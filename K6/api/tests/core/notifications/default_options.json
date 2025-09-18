@@ -1,0 +1,170 @@
+{
+    "scenarios": {
+        "smoke": {
+            "rate": 10,
+            "maxVUs": 10,
+            "timeUnit": "1s",
+            "duration": "30s",
+            "preAllocatedVUs": 5,
+            "gracefulStop": "10s",
+            "executor": "constant-arrival-rate"
+        },
+        "capacity_probe": {
+            "maxVUs": 400,
+            "startRate": 50,
+            "timeUnit": "1s",
+            "startTime": "45s",
+            "gracefulStop": "30s",
+            "preAllocatedVUs": 120,
+            "executor": "ramping-arrival-rate",
+            "stages": [
+                {
+                    "target": 100,
+                    "duration": "2m"
+                },
+                {
+                    "target": 200,
+                    "duration": "2m"
+                },
+                {
+                    "target": 300,
+                    "duration": "3m"
+                },
+                {
+                    "target": 0,
+                    "duration": "1m"
+                }
+            ]
+        },
+        "realistic_sla_compliance": {
+            "maxVUs": 500,
+            "startRate": 100,
+            "timeUnit": "1s",
+            "startTime": "9m20s",
+            "gracefulStop": "30s",
+            "preAllocatedVUs": 250,
+            "executor": "ramping-arrival-rate",
+            "stages": [
+                {
+                    "target": 400,
+                    "duration": "4m"
+                },
+                {
+                    "target": 700,
+                    "duration": "6m"
+                },
+                {
+                    "target": 0,
+                    "duration": "2m"
+                }
+            ]
+        },
+        "steady_state_load": {
+            "rate": 300,
+            "maxVUs": 600,
+            "timeUnit": "1s",
+            "duration": "15m",
+            "startTime": "22m",
+            "gracefulStop": "30s",
+            "preAllocatedVUs": 250,
+            "executor": "constant-arrival-rate"
+        },
+        "sudden_spike_resilience": {
+            "maxVUs": 700,
+            "timeUnit": "1s",
+            "startTime": "37m5s",
+            "gracefulStop": "30s",
+            "preAllocatedVUs": 350,
+            "executor": "ramping-arrival-rate",
+            "stages": [
+                {
+                    "target": 50,
+                    "duration": "10s"
+                },
+                {
+                    "target": 300,
+                    "duration": "20s"
+                },
+                {
+                    "target": 1000,
+                    "duration": "2m"
+                },
+                {
+                    "target": 0,
+                    "duration": "40s"
+                }
+            ]
+        },
+        "soak_long_term_stability": {
+            "rate": 120,
+            "maxVUs": 200,
+            "timeUnit": "1s",
+            "duration": "30m",
+            "gracefulStop": "2m",
+            "startTime": "40m45s",
+            "preAllocatedVUs": 120,
+            "executor": "constant-arrival-rate"
+        }
+    },
+    "summaryTrendStats": [
+        "avg",
+        "min",
+        "med",
+        "max",
+        "p(90)",
+        "p(95)",
+        "p(99)",
+        "count"
+    ],
+    "thresholds": {
+        "checks": [
+            "rate>0.99"
+        ],
+        "http_req_duration": [
+            "p(95)<2200",
+            "p(99)<4000"
+        ],
+        "dropped_iterations{scenario:smoke}": [
+            "count==0"
+        ],
+        "dropped_iterations{scenario:capacity_probe}": [
+            "count<20"
+        ],
+        "dropped_iterations{scenario:steady_state_load}": [
+            "count==0"
+        ],
+        "http_req_duration{scenario:smoke}": [
+            "p(95)<1200",
+            "p(99)<1800"
+        ],
+        "dropped_iterations{scenario:sudden_spike_resilience}": [
+            "count<50"
+        ],
+        "dropped_iterations{scenario:realistic_sla_compliance}": [
+            "count<5"
+        ],
+        "dropped_iterations{scenario:soak_long_term_stability}": [
+            "count<10"
+        ],
+        "http_req_duration{scenario:capacity_probe}": [
+            "p(95)<2500",
+            "p(99)<4000"
+        ],
+        "http_req_duration{scenario:steady_state_load}": [
+            "p(95)<2000",
+            "p(99)<3000"
+        ],
+        "http_req_duration{scenario:sudden_spike_resilience}": [
+            "p(95)<3500",
+            "p(99)<5000"
+        ],
+        "http_req_duration{scenario:soak_long_term_stability}": [
+            "p(95)<2400",
+            "p(99)<3500"
+        ],
+        "http_req_duration{scenario:realistic_sla_compliance}": [
+            "p(95)<2200",
+            "p(99)<3200"
+        ]
+    }
+}

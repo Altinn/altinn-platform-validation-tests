@@ -1,0 +1,37 @@
+namespace: core
+test_definitions:
+  - test_file: K6/api/tests/core/notifications/orderWithRemindersForEmailAddr.js
+    # config_file: "K6/api/tests/core/notifications/default_options.json"
+    env_file: "K6/api/tests/core/notifications/common.env"
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: ordr-w-rmndrs-for-email-addr
+          secrets:
+            - token-generator-creds
+      - environment: at24
+        node_type: default
+        test_run:
+          name: ordr-w-rmndrs-for-email-addr
+          secrets:
+            - token-generator-creds
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: ordr-w-rmndrs-for-email-addr
+          secrets:
+            - token-generator-creds
+  - test_file: K6/api/tests/core/notifications/emailRequest.js
+    env_file: "K6/api/tests/core/notifications/common.env"
+    contexts:
+      - environment: at22
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: false # Missing some configs, e.g. ninRecipient
+          config_file: ""
+        test_run:
+          name: email-request
+          secrets:
+            - token-generator-creds
