@@ -1,0 +1,96 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/auth/systemRegister/systemRegisterCrud.js
+    env_file: K6/api/tests/auth/common.env
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: system-register-crud
+          secrets:
+            - br-test.2025-07-03
+  - test_file: K6/api/tests/auth/systemRegister/systemRegisterRights.js
+    env_file: K6/api/tests/auth/common.env
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: system-register-rights
+          secrets:
+            - br-test.2025-07-03
+  - test_file: K6/api/tests/auth/systemRegister/systemRegisterAccessPackages.js
+    env_file: K6/api/tests/auth/common.env
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: system-register-accesspackages
+          secrets:
+            - br-test.2025-07-03
+  - test_file: K6/api/tests/auth/systemUserRequest/createAndConfirmSystemUserRequest.js
+    env_file: K6/api/tests/auth/common.env
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: create-confirm-system-user-req
+          secrets:
+            - token-generator-creds
+  - test_file: K6/api/tests/auth/register/testRemovalOfRevisorRoleForClient.js
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: add-rm-revisorrole-for-client
+          env:
+            - name: ALTINN2_BASE_URL
+              value: https://at22.altinn.cloud
+          secrets:
+            - soap-er-creds
+            - token-generator-creds
+            - authorization-subscription-key-at22
+            - register-subscription-key-at22
+  - test_file: K6/browser/systemUser/clientDelegation.js
+    contexts:
+      - environment: tt02
+        node_type: default
+        test_type:
+          type: browser
+          enabled: false
+          config_file: ""
+        test_run:
+          name: client-delegation
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: SYSTEMUSER_URL
+              value: https://am.ui.tt02.altinn.no/accessmanagement/ui/systemuser/overview
+            - name: ALTINN_UI_URL
+              value: https://tt02.altinn.no
+            - name: K6_TESTING_COLORIZE
+              value: "false"
+            - name: K6_TESTING_DISPLAY
+              value: inline
+          secrets:
+            - token-generator-creds
+      - environment: at24
+        node_type: default
+        test_type:
+          type: browser
+          enabled: false
+          config_file: ""
+        test_run:
+          name: client-delegation
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: K6_TESTING_COLORIZE
+              value: "false"
+            - name: K6_TESTING_DISPLAY
+              value: inline
+            - name: SYSTEMUSER_URL
+              value: https://am.ui.at24.altinn.cloud/accessmanagement/ui/systemuser/overview
+            - name: ALTINN_UI_URL
+              value: https://at24.altinn.cloud
+          secrets:
+            - token-generator-creds
