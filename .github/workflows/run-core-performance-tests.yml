@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  k6-functional:
+  k6-performance:
     runs-on: ubuntu-latest
     environment: test
     steps:
