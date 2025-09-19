@@ -1,0 +1,14 @@
+namespace: core
+test_definitions:
+  - test_file: K6/api/tests/core/notifications/orderWithRemindersForEmailAddr.js
+    config_file: "K6/api/tests/core/notifications/default_options.json"
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: ordr-w-rmndrs-for-email-addr
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+          secrets:
+            - token-generator-creds
