@@ -11,8 +11,6 @@ on:
   schedule:
     - cron: "*/15 * * * *"
 
-  push:
-
 permissions:
   id-token: write
   contents: read
