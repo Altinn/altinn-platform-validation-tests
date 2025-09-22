@@ -19,23 +19,24 @@ export default function () {
         = new OrdersApiClient(__ENV.BASE_URL, tokenGenerator)
 
     const testData = {
-        "subject": "Automated email from Altinn",
-        "body": "Dear $recipientName$! This is an automated email generated during the testing of Altinn Notifications. Your registration number is $recipientNumber$. Best regards, Altinn Team",
-        "contentType": "Html",
-        "fromAddress": "noreply@altinn.cloud",
         "sendersReference": uuidv4(),
-        "recipients": [],
+        "recipients": [{ "nationalIdentityNumber": __ENV.ninRecipient }, { "emailAddress": "noreply@altinn.no" }],
+        "emailTemplate": {
+            "subject": "Automated email from Altinn",
+            "body": "Dear $recipientName$! This is an automated email generated during the testing of Altinn Notifications. Your registration number is $recipientNumber$. Best regards, Altinn Team",
+            "contentType": "Html",
+            "fromAddress": "noreply@altinn.cloud",
+        },
     }
 
     let response = PostEmailNotificationOrder(
         ordersApiClient,
-        testData.subject,
-        testData.body,
-        testData.contentType,
-        testData.fromAddress
+        testData.emailTemplate,
+        testData.sendersReference,
+        testData.recipients
     )
 
     check(response, {
-        "POST email notification order request. Recipient lookup was successful": (r) => JSON.parse(r.body).recipientLookup.status == 'Success'
+        "POST email notification order request. Recipient lookup was successful": (r) => JSON.parse(r).recipientLookup.status == 'Success'
     });
 }
