@@ -26,9 +26,14 @@ export function PostNotificationOrderV2(
         reminders
     )
 
-    check(res, {
+    const success = check(res, {
         "PostNotificationOrderV2 - status code MUST be 201": (res) => res.status == 201,
     })
+
+    if (!success) {
+        console.log(res.status)
+        console.log(res.body)
+    }
 
     return res.body
 }

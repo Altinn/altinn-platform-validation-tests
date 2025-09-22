@@ -44,11 +44,50 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+  - test_file: K6/api/tests/core/notifications/orderWithRemindersForOrgs.js
+    env_file: "K6/api/tests/core/notifications/common.env"
+    contexts:
+      - environment: at22
+        node_type: default
+        test_run:
+          name: ordr-w-rmndrs-for-orgs
+          secrets:
+            - token-generator-creds
+            - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
+      - environment: at24
+        node_type: default
+        test_run:
+          name: ordr-w-rmndrs-for-orgs
+          secrets:
+            - token-generator-creds
+            - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: ordr-w-rmndrs-for-orgs
+          secrets:
+            - token-generator-creds
+            - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
+
   # OLD API
   - test_file: K6/api/tests/core/notifications/emailRequest.js
     env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: at22
+        node_type: default
+        test_run:
+          name: email-request
+          secrets:
+            - token-generator-creds
+            - email-order # Added the ninRecipient, but is this even a secret?
+      - environment: at24
+        node_type: default
+        test_run:
+          name: email-request
+          secrets:
+            - token-generator-creds
+            - email-order # Added the ninRecipient, but is this even a secret?
+      - environment: yt01
         node_type: default
         test_run:
           name: email-request
