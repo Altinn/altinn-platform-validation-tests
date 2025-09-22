@@ -25,21 +25,20 @@ class OrdersApiClient {
     }
 
     /**
-    * @param {string } subject
-    * @param {string } emailBody
-    * @param {string } contentType
-    * @param {string } fromAddress
+    * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
+    * @param {string } sendersReference
+    * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients
     * @returns http.RefinedResponse
     */
-    PostEmailNotificationOrder(subject, emailBody, contentType, fromAddress) {
+    PostEmailNotificationOrder(emailTemplate, sendersReference, recipients) {
         const token = this.tokenGenerator.getToken()
         const url = this.FULL_PATH
 
         const body = {
-            "subject": subject,
-            "body": emailBody,
-            "contentType": contentType,
-            "fromAddress": fromAddress
+            "notificationChannel": "Email",
+            "emailTemplate": emailTemplate,
+            "sendersReference": sendersReference,
+            "recipients": recipients,
         }
 
         const params = {

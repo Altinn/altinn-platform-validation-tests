@@ -1,16 +1,15 @@
-import { check } from 'k6';
+import { check, fail } from 'k6';
 import { OrdersApiClient } from "../../../../../clients/core/notifications/index.js"
 
 /**
  * @param {OrdersApiClient} ordersApiClient
- * @param {string } subject
- * @param {string } emailBody
- * @param {string } contentType
- * @param {string } fromAddress
+ * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
+ * @param {string } sendersReference
+ * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients
  * @returns (string | ArrayBuffer | null)
  */
-export function PostEmailNotificationOrder(ordersApiClient, subject, emailBody, contentType, fromAddress) {
-    const res = ordersApiClient.PostEmailNotificationOrder(subject, emailBody, contentType, fromAddress)
+export function PostEmailNotificationOrder(ordersApiClient, emailTemplate, sendersReference, recipients) {
+    const res = ordersApiClient.PostEmailNotificationOrder(emailTemplate, sendersReference, recipients)
 
     const success = check(res, {
         "POST email notification order request. Status is 202 Accepted": (r) => r.status === 202,
