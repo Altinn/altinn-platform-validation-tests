@@ -49,6 +49,7 @@ export default function () {
         ordersApiClient,
         testData.idempotencyId,
         testData.sendersReference,
+        testData.dialogportenAssociation,
         testData.requestedSendTime,
         testData.recipient,
         testData.reminders
