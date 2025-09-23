@@ -42,6 +42,7 @@ test_definitions:
         node_type: default
         test_run:
           name: add-rm-revisorrole-for-client
+          id: at22-add-rm-revisorrole-for-client
           env:
             - name: ALTINN2_BASE_URL
               value: https://at22.altinn.cloud

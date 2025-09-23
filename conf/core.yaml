@@ -7,18 +7,21 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-email-addr
+          id: at22-ordr-w-rmndrs-for-email-addr
           secrets:
             - token-generator-creds
       - environment: at24
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-email-addr
+          id: at24-ordr-w-rmndrs-for-email-addr
           secrets:
             - token-generator-creds
       - environment: yt01
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-email-addr
+          id: yt01-ordr-w-rmndrs-for-email-addr
           secrets:
             - token-generator-creds
 
@@ -29,18 +32,21 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-mobile-no
+          id: at22-ordr-w-rmndrs-for-mobile-no
           secrets:
             - token-generator-creds
       - environment: at24
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-mobile-no
+          id: at24-ordr-w-rmndrs-for-mobile-no
           secrets:
             - token-generator-creds
       - environment: yt01
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-mobile-no
+          id: yt01-ordr-w-rmndrs-for-mobile-no
           secrets:
             - token-generator-creds
 
@@ -51,6 +57,7 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-orgs
+          id: at22-ordr-w-rmndrs-for-orgs
           secrets:
             - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
@@ -58,6 +65,7 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-orgs
+          id: at24-ordr-w-rmndrs-for-orgs
           secrets:
             - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
@@ -65,6 +73,7 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-orgs
+          id: yt01-ordr-w-rmndrs-for-orgs
           secrets:
             - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
@@ -76,6 +85,7 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-persons
+          id: at22-ordr-w-rmndrs-for-persons
           secrets:
             - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
@@ -83,6 +93,7 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-persons
+          id: at24-ordr-w-rmndrs-for-persons
           secrets:
             - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
@@ -90,6 +101,7 @@ test_definitions:
         node_type: default
         test_run:
           name: ordr-w-rmndrs-for-persons
+          id: yt01-ordr-w-rmndrs-for-persons
           secrets:
             - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
@@ -102,6 +114,7 @@ test_definitions:
         node_type: default
         test_run:
           name: email-request
+          id: at22-email-request
           secrets:
             - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
@@ -109,6 +122,7 @@ test_definitions:
         node_type: default
         test_run:
           name: email-request
+          id: at24-email-request
           secrets:
             - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
@@ -116,6 +130,7 @@ test_definitions:
         node_type: default
         test_run:
           name: email-request
+          id: yt01-email-request
           secrets:
             - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
