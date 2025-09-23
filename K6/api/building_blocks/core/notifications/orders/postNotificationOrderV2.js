@@ -5,6 +5,7 @@ import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/ind
  * @param {OrdersV2ApiClient} ordersApiClient
  * @param {string } idempotencyId
  * @param {string } sendersReference
+ * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
  * @param {string } requestedSendTime
  * @param {Object } recipient
  * @param {Array<Object> } reminders
@@ -14,6 +15,7 @@ export function PostNotificationOrderV2(
     ordersApiClient,
     idempotencyId,
     sendersReference,
+    dialogportenAssociation,
     requestedSendTime,
     recipient,
     reminders
@@ -21,6 +23,7 @@ export function PostNotificationOrderV2(
     const res = ordersApiClient.PostNotificationOrderV2(
         idempotencyId,
         sendersReference,
+        dialogportenAssociation,
         requestedSendTime,
         recipient,
         reminders

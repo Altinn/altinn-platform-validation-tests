@@ -27,6 +27,7 @@ class OrdersV2ApiClient {
     /**
     * @param {string } idempotencyId
     * @param {string } sendersReference
+    * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
     * @param {string } requestedSendTime
     * @param {Object } recipient
     * @param {Array<Object> } reminders
@@ -35,6 +36,7 @@ class OrdersV2ApiClient {
     PostNotificationOrderV2(
         idempotencyId,
         sendersReference,
+        dialogportenAssociation,
         requestedSendTime,
         recipient,
         reminders
@@ -48,6 +50,9 @@ class OrdersV2ApiClient {
             "requestedSendTime": requestedSendTime,
             "recipient": recipient,
             "reminders": reminders
+        }
+        if (dialogportenAssociation) {
+            body.dialogportenAssociation = dialogportenAssociation
         }
 
         const params = {
