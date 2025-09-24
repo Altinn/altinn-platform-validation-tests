@@ -12,7 +12,7 @@ on:
         type: choice
         description: "The test to run"
         options:
-          - emailRequest
+          - email-request
           - ordr-w-rmndrs-for-email-addr
           - ordr-w-rmndrs-for-mobile-no
           - ordr-w-rmndrs-for-orgs
