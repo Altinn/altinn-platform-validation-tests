@@ -5,19 +5,30 @@ import { PostNotificationOrderV2 } from '../../../building_blocks/core/notificat
 
 const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-email-address.json"));
 
+let tokenGenerator = null;
+let ordersApiClient = null;
+
+function getClients() {
+    if (tokenGenerator == null || ordersApiClient == null) {
+        console.log("Configuring Clients")
+        const options = new Map();
+        options.set("env", __ENV.ENVIRONMENT);
+        options.set("ttl", 3600);
+        options.set("scopes", "altinn:serviceowner/notifications.create");
+        options.set("org", "ttd");
+        options.set("orgNo", "991825827");
+
+        tokenGenerator
+            = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd)
+        ordersApiClient
+            = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator)
+    }
+    return [ordersApiClient]
+}
+
 export default function () {
-    const options = new Map();
-    options.set("env", __ENV.ENVIRONMENT);
-    options.set("ttl", 3600);
-    options.set("scopes", "altinn:serviceowner/notifications.create");
-    options.set("org", "ttd");
-    options.set("orgNo", "991825827");
 
-    const tokenGenerator
-        = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd)
-
-    const ordersApiClient
-        = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator)
+    let [ordersApiClient] = getClients()
 
     testData.requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
     testData.sendersReference = `k6-order-${uuidv4().substring(0, 8)}`;
