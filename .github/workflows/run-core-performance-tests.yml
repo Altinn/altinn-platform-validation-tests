@@ -8,6 +8,21 @@ on:
         required: true
         default: "conf/core-perf.yaml"
 
+      testName:
+        type: choice
+        description: "The test to run"
+        options:
+          - emailRequest
+          - ordr-w-rmndrs-for-email-addr
+          - ordr-w-rmndrs-for-mobile-no
+          - ordr-w-rmndrs-for-orgs
+          - ordr-w-rmndrs-for-persons
+
+      commandLineArgs:
+        description: "Command line arguments to pass to the k6 run command"
+        required: false
+        default: ""
+
 permissions:
   id-token: write
   contents: read
@@ -46,9 +61,10 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/core-perf.yaml' }}"
+          config_file: "${{ inputs.configFilePath }}"
+          command_line_args: "${{ inputs.commandLineArgs }}"
 
       - name: Apply k8s manifests
         shell: bash
         run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-ordr-w-rmndrs-for-email-addr
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-${testName}
