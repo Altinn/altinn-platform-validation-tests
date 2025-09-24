@@ -1,0 +1,39 @@
+{
+    "scenarios": {
+        "smoke": {
+            "rate": 10,
+            "maxVUs": 10,
+            "timeUnit": "1s",
+            "duration": "30s",
+            "preAllocatedVUs": 5,
+            "gracefulStop": "10s",
+            "executor": "constant-arrival-rate"
+        }
+    },
+    "summaryTrendStats": [
+        "avg",
+        "min",
+        "med",
+        "max",
+        "p(90)",
+        "p(95)",
+        "p(99)",
+        "count"
+    ],
+    "thresholds": {
+        "checks": [
+            "rate>0.99"
+        ],
+        "http_req_duration": [
+            "p(95)<2200",
+            "p(99)<4000"
+        ],
+        "dropped_iterations{scenario:smoke}": [
+            "count==0"
+        ],
+        "http_req_duration{scenario:smoke}": [
+            "p(95)<1200",
+            "p(99)<1800"
+        ]
+    }
+}

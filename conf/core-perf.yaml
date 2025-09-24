@@ -1,7 +1,8 @@
 namespace: core
 test_definitions:
   - test_file: K6/api/tests/core/notifications/orderWithRemindersForEmailAddr.js
-    config_file: "K6/api/tests/core/notifications/default_options.json"
+    # config_file: "K6/api/tests/core/notifications/default_options.json"
+    config_file: "K6/api/tests/core/notifications/smoke.json"
     contexts:
       - environment: yt01
         node_type: spot
@@ -12,3 +13,62 @@ test_definitions:
               value: full
           secrets:
             - token-generator-creds
+  - test_file: K6/api/tests/core/notifications/orderWithRemindersForMobileNumber.js
+    # config_file: "K6/api/tests/core/notifications/default_options.json"
+    config_file: "K6/api/tests/core/notifications/smoke.json"
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: ordr-w-rmndrs-for-mobile-no
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/core/notifications/orderWithRemindersForOrgs.js
+    # config_file: "K6/api/tests/core/notifications/default_options.json"
+    config_file: "K6/api/tests/core/notifications/smoke.json"
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: ordr-w-rmndrs-for-orgs
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+          secrets:
+            - token-generator-creds
+            - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
+
+  - test_file: K6/api/tests/core/notifications/orderWithRemindersForPersons.js
+    # config_file: "K6/api/tests/core/notifications/default_options.json"
+    config_file: "K6/api/tests/core/notifications/smoke.json"
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: ordr-w-rmndrs-for-persons
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+          secrets:
+            - token-generator-creds
+            - email-order # Added the ninRecipient, but is this even a secret?
+
+  # OLD API
+  - test_file: K6/api/tests/core/notifications/emailRequest.js
+    # config_file: "K6/api/tests/core/notifications/default_options.json"
+    config_file: "K6/api/tests/core/notifications/smoke.json"
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: email-request
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+          secrets:
+            - token-generator-creds
+            - email-order # Added the ninRecipient, but is this even a secret?
