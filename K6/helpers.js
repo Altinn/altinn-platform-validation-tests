@@ -1,5 +1,5 @@
 import { sleep, check } from "k6";
-
+import { papaparse } from "./commonImports.js";
 /**
  * Retry a function until it succeeds or all retries fail.
  *
@@ -46,4 +46,13 @@ export function retry(conditionFn, options = {}) {
     });
 
     return success;
+}
+
+export function readCsv(filename) {
+    try {
+        return papaparse.parse(open(filename), { header: true, skipEmptyLines: true }).data;
+    } catch (error) {
+        console.log(`Error reading CSV file: ${error}`);
+        return [];
+    }
 }

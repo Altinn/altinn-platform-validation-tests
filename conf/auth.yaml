@@ -95,3 +95,12 @@ test_definitions:
               value: https://at24.altinn.cloud
           secrets:
             - token-generator-creds
+  - test_file: K6/api/tests/auth/consent/postConsent.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: post-consent
+          id: yt01-post-consent
+          secrets:
+            - token-generator-creds
