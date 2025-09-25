@@ -41,7 +41,7 @@ export class LoginPage {
     }
 
     async loginAs(pid, orgnummer) {
-        const baseUrl = __ENV.ALTINN_UI_URL;
+        const baseUrl = __ENV.ALTINN2_BASE_URL;
         await this.page.goto(baseUrl);
         await this.loginButton.click();
         await this.testIdLink.click();
@@ -56,7 +56,7 @@ export class LoginPage {
         const chosenReportee = this.page.getByRole('button').filter({ hasText: reportee });
         await chosenReportee.click();
 
-        await this.page.goto(`${__ENV.ALTINN_UI_URL}/ui/profile`);
+        await this.page.goto(`${__ENV.ALTINN2_BASE_URL}/ui/profile`);
         await this.profileLink.click();
 
         const profileHeader = this.page.getByRole('heading', {
@@ -69,7 +69,7 @@ export class LoginPage {
     }
 
     async navigateToLoginPage() {
-        await this.page.goto(__ENV.ALTINN_UI_URL);
+        await this.page.goto(__ENV.ALTINN2_BASE_URL);
         await this.loginButton.click();
         await this.testIdLink.click();
     }

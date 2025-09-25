@@ -10,7 +10,7 @@ export class logoutWithUser {
     }
 
     async gotoLogoutPage(logoutReportee) {
-        await this.page.goto(`${__ENV.ALTINN_UI_URL}/ui/profile`);
+        await this.page.goto(`${__ENV.ALTINN2_BASE_URL}/ui/profile`);
 
         if (await this.page.getByText('Oida, denne siden kjenner vi ikke til...').isVisible()) {
             await this.page.getByRole('link', { name: 'profil' }).click();

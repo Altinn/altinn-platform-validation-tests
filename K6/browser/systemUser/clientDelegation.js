@@ -154,8 +154,7 @@ export default async function () {
             await loginPage.loginAs(user.pid, user.org);
 
             // Go to system user overview page
-            const SYSTEMUSER_URL = __ENV.SYSTEMUSER_URL
-            await page.goto(SYSTEMUSER_URL);
+            await page.goto(`${__ENV.AM_UI_BASE_URL}/accessmanagement/ui/systemuser/overview`);
 
             const newTilgangsstyringsloesningen = page.getByRole('button', { name: 'Prøv ny tilgangsstyring' });
             await expect(newTilgangsstyringsloesningen).toBeVisible();
