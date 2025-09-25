@@ -130,10 +130,10 @@ export class ClientDelegationPage {
         // Should close modal and take you back to overview page
         await Promise.all([
             await confirmDeleteButton.click(),
-            this.page.waitForNavigation({ url: __ENV.SYSTEMUSER_URL }),
+            this.page.waitForNavigation({ url: `${__ENV.AM_UI_BASE_URL}/accessmanagement/ui/systemuser/overview` }),
         ]);
 
-        await expect(this.page.url()).toContain(__ENV.SYSTEMUSER_URL);
+        await expect(this.page.url()).toContain(`${__ENV.AM_UI_BASE_URL}/accessmanagement/ui/systemuser/overview`);
         const isVisible = await this.systemUserLink(name).isVisible();
         expect(isVisible).toBeFalsy();
     }
