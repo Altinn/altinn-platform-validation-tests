@@ -1,0 +1,19 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/auth/consent/postConsent.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          name: post-consent
+          id: yt01-post-consent-break
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - token-generator-creds
