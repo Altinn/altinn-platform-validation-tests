@@ -1,5 +1,6 @@
 import { sleep, check } from "k6";
-import { papaparse } from "./commonImports.js";
+import { papaparse, randomItem } from "./commonImports.js";
+
 /**
  * Retry a function until it succeeds or all retries fail.
  *
@@ -55,4 +56,16 @@ export function readCsv(filename) {
         console.log(`Error reading CSV file: ${error}`);
         return [];
     }
+}
+/**
+ *
+ * @returns A random item from the list, or an item based on __ITER if randomize is false
+ */
+export function getItemFromList(listOfItems, randomize = false) {
+    if (randomize) {
+        return randomItem(listOfItems)
+    }
+    else {
+        return listOfItems[__ITER % listOfItems.length]
+    };
 }
