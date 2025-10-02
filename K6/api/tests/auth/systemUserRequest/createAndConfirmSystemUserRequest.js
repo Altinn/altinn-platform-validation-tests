@@ -1,21 +1,14 @@
 import { check, group } from "k6"
 import { SharedArray } from "k6/data";
 import { vu } from 'k6/execution';
-import { papaparse, uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from '../../../../commonImports.js';
+import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from '../../../../commonImports.js';
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/auth/index.js"
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from '../../../building_blocks/auth/systemUserRequest/index.js';
 import { CreateNewSystem } from '../../../building_blocks/auth/systemRegister/index.js'
 
-function readCsv(filename) {
-    try {
-        return papaparse.parse(open(filename), { header: true, skipEmptyLines: true }).data;
-    } catch (error) {
-        console.log(`Error reading CSV file: ${error}`);
-        return [];
-    }
-}
+import { readCsv } from "../../../../helpers.js";
 
-const systemUsersFilename = `../../../../testdata/auth/data-${__ENV.ENVIRONMENT || "at22"}-all-customers.csv`;
+const systemUsersFilename = `../../../../testdata/auth/data-${__ENV.ENVIRONMENT}-all-customers.csv`;
 
 const mySystemUsers = new SharedArray('systemUsers', function () {
     return readCsv(systemUsersFilename);

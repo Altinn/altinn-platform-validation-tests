@@ -13,6 +13,9 @@ on:
         description: "The test to run"
         options:
           - post-consent
+          - get-authorized-parties-org
+          - get-authorized-parties-sysuser
+          - get-authorized-parties-user
 
       commandLineArgs:
         description: "Command line arguments to pass to the k6 run command"
@@ -20,14 +23,17 @@ on:
         default: ""
 
   schedule:
+    - cron: "0 8 * * *"
     - cron: "0 10 * * *"
+    - cron: "0 12 * * *"
+    - cron: "0 14 * * *"
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  k6-functional:
+  k6-breakpoint:
     runs-on: ubuntu-latest
     environment: test
     steps:
@@ -63,8 +69,26 @@ jobs:
           config_file: "${{ inputs.configFilePath || 'conf/auth-break.yaml' }}" # No inputs when running as a cron
           command_line_args: "${{ inputs.commandLineArgs }}"
 
-      - name: Apply k8s manifests
+      - name: Run Breakpoint for .dist/yt01-post-consent
+        if: github.event.schedule == '0 8 * * *'
         shell: bash
         run: |
-          # kubectl apply -f .dist/ -R
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-post-consent
+
+      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-org
+        if: github.event.schedule == '0 10 * * *'
+        shell: bash
+        run: |
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-org
+
+      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-sysuser
+        if: github.event.schedule == '0 12 * * *'
+        shell: bash
+        run: |
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
+
+      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-user
+        if: github.event.schedule == '0 12 * * *'
+        shell: bash
+        run: |
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-user
