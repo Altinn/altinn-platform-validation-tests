@@ -88,7 +88,7 @@ jobs:
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
 
       - name: Run Breakpoint for .dist/yt01-get-authorized-parties-user
-        if: github.event.schedule == '0 12 * * *'
+        if: github.event.schedule == '0 14 * * *'
         shell: bash
         run: |
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-user
