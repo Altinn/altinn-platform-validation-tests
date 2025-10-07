@@ -35,7 +35,7 @@ export default function () {
     const party = getItemFromList(parties, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:person:identifier-no",
+        "urn:altinn:organization:identifier-no",
         party.orgNo,
         includeAltinn2
     );
