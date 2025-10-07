@@ -1,1 +1,1 @@
-export { GetAuthorizedParties, getClients } from "./getAuthorizedParties.js"
+export { GetAuthorizedParties } from "./getAuthorizedParties.js"

@@ -1,6 +1,5 @@
 import { check } from 'k6';
 import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js"
-import { EnterpriseTokenGenerator } from '../../../../commonImports.js';
 
 /**
  * Get Authorized Parties
@@ -27,18 +26,3 @@ export function GetAuthorizedParties(authorizedPartiesClient, type, value, inclu
     }
     return res.body;
 }
-
-let authorizedPartiesClient = undefined;
-
-export function getClients() {
-    if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts)
-        authorizedPartiesClient = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    return [authorizedPartiesClient]
-}
-

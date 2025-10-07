@@ -1,6 +1,7 @@
 import { SharedArray } from "k6/data";
 import { getItemFromList, readCsv } from "../../../../helpers.js";
-import { GetAuthorizedParties, getClients } from '../../../building_blocks/auth/authorizedParties/index.js';
+import { GetAuthorizedParties } from '../../../building_blocks/auth/authorizedParties/index.js';
+import { getClients } from './getClients.js';
 
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? 'true') === 'true';
 const randomize = (__ENV.RANDOMIZE ?? 'true') === 'true';
