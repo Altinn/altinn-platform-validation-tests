@@ -1,5 +1,5 @@
 import { check } from 'k6';
-import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js"
+import { AuthorizedPartiesClient } from '../../../../clients/auth/index.js';
 
 /**
  * Get Authorized Parties

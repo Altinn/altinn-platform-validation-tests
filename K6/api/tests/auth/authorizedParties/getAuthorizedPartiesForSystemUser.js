@@ -1,5 +1,5 @@
-import { SharedArray } from "k6/data";
-import { getItemFromList, readCsv } from "../../../../helpers.js";
+import { SharedArray } from 'k6/data';
+import { getItemFromList, readCsv } from '../../../../helpers.js';
 import { GetAuthorizedParties } from '../../../building_blocks/auth/authorizedParties/index.js';
 import { getClients } from './getClients.js';
 
