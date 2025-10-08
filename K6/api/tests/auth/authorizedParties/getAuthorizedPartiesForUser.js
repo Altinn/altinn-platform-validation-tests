@@ -1,6 +1,5 @@
 import { SharedArray } from 'k6/data';
 import { GetAuthorizedParties } from '../../../building_blocks/auth/authorizedParties/index.js';
-import { AuthorizedPartiesClient } from '../../../../clients/auth/authorizedParties.js';
 import { getClients } from './getClients.js';
 import { getItemFromList, readCsv } from '../../../../helpers.js';
 
