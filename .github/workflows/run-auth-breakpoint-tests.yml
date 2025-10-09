@@ -17,6 +17,21 @@ on:
           - get-authorized-parties-sysuser
           - get-authorized-parties-user
 
+      target_vus:
+        description: "The target VUs to reach"
+        required: false
+        # default: 100
+
+      duration:
+        description: "How long should it take to reach the target_vus"
+        required: false
+        # default: 10m
+
+      abortOnFail:
+        description: "Should the test run stop as soon as the threshold fails"
+        required: false
+        # default: true
+
       commandLineArgs:
         description: "Command line arguments to pass to the k6 run command"
         required: false
@@ -63,11 +78,46 @@ jobs:
             echo "Failed to convert kubeconfig"
             exit 1
           fi
+
+      - name: Process CLI args
+        shell: bash
+        run: |
+          TARGET_VUS="${TARGET_VUS:-}"
+          DURATION="${DURATION:-}"
+          ABORT_ON_FAIL="${ABORT_ON_FAIL:-}"
+          COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
+
+          OUTPUT=""
+
+          if [ -n "$TARGET_VUS" ]; then
+            OUTPUT="$OUTPUT -e BREAKPOINT_STAGE_TARGET=$TARGET_VUS"
+          fi
+
+          if [ -n "$DURATION" ]; then
+            OUTPUT="$OUTPUT -e BREAKPOINT_STAGE_DURATION=$DURATION"
+          fi
+
+          if [ -n "$ABORT_ON_FAIL" ]; then
+            OUTPUT="$OUTPUT -e BREAKPOINT_STAGE_ABORTONFAIL=$ABORT_ON_FAIL"
+          fi
+
+          if [ -n "$COMMAND_LINE_ARGS" ]; then
+            OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
+          fi
+
+          # Output the final string
+          echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
+        env:
+          TARGET_VUS: ${{ inputs.target_vus }}
+          DURATION: ${{ inputs.duration }}
+          ABORT_ON_FAIL: ${{ inputs.abortOnFail }}
+          COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
+
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
           config_file: "${{ inputs.configFilePath || 'conf/auth-break.yaml' }}" # No inputs when running as a cron
-          command_line_args: "${{ inputs.commandLineArgs }}"
+          command_line_args: ${{ env.COMMAND_LINE_ARGS }}
 
       - name: Run Breakpoint for .dist/yt01-post-consent
         if: github.event.schedule == '0 08 * * 1'
