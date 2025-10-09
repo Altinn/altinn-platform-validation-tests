@@ -29,10 +29,10 @@ on:
         default: ""
 
   schedule:
-    - cron: $MONDAY_08H
-    - cron: $MONDAY_10H
-    - cron: $MONDAY_12H
-    - cron: $MONDAY_14H
+    - cron: ${{ env.MONDAY_08H }}
+    - cron: ${{ env.MONDAY_10H }}
+    - cron: ${{ env.MONDAY_12H }}
+    - cron: ${{ env.MONDAY_14H }}
 
 permissions:
   id-token: write
@@ -76,25 +76,25 @@ jobs:
           command_line_args: "${{ inputs.commandLineArgs }}"
 
       - name: Run Breakpoint for .dist/yt01-post-consent
-        if: github.event.schedule == $MONDAY_08H
+        if: github.event.schedule == ${{ env.MONDAY_08H }}
         shell: bash
         run: |
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-post-consent
 
       - name: Run Breakpoint for .dist/yt01-get-authorized-parties-org
-        if: github.event.schedule == $MONDAY_10H
+        if: github.event.schedule == ${{ env.MONDAY_10H }}
         shell: bash
         run: |
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-org
 
       - name: Run Breakpoint for .dist/yt01-get-authorized-parties-sysuser
-        if: github.event.schedule == $MONDAY_12H
+        if: github.event.schedule == ${{ env.MONDAY_12H }}
         shell: bash
         run: |
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
 
       - name: Run Breakpoint for .dist/yt01-get-authorized-parties-user
-        if: github.event.schedule == $MONDAY_14H
+        if: github.event.schedule == ${{ env.MONDAY_14H }}
         shell: bash
         run: |
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-user
