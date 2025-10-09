@@ -109,6 +109,9 @@ jobs:
             OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
           fi
 
+          # Remove leading whitespace
+          OUTPUT=$(echo "$OUTPUT" | sed 's/^[[:space:]]*//')
+
           # Output the final string
           echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
         env:
