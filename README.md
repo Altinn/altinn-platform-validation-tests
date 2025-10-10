@@ -52,3 +52,12 @@
     ├── auth-break.yaml
     ├── auth.yaml
 ```
+
+# Available [node types](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dv2-series?tabs=sizebasic#sizes-in-series)
+
+- default         (Standard_D3_v2)
+- spot            (Standard_D3_v2)
+- spot8cpu28gbmem (Standard_D4_v2)
+
+The default node pool should be fine for functional/low load tests.
+The spot node pools should be used when actual performance tests are to be run. Upgrade the tier if the node is incapable of generating enough load. If needed, it's simple to add more nodes and/or more node types.
