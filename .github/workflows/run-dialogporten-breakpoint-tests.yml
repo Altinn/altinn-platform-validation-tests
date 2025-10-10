@@ -1,0 +1,124 @@
+name: Dialogporten - run k6 breakpoint tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      configFilePath:
+        description: "Configuration file for the test runs"
+        required: true
+        default: "conf/dialogporten-break.yaml"
+
+      testName:
+        type: choice
+        description: "The test to run"
+        options:
+          - so-should-send-notification
+
+      target_vus:
+        description: "The target VUs to reach"
+        required: false
+        # default: 100
+
+      duration:
+        description: "How long should it take to reach the target_vus"
+        required: false
+        # default: 10m
+
+      abortOnFail:
+        description: "Should the test run stop as soon as the threshold fails"
+        type: choice
+        required: false
+        options:
+          - ""
+          - "true"
+          - "false"
+
+      commandLineArgs:
+        description: "Command line arguments to pass to the k6 run command"
+        required: false
+        default: ""
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  k6-breakpoint:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Populate kubeconfig with k6 context
+        id: populate_kubeconfig_with_k6_context
+        shell: bash
+        run: |
+          if ! az aks install-cli; then
+            echo "Failed to install kubectl CLI"
+            exit 1
+          fi
+          if ! az aks get-credentials --resource-group k6tests-rg --name k6tests-cluster; then
+            echo "Failed to populate kubeconfig"
+            exit 1
+          fi
+          if ! kubelogin convert-kubeconfig -l azurecli; then
+            echo "Failed to convert kubeconfig"
+            exit 1
+          fi
+
+      - name: Process CLI args
+        shell: bash
+        run: |
+          TARGET_VUS="${TARGET_VUS:-}"
+          DURATION="${DURATION:-}"
+          ABORT_ON_FAIL="${ABORT_ON_FAIL:-}"
+          COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
+
+          OUTPUT=""
+
+          if [ -n "$TARGET_VUS" ]; then
+            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_TARGET=$TARGET_VUS"
+          fi
+
+          if [ -n "$DURATION" ]; then
+            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_DURATION=$DURATION"
+          fi
+
+          if [ -n "$ABORT_ON_FAIL" ]; then
+            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_ABORTONFAIL=$ABORT_ON_FAIL"
+          fi
+
+          if [ -n "$COMMAND_LINE_ARGS" ]; then
+            OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
+          fi
+
+          # Remove leading whitespace
+          OUTPUT=$(echo "$OUTPUT" | sed 's/^[[:space:]]*//')
+
+          # Output the final string
+          echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
+        env:
+          TARGET_VUS: ${{ inputs.target_vus }}
+          DURATION: ${{ inputs.duration }}
+          ABORT_ON_FAIL: ${{ inputs.abortOnFail }}
+          COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
+
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: "${{ inputs.configFilePath || 'conf/dialogporten-break.yaml' }}" # No inputs when running as a cron
+          command_line_args: ${{ env.COMMAND_LINE_ARGS }}
+
+      - name: Apply k8s manifests
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-${{ inputs.testName }}
