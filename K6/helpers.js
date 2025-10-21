@@ -1,5 +1,6 @@
 import { sleep, check } from "k6";
-import { papaparse, randomItem } from "./commonImports.js";
+import exec from 'k6/execution';
+import { papaparse, randomItem, randomIntBetween } from "./commonImports.js";
 
 /**
  * Retry a function until it succeeds or all retries fail.
@@ -69,3 +70,24 @@ export function getItemFromList(listOfItems, randomize = false) {
         return listOfItems[__ITER % listOfItems.length]
     };
 }
+/**
+ *
+ * @returns A random item from the list, or an item based on __ITER if randomize is false
+ */
+export function getItemFromListForVu(listOfItems, randomize = false) {
+  const activeVus = exec.instance.vusActive;
+  const noOfClientsPerVu = Math.ceil(listOfItems.length / activeVus);
+  const startIx = (noOfClientsPerVu * (exec.vu.idInTest - 1)) % listOfItems.length;  //exec.vu.idInTest * (listOfItems.length / __ENV.VUS);
+  const endIx = Math.min((startIx + noOfClientsPerVu -1), listOfItems.length -1);
+  //console.log(`VU ${exec.vu.idInTest} has index range ${startIx} - ${endIx} (total items: ${listOfItems.length}, activeVUs: ${activeVus}, clientsPerVu: ${noOfClientsPerVu})`);
+  if (randomize) {
+      return listOfItems[randomIntBetween(startIx, endIx)]
+  }
+  else {
+      return listOfItems[startIx + __ITER % (endIx - startIx)]
+  };
+}
+
+
+// const part = exec.vu.idInTest % (dagl.length/noOfClientsPerVu)
+// const clientIndex = (randomIntBetween(part*noOfClientsPerVu, ((part+1)*noOfClientsPerVu)) - 1) % dagl.length;
