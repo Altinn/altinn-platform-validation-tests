@@ -1,4 +1,4 @@
-name: Core - run k6 functional tests
+name: Dialogporten - run k6 functional tests
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       configFilePath:
         description: "Configuration file for the test runs"
         required: true
-        default: "conf/core.yaml"
+        default: "conf/dialogporten.yaml"
 
   schedule:
     - cron: "*/15 * * * *"
@@ -49,14 +49,10 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/core.yaml' }}" # No inputs when running as a cron
+          config_file: "${{ inputs.configFilePath || 'conf/dialogporten.yaml' }}" # No inputs when running as a cron
 
       - name: Apply k8s manifests
         shell: bash
         run: |
           # kubectl apply -f .dist/ -R
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-email-addr); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-mobile-no); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-orgs); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-persons); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-email-request); do kubectl --context k6tests-cluster apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-so-should-send-notification); do kubectl --context k6tests-cluster apply --server-side -f $test; done

@@ -1,4 +1,4 @@
-name: Auth - run k6 breakpoint tests
+name: Dialogporten - run k6 breakpoint tests
 
 on:
   workflow_dispatch:
@@ -6,16 +6,13 @@ on:
       configFilePath:
         description: "Configuration file for the test runs"
         required: true
-        default: "conf/auth-break.yaml"
+        default: "conf/dialogporten-break.yaml"
 
       testName:
         type: choice
         description: "The test to run"
         options:
-          - post-consent
-          - get-authorized-parties-org
-          - get-authorized-parties-sysuser
-          - get-authorized-parties-user
+          - so-should-send-notification
 
       target_vus:
         description: "The target VUs to reach"
@@ -40,12 +37,6 @@ on:
         description: "Command line arguments to pass to the k6 run command"
         required: false
         default: ""
-
-  schedule:
-    - cron: "0 08 * * 1"
-    - cron: "0 10 * * 1"
-    - cron: "0 12 * * 1"
-    - cron: "0 14 * * 1"
 
 permissions:
   id-token: write
@@ -123,32 +114,8 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/auth-break.yaml' }}" # No inputs when running as a cron
+          config_file: "${{ inputs.configFilePath || 'conf/dialogporten-break.yaml' }}" # No inputs when running as a cron
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
-
-      - name: Run Breakpoint for .dist/yt01-post-consent
-        if: github.event.schedule == '0 08 * * 1'
-        shell: bash
-        run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-post-consent
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-org
-        if: github.event.schedule == '0 10 * * 1'
-        shell: bash
-        run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-org
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-sysuser
-        if: github.event.schedule == '0 12 * * 1'
-        shell: bash
-        run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-user
-        if: github.event.schedule == '0 14 * * 1'
-        shell: bash
-        run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-user
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'
