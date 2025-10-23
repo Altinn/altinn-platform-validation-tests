@@ -71,23 +71,23 @@ export function getItemFromList(listOfItems, randomize = false) {
     };
 }
 /**
- *
+ * Divide the list of items among the VUs, and return either a random item from that subset, or an item based on __ITER
+ * Weakness: If the number of VUs is greater than the number of items in the list, some VUs will get the same item
+ *           If we have 3 VUs and 10 items, VU1 gets items 1-4, VU2 gets items 5-8, VU3 gets items 9-10. Ideally VU1 should get 1-4, VU2 gets 5-7, VU3 gets 8-10
  * @returns A random item from the list, or an item based on __ITER if randomize is false
  */
-export function getItemFromListForVu(listOfItems, randomize = false) {
-  const activeVus = exec.instance.vusActive;
-  const noOfClientsPerVu = Math.ceil(listOfItems.length / activeVus);
-  const startIx = (noOfClientsPerVu * (exec.vu.idInTest - 1)) % listOfItems.length;  //exec.vu.idInTest * (listOfItems.length / __ENV.VUS);
-  const endIx = Math.min((startIx + noOfClientsPerVu -1), listOfItems.length -1);
-  //console.log(`VU ${exec.vu.idInTest} has index range ${startIx} - ${endIx} (total items: ${listOfItems.length}, activeVUs: ${activeVus}, clientsPerVu: ${noOfClientsPerVu})`);
+export function getItemFromListDividedPerVu(listOfItems, randomize = false) {
+  // For a normal test, total vus is taken from exec.test.options.scenarios.default.vus
+  // For a breakpoint test, total vus is taken from __ENV.BREAKPOINT_STAGES_TARGET
+  // If neither is set, default to 1, all vus will pick from the entire list
+  const totalVus = exec.test.options.scenarios.default.vus ?? __ENV.BREAKPOINT_STAGES_TARGET ?? 1;
+  const noOfItemsPerVu = Math.ceil(listOfItems.length / totalVus);
+  const startIx = (noOfItemsPerVu * (exec.vu.idInTest - 1)) % listOfItems.length;  
+  const endIx = Math.min((startIx + noOfItemsPerVu -1), listOfItems.length -1);
   if (randomize) {
       return listOfItems[randomIntBetween(startIx, endIx)]
   }
   else {
-      return listOfItems[startIx + __ITER % (endIx - startIx)]
+      return listOfItems[startIx + (__ITER % (endIx - startIx + 1))]
   };
 }
-
-
-// const part = exec.vu.idInTest % (dagl.length/noOfClientsPerVu)
-// const clientIndex = (randomIntBetween(part*noOfClientsPerVu, ((part+1)*noOfClientsPerVu)) - 1) % dagl.length;

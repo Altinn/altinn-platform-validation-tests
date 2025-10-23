@@ -1,13 +1,16 @@
 import { check } from 'k6';
-import { AuthorizedPartiesClient } from '../../../../clients/auth/index.js';
+import { PdpAuthorizeClient } from '../../../../clients/auth/index.js';
 
 
 /**
- * Get Authorized Parties
- * @param {AuthorizedPartiesClient} authorizedPartiesClient A client to interact with the Authorized Parties API
- * @param {*} type
- * @param {*} value
- * @param {*} label
+ * 
+ * @param {PdpAuthorizeClient} pdpAuthorizeClient A client to interact with the Pdp Authorize API
+ * @param {*} ssn - social security number of the end user
+ * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+ * @param {*} action - e.g. read, write, sign
+ * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
+ * @param {*} subscriptionKey - subscription key for the API
+ * @param {*} label - label for the request
  */
 
 export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, expectedResponse, subscriptionKey, label = null) {
