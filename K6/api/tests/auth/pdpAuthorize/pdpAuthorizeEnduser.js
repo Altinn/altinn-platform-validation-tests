@@ -75,7 +75,7 @@ export default function () {
         resource,
         action,
         expectedResponse,
-        __ENV.SUBSCRIPTION_KEY,
+        __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
         label
     );
 }
