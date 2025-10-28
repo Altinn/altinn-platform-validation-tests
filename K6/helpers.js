@@ -1,5 +1,6 @@
 import { sleep, check } from "k6";
-import { papaparse, randomItem } from "./commonImports.js";
+import exec from 'k6/execution';
+import { papaparse, randomItem, randomIntBetween } from "./commonImports.js";
 
 /**
  * Retry a function until it succeeds or all retries fail.
@@ -68,4 +69,33 @@ export function getItemFromList(listOfItems, randomize = false) {
     else {
         return listOfItems[__ITER % listOfItems.length]
     };
+}
+
+/**
+ * Divide the list of items into multiple sublists
+ * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
+ * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
+ * @returns A list with numberOfSublists lists.
+*/
+export function segmentData(listOfItems, numberOfSublists = 1) {
+    const sublists = [];
+    const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
+    const remainder = listOfItems.length % numberOfSublists;
+
+    let index = 0;
+    for (let i = 0; i < numberOfSublists; i++) {
+        const sublistSize = itemsPerSublist + (i < remainder ? 1 : 0);
+        sublists.push(listOfItems.slice(index, index + sublistSize));
+        index += sublistSize;
+    }
+
+    return sublists
+}
+
+/**
+ * An attempt to abstract finding the number of VUs. Current implementation is a bit restrictive/opinionated but we can build upon.
+ * @returns The number of VUs for the test
+*/
+export function getNumberOfVUs() {
+    return exec.test.options.scenarios.default.vus ?? __ENV.BREAKPOINT_STAGE_TARGET ?? 1;
 }
