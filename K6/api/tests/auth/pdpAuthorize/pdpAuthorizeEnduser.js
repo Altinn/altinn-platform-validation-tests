@@ -29,7 +29,7 @@ function getOptions(labels) {
     thresholds: {}
   };
 
-  // No thresholds for normal mode. Set labels with empty arrays to collect stats.
+  // Set labels with empty arrays to collect stats.
   for (const label of labels) {
     options.thresholds[`http_req_duration{name:${label}}`] = [];
     options.thresholds[`http_req_failed{name:${label}}`] = [];
