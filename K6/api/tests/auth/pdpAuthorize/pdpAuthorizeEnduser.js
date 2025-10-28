@@ -1,19 +1,15 @@
 import { SharedArray } from 'k6/data';
 import { PdpAuthorizeUser } from '../../../building_blocks/auth/pdpAuthorize/index.js';
-import { getItemFromListDividedPerVu, readCsv } from '../../../../helpers.js';
+import { segmentData, readCsv, getItemFromList, getNumberOfVUs } from '../../../../helpers.js';
 import { randomIntBetween } from '../../../../commonImports.js';
 import { getClients } from './getClients.js';
-
-const randomize = (__ENV.RANDOMIZE ?? 'true') === 'true';
-const breakpoint = (__ENV.BREAKPOINT ?? 'false') === 'true';
-const abort_on_fail = (__ENV.ABORT_ON_FAIL ?? 'false') === 'true';
-const stages_duration = __ENV.BREAKPOINT_STAGE_DURATION ?? '1m';
-const stages_target = __ENV.BREAKPOINT_STAGES_TARGET ?? 5;
+import exec from 'k6/execution';
 
 const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgsDagl-${__ENV.ENVIRONMENT}.csv`);
 const parties = new SharedArray('parties', function () {
-    return readCsv(partiesFilename);
+  return readCsv(partiesFilename);
 });
+let testData;
 
 // Labels for different actions
 const pdpAuthorizeLabel = "PDP Authorize";
@@ -21,10 +17,10 @@ const pdpAuthorizeLabelDenyPermit = "PDP Authorize Deny";
 const tokenGeneratorLabel = "Personal Token Generator";
 
 /**
- * Function to get k6 options based on labels and breakpoint settings. 
+ * Function to get k6 options based on labels.
  * Candidate to move out of this file if used elsewhere.
- * @param {} labels 
- * @returns 
+ * @param {} labels
+ * @returns
  */
 function getOptions(labels) {
   const options = {
@@ -33,26 +29,13 @@ function getOptions(labels) {
     thresholds: {}
   };
 
-  if (breakpoint) {
-    // Thresholds for breakpoint mode. Set abortOnFail based on env var, and labels to collect stats.
-    for (const label of labels) {
-      options.thresholds[`http_req_duration{name:${label}}`] = [{ threshold: "max<5000", abortOnFail: abort_on_fail }];
-      options.thresholds[`http_req_failed{name:${label}}`] = [{ threshold: 'rate<=0.0', abortOnFail: abort_on_fail }];
-      options.thresholds[`http_reqs{name:${label}}`] = [];
-    }
-    
-    // Breakpoint stages
-    options.stages = [
-      { duration: stages_duration, target: stages_target },
-    ];
-  } else {
-    // No thresholds for normal mode. Set labels with empty arrays to collect stats.
-    for (const label of labels) {
-      options.thresholds[`http_req_duration{name:${label}}`] = [];
-      options.thresholds[`http_req_failed{name:${label}}`] = [];
-      options.thresholds[`http_reqs{name:${label}}`] = [];
-    }
+  // No thresholds for normal mode. Set labels with empty arrays to collect stats.
+  for (const label of labels) {
+    options.thresholds[`http_req_duration{name:${label}}`] = [];
+    options.thresholds[`http_req_failed{name:${label}}`] = [];
+    options.thresholds[`http_reqs{name:${label}}`] = [];
   }
+
   return options;
 }
 
@@ -65,19 +48,25 @@ const resource = "ttd-dialogporten-performance-test-02";
  * Main function executed by each VU.
  */
 export default function () {
-    const party = getItemFromListDividedPerVu(parties, randomize);
-    const [pdpAuthorizeClient, tokenGenerator] = getClients();
-    tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
-    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse();
-    PdpAuthorizeUser(
-        pdpAuthorizeClient,
-        party.ssn,
-        resource,
-        action,
-        expectedResponse,
-        __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
-        label
-    );
+  const [pdpAuthorizeClient, tokenGenerator] = getClients();
+
+  if (!testData) {
+    const numberOfVUs = getNumberOfVUs();
+    testData = segmentData(parties, numberOfVUs)[exec.vu.idInTest - 1];
+  }
+
+  const party = getItemFromList(testData, __ENV.RANDOMIZE);
+  tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
+  const [action, label, expectedResponse] = getActionLabelAndExpectedResponse();
+  PdpAuthorizeUser(
+    pdpAuthorizeClient,
+    party.ssn,
+    resource,
+    action,
+    expectedResponse,
+    __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
+    label
+  );
 }
 
 /**
@@ -101,14 +90,14 @@ function getTokenOpts(ssn) {
  * Candidate to move out of this file if used elsewhere.
  * @return {Array} [action, label, expectedResponse]
  */
-function getActionLabelAndExpectedResponse() {  
+function getActionLabelAndExpectedResponse() {
   const randNumber = randomIntBetween(0, 10);
   switch (randNumber) {
-      case 0:
-          return ["sign", pdpAuthorizeLabelDenyPermit, 'NotApplicable']; 
-      case 1,3,5,7,9:
-          return ["read", pdpAuthorizeLabel, 'Permit'];
-      default:
-          return ["write", pdpAuthorizeLabel, 'Permit'];
+    case 0:
+      return ["sign", pdpAuthorizeLabelDenyPermit, 'NotApplicable'];
+    case 1, 3, 5, 7, 9:
+      return ["read", pdpAuthorizeLabel, 'Permit'];
+    default:
+      return ["write", pdpAuthorizeLabel, 'Permit'];
   }
 }

@@ -7,8 +7,8 @@ class PdpAuthorizeClient {
      * @param {*} tokenGenerator
      */
     constructor(
-      baseUrl,
-      tokenGenerator
+        baseUrl,
+        tokenGenerator
     ) {
         /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
@@ -27,11 +27,11 @@ class PdpAuthorizeClient {
 
     /**
     * POST authorize enduser
-    * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision}
+    * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
     * @param {string} ssn - social security number
     * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
     * @param {string} subscriptionKey - subscription key for the API
-    * @param {string} action - e.g. read, write, sign 
+    * @param {string} action - e.g. read, write, sign
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
@@ -47,7 +47,7 @@ class PdpAuthorizeClient {
                 'Ocp-Apim-Subscription-Key': subscriptionKey
             },
         };
-        
+
 
         const body = this.#getEnduserBody(ssn, resourceId, action);
         const res = http.post(url.toString(), JSON.stringify(body), params);
@@ -62,19 +62,19 @@ class PdpAuthorizeClient {
      * @returns body for authorize enduser
      */
     #getEnduserBody(ssn, resourceId, action) {
-      let body = this.#buildAuthorizeBody(resourceId, action);
-      body.Request.AccessSubject[0].Attribute.push(
-          { 
-              "AttributeId": "urn:altinn:person:identifier-no",
-              "Value": ssn
-          });
-      body.Request.Resource[0].Attribute.push(
-          {
-              "AttributeId": "urn:altinn:person:identifier-no",
-              "Value": ssn,
-              "DataType": "http://www.w3.org/2001/XMLSchema#string"
-          });
-      return body;
+        let body = this.#buildAuthorizeBody(resourceId, action);
+        body.Request.AccessSubject[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": ssn
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": ssn,
+                "DataType": "http://www.w3.org/2001/XMLSchema#string"
+            });
+        return body;
     }
 
     /**
@@ -84,41 +84,41 @@ class PdpAuthorizeClient {
      * @returns base body for authorize
      */
     #buildAuthorizeBody(resourceId, action) {
-      let body = {
-          "Request": {
-              "ReturnPolicyIdList": false,
-              "AccessSubject": [
-                  {
-                      "Attribute": [
-                      ]
-                  }
-              ],
-              "Action": [
-                  {
-                      "Attribute": [
-                          {
-                              "AttributeId": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-                              "Value": action,
-                              "DataType": "http://www.w3.org/2001/XMLSchema#string"
-                          }
-                      ]
-                  }
-              ],
-              "Resource": [
-                  {
-                      "Attribute": [
-                          {
-                              "AttributeId": "urn:altinn:resource",
-                              "Value": resourceId
-                          }
-                      ]
-                  }
-              ]
-          }
-      }
-      return body;
+        let body = {
+            "Request": {
+                "ReturnPolicyIdList": false,
+                "AccessSubject": [
+                    {
+                        "Attribute": [
+                        ]
+                    }
+                ],
+                "Action": [
+                    {
+                        "Attribute": [
+                            {
+                                "AttributeId": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                                "Value": action,
+                                "DataType": "http://www.w3.org/2001/XMLSchema#string"
+                            }
+                        ]
+                    }
+                ],
+                "Resource": [
+                    {
+                        "Attribute": [
+                            {
+                                "AttributeId": "urn:altinn:resource",
+                                "Value": resourceId
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+        return body;
 
-  }
+    }
 }
 
 export { PdpAuthorizeClient };
