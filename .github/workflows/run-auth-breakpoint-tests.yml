@@ -56,7 +56,7 @@ permissions:
 jobs:
   k6-breakpoint:
     runs-on: ubuntu-latest
-    environment: test
+    environment: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
