@@ -131,3 +131,21 @@ test_definitions:
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
+  - test_file: K6/api/tests/auth/connections/getConnections.js
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: get-connections
+          id: yt01-get-connections
+          secrets:
+            - token-generator-creds
+  - test_file: K6/api/tests/auth/connections/getAccessPackages.js
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_run:
+          name: get-access-packages
+          id: yt01-get-access-packages
+          secrets:
+            - token-generator-creds
