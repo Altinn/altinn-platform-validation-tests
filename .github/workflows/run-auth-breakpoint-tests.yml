@@ -17,6 +17,7 @@ on:
           - get-authorized-parties-sysuser
           - get-authorized-parties-user
           - pdp-authorize-enduser
+          - get-connections
 
       target_vus:
         description: "The target VUs to reach"

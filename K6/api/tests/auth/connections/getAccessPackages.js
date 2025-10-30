@@ -28,4 +28,13 @@ export default function (testData) {
     queryParamsTo,
     GetAccessPackagesToLabel
   );
+  const queryParamsFrom = {
+    party: party.orgUuid,
+    from: party.orgUuid
+  };
+  GetAccessPackages(
+    connectionsApiClient,
+    queryParamsFrom,
+    GetAccessPackagesFromLabel
+  );
 }
