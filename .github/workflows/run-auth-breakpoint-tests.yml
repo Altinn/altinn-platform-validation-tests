@@ -57,7 +57,7 @@ on:
     - cron: "30 07 * * 2"
     - cron: "0 08 * * 2"
 
-run-name: Auth - run breakpoint for ${{ inputs.testName }}
+run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}  
 permissions:
   id-token: write
   contents: read
