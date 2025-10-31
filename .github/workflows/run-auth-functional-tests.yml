@@ -61,5 +61,7 @@ jobs:
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-user
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-pdp-authorize-enduser
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections-to
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages-to
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections-from
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages-from

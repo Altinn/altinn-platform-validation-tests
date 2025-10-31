@@ -17,8 +17,10 @@ on:
           - get-authorized-parties-sysuser
           - get-authorized-parties-user
           - pdp-authorize-enduser
-          - get-connections
-          - get-access-packages
+          - get-connections-to
+          - get-connections-from
+          - get-access-packages-to
+          - get-access-packages-from
 
       target_vus:
         description: "The target VUs to reach"
@@ -50,9 +52,12 @@ on:
     - cron: "0 12 * * 1"
     - cron: "0 14 * * 1"
     - cron: "0 06 * * 2"
+    - cron: "30 06 * * 2"
     - cron: "0 07 * * 2"
+    - cron: "30 07 * * 2"
     - cron: "0 08 * * 2"
 
+run-name: Auth - run breakpoint for ${{ inputs.testName }}
 permissions:
   id-token: write
   contents: read
@@ -162,17 +167,29 @@ jobs:
         run: |
           kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-pdp-authorize-enduser
     
-      - name: Run Breakpoint for .dist/yt01-get-connections
+      - name: Run Breakpoint for .dist/yt01-get-connections-to
+        if: github.event.schedule == '30 06 * * 2'
+        shell: bash
+        run: |
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections-to
+
+      - name: Run Breakpoint for .dist/yt01-get-connections-from
         if: github.event.schedule == '0 07 * * 2'
         shell: bash
         run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections-from
     
-      - name: Run Breakpoint for .dist/yt01-get-access-packages
+      - name: Run Breakpoint for .dist/yt01-get-access-packages-to
+        if: github.event.schedule == '30 07 * * 2'
+        shell: bash
+        run: |
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages-to
+             
+      - name: Run Breakpoint for .dist/yt01-get-access-packages-from
         if: github.event.schedule == '0 08 * * 2'
         shell: bash
         run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages
+          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages-from
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'

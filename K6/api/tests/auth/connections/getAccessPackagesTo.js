@@ -6,11 +6,10 @@ export { setup } from './getClients.js';
 
 // Labels for different actions
 const GetAccessPackagesToLabel = "Get accesspackages to";
-const GetAccessPackagesFromLabel = "Get accesspackages from";
 const tokenGeneratorLabel = "Personal Token Generator";
 
 // get k6 options
-export const options = getOptions([GetAccessPackagesToLabel, GetAccessPackagesFromLabel, tokenGeneratorLabel]);
+export const options = getOptions([GetAccessPackagesToLabel, tokenGeneratorLabel]);
 
 /**
  * Main function executed by each VU.
@@ -27,14 +26,5 @@ export default function (testData) {
     connectionsApiClient,
     queryParamsTo,
     GetAccessPackagesToLabel
-  );
-  const queryParamsFrom = {
-    party: party.orgUuid,
-    from: party.orgUuid
-  };
-  GetAccessPackages(
-    connectionsApiClient,
-    queryParamsFrom,
-    GetAccessPackagesFromLabel
   );
 }

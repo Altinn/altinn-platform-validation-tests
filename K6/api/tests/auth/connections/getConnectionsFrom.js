@@ -5,12 +5,11 @@ import exec from 'k6/execution';
 export { setup } from './getClients.js';
 
 // Labels for different actions
-const getConnectionsToLabel = "Get connections to";
 const getConnectionsFromLabel = "Get Connections from";
 const tokenGeneratorLabel = "Personal Token Generator";
 
 // get k6 options
-export const options = getOptions([getConnectionsToLabel, getConnectionsFromLabel, tokenGeneratorLabel]);
+export const options = getOptions([ getConnectionsFromLabel, tokenGeneratorLabel]);
 
 /**
  * Main function executed by each VU.
@@ -19,15 +18,6 @@ export default function (testData) {
   const [connectionsApiClient, tokenGenerator] = getClients();
   const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
   tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.userId));
-  const queryParamsTo = {
-    party: party.orgUuid,
-    to: party.orgUuid
-  };
-  GetConnections(
-    connectionsApiClient,
-    queryParamsTo,
-    getConnectionsToLabel
-  );
   const queryParamsFrom = {
     party: party.orgUuid,
     from: party.orgUuid

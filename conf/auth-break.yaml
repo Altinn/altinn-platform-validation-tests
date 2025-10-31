@@ -113,7 +113,7 @@ test_definitions:
             - token-generator-creds
             - authorization-subscription-key-yt01
     
-  - test_file: K6/api/tests/auth/connections/getConnections.js
+  - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
     contexts:
       - environment: yt01
         node_type: spot
@@ -121,8 +121,30 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-connections
-          id: yt01-get-connections-break
+          name: get-connections-to
+          id: yt01-get-connections-to-break
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+                
+  - test_file: K6/api/tests/auth/connections/getConnectionsFrom.js
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          name: get-connections-from
+          id: yt01-get-connections-from-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -135,7 +157,7 @@ test_definitions:
           secrets:
             - token-generator-creds
     
-  - test_file: K6/api/tests/auth/connections/getAccessPackages.js
+  - test_file: K6/api/tests/auth/connections/getAccessPackagesTo.js
     contexts:
       - environment: yt01
         node_type: spot
@@ -143,8 +165,30 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-access-packages
-          id: yt01-get-access-packages-break
+          name: get-access-packages-to
+          id: yt01-get-access-packages-to-break
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+                
+  - test_file: K6/api/tests/auth/connections/getAccessPackagesFrom.js
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          name: get-access-packages-from
+          id: yt01-get-access-packages-from-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
