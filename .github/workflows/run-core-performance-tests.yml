@@ -35,29 +35,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+      - name: Setup k8s client
+        uses: ./.github/actions/setup-k8s
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Populate kubeconfig with k6 context
-        id: populate_kubeconfig_with_k6_context
-        shell: bash
-        run: |
-          if ! az aks install-cli; then
-            echo "Failed to install kubectl CLI"
-            exit 1
-          fi
-          if ! az aks get-credentials --resource-group k6tests-rg --name k6tests-cluster; then
-            echo "Failed to populate kubeconfig"
-            exit 1
-          fi
-          if ! kubelogin convert-kubeconfig -l azurecli; then
-            echo "Failed to convert kubeconfig"
-            exit 1
-          fi
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:

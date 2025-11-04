@@ -1,0 +1,38 @@
+name: Setup k8s client
+description: "Authenticates to Azure and configures kubeconfig"
+inputs:
+  azure-client-id:
+    description: "AZURE_CLIENT_ID"
+    required: true
+  azure-tenant-id:
+    description: "AZURE_TENANT_ID"
+    required: true
+  azure-subscription-id:
+    description: "AZURE_SUBSCRIPTION_ID"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: OIDC Login to Azure Public Cloud
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+      with:
+        client-id: ${{ inputs.azure-client-id }}
+        tenant-id: ${{ inputs.azure-tenant-id }}
+        subscription-id: ${{ inputs.azure-subscription-id }}
+
+    - name: Populate kubeconfig with k6 context
+      id: populate_kubeconfig_with_k6_context
+      shell: bash
+      run: |
+        if ! az aks install-cli; then
+          echo "Failed to install kubectl CLI"
+          exit 1
+        fi
+        if ! az aks get-credentials --resource-group k6tests-rg --name k6tests-cluster; then
+          echo "Failed to populate kubeconfig"
+          exit 1
+        fi
+        if ! kubelogin convert-kubeconfig -l azurecli; then
+          echo "Failed to convert kubeconfig"
+          exit 1
+        fi
