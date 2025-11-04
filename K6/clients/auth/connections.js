@@ -17,25 +17,25 @@ class ConnectionsApiClient {
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/accessmanagement/api/v1";
+        this.BASE_PATH = "/accessmanagement/api/v1/enduser/connections";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
-        
+
     }
 
     /**
     * Get connections
-    * Docs {@link TODO: Add documentation link here when we have one}
+    * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections}
     * @param {string} partyId
-    * @param {string} direction - 'from' or 'to'
+    * @param {Object} queryParams
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetConnections(queryParams, label = null, accesspackages = "") {
+    GetConnections(queryParams, label = null) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}/enduser/connections${accesspackages}`);
+        const url = new URL(`${this.FULL_PATH}`);
         const tags = label ? label : url.toString();
         const params = {
             tags: { name: tags },
@@ -45,14 +45,31 @@ class ConnectionsApiClient {
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        console.log(`GetConnections URL: ${url.toString()}`);
-        return http.get(url.toString(), params); 
+        return http.get(url.toString(), params);
     }
-  
 
-  GetAccessPackages(queryParams, label = null) {
-    return this.GetConnections(queryParams, label, "/accesspackages");
-  }
+    /**
+    * Get access packages
+    * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections_accesspackages}
+    * @param {Object} queryParams
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    GetAccessPackages(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/accesspackages`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-type': 'application/json',
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
 }
 
 export { ConnectionsApiClient };

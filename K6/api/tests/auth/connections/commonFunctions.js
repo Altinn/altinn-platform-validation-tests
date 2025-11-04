@@ -1,8 +1,7 @@
 import { SharedArray } from 'k6/data';
 import { ConnectionsApiClient } from "../../../../clients/auth/index.js"
 import { PersonalTokenGenerator } from '../../../../commonImports.js';
-import { segmentData, getNumberOfVUs } from '../../../../helpers.js';
-import { readCsv } from '../../../../helpers.js';
+import { readCsv, segmentData, getNumberOfVUs } from '../../../../helpers.js';
 
 const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgsIn-${__ENV.ENVIRONMENT}-WithPartyUuid.csv`);
 const parties = new SharedArray('parties', function () {
@@ -13,22 +12,22 @@ let connectionsApiClient = undefined;
 let tokenGenerator = undefined;
 
 /**
- * Function to set up and return clients to interact with the Pdp Authorize API
+ * Function to set up and return clients to interact with the /enduser/connections API
  *
- * @returns {Array} An array containing the PdpAuthorizeClient and PersonalTokenGenerator instances
+ * @returns {Array} An array containing the ConnectionsApiClient and PersonalTokenGenerator instances
  */
 export function getClients() {
-    if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    return [connectionsApiClient, tokenGenerator];
+  if (tokenGenerator == undefined) {
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+    tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+  }
+  if (connectionsApiClient == undefined) {
+    connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator);
+  }
+  return [connectionsApiClient, tokenGenerator];
 }
 
 /**
