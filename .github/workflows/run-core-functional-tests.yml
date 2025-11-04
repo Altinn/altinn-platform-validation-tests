@@ -39,8 +39,8 @@ jobs:
         shell: bash
         run: |
           # kubectl apply -f .dist/ -R
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-email-addr); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-mobile-no); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-orgs); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-persons); do kubectl --context k6tests-cluster apply --server-side -f $test; done
-          for test in $(ls -d .dist/*-email-request); do kubectl --context k6tests-cluster apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-email-addr); do kubectl apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-mobile-no); do kubectl apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-orgs); do kubectl apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-ordr-w-rmndrs-for-persons); do kubectl apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-email-request); do kubectl apply --server-side -f $test; done

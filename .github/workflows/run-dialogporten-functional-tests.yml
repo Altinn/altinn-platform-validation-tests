@@ -39,4 +39,4 @@ jobs:
         shell: bash
         run: |
           # kubectl apply -f .dist/ -R
-          for test in $(ls -d .dist/*-so-should-send-notification); do kubectl --context k6tests-cluster apply --server-side -f $test; done
+          for test in $(ls -d .dist/*-so-should-send-notification); do kubectl apply --server-side -f $test; done

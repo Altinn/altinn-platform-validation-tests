@@ -39,13 +39,13 @@ jobs:
         shell: bash
         run: |
           # kubectl apply -f .dist/ -R
-          kubectl --context k6tests-cluster apply --server-side -f .dist/at22-add-rm-revisorrole-for-client
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-post-consent
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-org
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-authorized-parties-user
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-pdp-authorize-enduser
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections-to
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages-to
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-connections-from
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-get-access-packages-from
+          kubectl apply --server-side -f .dist/at22-add-rm-revisorrole-for-client
+          kubectl apply --server-side -f .dist/yt01-post-consent
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-org
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
+          kubectl apply --server-side -f .dist/yt01-get-connections-to
+          kubectl apply --server-side -f .dist/yt01-get-access-packages-to
+          kubectl apply --server-side -f .dist/yt01-get-connections-from
+          kubectl apply --server-side -f .dist/yt01-get-access-packages-from

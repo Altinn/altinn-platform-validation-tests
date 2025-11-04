@@ -51,4 +51,4 @@ jobs:
       - name: Apply k8s manifests
         shell: bash
         run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/yt01-${{ inputs.testName }}
+          kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
