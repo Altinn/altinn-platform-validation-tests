@@ -1,6 +1,6 @@
 import { sleep, check } from "k6";
 import exec from 'k6/execution';
-import { papaparse, randomItem, randomIntBetween } from "./commonImports.js";
+import { papaparse, randomItem } from "./commonImports.js";
 
 /**
  * Retry a function until it succeeds or all retries fail.
@@ -98,4 +98,26 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
 */
 export function getNumberOfVUs() {
     return exec.test.options.scenarios.default.vus ?? __ENV.BREAKPOINT_STAGE_TARGET ?? 1;
+}
+
+/**
+ * Function to get k6 options based on labels.
+ * @param {} labels
+ * @returns
+ */
+export function getOptions(labels) {
+  const options = {
+    summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
+    // Placeholder, will be populated below
+    thresholds: {}
+  };
+
+  // Set labels with empty arrays to collect stats.
+  for (const label of labels) {
+    options.thresholds[`http_req_duration{name:${label}}`] = [];
+    options.thresholds[`http_req_failed{name:${label}}`] = [];
+    options.thresholds[`http_reqs{name:${label}}`] = [];
+  }
+
+  return options;
 }
