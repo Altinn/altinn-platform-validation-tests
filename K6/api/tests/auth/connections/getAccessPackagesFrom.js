@@ -1,8 +1,8 @@
 import { GetAccessPackages } from '../../../building_blocks/auth/connections/index.js';
 import { getItemFromList, getOptions } from '../../../../helpers.js';
-import { getClients, getTokenOpts } from './getClients.js';
+import { getClients, getTokenOpts } from './commonFunctions.js';
 import exec from 'k6/execution';
-export { setup } from './getClients.js';
+export { setup } from './commonFunctions.js';
 
 // Labels for different actions
 const GetAccessPackagesFromLabel = "Get accesspackages from";
