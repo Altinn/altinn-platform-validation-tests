@@ -5,7 +5,7 @@ import { randomIntBetween } from '../../../../commonImports.js';
 import { getClients } from './getClients.js';
 import exec from 'k6/execution';
 
-const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgsDagl-${__ENV.ENVIRONMENT}.csv`);
+const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
 const parties = new SharedArray('parties', function () {
   return readCsv(partiesFilename);
 });

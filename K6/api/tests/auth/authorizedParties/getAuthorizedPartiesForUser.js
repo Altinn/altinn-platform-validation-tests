@@ -6,9 +6,9 @@ import { getItemFromList, readCsv } from '../../../../helpers.js';
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? 'true') === 'true';
 const randomize = (__ENV.RANDOMIZE ?? 'true') === 'true';
 
-const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgsIn-${__ENV.ENVIRONMENT}-WithPartyUuid.csv`);
+const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
 const parties = new SharedArray('parties', function () {
-    return readCsv(partiesFilename);
+  return readCsv(partiesFilename);
 });
 
 const label = "getAuthorizedPartiesForUser";
@@ -22,13 +22,13 @@ export const options = {
 };
 
 export default function () {
-    const [authorizedPartiesClient] = getClients();
-    const userParty = getItemFromList(parties, randomize);
-    GetAuthorizedParties(
-        authorizedPartiesClient,
-        "urn:altinn:person:identifier-no",
-        userParty.ssn,
-        includeAltinn2,
-        label
-    );
+  const [authorizedPartiesClient] = getClients();
+  const userParty = getItemFromList(parties, randomize);
+  GetAuthorizedParties(
+    authorizedPartiesClient,
+    "urn:altinn:person:identifier-no",
+    userParty.ssn,
+    includeAltinn2,
+    label
+  );
 }

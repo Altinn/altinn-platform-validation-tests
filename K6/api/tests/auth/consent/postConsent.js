@@ -11,7 +11,7 @@ import { ConsentApiClient } from "../../../../clients/auth/index.js"
 import { RequestConsent, ApproveConsent } from "../../../building_blocks/auth/consent/index.js"
 
 const orgsDagl = new SharedArray('orgsDagl', function () {
-    const orgsDaglFilename = import.meta.resolve(`../../../../testdata/auth/orgsIn-${__ENV.ENVIRONMENT}-WithPartyUuid.csv`);
+    const orgsDaglFilename = import.meta.resolve(`../../../../testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
     return readCsv(orgsDaglFilename);
 });
 

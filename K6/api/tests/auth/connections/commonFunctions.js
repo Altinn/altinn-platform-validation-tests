@@ -3,7 +3,7 @@ import { ConnectionsApiClient } from "../../../../clients/auth/index.js"
 import { PersonalTokenGenerator } from '../../../../commonImports.js';
 import { readCsv, segmentData, getNumberOfVUs } from '../../../../helpers.js';
 
-const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgsIn-${__ENV.ENVIRONMENT}-WithPartyUuid.csv`);
+const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
 const parties = new SharedArray('parties', function () {
   return readCsv(partiesFilename);
 });
