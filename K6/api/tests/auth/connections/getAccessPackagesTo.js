@@ -5,11 +5,11 @@ import exec from 'k6/execution';
 export { setup } from './commonFunctions.js';
 
 // Labels for different actions
-const GetAccessPackagesToLabel = "Get accesspackages to";
+const getAccessPackagesToLabel = "Get accesspackages to";
 const tokenGeneratorLabel = "Personal Token Generator";
 
 // get k6 options
-export const options = getOptions([GetAccessPackagesToLabel, tokenGeneratorLabel]);
+export const options = getOptions([getAccessPackagesToLabel, tokenGeneratorLabel]);
 
 /**
  * Main function executed by each VU.
@@ -25,6 +25,6 @@ export default function (testData) {
   GetAccessPackages(
     connectionsApiClient,
     queryParamsTo,
-    GetAccessPackagesToLabel
+    getAccessPackagesToLabel
   );
 }

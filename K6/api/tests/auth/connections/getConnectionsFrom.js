@@ -9,7 +9,7 @@ const getConnectionsFromLabel = "Get Connections from";
 const tokenGeneratorLabel = "Personal Token Generator";
 
 // get k6 options
-export const options = getOptions([ getConnectionsFromLabel, tokenGeneratorLabel]);
+export const options = getOptions([getConnectionsFromLabel, tokenGeneratorLabel]);
 
 /**
  * Main function executed by each VU.
