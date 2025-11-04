@@ -3,7 +3,7 @@ import { ConnectionsApiClient } from '../../../../clients/auth/index.js';
 
 /**
  * 
- * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the Pdp Authorize API
+ * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
  * @param {uuid} partyId - party id of the end user
  * @param {string} direction - from or to
  * @param {*} label - label for the request
