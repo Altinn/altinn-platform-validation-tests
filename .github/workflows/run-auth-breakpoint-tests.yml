@@ -25,12 +25,12 @@ on:
       target_vus:
         description: "The target VUs to reach"
         required: false
-        # default: 100
+        default: 100
 
       duration:
         description: "How long should it take to reach the target_vus"
         required: false
-        # default: 10m
+        default: 10m
 
       abortOnFail:
         description: "Should the test run stop as soon as the threshold fails"
