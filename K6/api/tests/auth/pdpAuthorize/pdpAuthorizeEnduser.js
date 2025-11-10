@@ -1,6 +1,6 @@
 import { PdpAuthorizeUser } from '../../../building_blocks/auth/pdpAuthorize/index.js';
-import { getItemFromList } from '../../../../helpers.js';
-import { getClients, getOptions, getTokenOpts, getActionLabelAndExpectedResponse } from './commonFunctions.js';
+import { getItemFromList, getOptions } from '../../../../helpers.js';
+import { getClients, getTokenOpts, getActionLabelAndExpectedResponse } from './commonFunctions.js';
 export { setup } from './commonFunctions.js';
 import exec from 'k6/execution';
 

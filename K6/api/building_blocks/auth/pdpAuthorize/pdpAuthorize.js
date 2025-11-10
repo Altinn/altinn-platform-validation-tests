@@ -3,7 +3,7 @@ import { PdpAuthorizeClient } from '../../../../clients/auth/index.js';
 
 
 /**
- * 
+ *
  * @param {PdpAuthorizeClient} pdpAuthorizeClient A client to interact with the Pdp Authorize API
  * @param {*} ssn - social security number of the end user
  * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
@@ -14,13 +14,13 @@ import { PdpAuthorizeClient } from '../../../../clients/auth/index.js';
  */
 
 export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, expectedResponse, subscriptionKey, label = null) {
-    const res = pdpAuthorizeClient.authorizeEnduser(ssn, resourceId, action, subscriptionKey, label )
-    checker(res, "GetAuthorizedParties", expectedResponse);
-    return res.body;
+  const res = pdpAuthorizeClient.authorizeEnduser(ssn, resourceId, action, subscriptionKey, label)
+  checker(res, "PdpAuthorizeUser", expectedResponse);
+  return res.body;
 }
 
 /**
- * 
+ *
  * @param {PdpAuthorizeClient} pdpAuthorizeClient A client to interact with the Pdp Authorize API
  * @param {*} ssn - social security number of the end user
  * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
@@ -32,8 +32,8 @@ export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, ex
  */
 
 export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, action, expectedResponse, subscriptionKey, label = null) {
-  const res = pdpAuthorizeClient.authorizeDagl(ssn, resourceId, org, action, subscriptionKey, label )
-  checker(res, "GetAuthorizedParties", expectedResponse);
+  const res = pdpAuthorizeClient.authorizeDagl(ssn, resourceId, org, action, subscriptionKey, label)
+  checker(res, "PdpAuthorizeDagl", expectedResponse);
   return res.body;
 }
 

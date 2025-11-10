@@ -1,6 +1,6 @@
 import { PdpAuthorizeDagl } from '../../../building_blocks/auth/pdpAuthorize/index.js';
-import { getItemFromList } from '../../../../helpers.js';
-import { getClients, getOptions, getTokenOpts } from './commonFunctions.js';
+import { getItemFromList, getOptions } from '../../../../helpers.js';
+import { getClients, getTokenOpts } from './commonFunctions.js';
 import { randomIntBetween } from '../../../../commonImports.js';
 export { setup } from './commonFunctions.js';
 import exec from 'k6/execution';
