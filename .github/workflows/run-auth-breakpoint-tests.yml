@@ -21,6 +21,8 @@ on:
           - get-connections-from
           - get-access-packages-to
           - get-access-packages-from
+          - pdp-authorize-dagl
+          - pdp-authorize-dagl-deny
 
       target_vus:
         description: "The target VUs to reach"
@@ -163,7 +165,6 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
-
 
       - name: Run Breakpoint for .dist/yt01-get-connections-to
         if: github.event.schedule == '0 5 * * 2'

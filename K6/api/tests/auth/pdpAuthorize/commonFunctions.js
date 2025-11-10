@@ -18,39 +18,17 @@ const parties = new SharedArray('parties', function () {
  * @returns {Array} An array containing the PdpAuthorizeClient and PersonalTokenGenerator instances
  */
 export function getClients() {
-    if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (pdpAuthorizeClient == undefined) {
-        pdpAuthorizeClient = new PdpAuthorizeClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    return [pdpAuthorizeClient, tokenGenerator];
-}
-
-/**
- * Function to get k6 options based on labels.
- * @param {} labels
- * @returns
- */
-export function getOptions(labels) {
-  const options = {
-    summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
-    // Placeholder, will be populated below
-    thresholds: {}
-  };
-
-  // Set labels with empty arrays to collect stats.
-  for (const label of labels) {
-    options.thresholds[`http_req_duration{name:${label}}`] = [];
-    options.thresholds[`http_req_failed{name:${label}}`] = [];
-    options.thresholds[`http_reqs{name:${label}}`] = [];
+  if (tokenGenerator == undefined) {
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+    tokenGenerator = new PersonalTokenGenerator(tokenOpts);
   }
-
-  return options;
+  if (pdpAuthorizeClient == undefined) {
+    pdpAuthorizeClient = new PdpAuthorizeClient(__ENV.BASE_URL, tokenGenerator);
+  }
+  return [pdpAuthorizeClient, tokenGenerator];
 }
 
 /**
