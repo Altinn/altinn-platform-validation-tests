@@ -174,3 +174,31 @@ test_definitions:
           id: yt01-get-access-packages-from
           secrets:
             - token-generator-creds
+
+  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDagl.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: pdp-authorize-dagl
+          id: yt01-pdp-authorize-dagl
+          env:
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDeny.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: pdp-authorize-dagl-deny
+          id: yt01-pdp-authorize-dagl-deny
+          env:
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+            - authorization-subscription-key-yt01

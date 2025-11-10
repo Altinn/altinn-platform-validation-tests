@@ -55,6 +55,36 @@ class PdpAuthorizeClient {
     }
 
     /**
+    * POST authorize DAGL
+    * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
+    * @param {string} ssn - social security number
+    * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+    * @param {string} orgno - organization number
+    * @param {string} subscriptionKey - subscription key for the API
+    * @param {string} action - e.g. read, write, sign
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    authorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, label = null) {
+      const token = this.tokenGenerator.getToken()
+      const url = new URL(this.FULL_PATH);
+      let nameTag = label ? label : url.toString();
+      const params = {
+          tags: { name: nameTag },
+          headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-type': 'application/json',
+              'Ocp-Apim-Subscription-Key': subscriptionKey
+          },
+      };
+
+
+      const body = this.#getDaglBody(ssn, resourceId, orgno, action);
+      const res = http.post(url.toString(), JSON.stringify(body), params);
+      return res;
+  }
+
+    /**
      * get body for enduser authorization
      * @param {*} ssn - social security number
      * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
@@ -76,6 +106,30 @@ class PdpAuthorizeClient {
             });
         return body;
     }
+
+    /**
+     * get body for dagl authorization
+     * @param {*} ssn - social security number
+     * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} orgno - organization number
+     * @param {*} action -  e.g. read, write, sign
+     * @returns body for authorize dagl
+     */  
+    #getDaglBody(ssn, resourceId, orgno, action) {
+      let body = this.#buildAuthorizeBody(resourceId, action);
+      body.Request.AccessSubject[0].Attribute.push(
+          { 
+              "AttributeId": "urn:altinn:person:identifier-no",
+              "Value": ssn
+          });
+      body.Request.Resource[0].Attribute.push(
+          {
+              "AttributeId": "urn:altinn:organization:identifier-no",
+              "Value": orgno,
+              "DataType": "http://www.w3.org/2001/XMLSchema#string"
+          });
+      return body;
+  }
 
     /**
      * build base authorize body

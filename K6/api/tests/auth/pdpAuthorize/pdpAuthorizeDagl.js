@@ -1,4 +1,4 @@
-import { PdpAuthorizeUser } from '../../../building_blocks/auth/pdpAuthorize/index.js';
+import { PdpAuthorizeDagl } from '../../../building_blocks/auth/pdpAuthorize/index.js';
 import { getItemFromList, getOptions } from '../../../../helpers.js';
 import { getClients, getTokenOpts, getActionLabelAndExpectedResponse } from './commonFunctions.js';
 export { setup } from './commonFunctions.js';
@@ -22,9 +22,10 @@ export default function (testData) {
   const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
   tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
   const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-  PdpAuthorizeUser(
+  PdpAuthorizeDagl(
     pdpAuthorizeClient,
     party.ssn,
+    party.orgno,
     resource,
     action,
     expectedResponse,

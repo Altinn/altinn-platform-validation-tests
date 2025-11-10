@@ -21,16 +21,18 @@ on:
           - get-connections-from
           - get-access-packages-to
           - get-access-packages-from
+          - pdp-authorize-dagl
+          - pdp-authorize-dagl-deny
 
       target_vus:
         description: "The target VUs to reach"
         required: false
-        # default: 100
+        default: 100
 
       duration:
         description: "How long should it take to reach the target_vus"
         required: false
-        # default: 10m
+        default: 10m
 
       abortOnFail:
         description: "Should the test run stop as soon as the threshold fails"
@@ -51,11 +53,13 @@ on:
     - cron: "0 10 * * 1"
     - cron: "0 12 * * 1"
     - cron: "0 14 * * 1"
-    - cron: "0 13 * * 2"
-    - cron: "30 13 * * 2"
-    - cron: "0 14 * * 2"
-    - cron: "30 14 * * 2"
-    - cron: "0 15 * * 2"
+    - cron: "0 4 * * 2"
+    - cron: "20 4 * * 2"
+    - cron: "40 4 * * 2"
+    - cron: "0 5 * * 2"
+    - cron: "20 5 * * 2"
+    - cron: "40 5 * * 2"
+    - cron: "0 6 * * 2"
 
 run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -145,31 +149,43 @@ jobs:
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user
 
       - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser
-        if: github.event.schedule == '0 13 * * 2'
+        if: github.event.schedule == '0 4 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
 
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl
+        if: github.event.schedule == '20 4 * * 2'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
+
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny
+        if: github.event.schedule == '40 4 * * 2'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
+
       - name: Run Breakpoint for .dist/yt01-get-connections-to
-        if: github.event.schedule == '30 13 * * 2'
+        if: github.event.schedule == '0 5 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-connections-to
 
       - name: Run Breakpoint for .dist/yt01-get-connections-from
-        if: github.event.schedule == '0 14 * * 2'
+        if: github.event.schedule == '20 5 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-connections-from
 
       - name: Run Breakpoint for .dist/yt01-get-access-packages-to
-        if: github.event.schedule == '30 14 * * 2'
+        if: github.event.schedule == '40 5 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-to
 
       - name: Run Breakpoint for .dist/yt01-get-access-packages-from
-        if: github.event.schedule == '0 15 * * 2'
+        if: github.event.schedule == '0 6 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
