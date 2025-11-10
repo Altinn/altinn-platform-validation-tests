@@ -1,16 +1,15 @@
 import { PdpAuthorizeDagl } from '../../../building_blocks/auth/pdpAuthorize/index.js';
 import { getItemFromList } from '../../../../helpers.js';
-import { getClients, getOptions, getTokenOpts } from './getClients.js';
+import { getClients, getOptions, getTokenOpts } from './commonFunctions.js';
 import { randomIntBetween } from '../../../../commonImports.js';
-export { setup } from './getClients.js';
+export { setup } from './commonFunctions.js';
 import exec from 'k6/execution';
 
 // Labels for different actions
-const pdpAuthorizeLabel = "PDP Authorize";
 const pdpAuthorizeLabelDenyPermit = "PDP Authorize Deny";
 const tokenGeneratorLabel = "Personal Token Generator";
 
-export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
+export const options = getOptions([pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
 // resource with read/write for PRIV and DAGL
 const resource = "ttd-dialogporten-performance-test-02";
@@ -21,9 +20,14 @@ const resource = "ttd-dialogporten-performance-test-02";
 export default function (testData) {
   const [pdpAuthorizeClient, tokenGenerator] = getClients();
   const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
-  const org = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+  let org = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+  while (party.orgno === org.orgno) {
+    // ensure org is different from party's org
+    org = getItemFromList(testData[exec.vu.idInTest - 1], true);
+  }
   tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
-  const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(party, org);
+  const action = randomIntBetween(0, 1) === 0 ? "read" : "write";
+  const expectedResponse = "NotApplicable";
   PdpAuthorizeDagl(
     pdpAuthorizeClient,
     party.ssn,
@@ -32,19 +36,6 @@ export default function (testData) {
     action,
     expectedResponse,
     __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
-    label
+    pdpAuthorizeLabelDenyPermit
   );
 }
-
-function getActionLabelAndExpectedResponse(org, client) { 
-  const randNumber = randomIntBetween(0, 10);
-  if (org === client) {
-      if (randNumber % 2 == 0) {
-          return ["read", pdpAuthorizeLabel, 'Permit']; 
-      }
-      else {
-          return ["write", pdpAuthorizeLabel, 'Permit'];
-      }
-  }
-  return ["read", pdpAuthorizeLabelDenyPermit, 'NotApplicable'];
-} 

@@ -1,7 +1,7 @@
 import { PdpAuthorizeUser } from '../../../building_blocks/auth/pdpAuthorize/index.js';
 import { getItemFromList } from '../../../../helpers.js';
-import { getClients, getOptions, getTokenOpts, getActionLabelAndExpectedResponse } from './getClients.js';
-export { setup } from './getClients.js';
+import { getClients, getOptions, getTokenOpts, getActionLabelAndExpectedResponse } from './commonFunctions.js';
+export { setup } from './commonFunctions.js';
 import exec from 'k6/execution';
 
 // Labels for different actions
