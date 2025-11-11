@@ -1,27 +1,22 @@
-import { SharedArray } from 'k6/data';
+import http from 'k6/http';
 import { EnterpriseTokenGenerator } from '../../../../commonImports.js';
 import { GetDialogsQueriesNotificationCondition } from '../../../building_blocks/dialogporten/serviceowner/index.js';
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js"
 
-import { getItemFromList, readCsv } from '../../../../helpers.js';
+import { getItemFromList, getOptions, parseCsvData } from '../../../../helpers.js';
 
-const filenameDialogsWithTransmissions = import.meta.resolve(`../../../../testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
-const dialogsWithTransmissions = new SharedArray('dialogsWithTransmissions', function () {
-    return readCsv(filenameDialogsWithTransmissions);
-});
+
+export function setup() {
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
+    return parseCsvData(res.body);
+}
 
 const randomize = (__ENV.RANDOMIZE ?? 'true') === 'true';
 const orgNos = ["713431400"];
 
 const label = "should-send-notifications";
 
-export const options = {
-    summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
-    thresholds: {
-        [`http_req_duration{name:${label}}`]: [],
-        [`http_reqs{name:${label}}`]: []
-    }
-};
+export const options = getOptions([label]);
 
 let serviceOwnerApiClient = undefined;
 
@@ -46,9 +41,9 @@ export function getClients() {
 
 
 
-export default function () {
+export default function (data) {
     const [serviceOwnerApiClient] = getClients();
-    const dialogWithTransmission = getItemFromList(dialogsWithTransmissions, randomize);
+    const dialogWithTransmission = getItemFromList(data, randomize);
     GetDialogsQueriesNotificationCondition(
         serviceOwnerApiClient,
         dialogWithTransmission.dialogId,
