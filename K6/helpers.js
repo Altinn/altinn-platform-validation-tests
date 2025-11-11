@@ -50,13 +50,12 @@ export function retry(conditionFn, options = {}) {
     return success;
 }
 
+export function parseCsvData(data) {
+    return papaparse.parse(data, { header: true, skipEmptyLines: true }).data;
+}
+
 export function readCsv(filename) {
-    try {
-        return papaparse.parse(open(filename), { header: true, skipEmptyLines: true }).data;
-    } catch (error) {
-        console.log(`Error reading CSV file: ${error}`);
-        return [];
-    }
+    return parseCsvData(open(filename))
 }
 /**
  *
@@ -106,18 +105,18 @@ export function getNumberOfVUs() {
  * @returns
  */
 export function getOptions(labels) {
-  const options = {
-    summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
-    // Placeholder, will be populated below
-    thresholds: {}
-  };
+    const options = {
+        summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
+        // Placeholder, will be populated below
+        thresholds: {}
+    };
 
-  // Set labels with empty arrays to collect stats.
-  for (const label of labels) {
-    options.thresholds[`http_req_duration{name:${label}}`] = [];
-    options.thresholds[`http_req_failed{name:${label}}`] = [];
-    options.thresholds[`http_reqs{name:${label}}`] = [];
-  }
+    // Set labels with empty arrays to collect stats.
+    for (const label of labels) {
+        options.thresholds[`http_req_duration{name:${label}}`] = [];
+        options.thresholds[`http_req_failed{name:${label}}`] = [];
+        options.thresholds[`http_reqs{name:${label}}`] = [];
+    }
 
-  return options;
+    return options;
 }

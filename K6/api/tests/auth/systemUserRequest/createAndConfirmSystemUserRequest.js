@@ -1,20 +1,18 @@
 import { check, group } from "k6"
-import { SharedArray } from "k6/data";
+import http from 'k6/http';
 import { vu } from 'k6/execution';
 import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from '../../../../commonImports.js';
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/auth/index.js"
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from '../../../building_blocks/auth/systemUserRequest/index.js';
 import { CreateNewSystem } from '../../../building_blocks/auth/systemRegister/index.js'
+import { parseCsvData } from "../../../../helpers.js";
 
-import { readCsv } from "../../../../helpers.js";
+export function setup() {
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
+    return parseCsvData(res.body);
+}
 
-const systemUsersFilename = `../../../../testdata/auth/data-${__ENV.ENVIRONMENT}-all-customers.csv`;
-
-const mySystemUsers = new SharedArray('systemUsers', function () {
-    return readCsv(systemUsersFilename);
-});
-
-export default function () {
+export default function (data) {
 
     const systemOwner = "713431400";
 
@@ -75,7 +73,7 @@ export default function () {
         let res = CreateSystemUserRequest(
             vendorSystemUserRequestApiClient,
             systemId,
-            mySystemUsers[vu.idInTest - 1].orgNo,//partyOrgNo,
+            data[vu.idInTest - 1].orgNo,//partyOrgNo,
             rights,
             allowedRedirectUrls[vu.idInTest - 1],
             []
@@ -100,7 +98,7 @@ export default function () {
         options.set("env", __ENV.ENVIRONMENT)
         options.set("ttl", 3600);
         options.set("scopes", "altinn:portal/enduser")
-        options.set("userId", mySystemUsers[vu.idInTest - 1].userId);
+        options.set("userId", data[vu.idInTest - 1].userId);
 
         const tokenGenerator
             = new PersonalTokenGenerator(options)
@@ -109,7 +107,7 @@ export default function () {
             = new SystemUserRequestApiClient(__ENV.BASE_URL, tokenGenerator)
 
         res = ApproveSystemUserRequest(approverSystemUserRequestApiClient,
-            mySystemUsers[vu.idInTest - 1].partyId,
+            data[vu.idInTest - 1].partyId,
             requestId)
         check(res, {
             'ApproveSystemUserRequest - Approving the system user request is successful': (r) => {

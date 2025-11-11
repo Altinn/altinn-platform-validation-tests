@@ -150,6 +150,9 @@ test_definitions:
         test_run:
           name: get-connections-from
           id: yt01-get-connections-from
+          env:
+            - name: RANDOMIZE
+              value: true
           secrets:
             - token-generator-creds
 
@@ -172,6 +175,9 @@ test_definitions:
         test_run:
           name: get-access-packages-from
           id: yt01-get-access-packages-from
+          env:
+            - name: RANDOMIZE
+              value: true
           secrets:
             - token-generator-creds
 

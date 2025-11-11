@@ -1,16 +1,11 @@
-import { SharedArray } from 'k6/data';
+import http from 'k6/http';
 import { PdpAuthorizeClient } from "../../../../clients/auth/index.js"
 import { PersonalTokenGenerator, randomIntBetween } from '../../../../commonImports.js';
-import { segmentData, readCsv, getNumberOfVUs } from '../../../../helpers.js';
+import { segmentData, parseCsvData, getNumberOfVUs } from '../../../../helpers.js';
 
 
 let pdpAuthorizeClient = undefined;
 let tokenGenerator = undefined;
-
-const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
-const parties = new SharedArray('parties', function () {
-  return readCsv(partiesFilename);
-});
 
 /**
  * Function to set up and return clients to interact with the Pdp Authorize API
@@ -67,6 +62,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
  */
 export function setup() {
   const numberOfVUs = getNumberOfVUs();
-  const segmentedData = segmentData(parties, numberOfVUs);
+  const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+  const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
   return segmentedData;
 }

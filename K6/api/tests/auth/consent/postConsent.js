@@ -1,30 +1,29 @@
-import { check } from "k6"
-import { SharedArray } from 'k6/data';
+import http from 'k6/http';
 import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
     uuidv4,
     randomItem
 } from '../../../../commonImports.js';
-import { readCsv } from "../../../../helpers.js";
+import { parseCsvData } from "../../../../helpers.js";
 import { ConsentApiClient } from "../../../../clients/auth/index.js"
 import { RequestConsent, ApproveConsent } from "../../../building_blocks/auth/consent/index.js"
 
-const orgsDagl = new SharedArray('orgsDagl', function () {
-    const orgsDaglFilename = import.meta.resolve(`../../../../testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
-    return readCsv(orgsDaglFilename);
-});
+export function setup() {
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+    return parseCsvData(res.body);
+}
 
 let from = undefined
 let to = undefined
 
-function selectRandomFromToPair() {
+function selectRandomFromToPair(data) {
     console.log(from, to)
     if (!from || !to) {
-        from = randomItem(orgsDagl);
+        from = randomItem(data);
         // Make sure to and from are not the same
         do {
-            to = randomItem(orgsDagl);
+            to = randomItem(data);
         } while (to === from);
     }
     return [from, to]
@@ -68,9 +67,9 @@ function getClients(orgNo, userId, partyUuid) {
 }
 
 
-export default function () {
+export default function (data) {
     if (!from || !to) {
-        [from, to] = selectRandomFromToPair()
+        [from, to] = selectRandomFromToPair(data)
     }
 
     let [consenteeApiClient, consenterApiClient] = getClients(to.orgNo, from.userId, from.partyUuid)

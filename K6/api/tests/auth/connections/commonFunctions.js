@@ -1,12 +1,7 @@
-import { SharedArray } from 'k6/data';
+import http from 'k6/http';
 import { ConnectionsApiClient } from "../../../../clients/auth/index.js"
 import { PersonalTokenGenerator } from '../../../../commonImports.js';
-import { readCsv, segmentData, getNumberOfVUs } from '../../../../helpers.js';
-
-const partiesFilename = import.meta.resolve(`../../../../testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
-const parties = new SharedArray('parties', function () {
-  return readCsv(partiesFilename);
-});
+import { parseCsvData, segmentData, getNumberOfVUs } from '../../../../helpers.js';
 
 let connectionsApiClient = undefined;
 let tokenGenerator = undefined;
@@ -49,6 +44,7 @@ export function getTokenOpts(userId) {
  */
 export function setup() {
   const numberOfVUs = getNumberOfVUs();
-  const segmentedData = segmentData(parties, numberOfVUs);
+  const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+  const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
   return segmentedData;
 }
