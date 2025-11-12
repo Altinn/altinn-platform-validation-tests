@@ -22,6 +22,7 @@ on:
           - get-access-packages-to
           - get-access-packages-from
           - pdp-authorize-dagl
+          - pdp-authorize-dagl-direct-delegation
           - pdp-authorize-dagl-deny
 
       target_vus:
@@ -60,6 +61,7 @@ on:
     - cron: "20 5 * * 2"
     - cron: "40 5 * * 2"
     - cron: "0 6 * * 2"
+    - cron: "20 6 * * 2"
 
 run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -160,32 +162,38 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
 
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-direct-delegation
         if: github.event.schedule == '40 4 * * 2'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-direct-delegation
+  
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny
+        if: github.event.schedule == '0 5 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
 
       - name: Run Breakpoint for .dist/yt01-get-connections-to
-        if: github.event.schedule == '0 5 * * 2'
+        if: github.event.schedule == '20 5 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-connections-to
 
       - name: Run Breakpoint for .dist/yt01-get-connections-from
-        if: github.event.schedule == '20 5 * * 2'
+        if: github.event.schedule == '40 5 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-connections-from
 
       - name: Run Breakpoint for .dist/yt01-get-access-packages-to
-        if: github.event.schedule == '40 5 * * 2'
+        if: github.event.schedule == '0 6 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-to
 
       - name: Run Breakpoint for .dist/yt01-get-access-packages-from
-        if: github.event.schedule == '0 6 * * 2'
+        if: github.event.schedule == '20 6 * * 2'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
