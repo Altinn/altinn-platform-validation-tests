@@ -23,6 +23,7 @@ on:
           - get-access-packages-from
           - pdp-authorize-dagl
           - pdp-authorize-dagl-deny
+          - pdp-authorize-dagl-direct-delegation
 
       target_vus:
         description: "The target VUs to reach"
@@ -60,6 +61,7 @@ on:
     - cron: "20 5 * * 2"
     - cron: "40 5 * * 2"
     - cron: "0 6 * * 2"
+    - cron: "20 6 * * 2"
 
 run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -159,6 +161,12 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
+
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-direct-delegation
+        if: github.event.schedule == '20 6 * * 2'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-direct-delegation
 
       - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny
         if: github.event.schedule == '40 4 * * 2'

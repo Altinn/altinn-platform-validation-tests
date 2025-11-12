@@ -51,3 +51,4 @@ jobs:
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-direct-delegation
