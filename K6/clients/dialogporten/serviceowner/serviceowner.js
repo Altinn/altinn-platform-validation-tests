@@ -1,5 +1,5 @@
-import http from 'k6/http';
-import { uuidv4 } from "../../../commonImports.js"
+import http from "k6/http";
+import { uuidv4 } from "../../../commonImports.js";
 
 class ServiceOwnerApiClient {
     /**
@@ -11,18 +11,18 @@ class ServiceOwnerApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + "/dialogporten/api/v1/serviceowner"
+        this.FULL_PATH = baseUrl + "/dialogporten/api/v1/serviceowner";
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/dialogporten/api/v1/serviceowner"
+        this.BASE_PATH = "/dialogporten/api/v1/serviceowner";
     }
 
     /**
@@ -40,27 +40,27 @@ class ServiceOwnerApiClient {
         transmissionId,
         label = null
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = new URL(this.FULL_PATH + '/dialogs' + `/${dialogId}` + '/actions/should-send-notification');
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + "/dialogs" + `/${dialogId}` + "/actions/should-send-notification");
 
-        url.searchParams.append('conditionType', conditionType);
-        url.searchParams.append('activityType', activityType);
-        url.searchParams.append('transmissionId', transmissionId);
-        let nameTag = label ? label : this.FULL_PATH + '/dialogs/dialogId/actions/should-send-notification';
+        url.searchParams.append("conditionType", conditionType);
+        url.searchParams.append("activityType", activityType);
+        url.searchParams.append("transmissionId", transmissionId);
+        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification";
         const params = {
             tags: { name: nameTag },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Accept': 'application/json',
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
             },
         };
 
         if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4()
+            params.headers["traceparent"] = uuidv4();
         }
 
         return http.get(url.toString(), params);
     }
 }
 
-export { ServiceOwnerApiClient }
+export { ServiceOwnerApiClient };

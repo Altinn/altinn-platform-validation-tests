@@ -1,5 +1,5 @@
-import { Locator, Page } from 'k6/browser';
-import { expect } from "../../commonImports.js"
+import { Locator, Page } from "k6/browser";
+import { expect } from "../../commonImports.js";
 
 export class ClientDelegationPage {
     /**
@@ -8,33 +8,33 @@ export class ClientDelegationPage {
     */
     constructor(page) {
         this.page = page;
-        this.confirmButton = page.getByRole('button', { name: 'Godkjenn systemtilgang' });
-        this.addCustomersButton = page.getByRole('button', { name: 'Legg til kunder' });
-        this.modifyCustomersButton = page.getByRole('button', { name: 'Legg til eller fjern kunder' });
-        this.confirmAndCloseButton = page.getByRole('button', { name: 'Bekreft og lukk' });
-        this.deleteSystemAccessButtons = page.getByRole('button', { name: 'Slett systemtilgang' });
-        this.clientSearchBox = page.getByRole('searchbox', { name: 'Søk etter kunde' });
+        this.confirmButton = page.getByRole("button", { name: "Godkjenn systemtilgang" });
+        this.addCustomersButton = page.getByRole("button", { name: "Legg til kunder" });
+        this.modifyCustomersButton = page.getByRole("button", { name: "Legg til eller fjern kunder" });
+        this.confirmAndCloseButton = page.getByRole("button", { name: "Bekreft og lukk" });
+        this.deleteSystemAccessButtons = page.getByRole("button", { name: "Slett systemtilgang" });
+        this.clientSearchBox = page.getByRole("searchbox", { name: "Søk etter kunde" });
     }
     /**
     * @param {string} name
     * @returns {Locator}
     */
     systemUserLink(name) {
-        return this.page.getByRole('link', { name });
+        return this.page.getByRole("link", { name });
     }
     /**
     * @param {string} name
     * @returns {Locator}
     */
     addCustomerButtonByName(name) {
-        return this.page.getByRole('button', { name: `Legg til ${name}` });
+        return this.page.getByRole("button", { name: `Legg til ${name}` });
     }
     /**
     * @param {string} name
     * @returns {Locator}
     */
     removeCustomerButtonByName(name) {
-        return this.page.getByRole('button', { name: `Fjern ${name} fra systemtilgang` });
+        return this.page.getByRole("button", { name: `Fjern ${name} fra systemtilgang` });
     }
     /**
     * @param {string} text
@@ -47,7 +47,7 @@ export class ClientDelegationPage {
     * @param {string} accessPackage
     */
     async confirmAndCreateSystemUser(accessPackage) {
-        const button = this.page.getByRole('button', { name: accessPackage });
+        const button = this.page.getByRole("button", { name: accessPackage });
         expect(button).toBeVisible();
         await expect(this.confirmButton).toBeHidden();
         await this.confirmButton.click();
@@ -57,10 +57,10 @@ export class ClientDelegationPage {
     * @param {string} accessPackage
     */
     async openAccessPackage(accessPackage) {
-        const button = this.page.getByRole('button', { name: accessPackage });
+        const button = this.page.getByRole("button", { name: accessPackage });
         await expect(button).toBeHidden(); // the button was supposed to be visible but it's actually hidden
         await button.click();
-        await this.page.keyboard.press('Escape');
+        await this.page.keyboard.press("Escape");
     }
 
     /**
@@ -96,7 +96,7 @@ export class ClientDelegationPage {
     * @param {string} name
     */
     async removeCustomer(name) {
-        // Open the modify customers modal
+    // Open the modify customers modal
         await expect(this.modifyCustomersButton).toBeVisible();
         await this.modifyCustomersButton.click();
 

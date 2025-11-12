@@ -1,25 +1,25 @@
-import { check } from "k6"
-import { PersonalTokenGenerator } from '../../../../commonImports.js';
-import { RegisterApiClient } from "../../../../clients/auth/index.js"
+import { check } from "k6";
+import { PersonalTokenGenerator } from "../../../../commonImports.js";
+import { RegisterApiClient } from "../../../../clients/auth/index.js";
 import {
     RemoveRevisorRoleFromEr,
     AddRevisorRoleToErForOrg,
     GetRevisorCustomerIdentifiersForParty
-} from '../../../building_blocks/auth/register/index.js';
-import { retry } from "../../../../helpers.js"
+} from "../../../building_blocks/auth/register/index.js";
+import { retry } from "../../../../helpers.js";
 
 export default function () {
     const options = new Map();
-    options.set("env", __ENV.ENVIRONMENT)
+    options.set("env", __ENV.ENVIRONMENT);
     options.set("ttl", 3600);
-    options.set("scopes", "altinn:register/partylookup.admin")
-    options.set("pid", 22877497392)
+    options.set("scopes", "altinn:register/partylookup.admin");
+    options.set("pid", 22877497392);
 
     const tokenGenerator
-        = new PersonalTokenGenerator(options)
+        = new PersonalTokenGenerator(options);
 
     const registerApiClient
-        = new RegisterApiClient(__ENV.BASE_URL, tokenGenerator)
+        = new RegisterApiClient(__ENV.BASE_URL, tokenGenerator);
 
     const facilitatorPartyUuidRevisor = "7c1170ec-8232-4998-a277-0ba224808541";
     const facilitatorOrg = "314239458";
@@ -36,16 +36,16 @@ export default function () {
         `Picked target client organizationIdentifier for test: ${targetOrg}`
     );
 
-    let res = RemoveRevisorRoleFromEr(registerApiClient, __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD, targetOrg, facilitatorOrg)
+    let res = RemoveRevisorRoleFromEr(registerApiClient, __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD, targetOrg, facilitatorOrg);
 
     check(res, {
         "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED": (r) =>
-            r.includes('status="OK_ER_DATA_PROCESSED"'),
+            r.includes("status=\"OK_ER_DATA_PROCESSED\""),
     });
 
     let success = retry(
         () => {
-            const orgs = GetRevisorCustomerIdentifiersForParty(registerApiClient, facilitatorPartyUuidRevisor, __ENV.REGISTER_SUBSCRIPTION_KEY)
+            const orgs = GetRevisorCustomerIdentifiersForParty(registerApiClient, facilitatorPartyUuidRevisor, __ENV.REGISTER_SUBSCRIPTION_KEY);
             const stillPresent = orgs.includes(targetOrg);
             console.log(
                 `[remove role] Org ${targetOrg} is ${stillPresent ? "still" : "no longer"
@@ -64,16 +64,16 @@ export default function () {
         "Revisor role was successfully removed": (s) => s === true,
     });
 
-    res = AddRevisorRoleToErForOrg(registerApiClient, __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD, targetOrg, facilitatorOrg)
+    res = AddRevisorRoleToErForOrg(registerApiClient, __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD, targetOrg, facilitatorOrg);
 
     check(res, {
         "AddRevisorRoleToErForOrg - response contains status OK_ER_DATA_PROCESSED": (r) =>
-            r.includes('status="OK_ER_DATA_PROCESSED"'),
+            r.includes("status=\"OK_ER_DATA_PROCESSED\""),
     });
 
     success = retry(
         () => {
-            const orgs = GetRevisorCustomerIdentifiersForParty(registerApiClient, facilitatorPartyUuidRevisor, __ENV.REGISTER_SUBSCRIPTION_KEY)
+            const orgs = GetRevisorCustomerIdentifiersForParty(registerApiClient, facilitatorPartyUuidRevisor, __ENV.REGISTER_SUBSCRIPTION_KEY);
             const nowPresent = orgs.includes(targetOrg);
             console.log(
                 `[add role] Org ${targetOrg} is ${nowPresent ? "now" : "still not"

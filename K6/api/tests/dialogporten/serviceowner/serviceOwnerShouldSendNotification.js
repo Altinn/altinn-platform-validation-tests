@@ -1,9 +1,9 @@
-import http from 'k6/http';
-import { EnterpriseTokenGenerator } from '../../../../commonImports.js';
-import { GetDialogsQueriesNotificationCondition } from '../../../building_blocks/dialogporten/serviceowner/index.js';
-import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js"
+import http from "k6/http";
+import { EnterpriseTokenGenerator } from "../../../../commonImports.js";
+import { GetDialogsQueriesNotificationCondition } from "../../../building_blocks/dialogporten/serviceowner/index.js";
+import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
-import { getItemFromList, getOptions, parseCsvData } from '../../../../helpers.js';
+import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
 
 
 export function setup() {
@@ -11,7 +11,7 @@ export function setup() {
     return parseCsvData(res.body);
 }
 
-const randomize = (__ENV.RANDOMIZE ?? 'true') === 'true';
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNos = ["713431400"];
 
 const label = "should-send-notifications";
@@ -31,12 +31,12 @@ export function getClients() {
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:system/notifications.condition.check");
-        tokenOpts.set("org", 'test')
-        tokenOpts.set("orgNo", getItemFromList(orgNos))
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts)
+        tokenOpts.set("org", "test");
+        tokenOpts.set("orgNo", getItemFromList(orgNos));
+        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
     }
-    return [serviceOwnerApiClient]
+    return [serviceOwnerApiClient];
 }
 
 

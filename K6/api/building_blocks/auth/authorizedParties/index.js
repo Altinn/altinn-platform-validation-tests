@@ -1,1 +1,1 @@
-export { GetAuthorizedParties } from './getAuthorizedParties.js';
+export { GetAuthorizedParties } from "./getAuthorizedParties.js";

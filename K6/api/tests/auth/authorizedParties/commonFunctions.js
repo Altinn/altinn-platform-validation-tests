@@ -1,7 +1,7 @@
-import http from 'k6/http';
-import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js"
-import { EnterpriseTokenGenerator } from '../../../../commonImports.js';
-import { parseCsvData } from '../../../../helpers.js';
+import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js";
+import { EnterpriseTokenGenerator } from "../../../../commonImports.js";
+import { parseCsvData } from "../../../../helpers.js";
+import http from "k6/http";
 
 let authorizedPartiesClient = undefined;
 
@@ -16,10 +16,10 @@ export function getClients() {
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts)
+        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         authorizedPartiesClient = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
     }
-    return [authorizedPartiesClient]
+    return [authorizedPartiesClient];
 }
 
 export function setup() {

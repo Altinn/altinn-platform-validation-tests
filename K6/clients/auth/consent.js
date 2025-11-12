@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class ConsentApiClient {
     /**
@@ -10,18 +10,18 @@ class ConsentApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + "/accessmanagement/api/v1"
+        this.FULL_PATH = baseUrl + "/accessmanagement/api/v1";
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/accessmanagement/api/v1"
+        this.BASE_PATH = "/accessmanagement/api/v1";
     }
 
     /**
@@ -36,8 +36,8 @@ class ConsentApiClient {
     * @returns http.RefinedResponse
     */
     RequestConsent(id, from, to, validTo, consentRights, redirectUrl) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/enterprise/consentrequests`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/enterprise/consentrequests`;
         const body = {
             "id": id,
             "from": from,
@@ -50,8 +50,8 @@ class ConsentApiClient {
         const params = {
             tags: { name: url },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, JSON.stringify(body), params);
@@ -64,19 +64,19 @@ class ConsentApiClient {
     * @returns http.RefinedResponse
     */
     ApproveConsent(id) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
         const body = { "language": "nb" };
 
         const params = {
             tags: { name: `${this.FULL_PATH}/bff/consentrequests/id/accept` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, JSON.stringify(body), params);
     }
 }
 
-export { ConsentApiClient }
+export { ConsentApiClient };

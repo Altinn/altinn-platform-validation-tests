@@ -1,5 +1,5 @@
-import { check, fail } from 'k6';
-import { OrdersApiClient } from "../../../../../clients/core/notifications/index.js"
+import { check, fail } from "k6";
+import { OrdersApiClient } from "../../../../../clients/core/notifications/index.js";
 
 /**
  * @param {OrdersApiClient} ordersApiClient
@@ -9,15 +9,15 @@ import { OrdersApiClient } from "../../../../../clients/core/notifications/index
  * @returns (string | ArrayBuffer | null)
  */
 export function PostEmailNotificationOrder(ordersApiClient, emailTemplate, sendersReference, recipients) {
-    const res = ordersApiClient.PostEmailNotificationOrder(emailTemplate, sendersReference, recipients)
+    const res = ordersApiClient.PostEmailNotificationOrder(emailTemplate, sendersReference, recipients);
 
     const success = check(res, {
         "POST email notification order request. Status is 202 Accepted": (r) => r.status === 202,
     });
 
     if (!success) {
-        console.log(res.status)
-        console.log(res.body)
+        console.log(res.status);
+        console.log(res.body);
         fail("POST email notification order request failed");
     }
 
@@ -26,5 +26,5 @@ export function PostEmailNotificationOrder(ordersApiClient, emailTemplate, sende
         "POST email notification order request. Location header provided": (r) => selfLink,
     });
 
-    return res.body
+    return res.body;
 }

@@ -1,1 +1,1 @@
-export { PdpAuthorizeUser, PdpAuthorizeDagl } from './pdpAuthorize.js';
+export { PdpAuthorizeUser, PdpAuthorizeDagl } from "./pdpAuthorize.js";

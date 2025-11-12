@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class ConnectionsApiClient {
     /**
@@ -10,7 +10,7 @@ class ConnectionsApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
         this.tokenGenerator = tokenGenerator;
@@ -40,8 +40,8 @@ class ConnectionsApiClient {
         const params = {
             tags: { name: tags },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
@@ -62,8 +62,8 @@ class ConnectionsApiClient {
         const params = {
             tags: { name: tags },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));

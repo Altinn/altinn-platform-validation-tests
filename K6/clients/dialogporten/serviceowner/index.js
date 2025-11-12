@@ -1,1 +1,1 @@
-export { ServiceOwnerApiClient } from "./serviceowner.js"
+export { ServiceOwnerApiClient } from "./serviceowner.js";
