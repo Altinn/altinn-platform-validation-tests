@@ -1,0 +1,17 @@
+{
+  "name": "altinn-platform-validation-tests",
+  "version": "0.0.1",
+  "description": "# Adding tests",
+  "scripts": {
+    "lint": "eslint --max-warnings 0 K6",
+    "fix": "eslint --fix K6/**",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0"
+  }
+}

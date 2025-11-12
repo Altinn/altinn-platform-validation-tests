@@ -1,1 +1,1 @@
-export { GetDialogsQueriesNotificationCondition } from "./getDialogsQueriesNotificationCondition.js"
+export { GetDialogsQueriesNotificationCondition } from "./getDialogsQueriesNotificationCondition.js";

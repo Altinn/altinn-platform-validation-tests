@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class RegisterApiClient {
     /**
@@ -10,18 +10,18 @@ class RegisterApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + "/register/api/v1"
+        this.FULL_PATH = baseUrl + "/register/api/v1";
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/register/api/v1"
+        this.BASE_PATH = "/register/api/v1";
     }
 
 
@@ -34,9 +34,9 @@ class RegisterApiClient {
      * @returns http.RefinedResponse
      */
     RemoveRevisorRoleFromEr(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`
+        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`;
 
-        const submitERDataBasic = '"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic"'
+        const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapReqBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
       <soapenv:Header/>
       <soapenv:Body>
@@ -70,9 +70,9 @@ class RegisterApiClient {
 
 
     AddRevisorRoleToErForOrg(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`
+        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`;
 
-        const submitERDataBasic = '"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic"'
+        const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
     <soapenv:Body>
@@ -105,7 +105,7 @@ class RegisterApiClient {
     }
 
     GetRevisorCustomerIdentifiersForParty(facilitatorPartyUuid, subscriptionKey) {
-        const token = this.tokenGenerator.getToken()
+        const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/internal/parties/${facilitatorPartyUuid}/customers/ccr/revisor`;
 
         return http.get(url,
@@ -120,4 +120,4 @@ class RegisterApiClient {
 
 }
 
-export { RegisterApiClient }
+export { RegisterApiClient };

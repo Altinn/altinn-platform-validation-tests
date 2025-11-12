@@ -1,5 +1,5 @@
-import { check } from 'k6';
-import { SystemRegisterApiClient } from "../../../../clients/auth/index.js"
+import { check } from "k6";
+import { SystemRegisterApiClient } from "../../../../clients/auth/index.js";
 
 /**
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API
@@ -29,14 +29,14 @@ export function UpdateVendorSystemRegister(systemRegisterClient,
         description,
         rights,
         allowedRedirectUrls
-    )
+    );
     check(res, {
-        'UpdateVendorSystemRegister - status code is 200': (r) => r.status === 200,
-        'UpdateVendorSystemRegister - status text is 200 OK': (r) => r.status_text == "200 OK",
-        'UpdateVendorSystemRegister - body is not empty': (r) => {
+        "UpdateVendorSystemRegister - status code is 200": (r) => r.status === 200,
+        "UpdateVendorSystemRegister - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "UpdateVendorSystemRegister - body is not empty": (r) => {
             const res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     });
-    return res.body
+    return res.body;
 }

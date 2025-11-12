@@ -1,5 +1,5 @@
 import { sleep, check } from "k6";
-import exec from 'k6/execution';
+import exec from "k6/execution";
 import { papaparse, randomItem } from "./commonImports.js";
 
 /**
@@ -55,7 +55,7 @@ export function parseCsvData(data) {
 }
 
 export function readCsv(filename) {
-    return parseCsvData(open(filename))
+    return parseCsvData(open(filename));
 }
 /**
  *
@@ -63,10 +63,10 @@ export function readCsv(filename) {
  */
 export function getItemFromList(listOfItems, randomize = false) {
     if (randomize) {
-        return randomItem(listOfItems)
+        return randomItem(listOfItems);
     }
     else {
-        return listOfItems[__ITER % listOfItems.length]
+        return listOfItems[__ITER % listOfItems.length];
     };
 }
 
@@ -88,7 +88,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
         index += sublistSize;
     }
 
-    return sublists
+    return sublists;
 }
 
 /**
@@ -106,7 +106,7 @@ export function getNumberOfVUs() {
  */
 export function getOptions(labels) {
     const options = {
-        summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
+        summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
         thresholds: {}
     };

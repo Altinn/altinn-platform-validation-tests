@@ -1,5 +1,5 @@
-import { check } from 'k6';
-import { AuthorizedPartiesClient } from '../../../../clients/auth/index.js';
+import { check } from "k6";
+import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js";
 
 /**
  * Get Authorized Parties
@@ -10,19 +10,19 @@ import { AuthorizedPartiesClient } from '../../../../clients/auth/index.js';
  */
 
 export function GetAuthorizedParties(authorizedPartiesClient, type, value, includeAltinn2, label = null) {
-    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, includeAltinn2, label)
+    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, includeAltinn2, label);
 
     const succeed = check(res, {
-        'GetAuthorizedParties - status code is 200': (r) => r.status === 200,
-        'GetAuthorizedParties - status text is 200 OK': (r) => r.status_text == "200 OK",
-        'GetAuthorizedParties - body is not empty': (r) => {
+        "GetAuthorizedParties - status code is 200": (r) => r.status === 200,
+        "GetAuthorizedParties - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "GetAuthorizedParties - body is not empty": (r) => {
             const res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     });
     if (!succeed) {
-        console.log(res.status)
-        console.log(res.body)
+        console.log(res.status);
+        console.log(res.body);
     }
     return res.body;
 }

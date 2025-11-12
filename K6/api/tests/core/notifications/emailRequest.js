@@ -1,7 +1,7 @@
-import { check, fail } from "k6"
-import { EnterpriseTokenGenerator } from '../../../../commonImports.js';
-import { OrdersApiClient } from "../../../../clients/core/notifications/index.js"
-import { PostEmailNotificationOrder } from '../../../building_blocks/core/notifications/orders/index.js';
+import { check, fail } from "k6";
+import { EnterpriseTokenGenerator } from "../../../../commonImports.js";
+import { OrdersApiClient } from "../../../../clients/core/notifications/index.js";
+import { PostEmailNotificationOrder } from "../../../building_blocks/core/notifications/orders/index.js";
 import { uuidv4 } from "../../../../commonImports.js";
 
 export default function () {
@@ -13,10 +13,10 @@ export default function () {
     options.set("orgNo", "991825827");
 
     const tokenGenerator
-        = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd)
+        = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd);
 
     const ordersApiClient
-        = new OrdersApiClient(__ENV.BASE_URL, tokenGenerator)
+        = new OrdersApiClient(__ENV.BASE_URL, tokenGenerator);
 
     const testData = {
         "sendersReference": uuidv4(),
@@ -27,16 +27,16 @@ export default function () {
             "contentType": "Html",
             "fromAddress": "noreply@altinn.cloud",
         },
-    }
+    };
 
     let response = PostEmailNotificationOrder(
         ordersApiClient,
         testData.emailTemplate,
         testData.sendersReference,
         testData.recipients
-    )
+    );
 
     check(response, {
-        "POST email notification order request. Recipient lookup was successful": (r) => JSON.parse(r).recipientLookup.status == 'Success'
+        "POST email notification order request. Recipient lookup was successful": (r) => JSON.parse(r).recipientLookup.status == "Success"
     });
 }

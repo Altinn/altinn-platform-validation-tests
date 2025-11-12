@@ -1,5 +1,5 @@
-import { check, fail } from 'k6';
-import { SystemUserRequestApiClient } from "../../../../clients/auth/index.js"
+import { check, fail } from "k6";
+import { SystemUserRequestApiClient } from "../../../../clients/auth/index.js";
 
 /**
  * Creates a new Request based on a SystemId for a SystemUser.
@@ -25,24 +25,24 @@ export function CreateSystemUserRequest(
         rights,
         redirectUrl,
         accessPackages
-    )
+    );
     if (!check(res, {
-        'CreateSystemUserRequest - status code is 201': (r) => r.status === 201,
-        'CreateSystemUserRequest - status text is 201 Created': (r) => r.status_text == "201 Created",
+        "CreateSystemUserRequest - status code is 201": (r) => r.status === 201,
+        "CreateSystemUserRequest - status text is 201 Created": (r) => r.status_text == "201 Created",
     })) {
         if ((res.status.toString().startsWith("4") || res.status.toString().startsWith("5")) && res.body !== null) {
-            console.log(res.body)
+            console.log(res.body);
         }
-        fail(`CreateSystemUserRequest - Unexpected status: '${res.status}' or status_text: '${res.status_text}'`)
+        fail(`CreateSystemUserRequest - Unexpected status: '${res.status}' or status_text: '${res.status_text}'`);
     };
 
     if (!check(res, {
-        'CreateSystemUserRequest - body is not empty': (r) => {
+        "CreateSystemUserRequest - body is not empty": (r) => {
             const res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     })) {
-        fail(`CreateSystemUserRequest - Unexpected body: '${res.body}'`)
+        fail(`CreateSystemUserRequest - Unexpected body: '${res.body}'`);
     };
-    return res.body
+    return res.body;
 }

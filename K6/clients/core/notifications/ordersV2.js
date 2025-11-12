@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class OrdersV2ApiClient {
     /**
@@ -10,18 +10,18 @@ class OrdersV2ApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + "/notifications/api/v1/future/orders"
+        this.FULL_PATH = baseUrl + "/notifications/api/v1/future/orders";
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/notifications/api/v1/future/orders"
+        this.BASE_PATH = "/notifications/api/v1/future/orders";
     }
 
     /**
@@ -41,8 +41,8 @@ class OrdersV2ApiClient {
         recipient,
         reminders
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = this.FULL_PATH
+        const token = this.tokenGenerator.getToken();
+        const url = this.FULL_PATH;
 
         const body = {
             "idempotencyId": idempotencyId,
@@ -50,20 +50,20 @@ class OrdersV2ApiClient {
             "requestedSendTime": requestedSendTime,
             "recipient": recipient,
             "reminders": reminders
-        }
+        };
         if (dialogportenAssociation) {
-            body.dialogportenAssociation = dialogportenAssociation
+            body.dialogportenAssociation = dialogportenAssociation;
         }
 
         const params = {
             tags: { name: url },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, JSON.stringify(body), params);
     }
 }
 
-export { OrdersV2ApiClient }
+export { OrdersV2ApiClient };

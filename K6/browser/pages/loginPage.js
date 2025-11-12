@@ -1,5 +1,5 @@
-import { Page } from 'k6/browser';
-import { expect } from "../../commonImports.js"
+import { Page } from "k6/browser";
+import { expect } from "../../commonImports.js";
 
 export class LoginPage {
     /**
@@ -8,13 +8,13 @@ export class LoginPage {
     */
     constructor(page) {
         this.page = page;
-        this.searchBox = this.page.getByRole('searchbox', { name: 'Søk etter aktør' });
+        this.searchBox = this.page.getByRole("searchbox", { name: "Søk etter aktør" });
         this.pidInput = this.page.locator("input[name='pid']");
-        this.testIdLink = this.page.getByRole('link', { name: 'TestID Lag din egen' });
-        this.loginButton = this.page.getByRole('button', { name: 'Logg inn', exact: true });
-        this.profileLink = this.page.getByRole('link', { name: 'profil' });
-        this.velgAktoerHeading = this.page.getByRole('heading', { level: 1, name: 'Velg aktør' });
-        this.autentiserButton = this.page.getByRole('button', { name: 'Autentiser' });
+        this.testIdLink = this.page.getByRole("link", { name: "TestID Lag din egen" });
+        this.loginButton = this.page.getByRole("button", { name: "Logg inn", exact: true });
+        this.profileLink = this.page.getByRole("link", { name: "profil" });
+        this.velgAktoerHeading = this.page.getByRole("heading", { level: 1, name: "Velg aktør" });
+        this.autentiserButton = this.page.getByRole("button", { name: "Autentiser" });
     }
 
     async loginWithUser(testUser) {
@@ -27,7 +27,7 @@ export class LoginPage {
             } catch (error) {
                 console.log(`Login attempt ${attempt} failed with error: ${error}`);
                 if (attempt === 3) {
-                    throw new Error('Login failed after 3 retries');
+                    throw new Error("Login failed after 3 retries");
                 }
                 await this.page.waitForTimeout(2000 * attempt);
             }
@@ -53,16 +53,16 @@ export class LoginPage {
     }
 
     async chooseReportee(reportee) {
-        const chosenReportee = this.page.getByRole('button').filter({ hasText: reportee });
+        const chosenReportee = this.page.getByRole("button").filter({ hasText: reportee });
         await chosenReportee.click();
 
         await this.page.goto(`${__ENV.ALTINN2_BASE_URL}/ui/profile`);
         await this.profileLink.click();
 
-        const profileHeader = this.page.getByRole('heading', {
+        const profileHeader = this.page.getByRole("heading", {
             name: new RegExp(
-                `Profil for (.*${reportee}.*|.*${reportee.split(' ').reverse().join(' ')}.*)`,
-                'i',
+                `Profil for (.*${reportee}.*|.*${reportee.split(" ").reverse().join(" ")}.*)`,
+                "i",
             ),
         });
         await expect(profileHeader).toBeVisible();
@@ -85,7 +85,7 @@ export class LoginPage {
 
     async selectActor(input, orgnummer) {
         const aktorPartial = `${orgnummer.slice(0, 3)} ${orgnummer.slice(3, 6)}`;
-        const button = this.page.getByRole('button', { name: new RegExp(`Org\\.nr\\. ${aktorPartial}`) });
+        const button = this.page.getByRole("button", { name: new RegExp(`Org\\.nr\\. ${aktorPartial}`) });
 
         try {
             await this.tryTypingInSearchbox(input, orgnummer);

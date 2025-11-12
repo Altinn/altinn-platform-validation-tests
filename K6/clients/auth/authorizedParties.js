@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class AuthorizedPartiesClient {
     /**
@@ -10,10 +10,10 @@ class AuthorizedPartiesClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
@@ -34,14 +34,14 @@ class AuthorizedPartiesClient {
     * @returns http.RefinedResponse
     */
     GetAuthorizedParties(type, value, includeAltinn2, label = null) {
-        const token = this.tokenGenerator.getToken()
-        const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`)
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let nameTag = label ? label : url.toString();
         const params = {
             tags: { name: nameTag },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         if (includeAltinn2) {
@@ -51,7 +51,7 @@ class AuthorizedPartiesClient {
         const body = {
             "type": type,
             "value": value
-        }
+        };
         return http.post(url.toString(), JSON.stringify(body), params);
     }
 }

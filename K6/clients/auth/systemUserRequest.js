@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class SystemUserRequestApiClient {
     /**
@@ -10,18 +10,18 @@ class SystemUserRequestApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + "/authentication/api/v1/systemuser/request"
+        this.FULL_PATH = baseUrl + "/authentication/api/v1/systemuser/request";
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/authentication/api/v1/systemuser/request"
+        this.BASE_PATH = "/authentication/api/v1/systemuser/request";
     }
 
     /**
@@ -41,8 +41,8 @@ class SystemUserRequestApiClient {
         redirectUrl = "",
         accessPackages = []
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor`;
         const body = {
             "systemId": systemId,
             "partyOrgNo": partyOrgNo,
@@ -53,8 +53,8 @@ class SystemUserRequestApiClient {
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, JSON.stringify(body), params);
@@ -71,14 +71,14 @@ class SystemUserRequestApiClient {
         partyId,
         requestId
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/${partyId}/${requestId}/approve`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/${partyId}/${requestId}/approve`;
 
         const params = {
             tags: { name: `${this.FULL_PATH}/partyId/requestId/approve` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, null, params);
@@ -101,8 +101,8 @@ class SystemUserRequestApiClient {
         accessPackages = [],
         redirectUrl = "",
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor/agent`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/agent`;
         const body = {
             "externalRef": externalRef,
             "systemId": systemId,
@@ -113,12 +113,12 @@ class SystemUserRequestApiClient {
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor/agent` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, JSON.stringify(body), params);
     }
 }
 
-export { SystemUserRequestApiClient }
+export { SystemUserRequestApiClient };

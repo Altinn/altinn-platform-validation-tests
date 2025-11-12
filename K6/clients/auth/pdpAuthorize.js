@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class PdpAuthorizeClient {
     /**
@@ -10,7 +10,7 @@ class PdpAuthorizeClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
         this.tokenGenerator = tokenGenerator;
@@ -36,15 +36,15 @@ class PdpAuthorizeClient {
     * @returns http.RefinedResponse
     */
     authorizeEnduser(ssn, resourceId, action, subscriptionKey, label = null) {
-        const token = this.tokenGenerator.getToken()
+        const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : url.toString();
         const params = {
             tags: { name: nameTag },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
-                'Ocp-Apim-Subscription-Key': subscriptionKey
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
             },
         };
 
@@ -66,23 +66,23 @@ class PdpAuthorizeClient {
     * @returns http.RefinedResponse
     */
     authorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, label = null) {
-      const token = this.tokenGenerator.getToken()
-      const url = new URL(this.FULL_PATH);
-      let nameTag = label ? label : url.toString();
-      const params = {
-          tags: { name: nameTag },
-          headers: {
-              Authorization: 'Bearer ' + token,
-              'Content-type': 'application/json',
-              'Ocp-Apim-Subscription-Key': subscriptionKey
-          },
-      };
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let nameTag = label ? label : url.toString();
+        const params = {
+            tags: { name: nameTag },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
+            },
+        };
 
 
-      const body = this.#getDaglBody(ssn, resourceId, orgno, action);
-      const res = http.post(url.toString(), JSON.stringify(body), params);
-      return res;
-  }
+        const body = this.#getDaglBody(ssn, resourceId, orgno, action);
+        const res = http.post(url.toString(), JSON.stringify(body), params);
+        return res;
+    }
 
     /**
      * get body for enduser authorization
@@ -116,20 +116,20 @@ class PdpAuthorizeClient {
      * @returns body for authorize dagl
      */  
     #getDaglBody(ssn, resourceId, orgno, action) {
-      let body = this.#buildAuthorizeBody(resourceId, action);
-      body.Request.AccessSubject[0].Attribute.push(
-          { 
-              "AttributeId": "urn:altinn:person:identifier-no",
-              "Value": ssn
-          });
-      body.Request.Resource[0].Attribute.push(
-          {
-              "AttributeId": "urn:altinn:organization:identifier-no",
-              "Value": orgno,
-              "DataType": "http://www.w3.org/2001/XMLSchema#string"
-          });
-      return body;
-  }
+        let body = this.#buildAuthorizeBody(resourceId, action);
+        body.Request.AccessSubject[0].Attribute.push(
+            { 
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": ssn
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:organization:identifier-no",
+                "Value": orgno,
+                "DataType": "http://www.w3.org/2001/XMLSchema#string"
+            });
+        return body;
+    }
 
     /**
      * build base authorize body
@@ -169,7 +169,7 @@ class PdpAuthorizeClient {
                     }
                 ]
             }
-        }
+        };
         return body;
 
     }

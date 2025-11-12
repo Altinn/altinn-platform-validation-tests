@@ -1,4 +1,4 @@
-import http from 'k6/http';
+import http from "k6/http";
 
 class SystemRegisterApiClient {
     /**
@@ -10,18 +10,18 @@ class SystemRegisterApiClient {
         baseUrl,
         tokenGenerator
     ) {
-        /**
+    /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
-        this.tokenGenerator = tokenGenerator
+        this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + "/authentication/api/v1/systemregister"
+        this.FULL_PATH = baseUrl + "/authentication/api/v1/systemregister";
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/authentication/api/v1/systemregister"
+        this.BASE_PATH = "/authentication/api/v1/systemregister";
     }
 
     /**
@@ -30,13 +30,13 @@ class SystemRegisterApiClient {
      * @returns http.RefinedResponse
      */
     GetAllSystemsFromRegister() {
-        const token = this.tokenGenerator.getToken()
-        const url = this.FULL_PATH
+        const token = this.tokenGenerator.getToken();
+        const url = this.FULL_PATH;
         const params = {
             tags: { name: url },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.get(url, params);
@@ -49,13 +49,13 @@ class SystemRegisterApiClient {
      * @returns http.RefinedResponse
      */
     GetSystemRegisterById(systemId) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/${systemId}`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/${systemId}`;
         const params = {
             tags: { name: `${this.FULL_PATH}/systemId` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.get(url, params);
@@ -68,13 +68,13 @@ class SystemRegisterApiClient {
      * @returns http.RefinedResponse
      */
     GetVendorSystemRegisterById(systemId) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor/${systemId}`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor/systemId` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.get(url, params);
@@ -101,13 +101,13 @@ class SystemRegisterApiClient {
         rights,
         allowedRedirectUrls
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor/${systemId}`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor/systemId` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         const body = {
@@ -125,7 +125,7 @@ class SystemRegisterApiClient {
             "allowedRedirectUrls": allowedRedirectUrls,
             "isVisible": false,
             "ClientId": [`${clientId}`]
-        }
+        };
         return http.put(url, JSON.stringify(body), params);
     }
 
@@ -135,13 +135,13 @@ class SystemRegisterApiClient {
     * @returns http.RefinedResponse
     */
     UpdateVendorAccessPackages(systemId, body) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor/systemId/accesspackages` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.put(url, JSON.stringify(body), params);
@@ -155,13 +155,13 @@ class SystemRegisterApiClient {
      * @returns http.RefinedResponse
      */
     UpdateRightsVendorSystemRegister(systemId, body) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor/${systemId}/rights`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor/systemId/rights` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.put(url, JSON.stringify(body), params);
@@ -174,13 +174,13 @@ class SystemRegisterApiClient {
      * @returns http.RefinedResponse
      */
     DeleteSystemSystemRegister(systemId) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor/${systemId}`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor/systemId` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.del(url, null, params);
@@ -193,13 +193,13 @@ class SystemRegisterApiClient {
      * @returns http.RefinedResponse
      */
     GetSystemRegisterRights(systemId) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/${systemId}/rights`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/${systemId}/rights`;
         const params = {
             tags: { name: `${this.FULL_PATH}/systemId/rights` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.get(url, params);
@@ -225,8 +225,8 @@ class SystemRegisterApiClient {
         allowedRedirectUrls = [],
         accessPackages = []
     ) {
-        const token = this.tokenGenerator.getToken()
-        const url = `${this.FULL_PATH}/vendor`
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor`;
         const body = {
             "Id": `${vendorId}_${name}`,
             "Vendor": {
@@ -243,16 +243,16 @@ class SystemRegisterApiClient {
             "allowedRedirectUrls": allowedRedirectUrls,
             "isVisible": false,
             "ClientId": [`${clientId}`]
-        }
+        };
         const params = {
             tags: { name: `${this.FULL_PATH}/vendor` },
             headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-type': 'application/json',
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
             },
         };
         return http.post(url, JSON.stringify(body), params);
     }
 }
 
-export { SystemRegisterApiClient }
+export { SystemRegisterApiClient };

@@ -1,24 +1,24 @@
-import http from 'k6/http';
+import http from "k6/http";
 import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
     uuidv4,
     randomItem
-} from '../../../../commonImports.js';
+} from "../../../../commonImports.js";
 import { parseCsvData } from "../../../../helpers.js";
-import { ConsentApiClient } from "../../../../clients/auth/index.js"
-import { RequestConsent, ApproveConsent } from "../../../building_blocks/auth/consent/index.js"
+import { ConsentApiClient } from "../../../../clients/auth/index.js";
+import { RequestConsent, ApproveConsent } from "../../../building_blocks/auth/consent/index.js";
 
 export function setup() {
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
     return parseCsvData(res.body);
 }
 
-let from = undefined
-let to = undefined
+let from = undefined;
+let to = undefined;
 
 function selectRandomFromToPair(data) {
-    console.log(from, to)
+    console.log(from, to);
     if (!from || !to) {
         from = randomItem(data);
         // Make sure to and from are not the same
@@ -26,7 +26,7 @@ function selectRandomFromToPair(data) {
             to = randomItem(data);
         } while (to === from);
     }
-    return [from, to]
+    return [from, to];
 }
 
 
@@ -35,8 +35,8 @@ let consenteeApiClient = undefined;
 
 function getClients(orgNo, userId, partyUuid) {
     if (consenterApiClient == undefined || consenteeApiClient == undefined) {
-        console.log("Configuring Clients")
-        console.log(`orgNo: ${orgNo} -- userId: ${userId}`)
+        console.log("Configuring Clients");
+        console.log(`orgNo: ${orgNo} -- userId: ${userId}`);
         // consentee
         const optionsConsentee = new Map();
         optionsConsentee.set("env", __ENV.ENVIRONMENT);
@@ -46,9 +46,9 @@ function getClients(orgNo, userId, partyUuid) {
         optionsConsentee.set("orgNo", orgNo);
 
         const tokenGeneratorConsentee
-            = new EnterpriseTokenGenerator(optionsConsentee)
+            = new EnterpriseTokenGenerator(optionsConsentee);
         consenteeApiClient
-            = new ConsentApiClient(__ENV.BASE_URL, tokenGeneratorConsentee)
+            = new ConsentApiClient(__ENV.BASE_URL, tokenGeneratorConsentee);
 
         // consenter
         const optionsConsenter = new Map();
@@ -59,20 +59,20 @@ function getClients(orgNo, userId, partyUuid) {
         optionsConsenter.set("partyuuid", partyUuid);
 
         const tokenGeneratorConsenter
-            = new PersonalTokenGenerator(optionsConsenter)
+            = new PersonalTokenGenerator(optionsConsenter);
         consenterApiClient
-            = new ConsentApiClient(__ENV.BASE_URL, tokenGeneratorConsenter)
+            = new ConsentApiClient(__ENV.BASE_URL, tokenGeneratorConsenter);
     }
-    return [consenteeApiClient, consenterApiClient]
+    return [consenteeApiClient, consenterApiClient];
 }
 
 
 export default function (data) {
     if (!from || !to) {
-        [from, to] = selectRandomFromToPair(data)
+        [from, to] = selectRandomFromToPair(data);
     }
 
-    let [consenteeApiClient, consenterApiClient] = getClients(to.orgNo, from.userId, from.partyUuid)
+    let [consenteeApiClient, consenterApiClient] = getClients(to.orgNo, from.userId, from.partyUuid);
 
     const id = uuidv4();
     const personIdentifierNo = `urn:altinn:person:identifier-no:${from.ssn}`;
@@ -90,7 +90,7 @@ export default function (data) {
             "inntektsaar": "2026"
         }
     }
-    ]
+    ];
     let response = RequestConsent(
         consenteeApiClient,
         id,
@@ -99,7 +99,7 @@ export default function (data) {
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         consentRights,
         "https://altinn.no"
-    )
+    );
 
-    response = ApproveConsent(consenterApiClient, id)
+    response = ApproveConsent(consenterApiClient, id);
 }
