@@ -144,8 +144,8 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: pdp-authorize-dagl-direct-delegation
-          id: yt01-pdp-authorize-dagl-direct-delegation-break
+          name: pdp-authorize-dagl-dd
+          id: yt01-pdp-authorize-dagl-dd-break
           env:
             - name: K6_SUMMARY_MODE
               value: full

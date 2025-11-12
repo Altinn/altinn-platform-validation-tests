@@ -200,8 +200,8 @@ test_definitions:
       - environment: yt01
         node_type: default
         test_run:
-          name: pdp-authorize-dagl-direct-delegation
-          id: yt01-pdp-authorize-dagl-direct-delegation
+          name: pdp-authorize-dagl-dd
+          id: yt01-pdp-authorize-dagl-dd
           env:
             - name: RANDOMIZE
               value: true
