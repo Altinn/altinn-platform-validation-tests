@@ -40,6 +40,7 @@ jobs:
         run: |
           # kubectl apply -f .dist/ -R
           kubectl apply --server-side -f .dist/at22-add-rm-revisorrole-for-client
+          kubectl apply --server-side -f .dist/at22-pdp-authorize-dagl-dd
           kubectl apply --server-side -f .dist/tt02-pdp-authorize-dagl-dd
           kubectl apply --server-side -f .dist/yt01-post-consent
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-org

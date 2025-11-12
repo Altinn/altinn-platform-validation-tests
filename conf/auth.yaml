@@ -219,6 +219,17 @@ test_definitions:
           secrets:
             - token-generator-creds
             - authorization-subscription-key-tt02
+      - environment: at22
+        node_type: default
+        test_run:
+          name: pdp-authorize-dagl-dd
+          id: at22-pdp-authorize-dagl-dd
+          env:
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+            - authorization-subscription-key-at22
 
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDeny.js
     contexts:
