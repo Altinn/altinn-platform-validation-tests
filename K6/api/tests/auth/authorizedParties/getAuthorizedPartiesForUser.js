@@ -1,7 +1,7 @@
 
 import { GetAuthorizedParties } from '../../../building_blocks/auth/authorizedParties/index.js';
 import { getClients } from './commonFunctions.js';
-import { getItemFromList, getOptions, parseCsvData } from '../../../../helpers.js';
+import { getItemFromList, getOptions } from '../../../../helpers.js';
 export { setup } from "./commonFunctions.js"
 
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? 'true') === 'true';
