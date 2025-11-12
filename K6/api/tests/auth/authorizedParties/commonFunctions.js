@@ -1,5 +1,7 @@
+import http from 'k6/http';
 import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js"
 import { EnterpriseTokenGenerator } from '../../../../commonImports.js';
+import { parseCsvData } from '../../../../helpers.js';
 
 let authorizedPartiesClient = undefined;
 
