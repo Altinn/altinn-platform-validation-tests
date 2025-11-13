@@ -1,4 +1,4 @@
-name: Auth - run k6 breakpoint tests
+name: Auth - run k6 smoketests tests
 
 on:
   workflow_dispatch:
@@ -93,7 +93,7 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/auth-break.yaml' }}" # No inputs when running as a cron
+          config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
 
       - name: Run smoketest for .dist/yt01-pdp-authorize-enduser-smoke
