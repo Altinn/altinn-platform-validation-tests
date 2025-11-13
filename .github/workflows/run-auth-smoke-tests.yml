@@ -1,0 +1,127 @@
+name: Auth - run k6 smoketests
+
+on:
+  workflow_dispatch:
+    inputs:
+      configFilePath:
+        description: "Configuration file for the test runs"
+        required: true
+        default: "conf/auth-smoke.yaml"
+
+      testName:
+        type: choice
+        description: "The test to run"
+        options:
+          - pdp-authorize-enduser
+          - pdp-authorize-dagl
+          - pdp-authorize-dagl-dd
+          - pdp-authorize-dagl-deny
+
+      vus:
+        description: "The number of VUs to run the test with"
+        required: false
+        type: number
+        default: 1
+
+      duration:
+        description: "Duration of the test"
+        required: false
+        default: 1m
+
+      commandLineArgs:
+        description: "Command line arguments to pass to the k6 run command"
+        required: false
+        default: ""
+
+  schedule:
+    - cron: "0 * * * *"
+    - cron: "10 * * * *"
+    - cron: "20 * * * *"
+    - cron: "30 * * * *"
+
+run-name: Auth - run smoketest for ${{ inputs.testName }} - ${{ inputs.vus }} VUs for ${{ inputs.duration }}
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  k6-smoketest:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup k8s client
+        uses: ./.github/actions/setup-k8s
+        with:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Process CLI args
+        shell: bash
+        run: |
+          VUS="${VUS:-}"
+          DURATION="${DURATION:-}"
+          COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
+
+          OUTPUT=""
+
+          if [ -n "$VUS" ]; then
+            OUTPUT="$OUTPUT --env VUS=VUS"
+          fi
+
+          if [ -n "$DURATION" ]; then
+            OUTPUT="$OUTPUT --env DURATION=$DURATION"
+          fi
+
+          if [ -n "$COMMAND_LINE_ARGS" ]; then
+            OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
+          fi
+
+          # Remove leading whitespace
+          OUTPUT=$(echo "$OUTPUT" | sed 's/^[[:space:]]*//')
+
+          # Output the final string
+          echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
+        env:
+          K6_VUS: ${{ inputs.vus }}
+          K6_DURATION: ${{ inputs.duration }}
+          COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
+
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
+          command_line_args: ${{ env.COMMAND_LINE_ARGS }}
+
+      - name: Run smoketest for .dist/yt01-pdp-authorize-enduser-smoke
+        if: github.event.schedule == '0 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-smoke
+
+      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-smoke
+        if: github.event.schedule == '10 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-smoke
+
+      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-dd-smoke
+        if: github.event.schedule == '20 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-dd-smoke
+  
+      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-deny-smoke
+        if: github.event.schedule == '30 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny-smoke
+
+      - name: Apply k8s manifests
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
