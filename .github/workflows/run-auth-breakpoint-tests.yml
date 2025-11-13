@@ -39,7 +39,7 @@ on:
       abortOnFail:
         description: "Should the test run stop as soon as the threshold fails"
         type: boolean
-        required: false
+        required: true
         default: false
 
       commandLineArgs:
