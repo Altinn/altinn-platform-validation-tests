@@ -1,4 +1,4 @@
-name: Auth - run k6 smoketests
+name: Auth - run k6 smoke tests
 
 on:
   workflow_dispatch:
