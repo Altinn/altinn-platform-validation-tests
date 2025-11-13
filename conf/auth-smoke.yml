@@ -3,17 +3,16 @@ test_definitions:
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js
     contexts:
       - environment: yt01
-        node_type: spot
+        node_type: default
+        test-type:
+          type: smoke
+          enabled: true
         test_run:
           name: pdp-authorize-enduser
           id: yt01-pdp-authorize-enduser-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
-            - name: K6_DURATION
-              value: "1m"
-            - name: K6_VUS
-              value: 1
             - name: RANDOMIZE
               value: true
           secrets:
@@ -23,17 +22,16 @@ test_definitions:
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDagl.js
     contexts:
       - environment: yt01
-        node_type: spot
+        node_type: default
+        test-type:
+          type: smoke
+          enabled: true
         test_run:
           name: pdp-authorize-dagl
           id: yt01-pdp-authorize-dagl-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
-            - name: K6_DURATION
-              value: "1m"
-            - name: K6_VUS
-              value: 1
             - name: RANDOMIZE
               value: true
           secrets:
@@ -43,17 +41,16 @@ test_definitions:
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDirectDelegation.js
     contexts:
       - environment: yt01
-        node_type: spot
+        node_type: default
+        test-type:
+          type: smoke
+          enabled: true
         test_run:
           name: pdp-authorize-dagl-dd
           id: yt01-pdp-authorize-dagl-dd-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
-            - name: K6_DURATION
-              value: "1m"
-            - name: K6_VUS
-              value: 1
             - name: RANDOMIZE
               value: true
           secrets:
@@ -63,17 +60,16 @@ test_definitions:
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDeny.js
     contexts:
       - environment: yt01
-        node_type: spot
+        node_type: default
+        test-type:
+          type: smoke
+          enabled: true
         test_run:
           name: pdp-authorize-dagl-deny
           id: yt01-pdp-authorize-dagl-deny-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
-            - name: K6_DURATION
-              value: "1m"
-            - name: K6_VUS
-              value: 1
             - name: RANDOMIZE
               value: true
           secrets:
