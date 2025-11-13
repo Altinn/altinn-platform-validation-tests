@@ -1,4 +1,4 @@
-name: Auth - run k6 smoketests tests
+name: Auth - run k6 smoketests
 
 on:
   workflow_dispatch:
@@ -125,6 +125,3 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
-          TESTRUN_NAME=$(jq -r '.metadata.name' .dist/yt01-${{ inputs.testName }}/testrun.json)
-          kubectl -n authentication wait --for=jsonpath='{.status.stage}'=started testrun $TESTRUN_NAME --timeout=90s
-          kubectl -n authentication logs -f --tail=-1 -l "k6-test=$TESTRUN_NAME,runner=true"
