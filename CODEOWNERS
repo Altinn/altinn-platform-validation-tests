@@ -1,4 +1,6 @@
 # Owners for the whole repo (will be added to all PRs)
-*       @Altinn/team-platform
+*       @Altinn/altinn-test-contributors
 
 # Add specific ownership for further needs here
+/.github @Altinn/team-platform
+/CODEOWNERS @Altinn/team-platform
