@@ -49,7 +49,7 @@ permissions:
 jobs:
   k6-smoketest:
     runs-on: ubuntu-latest
-    environment: test
+    environment: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
