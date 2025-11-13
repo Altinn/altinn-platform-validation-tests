@@ -28,6 +28,7 @@ on:
       target_vus:
         description: "The target VUs to reach"
         required: false
+        type: number
         default: 100
 
       duration:
@@ -37,12 +38,9 @@ on:
 
       abortOnFail:
         description: "Should the test run stop as soon as the threshold fails"
-        type: choice
+        type: boolean
         required: false
-        options:
-          - ""
-          - "true"
-          - "false"
+        default: false
 
       commandLineArgs:
         description: "Command line arguments to pass to the k6 run command"
