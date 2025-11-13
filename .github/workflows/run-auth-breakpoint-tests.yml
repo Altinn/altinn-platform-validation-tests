@@ -24,6 +24,7 @@ on:
           - pdp-authorize-dagl
           - pdp-authorize-dagl-dd
           - pdp-authorize-dagl-deny
+          - get-roles
 
       target_vus:
         description: "The target VUs to reach"
