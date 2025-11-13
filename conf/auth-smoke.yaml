@@ -4,7 +4,7 @@ test_definitions:
     contexts:
       - environment: yt01
         node_type: default
-        test-type:
+        test_type:
           type: smoke
           enabled: true
         test_run:
@@ -23,7 +23,7 @@ test_definitions:
     contexts:
       - environment: yt01
         node_type: default
-        test-type:
+        test_type:
           type: smoke
           enabled: true
         test_run:
@@ -42,7 +42,7 @@ test_definitions:
     contexts:
       - environment: yt01
         node_type: default
-        test-type:
+        test_type:
           type: smoke
           enabled: true
         test_run:
@@ -61,7 +61,7 @@ test_definitions:
     contexts:
       - environment: yt01
         node_type: default
-        test-type:
+        test_type:
           type: smoke
           enabled: true
         test_run:
