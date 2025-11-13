@@ -96,29 +96,29 @@ jobs:
           config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
 
-      - name: Run smoketest for .dist/yt01-pdp-authorize-enduser-smoke
+      - name: Run smoketest for .dist/yt01-pdp-authorize-enduser
         if: github.event.schedule == '0 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-smoke
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
 
-      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-smoke
+      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl
         if: github.event.schedule == '10 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-smoke
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
 
-      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-dd-smoke
+      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-dd
         if: github.event.schedule == '20 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-dd-smoke
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-dd
   
-      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-deny-smoke
+      - name: Run smoketest for .dist/yt01-pdp-authorize-dagl-deny
         if: github.event.schedule == '30 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny-smoke
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'
