@@ -244,3 +244,11 @@ test_definitions:
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/auth/roles/getRoles.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: get-roles
+          id: yt01-get-roles
