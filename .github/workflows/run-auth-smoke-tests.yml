@@ -88,8 +88,8 @@ jobs:
           # Output the final string
           echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
         env:
-          K6_VUS: ${{ inputs.vus }}
-          K6_DURATION: ${{ inputs.duration }}
+          VUS: ${{ inputs.vus }}
+          DURATION: ${{ inputs.duration }}
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: Generate k8s manifests
