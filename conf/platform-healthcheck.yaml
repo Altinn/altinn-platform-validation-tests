@@ -1,0 +1,21 @@
+namespace: platform
+test_definitions:
+  - test_file: K6/service_owner/healthcheck.js
+    contexts:
+      - environment: tt02
+        node_type: default
+        test_run:
+          name: so-healthcheck
+          id: tt02-so-healthcheck
+          env:
+            - name: ALTINN_CDN_URL
+              value: "https://altinncdn.no/orgs/altinn-orgs.json"
+
+      - environment: prod
+        node_type: default
+        test_run:
+          name: so-healthcheck
+          id: prod-so-healthcheck
+          env:
+            - name: ALTINN_CDN_URL
+              value: "https://altinncdn.no/orgs/altinn-orgs.json"
