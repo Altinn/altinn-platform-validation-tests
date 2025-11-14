@@ -5,4 +5,4 @@ export { ConsentApiClient } from "./consent.js";
 export { AuthorizedPartiesClient } from "./authorizedParties.js";
 export { PdpAuthorizeClient } from "./pdpAuthorize.js";
 export { ConnectionsApiClient } from "./connections.js";
-export { RolesApiClient } from "./accessmanagement/api/v1/meta/roles.js";
+export { RolesApiClient } from "./accessmanagement/api/v1/meta/info/roles.js";
