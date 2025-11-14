@@ -89,7 +89,3 @@ test_definitions:
           env:
             - name: K6_SUMMARY_MODE
               value: full
-            - name: K6_VUS
-              value: "1"
-            - name: K6_DURATION
-              value: 1m

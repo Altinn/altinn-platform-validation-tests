@@ -22,7 +22,7 @@ class RolesApiClient {
 
     /**
     * Get Roles
-    * Docs 
+    * Docs TODO: This link does not work, nothing yet {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Roles}
     * @param {string} type
     * @param {string} value
     * @param {string} label
