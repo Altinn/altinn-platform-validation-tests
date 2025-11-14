@@ -199,7 +199,7 @@ jobs:
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
 
       - name: Run Breakpoint for .dist/yt01-get-roles
-        if: github.event.schedule == '20 6 * * 2'
+        if: github.event.schedule == '40 4 * * 3'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-roles
