@@ -94,6 +94,9 @@ jobs:
 
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        env:
+          K6_VUS: ${{ inputs.vus }}
+          K6_DURATION: ${{ inputs.duration }}
         with:
           config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
@@ -131,8 +134,5 @@ jobs:
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'
         shell: bash
-        env:
-          K6_VUS: ${{ inputs.vus }}
-          K6_DURATION: ${{ inputs.duration }}
         run: |
           kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
