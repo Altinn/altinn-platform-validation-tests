@@ -8,7 +8,7 @@ export const options = getOptions([label]);
 
 export default function () {
     if (rolesApiClient == undefined) {
-      rolesApiClient = new RolesApiClient(__ENV.BASE_URL);
+        rolesApiClient = new RolesApiClient(__ENV.BASE_URL);
     }
     GetRoles(rolesApiClient, label);
 }
