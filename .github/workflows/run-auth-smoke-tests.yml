@@ -71,11 +71,11 @@ jobs:
           OUTPUT=""
 
           if [ -n "$VUS" ]; then
-            OUTPUT="$OUTPUT --env VUS=VUS"
+            OUTPUT="$OUTPUT --env K6_VUS=$VUS"
           fi
 
           if [ -n "$DURATION" ]; then
-            OUTPUT="$OUTPUT --env DURATION=$DURATION"
+            OUTPUT="$OUTPUT --env K6_DURATION=$DURATION"
           fi
 
           if [ -n "$COMMAND_LINE_ARGS" ]; then
@@ -94,9 +94,6 @@ jobs:
 
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
-        env:
-          K6_VUS: ${{ inputs.vus }}
-          K6_DURATION: ${{ inputs.duration }}
         with:
           config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
