@@ -24,6 +24,7 @@ on:
           - pdp-authorize-dagl
           - pdp-authorize-dagl-dd
           - pdp-authorize-dagl-deny
+          - get-roles
 
       target_vus:
         description: "The target VUs to reach"
@@ -60,6 +61,7 @@ on:
     - cron: "40 5 * * 2"
     - cron: "0 6 * * 2"
     - cron: "20 6 * * 2"
+    - cron: "40 4 * * 3" 
 
 run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -196,11 +198,14 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
 
+      - name: Run Breakpoint for .dist/yt01-get-roles
+        if: github.event.schedule == '40 4 * * 3'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-get-roles
+
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
-          TESTRUN_NAME=$(jq -r '.metadata.name' .dist/yt01-${{ inputs.testName }}/testrun.json)
-          kubectl -n authentication wait --for=jsonpath='{.status.stage}'=started testrun $TESTRUN_NAME --timeout=90s
-          kubectl -n authentication logs -f --tail=-1 -l "k6-test=$TESTRUN_NAME,runner=true"
