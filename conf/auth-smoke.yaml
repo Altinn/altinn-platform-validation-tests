@@ -89,3 +89,135 @@ test_definitions:
           env:
             - name: K6_SUMMARY_MODE
               value: full
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForOrg.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-org
+          id: yt01-get-authorized-parties-org-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForSystemUser.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-sysuser
+          id: yt01-get-authorized-parties-sysuser-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUser.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-user
+          id: yt01-get-authorized-parties-user-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-connections-to
+          id: yt01-get-connections-to-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/getConnectionsFrom.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-connections-from
+          id: yt01-get-connections-from-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/getAccessPackagesTo.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-access-packages-to
+          id: yt01-get-access-packages-to-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/getAccessPackagesFrom.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-access-packages-from
+          id: yt01-get-access-packages-from-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
