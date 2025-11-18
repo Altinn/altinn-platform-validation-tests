@@ -7,15 +7,23 @@ test_definitions:
         test_run:
           name: so-healthcheck
           id: tt02-so-healthcheck
-          env:
-            - name: ALTINN_CDN_URL
-              value: "https://altinncdn.no/orgs/altinn-orgs.json"
 
       - environment: prod
         node_type: default
         test_run:
           name: so-healthcheck
           id: prod-so-healthcheck
-          env:
-            - name: ALTINN_CDN_URL
-              value: "https://altinncdn.no/orgs/altinn-orgs.json"
+# Cannot add it yet, requires custom built image
+#  - test_file: K6/service_owner/ipv4_test.js
+#    contexts:
+#      - environment: tt02
+#        node_type: default
+#        test_run:
+#          name: so-ipv4-resolution
+#          id: tt02-so-ipv4-resolution
+
+#      - environment: prod
+#        node_type: default
+#        test_run:
+#          name: so-ipv4-resolution
+#          id: prod-so-ipv4-resolution
