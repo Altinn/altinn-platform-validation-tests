@@ -1,5 +1,6 @@
 import http from "k6/http";
 import { check } from "k6";
+import { AltinnCdnClient } from "./client.js";
 
 // https://grafana.com/docs/k6/latest/using-k6/k6-options/reference/#dns
 export const options = {
@@ -9,27 +10,17 @@ export const options = {
 };
 
 export function setup() {
-    const endpoints = [];
-    const url = __ENV.ALTINN_CDN_URL;
-    const res = http.get(url);
-    if (res.status == 200) {
-        const res_body = JSON.parse(res.body);
-
-        for (let [org, meta] of Object.entries(res_body["orgs"])) {
-            if (meta.environments.length > 0) {
-                for (let env of meta.environments) {
-                    if (env == "tt02" && __ENV.DEPLOY_ENV == "tt02") {
-                        endpoints.push([
-                            org, "tt02", `https://${org}.apps.tt02.altinn.no/kuberneteswrapper/api/v1/deployments`
-                        ]);
-                    } else if (env == "production" && __ENV.DEPLOY_ENV == "prod") {
-                        endpoints.push([
-                            org, "prod", `https://${org}.apps.altinn.no/kuberneteswrapper/api/v1/deployments`]
-                        );
-                    }
-                }
-            }
-        }
+    const client = new AltinnCdnClient();
+    const orgs = client.GetOrgs(__ENV.DEPLOY_ENV);
+    let endpoints = [];
+    for (let org of orgs) {
+        endpoints.push(
+            [
+                org,
+                __ENV.DEPLOY_ENV,
+                `${client.GetBaseUrlForOrgInEnvironment(org, __ENV.DEPLOY_ENV)}/kuberneteswrapper/api/v1/deployments`
+            ]
+        );
     }
     return endpoints;
 }

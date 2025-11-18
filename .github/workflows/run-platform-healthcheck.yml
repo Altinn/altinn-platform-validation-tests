@@ -38,5 +38,4 @@ jobs:
       - name: Apply k8s manifests
         shell: bash
         run: |
-          kubectl --context k6tests-cluster apply --server-side -f .dist/tt02-so-healthcheck
-          kubectl --context k6tests-cluster apply --server-side -f .dist/prod-so-healthcheck
+          kubectl --context k6tests-cluster apply --server-side -f .dist/ -R
