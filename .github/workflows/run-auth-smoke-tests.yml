@@ -17,7 +17,7 @@ on:
           - pdp-authorize-dagl-dd
           - pdp-authorize-dagl-deny
           - get-roles
-          - get_authorized-parties-org
+          - get-authorized-parties-org
           - get-authorized-parties-user
           - get-authorized-parties-sysuser
           - get-connections-to
