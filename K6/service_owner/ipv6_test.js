@@ -2,6 +2,7 @@ import { check } from "k6";
 import dns from "k6/x/dns";
 import { sleep } from "k6";
 import { AltinnCdnClient } from "./client.js";
+
 import { checkIp } from "../helpers.js";
 
 export function setup() {
@@ -24,9 +25,10 @@ export default async function (data) {
     console.log(`Querying ${data.length} domains`);
     for (let [org, deploy_env, domain] of data) {
         const tags = { "org": org, "domain": domain, "deploy_env": deploy_env };
-        const ipv4Results = await dns.resolve(domain, "A", "8.8.8.8:53");
-        for (let ip of ipv4Results) {
-            check(ip, { "Valid IPv4 address returned": (ip) => checkIp(ip), }, tags);
+        //const ipv4Results = await dns.resolve(domain, "A", "8.8.8.8:53");
+        const ipv6Results = await dns.resolve(domain, "AAAA", "[2606:4700:4700::1111]:53");
+        for (let ip of ipv6Results) {
+            check(ip, { "Valid IPv6 address returned": (ip) => checkIp(ip), }, tags);
         }
         sleep(1);
     }
