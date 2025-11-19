@@ -1,8 +1,9 @@
+import tls from "k6/x/tls";
 import { check } from "k6";
-import dns from "k6/x/dns";
+
 import { sleep } from "k6";
 import { AltinnCdnClient } from "./client.js";
-import { checkIp } from "../helpers.js";
+
 
 export function setup() {
     const client = new AltinnCdnClient();
@@ -19,15 +20,17 @@ export function setup() {
     }
     return domains;
 }
-
 export default async function (data) {
+
     console.log(`Querying ${data.length} domains`);
     for (let [org, deploy_env, domain] of data) {
         const tags = { "org": org, "domain": domain, "deploy_env": deploy_env };
-        const ipv4Results = await dns.resolve(domain, "A", "8.8.8.8:53");
-        for (let ip of ipv4Results) {
-            check(ip, { "Valid IPv4 address returned": (ip) => checkIp(ip), }, tags);
-        }
+        // TODO expose how long until cert is expired
+        const cert = await tls.getCertificate(domain);
+        check(cert, {
+            "certificate is not expired": (c) => c.expires > Date.now(),
+        }, tags);
+        console.log(`Certificate for ${domain} expires: ${new Date(cert.expires)}`);
         sleep(1);
     }
 }
