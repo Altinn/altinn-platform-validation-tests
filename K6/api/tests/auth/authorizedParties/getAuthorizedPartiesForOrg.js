@@ -4,6 +4,7 @@ export { setup } from "./commonFunctions.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? "true") === "true";
+const includeAccessPackages = (__ENV.INCLUDE_ACCESS_PACKAGES ?? "false") === "true";
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = "getAuthorizedPartiesForOrg";
@@ -18,6 +19,7 @@ export default function (data) {
         "urn:altinn:organization:identifier-no",
         party.orgNo,
         includeAltinn2,
+        includeAccessPackages,
         label
     );
 }

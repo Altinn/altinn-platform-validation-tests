@@ -4,6 +4,7 @@ import { GetAuthorizedParties } from "../../../building_blocks/auth/authorizedPa
 import { getClients } from "./commonFunctions.js";
 
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? "true") === "true";
+const includeAccessPackages = (__ENV.INCLUDE_ACCESS_PACKAGES ?? "false") === "true";
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = "getAuthorizedPartiesForSystemUser";
@@ -23,6 +24,7 @@ export default function (data) {
         "urn:altinn:systemuser:uuid",
         systemUser.systemuserUuid,
         includeAltinn2,
+        includeAccessPackages,
         label
     );
 }

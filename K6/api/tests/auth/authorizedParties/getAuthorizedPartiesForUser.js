@@ -5,7 +5,9 @@ import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.j
 export { setup } from "./commonFunctions.js";
 
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? "true") === "true";
+const includeAccessPackages = (__ENV.INCLUDE_ACCESS_PACKAGES ?? "false") === "true"; 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
 
 const label = "getAuthorizedPartiesForUser";
 
@@ -19,6 +21,7 @@ export default function (data) {
         "urn:altinn:person:identifier-no",
         userParty.ssn,
         includeAltinn2,
+        includeAccessPackages,
         label
     );
 }

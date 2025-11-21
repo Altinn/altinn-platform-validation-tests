@@ -9,8 +9,8 @@ import { AuthorizedPartiesClient } from "../../../../clients/auth/index.js";
  * @param {*} label
  */
 
-export function GetAuthorizedParties(authorizedPartiesClient, type, value, includeAltinn2, label = null) {
-    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, includeAltinn2, label);
+export function GetAuthorizedParties(authorizedPartiesClient, type, value, includeAltinn2, includeAccessPackages, label = null) {
+    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, includeAltinn2, includeAccessPackages, label);
 
     const succeed = check(res, {
         "GetAuthorizedParties - status code is 200": (r) => r.status === 200,
