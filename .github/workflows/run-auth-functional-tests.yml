@@ -46,6 +46,9 @@ jobs:
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-org
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-avgiverliste
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-dialogporten
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-dp-with-filter
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
           kubectl apply --server-side -f .dist/yt01-get-connections-to
           kubectl apply --server-side -f .dist/yt01-get-access-packages-to

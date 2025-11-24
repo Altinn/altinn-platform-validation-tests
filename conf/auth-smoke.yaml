@@ -150,6 +150,60 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-user-avgiverliste
+          id: yt01-get-authorized-parties-user-avgiverliste-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-user-dialogporten
+          id: yt01-get-authorized-parties-user-dialogporten-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-user-dp-with-filter
+          id: yt01-get-authorized-parties-user-dp-with-filter-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
   - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
     contexts:
       - environment: yt01

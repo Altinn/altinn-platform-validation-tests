@@ -21,7 +21,6 @@ export function GetAuthorizedParties(authorizedPartiesClient, type, value, query
         }
     });
     if (!succeed) {
-        console.log(type, value, partyFilter);
         console.log(res.status);
         console.log(res.body);
     }

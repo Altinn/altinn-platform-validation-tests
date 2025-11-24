@@ -121,6 +121,34 @@ test_definitions:
           id: yt01-get-authorized-parties-user
           secrets:
             - token-generator-creds
+  
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: get-authorized-parties-user-avgiverliste
+          id: yt01-get-authorized-parties-user-avgiverliste
+          secrets:
+            - token-generator-creds              
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: get-authorized-parties-user-dialogporten
+          id: yt01-get-authorized-parties-user-dialogporten
+          secrets:
+            - token-generator-creds  
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: get-authorized-parties-user-dp-with-filter
+          id: yt01-get-authorized-parties-user-dp-with-filter
+          secrets:
+            - token-generator-creds
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js
     contexts:
       - environment: yt01

@@ -16,6 +16,9 @@ on:
           - get-authorized-parties-org
           - get-authorized-parties-sysuser
           - get-authorized-parties-user
+          - get-authorized-parties-user-avgiverliste
+          - get-authorized-parties-user-dialogporten
+          - get-authorized-parties-user-dp-with-filter
           - pdp-authorize-enduser
           - get-connections-to
           - get-connections-from
@@ -61,7 +64,10 @@ on:
     - cron: "40 5 * * 2"
     - cron: "0 6 * * 2"
     - cron: "20 6 * * 2"
-    - cron: "40 4 * * 3" 
+    - cron: "40 4 * * 3"
+    - cron: "0 5 * * 3"
+    - cron: "20 5 * * 3"
+    - cron: "40 5 * * 3" 
 
 run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -203,6 +209,24 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-get-roles
+
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-avgiverliste
+        if: github.event.schedule == '0 5 * * 3'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-avgiverliste
+
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-dialogporten
+        if: github.event.schedule == '20 5 * * 3'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-dialogporten
+
+      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-dp-with-filter
+        if: github.event.schedule == '40 5 * * 3'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-dp-with-filter
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'

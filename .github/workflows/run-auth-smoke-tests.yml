@@ -19,6 +19,9 @@ on:
           - get-roles
           - get-authorized-parties-org
           - get-authorized-parties-user
+          - get-authorized-parties-user-avgiverliste
+          - get-authorized-parties-user-dialogporten
+          - get-authorized-parties-user-dp-with-filter
           - get-authorized-parties-sysuser
           - get-connections-to
           - get-connections-from
@@ -54,6 +57,9 @@ on:
     - cron: "36 * * * *"
     - cron: "40 * * * *"
     - cron: "44 * * * *"
+    - cron: "48 * * * *"
+    - cron: "52 * * * *"
+    - cron: "56 * * * *"
 
 run-name: Auth - run smoke test for ${{ inputs.testName }} - ${{ inputs.vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -189,3 +195,21 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
+
+      - name: Run smoke test for .dist/yt01-get-authorized-parties-user-avgiverliste
+        if: github.event.schedule == '48 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-avgiverliste-smoke
+
+      - name: Run smoke test for .dist/yt01-get-authorized-parties-user-dialogporten
+        if: github.event.schedule == '52 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-dialogporten-smoke
+
+      - name: Run smoke test for .dist/yt01-get-authorized-parties-user-dp-with-filter
+        if: github.event.schedule == '56 * * * *'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-dp-with-filter-smoke
