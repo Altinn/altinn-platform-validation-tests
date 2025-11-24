@@ -61,19 +61,19 @@ class AuthorizedPartiesClient {
     }
 
     #getPartyFilter(parties, length, ssn) {
-      const result = [{ type: "urn:altinn:person:identifier-no", value: ssn }];
-      for (const party of parties) {
-          if (result.length >= length) {
-              break;
-          }
-          const [type, id] = party.split(":");
-          if (type === "org") {
-              result.push({ type: "urn:altinn:organization:identifier-no", value: id });
-          } else if (type === "person") {
-              result.push({ type: "urn:altinn:person:identifier-no", value: id });
-          }
-      }
-      return result;
+        const result = [{ type: "urn:altinn:person:identifier-no", value: ssn }];
+        for (const party of parties) {
+            if (result.length >= length) {
+                break;
+            }
+            const [type, id] = party.split(":");
+            if (type === "org") {
+                result.push({ type: "urn:altinn:organization:identifier-no", value: id });
+            } else if (type === "person") {
+                result.push({ type: "urn:altinn:person:identifier-no", value: id });
+            }
+        }
+        return result;
     }
 }
 

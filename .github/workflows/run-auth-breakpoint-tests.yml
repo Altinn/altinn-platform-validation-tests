@@ -16,9 +16,9 @@ on:
           - get-authorized-parties-org
           - get-authorized-parties-sysuser
           - get-authorized-parties-user
-          - get-authorized-parties-user-al
-          - get-authorized-parties-user-dp
-          - get-authorized-parties-user-wf
+          - get-auth-parties-user-al
+          - get-auth-parties-user-dp
+          - get-auth-parties-user-dp-wf
           - pdp-authorize-enduser
           - get-connections-to
           - get-connections-from
@@ -67,7 +67,7 @@ on:
     - cron: "40 4 * * 3"
     - cron: "0 5 * * 3"
     - cron: "20 5 * * 3"
-    - cron: "40 5 * * 3" 
+    - cron: "40 5 * * 3"
 
 run-name: Auth - run breakpoint for ${{ inputs.testName }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
@@ -77,7 +77,7 @@ permissions:
 jobs:
   k6-breakpoint:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: test
     steps:
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
@@ -173,7 +173,7 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-dd
-  
+
       - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny
         if: github.event.schedule == '0 5 * * 2'
         shell: bash
@@ -210,23 +210,23 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-get-roles
 
-      - name: Run Breakpoint for .dist/yt01-auth-parties-al-break
+      - name: Run Breakpoint for .dist/yt01-get-auth-parties-user-al
         if: github.event.schedule == '0 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-auth-parties-al-break
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-al
 
-      - name: Run Breakpoint for .dist/yt01-auth-parties-dp-break
+      - name: Run Breakpoint for .dist/yt01-get-auth-parties-user-dp
         if: github.event.schedule == '20 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-break
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp
 
-      - name: Run Breakpoint for .dist/yt01-auth-parties-dp-wf-break
+      - name: Run Breakpoint for .dist/yt01-get-auth-parties-user-dp-wf
         if: github.event.schedule == '40 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-wf-break
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp-wf
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'
