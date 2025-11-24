@@ -211,23 +211,23 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-get-roles
 
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-avgiverliste
+      - name: Run Breakpoint for .dist/yt01-auth-parties-al-break
         if: github.event.schedule == '0 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-avgiverliste
+          kubectl apply --server-side -f .dist/yt01-auth-parties-al-break
 
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-dialogporten
+      - name: Run Breakpoint for .dist/yt01-auth-parties-dp-break
         if: github.event.schedule == '20 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-dialogporten
+          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-break
 
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-dp-with-filter
+      - name: Run Breakpoint for .dist/yt01-auth-parties-dp-wf-break
         if: github.event.schedule == '40 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-dp-with-filter
+          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-wf-break
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'

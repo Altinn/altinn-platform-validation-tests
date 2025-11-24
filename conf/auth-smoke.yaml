@@ -159,7 +159,7 @@ test_definitions:
           enabled: true
         test_run:
           name: get-authorized-parties-user-avgiverliste
-          id: yt01-get-authorized-parties-user-avgiverliste-smoke
+          id: yt01-auth-parties-al-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -177,7 +177,7 @@ test_definitions:
           enabled: true
         test_run:
           name: get-authorized-parties-user-dialogporten
-          id: yt01-get-authorized-parties-user-dialogporten-smoke
+          id: yt01-auth-parties-dp-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -195,7 +195,7 @@ test_definitions:
           enabled: true
         test_run:
           name: get-authorized-parties-user-dp-with-filter
-          id: yt01-get-authorized-parties-user-dp-with-filter-smoke
+          id: yt01-auth-parties-dp-wfilter-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full

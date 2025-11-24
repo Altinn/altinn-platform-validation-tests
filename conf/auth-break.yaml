@@ -143,7 +143,7 @@ test_definitions:
           enabled: true
         test_run:
           name: get-authorized-parties-user-dp-with-filter
-          id: yt01-get-authorized-parties-user-dp-with-filter-break
+          id: yt01-auth-parties-dp-wf-break
           env:
             - name: K6_SUMMARY_MODE
               value: full

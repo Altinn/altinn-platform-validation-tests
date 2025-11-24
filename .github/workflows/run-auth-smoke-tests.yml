@@ -197,20 +197,20 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
 
-      - name: Run smoke test for .dist/yt01-get-authorized-parties-user-avgiverliste
+      - name: Run smoke test for .dist/yt01-auth-parties-al-smoke
         if: github.event.schedule == '48 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-avgiverliste-smoke
+          kubectl apply --server-side -f .dist/yt01-auth-parties-al-smoke
 
-      - name: Run smoke test for .dist/yt01-get-authorized-parties-user-dialogporten
+      - name: Run smoke test for .dist/yt01-auth-parties-dp-smoke
         if: github.event.schedule == '52 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-dialogporten-smoke
+          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-smoke
 
-      - name: Run smoke test for .dist/yt01-get-authorized-parties-user-dp-with-filter
+      - name: Run smoke test for .dist/yt01-auth-parties-dp-wfilter-smoke
         if: github.event.schedule == '56 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user-dp-with-filter-smoke
+          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-wfilter-smoke
