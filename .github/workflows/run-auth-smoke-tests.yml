@@ -111,6 +111,7 @@ jobs:
           VUS: ${{ inputs.vus }}
           DURATION: ${{ inputs.duration }}
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
+          BRANCH: ${{ github.ref_name }}
 
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
