@@ -89,7 +89,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-        
+
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
     contexts:
       - environment: yt01
@@ -98,8 +98,8 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user-al
-          id: yt01-auth-parties-al-break
+          name: get-auth-parties-user-al
+          id: yt01-get-auth-parties-user-al-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -111,7 +111,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-                    
+
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
     contexts:
       - environment: yt01
@@ -120,8 +120,8 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user-dp
-          id: yt01-auth-parties-dp-break
+          name: get-auth-parties-user-dp
+          id: yt01-get-auth-parties-user-dp-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -133,7 +133,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-                    
+
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
     contexts:
       - environment: yt01
@@ -142,8 +142,8 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user-wf
-          id: yt01-auth-parties-dp-wf-break
+          name: get-auth-parties-user-dp-wf
+          id: yt01-get-auth-parties-user-dp-wf-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -247,7 +247,7 @@ test_definitions:
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
-    
+
   - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
     contexts:
       - environment: yt01
@@ -269,7 +269,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-                
+
   - test_file: K6/api/tests/auth/connections/getConnectionsFrom.js
     contexts:
       - environment: yt01
@@ -291,7 +291,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-    
+
   - test_file: K6/api/tests/auth/connections/getAccessPackagesTo.js
     contexts:
       - environment: yt01
@@ -313,7 +313,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-                
+
   - test_file: K6/api/tests/auth/connections/getAccessPackagesFrom.js
     contexts:
       - environment: yt01
@@ -335,7 +335,7 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-                         
+
   - test_file: K6/api/tests/auth/roles/getRoles.js
     contexts:
       - environment: yt01

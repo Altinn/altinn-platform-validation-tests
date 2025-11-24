@@ -158,8 +158,38 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-al
-          id: yt01-auth-parties-al-smoke
+          name: get-auth-parties-user-al
+          id: yt01-get-auth-parties-user-al-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+      - environment: at22
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-al
+          id: at22-get-auth-parties-user-al-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+      - environment: tt02
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-al
+          id: tt02-get-auth-parties-user-al-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -176,8 +206,8 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-dp
-          id: yt01-auth-parties-dp-smoke
+          name: get-auth-parties-user-dp
+          id: yt01-get-auth-parties-user-dp-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -194,8 +224,8 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-wf
-          id: yt01-auth-parties-dp-wfilter-smoke
+          name: get-auth-parties-user-dp-wf
+          id: yt01-get-auth-parties-user-dp-wf-smoke
           env:
             - name: K6_SUMMARY_MODE
               value: full

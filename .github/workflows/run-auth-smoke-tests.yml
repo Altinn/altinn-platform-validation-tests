@@ -19,9 +19,9 @@ on:
           - get-roles
           - get-authorized-parties-org
           - get-authorized-parties-user
-          - get-authorized-parties-user-al
-          - get-authorized-parties-user-dp
-          - get-authorized-parties-user-wf
+          - get-auth-parties-user-al
+          - get-auth-parties-user-dp
+          - get-auth-parties-user-dp-wf
           - get-authorized-parties-sysuser
           - get-connections-to
           - get-connections-from
@@ -69,7 +69,7 @@ permissions:
 jobs:
   k6-smoketest:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: test
     steps:
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
@@ -190,23 +190,23 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
 
-      - name: Run smoke test for .dist/yt01-auth-parties-al-smoke
+      - name: Run smoke test for .dist/yt01-get-auth-parties-user-al
         if: github.event.schedule == '48 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-auth-parties-al-smoke
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-al
 
-      - name: Run smoke test for .dist/yt01-auth-parties-dp-smoke
+      - name: Run smoke test for .dist/yt01-get-auth-parties-user-dp
         if: github.event.schedule == '52 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-smoke
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp
 
-      - name: Run smoke test for .dist/yt01-auth-parties-dp-wfilter-smoke
+      - name: Run smoke test for .dist/yt01-get-auth-parties-user-dp-wf
         if: github.event.schedule == '56 * * * *'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-auth-parties-dp-wfilter-smoke
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp-wf
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'

@@ -121,32 +121,74 @@ test_definitions:
           id: yt01-get-authorized-parties-user
           secrets:
             - token-generator-creds
-  
+
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
     contexts:
       - environment: yt01
         node_type: default
         test_run:
-          name: get-authorized-parties-user-avgiverliste
-          id: yt01-auth-parties-avgiverliste
+          name: get-auth-parties-user-al
+          id: yt01-get-auth-parties-user-al
           secrets:
-            - token-generator-creds              
+            - token-generator-creds
+      - environment: at22
+        node_type: default
+        test_run:
+          name: get-auth-parties-user-al
+          id: at22-get-auth-parties-user-al
+          secrets:
+            - token-generator-creds
+      - environment: tt02
+        node_type: default
+        test_run:
+          name: get-auth-parties-user-al
+          id: tt02-get-auth-parties-user-al
+          secrets:
+            - token-generator-creds
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
     contexts:
       - environment: yt01
         node_type: default
         test_run:
-          name: get-authorized-parties-user-dialogporten
-          id: yt01-auth-parties-dialogporten
+          name: get-auth-parties-user-dp
+          id: yt01-get-auth-parties-user-dp
           secrets:
-            - token-generator-creds  
+            - token-generator-creds
+      - environment: at22
+        node_type: default
+        test_run:
+          name: get-auth-parties-user-dp
+          id: at22-get-auth-parties-user-dp
+          secrets:
+            - token-generator-creds
+      - environment: tt02
+        node_type: default
+        test_run:
+          name: get-auth-parties-user-dp
+          id: tt02-get-auth-parties-user-dp
+          secrets:
+            - token-generator-creds
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
     contexts:
       - environment: yt01
         node_type: default
         test_run:
-          name: get-authorized-parties-user-dp-with-filter
-          id: yt01-auth-parties-dp-wf
+          name: get-auth-parties-user-dp-wf
+          id: yt01-get-auth-parties-user-dp-wf
+          secrets:
+            - token-generator-creds
+      - environment: at22
+        node_type: default
+        test_run:
+          name: get-auth-parties-user-dp-wf
+          id: at22-get-auth-parties-user-dp-wf
+          secrets:
+            - token-generator-creds
+      - environment: tt02
+        node_type: default
+        test_run:
+          name: get-auth-parties-user-dp-wf
+          id: tt02-get-auth-parties-user-dp-wf
           secrets:
             - token-generator-creds
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js

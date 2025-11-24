@@ -15,7 +15,7 @@ export default function (data) {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(data, randomize);
     const queryParams = {
-      includeAltinn2: includeAltinn2
+        includeAltinn2: includeAltinn2
     };
     if (includeAltinn2) {
         queryParams.includeAltinn2 = "true";
