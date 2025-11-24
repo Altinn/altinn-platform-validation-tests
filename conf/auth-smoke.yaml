@@ -158,7 +158,7 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-avgiverliste
+          name: get-authorized-parties-user-al
           id: yt01-auth-parties-al-smoke
           env:
             - name: K6_SUMMARY_MODE
@@ -176,7 +176,7 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-dialogporten
+          name: get-authorized-parties-user-dp
           id: yt01-auth-parties-dp-smoke
           env:
             - name: K6_SUMMARY_MODE
@@ -194,7 +194,7 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-dp-with-filter
+          name: get-authorized-parties-user-wf
           id: yt01-auth-parties-dp-wfilter-smoke
           env:
             - name: K6_SUMMARY_MODE

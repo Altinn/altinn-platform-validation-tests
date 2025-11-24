@@ -19,9 +19,9 @@ on:
           - get-roles
           - get-authorized-parties-org
           - get-authorized-parties-user
-          - get-authorized-parties-user-avgiverliste
-          - get-authorized-parties-user-dialogporten
-          - get-authorized-parties-user-dp-with-filter
+          - get-authorized-parties-user-al
+          - get-authorized-parties-user-dp
+          - get-authorized-parties-user-wf
           - get-authorized-parties-sysuser
           - get-connections-to
           - get-connections-from
@@ -191,12 +191,6 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-get-access-packages-from
 
-      - name: Apply k8s manifests
-        if: github.event_name == 'workflow_dispatch'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
-
       - name: Run smoke test for .dist/yt01-auth-parties-al-smoke
         if: github.event.schedule == '48 * * * *'
         shell: bash
@@ -214,3 +208,9 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/yt01-auth-parties-dp-wfilter-smoke
+
+      - name: Apply k8s manifests
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}

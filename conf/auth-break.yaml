@@ -98,8 +98,8 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user-avgiverliste
-          id: yt01-get-authorized-parties-user-avgiverliste-break
+          name: get-authorized-parties-user-al
+          id: yt01-auth-parties-al-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -120,8 +120,8 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user-dialogporten
-          id: yt01-get-authorized-parties-user-dialogporten-break
+          name: get-authorized-parties-user-dp
+          id: yt01-auth-parties-dp-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -142,7 +142,7 @@ test_definitions:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user-dp-with-filter
+          name: get-authorized-parties-user-wf
           id: yt01-auth-parties-dp-wf-break
           env:
             - name: K6_SUMMARY_MODE

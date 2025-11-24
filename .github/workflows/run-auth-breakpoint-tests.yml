@@ -16,9 +16,9 @@ on:
           - get-authorized-parties-org
           - get-authorized-parties-sysuser
           - get-authorized-parties-user
-          - get-authorized-parties-user-avgiverliste
-          - get-authorized-parties-user-dialogporten
-          - get-authorized-parties-user-dp-with-filter
+          - get-authorized-parties-user-al
+          - get-authorized-parties-user-dp
+          - get-authorized-parties-user-wf
           - pdp-authorize-enduser
           - get-connections-to
           - get-connections-from
