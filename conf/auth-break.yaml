@@ -90,6 +90,31 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+        
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          name: get-authorized-parties-user-avgiverliste
+          id: yt01-get-authorized-parties-user-avgiverliste-break
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
   - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js
     contexts:
       - environment: yt01

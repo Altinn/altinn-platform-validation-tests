@@ -33,7 +33,7 @@ class AuthorizedPartiesClient {
     * @param {string} label
     * @returns http.RefinedResponse
     */
-    GetAuthorizedParties(type, value, includeAltinn2, label = null) {
+    GetAuthorizedParties(type, value, queryParams, label = null, partyFilter = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let nameTag = label ? label : url.toString();
@@ -44,14 +44,17 @@ class AuthorizedPartiesClient {
                 "Content-type": "application/json",
             },
         };
-        if (includeAltinn2) {
-            url.searchParams.append("includeAltinn2", "true");
+        for (const key in queryParams) {
+            url.searchParams.append(key, queryParams[key]);
         }
 
         const body = {
             "type": type,
             "value": value
         };
+        if (partyFilter !== null) {
+            body["partyFilter"] = partyFilter;
+        }
         return http.post(url.toString(), JSON.stringify(body), params);
     }
 }
