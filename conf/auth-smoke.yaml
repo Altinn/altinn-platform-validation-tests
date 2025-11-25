@@ -150,6 +150,90 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-al
+          id: yt01-get-auth-parties-user-al-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+      - environment: at22
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-al
+          id: at22-get-auth-parties-user-al-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+      - environment: tt02
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-al
+          id: tt02-get-auth-parties-user-al-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-dp
+          id: yt01-get-auth-parties-user-dp-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-auth-parties-user-dp-wf
+          id: yt01-get-auth-parties-user-dp-wf-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
   - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
     contexts:
       - environment: yt01

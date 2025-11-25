@@ -46,6 +46,15 @@ jobs:
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-org
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user
+          kubectl apply --server-side -f .dist/at22-get-auth-parties-user-al
+          kubectl apply --server-side -f .dist/tt02-get-auth-parties-user-al
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-al
+          kubectl apply --server-side -f .dist/at22-get-auth-parties-user-dp
+          kubectl apply --server-side -f .dist/tt02-get-auth-parties-user-dp
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp
+          kubectl apply --server-side -f .dist/at22-get-auth-parties-user-dp-wf
+          kubectl apply --server-side -f .dist/tt02-get-auth-parties-user-dp-wf
+          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp-wf
           kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
           kubectl apply --server-side -f .dist/yt01-get-connections-to
           kubectl apply --server-side -f .dist/yt01-get-access-packages-to
