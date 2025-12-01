@@ -38,4 +38,4 @@ jobs:
       - name: Apply k8s manifests
         shell: bash
         run: |
-          kubectl apply -f .dist/ -R
+          kubectl apply --server-side -f .dist/ -R
