@@ -1,4 +1,5 @@
 import http from "k6/http";
+import { URL } from "../../commonImports.js";
 
 class ResourceRegistryApiClient {
     /**
@@ -33,9 +34,9 @@ class ResourceRegistryApiClient {
     GetUpdatedResources(since, limit, label = null) {
         const url = new URL(`${this.FULL_PATH}`);
         url.searchParams.append("since", since);
-        url.searchParams.append("limit", limit.toString());
-        
-        let nameTag = label ? label : url.toString();
+        url.searchParams.append("limit", limit);
+
+        let nameTag = label ? label : url.pathname;
         const params = {
             tags: { name: nameTag },
             headers: {
@@ -47,5 +48,3 @@ class ResourceRegistryApiClient {
 }
 
 export { ResourceRegistryApiClient };
-
-
