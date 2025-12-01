@@ -1,0 +1,41 @@
+name: Auth - run k6 healthcheck tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      configFilePath:
+        description: "Configuration file for the test runs"
+        required: true
+        default: "conf/auth-healthcheck.yaml"
+
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  k6-functional:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+      - name: Setup k8s client
+        uses: ./.github/actions/setup-k8s
+        with:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: "${{ inputs.configFilePath || 'conf/auth-healthcheck.yaml' }}" # No inputs when running as a cron
+
+      - name: Apply k8s manifests
+        shell: bash
+        run: |
+          kubectl apply -f .dist/ -R
