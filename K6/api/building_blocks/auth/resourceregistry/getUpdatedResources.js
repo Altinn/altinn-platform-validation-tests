@@ -9,20 +9,12 @@ import { ResourceRegistryApiClient } from "../../../../clients/auth/index.js";
  * @param {string|null} label Label for the request
  * @returns {Object} Parsed JSON response
  */
-export function GetUpdatedResources(
-  resourceRegistryClient,
-  since,
-  limit,
-  label = null
-) {
+export function GetUpdatedResources(resourceRegistryClient, since, limit) {
   const res = resourceRegistryClient.GetUpdatedResources(since, limit, label);
 
   let resBody = null;
-  try {
-    resBody = res.json();
-  } catch (e) {
-    // Will be caught by status code check
-  }
+
+  resBody = res.json();
 
   const expectedBaseUrl = resourceRegistryClient.baseUrl + "/resourceregistry/";
 
