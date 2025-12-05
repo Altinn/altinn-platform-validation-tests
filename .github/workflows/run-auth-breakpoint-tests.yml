@@ -19,7 +19,7 @@ on:
           - yt01-get-authorized-parties-for-user-avgiver-liste-break
           - yt01-get-authorized-parties-for-user-break
           - yt01-get-authorized-parties-for-user-dialogporten-break
-          - yt01-get-authorized-parties-for-user-dialogporten-with-filter-break
+          - yt01-get-authorized-parties-for-user-dp-with-filter-break
           - yt01-get-connections-from-break
           - yt01-get-connections-to-break
           - yt01-get-roles-break
@@ -222,11 +222,11 @@ jobs:
         run: |
           kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dialogporten-break
 
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dialogporten-with-filter-break
+      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
         if: github.event.schedule == '40 5 * * 3'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dialogporten-with-filter-break
+          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'
