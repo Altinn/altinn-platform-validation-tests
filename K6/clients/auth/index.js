@@ -1,9 +1,9 @@
-export { SystemRegisterApiClient } from "./systemRegister.js";
-export { SystemUserRequestApiClient } from "./systemUserRequest.js";
+export { SystemRegisterApiClient } from "./system-register.js";
+export { SystemUserRequestApiClient } from "./system-user-request.js";
 export { RegisterApiClient } from "./register.js";
 export { ConsentApiClient } from "./consent.js";
-export { AuthorizedPartiesClient } from "./authorizedParties.js";
-export { PdpAuthorizeClient } from "./pdpAuthorize.js";
+export { AuthorizedPartiesClient } from "./authorized-parties.js";
+export { PdpAuthorizeClient } from "./pdp-authorize.js";
 export { ConnectionsApiClient } from "./connections.js";
 export { RolesApiClient } from "./roles.js";
-export { ResourceRegistryApiClient } from "./resourceregistry.js";
+export { ResourceRegistryApiClient } from "./resource-registry.js";

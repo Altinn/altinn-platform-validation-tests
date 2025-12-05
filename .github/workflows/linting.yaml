@@ -26,3 +26,34 @@ jobs:
 
       - name: Lint Code
         run: npm run lint
+
+      - name: Ensure javascript files are Kebab Case
+        shell: bash
+        run: |
+          ./validate.sh
+
+  validate_generation:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config_file:
+          [
+            conf/auth-break.yaml,
+            conf/auth-healthcheck.yaml,
+            conf/auth-smoke.yaml,
+            conf/auth.yaml,
+            conf/core-perf.yaml,
+            conf/core.yaml,
+            conf/dialogporten-break.yaml,
+            conf/dialogporten.yaml,
+            conf/platform-healthcheck.yaml,
+          ]
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+      - uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: ${{ matrix.config_file }}
+      - shell: bash
+        run: |
+          tree .dist/

@@ -1,6 +1,6 @@
 import { sleep, check } from "k6";
 import exec from "k6/execution";
-import { papaparse, randomItem } from "./commonImports.js";
+import { papaparse, randomItem } from "./common-imports.js";
 
 /**
  * Retry a function until it succeeds or all retries fail.

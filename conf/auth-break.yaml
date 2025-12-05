@@ -1,15 +1,12 @@
 namespace: authentication
 test_definitions:
-  - test_file: K6/api/tests/auth/consent/postConsent.js
+  - test_file: K6/api/tests/auth/consent/post-consent.js
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: post-consent
-          id: yt01-post-consent-break
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
@@ -18,16 +15,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForOrg.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-org.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-org
-          id: yt01-get-authorized-parties-org-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -42,16 +36,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForSystemUser.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-system-user.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-sysuser
-          id: yt01-get-authorized-parties-sysuser-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -66,16 +57,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUser.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-authorized-parties-user
-          id: yt01-get-authorized-parties-user-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -90,16 +78,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-auth-parties-user-al
-          id: yt01-get-auth-parties-user-al-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -112,16 +97,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-auth-parties-user-dp
-          id: yt01-get-auth-parties-user-dp-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -134,16 +116,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten-with-filter.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-auth-parties-user-dp-wf
-          id: yt01-get-auth-parties-user-dp-wf-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -156,16 +135,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-enduser.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: pdp-authorize-enduser
-          id: yt01-pdp-authorize-enduser-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -179,16 +155,13 @@ test_definitions:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDagl.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: pdp-authorize-dagl
-          id: yt01-pdp-authorize-dagl-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -202,16 +175,13 @@ test_definitions:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDirectDelegation.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-direct-delegation.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: pdp-authorize-dagl-dd
-          id: yt01-pdp-authorize-dagl-dd-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -225,16 +195,13 @@ test_definitions:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDeny.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-deny.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: pdp-authorize-dagl-deny
-          id: yt01-pdp-authorize-dagl-deny-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -248,16 +215,13 @@ test_definitions:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
+  - test_file: K6/api/tests/auth/connections/get-connections-to.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-connections-to
-          id: yt01-get-connections-to-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -270,16 +234,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getConnectionsFrom.js
+  - test_file: K6/api/tests/auth/connections/get-connections-from.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-connections-from
-          id: yt01-get-connections-from-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -292,16 +253,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getAccessPackagesTo.js
+  - test_file: K6/api/tests/auth/connections/get-access-packages-to.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-access-packages-to
-          id: yt01-get-access-packages-to-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -314,16 +272,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getAccessPackagesFrom.js
+  - test_file: K6/api/tests/auth/connections/get-access-packages-from.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-access-packages-from
-          id: yt01-get-access-packages-from-break
           env:
             - name: K6_SUMMARY_MODE
               value: full
@@ -336,16 +291,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/roles/getRoles.js
+  - test_file: K6/api/tests/auth/roles/get-roles.js
     contexts:
       - environment: yt01
-        node_type: spot
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: get-roles
-          id: yt01-get-roles-break
           env:
             - name: K6_SUMMARY_MODE
               value: full

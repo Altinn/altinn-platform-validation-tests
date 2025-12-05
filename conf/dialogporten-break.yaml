@@ -1,15 +1,12 @@
 namespace: dialogporten
 test_definitions:
-  - test_file: K6/api/tests/dialogporten/serviceowner/serviceOwnerShouldSendNotification.js
+  - test_file: K6/api/tests/dialogporten/serviceowner/service-owner-should-send-notification.js
     contexts:
       - environment: yt01
-        node_type: spot8cpu28gbmem
         test_type:
           type: breakpoint
           enabled: true
         test_run:
-          name: so-should-send-notification
-          id: yt01-so-should-send-notification-break
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"

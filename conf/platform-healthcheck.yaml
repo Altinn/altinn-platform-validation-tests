@@ -1,43 +1,16 @@
 namespace: platform
 test_definitions:
-  - test_file: K6/service_owner/healthcheck.js
+  - test_file: K6/service_owner/so-healthcheck.js
     contexts:
       - environment: tt02
-        node_type: default
-        test_run:
-          name: so-healthcheck
-          id: tt02-so-healthcheck
-
       - environment: prod
-        node_type: default
-        test_run:
-          name: so-healthcheck
-          id: prod-so-healthcheck
 
-  - test_file: K6/service_owner/ipv4_test.js
+  - test_file: K6/service_owner/so-ipv4-test.js
     contexts:
       - environment: tt02
-        node_type: default
-        test_run:
-          name: so-ipv4-resolution
-          id: tt02-so-ipv4-resolution
-
       - environment: prod
-        node_type: default
-        test_run:
-          name: so-ipv4-resolution
-          id: prod-so-ipv4-resolution
 
-  - test_file: K6/service_owner/tls_valid.js
+  - test_file: K6/service_owner/so-tls-valid.js
     contexts:
       - environment: tt02
-        node_type: default
-        test_run:
-          name: so-valid-tls-cert
-          id: tt02-so-valid-tls-cert
-
       - environment: prod
-        node_type: default
-        test_run:
-          name: so-valid-tls-cert
-          id: prod-so-valid-tls-cert

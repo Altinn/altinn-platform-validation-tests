@@ -1,34 +1,10 @@
 namespace: authentication
 test_definitions:
-  - test_file: K6/api/tests/auth/resourceregistry/getUpdatedResources.js
+  - test_file: K6/api/tests/auth/resource-registry/get-updated-resources.js
     contexts:
       - environment: at22
-        node_type: default
-        test_run:
-          name: get-updated-resources
-          id: at22-get-updated-resources
       - environment: at23
-        node_type: default
-        test_run:
-          name: get-updated-resources
-          id: at23-get-updated-resources
       - environment: at24
-        node_type: default
-        test_run:
-          name: get-updated-resources
-          id: at24-get-updated-resources
       - environment: tt02
-        node_type: default
-        test_run:
-          name: get-updated-resources
-          id: tt02-get-updated-resources
       - environment: yt01
-        node_type: default
-        test_run:
-          name: get-updated-resources
-          id: yt01-get-updated-resources
       - environment: prod
-        node_type: default
-        test_run:
-          name: get-updated-resources
-          id: prod-get-updated-resources
