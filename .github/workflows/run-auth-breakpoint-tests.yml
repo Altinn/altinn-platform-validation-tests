@@ -232,4 +232,4 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
+          kubectl apply --server-side -f .dist/yt01-${{ inputs.testid }}
