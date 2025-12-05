@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { uuidv4 } from "../../../commonImports.js";
+import { uuidv4 } from "../../../common-imports.js";
 
 class ServiceOwnerApiClient {
     /**
@@ -11,7 +11,7 @@ class ServiceOwnerApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
+        /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
         this.tokenGenerator = tokenGenerator;
