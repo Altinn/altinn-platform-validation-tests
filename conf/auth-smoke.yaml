@@ -119,7 +119,7 @@ test_definitions:
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten-with-filter.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
