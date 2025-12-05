@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/linting.yaml
       - K6/**
+      - conf
 
 permissions:
   contents: read
