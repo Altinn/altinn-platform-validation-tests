@@ -121,7 +121,15 @@ test_definitions:
           id: yt01-get-authorized-parties-user
           secrets:
             - token-generator-creds
-
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserIncludePartiesViaKeyRoles.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_run:
+          name: get-authorized-parties-user-ipvkr
+          id: yt01-get-authorized-parties-user-ipvkr
+          secrets:
+            - token-generator-creds
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
     contexts:
       - environment: yt01

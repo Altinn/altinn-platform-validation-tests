@@ -150,6 +150,26 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserIncludePartiesViaKeyRoles.js
+    contexts:
+      - environment: yt01
+        node_type: default
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          name: get-authorized-parties-user-ipvkr
+          id: yt01-get-authorized-parties-user-ipvkr-smoke
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
   - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
     contexts:
       - environment: yt01
