@@ -8,25 +8,25 @@ on:
         required: true
         default: "conf/auth-smoke.yaml"
 
-      testName:
+      testId:
         type: choice
         description: "The test to run"
         options:
-          - pdp-authorize-enduser
-          - pdp-authorize-dagl
-          - pdp-authorize-dagl-dd
-          - pdp-authorize-dagl-deny
-          - get-roles
-          - get-authorized-parties-org
-          - get-authorized-parties-user
-          - get-auth-parties-user-al
-          - get-auth-parties-user-dp
-          - get-auth-parties-user-dp-wf
-          - get-authorized-parties-sysuser
-          - get-connections-to
-          - get-connections-from
-          - get-access-packages-to
-          - get-access-packages-from
+          - yt01-pdp-authorize-enduser-smoke
+          - yt01-pdp-authorize-dagl-smoke
+          - yt01-pdp-authorize-dagl-direct-delegation-smoke
+          - yt01-pdp-authorize-dagl-deny-smoke
+          - yt01-get-roles-smoke
+          - yt01-get-authorized-parties-for-org-smoke
+          - yt01-get-authorized-parties-for-user-smoke
+          - yt01-get-authorized-parties-for-user-avgiver-liste-smoke
+          - yt01-get-authorized-parties-for-user-dialogporten-smoke
+          - yt01-get-authorized-parties-for-user-dp-with-filter-smoke
+          - yt01-get-authorized-parties-for-system-user-smoke
+          - yt01-get-connections-to-smoke
+          - yt01-get-connections-from-smoke
+          - yt01-get-access-packages-to-smoke
+          - yt01-get-access-packages-from-smoke
 
       vus:
         description: "The number of VUs to run the test with"
@@ -112,4 +112,4 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-${{ inputs.testName }}
+          kubectl apply --server-side -f .dist/${{ inputs.testId }}
