@@ -17,6 +17,7 @@ name: Auth - run k6 breakpoint tests
     - cron: ' 0 5 * * 3 '
     - cron: ' 20 5 * * 3 '
     - cron: ' 40 5 * * 3 '
+    - cron: ' 0 6 * * 3 '
 run-name: Auth - run breakpoint
 permissions:
   contents: read
@@ -101,4 +102,8 @@ jobs:
       - if: github.event.schedule == '40 5 * * 3'
         name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
         run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
+        shell: bash
+      - if: github.event.schedule == '0 6 * * 3'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-ipvkr-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-ipvkr-break
         shell: bash
