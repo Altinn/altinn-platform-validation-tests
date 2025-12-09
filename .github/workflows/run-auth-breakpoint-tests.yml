@@ -1,235 +1,104 @@
 name: Auth - run k6 breakpoint tests
-
-on:
-  workflow_dispatch:
-    inputs:
-      configFilePath:
-        description: "Configuration file for the test runs"
-        required: true
-        default: "conf/auth-break.yaml"
-
-      testid:
-        type: choice
-        description: "The test to run"
-        options:
-          - yt01-get-access-packages-from-break
-          - yt01-get-access-packages-to-break
-          - yt01-get-authorized-parties-for-org-break
-          - yt01-get-authorized-parties-for-system-user-break
-          - yt01-get-authorized-parties-for-user-avgiver-liste-break
-          - yt01-get-authorized-parties-for-user-break
-          - yt01-get-authorized-parties-for-user-dialogporten-break
-          - yt01-get-authorized-parties-for-user-dp-with-filter-break
-          - yt01-get-connections-from-break
-          - yt01-get-connections-to-break
-          - yt01-get-roles-break
-          - yt01-pdp-authorize-dagl-break
-          - yt01-pdp-authorize-dagl-deny-break
-          - yt01-pdp-authorize-dagl-direct-delegation-break
-          - yt01-pdp-authorize-enduser-break
-          - yt01-post-consent-break
-
-      target_vus:
-        description: "The target VUs to reach"
-        required: false
-        type: number
-        default: 100
-
-      duration:
-        description: "How long should it take to reach the target_vus"
-        required: false
-        default: 10m
-
-      abortOnFail:
-        description: "Should the test run stop as soon as the threshold fails"
-        type: boolean
-        required: true
-        default: false
-
-      commandLineArgs:
-        description: "Command line arguments to pass to the k6 run command"
-        required: false
-        default: ""
-
+'on':
   schedule:
-    - cron: "0 08 * * 1"
-    - cron: "0 10 * * 1"
-    - cron: "0 12 * * 1"
-    - cron: "0 14 * * 1"
-    - cron: "0 4 * * 2"
-    - cron: "20 4 * * 2"
-    - cron: "40 4 * * 2"
-    - cron: "0 5 * * 2"
-    - cron: "20 5 * * 2"
-    - cron: "40 5 * * 2"
-    - cron: "0 6 * * 2"
-    - cron: "20 6 * * 2"
-    - cron: "40 4 * * 3"
-    - cron: "0 5 * * 3"
-    - cron: "20 5 * * 3"
-    - cron: "40 5 * * 3"
-
-run-name: Auth - run breakpoint for ${{ inputs.testid }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
+    - cron: ' 0 08 * * 1 '
+    - cron: ' 0 10 * * 1 '
+    - cron: ' 0 12 * * 1 '
+    - cron: ' 0 14 * * 1 '
+    - cron: ' 0 4 * * 2 '
+    - cron: ' 20 4 * * 2 '
+    - cron: ' 40 4 * * 2 '
+    - cron: ' 0 5 * * 2 '
+    - cron: ' 20 5 * * 2 '
+    - cron: ' 40 5 * * 2 '
+    - cron: ' 0 6 * * 2 '
+    - cron: ' 20 6 * * 2 '
+    - cron: ' 40 4 * * 3 '
+    - cron: ' 0 5 * * 3 '
+    - cron: ' 20 5 * * 3 '
+    - cron: ' 40 5 * * 3 '
+run-name: Auth - run breakpoint
 permissions:
-  id-token: write
   contents: read
-
+  id-token: write
 jobs:
   k6-breakpoint:
-    runs-on: ubuntu-latest
     environment: test
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
         with:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Process CLI args
-        shell: bash
-        run: |
-          TARGET_VUS="${TARGET_VUS:-}"
-          DURATION="${DURATION:-}"
-          ABORT_ON_FAIL="${ABORT_ON_FAIL:-}"
-          COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
-
-          OUTPUT=""
-
-          if [ -n "$TARGET_VUS" ]; then
-            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_TARGET=$TARGET_VUS"
-          fi
-
-          if [ -n "$DURATION" ]; then
-            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_DURATION=$DURATION"
-          fi
-
-          if [ -n "$ABORT_ON_FAIL" ]; then
-            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_ABORTONFAIL=$ABORT_ON_FAIL"
-          fi
-
-          if [ -n "$COMMAND_LINE_ARGS" ]; then
-            OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
-          fi
-
-          # Remove leading whitespace
-          OUTPUT=$(echo "$OUTPUT" | sed 's/^[[:space:]]*//')
-
-          # Output the final string
-          echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
-        env:
-          TARGET_VUS: ${{ inputs.target_vus }}
-          DURATION: ${{ inputs.duration }}
-          ABORT_ON_FAIL: ${{ inputs.abortOnFail }}
-          COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
-
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/auth-break.yaml' }}" # No inputs when running as a cron
-          command_line_args: ${{ env.COMMAND_LINE_ARGS }}
-
-      - name: Run Breakpoint for .dist/yt01-post-consent-break
-        if: github.event.schedule == '0 08 * * 1'
+          config_file: conf/auth-break.yaml
+      - if: github.event.schedule == '0 08 * * 1'
+        name: Run Breakpoint for .dist/yt01-post-consent-break
+        run: kubectl apply --server-side -f .dist/yt01-post-consent-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-post-consent-break
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-org-break
-        if: github.event.schedule == '0 10 * * 1'
+      - if: github.event.schedule == '0 10 * * 1'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-org-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-org-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-org-break
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-system-user-break
-        if: github.event.schedule == '0 12 * * 1'
+      - if: github.event.schedule == '0 12 * * 1'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-system-user-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-system-user-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-system-user-break
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-break
-        if: github.event.schedule == '0 14 * * 1'
+      - if: github.event.schedule == '0 14 * * 1'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-break
-
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-break
-        if: github.event.schedule == '0 4 * * 2'
+      - if: github.event.schedule == '0 4 * * 2'
+        name: Run Breakpoint for .dist/yt01-pdp-authorize-enduser-break
+        run: kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser-break
-
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-break
-        if: github.event.schedule == '20 4 * * 2'
+      - if: github.event.schedule == '20 4 * * 2'
+        name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-break
+        run: kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-break
-
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-direct-delegation-break
-        if: github.event.schedule == '40 4 * * 2'
+      - if: github.event.schedule == '40 4 * * 2'
+        name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-direct-delegation-break
+        run: kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-direct-delegation-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-direct-delegation-break
-
-      - name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny-break
-        if: github.event.schedule == '0 5 * * 2'
+      - if: github.event.schedule == '0 5 * * 2'
+        name: Run Breakpoint for .dist/yt01-pdp-authorize-dagl-deny-break
+        run: kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny-break
-
-      - name: Run Breakpoint for .dist/yt01-get-connections-to-break
-        if: github.event.schedule == '20 5 * * 2'
+      - if: github.event.schedule == '20 5 * * 2'
+        name: Run Breakpoint for .dist/yt01-get-connections-to-break
+        run: kubectl apply --server-side -f .dist/yt01-get-connections-to-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-connections-to-break
-
-      - name: Run Breakpoint for .dist/yt01-get-connections-from-break
-        if: github.event.schedule == '40 5 * * 2'
+      - if: github.event.schedule == '40 5 * * 2'
+        name: Run Breakpoint for .dist/yt01-get-connections-from-break
+        run: kubectl apply --server-side -f .dist/yt01-get-connections-from-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-connections-from-break
-
-      - name: Run Breakpoint for .dist/yt01-get-access-packages-to-break
-        if: github.event.schedule == '0 6 * * 2'
+      - if: github.event.schedule == '0 6 * * 2'
+        name: Run Breakpoint for .dist/yt01-get-access-packages-to-break
+        run: kubectl apply --server-side -f .dist/yt01-get-access-packages-to-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-access-packages-to-break
-
-      - name: Run Breakpoint for .dist/yt01-get-access-packages-from-break
-        if: github.event.schedule == '20 6 * * 2'
+      - if: github.event.schedule == '20 6 * * 2'
+        name: Run Breakpoint for .dist/yt01-get-access-packages-from-break
+        run: kubectl apply --server-side -f .dist/yt01-get-access-packages-from-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-access-packages-from-break
-
-      - name: Run Breakpoint for .dist/yt01-get-roles-break
-        if: github.event.schedule == '40 4 * * 3'
+      - if: github.event.schedule == '40 4 * * 3'
+        name: Run Breakpoint for .dist/yt01-get-roles-break
+        run: kubectl apply --server-side -f .dist/yt01-get-roles-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-roles-break
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-avgiver-liste-break
-        if: github.event.schedule == '0 5 * * 3'
+      - if: github.event.schedule == '0 5 * * 3'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-avgiver-liste-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-avgiver-liste-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-avgiver-liste-break
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dialogporten-break
-        if: github.event.schedule == '20 5 * * 3'
+      - if: github.event.schedule == '20 5 * * 3'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dialogporten-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dialogporten-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dialogporten-break
-
-      - name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
-        if: github.event.schedule == '40 5 * * 3'
+      - if: github.event.schedule == '40 5 * * 3'
+        name: Run Breakpoint for .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
+        run: kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-for-user-dp-with-filter-break
-
-      - name: Apply k8s manifests
-        if: github.event_name == 'workflow_dispatch'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-${{ inputs.testid }}
