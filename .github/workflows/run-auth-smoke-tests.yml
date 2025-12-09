@@ -104,6 +104,7 @@ jobs:
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
 
       - name: Apply k8s manifests
+        if: github.event.schedule == '27 * * * *'
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/ -R
