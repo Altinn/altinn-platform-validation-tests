@@ -101,7 +101,6 @@ test_definitions:
     env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
@@ -111,7 +110,6 @@ test_definitions:
               value: true
           secrets:
             - token-generator-creds
-
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
