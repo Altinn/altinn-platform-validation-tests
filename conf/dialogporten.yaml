@@ -3,6 +3,3 @@ test_definitions:
   - test_file: K6/api/tests/dialogporten/serviceowner/service-owner-should-send-notification.js
     contexts:
       - environment: yt01
-        test_run:
-          secrets:
-            - token-generator-creds

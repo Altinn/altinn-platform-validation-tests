@@ -9,7 +9,6 @@ test_definitions:
           enabled: true
         test_run:
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl.js
@@ -21,7 +20,6 @@ test_definitions:
           enabled: true
         test_run:
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-direct-delegation.js
@@ -33,7 +31,6 @@ test_definitions:
           enabled: true
         test_run:
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-deny.js
@@ -45,7 +42,6 @@ test_definitions:
           enabled: true
         test_run:
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/roles/get-roles.js
@@ -66,8 +62,6 @@ test_definitions:
           env:
             - name: INCLUDE_ALTINN2
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-system-user.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
@@ -80,8 +74,6 @@ test_definitions:
           env:
             - name: INCLUDE_ALTINN2
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
@@ -94,8 +86,6 @@ test_definitions:
           env:
             - name: INCLUDE_ALTINN2
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
@@ -104,9 +94,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
@@ -115,9 +102,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
     env_file: K6/api/tests/auth/authorized-parties/common.env
@@ -126,9 +110,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-connections-to.js
     env_file: K6/api/tests/auth/connections/common.env
@@ -137,9 +118,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-connections-from.js
     env_file: K6/api/tests/auth/connections/common.env
@@ -148,9 +126,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-access-packages-to.js
     env_file: K6/api/tests/auth/connections/common.env
@@ -159,9 +134,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-access-packages-from.js
     env_file: K6/api/tests/auth/connections/common.env
@@ -170,6 +142,3 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          secrets:
-            - token-generator-creds

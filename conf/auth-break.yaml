@@ -12,8 +12,6 @@ test_definitions:
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-org.js
     contexts:
@@ -33,8 +31,6 @@ test_definitions:
               value: true
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-system-user.js
     contexts:
@@ -54,8 +50,6 @@ test_definitions:
               value: true
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user.js
     contexts:
@@ -75,8 +69,6 @@ test_definitions:
               value: true
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
     contexts:
@@ -94,8 +86,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten.js
     contexts:
@@ -113,8 +103,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
     contexts:
@@ -132,8 +120,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-enduser.js
     contexts:
@@ -152,7 +138,6 @@ test_definitions:
             - name: RANDOMIZE
               value: true
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl.js
@@ -172,7 +157,6 @@ test_definitions:
             - name: RANDOMIZE
               value: true
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-direct-delegation.js
@@ -192,7 +176,6 @@ test_definitions:
             - name: RANDOMIZE
               value: true
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-deny.js
@@ -212,7 +195,6 @@ test_definitions:
             - name: RANDOMIZE
               value: true
           secrets:
-            - token-generator-creds
             - authorization-subscription-key-yt01
 
   - test_file: K6/api/tests/auth/connections/get-connections-to.js
@@ -231,8 +213,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-connections-from.js
     contexts:
@@ -250,8 +230,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-access-packages-to.js
     contexts:
@@ -269,8 +247,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/connections/get-access-packages-from.js
     contexts:
@@ -288,8 +264,6 @@ test_definitions:
               value: 100
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/roles/get-roles.js
     contexts:

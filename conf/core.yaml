@@ -4,33 +4,15 @@ test_definitions:
     env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: at22
-        test_run:
-          secrets:
-            - token-generator-creds
       - environment: at24
-        test_run:
-          secrets:
-            - token-generator-creds
       - environment: yt01
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders-for-mobile-number.js
     env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: at22
-        test_run:
-          secrets:
-            - token-generator-creds
       - environment: at24
-        test_run:
-          secrets:
-            - token-generator-creds
       - environment: yt01
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders-for-orgs.js
     env_file: "K6/api/tests/core/notifications/common.env"
@@ -38,17 +20,14 @@ test_definitions:
       - environment: at22
         test_run:
           secrets:
-            - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
       - environment: at24
         test_run:
           secrets:
-            - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
       - environment: yt01
         test_run:
           secrets:
-            - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders-for-persons.js
@@ -57,17 +36,14 @@ test_definitions:
       - environment: at22
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
       - environment: at24
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
       - environment: yt01
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
 
   # OLD API
@@ -77,15 +53,12 @@ test_definitions:
       - environment: at22
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
       - environment: at24
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
       - environment: yt01
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
