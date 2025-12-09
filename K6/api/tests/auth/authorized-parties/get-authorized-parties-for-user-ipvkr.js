@@ -1,8 +1,8 @@
 
-import { GetAuthorizedParties } from "../../../building_blocks/auth/authorizedParties/index.js";
-import { getClients } from "./commonFunctions.js";
+import { GetAuthorizedParties } from "../../../building-blocks/auth/authorized-parties/index.js";
+import { getClients } from "./common-functions.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-export { setup } from "./commonFunctions.js";
+export { setup } from "./common-functions.js";
 
 const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? "true") === "true";
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
