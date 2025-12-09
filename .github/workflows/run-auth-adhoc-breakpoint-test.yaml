@@ -22,6 +22,7 @@ on:
           - yt01-get-authorized-parties-for-user-avgiver-liste-break
           - yt01-get-authorized-parties-for-user-dialogporten-break
           - yt01-get-authorized-parties-for-user-dp-with-filter-break
+          - yt01-get-authorized-parties-for-user-ipvkr-break
           - yt01-get-authorized-parties-for-system-user-break
           - yt01-get-connections-to-break
           - yt01-get-connections-from-break

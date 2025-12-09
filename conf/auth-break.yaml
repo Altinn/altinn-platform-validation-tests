@@ -78,6 +78,27 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-ipvkr.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+          secrets:
+            - token-generator-creds
+
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
     contexts:
       - environment: yt01

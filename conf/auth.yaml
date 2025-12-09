@@ -75,6 +75,13 @@ test_definitions:
           secrets:
             - token-generator-creds
 
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-ipvkr.js
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-org.js
     contexts:
       - environment: yt01
