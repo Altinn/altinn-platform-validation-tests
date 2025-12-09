@@ -29,6 +29,7 @@ local schedule_map = {
   '0 5 * * 3': 'yt01-get-authorized-parties-for-user-avgiver-liste-break',  //  “At 05:00 on Wednesday.”
   '20 5 * * 3': 'yt01-get-authorized-parties-for-user-dialogporten-break',  //  “At 05:20 on Wednesday.”
   '40 5 * * 3': 'yt01-get-authorized-parties-for-user-dp-with-filter-break',  //  “At 05:40 on Wednesday.”
+  '0 6 * * 3': 'yt01-get-authorized-parties-for-user-ipvkr-break',  // “At 06:00 on Wednesday.”
 };
 
 local schedule_entries = std.sort(std.objectFields(schedule_map), function(a) cronToMinutes(a));
