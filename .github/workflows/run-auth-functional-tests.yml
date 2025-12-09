@@ -21,7 +21,7 @@ jobs:
     environment: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
@@ -38,29 +38,4 @@ jobs:
       - name: Apply k8s manifests
         shell: bash
         run: |
-          # kubectl apply -f .dist/ -R
-          kubectl apply --server-side -f .dist/at22-add-rm-revisorrole-for-client
-          kubectl apply --server-side -f .dist/at22-pdp-authorize-dagl-dd
-          kubectl apply --server-side -f .dist/tt02-pdp-authorize-dagl-dd
-          kubectl apply --server-side -f .dist/yt01-post-consent
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-org
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user
-          kubectl apply --server-side -f .dist/at22-get-auth-parties-user-al
-          kubectl apply --server-side -f .dist/tt02-get-auth-parties-user-al
-          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-al
-          kubectl apply --server-side -f .dist/at22-get-auth-parties-user-dp
-          kubectl apply --server-side -f .dist/tt02-get-auth-parties-user-dp
-          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp
-          kubectl apply --server-side -f .dist/at22-get-auth-parties-user-dp-wf
-          kubectl apply --server-side -f .dist/tt02-get-auth-parties-user-dp-wf
-          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp-wf
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
-          kubectl apply --server-side -f .dist/yt01-get-connections-to
-          kubectl apply --server-side -f .dist/yt01-get-access-packages-to
-          kubectl apply --server-side -f .dist/yt01-get-connections-from
-          kubectl apply --server-side -f .dist/yt01-get-access-packages-from
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-dd
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
-          kubectl apply --server-side -f .dist/yt01-get-roles
+          kubectl apply --server-side -f .dist/ -R

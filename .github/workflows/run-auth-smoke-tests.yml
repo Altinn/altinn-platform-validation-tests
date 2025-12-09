@@ -45,23 +45,8 @@ on:
         default: ""
 
   schedule:
-    - cron: "0 * * * *"
-    - cron: "4 * * * *"
-    - cron: "8 * * * *"
-    - cron: "12 * * * *"
-    - cron: "16 * * * *"
-    - cron: "20 * * * *"
-    - cron: "24 * * * *"
-    - cron: "28 * * * *"
-    - cron: "32 * * * *"
-    - cron: "36 * * * *"
-    - cron: "40 * * * *"
-    - cron: "44 * * * *"
-    - cron: "48 * * * *"
-    - cron: "52 * * * *"
-    - cron: "56 * * * *"
+    - cron: "27 * * * *"
 
-run-name: Auth - run smoke test for ${{ inputs.testName }} - ${{ inputs.vus }} VUs for ${{ inputs.duration }}
 permissions:
   id-token: write
   contents: read
@@ -72,7 +57,7 @@ jobs:
     environment: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
@@ -118,95 +103,10 @@ jobs:
           config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
 
-      - name: Run smoke test for .dist/yt01-pdp-authorize-enduser
-        if: github.event.schedule == '0 * * * *'
+      - name: Apply k8s manifests
         shell: bash
         run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-enduser
-
-      - name: Run smoke test for .dist/yt01-pdp-authorize-dagl
-        if: github.event.schedule == '4 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl
-
-      - name: Run smoke test for .dist/yt01-pdp-authorize-dagl-dd
-        if: github.event.schedule == '8 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-dd
-
-      - name: Run smoke test for .dist/yt01-pdp-authorize-dagl-deny
-        if: github.event.schedule == '12 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-pdp-authorize-dagl-deny
-
-      - name: Run smoke test for .dist/yt01-get-roles
-        if: github.event.schedule == '16 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-roles
-
-      - name: Run smoke test for .dist/yt01-get-authorized-parties-org
-        if: github.event.schedule == '20 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-org
-
-      - name: Run smoke test for .dist/yt01-get-authorized-parties-sysuser
-        if: github.event.schedule == '24 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-sysuser
-
-      - name: Run smoke test for .dist/yt01-get-authorized-parties-user
-        if: github.event.schedule == '28 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-authorized-parties-user
-
-      - name: Run smoke test for .dist/yt01-get-connections-to
-        if: github.event.schedule == '32 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-connections-to
-
-      - name: Run smoke test for .dist/yt01-get-connections-from
-        if: github.event.schedule == '36 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-connections-from
-
-      - name: Run smoke test for .dist/yt01-get-access-packages-to
-        if: github.event.schedule == '40 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-access-packages-to
-
-      - name: Run smoke test for .dist/yt01-get-access-packages-from
-        if: github.event.schedule == '44 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-access-packages-from
-
-      - name: Run smoke test for .dist/yt01-get-auth-parties-user-al
-        if: github.event.schedule == '48 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-al
-
-      - name: Run smoke test for .dist/yt01-get-auth-parties-user-dp
-        if: github.event.schedule == '52 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp
-
-      - name: Run smoke test for .dist/yt01-get-auth-parties-user-dp-wf
-        if: github.event.schedule == '56 * * * *'
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/yt01-get-auth-parties-user-dp-wf
+          kubectl apply --server-side -f .dist/ -R
 
       - name: Apply k8s manifests
         if: github.event_name == 'workflow_dispatch'

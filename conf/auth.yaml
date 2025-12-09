@@ -1,127 +1,81 @@
 namespace: authentication
 test_definitions:
-  - test_file: K6/api/tests/auth/systemRegister/systemRegisterCrud.js
-    env_file: K6/api/tests/auth/common.env
+  - test_file: K6/api/tests/auth/system-register/system-register-crud.js
     contexts:
       - environment: at22
-        node_type: default
+        test_type:
+          type: functional
+          enabled: false
         test_run:
-          name: system-register-crud
           secrets:
-            - br-test.2025-07-03
-  - test_file: K6/api/tests/auth/systemRegister/systemRegisterRights.js
-    env_file: K6/api/tests/auth/common.env
+            - br-test.2025-07-03 # Needs renewal
+
+  - test_file: K6/api/tests/auth/system-register/system-register-rights.js
     contexts:
       - environment: at22
-        node_type: default
+        test_type:
+          type: functional
+          enabled: false
         test_run:
-          name: system-register-rights
           secrets:
-            - br-test.2025-07-03
-  - test_file: K6/api/tests/auth/systemRegister/systemRegisterAccessPackages.js
-    env_file: K6/api/tests/auth/common.env
+            - br-test.2025-07-03 # Needs renewal
+
+  - test_file: K6/api/tests/auth/system-register/system-register-access-packages.js
     contexts:
       - environment: at22
-        node_type: default
+        test_type:
+          type: functional
+          enabled: false
         test_run:
-          name: system-register-accesspackages
           secrets:
-            - br-test.2025-07-03
-  - test_file: K6/api/tests/auth/systemUserRequest/createAndConfirmSystemUserRequest.js
-    env_file: K6/api/tests/auth/common.env
+            - br-test.2025-07-03 # Needs renewal
+
+  - test_file: K6/api/tests/auth/system-user-request/create-and-confirm-system-user-request.js
     contexts:
       - environment: at22
-        node_type: default
+        test_type:
+          type: functional
+          enabled: false # Needs cleanup as the UI does not do pagination
         test_run:
-          name: create-confirm-system-user-req
           secrets:
             - token-generator-creds
-  - test_file: K6/api/tests/auth/register/testRemovalOfRevisorRoleForClient.js
+
+  - test_file: K6/api/tests/auth/register/add-rm-revisor-role-for-client.js
     contexts:
       - environment: at22
-        node_type: default
         test_run:
-          name: add-rm-revisorrole-for-client
-          id: at22-add-rm-revisorrole-for-client
           secrets:
             - soap-er-creds
             - token-generator-creds
             - authorization-subscription-key-at22
             - register-subscription-key-at22
-  - test_file: K6/browser/systemUser/clientDelegation.js
+
+  - test_file: K6/browser/system-user/client-delegation.js
+    env_file: K6/browser/common.env
     contexts:
       - environment: tt02
-        node_type: default
         test_type:
           type: browser
-          enabled: false
-          config_file: ""
+          enabled: false # not maintained
         test_run:
-          name: client-delegation
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: K6_TESTING_COLORIZE
-              value: "false"
-            - name: K6_TESTING_DISPLAY
-              value: inline
           secrets:
             - token-generator-creds
       - environment: at24
-        node_type: default
         test_type:
           type: browser
-          enabled: false
-          config_file: ""
+          enabled: false # not maintained
         test_run:
-          name: client-delegation
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: K6_TESTING_COLORIZE
-              value: "false"
-            - name: K6_TESTING_DISPLAY
-              value: inline
-          secrets:
-            - token-generator-creds
-  - test_file: K6/api/tests/auth/consent/postConsent.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: post-consent
-          id: yt01-post-consent
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForOrg.js
+  - test_file: K6/api/tests/auth/consent/post-consent.js
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: get-authorized-parties-org
-          id: yt01-get-authorized-parties-org
           secrets:
             - token-generator-creds
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForSystemUser.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: get-authorized-parties-sysuser
-          id: yt01-get-authorized-parties-sysuser
-          secrets:
-            - token-generator-creds
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUser.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: get-authorized-parties-user
-          id: yt01-get-authorized-parties-user
-          secrets:
-            - token-generator-creds
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserIncludePartiesViaKeyRoles.js
+  
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-include-parties-via-key-roles.js
     contexts:
       - environment: yt01
         node_type: default
@@ -130,203 +84,150 @@ test_definitions:
           id: yt01-get-authorized-parties-user-ipvkr
           secrets:
             - token-generator-creds
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-org.js
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: get-auth-parties-user-al
-          id: yt01-get-auth-parties-user-al
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-system-user.js
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user.js
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
+    contexts:
+      - environment: yt01
+        test_run:
           secrets:
             - token-generator-creds
       - environment: at22
-        node_type: default
         test_run:
-          name: get-auth-parties-user-al
-          id: at22-get-auth-parties-user-al
           secrets:
             - token-generator-creds
       - environment: tt02
-        node_type: default
         test_run:
-          name: get-auth-parties-user-al
-          id: tt02-get-auth-parties-user-al
           secrets:
             - token-generator-creds
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
+
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten.js
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: get-auth-parties-user-dp
           id: yt01-get-auth-parties-user-dp
           secrets:
             - token-generator-creds
       - environment: at22
-        node_type: default
         test_run:
-          name: get-auth-parties-user-dp
-          id: at22-get-auth-parties-user-dp
           secrets:
             - token-generator-creds
       - environment: tt02
-        node_type: default
         test_run:
-          name: get-auth-parties-user-dp
-          id: tt02-get-auth-parties-user-dp
           secrets:
             - token-generator-creds
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: get-auth-parties-user-dp-wf
-          id: yt01-get-auth-parties-user-dp-wf
           secrets:
             - token-generator-creds
       - environment: at22
-        node_type: default
         test_run:
-          name: get-auth-parties-user-dp-wf
-          id: at22-get-auth-parties-user-dp-wf
           secrets:
             - token-generator-creds
       - environment: tt02
-        node_type: default
         test_run:
-          name: get-auth-parties-user-dp-wf
-          id: tt02-get-auth-parties-user-dp-wf
-          secrets:
-            - token-generator-creds
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: pdp-authorize-enduser
-          id: yt01-pdp-authorize-enduser
-          secrets:
-            - token-generator-creds
-            - authorization-subscription-key-yt01
-  - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: get-connections-to
-          id: yt01-get-connections-to
-          env:
-            - name: RANDOMIZE
-              value: true
-          secrets:
-            - token-generator-creds
-  - test_file: K6/api/tests/auth/connections/getConnectionsFrom.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: get-connections-from
-          id: yt01-get-connections-from
-          env:
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getAccessPackagesTo.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-enduser.js
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: get-access-packages-to
-          id: yt01-get-access-packages-to
-          env:
-            - name: RANDOMIZE
-              value: true
-          secrets:
-            - token-generator-creds
-  - test_file: K6/api/tests/auth/connections/getAccessPackagesFrom.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: get-access-packages-from
-          id: yt01-get-access-packages-from
-          env:
-            - name: RANDOMIZE
-              value: true
-          secrets:
-            - token-generator-creds
-
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDagl.js
-    contexts:
-      - environment: yt01
-        node_type: default
-        test_run:
-          name: pdp-authorize-dagl
-          id: yt01-pdp-authorize-dagl
-          env:
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDirectDelegation.js
+  - test_file: K6/api/tests/auth/connections/get-connections-to.js
+    env_file: K6/api/tests/auth/connections/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: pdp-authorize-dagl-dd
-          id: yt01-pdp-authorize-dagl-dd
-          env:
-            - name: RANDOMIZE
-              value: true
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/get-connections-from.js
+    env_file: K6/api/tests/auth/connections/common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/get-access-packages-to.js
+    env_file: K6/api/tests/auth/connections/common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/connections/get-access-packages-from.js
+    env_file: K6/api/tests/auth/connections/common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - token-generator-creds
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-direct-delegation.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_run:
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
       - environment: tt02
-        node_type: default
         test_run:
-          name: pdp-authorize-dagl-dd
-          id: tt02-pdp-authorize-dagl-dd
-          env:
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-tt02
       - environment: at22
-        node_type: default
         test_run:
-          name: pdp-authorize-dagl-dd
-          id: at22-pdp-authorize-dagl-dd
-          env:
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-at22
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDeny.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-deny.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: pdp-authorize-dagl-deny
-          id: yt01-pdp-authorize-dagl-deny
-          env:
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/roles/getRoles.js
+  - test_file: K6/api/tests/auth/roles/get-roles.js
     contexts:
       - environment: yt01
-        node_type: default
-        test_run:
-          name: get-roles
-          id: yt01-get-roles

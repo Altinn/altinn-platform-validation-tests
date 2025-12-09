@@ -21,7 +21,7 @@ jobs:
     environment: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
@@ -38,5 +38,4 @@ jobs:
       - name: Apply k8s manifests
         shell: bash
         run: |
-          # kubectl apply -f .dist/ -R
-          for test in $(ls -d .dist/*-so-should-send-notification); do kubectl apply --server-side -f $test; done
+          kubectl apply --server-side -f .dist/ -R

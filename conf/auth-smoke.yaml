@@ -1,156 +1,104 @@
 namespace: authentication
 test_definitions:
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeEnduser.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-enduser.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: pdp-authorize-enduser
-          id: yt01-pdp-authorize-enduser-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDagl.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: pdp-authorize-dagl
-          id: yt01-pdp-authorize-dagl-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDirectDelegation.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-direct-delegation.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: pdp-authorize-dagl-dd
-          id: yt01-pdp-authorize-dagl-dd-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/pdpAuthorize/pdpAuthorizeDaglDeny.js
+  - test_file: K6/api/tests/auth/pdp-authorize/pdp-authorize-dagl-deny.js
+    env_file: K6/api/tests/auth/pdp-authorize/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: pdp-authorize-dagl-deny
-          id: yt01-pdp-authorize-dagl-deny-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/auth/roles/getRoles.js
+  - test_file: K6/api/tests/auth/roles/get-roles.js
+    env_file: K6/api/tests/auth/roles/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
-        test_run:
-          name: get-roles
-          id: yt01-get-roles-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForOrg.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-org.js
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-org
-          id: yt01-get-authorized-parties-org-smoke
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: INCLUDE_ALTINN2
               value: true
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForSystemUser.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-system-user.js
+    env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-sysuser
-          id: yt01-get-authorized-parties-sysuser-smoke
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: INCLUDE_ALTINN2
               value: true
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUser.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user.js
+    env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user
-          id: yt01-get-authorized-parties-user-smoke
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: INCLUDE_ALTINN2
               value: true
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserIncludePartiesViaKeyRoles.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-include-parties-via-key-roles.js
+    env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
         node_type: default
@@ -158,170 +106,86 @@ test_definitions:
           type: smoke
           enabled: true
         test_run:
-          name: get-authorized-parties-user-ipvkr
-          id: yt01-get-authorized-parties-user-ipvkr-smoke
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: INCLUDE_ALTINN2
               value: true
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserAvgiverListe.js
+
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
+    env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-auth-parties-user-al
-          id: yt01-get-auth-parties-user-al-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
-          secrets:
-            - token-generator-creds
-      - environment: at22
-        node_type: default
-        test_type:
-          type: smoke
-          enabled: true
-        test_run:
-          name: get-auth-parties-user-al
-          id: at22-get-auth-parties-user-al-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
-          secrets:
-            - token-generator-creds
-      - environment: tt02
-        node_type: default
-        test_type:
-          type: smoke
-          enabled: true
-        test_run:
-          name: get-auth-parties-user-al
-          id: tt02-get-auth-parties-user-al-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDialogporten.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dialogporten.js
+    env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-auth-parties-user-dp
-          id: yt01-get-auth-parties-user-dp-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/authorizedParties/getAuthorizedPartiesForUserDPWithFilter.js
+  - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
+    env_file: K6/api/tests/auth/authorized-parties/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-auth-parties-user-dp-wf
-          id: yt01-get-auth-parties-user-dp-wf-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getConnectionsTo.js
+  - test_file: K6/api/tests/auth/connections/get-connections-to.js
+    env_file: K6/api/tests/auth/connections/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-connections-to
-          id: yt01-get-connections-to-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getConnectionsFrom.js
+  - test_file: K6/api/tests/auth/connections/get-connections-from.js
+    env_file: K6/api/tests/auth/connections/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-connections-from
-          id: yt01-get-connections-from-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getAccessPackagesTo.js
+  - test_file: K6/api/tests/auth/connections/get-access-packages-to.js
+    env_file: K6/api/tests/auth/connections/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-access-packages-to
-          id: yt01-get-access-packages-to-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds
 
-  - test_file: K6/api/tests/auth/connections/getAccessPackagesFrom.js
+  - test_file: K6/api/tests/auth/connections/get-access-packages-from.js
+    env_file: K6/api/tests/auth/connections/common.env
     contexts:
       - environment: yt01
-        node_type: default
         test_type:
           type: smoke
           enabled: true
         test_run:
-          name: get-access-packages-from
-          id: yt01-get-access-packages-from-smoke
-          env:
-            - name: K6_SUMMARY_MODE
-              value: full
-            - name: RANDOMIZE
-              value: true
           secrets:
             - token-generator-creds

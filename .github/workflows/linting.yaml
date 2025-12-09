@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/linting.yaml
       - K6/**
+      - conf
 
 permissions:
   contents: read
@@ -14,10 +15,10 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Use Node.js
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
         with:
           node-version: "24.x"
 
@@ -26,3 +27,34 @@ jobs:
 
       - name: Lint Code
         run: npm run lint
+
+      - name: Ensure javascript files are Kebab Case
+        shell: bash
+        run: |
+          ./validate.sh
+
+  validate_generation:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config_file:
+          [
+            conf/auth-break.yaml,
+            conf/auth-healthcheck.yaml,
+            conf/auth-smoke.yaml,
+            conf/auth.yaml,
+            conf/core-perf.yaml,
+            conf/core.yaml,
+            conf/dialogporten-break.yaml,
+            conf/dialogporten.yaml,
+            conf/platform-healthcheck.yaml,
+          ]
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+      - uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: ${{ matrix.config_file }}
+      - shell: bash
+        run: |
+          tree .dist/

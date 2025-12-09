@@ -1,11 +1,8 @@
 namespace: dialogporten
 test_definitions:
-  - test_file: K6/api/tests/dialogporten/serviceowner/serviceOwnerShouldSendNotification.js
+  - test_file: K6/api/tests/dialogporten/serviceowner/service-owner-should-send-notification.js
     contexts:
       - environment: yt01
-        node_type: default
         test_run:
-          name: so-should-send-notification
-          id: yt01-so-should-send-notification
           secrets:
             - token-generator-creds
