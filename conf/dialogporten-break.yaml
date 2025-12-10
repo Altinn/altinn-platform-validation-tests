@@ -12,5 +12,3 @@ test_definitions:
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-          secrets:
-            - token-generator-creds

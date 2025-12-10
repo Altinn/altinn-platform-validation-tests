@@ -4,17 +4,11 @@ test_definitions:
     config_file: "K6/api/tests/core/notifications/default_options.json"
     contexts:
       - environment: yt01
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders-for-mobile-number.js
     config_file: "K6/api/tests/core/notifications/default_options.json"
     contexts:
       - environment: yt01
-        test_run:
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders-for-orgs.js
     config_file: "K6/api/tests/core/notifications/default_options.json"
@@ -22,7 +16,6 @@ test_definitions:
       - environment: yt01
         test_run:
           secrets:
-            - token-generator-creds
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders-for-persons.js
@@ -31,7 +24,6 @@ test_definitions:
       - environment: yt01
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
 
   # OLD API
@@ -41,5 +33,4 @@ test_definitions:
       - environment: yt01
         test_run:
           secrets:
-            - token-generator-creds
             - email-order # Added the ninRecipient, but is this even a secret?
