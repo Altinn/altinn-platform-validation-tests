@@ -12,7 +12,7 @@ on:
         type: choice
         description: "The test to run"
         options:
-          - at23-portal-break
+          - at23-get-info-dot-altinn-dot-cloud-break
 
       target_vus:
         description: "The target VUs to reach"
