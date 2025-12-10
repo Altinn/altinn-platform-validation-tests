@@ -43,11 +43,17 @@ jobs:
             conf/auth-healthcheck.yaml,
             conf/auth-smoke.yaml,
             conf/auth.yaml,
+
             conf/core-perf.yaml,
             conf/core.yaml,
+
             conf/dialogporten-break.yaml,
             conf/dialogporten.yaml,
+
             conf/platform-healthcheck.yaml,
+
+            conf/portaler-healthcheck.yaml,
+            conf/portaler-break.yaml,
           ]
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6

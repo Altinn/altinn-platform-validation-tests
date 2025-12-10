@@ -1,0 +1,12 @@
+namespace: portaler
+test_definitions:
+  - test_file: K6/portaler/get-info-dot-altinn-dot-cloud.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: INFO_CLOUD_URL
+              value: "https://info.at23.altinn.cloud/"
