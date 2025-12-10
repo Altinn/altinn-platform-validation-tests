@@ -102,5 +102,5 @@ jobs:
         shell: bash
         run: |
           kubectl apply --server-side -f .dist/${{ inputs.testId }}
-          kubectl -n authentication wait --for=jsonpath='{.status.stage}'=started testrun -l "testid=${{ inputs.testId }}" --timeout=600s
-          kubectl -n authentication logs -f --tail=-1 -l "testid=${{ inputs.testId }},runner=true"
+          kubectl -n portaler wait --for=jsonpath='{.status.stage}'=started testrun -l "testid=${{ inputs.testId }}" --timeout=600s
+          kubectl -n portaler logs -f --tail=-1 -l "testid=${{ inputs.testId }},runner=true"
