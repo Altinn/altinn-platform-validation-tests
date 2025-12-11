@@ -1,0 +1,10 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/auth/resource-registry/get-updated-resources.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: at24
+      - environment: tt02
+      - environment: yt01
+      - environment: prod
