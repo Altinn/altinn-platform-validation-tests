@@ -1,9 +1,9 @@
 import { check } from "k6";
-import { EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { OrdersV2ApiClient } from "../../../../clients/core/notifications/index.js";
-import { PostNotificationOrderV2 } from "../../../building-blocks/core/notifications/orders/index.js";
+import { EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
+import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
+import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
-const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-organizations.json"));
+const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-persons.json"));
 
 export default function () {
     const options = new Map();
@@ -20,7 +20,6 @@ export default function () {
         = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator);
 
 
-
     const uniqueIdentifier = uuidv4().substring(0, 8);
     testData.requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
     testData.sendersReference = `k6-order-${uniqueIdentifier}`;
@@ -31,15 +30,12 @@ export default function () {
         transmissionId: uniqueIdentifier
     };
 
-    testData.recipient.recipientOrganization.resourceId = __ENV.resourceId;
-    testData.recipient.recipientOrganization.orgNumber = __ENV.orgNoRecipient;
+    testData.recipient.recipientPerson.nationalIdentityNumber = __ENV.ninRecipient;
+
 
     testData.reminders = testData.reminders.map(reminder => {
         const updatedReminder = { ...reminder, sendersReference: `k6-reminder-${uuidv4().substring(0, 8)}` };
-
-        updatedReminder.recipient.recipientOrganization.orgNumber = __ENV.orgNoRecipient;
-        updatedReminder.recipient.recipientOrganization.resourceId = __ENV.resourceId;
-
+        updatedReminder.recipient.recipientPerson.nationalIdentityNumber = __ENV.ninRecipient;
         return updatedReminder;
     });
 

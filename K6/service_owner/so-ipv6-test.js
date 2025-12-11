@@ -1,7 +1,7 @@
 import { check } from "k6";
 import dns from "k6/x/dns";
 import { sleep } from "k6";
-import { AltinnCdnClient } from "./client.js";
+import { AltinnCdnClient } from "../clients/altinn-cdn/index.js";
 
 import { checkIp } from "../helpers.js";
 

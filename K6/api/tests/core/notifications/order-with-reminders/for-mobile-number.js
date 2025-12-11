@@ -1,9 +1,9 @@
 import { check } from "k6";
-import { EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { OrdersV2ApiClient } from "../../../../clients/core/notifications/index.js";
-import { PostNotificationOrderV2 } from "../../../building-blocks/core/notifications/orders/index.js";
+import { EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
+import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
+import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
-const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-persons.json"));
+const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-mobile-number.json"));
 
 export default function () {
     const options = new Map();
@@ -19,23 +19,15 @@ export default function () {
     const ordersApiClient
         = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator);
 
-
-    const uniqueIdentifier = uuidv4().substring(0, 8);
     testData.requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
-    testData.sendersReference = `k6-order-${uniqueIdentifier}`;
-
-    // Set Dialogporten association
-    testData.dialogportenAssociation = {
-        dialogId: uniqueIdentifier,
-        transmissionId: uniqueIdentifier
-    };
-
-    testData.recipient.recipientPerson.nationalIdentityNumber = __ENV.ninRecipient;
-
+    testData.sendersReference = `k6-order-${uuidv4().substring(0, 8)}`;
+    testData.recipient.recipientSms.phoneNumber = "+4799999999";
 
     testData.reminders = testData.reminders.map(reminder => {
         const updatedReminder = { ...reminder, sendersReference: `k6-reminder-${uuidv4().substring(0, 8)}` };
-        updatedReminder.recipient.recipientPerson.nationalIdentityNumber = __ENV.ninRecipient;
+
+        updatedReminder.recipient.recipientSms.phoneNumber = "+4799999999";
+
         return updatedReminder;
     });
 
@@ -45,7 +37,7 @@ export default function () {
         ordersApiClient,
         testData.idempotencyId,
         testData.sendersReference,
-        testData.dialogportenAssociation,
+        null,
         testData.requestedSendTime,
         testData.recipient,
         testData.reminders

@@ -1,9 +1,9 @@
 import { check } from "k6";
-import { EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { OrdersV2ApiClient } from "../../../../clients/core/notifications/index.js";
-import { PostNotificationOrderV2 } from "../../../building-blocks/core/notifications/orders/index.js";
+import { EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
+import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
+import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
-const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-mobile-number.json"));
+const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-organizations.json"));
 
 export default function () {
     const options = new Map();
@@ -19,14 +19,26 @@ export default function () {
     const ordersApiClient
         = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator);
 
+
+
+    const uniqueIdentifier = uuidv4().substring(0, 8);
     testData.requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
-    testData.sendersReference = `k6-order-${uuidv4().substring(0, 8)}`;
-    testData.recipient.recipientSms.phoneNumber = "+4799999999";
+    testData.sendersReference = `k6-order-${uniqueIdentifier}`;
+
+    // Set Dialogporten association
+    testData.dialogportenAssociation = {
+        dialogId: uniqueIdentifier,
+        transmissionId: uniqueIdentifier
+    };
+
+    testData.recipient.recipientOrganization.resourceId = __ENV.resourceId;
+    testData.recipient.recipientOrganization.orgNumber = __ENV.orgNoRecipient;
 
     testData.reminders = testData.reminders.map(reminder => {
         const updatedReminder = { ...reminder, sendersReference: `k6-reminder-${uuidv4().substring(0, 8)}` };
 
-        updatedReminder.recipient.recipientSms.phoneNumber = "+4799999999";
+        updatedReminder.recipient.recipientOrganization.orgNumber = __ENV.orgNoRecipient;
+        updatedReminder.recipient.recipientOrganization.resourceId = __ENV.resourceId;
 
         return updatedReminder;
     });
@@ -37,7 +49,7 @@ export default function () {
         ordersApiClient,
         testData.idempotencyId,
         testData.sendersReference,
-        null,
+        testData.dialogportenAssociation,
         testData.requestedSendTime,
         testData.recipient,
         testData.reminders
