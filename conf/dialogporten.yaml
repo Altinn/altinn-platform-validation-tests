@@ -1,5 +1,0 @@
-namespace: dialogporten
-test_definitions:
-  - test_file: K6/api/tests/dialogporten/serviceowner/service-owner-should-send-notification.js
-    contexts:
-      - environment: yt01
