@@ -88,8 +88,6 @@ test_definitions:
               value: true
             - name: RANDOMIZE
               value: true
-          secrets:
-            - token-generator-creds
 
   - test_file: K6/api/tests/auth/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
     contexts:
