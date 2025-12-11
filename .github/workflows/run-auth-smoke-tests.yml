@@ -1,116 +1,55 @@
-name: Auth - run k6 smoke tests
-
-on:
-  workflow_dispatch:
-    inputs:
-      configFilePath:
-        description: "Configuration file for the test runs"
-        required: true
-        default: "conf/auth-smoke.yaml"
-
-      testId:
-        type: choice
-        description: "The test to run"
-        options:
-          - yt01-pdp-authorize-enduser-smoke
-          - yt01-pdp-authorize-dagl-smoke
-          - yt01-pdp-authorize-dagl-direct-delegation-smoke
-          - yt01-pdp-authorize-dagl-deny-smoke
-          - yt01-get-roles-smoke
-          - yt01-get-authorized-parties-for-org-smoke
-          - yt01-get-authorized-parties-for-user-smoke
-          - yt01-get-authorized-parties-for-user-avgiver-liste-smoke
-          - yt01-get-authorized-parties-for-user-dialogporten-smoke
-          - yt01-get-authorized-parties-for-user-dp-with-filter-smoke
-          - yt01-get-authorized-parties-for-system-user-smoke
-          - yt01-get-connections-to-smoke
-          - yt01-get-connections-from-smoke
-          - yt01-get-access-packages-to-smoke
-          - yt01-get-access-packages-from-smoke
-
-      vus:
-        description: "The number of VUs to run the test with"
-        required: false
-        type: number
-        default: 1
-
-      duration:
-        description: "Duration of the test"
-        required: false
-        default: 1m
-
-      commandLineArgs:
-        description: "Command line arguments to pass to the k6 run command"
-        required: false
-        default: ""
-
+name: auth - run k6 smoke tests
+'on':
   schedule:
-    - cron: "27 * * * *"
-
+    - cron: 20 * * * *
 permissions:
-  id-token: write
   contents: read
-
+  id-token: write
 jobs:
-  k6-smoketest:
-    runs-on: ubuntu-latest
+  k6-smoke:
     environment: test
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
         with:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Process CLI args
-        shell: bash
-        run: |
-          VUS="${VUS:-}"
-          DURATION="${DURATION:-}"
-          COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
-
-          OUTPUT=""
-
-          if [ -n "$VUS" ]; then
-            OUTPUT="$OUTPUT --vus=$VUS"
-          fi
-
-          if [ -n "$DURATION" ]; then
-            OUTPUT="$OUTPUT --duration=$DURATION"
-          fi
-
-          if [ -n "$COMMAND_LINE_ARGS" ]; then
-            OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
-          fi
-
-          # Remove leading whitespace
-          OUTPUT=$(echo "$OUTPUT" | sed 's/^[[:space:]]*//')
-
-          # Output the final string
-          echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
-        env:
-          VUS: ${{ inputs.vus }}
-          DURATION: ${{ inputs.duration }}
-          COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
-
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/auth-smoke.yaml' }}" # No inputs when running as a cron
-          command_line_args: ${{ env.COMMAND_LINE_ARGS }}
-
+          config_file: K6/api/tests/auth/connections/smoke.yaml
       - name: Apply k8s manifests
-        if: github.event.schedule == '27 * * * *'
+        run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/ -R
-
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: K6/api/tests/auth/pdp-authorize/smoke.yaml
       - name: Apply k8s manifests
-        if: github.event_name == 'workflow_dispatch'
+        run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/${{ inputs.testId }}
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: K6/api/tests/auth/get-authorized-parties/smoke.yaml
+      - name: Apply k8s manifests
+        run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
+        shell: bash
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: K6/api/tests/auth/roles/smoke.yaml
+      - name: Apply k8s manifests
+        run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
+        shell: bash
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: K6/api/tests/auth/consent/smoke.yaml
+      - name: Apply k8s manifests
+        run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
+        shell: bash
