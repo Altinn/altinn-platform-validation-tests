@@ -1,6 +1,6 @@
 namespace: authentication
 test_definitions:
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-org.js
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-org.js
     contexts:
       - environment: yt01
         test_type:
@@ -11,8 +11,8 @@ test_definitions:
             - name: INCLUDE_ALTINN2
               value: true
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-system-user.js
-    env_file: K6/api/tests/authentication/authorized-parties/common.env
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-system-user.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -23,8 +23,8 @@ test_definitions:
             - name: INCLUDE_ALTINN2
               value: true
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user.js
-    env_file: K6/api/tests/authentication/authorized-parties/common.env
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -35,8 +35,8 @@ test_definitions:
             - name: INCLUDE_ALTINN2
               value: true
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-ipvkr.js
-    env_file: K6/api/tests/authentication/authorized-parties/common.env
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-include-parties-via-key-role.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -47,24 +47,24 @@ test_definitions:
             - name: INCLUDE_ALTINN2
               value: true
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
-    env_file: K6/api/tests/authentication/authorized-parties/common.env
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-avgiver-liste.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
         test_type:
           type: smoke
           enabled: true
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-dialogporten.js
-    env_file: K6/api/tests/authentication/authorized-parties/common.env
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
         test_type:
           type: smoke
           enabled: true
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
-    env_file: K6/api/tests/authentication/authorized-parties/common.env
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten-with-filter.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
         test_type:

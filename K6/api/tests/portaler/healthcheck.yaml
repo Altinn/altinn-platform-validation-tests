@@ -1,6 +1,6 @@
 namespace: portaler
 test_definitions:
-  - test_file: K6/portaler/get-info-dot-altinn-dot-cloud.js
+  - test_file: K6/api/tests/portaler/get-info-dot-altinn-dot-cloud.js
     contexts:
       - environment: at23
         test_run:

@@ -56,7 +56,7 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: KK6/api/tests/authentication/get-authorized-parties/for-user.js
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user.js
     env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
@@ -110,7 +110,7 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-avgiver-liste.js
     env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
@@ -124,7 +124,7 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-dialogporten.js
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten.js
     env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01
@@ -138,7 +138,7 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten-with-filter.js
     env_file: K6/api/tests/authentication/get-authorized-parties/common.env
     contexts:
       - environment: yt01

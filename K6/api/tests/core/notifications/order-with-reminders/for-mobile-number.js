@@ -3,7 +3,7 @@ import { EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
 import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
-const testData = JSON.parse(open("../../../../testdata/core/orders/order-with-reminders-for-mobile-number.json"));
+const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-mobile-number.json"));
 
 export default function () {
     const options = new Map();

@@ -1,9 +1,9 @@
 import { check } from "k6";
 import dns from "k6/x/dns";
 import { sleep } from "k6";
-import { AltinnCdnClient } from "../clients/altinn-cdn/index.js";
+import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 
-import { checkIp } from "../helpers.js";
+import { checkIp } from "../../../../helpers.js";
 
 export function setup() {
     const client = new AltinnCdnClient();

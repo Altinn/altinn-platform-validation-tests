@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { check } from "k6";
-import { AltinnCdnClient } from "../clients/altinn-cdn/index.js";
+import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 
 // https://grafana.com/docs/k6/latest/using-k6/k6-options/reference/#dns
 export const options = {
