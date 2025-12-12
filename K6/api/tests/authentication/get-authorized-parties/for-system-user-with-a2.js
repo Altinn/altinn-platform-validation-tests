@@ -3,7 +3,7 @@ import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.j
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
 
-const includeAltinn2 = false;
+const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = "getAuthorizedPartiesForSystemUser";

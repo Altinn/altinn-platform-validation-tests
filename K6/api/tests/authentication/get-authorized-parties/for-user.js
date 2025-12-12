@@ -4,7 +4,7 @@ import { getClients } from "./common-functions.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 export { setup } from "./common-functions.js";
 
-const includeAltinn2 = (__ENV.INCLUDE_ALTINN2 ?? "true") === "true";
+const includeAltinn2 = false;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = "getAuthorizedPartiesForUser";

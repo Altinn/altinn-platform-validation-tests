@@ -1,28 +1,23 @@
-
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
 export { setup } from "./common-functions.js";
+import { getItemFromList, getOptions } from "../../../../helpers.js";
 
-const includeAltinn2 = false;
+const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForUserIncludePartiesViaKeyRole";
+const label = "getAuthorizedPartiesForOrg";
 
 export const options = getOptions([label]);
 
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
-    const userParty = getItemFromList(data, randomize);
-    const queryParams = {
-        includeAltinn2: includeAltinn2,
-        includePartiesViaKeyRoles: false
-    };
+    const party = getItemFromList(data, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:person:identifier-no",
-        userParty.ssn,
-        queryParams,
+        "urn:altinn:organization:identifier-no",
+        party.orgNo,
+        includeAltinn2,
         label
     );
 }
