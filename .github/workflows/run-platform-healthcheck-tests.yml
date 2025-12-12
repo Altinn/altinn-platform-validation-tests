@@ -1,7 +1,7 @@
-name: authentication - run k6 healthcheck tests
-"on":
+name: platform - run k6 healthcheck tests
+'on':
   schedule:
-    - cron: 25 * * * *
+    - cron: 35 * * * *
 permissions:
   contents: read
   id-token: write
@@ -21,7 +21,7 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/authentication/resource-registry/healthcheck.yaml
+          config_file: K6/api/tests/platform/service_owner/healthcheck.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash

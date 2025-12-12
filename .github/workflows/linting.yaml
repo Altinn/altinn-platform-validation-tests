@@ -1,5 +1,5 @@
 name: Linting Tests
-"on":
+'on':
   pull_request:
     branches:
       - main
@@ -40,8 +40,8 @@ jobs:
     strategy:
       matrix:
         config_file:
-          - K6/portaler/breakpoint.yaml
-          - K6/portaler/healthcheck.yaml
+          - K6/api/tests/portaler/breakpoint.yaml
+          - K6/api/tests/portaler/healthcheck.yaml
           - K6/api/tests/dialogporten/serviceowner/functional.yaml
           - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
           - K6/api/tests/authentication/register/functional.yaml
@@ -63,6 +63,6 @@ jobs:
           - K6/api/tests/authentication/consent/functional.yaml
           - K6/api/tests/authentication/consent/smoke.yaml
           - K6/api/tests/authentication/consent/breakpoint.yaml
+          - K6/api/tests/platform/service_owner/healthcheck.yaml
           - K6/api/tests/core/notifications/functional.yaml
           - K6/api/tests/core/notifications/order-with-reminders/functional.yaml
-          - K6/service_owner/healthcheck.yaml

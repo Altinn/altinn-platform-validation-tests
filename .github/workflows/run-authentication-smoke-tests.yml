@@ -1,5 +1,5 @@
 name: authentication - run k6 smoke tests
-"on":
+'on':
   schedule:
     - cron: 20 * * * *
 permissions:

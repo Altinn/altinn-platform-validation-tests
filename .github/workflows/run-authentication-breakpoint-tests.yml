@@ -1,23 +1,23 @@
 name: authentication - run k6 breakpoint tests
-"on":
+'on':
   schedule:
-    - cron: " 0 08 * * 1 "
-    - cron: " 0 10 * * 1 "
-    - cron: " 0 12 * * 1 "
-    - cron: " 0 14 * * 1 "
-    - cron: " 0 4 * * 2 "
-    - cron: " 20 4 * * 2 "
-    - cron: " 40 4 * * 2 "
-    - cron: " 0 5 * * 2 "
-    - cron: " 20 5 * * 2 "
-    - cron: " 40 5 * * 2 "
-    - cron: " 0 6 * * 2 "
-    - cron: " 20 6 * * 2 "
-    - cron: " 40 4 * * 3 "
-    - cron: " 0 5 * * 3 "
-    - cron: " 20 5 * * 3 "
-    - cron: " 40 5 * * 3 "
-    - cron: " 0 6 * * 3 "
+    - cron: ' 0 08 * * 1 '
+    - cron: ' 0 10 * * 1 '
+    - cron: ' 0 12 * * 1 '
+    - cron: ' 0 14 * * 1 '
+    - cron: ' 0 4 * * 2 '
+    - cron: ' 20 4 * * 2 '
+    - cron: ' 40 4 * * 2 '
+    - cron: ' 0 5 * * 2 '
+    - cron: ' 20 5 * * 2 '
+    - cron: ' 40 5 * * 2 '
+    - cron: ' 0 6 * * 2 '
+    - cron: ' 20 6 * * 2 '
+    - cron: ' 40 4 * * 3 '
+    - cron: ' 0 5 * * 3 '
+    - cron: ' 20 5 * * 3 '
+    - cron: ' 40 5 * * 3 '
+    - cron: ' 0 6 * * 3 '
 run-name: authentication - run breakpoint
 permissions:
   contents: read
