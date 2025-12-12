@@ -45,13 +45,13 @@ local step_entries = [
 ];
 
 {
-  name: 'Auth - run k6 breakpoint tests',
+  name: 'authentication - run k6 breakpoint tests',
 
   on: {
     schedule: [{ cron: std.format(' %s ', e) } for e in schedule_entries],
   },
 
-  'run-name': 'Auth - run breakpoint',
+  'run-name': 'authentication - run breakpoint',
 
   permissions: {
     'id-token': 'write',
@@ -80,7 +80,7 @@ local step_entries = [
           name: 'Generate k8s manifests',
           uses: 'Altinn/altinn-platform/actions/generate-k6-manifests@main',
           with: {
-            config_file: 'conf/auth-break.yaml',
+            config_file: 'conf/authentication-break.yaml',
           },
         },
       ] + step_entries,

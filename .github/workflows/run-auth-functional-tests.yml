@@ -1,7 +1,7 @@
-name: auth - run k6 functional tests
-'on':
+name: authentication - run k6 functional tests
+"on":
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: "*/15 * * * *"
 permissions:
   contents: read
   id-token: write
@@ -21,56 +21,56 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/register/functional.yaml
+          config_file: K6/api/tests/authentication/register/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/connections/functional.yaml
+          config_file: K6/api/tests/authentication/connections/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/pdp-authorize/functional.yaml
+          config_file: K6/api/tests/authentication/pdp-authorize/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/system-register/functional.yaml
+          config_file: K6/api/tests/authentication/system-register/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/get-authorized-parties/functional.yaml
+          config_file: K6/api/tests/authentication/get-authorized-parties/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/roles/functional.yaml
+          config_file: K6/api/tests/authentication/roles/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/system-user-request/functional.yaml
+          config_file: K6/api/tests/authentication/system-user-request/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/consent/functional.yaml
+          config_file: K6/api/tests/authentication/consent/functional.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash

@@ -1,0 +1,10 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/register/add-rm-revisor-role-for-client.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - soap-er-creds
+            - authorization-subscription-key-at22
+            - register-subscription-key-at22

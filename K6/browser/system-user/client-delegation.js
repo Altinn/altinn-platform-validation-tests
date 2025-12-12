@@ -2,9 +2,9 @@ import { browser } from "k6/browser";
 import { check, fail } from "k6";
 import { expect, EnterpriseTokenGenerator } from "../../common-imports.js";
 import { LoginPage, ClientDelegationPage } from "../pages/index.js";
-import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/auth/index.js";
-import { CreateNewSystem } from "../../api/building-blocks/auth/system-register/index.js";
-import { CreateAgentSystemUserRequest } from "../../api/building-blocks/auth/system-user-request/index.js";
+import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/authentication/index.js";
+import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";
+import { CreateAgentSystemUserRequest } from "../../api/building-blocks/authentication/system-user-request/index.js";
 
 
 export const options = {

@@ -1,5 +1,5 @@
-name: auth - run k6 smoke tests
-'on':
+name: authentication - run k6 smoke tests
+"on":
   schedule:
     - cron: 20 * * * *
 permissions:
@@ -21,35 +21,35 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/connections/smoke.yaml
+          config_file: K6/api/tests/authentication/connections/smoke.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/pdp-authorize/smoke.yaml
+          config_file: K6/api/tests/authentication/pdp-authorize/smoke.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/get-authorized-parties/smoke.yaml
+          config_file: K6/api/tests/authentication/get-authorized-parties/smoke.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/roles/smoke.yaml
+          config_file: K6/api/tests/authentication/roles/smoke.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/auth/consent/smoke.yaml
+          config_file: K6/api/tests/authentication/consent/smoke.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash

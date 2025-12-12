@@ -44,25 +44,25 @@ jobs:
           - K6/portaler/healthcheck.yaml
           - K6/api/tests/dialogporten/serviceowner/functional.yaml
           - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
-          - K6/api/tests/auth/register/functional.yaml
-          - K6/api/tests/auth/connections/functional.yaml
-          - K6/api/tests/auth/connections/smoke.yaml
-          - K6/api/tests/auth/connections/breakpoint.yaml
-          - K6/api/tests/auth/resource-registry/healthcheck.yaml
-          - K6/api/tests/auth/pdp-authorize/functional.yaml
-          - K6/api/tests/auth/pdp-authorize/smoke.yaml
-          - K6/api/tests/auth/pdp-authorize/breakpoint.yaml
-          - K6/api/tests/auth/system-register/functional.yaml
-          - K6/api/tests/auth/get-authorized-parties/functional.yaml
-          - K6/api/tests/auth/get-authorized-parties/smoke.yaml
-          - K6/api/tests/auth/get-authorized-parties/breakpoint.yaml
-          - K6/api/tests/auth/roles/functional.yaml
-          - K6/api/tests/auth/roles/smoke.yaml
-          - K6/api/tests/auth/roles/breakpoint.yaml
-          - K6/api/tests/auth/system-user-request/functional.yaml
-          - K6/api/tests/auth/consent/functional.yaml
-          - K6/api/tests/auth/consent/smoke.yaml
-          - K6/api/tests/auth/consent/breakpoint.yaml
+          - K6/api/tests/authentication/register/functional.yaml
+          - K6/api/tests/authentication/connections/functional.yaml
+          - K6/api/tests/authentication/connections/smoke.yaml
+          - K6/api/tests/authentication/connections/breakpoint.yaml
+          - K6/api/tests/authentication/resource-registry/healthcheck.yaml
+          - K6/api/tests/authentication/pdp-authorize/functional.yaml
+          - K6/api/tests/authentication/pdp-authorize/smoke.yaml
+          - K6/api/tests/authentication/pdp-authorize/breakpoint.yaml
+          - K6/api/tests/authentication/system-register/functional.yaml
+          - K6/api/tests/authentication/get-authorized-parties/functional.yaml
+          - K6/api/tests/authentication/get-authorized-parties/smoke.yaml
+          - K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml
+          - K6/api/tests/authentication/roles/functional.yaml
+          - K6/api/tests/authentication/roles/smoke.yaml
+          - K6/api/tests/authentication/roles/breakpoint.yaml
+          - K6/api/tests/authentication/system-user-request/functional.yaml
+          - K6/api/tests/authentication/consent/functional.yaml
+          - K6/api/tests/authentication/consent/smoke.yaml
+          - K6/api/tests/authentication/consent/breakpoint.yaml
           - K6/api/tests/core/notifications/functional.yaml
           - K6/api/tests/core/notifications/order-with-reminders/functional.yaml
           - K6/service_owner/healthcheck.yaml

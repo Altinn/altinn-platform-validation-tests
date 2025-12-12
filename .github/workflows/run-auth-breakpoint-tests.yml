@@ -1,24 +1,24 @@
-name: Auth - run k6 breakpoint tests
-'on':
+name: authentication - run k6 breakpoint tests
+"on":
   schedule:
-    - cron: ' 0 08 * * 1 '
-    - cron: ' 0 10 * * 1 '
-    - cron: ' 0 12 * * 1 '
-    - cron: ' 0 14 * * 1 '
-    - cron: ' 0 4 * * 2 '
-    - cron: ' 20 4 * * 2 '
-    - cron: ' 40 4 * * 2 '
-    - cron: ' 0 5 * * 2 '
-    - cron: ' 20 5 * * 2 '
-    - cron: ' 40 5 * * 2 '
-    - cron: ' 0 6 * * 2 '
-    - cron: ' 20 6 * * 2 '
-    - cron: ' 40 4 * * 3 '
-    - cron: ' 0 5 * * 3 '
-    - cron: ' 20 5 * * 3 '
-    - cron: ' 40 5 * * 3 '
-    - cron: ' 0 6 * * 3 '
-run-name: Auth - run breakpoint
+    - cron: " 0 08 * * 1 "
+    - cron: " 0 10 * * 1 "
+    - cron: " 0 12 * * 1 "
+    - cron: " 0 14 * * 1 "
+    - cron: " 0 4 * * 2 "
+    - cron: " 20 4 * * 2 "
+    - cron: " 40 4 * * 2 "
+    - cron: " 0 5 * * 2 "
+    - cron: " 20 5 * * 2 "
+    - cron: " 40 5 * * 2 "
+    - cron: " 0 6 * * 2 "
+    - cron: " 20 6 * * 2 "
+    - cron: " 40 4 * * 3 "
+    - cron: " 0 5 * * 3 "
+    - cron: " 20 5 * * 3 "
+    - cron: " 40 5 * * 3 "
+    - cron: " 0 6 * * 3 "
+run-name: authentication - run breakpoint
 permissions:
   contents: read
   id-token: write
@@ -38,7 +38,7 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: conf/auth-break.yaml
+          config_file: conf/authentication-break.yaml
       - if: github.event.schedule == '0 08 * * 1'
         name: Run Breakpoint for .dist/yt01-post-consent-break
         run: kubectl apply --server-side -f .dist/yt01-post-consent-break

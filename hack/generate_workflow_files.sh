@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in auth dialogporten core
+for i in authentication dialogporten core
 do
   functional_config_files=$(find K6/api/tests/${i} -type f -name 'functional.yaml')
   jsonnet \
@@ -16,7 +16,7 @@ do
 done
 
 ite=0
-for i in auth dialogporten core
+for i in authentication dialogporten core
 do
   smoke_config_files=$(find K6/api/tests/${i} -type f -name 'smoke.yaml')
   if [ -n "$smoke_config_files" ]; then
@@ -37,7 +37,7 @@ do
 done
 
 ite=0
-for i in auth dialogporten core
+for i in authentication dialogporten core
 do
   healthcheck_config_files=$(find K6/api/tests/${i} -type f -name 'healthcheck.yaml')
   if [ -n "$healthcheck_config_files" ]; then
@@ -65,7 +65,7 @@ jsonnet hack/run-breakpoint-tests.jsonnet | yq '
     + (keys - ["name","on","run-name", "permissions", "jobs"])
     | map({key: ., value: $obj[.]})
     | from_entries
-' -y > .github/workflows/run-auth-breakpoint-tests.yml
+' -y > .github/workflows/run-authentication-breakpoint-tests.yml
 
 
 

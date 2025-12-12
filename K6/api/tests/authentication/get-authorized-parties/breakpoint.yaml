@@ -1,0 +1,128 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-org.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-system-user.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-ipvkr.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: INCLUDE_ALTINN2
+              value: true
+            - name: RANDOMIZE
+              value: true
+
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-avgiver-liste.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: RANDOMIZE
+              value: true
+
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-dialogporten.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: RANDOMIZE
+              value: true
+
+  - test_file: K6/api/tests/authentication/authorized-parties/get-authorized-parties-for-user-dp-with-filter.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: RANDOMIZE
+              value: true
