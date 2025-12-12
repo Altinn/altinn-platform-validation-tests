@@ -1,8 +1,9 @@
 #!/bin/bash
 
-for i in authentication dialogporten core
+for i in authentication dialogporten core portaler platform
 do
   functional_config_files=$(find K6/api/tests/${i} -type f -name 'functional.yaml')
+  if [ -n "$functional_config_files" ]; then
   jsonnet \
   --ext-str team="${i}" \
   --ext-str config_files="${functional_config_files}" \
@@ -13,10 +14,11 @@ do
     | map({key: ., value: $obj[.]})
     | from_entries
   ' -y > ".github/workflows/run-${i}-functional-tests.yml"
+  fi
 done
 
 ite=0
-for i in authentication dialogporten core
+for i in authentication dialogporten core portaler platform
 do
   smoke_config_files=$(find K6/api/tests/${i} -type f -name 'smoke.yaml')
   if [ -n "$smoke_config_files" ]; then
@@ -37,7 +39,7 @@ do
 done
 
 ite=0
-for i in authentication dialogporten core
+for i in authentication dialogporten core portaler platform
 do
   healthcheck_config_files=$(find K6/api/tests/${i} -type f -name 'healthcheck.yaml')
   if [ -n "$healthcheck_config_files" ]; then
