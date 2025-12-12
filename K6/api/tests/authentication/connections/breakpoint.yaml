@@ -1,6 +1,7 @@
 namespace: authentication
 test_definitions:
   - test_file: K6/api/tests/authentication/connections/get-connections-to.js
+    env_file: K6/api/tests/authentication/connections/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -8,16 +9,13 @@ test_definitions:
           enabled: true
         test_run:
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-            - name: RANDOMIZE
-              value: true
 
   - test_file: K6/api/tests/authentication/connections/get-connections-from.js
+    env_file: K6/api/tests/authentication/connections/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -25,16 +23,13 @@ test_definitions:
           enabled: true
         test_run:
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-            - name: RANDOMIZE
-              value: true
 
   - test_file: K6/api/tests/authentication/connections/get-access-packages-to.js
+    env_file: K6/api/tests/authentication/connections/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -42,16 +37,13 @@ test_definitions:
           enabled: true
         test_run:
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-            - name: RANDOMIZE
-              value: true
 
   - test_file: K6/api/tests/authentication/connections/get-access-packages-from.js
+    env_file: K6/api/tests/authentication/connections/common.env
     contexts:
       - environment: yt01
         test_type:
@@ -59,11 +51,7 @@ test_definitions:
           enabled: true
         test_run:
           env:
-            - name: K6_SUMMARY_MODE
-              value: full
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-            - name: RANDOMIZE
-              value: true

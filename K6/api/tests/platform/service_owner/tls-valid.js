@@ -2,7 +2,7 @@ import tls from "k6/x/tls";
 import { check } from "k6";
 
 import { sleep } from "k6";
-import { AltinnCdnClient } from "../clients/altinn-cdn/index.js";
+import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 
 
 export function setup() {
