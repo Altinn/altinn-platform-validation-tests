@@ -1,4 +1,4 @@
-name: Auth - run ad-hoc k6 breakpoint test
+name: authentication - run ad-hoc k6 breakpoint test
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       configFilePath:
         description: "Configuration file for the test runs"
         required: true
-        default: "conf/auth-break.yaml"
+        default: "conf/authentication-break.yaml"
 
       testId:
         type: choice
@@ -50,7 +50,7 @@ on:
         required: false
         default: ""
 
-run-name: Auth - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
+run-name: authentication - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
   id-token: write
   contents: read

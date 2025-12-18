@@ -1,0 +1,16 @@
+namespace: platform
+test_definitions:
+  - test_file: K6/api/tests/platform/service_owner/healthcheck.js
+    contexts:
+      - environment: tt02
+      - environment: prod
+
+  - test_file: K6/api/tests/platform/service_owner/ipv4-test.js
+    contexts:
+      - environment: tt02
+      - environment: prod
+
+  - test_file: K6/api/tests/platform/service_owner/tls-valid.js
+    contexts:
+      - environment: tt02
+      - environment: prod

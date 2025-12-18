@@ -1,12 +1,12 @@
-name: dialogporten - run k6 functional tests
+name: authentication - run k6 healthcheck tests
 'on':
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: 25 * * * *
 permissions:
   contents: read
   id-token: write
 jobs:
-  k6-functional:
+  k6-healthcheck:
     environment: test
     runs-on: ubuntu-latest
     steps:
@@ -21,7 +21,7 @@ jobs:
       - name: Generate k8s manifests
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
-          config_file: K6/api/tests/dialogporten/serviceowner/functional.yaml
+          config_file: K6/api/tests/authentication/resource-registry/healthcheck.yaml
       - name: Apply k8s manifests
         run: kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/
         shell: bash
