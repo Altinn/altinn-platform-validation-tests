@@ -35,13 +35,10 @@ export default function (data) {
   if (randomize) {
     testCustomer = randomItem(data);
   } else {
-    testCustomer = data[vu.idInTest - 1];
+    testCustomer = data[__ITER % data.length];
   }
 
   const customers = testCustomer.customers;
-  console.log(`Customer number: ${customers}`);
-
-  console.log(`VU ${vu.idInTest} using test customer orgNo ${testCustomer.orgNo}`);
 
   const options = new Map();
   options.set("env", __ENV.ENVIRONMENT);
