@@ -39,7 +39,7 @@ export default function (data) {
   }
 
   const customers = testCustomer.customers;
-  console.log(`Customer number from numbers.csv: ${customers}`);
+  console.log(`Customer number: ${customers}`);
 
   console.log(`VU ${vu.idInTest} using test customer orgNo ${testCustomer.orgNo}`);
 
