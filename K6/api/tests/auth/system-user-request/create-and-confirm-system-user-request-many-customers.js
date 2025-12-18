@@ -6,11 +6,9 @@ import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator, randomItem } 
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/auth/index.js";
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/auth/system-user-request/index.js";
 import { CreateNewSystem } from "../../../building-blocks/auth/system-register/index.js";
-import { parseCsvData, readCsv } from "../../../../helpers.js";
+import { parseCsvData } from "../../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
-
-const numbers = readCsv("numbers.csv");
 
 const lessThan1000 = new Trend("less_than_1000");
 const between1000And5000 = new Trend("between_1000_and_5000");
@@ -25,14 +23,8 @@ export const options = {
 };
 
 export function setup() {
-  ///Users/dagfinnolsen/dev/altinn-authentication/test/Altinn.Platform.Authentication.PerformanceTests/testdata/data-yt01-many-customers.csv
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-authentication/refs/heads/main/test/Altinn.Platform.Authentication.PerformanceTests/testdata/data-${__ENV.ENVIRONMENT}-many-customers.csv`);
-    const data = parseCsvData(res.body);
-    const numbersData = {};
-    for (let i = 0; i < numbers.length; i++) {
-      numbersData[numbers[i].uuid + numbers[i].type] = numbers[i].number;
-    }
-    return { data: data, numbers: numbersData };
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/create-approve-systemuser-revisited/K6/testdata/auth/data-${__ENV.ENVIRONMENT}-many-customers.csv`);
+    return parseCsvData(res.body);
 }
 
 export default function (data) {
@@ -41,12 +33,12 @@ export default function (data) {
 
   let testCustomer = undefined;
   if (randomize) {
-    testCustomer = randomItem(data.data);
+    testCustomer = randomItem(data);
   } else {
-    testCustomer = data.data[vu.idInTest - 1];
+    testCustomer = data[vu.idInTest - 1];
   }
 
-  const customers = data.numbers[testCustomer.orgUuid + testCustomer.orgType];
+  const customers = testCustomer.customers;
   console.log(`Customer number from numbers.csv: ${customers}`);
 
   console.log(`VU ${vu.idInTest} using test customer orgNo ${testCustomer.orgNo}`);
