@@ -15,6 +15,7 @@ export default defineConfig([
       globals: {
         __ENV: "readonly",
         __ITER: "readonly",
+        __VU: "readonly",
       },
     },
   },

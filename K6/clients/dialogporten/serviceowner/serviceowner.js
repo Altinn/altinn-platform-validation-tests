@@ -61,6 +61,36 @@ class ServiceOwnerApiClient {
 
         return http.get(url.toString(), params);
     }
+
+    /**
+    * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsUpdate_Dialog
+    * @param { string } dialogId
+    * @param { object } body
+    * @returns http.RefinedResponse
+    */
+    UpdateDialog(
+        dialogId,
+        body,
+        label = null
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + "/dialogs" + `/${dialogId}`);
+        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId";
+        const params = {
+            tags: { name: nameTag },
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json",
+                "User-Agent": "dialogporten-k6",
+                "Content-Type": "application/json"
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+        return http.put(url.toString(), JSON.stringify(body), params);
+    }
 }
 
 export { ServiceOwnerApiClient };
