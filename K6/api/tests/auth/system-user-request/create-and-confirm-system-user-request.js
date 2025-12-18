@@ -1,11 +1,13 @@
 import { check, group } from "k6";
 import http from "k6/http";
 import { vu } from "k6/execution";
-import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator, randomItem } from "../../../../common-imports.js";
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/auth/index.js";
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/auth/system-user-request/index.js";
 import { CreateNewSystem } from "../../../building-blocks/auth/system-register/index.js";
 import { parseCsvData } from "../../../../helpers.js";
+
+const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 
 export function setup() {
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
@@ -15,6 +17,15 @@ export function setup() {
 export default function (data) {
 
     const systemOwner = "713431400";
+
+    let testCustomer = undefined;
+    if (randomize) {
+      testCustomer = randomItem(data);
+    } else {
+      testCustomer = data[vu.idInTest - 1];
+    }
+
+    console.log(`VU ${vu.idInTest} using test customer orgNo ${testCustomer.orgNo}`);
 
     const options = new Map();
     options.set("env", __ENV.ENVIRONMENT);
@@ -73,7 +84,7 @@ export default function (data) {
         let res = CreateSystemUserRequest(
             vendorSystemUserRequestApiClient,
             systemId,
-            data[vu.idInTest - 1].orgNo,//partyOrgNo,
+            testCustomer.orgNo,//partyOrgNo,
             rights,
             allowedRedirectUrls[vu.idInTest - 1],
             []
@@ -98,7 +109,7 @@ export default function (data) {
         options.set("env", __ENV.ENVIRONMENT);
         options.set("ttl", 3600);
         options.set("scopes", "altinn:portal/enduser");
-        options.set("userId", data[vu.idInTest - 1].userId);
+        options.set("userId", testCustomer.userId);
 
         const tokenGenerator
             = new PersonalTokenGenerator(options);
@@ -107,9 +118,9 @@ export default function (data) {
             = new SystemUserRequestApiClient(__ENV.BASE_URL, tokenGenerator);
 
         res = ApproveSystemUserRequest(approverSystemUserRequestApiClient,
-            data[vu.idInTest - 1].partyId,
+            testCustomer.partyId,
             requestId);
-        check(res, {
+        check(res.body, {
             "ApproveSystemUserRequest - Approving the system user request is successful": (r) => {
                 const jsonBody = JSON.parse(r);
                 return true == jsonBody;

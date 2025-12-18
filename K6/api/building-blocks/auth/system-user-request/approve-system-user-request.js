@@ -28,5 +28,5 @@ export function ApproveSystemUserRequest(
             return res_body !== null && res_body !== undefined;
         }
     });
-    return res.body;
+    return res;
 }
