@@ -10,13 +10,12 @@ import { parseCsvData } from "../../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 
-const lessThan1000 = new Trend("less_than_1000");
-const between1000And5000 = new Trend("between_1000_and_5000");
-const between5000And10000 = new Trend("between_5000_and_10000");
-const between10000And15000 = new Trend("between_10000_and_15000");
-const between15000And20000 = new Trend("between_15000_and_20000");
-const between20000And25000 = new Trend("between_20000_and_25000");
-const moreThan25000 = new Trend("more_than_25000");
+const lessThan1000 = new Trend("a_less_than_1000");
+const between1000And2000 = new Trend("b_between_1000_and_2000");
+const between2000And5000 = new Trend("c_between_2000_and_5000");
+const between5000And10000 = new Trend("d_between_5000_and_10000");
+const between10000And20000 = new Trend("e_between_10000_and_20000");
+const moreThan20000 = new Trend("f_more_than_20000");
 
 export const options = {
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'count'],
@@ -146,18 +145,16 @@ export default function (data) {
 function putInCorrectMetric(customers, duration) {
   if (customers < 1000) {
     lessThan1000.add(duration);
-  } else if (customers >= 1000 && customers < 5000) {
-    between1000And5000.add(duration);
+  } else if (customers >= 1000 && customers < 2000) {
+    between1000And2000.add(duration);
+  } else if (customers >= 2000 && customers < 5000) {
+    between2000And5000.add(duration);
   } else if (customers >= 5000 && customers < 10000) {
     between5000And10000.add(duration);
-  } else if (customers >= 10000 && customers < 15000) {
-    between10000And15000.add(duration);
-  } else if (customers >= 15000 && customers < 20000) {
-    between15000And20000.add(duration);
-  } else if (customers >= 20000 && customers < 25000) {
-    between20000And25000.add(duration);
+  } else if (customers >= 10000 && customers < 20000) {
+    between10000And20000.add(duration);
   } else {
-    moreThan25000.add(duration);
+    moreThan20000.add(duration);
   }
 }
 

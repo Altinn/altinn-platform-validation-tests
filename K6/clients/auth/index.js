@@ -7,3 +7,4 @@ export { PdpAuthorizeClient } from "./pdp-authorize.js";
 export { ConnectionsApiClient } from "./connections.js";
 export { RolesApiClient } from "./roles.js";
 export { ResourceRegistryApiClient } from "./resource-registry.js";
+export { SystemUserClientsRequestApiClient } from "./system-user-clients-request.js";
