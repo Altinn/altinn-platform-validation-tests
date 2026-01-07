@@ -1,0 +1,5 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/roles/get-roles.js
+    contexts:
+      - environment: yt01
