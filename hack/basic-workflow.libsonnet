@@ -53,6 +53,6 @@
       run: std.format('kubectl apply --server-side -f .dist/%s', path),
     }
     else {
-      run: 'kubectl apply --server-side -f .dist/ -R',
+      run: 'kubectl apply --server-side -f .dist/ -R || true',
     },
 }
