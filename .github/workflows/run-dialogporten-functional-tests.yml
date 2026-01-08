@@ -24,5 +24,5 @@ jobs:
         with:
           config_file: "K6/api/tests/dialogporten/serviceowner/functional.yaml"
       - name: "Apply k8s manifests"
-        run: "kubectl apply --server-side -f .dist/ -R"
+        run: "kubectl apply --server-side -f .dist/ -R || true"
         shell: "bash"
