@@ -50,9 +50,9 @@
       shell: 'bash',
     } + if path != null
     then {
-      run: std.format('kubectl apply --server-side -f .dist/%s; rm -rf .build/ .conf/ .dist/', path),
+      run: std.format('kubectl apply --server-side -f .dist/%s', path),
     }
     else {
-      run: 'kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/',
+      run: 'kubectl apply --server-side -f .dist/ -R',
     },
 }
