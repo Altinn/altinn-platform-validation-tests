@@ -1,0 +1,33 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/connections/get-connections-to.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/connections/get-connections-from.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/connections/get-access-packages-to.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/connections/get-access-packages-from.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true

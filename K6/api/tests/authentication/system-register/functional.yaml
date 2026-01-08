@@ -1,0 +1,31 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/system-register/system-register-crud.js
+    contexts:
+      - environment: at22
+        test_type:
+          type: functional
+          enabled: false
+        test_run:
+          secrets:
+            - br-test.2025-07-03 # Needs renewal
+
+  - test_file: K6/api/tests/authentication/system-register/system-register-rights.js
+    contexts:
+      - environment: at22
+        test_type:
+          type: functional
+          enabled: false
+        test_run:
+          secrets:
+            - br-test.2025-07-03 # Needs renewal
+
+  - test_file: K6/api/tests/authentication/system-register/system-register-access-packages.js
+    contexts:
+      - environment: at22
+        test_type:
+          type: functional
+          enabled: false
+        test_run:
+          secrets:
+            - br-test.2025-07-03 # Needs renewal

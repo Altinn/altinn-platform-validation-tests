@@ -1,41 +1,35 @@
-name: Core - run k6 functional tests
-
+name: "core - run k6 functional tests"
 on:
-  workflow_dispatch:
-    inputs:
-      configFilePath:
-        description: "Configuration file for the test runs"
-        required: true
-        default: "conf/core.yaml"
-
   schedule:
     - cron: "*/15 * * * *"
-
+run-name: "run functional"
 permissions:
-  id-token: write
-  contents: read
-
+  contents: "read"
+  id-token: "write"
 jobs:
   k6-functional:
-    runs-on: ubuntu-latest
-    environment: test
+    environment: "test"
+    runs-on: "ubuntu-latest"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Setup k8s client
-        uses: ./.github/actions/setup-k8s
+      - name: "Checkout code"
+        uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
         with:
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
         with:
-          config_file: "${{ inputs.configFilePath || 'conf/core.yaml' }}" # No inputs when running as a cron
-
-      - name: Apply k8s manifests
-        shell: bash
-        run: |
-          kubectl apply --server-side -f .dist/ -R
+          config_file: "K6/api/tests/core/notifications/functional.yaml"
+      - name: "Apply k8s manifests"
+        run: "kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/"
+        shell: "bash"
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
+        with:
+          config_file: "K6/api/tests/core/notifications/order-with-reminders/functional.yaml"
+      - name: "Apply k8s manifests"
+        run: "kubectl apply --server-side -f .dist/ -R; rm -rf .build/ .conf/ .dist/"
+        shell: "bash"

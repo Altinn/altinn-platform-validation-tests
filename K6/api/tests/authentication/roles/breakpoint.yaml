@@ -1,0 +1,16 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/roles/get-roles.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: K6_SUMMARY_MODE
+              value: full
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
