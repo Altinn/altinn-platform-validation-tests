@@ -1,44 +1,33 @@
-name: portaler - run ad-hoc k6 breakpoint test
+name: authentication - run ad-hoc k6 smoke test
 
 on:
   workflow_dispatch:
     inputs:
       configFilePath:
-        type: choice
         description: "Configuration file for the test runs"
         required: true
         options:
-          - "K6/api/tests/portaler/breakpoint.yaml"
-        default: "K6/api/tests/portaler/breakpoint.yaml"
+          - K6/api/tests/authentication/get-authorized-parties/for-user-many-parties/smoke.yaml
 
       testId:
         type: choice
         description: "The test to run"
         options:
-          - at23-get-info-dot-altinn-dot-cloud-break
-
-      target_vus:
-        description: "The target VUs to reach"
-        required: false
-        default: 100
-
-      duration:
-        description: "How long should it take to reach the target_vus"
-        required: false
-        default: 10m
-
-      abortOnFail:
-        description: "Should the test run stop as soon as the threshold fails"
-        type: boolean
-        required: false
-        default: false
+          # - K6/api/tests/authentication/get-authorized-parties/for-user-many-parties/smoke.yaml
+          - yt01-with-altinn2-with-altinn3
+          - yt01-with-altinn2-with-altinn3-with-accesspackages
+          - yt01-with-altinn3
+          - yt01-with-altinn3-with-accesspackages
+          - yt01-with-altinn3-with-accesspackages-without-resources
+          - yt01-with-altinn3-without-includepartiesviakeyroles
+          - yt01-with-altinn3-without-includepartiesviakeyroles-with-accesspackages
 
       commandLineArgs:
         description: "Command line arguments to pass to the k6 run command"
         required: false
         default: ""
 
-run-name: Portaler - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
+run-name: authentication - run smoke test for ${{ inputs.testId }}
 permissions:
   id-token: write
   contents: read
@@ -61,24 +50,7 @@ jobs:
       - name: Process CLI args
         shell: bash
         run: |
-          TARGET_VUS="${TARGET_VUS:-}"
-          DURATION="${DURATION:-}"
-          ABORT_ON_FAIL="${ABORT_ON_FAIL:-}"
           COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
-
-          OUTPUT=""
-
-          if [ -n "$TARGET_VUS" ]; then
-            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_TARGET=$TARGET_VUS"
-          fi
-
-          if [ -n "$DURATION" ]; then
-            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_DURATION=$DURATION"
-          fi
-
-          if [ -n "$ABORT_ON_FAIL" ]; then
-            OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_ABORTONFAIL=$ABORT_ON_FAIL"
-          fi
 
           if [ -n "$COMMAND_LINE_ARGS" ]; then
             OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
@@ -90,9 +62,6 @@ jobs:
           # Output the final string
           echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
         env:
-          TARGET_VUS: ${{ inputs.target_vus }}
-          DURATION: ${{ inputs.duration }}
-          ABORT_ON_FAIL: ${{ inputs.abortOnFail }}
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: Generate k8s manifests
@@ -107,5 +76,5 @@ jobs:
           TEST_ID=${{ inputs.testId }}
           kubectl apply --server-side -f .dist/${TEST_ID}
           UNIQ_NAME=$(jq -r '.metadata.labels.uniq_name' .dist/${TEST_ID}/testrun.json)
-          kubectl -n portaler wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
-          kubectl -n portaler logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
+          kubectl -n authentication wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
+          kubectl -n authentication logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
