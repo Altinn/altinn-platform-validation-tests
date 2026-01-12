@@ -1,66 +1,68 @@
-name: Linting Tests
-
+name: "Linting Tests"
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - "main"
     paths:
-      - .github/workflows/**
-      - K6/**
-      - conf
-
+      - ".github/workflows/**"
+      - "K6/**"
+      - "conf"
+run-name: "linting"
 permissions:
-  contents: read
-
+  contents: "read"
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Use Node.js
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
+      - name: "Checkout code"
+        uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
+      - name: "Use Node.js"
+        uses: "actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f"
         with:
           node-version: "24.x"
-
-      - name: Dependencies
-        run: npm install
-
-      - name: Lint Code
-        run: npm run lint
-
-      - name: Ensure javascript files are Kebab Case
-        shell: bash
-        run: |
-          ./validate.sh
-
+      - name: "Dependencies"
+        run: "npm install"
+      - name: "Lint Code"
+        run: "npm run lint"
+      - name: "Ensure javascript files are Kebab Case"
+        run: "./validate.sh"
+        shell: "bash"
   validate_generation:
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
+      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
+        with:
+          config_file: "${{ matrix.config_file }}"
+      - name: "Tree"
+        run: "tree .dist/"
+        shell: "bash"
     strategy:
       matrix:
         config_file:
-          [
-            conf/auth-break.yaml,
-            conf/auth-healthcheck.yaml,
-            conf/auth-smoke.yaml,
-            conf/auth.yaml,
-
-            conf/core-perf.yaml,
-            conf/core.yaml,
-
-            conf/dialogporten-break.yaml,
-            conf/dialogporten.yaml,
-
-            conf/platform-healthcheck.yaml,
-
-            conf/portaler-healthcheck.yaml,
-            conf/portaler-break.yaml,
-          ]
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
-        with:
-          config_file: ${{ matrix.config_file }}
-      - shell: bash
-        run: |
-          tree .dist/
+          - "K6/api/tests/portaler/breakpoint.yaml"
+          - "K6/api/tests/portaler/healthcheck.yaml"
+          - "K6/api/tests/dialogporten/serviceowner/functional.yaml"
+          - "K6/api/tests/dialogporten/serviceowner/breakpoint.yaml"
+          - "K6/api/tests/authentication/register/functional.yaml"
+          - "K6/api/tests/authentication/connections/functional.yaml"
+          - "K6/api/tests/authentication/connections/smoke.yaml"
+          - "K6/api/tests/authentication/connections/breakpoint.yaml"
+          - "K6/api/tests/authentication/resource-registry/healthcheck.yaml"
+          - "K6/api/tests/authentication/pdp-authorize/functional.yaml"
+          - "K6/api/tests/authentication/pdp-authorize/smoke.yaml"
+          - "K6/api/tests/authentication/pdp-authorize/breakpoint.yaml"
+          - "K6/api/tests/authentication/system-register/functional.yaml"
+          - "K6/api/tests/authentication/get-authorized-parties/functional.yaml"
+          - "K6/api/tests/authentication/get-authorized-parties/smoke.yaml"
+          - "K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml"
+          - "K6/api/tests/authentication/roles/functional.yaml"
+          - "K6/api/tests/authentication/roles/smoke.yaml"
+          - "K6/api/tests/authentication/roles/breakpoint.yaml"
+          - "K6/api/tests/authentication/system-user-request/functional.yaml"
+          - "K6/api/tests/authentication/consent/functional.yaml"
+          - "K6/api/tests/authentication/consent/smoke.yaml"
+          - "K6/api/tests/authentication/consent/breakpoint.yaml"
+          - "K6/api/tests/platform/service_owner/healthcheck.yaml"
+          - "K6/api/tests/core/notifications/functional.yaml"
+          - "K6/api/tests/core/notifications/order-with-reminders/functional.yaml"

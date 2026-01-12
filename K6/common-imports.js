@@ -15,7 +15,7 @@ export {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
     MaskinportenAccessTokenGenerator
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.5/index.js";
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.8/index.js";
 
 import { expect } from "https://jslib.k6.io/k6-testing/0.5.0/index.js";
 

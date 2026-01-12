@@ -1,13 +1,13 @@
-name: "core - run k6 functional tests"
+name: "authentication - run k6 consent breakpoint tests"
 on:
   schedule:
-    - cron: "*/15 * * * *"
-run-name: "run functional"
+    - cron: "0 08 * * 1"
+run-name: "run breakpoint"
 permissions:
   contents: "read"
   id-token: "write"
 jobs:
-  k6-functional:
+  k6-breakpoint:
     environment: "test"
     runs-on: "ubuntu-latest"
     steps:
@@ -22,14 +22,8 @@ jobs:
       - name: "Generate k8s manifests"
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
         with:
-          config_file: "K6/api/tests/core/notifications/functional.yaml"
-      - name: "Apply k8s manifests"
-        run: "kubectl apply --server-side -f .dist/ -R || true"
-        shell: "bash"
-      - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
-        with:
-          config_file: "K6/api/tests/core/notifications/order-with-reminders/functional.yaml"
-      - name: "Apply k8s manifests"
-        run: "kubectl apply --server-side -f .dist/ -R || true"
+          config_file: "K6/api/tests/authentication/consent/breakpoint.yaml"
+      - if: "github.event.schedule == '0 08 * * 1'"
+        name: "Run Breakpoint for .dist/yt01-post-consent-break"
+        run: "kubectl apply --server-side -f .dist/yt01-post-consent-break"
         shell: "bash"

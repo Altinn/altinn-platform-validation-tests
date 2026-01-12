@@ -1,0 +1,45 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/pdp-authorize/enduser.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-direct-delegation.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-deny.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01

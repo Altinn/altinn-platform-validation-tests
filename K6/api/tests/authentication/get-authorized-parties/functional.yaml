@@ -1,0 +1,34 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-include-parties-via-key-role.js
+    contexts:
+      - environment: yt01
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-org.js
+    contexts:
+      - environment: yt01
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-system-user.js
+    contexts:
+      - environment: yt01
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user.js
+    contexts:
+      - environment: yt01
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-avgiver-liste.js
+    contexts:
+      - environment: yt01
+      - environment: at22
+      - environment: tt02
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten.js
+    contexts:
+      - environment: yt01
+      - environment: at22
+      - environment: tt02
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten-with-filter.js
+    contexts:
+      - environment: yt01
+      - environment: at22
+      - environment: tt02

@@ -1,0 +1,13 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/browser/system-user/client-delegation.js
+    env_file: K6/browser/common.env
+    contexts:
+      - environment: tt02
+        test_type:
+          type: browser
+          enabled: false # not maintained
+      - environment: at24
+        test_type:
+          type: browser
+          enabled: false # not maintained

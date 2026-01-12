@@ -1,0 +1,44 @@
+name: "authentication - run k6 pdp-authorize breakpoint tests"
+on:
+  schedule:
+    - cron: "0 4 * * 2"
+    - cron: "20 4 * * 2"
+    - cron: "40 4 * * 2"
+    - cron: "0 5 * * 2"
+run-name: "run breakpoint"
+permissions:
+  contents: "read"
+  id-token: "write"
+jobs:
+  k6-breakpoint:
+    environment: "test"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
+        with:
+          config_file: "K6/api/tests/authentication/pdp-authorize/breakpoint.yaml"
+      - if: "github.event.schedule == '0 4 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-enduser-break"
+        run: "kubectl apply --server-side -f .dist/yt01-enduser-break"
+        shell: "bash"
+      - if: "github.event.schedule == '20 4 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-dagl-break"
+        run: "kubectl apply --server-side -f .dist/yt01-dagl-break"
+        shell: "bash"
+      - if: "github.event.schedule == '40 4 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-dagl-direct-delegation-break"
+        run: "kubectl apply --server-side -f .dist/yt01-dagl-direct-delegation-break"
+        shell: "bash"
+      - if: "github.event.schedule == '0 5 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-dagl-deny-break"
+        run: "kubectl apply --server-side -f .dist/yt01-dagl-deny-break"
+        shell: "bash"

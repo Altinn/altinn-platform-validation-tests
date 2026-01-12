@@ -1,13 +1,12 @@
-name: "dialogporten - run k6 functional tests"
+name: "dialogporten - run k6 serviceowner breakpoint tests"
 on:
-  schedule:
-    - cron: "*/15 * * * *"
-run-name: "run functional"
+  workflow_dispatch: {}
+run-name: "run breakpoint"
 permissions:
   contents: "read"
   id-token: "write"
 jobs:
-  k6-functional:
+  k6-breakpoint:
     environment: "test"
     runs-on: "ubuntu-latest"
     steps:
@@ -22,7 +21,4 @@ jobs:
       - name: "Generate k8s manifests"
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
         with:
-          config_file: "K6/api/tests/dialogporten/serviceowner/functional.yaml"
-      - name: "Apply k8s manifests"
-        run: "kubectl apply --server-side -f .dist/ -R || true"
-        shell: "bash"
+          config_file: "K6/api/tests/dialogporten/serviceowner/breakpoint.yaml"

@@ -1,13 +1,13 @@
-name: "core - run k6 functional tests"
+name: "authentication - run k6 healthcheck tests"
 on:
   schedule:
     - cron: "*/15 * * * *"
-run-name: "run functional"
+run-name: "run healthcheck"
 permissions:
   contents: "read"
   id-token: "write"
 jobs:
-  k6-functional:
+  k6-healthcheck:
     environment: "test"
     runs-on: "ubuntu-latest"
     steps:
@@ -22,14 +22,7 @@ jobs:
       - name: "Generate k8s manifests"
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
         with:
-          config_file: "K6/api/tests/core/notifications/functional.yaml"
-      - name: "Apply k8s manifests"
-        run: "kubectl apply --server-side -f .dist/ -R || true"
-        shell: "bash"
-      - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
-        with:
-          config_file: "K6/api/tests/core/notifications/order-with-reminders/functional.yaml"
+          config_file: "K6/api/tests/authentication/resource-registry/healthcheck.yaml"
       - name: "Apply k8s manifests"
         run: "kubectl apply --server-side -f .dist/ -R || true"
         shell: "bash"
