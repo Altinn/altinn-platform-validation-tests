@@ -1,0 +1,13 @@
+{
+    "stages": [
+        {
+            "duration": "1m",
+            "target": 15
+        }
+    ],
+    "summaryTrendStats": [
+        "min",
+        "max",
+        "med"
+    ]
+}

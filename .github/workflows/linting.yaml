@@ -31,7 +31,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
-      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
+      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@9db43829e2ba67fdc14a05ac1297f153d26d22c1"
         with:
           config_file: "${{ matrix.config_file }}"
       - name: "Tree"
@@ -55,6 +55,7 @@ jobs:
           - "K6/api/tests/authentication/system-register/functional.yaml"
           - "K6/api/tests/authentication/get-authorized-parties/functional.yaml"
           - "K6/api/tests/authentication/get-authorized-parties/smoke.yaml"
+          - "K6/api/tests/authentication/get-authorized-parties/for-user-many-parties/smoke.yaml"
           - "K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml"
           - "K6/api/tests/authentication/roles/functional.yaml"
           - "K6/api/tests/authentication/roles/smoke.yaml"
