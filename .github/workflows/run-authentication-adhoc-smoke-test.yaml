@@ -8,6 +8,7 @@ on:
         required: true
         options:
           - K6/api/tests/authentication/get-authorized-parties/for-user-many-parties/smoke.yaml
+        default: "K6/api/tests/authentication/get-authorized-parties/for-user-many-parties/smoke.yaml"
 
       testId:
         type: choice
@@ -33,7 +34,7 @@ permissions:
   contents: read
 
 jobs:
-  k6-breakpoint:
+  k6-smoke:
     runs-on: ubuntu-latest
     environment: test
     steps:
@@ -65,7 +66,7 @@ jobs:
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@9db43829e2ba67fdc14a05ac1297f153d26d22c1main
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@9db43829e2ba67fdc14a05ac1297f153d26d22c1
         with:
           config_file: "${{ inputs.configFilePath }}"
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
