@@ -10,11 +10,23 @@ import { RegisterApiClient } from "../../../../clients/authentication/index.js";
  * @param {string } facilitatorOrg
  * @returns (string | ArrayBuffer | null)
  */
-export function AddRevisorRoleToErForOrg(registerClient, soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-    const res = registerClient.AddRevisorRoleToErForOrg(soapErUsername, soapErPassword, clientOrg, facilitatorOrg);
+export function AddRevisorRoleToErForOrg(
+    registerClient,
+    soapErUsername,
+    soapErPassword,
+    clientOrg,
+    facilitatorOrg
+) {
+    const res = registerClient.AddRevisorRoleToErForOrg(
+        soapErUsername,
+        soapErPassword,
+        clientOrg,
+        facilitatorOrg
+    );
 
     check(res, {
-        "AddRevisorRoleToErForOrg - status code MUST be 200": (res) => res.status == 200,
+        "AddRevisorRoleToErForOrg - status code MUST be 200": (res) =>
+            res.status == 200,
     });
 
     return res.body;
