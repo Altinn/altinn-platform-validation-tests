@@ -31,7 +31,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
-      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@9db43829e2ba67fdc14a05ac1297f153d26d22c1"
+      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@0d58976991bcad93df26d58e94a34aa3dd57672f"
         with:
           config_file: "${{ matrix.config_file }}"
       - name: "Tree"
