@@ -55,22 +55,23 @@ export class RegisterLookupClient {
     }
 
     const token = this.tokenGenerator.getToken();
+
     let urlString = this.FULL_PATH;
     if (fields !== null && fields !== undefined) {
       urlString += fields;
     }
     const url = new URL(urlString);
+    const body = JSON.stringify({
+      data: [`urn:altinn:party:username:${username}`],
+    });
     const params = {
       tags: { name: label || url.toString() },
       headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-type": "application/json",
+        PlatformAccessToken: `${token}`,
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": __ENV.SUBSCRIPTION_KEY,
       },
-      // Add request body based on username parameter
-      body: JSON.stringify({
-        data: [`urn:altinn:party:username:${username}`],
-      }),
     };
-    return http.get(url.toString(), params);
+    return http.post(url.toString(), body, params);
   }
 }
