@@ -1,10 +1,6 @@
 {
-    "stages": [
-        {
-            "duration": "1m",
-            "target": 15
-        }
-    ],
+    "vus": 1,
+    "iterations": 15,
     "summaryTrendStats": [
         "min",
         "max",
