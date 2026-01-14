@@ -16,7 +16,6 @@ import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 export function LookUpPartyInRegister(
     registerLookupClient,
     fields,
-    username,
     requestBody,
     label = null
 ) {
@@ -26,19 +25,15 @@ export function LookUpPartyInRegister(
 
     const res = registerLookupClient.LookupParties(fields, requestBody, label);
 
-    const succeed = check(res, {
-        "Register LookupParties - status code is 200": (r) => r.status === 200,
+    check(res, {
+    // A bit ugly, but works at least, should consider using chai?
+        [`Register LookupParties - status code should be 200 (actual: ${res.status})`]:
+      (r) => r.status === 200,
         "Register LookupParties - body is not empty": (r) => {
             const resBody = JSON.parse(r.body);
             return resBody !== null && resBody !== undefined;
         },
     });
-
-    if (!succeed) {
-        console.log(res.status);
-        console.log(res.status_text);
-        console.log(res.body);
-    }
 
     return res;
 }
