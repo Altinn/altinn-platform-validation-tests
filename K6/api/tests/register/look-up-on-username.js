@@ -1,3 +1,4 @@
+import http from "k6/http";
 import { check, group } from "k6";
 import { PlatformTokenGenerator } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
@@ -9,11 +10,14 @@ const label = "test-lookup-on-username";
 
 export const options = getOptions([label]);
 
-// Todo: use url once test files are checked in
-const csvPath = `../../../testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`;
-const usernames = parseCsvData(open(csvPath));
 
-export default function () {
+export function setup() {
+    // const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/test/register-536-lookup-username/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`);
+    return parseCsvData(res.body);
+}
+
+export default function (usernames) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
@@ -34,6 +38,7 @@ export default function () {
    * Note: YT01 does not currently have a frontend for user creation.
    * Username should be case insensitive.
    */
+
     const user = getItemFromList(usernames, randomize);
 
     // The user we're trying to lookup
@@ -81,4 +86,3 @@ export default function () {
         });
     });
 }
-export { handleSummary } from "../../../common-imports.js";
