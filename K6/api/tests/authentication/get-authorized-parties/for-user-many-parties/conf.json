@@ -1,0 +1,9 @@
+{
+    "vus": 1,
+    "iterations": 15,
+    "summaryTrendStats": [
+        "min",
+        "max",
+        "med"
+    ]
+}

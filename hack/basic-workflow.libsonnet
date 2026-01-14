@@ -1,3 +1,4 @@
+local utils = import './utils.libsonnet';
 {
 
   generate_basic_workflow(workflow_name, job_name, run_name): {
@@ -38,7 +39,7 @@
 
   generate_manifests_job(config_file): {
     name: 'Generate k8s manifests',
-    uses: 'Altinn/altinn-platform/actions/generate-k6-manifests@main',
+    uses: utils.generateK6ManifetsAction,
     with: {
       config_file: config_file,
     },

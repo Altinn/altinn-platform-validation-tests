@@ -1,0 +1,38 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/get-authorized-parties/for-user-many-parties
+test_definitions:
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn2-with-altinn3-with-accesspackages.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn2-with-altinn3.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn3-with-accesspackages-without-resources.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn3-with-accesspackages.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn3-without-includepartiesviakeyroles-with-accesspackages.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn3-without-includepartiesviakeyroles.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn3.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01

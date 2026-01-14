@@ -1,5 +1,6 @@
 local input_config_files = std.extVar('config_files');
 local config_files = std.split(input_config_files, '\n');
+local utils = import './utils.libsonnet';
 
 {
   name: 'Linting Tests',
@@ -57,7 +58,7 @@ local config_files = std.split(input_config_files, '\n');
           uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8',
         },
         {
-          uses: 'Altinn/altinn-platform/actions/generate-k6-manifests@main',
+          uses: utils.generateK6ManifetsAction,
           with: {
             config_file: '${{ matrix.config_file }}',
           },
