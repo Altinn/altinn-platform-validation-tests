@@ -21,7 +21,7 @@ const orgCodes = [
     "skd",
     "svv",
     "ttd",
-]
+];
 
 export const options = getOptions(endUserLabels);
 let authorizedPartiesClient = undefined;
@@ -32,15 +32,15 @@ let authorizedPartiesClient = undefined;
  * @returns {Array} An array containing the AuthorizedPartiesClient instance
  */
 function getClients() {
-  if (authorizedPartiesClient == undefined) {
-      const tokenOpts = new Map();
-      tokenOpts.set("env", __ENV.ENVIRONMENT);
-      tokenOpts.set("ttl", 3600);
-      tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");
-      const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-      authorizedPartiesClient = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
-  }
-  return [authorizedPartiesClient];
+    if (authorizedPartiesClient == undefined) {
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");
+        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+        authorizedPartiesClient = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
+    }
+    return [authorizedPartiesClient];
 }
 
 export default function () {
