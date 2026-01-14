@@ -1,12 +1,12 @@
 import { check, group } from "k6";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
-import { RegisterApiClient } from "../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator } from "../../../common-imports.js";
+import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import {
-    RemoveRevisorRoleFromEr,
     AddRevisorRoleToErForOrg,
     GetRevisorCustomerIdentifiersForParty,
-} from "../../../building-blocks/authentication/register/index.js";
-import { retry } from "../../../../helpers.js";
+    RemoveRevisorRoleFromEr,
+} from "../../building-blocks/register/index.js";
+import { retry } from "../../../helpers.js";
 
 export default function () {
     group("Remove org from ER and make sure it's reflected in Register", () => {

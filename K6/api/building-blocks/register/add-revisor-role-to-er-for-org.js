@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { RegisterApiClient } from "../../../../clients/authentication/index.js";
+import { RegisterApiClient } from "../../../clients/authentication/index.js";
 
 /**
  *
@@ -10,14 +10,14 @@ import { RegisterApiClient } from "../../../../clients/authentication/index.js";
  * @param {string } facilitatorOrg
  * @returns (string | ArrayBuffer | null)
  */
-export function RemoveRevisorRoleFromEr(
+export function AddRevisorRoleToErForOrg(
     registerClient,
     soapErUsername,
     soapErPassword,
     clientOrg,
     facilitatorOrg
 ) {
-    const res = registerClient.RemoveRevisorRoleFromEr(
+    const res = registerClient.AddRevisorRoleToErForOrg(
         soapErUsername,
         soapErPassword,
         clientOrg,
@@ -25,7 +25,8 @@ export function RemoveRevisorRoleFromEr(
     );
 
     check(res, {
-        "status code MUST be 200": (res) => res.status == 200,
+        "AddRevisorRoleToErForOrg - status code MUST be 200": (res) =>
+            res.status == 200,
     });
 
     return res.body;

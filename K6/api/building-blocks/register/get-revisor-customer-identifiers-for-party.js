@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { RegisterApiClient } from "../../../../clients/authentication/index.js";
+import { RegisterApiClient } from "../../../clients/authentication/index.js";
 
 /**
  *
@@ -8,8 +8,15 @@ import { RegisterApiClient } from "../../../../clients/authentication/index.js";
  * @param {string } subscriptionKey
  * @returns {[]}
  */
-export function GetRevisorCustomerIdentifiersForParty(registerClient, facilitatorPartyUuid, subscriptionKey) {
-    const res = registerClient.GetRevisorCustomerIdentifiersForParty(facilitatorPartyUuid, subscriptionKey);
+export function GetRevisorCustomerIdentifiersForParty(
+    registerClient,
+    facilitatorPartyUuid,
+    subscriptionKey
+) {
+    const res = registerClient.GetRevisorCustomerIdentifiersForParty(
+        facilitatorPartyUuid,
+        subscriptionKey
+    );
 
     check(res, {
         "Register customer list for revisor should respond 200 OK": (r) =>

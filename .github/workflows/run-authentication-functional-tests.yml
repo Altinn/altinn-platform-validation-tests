@@ -22,7 +22,7 @@ jobs:
       - name: "Generate k8s manifests"
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@main"
         with:
-          config_file: "K6/api/tests/authentication/register/functional.yaml"
+          config_file: "K6/api/tests/register/functional.yaml"
       - name: "Apply k8s manifests"
         run: "kubectl apply --server-side -f .dist/ -R || true"
         shell: "bash"
