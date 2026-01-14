@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TEAMS=(authentication dialogporten core portaler platform)
+TEAMS=(authentication dialogporten core portaler platform register)
 WORKFLOWS_DIR=".github/workflows"
 
 
