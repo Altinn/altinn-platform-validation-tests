@@ -30,8 +30,8 @@ jobs:
   validate_generation:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8"
-      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@0d58976991bcad93df26d58e94a34aa3dd57672f"
+      - uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+      - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@bfff0d4e624bcc96321727367c865e5ed6dcffc8"
         with:
           config_file: "${{ matrix.config_file }}"
       - name: "Tree"
