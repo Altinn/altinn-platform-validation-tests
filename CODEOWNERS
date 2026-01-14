@@ -3,4 +3,5 @@
 
 # Add specific ownership for further needs here
 /.github @Altinn/team-platform
+/hack @Altinn/team-platform
 /CODEOWNERS @Altinn/team-platform
