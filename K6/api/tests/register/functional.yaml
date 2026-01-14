@@ -12,9 +12,6 @@ test_definitions:
   - test_file: look-up-on-username.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
         test_run:
           secrets:
             - soap-er-creds
