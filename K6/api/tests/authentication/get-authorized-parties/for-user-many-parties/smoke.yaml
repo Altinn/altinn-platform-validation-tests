@@ -36,3 +36,8 @@ test_definitions:
     config_file: "conf.json"
     contexts:
       - environment: yt01
+  - test_scope: get-authorized-parties-for-user-many-parties
+    test_file: with-altinn2-with-altinn3-with-accesspackages-with-orgcode.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
