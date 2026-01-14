@@ -46,7 +46,7 @@ function getClients() {
 export default function () {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(endUsers, randomize);
-    const randomizeOrgCodes = true
+    const randomizeOrgCodes = true;
     const queryParams = {
         includeAltinn3: "true",
         includeAltinn2: "true",
