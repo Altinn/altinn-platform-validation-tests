@@ -14,14 +14,14 @@ const csvPath = `../../../testdata/register/register-usernames-${__ENV.ENVIRONME
 const usernames = parseCsvData(open(csvPath));
 
 export default function () {
-  const tokenOpts = new Map();
-  tokenOpts.set("env", __ENV.ENVIRONMENT);
-  tokenOpts.set("ttl", 3600);
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
 
-  const token = new PlatformTokenGenerator(tokenOpts);
-  const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
+    const token = new PlatformTokenGenerator(tokenOpts);
+    const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
 
-  /**
+    /**
    * This test requires a username that exists in Register:
    * https://github.com/Altinn/altinn-register
    * The username must correspond to a "self identified user" (i.e., a user with email login).
@@ -32,58 +32,66 @@ export default function () {
    * Note: YT01 does not currently have a frontend for user creation.
    * Username should be case insensitive.
    */
-  const user = getItemFromList(usernames, randomize);
-  const username = user.username;
+    const user = getItemFromList(usernames, randomize);
 
-  const fields = "person,party,user";
+    // The user we're trying to lookup
+    const username = user.username;
 
-  group("Look up username in Register", () => {
-    const requestBody = {
-      data: [`urn:altinn:party:username:${username}`],
-    };
+    const fields = "person,party,user";
 
-    const response = LookupPartiesInRegister(
-      registerLookupClient,
-      fields,
-      username,
-      requestBody,
-      label
-    );
+    group("Look up username in Register", () => {
+        const requestBody = {
+            data: [`urn:altinn:party:username:${username}`],
+        };
 
-    check(response, {
-      "Username was found in the response": (r) => r.body.includes(username),
-      "User is of type self-identified-user": (r) =>
-        JSON.parse(r.body).data.some(
-          (party) => party.partyType === "self-identified-user"
-        ),
+        const response = LookupPartiesInRegister(
+            registerLookupClient,
+            fields,
+            username,
+            requestBody,
+            label
+        );
+
+        check(response, {
+            "Username is included in the response 'Vegard'": (r) => {
+                const data = JSON.parse(r.body).data;
+                return data.some(
+                    (party) =>
+                        party.user.username?.toLowerCase() === username.toLowerCase()
+                );
+            },
+            "User is of type self-identified-user": (r) =>
+                JSON.parse(r.body).data.some(
+                    (party) => party.partyType === "self-identified-user"
+                ),
+        });
     });
-  });
 
-  group("Look up username in Register - case insensitivity", () => {
+    group("Look up username in Register - case insensitivity", () => {
     // Uppercase the username if not already, to test case insensitivity
-    const altUsername = username === username.toUpperCase();
+        const altUsername = username === username.toUpperCase();
 
-    const requestBody = {
-      data: [`urn:altinn:party:username:${altUsername}`],
-    };
+        const requestBody = {
+            data: [`urn:altinn:party:username:${altUsername}`],
+        };
 
-    const response = LookupPartiesInRegister(
-      registerLookupClient,
-      fields,
-      altUsername,
-      requestBody,
-      label
-    );
+        const response = LookupPartiesInRegister(
+            registerLookupClient,
+            fields,
+            altUsername,
+            requestBody,
+            label
+        );
 
-    check(response, {
-      "Username (case variant) was found in the response": (r) =>
-        r.body.includes(username) || r.body.includes(altUsername),
-      "User is of type self-identified-user (case variant)": (r) =>
-        JSON.parse(r.body).data.some(
-          (party) => party.partyType === "self-identified-user"
-        ),
+        check(response, {
+            "Username (case variant) was found in the response": (r) =>
+                r.body.includes(username) || r.body.includes(altUsername),
+            "User is of type self-identified-user (case variant)": (r) =>
+                JSON.parse(r.body).data.some(
+                    (party) => party.partyType === "self-identified-user"
+                ),
+        });
     });
-  });
 }
 
 export { handleSummary } from "../../../common-imports.js";

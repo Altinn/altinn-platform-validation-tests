@@ -26,7 +26,27 @@ function collectGroupChecksLines(group, lines) {
 export function handleSummary(data) {
   if (data?.root_group) {
     const lines = [];
-    collectGroupChecksLines(data.root_group, lines);
+    const root = data.root_group;
+
+    // k6 always has a "root group" with an empty name; skip printing it to avoid
+    // an extra "Testscenario:" line when only nested `group()`s are used.
+    const rootChecks = Array.isArray(root?.checks) ? root.checks : [];
+    if (rootChecks.length > 0) {
+      lines.push("\nTestscenario: (ungrouped)");
+      for (const c of rootChecks) {
+        const ok = c.fails === 0;
+        const icon = ok ? "✅" : "❌";
+        lines.push(
+          ` ${icon} ${c.name} (passes: ${c.passes}, fails: ${c.fails})`
+        );
+      }
+    }
+
+    const groups = Array.isArray(root?.groups) ? root.groups : [];
+    for (const g of groups) {
+      collectGroupChecksLines(g, lines);
+    }
+
     // Print once to keep output tidy.
     console.log(lines.join("\n"));
     return {};

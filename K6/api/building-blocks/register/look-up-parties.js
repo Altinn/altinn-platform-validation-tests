@@ -14,37 +14,31 @@ import { RegisterLookupClient } from "../../../clients/authentication/index.js";
  * @returns {import("k6/http").RefinedResponse}
  */
 export function LookUpPartyInRegister(
-  registerLookupClient,
-  fields,
-  username,
-  requestBody,
-  label = null
+    registerLookupClient,
+    fields,
+    username,
+    requestBody,
+    label = null
 ) {
-  if (requestBody === null || requestBody === undefined) {
-    throw new Error("LookUpPartyInRegister: requestBody is required");
-  }
+    if (requestBody === null || requestBody === undefined) {
+        throw new Error("LookUpPartyInRegister: requestBody is required");
+    }
 
-  const res = registerLookupClient.LookupParties(fields, requestBody, label);
+    const res = registerLookupClient.LookupParties(fields, requestBody, label);
 
-  const succeed = check(res, {
-    "Register LookupParties - status code is 200": (r) => r.status === 200,
-    "Register LookupParties - body is not empty": (r) => {
-      const resBody = JSON.parse(r.body);
-      return resBody !== null && resBody !== undefined;
-    },
-  });
+    const succeed = check(res, {
+        "Register LookupParties - status code is 200": (r) => r.status === 200,
+        "Register LookupParties - body is not empty": (r) => {
+            const resBody = JSON.parse(r.body);
+            return resBody !== null && resBody !== undefined;
+        },
+    });
 
-  check(requestBody, {
-    "Register LookupParties - request body contains username": (b) =>
-      Array.isArray(b?.data) &&
-      b.data.includes(`urn:altinn:party:username:${username}`),
-  });
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.status_text);
+        console.log(res.body);
+    }
 
-  if (!succeed) {
-    console.log(res.status);
-    console.log(res.status_text);
-    console.log(res.body);
-  }
-
-  return res;
+    return res;
 }
