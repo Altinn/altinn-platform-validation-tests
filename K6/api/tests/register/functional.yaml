@@ -1,4 +1,4 @@
-namespace: register
+namespace: authentication
 test_definitions:
   - test_file: K6/api/tests/register/add-rm-revisor-role-for-client.js
     contexts:
