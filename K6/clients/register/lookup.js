@@ -7,9 +7,9 @@ export class RegisterLookupClient {
    * @param {*} tokenGenerator
    */
     constructor(baseUrl, tokenGenerator) {
-    /**
-     * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-     */
+        /**
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
      * @property {string} BASE_PATH The path to the api without host information
@@ -31,7 +31,7 @@ export class RegisterLookupClient {
     * Lookup parties in register.
     *
     * @param {string} fields - Comma separated list of fields used to query which fields to include in the result.
-    *   Example usage: fields="person,party,user" results in endpoint 
+    *   Example usage: fields="person,party,user" results in endpoint
     *   <code>register/api/v1/access-management/parties/query?fields=person,party,user</code>
     * @param {string|null} label - Optional label for the request tag.
     * @returns http.RefinedResponse
@@ -76,7 +76,7 @@ export class RegisterLookupClient {
                 "Ocp-Apim-Subscription-Key": __ENV.REGISTER_SUBSCRIPTION_KEY,
             },
         };
-        console.log("Subscription key: ", __ENV.REGISTER_SUBSCRIPTION_KEY);
+
         return http.post(url.toString(), body, params);
     }
 }
