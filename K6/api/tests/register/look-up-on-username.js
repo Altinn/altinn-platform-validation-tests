@@ -12,8 +12,7 @@ export const options = getOptions([label]);
 
 
 export function setup() {
-    // const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`);
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/test/register-536-lookup-username/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`);
     return parseCsvData(res.body);
 }
 
