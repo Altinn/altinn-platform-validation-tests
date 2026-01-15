@@ -42,9 +42,9 @@ jobs:
         config_file:
           - "K6/api/tests/portaler/breakpoint.yaml"
           - "K6/api/tests/portaler/healthcheck.yaml"
+          - "K6/api/tests/register/functional.yaml"
           - "K6/api/tests/dialogporten/serviceowner/functional.yaml"
           - "K6/api/tests/dialogporten/serviceowner/breakpoint.yaml"
-          - "K6/api/tests/authentication/register/functional.yaml"
           - "K6/api/tests/authentication/connections/functional.yaml"
           - "K6/api/tests/authentication/connections/smoke.yaml"
           - "K6/api/tests/authentication/connections/breakpoint.yaml"

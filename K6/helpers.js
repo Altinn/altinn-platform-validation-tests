@@ -33,7 +33,9 @@ export function retry(conditionFn, options = {}) {
                 break;
             }
 
-            console.log(`${testscenario}] Attempt ${attempt}/${retries} — condition not met, retrying...`);
+            console.log(
+                `${testscenario}] Attempt ${attempt}/${retries} — condition not met, retrying...`
+            );
         } catch (err) {
             console.warn(`${testscenario}: Error on attempt ${attempt}:`);
         }
@@ -64,10 +66,9 @@ export function readCsv(filename) {
 export function getItemFromList(listOfItems, randomize = false) {
     if (randomize) {
         return randomItem(listOfItems);
-    }
-    else {
+    } else {
         return listOfItems[__ITER % listOfItems.length];
-    };
+    }
 }
 
 /**
@@ -75,7 +76,7 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * @returns A list with numberOfSublists lists.
-*/
+ */
 export function segmentData(listOfItems, numberOfSublists = 1) {
     const sublists = [];
     const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
@@ -94,9 +95,13 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
 /**
  * An attempt to abstract finding the number of VUs. Current implementation is a bit restrictive/opinionated but we can build upon.
  * @returns The number of VUs for the test
-*/
+ */
 export function getNumberOfVUs() {
-    return exec.test.options.scenarios.default.vus ?? __ENV.BREAKPOINT_STAGE_TARGET ?? 1;
+    return (
+        exec.test.options.scenarios.default.vus ??
+    __ENV.BREAKPOINT_STAGE_TARGET ??
+    1
+    );
 }
 
 /**
@@ -108,7 +113,7 @@ export function getOptions(labels) {
     const options = {
         summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
-        thresholds: {}
+        thresholds: {},
     };
 
     // Set labels with empty arrays to collect stats.

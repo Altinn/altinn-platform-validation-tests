@@ -5,10 +5,12 @@ import stylistic from "@stylistic/eslint-plugin";
 export default defineConfig([
   {
     plugins: {
-      "@stylistic": stylistic
+      "@stylistic": stylistic,
     },
-  }, {
-    files: ["**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.browser }
+  },
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    languageOptions: { globals: globals.browser },
   },
   {
     languageOptions: {
@@ -20,8 +22,8 @@ export default defineConfig([
   },
   {
     rules: {
-      "semi": 2,
-      "quotes": 2,
+      semi: 2,
+      quotes: 2,
       "no-undef": 2,
       "@stylistic/eol-last": ["error", "always"],
       "@stylistic/indent": ["error", 4],
