@@ -21,8 +21,6 @@ export default function (usernames) {
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
 
-    console.log("Environment: ", __ENV.ENVIRONMENT);
-
     const token = new PlatformTokenGenerator(tokenOpts);
     const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
 
