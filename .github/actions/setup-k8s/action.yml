@@ -24,7 +24,7 @@ runs:
       id: populate_kubeconfig_with_k6_context
       shell: bash
       run: |
-        if ! az aks install-cli --client-version v1.35.0; then
+        if ! az aks install-cli --client-version v1.35.0 --kubelogin-version v0.2.14; then
           echo "Failed to install kubectl CLI"
           exit 1
         fi
