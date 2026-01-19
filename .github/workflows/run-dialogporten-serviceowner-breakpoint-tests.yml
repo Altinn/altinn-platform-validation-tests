@@ -1,6 +1,43 @@
 name: "dialogporten - run k6 serviceowner breakpoint tests"
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: 
+    inputs:
+      configFilePath:
+        type: choice
+        description: "Configuration file for the test runs"
+        required: true
+        options:
+          - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
+
+      testId:
+        type: choice
+        description: "The test to run"
+        options:
+          # - K6/api/tests/authentication/connections/breakpoint.yaml
+          - yt01-get-dialogs-queries-notification-condition-break
+          - yt01-create-dialog-break
+      target_vus:
+        description: "The target VUs to reach"
+        required: false
+        type: number
+        default: 100
+
+      duration:
+        description: "How long should it take to reach the target_vus"
+        required: false
+        default: 10m
+
+      abortOnFail:
+        description: "Should the test run stop as soon as the threshold fails"
+        type: boolean
+        required: false
+        default: false
+
+      commandLineArgs:
+        description: "Command line arguments to pass to the k6 run command"
+        required: false
+        default: ""
+
 run-name: "run breakpoint"
 permissions:
   contents: "read"
