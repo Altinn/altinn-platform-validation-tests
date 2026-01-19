@@ -8,5 +8,5 @@
     day_of_week * 24 * 60 + hour * 60 + minute,
 
   generateK6ManifetsAction: std.format('Altinn/altinn-platform/actions/generate-k6-manifests@%s',
-                                       'bfff0d4e624bcc96321727367c865e5ed6dcffc8'),  // v0.0.28
+                                       '1d5f832369971798ef8c1842a280eaade8d65cf6'),  // v0.0.29
 }
