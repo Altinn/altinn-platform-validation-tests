@@ -1,103 +1,56 @@
-import { check, group } from "k6";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+// todo: Can I import this here or should it be put in a package.json etc
+import { describe, expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
-import { GetSystemUserRequestsBySystemId, GetSystemUserRequestsByUrl } from "../../../building-blocks/authentication/system-user-request/index.js";
-
-function getVendorTokenGenerator(systemOwnerOrgNo) {
-    const options = new Map();
-    options.set("env", __ENV.ENVIRONMENT);
-    options.set("ttl", 3600);
-    options.set(
-        "scopes",
-        "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write"
-    );
-    options.set("orgNo", systemOwnerOrgNo);
-    return new EnterpriseTokenGenerator(options);
-}
+import { assertHasLinks, followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
+import { getVendorTokenGenerator } from "../../../building-blocks/authentication/common/get-vendor-token-generator.js";
 
 function itemKey(x) {
     if (!x || typeof x !== "object") return "";
-    const v = x.id ?? x.requestId ?? x.systemInternalId ?? x.externalRef ?? "";
+    // Prefer stable identifiers only (avoid fields like externalRef which can be reused/collide).
+    const v = x.requestId ?? x.id ?? x.systemInternalId ?? "";
     return typeof v === "string" ? v : "";
 }
 
-function pageFingerprint(body) {
-    if (!body || !Array.isArray(body.data)) return "no-data";
-    const keys = body.data.map(itemKey).filter((k) => typeof k === "string" && k.length > 0);
-    const first = keys[0] ?? "";
-    const last = keys[keys.length - 1] ?? "";
-    return `len=${body.data.length};first=${first};last=${last}`;
-}
-
 function followNextLinks(systemUserRequestApiClient, firstPageBody, expectedBaseUrl, maxPages = 20) {
-    let current = firstPageBody;
-    let pages = 1;
-    const seenNextUrls = new Set();
-
-    while (current && current.links && current.links.next && pages < maxPages) {
-        const nextUrl = current.links.next;
-        const prevFingerprint = pageFingerprint(current);
-        check(nextUrl, {
-            "GetSystemUserRequestsBySystemId - links.next starts with https://": (u) => typeof u === "string" && u.startsWith("https://"),
-            "GetSystemUserRequestsBySystemId - links.next matches expected format": (u) =>
-                typeof u === "string" && u.startsWith(expectedBaseUrl),
-            "GetSystemUserRequestsBySystemId - links.next is not repeating": (u) => typeof u === "string" && !seenNextUrls.has(u),
-        });
-
-console.log(`[NEXT_URL] ${nextUrl}`);
-
-
-        if (typeof nextUrl === "string") {
-            if (seenNextUrls.has(nextUrl)) {
-                // Fail-fast: this matches the reported bug where links.next points to the first page every time.
-                console.log(`[PAGINATION_BUG] links.next repeated: ${nextUrl}`);
-                console.log(`[PAGINATION_BUG] prev page fingerprint: ${prevFingerprint}`);
-                break;
-            }
-            seenNextUrls.add(nextUrl);
-        }
-
-        current = GetSystemUserRequestsByUrl(systemUserRequestApiClient, nextUrl);
-        const newFingerprint = pageFingerprint(current);
-        check([prevFingerprint, newFingerprint], {
-            "GetSystemUserRequestsBySystemId - next page differs from previous (fingerprint)": ([a, b]) => a !== b,
-        });
-        if (prevFingerprint === newFingerprint) {
-            console.log(`[PAGINATION_BUG] next page fingerprint did not change for url: ${nextUrl}`);
-            console.log(`[PAGINATION_BUG] prev fingerprint: ${prevFingerprint}`);
-            console.log(`[PAGINATION_BUG] new  fingerprint: ${newFingerprint}`);
-        }
-        pages++;
-    }
-
-    return pages;
+    return followLinksNext({
+        firstBody: firstPageBody,
+        expectedNextBaseUrl: expectedBaseUrl,
+        maxPages,
+        fetchByUrl: (url) => systemUserRequestApiClient.GetSystemUserRequestsByUrl(url),
+        itemKey: { label: "requestId|id|systemInternalId", fn: itemKey },
+        pageLabel: "page",
+    }).pages;
 }
 
+/**
+ * Test: System User Requests By SystemId (vendor) + pagination.
+ *
+ * Ensures that paginated access to system user requests by systemId (vendor endpoint) works correctly through APIM.
+ */
 export default function () {
     // Constants for now, could be replaced, but this works in at22 and tt02.
     const systemOwnerOrgNo = "312605031";
     const systemId = "312605031_Virksomhetsbruker";
 
-    const vendorTokenGenerator = getVendorTokenGenerator(systemOwnerOrgNo);
+    const vendorTokenGenerator = getVendorTokenGenerator({
+        systemOwnerOrgNo,
+        scopes:
+            "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write",
+    });
     const systemUserRequestApiClient = new SystemUserRequestApiClient(__ENV.BASE_URL, vendorTokenGenerator);
 
-    group("Get System User Requests By SystemId (vendor) + pagination", function () {
+    describe("Get system user requests by systemId (vendor) + pagination", () => {
         // Expected pagination format: .../vendor/bysystem/{systemId}?token=...
         const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/request/vendor/bysystem/${systemId}?token=`;
 
-        const first = GetSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId);
-        check(first, {
-            "GetSystemUserRequestsBySystemId - has data array": (b) => b && Array.isArray(b.data),
-            "GetSystemUserRequestsBySystemId - has links object": (b) => b && b.links !== undefined,
-        });
+        const firstRes = systemUserRequestApiClient.GetSystemUserRequestsBySystemIdForVendor(systemId);
+        expect(firstRes.status, "first page status").to.equal(200);
+        const firstBody = firstRes.json();
+        assertHasLinks(firstBody, "page 1");
 
-        if (first && first.links && first.links.next) {
-            // "Click" next and ensure it returns a valid page
-            const second = GetSystemUserRequestsByUrl(systemUserRequestApiClient, first.links.next);
-            check(second, {
-                "GetSystemUserRequestsBySystemId - next page has data array": (b) => b && Array.isArray(b.data),
-            });
-            followNextLinks(systemUserRequestApiClient, second, expectedNextBaseUrl);
+        // Only follow pagination if we actually have a next link
+        if (firstBody && firstBody.links && firstBody.links.next) {
+            followNextLinks(systemUserRequestApiClient, firstBody, expectedNextBaseUrl);
         }
     });
 }

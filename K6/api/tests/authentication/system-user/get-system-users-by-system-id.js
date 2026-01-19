@@ -1,88 +1,49 @@
-import { check, group } from "k6";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { GetSystemUsersBySystemId, GetSystemUsersByUrl } from "../../../building-blocks/authentication/system-user/index.js";
+import { describe, expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
+import { assertHasLinks, followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
+import { getVendorTokenGenerator } from "../../../building-blocks/authentication/common/get-vendor-token-generator.js";
 
-function getVendorTokenGenerator(systemOwnerOrgNo) {
-    const options = new Map();
-    options.set("env", __ENV.ENVIRONMENT);
-    options.set("ttl", 3600);
-    options.set(
-        "scopes",
-        "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write"
-    );
-    options.set("orgNo", systemOwnerOrgNo);
-    return new EnterpriseTokenGenerator(options);
+function itemKey(x) {
+    if (!x || typeof x !== "object") return "";
+    // Prefer stable identifiers only (avoid fields like externalRef which can be reused/collide).
+    const v = x.systemInternalId ?? x.id ?? "";
+    return typeof v === "string" ? v : "";
 }
 
-function normalizeIds(items) {
-    if (!Array.isArray(items)) return new Set();
-    const ids = items
-        .map((x) => (x && (x.id ?? x.systemInternalId)) ?? null)
-        .filter((x) => typeof x === "string" && x.length > 0);
-    return new Set(ids);
-}
-
-function followNextLinks(systemUserApiClient, firstPageBody, expectedBaseUrl, maxPages = 20) {
-    let current = firstPageBody;
-    let pages = 1;
-
-    while (current && current.links && current.links.next && pages < maxPages) {
-        const nextUrl = current.links.next;
-        console.log(`[NEXT_URL] ${nextUrl}`);
-        check(nextUrl, {
-            "GetSystemUsersBySystemId - links.next starts with https://": (u) => typeof u === "string" && u.startsWith("https://"),
-            "GetSystemUsersBySystemId - links.next has expected base url": (u) =>
-                typeof u === "string" && u.startsWith(expectedBaseUrl),
-            "GetSystemUsersBySystemId - links.next contains token query param": (u) =>
-                typeof u === "string" && u.includes("?token="),
-        });
-        current = GetSystemUsersByUrl(systemUserApiClient, nextUrl);
-        pages++;
-    }
-
-    return pages;
-}
-
+/**
+ * Test: System Users By SystemId (vendor) + pagination.
+ *
+ * Ensures that paginated access to system users by systemId (vendor endpoint) works correctly through APIM.
+ */
 export default function () {
     // Constants for now, could be replaced, but this works in at22 and tt02.
     const systemOwnerOrgNo = "312605031";
-    const systemId = "312605031_Virksomhetsbruker"
+    const systemId = "312605031_Virksomhetsbruker";
 
-    const vendorTokenGenerator = getVendorTokenGenerator(systemOwnerOrgNo);
+    const vendorTokenGenerator = getVendorTokenGenerator({
+        systemOwnerOrgNo,
+        scopes:
+            "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write",
+    });
     const systemUserApiClient = new SystemUserApiClient(__ENV.BASE_URL, vendorTokenGenerator);
 
-    group("Get System Users By SystemId (vendor) + pagination", function () {
-        // Expected pagination format: .../vendor/bysystem/{systemId}?token=...
-        const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/vendor/bysystem/${systemId}?token=`;
+    // Expected pagination format: .../vendor/bysystem/{systemId}?token=...
+    const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/vendor/bysystem/${systemId}?token=`;
 
-        const first = GetSystemUsersBySystemId(systemUserApiClient, systemId);
-        check(first, {
-            "GetSystemUsersBySystemId - has data array": (b) => b && Array.isArray(b.data),
-            "GetSystemUsersBySystemId - has links object": (b) => b && b.links !== undefined,
-        });
+    describe("Get system users by systemId (vendor) + pagination", () => {
+        const firstRes = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
+        expect(firstRes.status, "first page status").to.equal(200);
+        const firstBody = firstRes.json();
+        assertHasLinks(firstBody, "page 1");
 
-        // If there is a next link, make sure we can "click" it and that it contains additional entries.
-        if (first && first.links && first.links.next) {
-            check(first.links.next, {
-                "GetSystemUsersBySystemId - links.next matches expected format": (u) =>
-                    typeof u === "string" && u.startsWith(expectedNextBaseUrl),
+        if (firstBody && firstBody.links && firstBody.links.next) {
+            followLinksNext({
+                firstBody,
+                expectedNextBaseUrl,
+                fetchByUrl: (url) => systemUserApiClient.GetSystemUsersByNextUrl(url),
+                itemKey: { label: "systemInternalId|id", fn: itemKey },
+                pageLabel: "page",
             });
-            const second = GetSystemUsersByUrl(systemUserApiClient, first.links.next);
-            check(second, {
-                "GetSystemUsersBySystemId - second page has data array": (b) => b && Array.isArray(b.data),
-                "GetSystemUsersBySystemId - second page has at least 1 item": (b) => b && Array.isArray(b.data) && b.data.length > 0,
-            });
-
-            const firstIds = normalizeIds(first.data);
-            const secondIds = normalizeIds(second.data);
-            const hasNew = Array.from(secondIds).some((id) => !firstIds.has(id));
-            check(hasNew, {
-                "GetSystemUsersBySystemId - second page contains new entries": (v) => v === true,
-            });
-
-            // Continue following until no more pages (or cap hit)
-            followNextLinks(systemUserApiClient, second, expectedNextBaseUrl);
         }
     });
 }
