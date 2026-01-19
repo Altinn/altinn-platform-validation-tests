@@ -6,6 +6,9 @@
  *
  */
 
+import postSlackMessage from "./slack.js";
+import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
+
 function collectGroupChecksLines(group, lines) {
     const groupName = group.name;
     lines.push(`\nTestscenario: ${groupName}`);
@@ -33,15 +36,20 @@ export function handleSummary(data) {
             collectGroupChecksLines(g, lines);
         }
 
-        // Print report to console
-        console.log(lines.join("\n"));
-        return {};
-    }
+        const hasFailures = lines.filter(line => line.includes("❌")).length > 0;
 
-    // Fallback: if someone runs with --new-machine-readable-summary or a wrapper changes shape,
-    // dump a minimal hint rather than silently doing nothing.
-    console.log(
-        "handleSummary: unexpected summary shape; enable raw dump by temporarily logging JSON.stringify(data)"
-    );
-    return {};
+        if (__ENV.RUNNING_IN_K8S == "true") {
+            if (hasFailures) {
+                postSlackMessage(data, lines.join("\n"));
+            }
+
+            return {
+                stdout: textSummary(data, { enableColors: false }),
+            };
+        }
+
+        return {
+            stdout: lines.join("\n"),
+        };
+    }
 }
