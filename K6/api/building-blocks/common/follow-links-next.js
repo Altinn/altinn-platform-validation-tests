@@ -21,7 +21,7 @@ export function assertHasLinks(body, pageDescription) {
  * @param {(url: string) => import("k6/http").RefinedResponse} args.fetchByUrl Function that fetches the fully qualified next URL
  * @param {string} args.expectedNextBaseUrl Expected prefix for links.next, e.g. `${BASE_URL}/.../bysystem/${systemId}?token=`
  * @param {number} [args.maxPages=20] Safety cap
- * @param {{ label: string, fn: (item: any) => string }} [args.itemKey] Pair describing how we dedupe entries across pages
+ * @param {{ label: string, fn: (item: any) => ({ field: string, value: string } | null) }} [args.itemKey] Pair describing how we dedupe entries across pages
  * @param {string} [args.pageLabel="page"] Label prefix for assertion messages
  * @returns {{ pages: number }}
  */
@@ -46,14 +46,14 @@ export function followLinksNext({
 
         // Avoid noisy per-item assertions: only assert when we actually find a duplicate.
         for (const item of body.data) {
-            const key = fn(item);
-            if (!key) continue;
+            const keyInfo = fn(item);
+            if (!keyInfo || !keyInfo.value) continue;
+            const key = keyInfo.value;
             if (seenItemKeys.has(key)) {
-                const snippet = JSON.stringify(item);
-                const truncated = snippet.length > 500 ? snippet.slice(0, 500) + "...(truncated)" : snippet;
+                const fullItem = JSON.stringify(item);
                 expect(
                     false,
-                    `${pageDescription}: Paginated response contains repeated entry (${label})=${key}; item=${truncated}`
+                    `${pageDescription}: Paginated response contains repeated entry (${label}) field=${keyInfo.field} value=${key}; item=${fullItem}`
                 ).to.equal(true);
                 return;
             }

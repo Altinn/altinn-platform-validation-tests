@@ -4,10 +4,9 @@ import { assertHasLinks, followLinksNext } from "../../../building-blocks/common
 import { getVendorTokenGenerator } from "../../../building-blocks/authentication/common/get-vendor-token-generator.js";
 
 function itemKey(x) {
-    if (!x || typeof x !== "object") return "";
-    // Prefer stable identifiers only (avoid fields like externalRef which can be reused/collide).
-    const v = x.systemInternalId ?? x.id ?? "";
-    return typeof v === "string" ? v : "";
+    return typeof x?.systemInternalId === "string" && x.systemInternalId.length > 0
+        ? { field: "systemInternalId", value: x.systemInternalId }
+        : null;
 }
 
 /**
@@ -41,7 +40,7 @@ export default function () {
                 firstBody,
                 expectedNextBaseUrl,
                 fetchByUrl: (url) => systemUserApiClient.GetSystemUsersByNextUrl(url),
-                itemKey: { label: "systemInternalId|id", fn: itemKey },
+                itemKey: { label: "systemInternalId", fn: itemKey },
                 pageLabel: "page",
             });
         }
