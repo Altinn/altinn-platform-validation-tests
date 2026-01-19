@@ -1,0 +1,7 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/system-user/get-system-users-by-system-id.js
+    contexts:
+      - environment: tt02
+      - environment: at22
+
