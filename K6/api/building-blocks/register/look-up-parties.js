@@ -25,15 +25,19 @@ export function LookUpPartyInRegister(
 
     const res = registerLookupClient.LookupParties(fields, requestBody, label);
 
-    check(res, {
-    // A bit ugly, but works at least, should consider using chai?
-        [`Register LookupParties - status code should be 200 (actual: ${res.status})`]:
-      (r) => r.status === 200,
+    const success = check(res, {
+        "Register LookupParties - status code should be 200":
+            (r) => r.status === 200,
         "Register LookupParties - body is not empty": (r) => {
             const resBody = JSON.parse(r.body);
             return resBody !== null && resBody !== undefined;
         },
     });
+
+    if (!success) {
+        console.error(res.status);
+        console.error(res.body);
+    }
 
     return res;
 }
