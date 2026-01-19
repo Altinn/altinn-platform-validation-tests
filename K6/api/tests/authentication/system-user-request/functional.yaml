@@ -1,8 +1,12 @@
 namespace: authentication
 test_definitions:
+  - test_file: K6/api/tests/authentication/system-user-request/get-system-user-requests-by-system-id.js
+    contexts:
+      - environment: tt02
+      - environment: at22
+
   - test_file: K6/api/tests/authentication/system-user-request/create-and-confirm-system-user-request.js
     contexts:
       - environment: at22
         test_type:
           type: functional
-          enabled: false # Needs cleanup as the UI does not do pagination

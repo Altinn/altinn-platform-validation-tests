@@ -29,6 +29,7 @@ function followNextLinks(systemUserApiClient, firstPageBody, expectedBaseUrl, ma
 
     while (current && current.links && current.links.next && pages < maxPages) {
         const nextUrl = current.links.next;
+        console.log(`[NEXT_URL] ${nextUrl}`);
         check(nextUrl, {
             "GetSystemUsersBySystemId - links.next starts with https://": (u) => typeof u === "string" && u.startsWith("https://"),
             "GetSystemUsersBySystemId - links.next has expected base url": (u) =>
@@ -36,7 +37,6 @@ function followNextLinks(systemUserApiClient, firstPageBody, expectedBaseUrl, ma
             "GetSystemUsersBySystemId - links.next contains token query param": (u) =>
                 typeof u === "string" && u.includes("?token="),
         });
-
         current = GetSystemUsersByUrl(systemUserApiClient, nextUrl);
         pages++;
     }

@@ -119,6 +119,42 @@ class SystemUserRequestApiClient {
         };
         return http.post(url, JSON.stringify(body), params);
     }
+
+    /**
+     * Retrieves system user requests for a given systemId for a vendor.
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/}
+     * @param {string} systemId
+     * @returns http.RefinedResponse
+     */
+    GetSystemUserRequestsBySystemIdForVendor(systemId) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
+        const params = {
+            tags: { name: `${this.FULL_PATH}/vendor/bysystem/systemId` },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.get(url, params);
+    }
+
+    /**
+     * Follows pagination using a fully qualified URL from links.next.
+     * @param {string} url Fully qualified URL from the API response (links.next)
+     * @returns http.RefinedResponse
+     */
+    GetSystemUserRequestsByUrl(url) {
+        const token = this.tokenGenerator.getToken();
+        const params = {
+            tags: { name: `${this.FULL_PATH}/by-url` },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.get(url, params);
+    }
 }
 
 export { SystemUserRequestApiClient };

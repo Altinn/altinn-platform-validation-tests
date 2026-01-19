@@ -10,8 +10,6 @@ import { SystemUserApiClient } from "../../../../clients/authentication/index.js
 export function GetSystemUsersByUrl(systemUserApiClient, url) {
     const res = systemUserApiClient.GetSystemUsersByNextUrl(url);
     const resBody = res.json();
-    console.log(`[PRINT_RESPONSES] GET ${url} -> status=${res.status}`);
-    console.log(JSON.stringify(resBody));
 
     check(res, {
         "GetSystemUsersByUrl - status code is 200": (r) => r.status === 200,
