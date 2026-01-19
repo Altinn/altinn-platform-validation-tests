@@ -2,7 +2,7 @@
 import { describe, expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
-import { getVendorTokenGenerator } from "../../../building-blocks/authentication/common/get-vendor-token-generator.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 
 function followNextLinks(systemUserRequestApiClient, firstPageBody, expectedBaseUrl, maxPages = 20) {
     return followLinksNext({
@@ -25,11 +25,17 @@ export default function () {
     const systemOwnerOrgNo = "312605031";
     const systemId = "312605031_Virksomhetsbruker";
 
-    const vendorTokenGenerator = getVendorTokenGenerator({
-        systemOwnerOrgNo,
-        scopes:
-            "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write",
-    });
+    // Token setup is intentionally kept in the test to showcase required settings.
+    const vendorTokenOptions = new Map();
+    vendorTokenOptions.set("env", __ENV.ENVIRONMENT);
+    vendorTokenOptions.set("ttl", 3600);
+    vendorTokenOptions.set(
+        "scopes",
+        "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write"
+    );
+    vendorTokenOptions.set("orgNo", systemOwnerOrgNo);
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(vendorTokenOptions);
+
     const systemUserRequestApiClient = new SystemUserRequestApiClient(__ENV.BASE_URL, vendorTokenGenerator);
 
     describe("Get system user requests by systemId (vendor) + pagination", () => {

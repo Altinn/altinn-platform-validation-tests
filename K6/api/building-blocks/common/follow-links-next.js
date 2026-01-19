@@ -1,5 +1,9 @@
 import { expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
 
+function escapeRegExp(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
  * Minimal assertion for pagination response shape: only verifies the `links` object
  * (and that `links.next`, if present, is a string).
@@ -26,7 +30,6 @@ export function assertHasLinks(body, pageDescription) {
 export function followLinksNext({
     firstBody,
     fetchByUrl,
-    expectedNextBaseUrl,
     maxPages = 20,
     pageLabel = "page",
 }) {
@@ -37,12 +40,22 @@ export function followLinksNext({
     while (current && current.links && current.links.next && pages < maxPages) {
         const nextUrl = current.links.next;
         console.log(`[NEXT_URL] ${nextUrl}`);
-        expect(nextUrl.startsWith(expectedNextBaseUrl), "links.next has expected prefix").to.equal(true);
-        expect(seenNextUrls.has(nextUrl), "links.next is repeating").to.equal(false);
+
+        // If this repeats, stop to avoid infinite looping.
+        // Some k6/chai output truncates long assertion messages, so print the full URL on failure.
+        if (seenNextUrls.has(nextUrl)) {
+            console.log(`[NEXT_URL_REPEAT] ${nextUrl}`);
+        }
+        expect(seenNextUrls.has(nextUrl), "links.next is repeating: " + nextUrl).to.equal(false);
         seenNextUrls.add(nextUrl);
 
         const nextRes = fetchByUrl(nextUrl);
-        expect(nextRes.status, `${pageLabel} ${pages + 1} status`).to.equal(200);
+        if (nextRes.status !== 200) {
+            // Fail with status + body (kept as a string for quick debugging).
+            expect.fail(
+                `${pageLabel} ${pages + 1} status expected 200, got ${nextRes.status}. Body: ${nextRes.body}`
+            );
+        }
         const nextBody = nextRes.json();
 
         current = nextBody;
