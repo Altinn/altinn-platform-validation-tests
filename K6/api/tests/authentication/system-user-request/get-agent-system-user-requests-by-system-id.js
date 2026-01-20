@@ -1,8 +1,8 @@
 // todo: Can I import this here or should it be put in a package.json etc
-import { describe, expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { check } from "k6";
 
 function followNextLinks(systemUserRequestApiClient, firstPageBody, expectedBaseUrl, maxPages = 20) {
     return followLinksNext({
@@ -31,25 +31,25 @@ export default function () {
     vendorTokenOptions.set("ttl", 3600);
     vendorTokenOptions.set(
         "scopes",
-        "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write"
+        "altinn:authentication/systemuser.request.read"
     );
     vendorTokenOptions.set("orgNo", systemOwnerOrgNo);
     const vendorTokenGenerator = new EnterpriseTokenGenerator(vendorTokenOptions);
 
     const systemUserRequestApiClient = new SystemUserRequestApiClient(__ENV.BASE_URL, vendorTokenGenerator);
 
-    describe("Get agent system user requests by systemId (vendor) + pagination", () => {
-        // Expected pagination format: .../vendor/agent/bysystem/{systemId}?token=...
-        const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/request/vendor/agent/bysystem/${systemId}?token=`;
+    const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/request/vendor/agent/bysystem/${systemId}?token=`;
 
-        const firstRes = systemUserRequestApiClient.GetAgentSystemUserRequestsBySystemIdForVendor(systemId);
-        expect(firstRes.status, "first page status").to.equal(200);
-        const firstBody = firstRes.json();
-
-        // Only follow pagination if we actually have a next link
-        if (firstBody && firstBody.links && firstBody.links.next) {
-            followNextLinks(systemUserRequestApiClient, firstBody, expectedNextBaseUrl);
-        }
+    const firstRes = systemUserRequestApiClient.GetAgentSystemUserRequestsBySystemIdForVendor(systemId);
+    const ok = check(firstRes, {
+        "first page status is 200": (r) => r.status === 200,
     });
+    if (!ok) return;
+
+    const firstBody = firstRes.json();
+    // Only follow pagination if we actually have a next link
+    if (firstBody && firstBody.links && firstBody.links.next) {
+        followNextLinks(systemUserRequestApiClient, firstBody, expectedNextBaseUrl);
+    }
 }
 

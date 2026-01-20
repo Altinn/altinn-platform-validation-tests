@@ -1,7 +1,7 @@
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { describe, expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
 import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { check } from "k6";
 
 /**
  * Test: System Users By SystemId (vendor) + pagination.
@@ -28,19 +28,20 @@ export default function () {
 
     const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/vendor/bysystem/${systemId}?token=`;
 
-    describe("Get system users by systemId (vendor) + pagination", () => {
-        const firstRes = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
-        expect(firstRes.status, "first page status").to.equal(200);
-        const firstBody = firstRes.json();
-
-        if (firstBody && firstBody.links && firstBody.links.next) {
-            followLinksNext({
-                firstBody,
-                expectedNextBaseUrl,
-                fetchByUrl: (url) => systemUserApiClient.GetSystemUsersByNextUrl(url),
-                pageLabel: "page",
-            });
-        }
+    const firstRes = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
+    const ok = check(firstRes, {
+        "first page status is 200": (r) => r.status === 200,
     });
+    if (!ok) return;
+
+    const firstBody = firstRes.json();
+    if (firstBody && firstBody.links && firstBody.links.next) {
+        followLinksNext({
+            firstBody,
+            expectedNextBaseUrl,
+            fetchByUrl: (url) => systemUserApiClient.GetSystemUsersByNextUrl(url),
+            pageLabel: "page",
+        });
+    }
 }
 

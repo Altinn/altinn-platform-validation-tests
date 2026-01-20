@@ -1,8 +1,4 @@
-import { expect } from "https://jslib.k6.io/k6chaijs/4.5.0.1/index.js";
-
-function escapeRegExp(s) {
-    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+import { check } from "k6";
 
 /**
  * Minimal assertion for pagination response shape: only verifies the `links` object
@@ -12,7 +8,9 @@ function escapeRegExp(s) {
  * @param {string} pageDescription Human-friendly label for assertion messages
  */
 export function assertHasLinks(body, pageDescription) {
-    expect(body, `${pageDescription}: links property`).to.have.property("links");
+    check(body, {
+        [`${pageDescription}: has links`]: (b) => b && typeof b === "object" && b.links !== undefined,
+    });
 }
 
 /**
@@ -30,6 +28,7 @@ export function assertHasLinks(body, pageDescription) {
 export function followLinksNext({
     firstBody,
     fetchByUrl,
+    expectedNextBaseUrl,
     maxPages = 20,
     pageLabel = "page",
 }) {
@@ -41,23 +40,25 @@ export function followLinksNext({
         const nextUrl = current.links.next;
         console.log(`[NEXT_URL] ${nextUrl}`);
 
-        // If this repeats, stop to avoid infinite looping.
-        // Some k6/chai output truncates long assertion messages, so print the full URL on failure.
-        if (seenNextUrls.has(nextUrl)) {
-            console.log(`[NEXT_URL_REPEAT] ${nextUrl}`);
-        }
-        expect(seenNextUrls.has(nextUrl), "links.next is repeating: " + nextUrl).to.equal(false);
+        const urlOk = check(nextUrl, {
+            "links.next has expected prefix": (u) => typeof u === "string" && u.startsWith(expectedNextBaseUrl),
+        });
+        if (!urlOk) return { pages };
+
+        const notRepeating = check(seenNextUrls, {
+            "links.next is repeating": (set) => !set.has(nextUrl),
+        });
+
+        if (!notRepeating) return { pages };
         seenNextUrls.add(nextUrl);
 
         const nextRes = fetchByUrl(nextUrl);
-        if (nextRes.status !== 200) {
-            // Fail with status + body (kept as a string for quick debugging).
-            expect.fail(
-                `${pageLabel} ${pages + 1} status expected 200, got ${nextRes.status}. Body: ${nextRes.body}`
-            );
-        }
-        const nextBody = nextRes.json();
+        const statusOk = check(nextRes, {
+            [`${pageLabel} ${pages + 1} status is 200`]: (r) => r.status === 200,
+        });
+        if (!statusOk) return { pages };
 
+        const nextBody = nextRes.json();
         current = nextBody;
         pages++;
     }
