@@ -1,0 +1,109 @@
+name: "dialogporten - run k6 serviceowner breakpoint tests"
+on:
+  workflow_dispatch: 
+    inputs:
+      configFilePath:
+        type: choice
+        description: "Configuration file for the test runs"
+        required: true
+        options:
+          - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
+
+      testId:
+        type: choice
+        description: "The test to run"
+        options:
+          # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
+          - yt01-should-send-notification-break
+          - yt01-create-dialog-break
+      target_vus:
+        description: "The target VUs to reach"
+        required: false
+        type: number
+        default: 100
+
+      duration:
+        description: "How long should it take to reach the target_vus"
+        required: false
+        default: 10m
+
+      abortOnFail:
+        description: "Should the test run stop as soon as the threshold fails"
+        type: boolean
+        required: false
+        default: false
+
+      commandLineArgs:
+        description: "Command line arguments to pass to the k6 run command"
+        required: false
+        default: ""
+
+run-name: dialogporten - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
+permissions:
+  contents: "read"
+  id-token: "write"
+jobs:
+  k6-breakpoint:
+    environment: test
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+
+      - name: Process CLI args
+        shell: bash
+        run: |
+            TARGET_VUS="${TARGET_VUS:-}"
+            DURATION="${DURATION:-}"
+            ABORT_ON_FAIL="${ABORT_ON_FAIL:-}"
+            COMMAND_LINE_ARGS="${COMMAND_LINE_ARGS:-}"
+  
+            OUTPUT=""
+  
+            if [ -n "$TARGET_VUS" ]; then
+              OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_TARGET=$TARGET_VUS"
+            fi
+  
+            if [ -n "$DURATION" ]; then
+              OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_DURATION=$DURATION"
+            fi
+  
+            if [ -n "$ABORT_ON_FAIL" ]; then
+              OUTPUT="$OUTPUT --env BREAKPOINT_STAGE_ABORTONFAIL=$ABORT_ON_FAIL"
+            fi
+  
+            if [ -n "$COMMAND_LINE_ARGS" ]; then
+              OUTPUT="$OUTPUT $COMMAND_LINE_ARGS"
+            fi
+  
+            # Remove leading whitespace
+            OUTPUT=$(echo "$OUTPUT" | sed 's/^[[:space:]]*//')
+  
+            # Output the final string
+            echo "COMMAND_LINE_ARGS=$OUTPUT" >> $GITHUB_ENV
+        env:
+            TARGET_VUS: ${{ inputs.target_vus }}
+            DURATION: ${{ inputs.duration }}
+            ABORT_ON_FAIL: ${{ inputs.abortOnFail }}
+            COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
+
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@bfff0d4e624bcc96321727367c865e5ed6dcffc8"
+        with:
+          config_file: "K6/api/tests/dialogporten/serviceowner/breakpoint.yaml"
+          command_line_args: ${{ env.COMMAND_LINE_ARGS }}
+      
+      - name: Apply k8s manifests
+        shell: bash
+        run: |
+            TEST_ID=${{ inputs.testId }}
+            kubectl apply --server-side -f .dist/${TEST_ID}
+            UNIQ_NAME=$(jq -r '.metadata.labels.uniq_name' .dist/${TEST_ID}/testrun.json)
+            kubectl -n dialogporten wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
+            kubectl -n dialogporten logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
