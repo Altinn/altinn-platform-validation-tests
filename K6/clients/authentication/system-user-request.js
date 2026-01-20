@@ -140,6 +140,24 @@ class SystemUserRequestApiClient {
     }
 
     /**
+     * Retrieves agent system user requests for a given systemId for a vendor.
+     * @param {string} systemId
+     * @returns http.RefinedResponse
+     */
+    GetAgentSystemUserRequestsBySystemIdForVendor(systemId) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/agent/bysystem/${systemId}`;
+        const params = {
+            tags: { name: `${this.FULL_PATH}/vendor/agent/bysystem/systemId` },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.get(url, params);
+    }
+
+    /**
      * Follows pagination using a fully qualified URL from links.next.
      * @param {string} url Fully qualified URL from the API response (links.next)
      * @returns http.RefinedResponse
