@@ -317,6 +317,6 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
                 ]
             }
         ]
-  };
+    };
 };
 
