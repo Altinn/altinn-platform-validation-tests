@@ -11,16 +11,16 @@ const orgNo = "713431400"; // digdir orgno
 const label = "create-dialog";
 
 const serviceResources = [
-  'ttd-dialogporten-performance-test-01',
-  'ttd-dialogporten-performance-test-02',
-  'ttd-dialogporten-performance-test-03',
-  'ttd-dialogporten-performance-test-04',
-  'ttd-dialogporten-performance-test-05',
-  'ttd-dialogporten-performance-test-06',
-  'ttd-dialogporten-performance-test-07',
-  'ttd-dialogporten-performance-test-08',
-  'ttd-dialogporten-performance-test-09',
-  'ttd-dialogporten-performance-test-10',
+    'ttd-dialogporten-performance-test-01',
+    'ttd-dialogporten-performance-test-02',
+    'ttd-dialogporten-performance-test-03',
+    'ttd-dialogporten-performance-test-04',
+    'ttd-dialogporten-performance-test-05',
+    'ttd-dialogporten-performance-test-06',
+    'ttd-dialogporten-performance-test-07',
+    'ttd-dialogporten-performance-test-08',
+    'ttd-dialogporten-performance-test-09',
+    'ttd-dialogporten-performance-test-10',
 ]
 
 export const options = getOptions([label]);
