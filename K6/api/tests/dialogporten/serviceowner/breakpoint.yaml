@@ -1,6 +1,19 @@
 namespace: dialogporten
+base_dir: K6/api/tests/dialogporten/serviceowner
 test_definitions:
-  - test_file: K6/api/tests/dialogporten/serviceowner/should-send-notification.js
+  - test_file: should-send-notification.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+  - test_file: create-dialog.js
     contexts:
       - environment: yt01
         test_type:
