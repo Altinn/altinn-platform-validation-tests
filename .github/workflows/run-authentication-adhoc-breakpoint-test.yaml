@@ -47,6 +47,7 @@ on:
       target_vus:
         description: "The target VUs to reach"
         required: false
+        type: number
         default: 100
 
       duration:
