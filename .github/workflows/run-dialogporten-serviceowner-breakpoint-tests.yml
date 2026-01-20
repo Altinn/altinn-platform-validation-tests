@@ -13,8 +13,8 @@ on:
         type: choice
         description: "The test to run"
         options:
-          # - K6/api/tests/authentication/connections/breakpoint.yaml
-          - yt01-get-dialogs-queries-notification-condition-break
+          # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
+          - yt01-should-send-notification-break
           - yt01-create-dialog-break
       target_vus:
         description: "The target VUs to reach"
@@ -38,7 +38,7 @@ on:
         required: false
         default: ""
 
-run-name: "run breakpoint"
+run-name: dialogporten - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
   contents: "read"
   id-token: "write"
@@ -105,5 +105,5 @@ jobs:
             TEST_ID=${{ inputs.testId }}
             kubectl apply --server-side -f .dist/${TEST_ID}
             UNIQ_NAME=$(jq -r '.metadata.labels.uniq_name' .dist/${TEST_ID}/testrun.json)
-            kubectl -n authentication wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
-            kubectl -n authentication logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
+            kubectl -n dialogporten wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
+            kubectl -n dialogporten logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
