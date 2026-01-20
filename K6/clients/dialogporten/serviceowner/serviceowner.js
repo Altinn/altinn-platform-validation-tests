@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { uuidv4 } from "../../../common-imports.js";
-import { getDialogBody } from "./request-templates.js";
+import { getDialogBody } from "./request-body-templates.js";
 
 class ServiceOwnerApiClient {
     /**
