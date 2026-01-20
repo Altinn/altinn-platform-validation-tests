@@ -16,7 +16,7 @@ export default function (data) {
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:organization:identifier-no",
-        party.orgNo,
+        party.orgno,
         includeAltinn2,
         label
     );
