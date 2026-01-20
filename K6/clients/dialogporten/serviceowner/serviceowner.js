@@ -99,7 +99,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Transmission
      * @param { string } dialogId 
      * @param { string } label 
-     * @returns 
+     * @returns http.RefinedResponse
      */
 
     PostTransmission(

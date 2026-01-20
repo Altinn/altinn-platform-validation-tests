@@ -10,7 +10,7 @@ const orgNo = "713431400"; // digdir orgno
 
 const label = "create-dialog";
 
-const serviceResources = [
+export const serviceResources = [
     "ttd-dialogporten-performance-test-01",
     "ttd-dialogporten-performance-test-02",
     "ttd-dialogporten-performance-test-03",
