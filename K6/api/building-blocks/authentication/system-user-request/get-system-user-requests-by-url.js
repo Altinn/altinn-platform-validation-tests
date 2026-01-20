@@ -2,12 +2,12 @@ import { check } from "k6";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 
 /**
- * Follow pagination for SystemUserRequests using a fully qualified URL from links.next.
+ * Follow pagination by next url using a fully qualified URL from links.next.
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
  * @param {string} url Fully qualified URL from the API response (links.next)
  * @returns {Object} Parsed JSON response
  */
-export function GetSystemUserRequestsByUrl(systemUserRequestApiClient, url) {
+export function GetByNextUrl(systemUserRequestApiClient, url) {
     const res = systemUserRequestApiClient.GetSystemUserRequestsByUrl(url);
     const resBody = res.json();
 

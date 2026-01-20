@@ -1,4 +1,5 @@
 import http from "k6/http";
+import { getNextUrlPaginatedResponse } from "../common/get-next-url-paginated-response.js";
 
 class SystemUserRequestApiClient {
     /**
@@ -86,7 +87,7 @@ class SystemUserRequestApiClient {
 
     /**
     * Creates a system user request of type agent
-    * OpenAPI for {@link https://docs.altinn.studio/api/authentication/systemuserapi/systemuserrequest/external/#create-an-agent-system-user-request}
+    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/RequestSystemUser/post_systemuser_request_vendor_agent}
     * @param {string } externalRef
     * @param {string } systemId
     * @param {string} partyOrgNo
@@ -163,15 +164,11 @@ class SystemUserRequestApiClient {
      * @returns http.RefinedResponse
      */
     GetSystemUserRequestsByUrl(url) {
-        const token = this.tokenGenerator.getToken();
-        const params = {
-            tags: { name: `${this.FULL_PATH}/by-url` },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.get(url, params);
+        return getNextUrlPaginatedResponse({
+            url,
+            tokenGenerator: this.tokenGenerator,
+            tagName: `${this.FULL_PATH}/by-next-url`,
+        });
     }
 }
 

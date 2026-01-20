@@ -9,16 +9,15 @@ import { SystemUserApiClient } from "../../../../clients/authentication/index.js
  */
 export function GetSystemUsersBySystemId(systemUserApiClient, systemId) {
     const res = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
-    const resBody = res.json();
 
     check(res, {
         "GetSystemUsersBySystemId - status code is 200": (r) => r.status === 200,
         "GetSystemUsersBySystemId - status text is 200 OK": (r) => r.status_text == "200 OK",
-        "GetSystemUsersBySystemId - body is not empty": () => resBody !== null && resBody !== undefined,
-        "GetSystemUsersBySystemId - body has data array": () => resBody && Array.isArray(resBody.data),
-        "GetSystemUsersBySystemId - body has links object": () => resBody && resBody.links !== undefined,
+        "GetSystemUsersBySystemId - body is not empty": (r) => r.body !== null && r.body !== undefined,
+        "GetSystemUsersBySystemId - body has data array": (r) => r.body && Array.isArray(JSON.parse(r.body).data),
+        "GetSystemUsersBySystemId - body has links object": (r) => r.body && JSON.parse(r.body).links !== undefined,
     });
 
-    return resBody;
+    return JSON.parse(res.body);
 }
 

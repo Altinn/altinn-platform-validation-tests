@@ -1,7 +1,7 @@
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
 import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
+import { GetSystemUsersBySystemId, GetSystemUsersByUrl } from "../../../building-blocks/authentication/system-user/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { check } from "k6";
 
 /**
  * Test: System Users By SystemId (vendor) + pagination.
@@ -19,29 +19,24 @@ export default function () {
     vendorTokenOptions.set("ttl", 3600);
     vendorTokenOptions.set(
         "scopes",
-        "altinn:authentication/systemuser.read altinn:authentication/systemuser.request.read altinn:authentication/systemregister.write"
+        "altinn:authentication/systemregister.write"
     );
     vendorTokenOptions.set("orgNo", systemOwnerOrgNo);
     const vendorTokenGenerator = new EnterpriseTokenGenerator(vendorTokenOptions);
 
-    const systemUserApiClient = new SystemUserApiClient(__ENV.BASE_URL, vendorTokenGenerator);
-
     const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/vendor/bysystem/${systemId}?token=`;
 
-    const firstRes = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
-    const ok = check(firstRes, {
-        "first page status is 200": (r) => r.status === 200,
-    });
-    if (!ok) return;
+    const systemUserApiClient = new SystemUserApiClient(__ENV.BASE_URL, vendorTokenGenerator);
 
-    const firstBody = firstRes.json();
-    if (firstBody && firstBody.links && firstBody.links.next) {
-        followLinksNext({
-            firstBody,
-            expectedNextBaseUrl,
-            fetchByUrl: (url) => systemUserApiClient.GetSystemUsersByNextUrl(url),
-            pageLabel: "page",
-        });
-    }
+    const firstBody = GetSystemUsersBySystemId(systemUserApiClient, systemId);
+
+    const pages = followLinksNext({
+        firstBody,
+        expectedNextBaseUrl,
+        fetchByUrl: (url) => GetSystemUsersByUrl(systemUserApiClient, url),
+    });
+
+    console.log("Counted Pages: " + pages);
+    
 }
 

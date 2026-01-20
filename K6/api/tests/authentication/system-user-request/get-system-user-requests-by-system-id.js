@@ -1,18 +1,9 @@
 // todo: Can I import this here or should it be put in a package.json etc
-import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
+import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
+import { GetSystemUserRequestsBySystemId, GetSystemUserRequestsByUrl } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { check } from "k6";
 
-function followNextLinks(systemUserRequestApiClient, firstPageBody, expectedBaseUrl, maxPages = 20) {
-    return followLinksNext({
-        firstBody: firstPageBody,
-        expectedNextBaseUrl: expectedBaseUrl,
-        maxPages,
-        fetchByUrl: (url) => systemUserRequestApiClient.GetSystemUserRequestsByUrl(url),
-        pageLabel: "page",
-    }).pages;
-}
 
 /**
  * Test: System User Requests By SystemId (vendor) + pagination.
@@ -38,19 +29,16 @@ export default function () {
 
     const systemUserRequestApiClient = new SystemUserRequestApiClient(__ENV.BASE_URL, vendorTokenGenerator);
 
-    // Expected pagination format: .../vendor/bysystem/{systemId}?token=...
     const expectedNextBaseUrl = `${__ENV.BASE_URL}/authentication/api/v1/systemuser/request/vendor/bysystem/${systemId}?token=`;
 
-    const firstRes = systemUserRequestApiClient.GetSystemUserRequestsBySystemIdForVendor(systemId);
-    const ok = check(firstRes, {
-        "first page status is 200": (r) => r.status === 200,
-    });
-    if (!ok) return;
+    const firstBody = GetSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId);
 
-    const firstBody = firstRes.json();
-    // Only follow pagination if we actually have a next link
-    if (firstBody && firstBody.links && firstBody.links.next) {
-        followNextLinks(systemUserRequestApiClient, firstBody, expectedNextBaseUrl);
-    }
+    const pages = followLinksNext({
+        firstBody,
+        expectedNextBaseUrl,
+        fetchByUrl: (url) => GetSystemUserRequestsByUrl(systemUserRequestApiClient, url),
+    });
+
+    console.log("Counted Pages: " + pages);
 }
 
