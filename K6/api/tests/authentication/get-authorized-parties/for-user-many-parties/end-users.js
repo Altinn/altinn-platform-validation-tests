@@ -2,29 +2,29 @@
 // The labels include the approximate number of authorized parties for each user.
 // The labels are prefixed with a letter to ensure consistent ordering in test reports.
 
-const environment = __ENV.ENVIRONMENT || 'yt01';
+const environment = __ENV.ENVIRONMENT || "yt01";
 const endUsersByEnvironment = {
-  yt01: [
-    { pid: "14022216091", label: "a_14022216091_80k" },
-    { pid: "21070450361", label: "b_21070450361_47K" },
-    { pid: "10121251049", label:  "c_10121251049_30k" },
-    { pid: "11111574113", label:  "d_11111574113_27k" },
-    { pid: "26091077719", label:  "e_26091077719_27k" },
-  ],
-  tt02: [
-    { pid: "06095101567", label:  "a_06095101567_48k" },
-    { pid: "22877497392", label:  "b_22877497392_15k" },
-    { pid: "05897398887", label:  "c_05897398887_15k" },
-    { pid: "13886499404", label:  "d_13886499404_13k" },
-    { pid: "01055902352", label:  "e_01055902352_12k" },
-  ],
-  at23: [
-    { pid: "22877497392", label:  "a_22877497392_15k" },
-    { pid: "13886499404", label:  "b_13886499404_13k" },
-    { pid: "14836599080", label:  "c_14836599080_6k" },
-    { pid: "23812849735", label:  "d_23812849735_6k" },
-    { pid: "24916399592", label:  "e_24916399592_6k" },
-  ],
+    yt01: [
+        { pid: "14022216091", label: "a_14022216091_80k" },
+        { pid: "21070450361", label: "b_21070450361_47K" },
+        { pid: "10121251049", label:  "c_10121251049_30k" },
+        { pid: "11111574113", label:  "d_11111574113_27k" },
+        { pid: "26091077719", label:  "e_26091077719_27k" },
+    ],
+    tt02: [
+        { pid: "06095101567", label:  "a_06095101567_48k" },
+        { pid: "22877497392", label:  "b_22877497392_15k" },
+        { pid: "05897398887", label:  "c_05897398887_15k" },
+        { pid: "13886499404", label:  "d_13886499404_13k" },
+        { pid: "01055902352", label:  "e_01055902352_12k" },
+    ],
+    at23: [
+        { pid: "22877497392", label:  "a_22877497392_15k" },
+        { pid: "13886499404", label:  "b_13886499404_13k" },
+        { pid: "14836599080", label:  "c_14836599080_6k" },
+        { pid: "23812849735", label:  "d_23812849735_6k" },
+        { pid: "24916399592", label:  "e_24916399592_6k" },
+    ],
 };
 
 export const endUsers = endUsersByEnvironment[environment] || [];
