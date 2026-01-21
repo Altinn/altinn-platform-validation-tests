@@ -1,42 +1,49 @@
-export function uuidv7() {
+import crypto from "k6/crypto";
 
-  let uuid = "";
-
-  // generate time chars
-  let milli = (new Date()).getTime();
-  let time = hex(milli, 12);
-
-  // cat time and random chars
-  uuid += time.substring(0, 8);
-  uuid += "-";
-  uuid += time.substring(8, 12);
-  uuid += "-";
-  uuid += hex(random(16), 4);
-  uuid += "-";
-  uuid += hex(random(16), 4);
-  uuid += "-";
-  uuid += hex(random(48), 12);
-
-  // version and variant
-  uuid = uuid.split('');
-  uuid[14] = '7';
-  uuid[19] = ['8', '9', 'a', 'b'][random(2)];
-  uuid = uuid.join('');
-
-  return uuid;
+function hex2(b) {
+    return b.toString(16).padStart(2, "0");
 }
 
-function hex(number, len) {
-  return number.toString(16).padStart(len, '0');
+function uuidv7() {
+    // Date.now() is < 2^53, so integer math via division is safe/precise here.
+    const ts = Date.now();
+
+    // 16 bytes UUID
+    const bytes = new Uint8Array(16);
+
+    // Write 48-bit timestamp (big-endian) into bytes[0..5]
+    bytes[0] = Math.floor(ts / 1099511627776) & 0xff; // 2^40
+    bytes[1] = Math.floor(ts / 4294967296) & 0xff;    // 2^32
+    bytes[2] = Math.floor(ts / 16777216) & 0xff;      // 2^24
+    bytes[3] = Math.floor(ts / 65536) & 0xff;         // 2^16
+    bytes[4] = Math.floor(ts / 256) & 0xff;           // 2^8
+    bytes[5] = ts & 0xff;
+
+    // Fill remaining 10 bytes with randomness (k6: randomBytes returns ArrayBuffer)
+    const rnd = new Uint8Array(crypto.randomBytes(10));
+    bytes.set(rnd, 6);
+
+    // Set UUID version to 7 (high nibble of byte 6)
+    bytes[6] = (bytes[6] & 0x0f) | 0x70;
+
+    // Set RFC4122 variant (10xxxxxx) (byte 8)
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    // Format as canonical UUID: 8-4-4-4-12
+    const hex =
+        hex2(bytes[0]) + hex2(bytes[1]) + hex2(bytes[2]) + hex2(bytes[3]) +
+        hex2(bytes[4]) + hex2(bytes[5]) + hex2(bytes[6]) + hex2(bytes[7]) +
+        hex2(bytes[8]) + hex2(bytes[9]) + hex2(bytes[10]) + hex2(bytes[11]) +
+        hex2(bytes[12]) + hex2(bytes[13]) + hex2(bytes[14]) + hex2(bytes[15]);
+
+    return (
+        hex.slice(0, 8) + "-" +
+        hex.slice(8, 12) + "-" +
+        hex.slice(12, 16) + "-" +
+        hex.slice(16, 20) + "-" +
+        hex.slice(20, 32)
+    );
 }
-
-function random(bits) {
-  if (bits > 52) { bits = 52 };
-  return Math.floor(Math.random() * Math.pow(2, bits));
-}
-
-
-
 
 export function getDialogBody ( endUser, serviceResource, serviceOwner) {
     return {
