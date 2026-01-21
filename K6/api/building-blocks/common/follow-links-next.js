@@ -10,7 +10,7 @@ import { check } from "k6";
  * @param {number} [args.maxPages=20] Safety cap
  * @returns {number} Number of pages visited (including the first page)
  */
-export function followLinksNext({
+export function VerifyNextLinkPagination({
     firstBody,
     expectedNextBaseUrl,
     fetchByUrl,

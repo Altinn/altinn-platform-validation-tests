@@ -1,7 +1,8 @@
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
+import { VerifyNextLinkPagination } from "../../../building-blocks/common/follow-links-next.js";
 import { GetSystemUsersBySystemId, GetSystemUsersByUrl } from "../../../building-blocks/authentication/system-user/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { check } from "k6";
 
 /**
  * Test: System Users By SystemId (vendor) + pagination.
@@ -30,13 +31,15 @@ export default function () {
 
     const firstBody = GetSystemUsersBySystemId(systemUserApiClient, systemId);
 
-    const pages = followLinksNext({
+    const pages = VerifyNextLinkPagination({
         firstBody,
         expectedNextBaseUrl,
         fetchByUrl: (url) => GetSystemUsersByUrl(systemUserApiClient, url),
     });
 
-    console.log("Counted Pages: " + pages);
+    check(pages, {
+        "Verify that Get System Users By System Id return paginated data": (p) => p > 1,
+    });
     
 }
 

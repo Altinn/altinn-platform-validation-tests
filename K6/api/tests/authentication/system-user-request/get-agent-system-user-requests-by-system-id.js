@@ -1,7 +1,8 @@
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
-import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
+import { VerifyNextLinkPagination } from "../../../building-blocks/common/follow-links-next.js";
 import { GetAgentSystemUserRequestsBySystemId, GetSystemUserRequestsByUrl } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { check } from "k6";
 
 /**
  * Test: Agent System User Requests By SystemId (vendor) + pagination.
@@ -31,10 +32,14 @@ export default function () {
 
     const firstBody = GetAgentSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId);
 
-    followLinksNext({
+    const pages = VerifyNextLinkPagination({
         firstBody,
         expectedNextBaseUrl,
         fetchByUrl: (url) => GetSystemUserRequestsByUrl(systemUserRequestApiClient, url),
+    });
+
+    check(pages, {
+        "Verify that System User Agent Requests return paginated data": (p) => p > 1,
     });
 
 }
