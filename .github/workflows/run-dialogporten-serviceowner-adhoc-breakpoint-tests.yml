@@ -1,4 +1,4 @@
-name: "dialogporten - run k6 serviceowner breakpoint tests"
+name: "dialogporten - run k6 serviceowner adhoc breakpoint tests"
 on:
   workflow_dispatch:
     inputs:
@@ -45,7 +45,7 @@ permissions:
   id-token: "write"
 jobs:
   k6-breakpoint:
-    environment: test
+    environment: dev
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
