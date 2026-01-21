@@ -431,7 +431,7 @@ export function getTransmissionBody (relatedTransmissionId = 0) {
                     ]
                 }
             ]
-        }
+        };
     if (relatedTransmissionId != 0) {
         transmission.relatedTransmissionId = relatedTransmissionId;
     }
@@ -444,9 +444,9 @@ export function getActivityBody() {
         "transmissionId": null,
         "extendedType": "string",
         "performedBy": {
-          "actorType": "ServiceOwner",
-          "actorId": null,
-          "actorName": null
+            "actorType": "ServiceOwner",
+            "actorId": null,
+            "actorName": null
         },
         "description": [],
         "type": "DialogCreated",
