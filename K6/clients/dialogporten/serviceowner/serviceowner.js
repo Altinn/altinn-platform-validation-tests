@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { uuidv4 } from "../../../common-imports.js";
-import { getDialogBody, getTransmissionBody, getActivityBody } from "./request-body-templates.js";
+import { getDialogBody, getTransmissionBody, getActivityBody, getDialogBodyWithoutTransmissionsAndActivities } from "./request-body-templates.js";
 
 class ServiceOwnerApiClient {
     /**
@@ -74,7 +74,8 @@ class ServiceOwnerApiClient {
         endUser,
         serviceResource,
         serviceOwner,
-        label = null
+        label = null,
+        noTransmissionsActivities = false,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
@@ -87,11 +88,15 @@ class ServiceOwnerApiClient {
             },
         };
 
-        const requestBody = getDialogBody(endUser, serviceResource, serviceOwner);
+        let requestBody = null;
+        if (!noTransmissionsActivities) {
+            requestBody = getDialogBody(endUser, serviceResource, serviceOwner);
+        } else { 
+            requestBody = getDialogBodyWithoutTransmissionsAndActivities(endUser, serviceResource, serviceOwner);
+        }
         if (__ENV.TRACE_CALL) {
             params.headers["traceparent"] = uuidv4();
         }
-
         return http.post(url.toString(), JSON.stringify(requestBody), params);
     }
 

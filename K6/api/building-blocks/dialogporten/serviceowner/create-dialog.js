@@ -11,12 +11,14 @@ export function CreateDialog(
     serviceResource,
     serviceOwner,
     label = null,
+    noTransmissionsActivities = false,
 ) {
     const res = serviceOwnerApiClient.PostDialog(
         endUser,
         serviceResource,
         serviceOwner,
         label,
+        noTransmissionsActivities,
     );
 
     const success = check(res, {

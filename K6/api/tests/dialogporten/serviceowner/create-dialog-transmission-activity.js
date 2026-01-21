@@ -15,12 +15,14 @@ export const options = getOptions([create_dialog_label, create_transmission_labe
 
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
+    const noTransmissionsActivities = true;
     const dialogId = CreateDialog(
         serviceOwnerApiClient,
         getItemFromList(data, randomize).ssn,
         getItemFromList(serviceResources, randomize),
         orgNo,
         create_dialog_label,
+        noTransmissionsActivities,
     );
     const transmissionId = CreateTransmission(
         serviceOwnerApiClient,

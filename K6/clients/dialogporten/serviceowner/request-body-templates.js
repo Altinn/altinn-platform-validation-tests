@@ -360,6 +360,13 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
     };
 };
 
+export function getDialogBodyWithoutTransmissionsAndActivities ( endUser, serviceResource) {
+  let body = getDialogBody( endUser, serviceResource);
+  body.transmissions = [];
+  body.activities = [];
+  return body;
+}
+
 export function getTransmissionBody (relatedTransmissionId = 0) {
     let transmission = 
     {
