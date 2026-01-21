@@ -32,14 +32,22 @@ export default function () {
 
     const firstBody = GetAgentSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId);
 
+      if (firstBody === null) {
+        fail("Expected to find system user agent requests, but found none");
+    }
+
     const pages = VerifyNextLinkPagination({
         firstBody,
         expectedNextBaseUrl,
         fetchByUrl: (url) => GetSystemUserRequestsByUrl(systemUserRequestApiClient, url),
     });
 
-    check(pages, {
+    var outcome = check(pages, {
         "Verify that System User Agent Requests return paginated data": (p) => p > 1,
     });
+
+    if (outcome > 1) {
+        console.log("Expected to find more than 1 page");
+    }
 
 }

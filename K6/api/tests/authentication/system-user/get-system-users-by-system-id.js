@@ -31,6 +31,10 @@ export default function () {
 
     const firstBody = GetSystemUsersBySystemId(systemUserApiClient, systemId);
 
+    if (firstBody === null) {
+        fail("Expected to find System Users, but found none");
+    }
+
     const pages = VerifyNextLinkPagination({
         firstBody,
         expectedNextBaseUrl,

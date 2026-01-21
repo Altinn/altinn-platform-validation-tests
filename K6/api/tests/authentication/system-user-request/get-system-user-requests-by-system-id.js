@@ -7,6 +7,7 @@ import {
 } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { check } from "k6";
+import { fail } from "k6";
 
 
 /**
@@ -37,13 +38,21 @@ export default function () {
 
     const firstBody = GetSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId);
 
+    if (firstBody === null) {
+        fail("Expected to find system user requests, but found none");
+    }
+
     const pages = VerifyNextLinkPagination({
         firstBody,
         expectedNextBaseUrl,
         fetchByUrl: (url) => GetSystemUserRequestsByUrl(systemUserRequestApiClient, url),
     });
 
-    check(pages, {
+    var outcome = check(pages, {
         "Verify that System User Requests return paginated data": (p) => p > 1,
     });
+
+    if (outcome > 1) {
+        console.log("Expected to find more than 1 page");
+    }
 }

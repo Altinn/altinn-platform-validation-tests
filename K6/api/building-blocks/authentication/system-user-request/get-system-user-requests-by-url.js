@@ -1,5 +1,5 @@
-import { check } from "k6";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
+import { CheckAndVerifyResponse } from "./system-user-request-helper.js";
 
 /**
  * Follow pagination by next url using a fully qualified URL from links.next.
@@ -9,15 +9,9 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
  */
 export function GetByNextUrl(systemUserRequestApiClient, url) {
     const res = systemUserRequestApiClient.GetSystemUserRequestsByUrl(url);
-    const resBody = res.json();
-
-    check(res, {
-        "GetSystemUserRequestsByUrl - status code is 200": (r) => r.status === 200,
-        "GetSystemUserRequestsByUrl - status text is 200 OK": (r) => r.status_text == "200 OK",
-        "GetSystemUserRequestsByUrl - body is not empty": () => resBody !== null && resBody !== undefined,
-        "GetSystemUserRequestsByUrl - body has data array": () => resBody && Array.isArray(resBody.data),
-    });
-
-    return resBody;
+    CheckAndVerifyResponse(res);
+    return res.json();
 }
+
+
 
