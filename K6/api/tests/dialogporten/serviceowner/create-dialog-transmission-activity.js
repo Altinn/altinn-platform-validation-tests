@@ -1,7 +1,6 @@
-import { CreateDialog, CreateTransmission } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { CreateDialog, CreateTransmission, CreateActivity } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { serviceResources, getClients } from "./create-dialog.js";
-import { CreateActivity } from "../../../building-blocks/dialogporten/serviceowner/create-dialog.js";
 export { setup } from "./create-dialog.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
