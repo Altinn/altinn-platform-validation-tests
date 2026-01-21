@@ -138,8 +138,8 @@ class ServiceOwnerApiClient {
      */
 
     PostActivity(
-      dialogId,
-      label = null,
+        dialogId,
+        label = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);
@@ -159,6 +159,6 @@ class ServiceOwnerApiClient {
 
         return http.post(url.toString(), JSON.stringify(requestBody), params);
     }  
-  }
+}
 
 export { ServiceOwnerApiClient };
