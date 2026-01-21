@@ -16,6 +16,7 @@ on:
           # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
           - yt01-should-send-notification-break
           - yt01-create-dialog-break
+          - yt01-create-dialog-transmission-activity-break
       target_vus:
         description: "The target VUs to reach"
         required: false

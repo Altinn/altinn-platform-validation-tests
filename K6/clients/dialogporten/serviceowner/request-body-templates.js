@@ -1,4 +1,42 @@
-import { uuidv4 } from "../../../common-imports.js";
+export function uuidv7() {
+
+  let uuid = "";
+
+  // generate time chars
+  let milli = (new Date()).getTime();
+  let time = hex(milli, 12);
+
+  // cat time and random chars
+  uuid += time.substring(0, 8);
+  uuid += "-";
+  uuid += time.substring(8, 12);
+  uuid += "-";
+  uuid += hex(random(16), 4);
+  uuid += "-";
+  uuid += hex(random(16), 4);
+  uuid += "-";
+  uuid += hex(random(48), 12);
+
+  // version and variant
+  uuid = uuid.split('');
+  uuid[14] = '7';
+  uuid[19] = ['8', '9', 'a', 'b'][random(2)];
+  uuid = uuid.join('');
+
+  return uuid;
+}
+
+function hex(number, len) {
+  return number.toString(16).padStart(len, '0');
+}
+
+function random(bits) {
+  if (bits > 52) { bits = 52 };
+  return Math.floor(Math.random() * Math.pow(2, bits));
+}
+
+
+
 
 export function getDialogBody ( endUser, serviceResource, serviceOwner) {
     return {
@@ -325,7 +363,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
 export function getTransmissionBody (relatedTransmissionId = 0) {
     let transmission = 
     {
-        "id": uuidv4(),
+        "id": uuidv7(),
         "createdAt": new Date().toISOString(),
         "authorizationAttribute": "element1",
         "extendedType": "string",
@@ -384,4 +422,20 @@ export function getTransmissionBody (relatedTransmissionId = 0) {
       transmission.relatedTransmissionId = relatedTransmissionId;
   }
   return transmission;
+}
+
+export function getActivityBody() {
+    return {
+        "id": uuidv7(),
+        "transmissionId": null,
+        "extendedType": "string",
+        "performedBy": {
+          "actorType": "ServiceOwner",
+          "actorId": null,
+          "actorName": null
+        },
+        "description": [],
+        "type": "DialogCreated",
+        "createdAt": new Date().toISOString(),
+    };
 }
