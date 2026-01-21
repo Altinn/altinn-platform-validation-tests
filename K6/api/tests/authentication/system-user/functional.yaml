@@ -1,7 +1,7 @@
 namespace: authentication
+base_dir: K6/api/tests/authentication/system-user
 test_definitions:
-  - test_file: K6/api/tests/authentication/system-user/get-system-users-by-system-id.js
+  - test_file: get-system-users-by-system-id.js
     contexts:
       - environment: tt02
       - environment: at22
-

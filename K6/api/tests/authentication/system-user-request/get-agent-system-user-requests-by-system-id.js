@@ -1,6 +1,5 @@
-// todo: Can I import this here or should it be put in a package.json etc
-import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
+import { followLinksNext } from "../../../building-blocks/common/follow-links-next.js";
 import { GetAgentSystemUserRequestsBySystemId, GetSystemUserRequestsByUrl } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 
@@ -37,6 +36,5 @@ export default function () {
         expectedNextBaseUrl,
         fetchByUrl: (url) => GetSystemUserRequestsByUrl(systemUserRequestApiClient, url),
     });
-    
-}
 
+}
