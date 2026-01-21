@@ -45,7 +45,7 @@ permissions:
   id-token: "write"
 jobs:
   k6-breakpoint:
-    environment: dev
+    environment: test
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
