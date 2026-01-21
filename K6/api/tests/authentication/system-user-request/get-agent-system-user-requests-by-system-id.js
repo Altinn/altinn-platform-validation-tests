@@ -3,6 +3,7 @@ import { VerifyNextLinkPagination } from "../../../building-blocks/common/follow
 import { GetAgentSystemUserRequestsBySystemId, GetSystemUserRequestsByUrl } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { check } from "k6";
+import { fail } from "k6";
 
 /**
  * Test: Agent System User Requests By SystemId (vendor) + pagination.
@@ -32,7 +33,7 @@ export default function () {
 
     const firstBody = GetAgentSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId);
 
-      if (firstBody === null) {
+    if (firstBody === null) {
         fail("Expected to find system user agent requests, but found none");
     }
 

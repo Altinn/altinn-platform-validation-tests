@@ -3,6 +3,7 @@ import { VerifyNextLinkPagination } from "../../../building-blocks/common/follow
 import { GetSystemUsersBySystemId, GetSystemUsersByUrl } from "../../../building-blocks/authentication/system-user/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { check } from "k6";
+import { fail } from "k6";
 
 /**
  * Test: System Users By SystemId (vendor) + pagination.
