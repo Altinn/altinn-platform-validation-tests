@@ -10,7 +10,7 @@ const orgNo = "713431400"; // digdir orgno
 
 const label = "create-dialog";
 
-const serviceResources = [
+export const serviceResources = [
     "ttd-dialogporten-performance-test-01",
     "ttd-dialogporten-performance-test-02",
     "ttd-dialogporten-performance-test-03",
@@ -43,7 +43,7 @@ export function getClients() {
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider");
-        tokenOpts.set("org", "test");
+        tokenOpts.set("org", "ttd");
         tokenOpts.set("orgNo", orgNo);
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
