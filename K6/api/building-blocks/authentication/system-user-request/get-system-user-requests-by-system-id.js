@@ -11,6 +11,6 @@ export function GetSystemUserRequestsBySystemId(systemUserRequestApiClient, syst
     const res = systemUserRequestApiClient.GetSystemUserRequestsBySystemIdForVendor(systemId);
     const succeed = CheckAndVerifyResponse(res);
     if (!succeed) return null;
-    return res.json();
+    return JSON.parse(res.body);
 }
 

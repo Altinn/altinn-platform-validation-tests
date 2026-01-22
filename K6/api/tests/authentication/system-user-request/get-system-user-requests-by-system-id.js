@@ -48,11 +48,11 @@ export default function () {
         fetchByUrl: (url) => GetSystemUserRequestsByUrl(systemUserRequestApiClient, url),
     });
 
-    var outcome = check(pages, {
+    var passed = check(pages, {
         "Verify that System User Requests return paginated data": (p) => p > 1,
     });
 
-    if (outcome > 1) {
+    if (!passed) {
         console.log("Expected to find more than 1 page");
     }
 }

@@ -1,5 +1,5 @@
-import { check } from "k6";
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
+import { CheckAndVerifyResponse } from "../system-user-request/system-user-request-helper.js";
 
 /**
  * Follow pagination for SystemUsers using a fully qualified URL from links.next.
@@ -9,15 +9,8 @@ import { SystemUserApiClient } from "../../../../clients/authentication/index.js
  */
 export function GetSystemUsersByUrl(systemUserApiClient, url) {
     const res = systemUserApiClient.GetSystemUsersByNextUrl(url);
-    const resBody = res.json();
-
-    check(res, {
-        "GetSystemUsersByUrl - status code is 200": (r) => r.status === 200,
-        "GetSystemUsersByUrl - status text is 200 OK": (r) => r.status_text == "200 OK",
-        "GetSystemUsersByUrl - body is not empty": () => resBody !== null && resBody !== undefined,
-        "GetSystemUsersByUrl - body has data array": () => resBody && Array.isArray(resBody.data),
-    });
-
-    return resBody;
+    const succeed = CheckAndVerifyResponse(res);
+    if (!succeed) return null;
+    return JSON.parse(res.body);
 }
 

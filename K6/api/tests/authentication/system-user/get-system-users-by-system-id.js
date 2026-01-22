@@ -15,7 +15,6 @@ export default function () {
     const systemOwnerOrgNo = "312605031";
     const systemId = "312605031_Virksomhetsbruker";
 
-    // Token setup is intentionally kept in the test to showcase required settings.
     const vendorTokenOptions = new Map();
     vendorTokenOptions.set("env", __ENV.ENVIRONMENT);
     vendorTokenOptions.set("ttl", 3600);
@@ -42,9 +41,15 @@ export default function () {
         fetchByUrl: (url) => GetSystemUsersByUrl(systemUserApiClient, url),
     });
 
-    check(pages, {
-        "Verify that Get System Users By System Id return paginated data": (p) => p > 1,
+    var passed = check(pages, {
+        "Verify that System Users By System Id endpoint return paginated data": (p) => p > 1,
     });
+
+    if (!passed) {
+        console.log("Expected to find more than 1 page");
+    }
+
+    
     
 }
 

@@ -9,7 +9,8 @@ import { CheckAndVerifyResponse } from "./system-user-request-helper.js";
  */
 export function GetAgentSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId) {
     const res = systemUserRequestApiClient.GetAgentSystemUserRequestsBySystemIdForVendor(systemId);
-    CheckAndVerifyResponse(res);
-    return res.json();
+    const succeed = CheckAndVerifyResponse(res);
+    if (!succeed) return null;
+    return JSON.parse(res.body);
 }
 
