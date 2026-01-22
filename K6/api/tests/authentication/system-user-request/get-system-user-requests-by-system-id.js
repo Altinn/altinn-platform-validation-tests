@@ -53,6 +53,6 @@ export default function () {
     });
 
     if (!passed) {
-        console.log("Expected to find more than 1 page");
+        console.log("Expected to find more than 1 page for System User Requests By System Id endpoint");
     }
 }
