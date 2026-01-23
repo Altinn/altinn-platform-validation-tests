@@ -8,7 +8,8 @@ class ConnectionsApiClient {
      */
     constructor(
         baseUrl,
-        tokenGenerator
+        tokenGenerator,
+        bff=false,
     ) {
     /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
@@ -18,11 +19,15 @@ class ConnectionsApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/accessmanagement/api/v1/enduser/connections";
+        this.BASE_PATH_BFF = "accessmanagement/api/v1/connection/rightholders";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
-        this.FULL_PATH = baseUrl + this.BASE_PATH;
-
+        if (bff) {
+            this.FULL_PATH = baseUrl + this.BASE_PATH_BFF;
+        } else {
+            this.FULL_PATH = baseUrl + this.BASE_PATH;
+        }
     }
 
     /**

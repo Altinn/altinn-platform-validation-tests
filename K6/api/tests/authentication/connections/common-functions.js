@@ -5,6 +5,7 @@ import { parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.j
 
 let connectionsApiClient = undefined;
 let tokenGenerator = undefined;
+const bff = __ENV.BFF === "true" || false;
 
 /**
  * Function to set up and return clients to interact with the /enduser/connections API
@@ -20,7 +21,7 @@ export function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator, bff);
     }
     return [connectionsApiClient, tokenGenerator];
 }
