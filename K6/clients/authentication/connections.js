@@ -19,7 +19,7 @@ class ConnectionsApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/accessmanagement/api/v1/enduser/connections";
-        this.BASE_PATH_BFF = "accessmanagement/api/v1/connection/rightholders";
+        this.BASE_PATH_BFF = "/accessmanagement/api/v1/connection/rightholders";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
