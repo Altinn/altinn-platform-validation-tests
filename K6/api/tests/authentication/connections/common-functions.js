@@ -11,7 +11,7 @@ let tokenGenerator = undefined;
  *
  * @returns {Array} An array containing the ConnectionsApiClient and PersonalTokenGenerator instances
  */
-export function getClients() {
+export function getClients(bff=false) {
     if (tokenGenerator == undefined) {
         const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
@@ -20,7 +20,7 @@ export function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator, bff);
     }
     return [connectionsApiClient, tokenGenerator];
 }
