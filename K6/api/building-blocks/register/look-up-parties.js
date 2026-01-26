@@ -14,33 +14,33 @@ import { RegisterLookupClient } from "../../../clients/authentication/index.js";
  * @returns {import("k6/http").RefinedResponse}
  */
 export function LookUpPartyInRegister(
-  registerLookupClient,
-  fields,
-  requestBody,
-  label = null,
+    registerLookupClient,
+    fields,
+    requestBody,
+    label = null,
 ) {
-  if (requestBody === null || requestBody === undefined) {
-    throw new Error("LookUpPartyInRegister: requestBody is required");
-  }
+    if (requestBody === null || requestBody === undefined) {
+        throw new Error("LookUpPartyInRegister: requestBody is required");
+    }
 
-  const res = registerLookupClient.LookupParties(fields, requestBody, label);
+    const res = registerLookupClient.LookupParties(fields, requestBody, label);
 
-  const success = check(res, {
-    "Register LookupParties - status code should be 200": (r) =>
-      r.status === 200,
+    const success = check(res, {
+        "Register LookupParties - status code should be 200": (r) =>
+            r.status === 200,
 
-    "Register LookupParties - body is not empty": (r) => {
-      const body = r.body;
-      if (!body || body.trim() === "") {
-        return res;
-      }
-    },
-  });
+        "Register LookupParties - body is not empty": (r) => {
+            const body = r.body;
+            if (!body || body.trim() === "") {
+                return res;
+            }
+        },
+    });
 
-  if (!success) {
-    console.error(res.status);
-    console.error(res.body);
-  }
+    if (!success) {
+        console.error(res.status);
+        console.error(res.body);
+    }
 
-  return res;
+    return res;
 }
