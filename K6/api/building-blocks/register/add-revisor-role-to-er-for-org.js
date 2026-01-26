@@ -27,6 +27,8 @@ export function AddRevisorRoleToErForOrg(
     const success = check(res, {
         "AddRevisorRoleToErForOrg - status code MUST be 200": (res) =>
             res.status == 200,
+        "AddRevisorRoleToErForOrg - body is not empty": (r) =>
+            r.body && r.body.length > 0,
     });
 
     if (!success) {
