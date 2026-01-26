@@ -15,18 +15,18 @@ export function RemoveRevisorRoleFromEr(
     soapErUsername,
     soapErPassword,
     clientOrg,
-    facilitatorOrg
+    facilitatorOrg,
 ) {
     const res = registerClient.RemoveRevisorRoleFromEr(
         soapErUsername,
         soapErPassword,
         clientOrg,
-        facilitatorOrg
+        facilitatorOrg,
     );
 
     check(res, {
         "status code MUST be 200": (res) => res.status == 200,
     });
 
-    return res.body;
+    return res;
 }
