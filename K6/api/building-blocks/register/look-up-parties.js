@@ -28,7 +28,11 @@ export function LookUpPartyInRegister(
     const success = check(res, {
         "Register LookupParties - status code should be 200": (r) =>
             r.status === 200,
-        "Register LookupParties - body is not empty": (r) => {},
+
+        "Register LookupParties - body is not empty": (r) => {
+            const resBody = JSON.parse(r.body);
+            return resBody !== null && resBody !== undefined;
+        },
     });
 
     if (!success) {

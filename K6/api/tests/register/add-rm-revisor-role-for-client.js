@@ -20,7 +20,7 @@ export default function () {
 
         const registerApiClient = new RegisterApiClient(
             __ENV.BASE_URL,
-            tokenGenerator
+            tokenGenerator,
         );
 
         const facilitatorPartyUuidRevisor = "7c1170ec-8232-4998-a277-0ba224808541";
@@ -28,7 +28,7 @@ export default function () {
         const currentOrgs = GetRevisorCustomerIdentifiersForParty(
             registerApiClient,
             facilitatorPartyUuidRevisor,
-            __ENV.REGISTER_SUBSCRIPTION_KEY
+            __ENV.REGISTER_SUBSCRIPTION_KEY,
         );
 
         console.log(`Initial number of revisor customers: ${currentOrgs.length}`);
@@ -39,7 +39,7 @@ export default function () {
 
         const targetOrg = currentOrgs[0];
         console.log(
-            `Picked target client organizationIdentifier for test: ${targetOrg}`
+            `Picked target client organizationIdentifier for test: ${targetOrg}`,
         );
 
         let res = RemoveRevisorRoleFromEr(
@@ -47,10 +47,10 @@ export default function () {
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
             targetOrg,
-            facilitatorOrg
+            facilitatorOrg,
         );
 
-        check(res, {
+        check(res.body, {
             "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED":
         (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
@@ -60,13 +60,13 @@ export default function () {
                 const orgs = GetRevisorCustomerIdentifiersForParty(
                     registerApiClient,
                     facilitatorPartyUuidRevisor,
-                    __ENV.REGISTER_SUBSCRIPTION_KEY
+                    __ENV.REGISTER_SUBSCRIPTION_KEY,
                 );
                 const stillPresent = orgs.includes(targetOrg);
                 console.log(
                     `[remove role] Org ${targetOrg} is ${
                         stillPresent ? "still" : "no longer"
-                    } in the list (${orgs.length})`
+                    } in the list (${orgs.length})`,
                 );
                 return !stillPresent;
             },
@@ -74,7 +74,7 @@ export default function () {
                 retries: 10,
                 intervalSeconds: 30,
                 testscenario: "remove revisor role",
-            }
+            },
         );
 
         check(success, {
@@ -86,7 +86,7 @@ export default function () {
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
             targetOrg,
-            facilitatorOrg
+            facilitatorOrg,
         );
 
         check(res, {
@@ -99,13 +99,13 @@ export default function () {
                 const orgs = GetRevisorCustomerIdentifiersForParty(
                     registerApiClient,
                     facilitatorPartyUuidRevisor,
-                    __ENV.REGISTER_SUBSCRIPTION_KEY
+                    __ENV.REGISTER_SUBSCRIPTION_KEY,
                 );
                 const nowPresent = orgs.includes(targetOrg);
                 console.log(
                     `[add role] Org ${targetOrg} is ${
                         nowPresent ? "now" : "still not"
-                    } in the list (${orgs.length})`
+                    } in the list (${orgs.length})`,
                 );
                 return nowPresent;
             },
@@ -113,7 +113,7 @@ export default function () {
                 retries: 10,
                 intervalSeconds: 30,
                 testscenario: "add revisor role back",
-            }
+            },
         );
 
         check(success, {

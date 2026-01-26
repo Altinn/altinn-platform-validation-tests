@@ -27,6 +27,7 @@ export function GetRevisorCustomerIdentifiersForParty(
     if (!success) {
         console.error(res.status);
         console.error(res.body);
+        return [];
     }
 
     const body = JSON.parse(res.body);
