@@ -52,7 +52,7 @@ export default function () {
 
         check(res.body, {
             "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED":
-        (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
+        (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
 
         let success = retry(
@@ -91,7 +91,7 @@ export default function () {
 
         check(res, {
             "AddRevisorRoleToErForOrg - response contains status OK_ER_DATA_PROCESSED":
-        (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
+        (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
 
         success = retry(

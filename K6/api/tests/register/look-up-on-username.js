@@ -14,6 +14,8 @@ export function setup() {
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
     );
+    console.log("Environment: ", __ENV.ENVIRONMENT);
+    console.log(res.body);
     return parseCsvData(res.body);
 }
 
@@ -38,9 +40,6 @@ export default function (usernames) {
    */
 
     const user = getItemFromList(usernames, randomize);
-
-    // The user we're trying to lookup
-    console.log("user: " + user);
 
     const username = user.username;
     const fields = "person,party,user";

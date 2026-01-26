@@ -30,10 +30,7 @@ export function LookUpPartyInRegister(
             r.status === 200,
 
         "Register LookupParties - body is not empty": (r) => {
-            const body = r.body;
-            if (!body || body.trim() === "") {
-                return res;
-            }
+            return r.body && r.body.length > 0;
         },
     });
 
