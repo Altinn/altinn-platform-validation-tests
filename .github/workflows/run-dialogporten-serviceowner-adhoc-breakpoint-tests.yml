@@ -1,5 +1,4 @@
-name: portaler - run ad-hoc k6 breakpoint test
-
+name: "dialogporten - run k6 serviceowner adhoc breakpoint tests"
 on:
   workflow_dispatch:
     inputs:
@@ -8,15 +7,16 @@ on:
         description: "Configuration file for the test runs"
         required: true
         options:
-          - "K6/api/tests/portaler/breakpoint.yaml"
-        default: "K6/api/tests/portaler/breakpoint.yaml"
+          - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
 
       testId:
         type: choice
         description: "The test to run"
         options:
-          - at23-get-info-dot-altinn-dot-cloud-break
-
+          # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
+          - yt01-should-send-notification-break
+          - yt01-create-dialog-break
+          - yt01-create-dialog-transmission-activity-break
       target_vus:
         description: "The target VUs to reach"
         required: false
@@ -39,25 +39,23 @@ on:
         required: false
         default: ""
 
-run-name: Portaler - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
+run-name: dialogporten - run breakpoint for ${{ inputs.testId }} - ${{ inputs.target_vus }} VUs for ${{ inputs.duration }}
 permissions:
-  id-token: write
-  contents: read
-
+  contents: "read"
+  id-token: "write"
 jobs:
   k6-breakpoint:
-    runs-on: ubuntu-latest
     environment: test
+    runs-on: "ubuntu-latest"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Setup k8s client
-        uses: ./.github/actions/setup-k8s
+      - name: "Checkout code"
+        uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
         with:
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
 
       - name: Process CLI args
         shell: bash
@@ -96,8 +94,8 @@ jobs:
           ABORT_ON_FAIL: ${{ inputs.abortOnFail }}
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
-      - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@dfcaed7b1320a7c6775893dd4e6ec7ce9b0c2953
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@bfff0d4e624bcc96321727367c865e5ed6dcffc8"
         with:
           config_file: "${{ inputs.configFilePath }}"
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}
@@ -108,5 +106,5 @@ jobs:
           TEST_ID=${{ inputs.testId }}
           kubectl apply --server-side -f .dist/${TEST_ID}
           UNIQ_NAME=$(jq -r '.metadata.labels.uniq_name' .dist/${TEST_ID}/testrun.json)
-          kubectl -n portaler wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
-          kubectl -n portaler logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
+          kubectl -n dialogporten wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=600s
+          kubectl -n dialogporten logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"

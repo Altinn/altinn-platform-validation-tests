@@ -99,6 +99,7 @@ export default function (data) {
         options.set("ttl", 3600);
         options.set("scopes", "altinn:portal/enduser");
         options.set("userId", data[vu.idInTest - 1].userId);
+        options.set("partyuuid", data[vu.idInTest - 1].userPartyUuid);
 
         const tokenGenerator
             = new PersonalTokenGenerator(options);

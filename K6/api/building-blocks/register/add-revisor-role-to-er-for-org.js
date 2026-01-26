@@ -15,19 +15,26 @@ export function AddRevisorRoleToErForOrg(
     soapErUsername,
     soapErPassword,
     clientOrg,
-    facilitatorOrg
+    facilitatorOrg,
 ) {
     const res = registerClient.AddRevisorRoleToErForOrg(
         soapErUsername,
         soapErPassword,
         clientOrg,
-        facilitatorOrg
+        facilitatorOrg,
     );
 
-    check(res, {
+    const success = check(res, {
         "AddRevisorRoleToErForOrg - status code MUST be 200": (res) =>
             res.status == 200,
+        "AddRevisorRoleToErForOrg - body is not empty": (r) =>
+            r.body && r.body.length > 0,
     });
 
-    return res.body;
+    if (!success) {
+        console.error(res.status);
+        console.error(res.body);
+    }
+
+    return res;
 }
