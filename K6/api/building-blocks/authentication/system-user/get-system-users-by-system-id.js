@@ -9,9 +9,15 @@ import { check } from "k6";
  */
 export function GetSystemUsersBySystemId(systemUserApiClient, systemId) {
     const res = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
-    check(res, {
+    const isOk = check(res, {
         "status is 200": (r) => r.status === 200,
         "status text is 200 OK": (r) => r.status_text === "200 OK",
     });
+
+    if (!isOk) {
+        console.log(res.status, res.status_text);
+        console.log(res.body);
+    }
+
     return res.body;
 }

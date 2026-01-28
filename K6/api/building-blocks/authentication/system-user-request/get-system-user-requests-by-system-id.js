@@ -18,6 +18,11 @@ export function GetSystemUserRequestsBySystemId(
     const ok = check(res, {
         "status is 200": (r) => r.status === 200,
     });
-    if (!ok) return null;
+
+    if (!ok) {
+        console.log(res.status, res.status_text);
+        console.log(res.body);
+    }
+
     return res.body;
 }
