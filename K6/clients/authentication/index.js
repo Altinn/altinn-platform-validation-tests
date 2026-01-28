@@ -1,4 +1,5 @@
 export { SystemRegisterApiClient } from "./system-register.js";
+export { SystemUserApiClient } from "./system-user.js";
 export { SystemUserRequestApiClient } from "./system-user-request.js";
 export { RegisterApiClient } from "./register.js";
 export { ConsentApiClient } from "./consent.js";

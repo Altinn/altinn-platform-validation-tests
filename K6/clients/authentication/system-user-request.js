@@ -1,4 +1,5 @@
 import http from "k6/http";
+import { getNextUrlPaginatedResponse } from "../common/get-next-url-paginated-response.js";
 
 class SystemUserRequestApiClient {
     /**
@@ -86,7 +87,7 @@ class SystemUserRequestApiClient {
 
     /**
     * Creates a system user request of type agent
-    * OpenAPI for {@link https://docs.altinn.studio/api/authentication/systemuserapi/systemuserrequest/external/#create-an-agent-system-user-request}
+    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/RequestSystemUser/post_systemuser_request_vendor_agent}
     * @param {string } externalRef
     * @param {string } systemId
     * @param {string} partyOrgNo
@@ -118,6 +119,53 @@ class SystemUserRequestApiClient {
             },
         };
         return http.post(url, JSON.stringify(body), params);
+    }
+
+    /**
+     * Retrieves system user requests for a given systemId for a vendor.
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/}
+     * @param {string} systemId
+     * @returns http.RefinedResponse
+     */
+    GetSystemUserRequestsBySystemIdForVendor(systemId) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
+        const params = {
+            tags: { name: `${this.FULL_PATH}/vendor/bysystem/systemId` },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.get(url, params);
+    }
+
+    /**
+     * Retrieves agent system user requests for a given systemId for a vendor.
+     * @param {string} systemId
+     * @returns http.RefinedResponse
+     */
+    GetAgentSystemUserRequestsBySystemIdForVendor(systemId) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/vendor/agent/bysystem/${systemId}`;
+        const params = {
+            tags: { name: `${this.FULL_PATH}/vendor/agent/bysystem/systemId` },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.get(url, params);
+    }
+
+    /**
+     * Follows pagination using a fully qualified URL from links.next.
+     * @param {string} url Fully qualified URL from the API response (links.next)
+     * @returns http.RefinedResponse
+     */
+    GetSystemUserRequestsByUrl(url) {
+        const token = this.tokenGenerator.getToken();
+        return getNextUrlPaginatedResponse(token, url);
     }
 }
 
