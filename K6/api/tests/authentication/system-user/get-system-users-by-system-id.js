@@ -61,7 +61,10 @@ export default function () {
                 `Step: ${testRef} - Follow the next-link pagination (links.next).`,
                 () => {
                     const token = vendorTokenGenerator.getToken();
-                    const nextUrl = extractNextUrl(firstBody);
+                    const nextUrl = extractNextUrl(firstJson);
+                    if (!nextUrl) {
+                        fail("Couldn't find next URL on first page for system users");
+                    }
                     const additionalPages = followNextUrlPagination(token, nextUrl);
                     const pages = 1 + additionalPages;
                     check(pages, {

@@ -3,14 +3,11 @@ import { getNextUrlPaginatedResponse } from "../../../clients/common/get-next-ur
 
 /**
  * Extract `links.next` URL from a JSON response body.
- * @param {string|object} body - JSON string or parsed object
+ * @param {string|object} body - parsed JSON object
  * @returns {string|null} - The next URL or null if not found
  */
-export function extractNextUrl(body) {
-    if (body === null || body === undefined) return null;
-
-    const parsed = typeof body === "string" ? JSON.parse(body) : body;
-    return parsed?.links?.next ?? null;
+export function extractNextUrl(parsedBody) {
+  return parsedBody?.links?.next ?? null;
 }
 
 /**
@@ -26,41 +23,45 @@ export function extractNextUrl(body) {
  * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
  */
 export function followNextUrlPagination(token, nextUrl, options = {}) {
-    const maxPages = options.maxPages ?? 10;
-    const seenUrls = new Set();
-    let pages = 0;
-    let previousBody = null;
-    let currentUrl = nextUrl;
+  const maxPages = options.maxPages ?? 10;
+  const seenUrls = new Set();
+  let pages = 0;
+  let previousBody = null;
+  let currentUrl = nextUrl;
 
-    while (currentUrl && pages < maxPages) {
-        check(currentUrl, {
-            "Pagination URL does not repeat.": () => !seenUrls.has(currentUrl),
-        });
-        seenUrls.add(currentUrl);
+  while (currentUrl && pages < maxPages) {
+    check(currentUrl, {
+      "Pagination URL does not repeat.": () => !seenUrls.has(currentUrl),
+    });
+    seenUrls.add(currentUrl);
 
-        const res = getNextUrlPaginatedResponse(token, currentUrl);
+    const res = getNextUrlPaginatedResponse(token, currentUrl);
 
-        const ok = check(res, {
-            "Next page status is 200.": (r) => r.status === 200,
-            "Next page body is not empty.": (r) =>
-                typeof r.body === "string" && r.body.length > 0,
-            "Next page returns new values.": (r) =>
-                previousBody === null ? true : r.body !== previousBody,
-        });
+    const ok = check(res, {
+      "Next page status is 200.": (r) => r.status === 200,
+      "Next page body is not empty.": (r) =>
+        typeof r.body === "string" && r.body.length > 0,
+      "Next page returns new values.": (r) =>
+        previousBody === null ? true : r.body !== previousBody,
+    });
 
-        if (!ok) {
-            console.log(res.status, res.status_text);
-            console.log(res.body);
-            return pages;
-        }
-
-        previousBody = res.body;
-        currentUrl = extractNextUrl(res.body);
-
-        if (ok) {
-            pages++;
-        }
+    if (!ok) {
+      console.log(res.status, res.status_text);
+      console.log(res.body);
+      return pages;
     }
 
-    return pages;
+    let parsedBody = JSON.parse(res.body);
+    previousBody = res.body;
+    currentUrl = extractNextUrl(parsedBody);
+    if (!currentUrl) {
+      console.log("No more pages to fetch");
+    }
+
+    if (ok) {
+      pages++;
+    }
+  }
+
+  return pages;
 }

@@ -40,40 +40,51 @@ export default function () {
 
             let firstBody;
             let firstJson;
-            group(`Step: ${testRef} - Fetch the first page of system user requests.`, () => {
-                firstBody = GetSystemUserRequestsBySystemId(
-                    systemUserRequestApiClient,
-                    systemId,
-                );
+            group(
+                `Step: ${testRef} - Fetch the first page of system user requests.`,
+                () => {
+                    firstBody = GetSystemUserRequestsBySystemId(
+                        systemUserRequestApiClient,
+                        systemId,
+                    );
 
-                if (typeof firstBody !== "string" || firstBody.length === 0) {
-                    fail("The response body is empty or missing.");
-                }
-                firstJson = JSON.parse(firstBody);
+                    if (typeof firstBody !== "string" || firstBody.length === 0) {
+                        fail("The response body is empty or missing.");
+                    }
+                    firstJson = JSON.parse(firstBody);
 
-                const ok = check(firstJson, {
-                    "The response has a 'data' field.": (r) => "data" in r,
-                    "The response has a 'links' field.": (r) => "links" in r,
-                    "The response body is not empty.": () => firstBody.length > 0,
-                });
-                if (!ok) {
-                    fail("Expected to find system user requests, but found none");
-                }
-            });
+                    const ok = check(firstJson, {
+                        "The response has a 'data' field.": (r) => "data" in r,
+                        "The response has a 'links' field.": (r) => "links" in r,
+                        "The response body is not empty.": () => firstBody.length > 0,
+                    });
+                    if (!ok) {
+                        fail("Expected to find system user requests, but found none");
+                    }
+                },
+            );
 
-            group(`Step: ${testRef} - Follow the next-link pagination (links.next).`, () => {
-                const nextUrl = extractNextUrl(firstBody);
-                const additionalPages = followNextUrlPagination(
-                    vendorTokenGenerator.getToken(),
-                    nextUrl,
-                );
+            group(
+                `Step: ${testRef} - Follow the next-link pagination (links.next).`,
+                () => {
+                    const nextUrl = extractNextUrl(firstJson);
+                    if (!nextUrl) {
+                        fail(
+                            "Couldn't find next URL on first page for system user requests",
+                        );
+                    }
+                    const additionalPages = followNextUrlPagination(
+                        vendorTokenGenerator.getToken(),
+                        nextUrl,
+                    );
 
-                const pages = 1 + additionalPages;
-                check(pages, {
-                    "System user requests by system id: More than one page is returned.":
-            (p) => p > 1,
-                });
-            });
+                    const pages = 1 + additionalPages;
+                    check(pages, {
+                        "System user requests by system id: More than one page is returned.":
+              (p) => p > 1,
+                    });
+                },
+            );
         },
     );
 }

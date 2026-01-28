@@ -8,14 +8,9 @@ export function CheckAndVerifyResponse(res) {
     const isOk = check(res, {
         "status is 200": (r) => r.status === 200,
         "status text is 200 OK": (r) => r.status_text === "200 OK",
-    //  "body is not empty": (r) => typeof r.body === "string" && r.body.length > 0,
-    // "body looks like JSON": (r) => r.body.startsWith("{"),
-    // "body contains data": (r) => r.body.includes('"data"'),
-    //"body contains links": (r) => r.body.includes('"links"'),
     });
 
     if (!isOk) {
-        console.log("CHECK AND VERIFY RESPONSE FAILED");
         console.log(res.status, res.status_text);
         console.log(res.body);
     }
