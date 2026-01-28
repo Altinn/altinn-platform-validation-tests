@@ -1,16 +1,17 @@
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { CheckAndVerifyResponse } from "../system-user-request/system-user-request-helper.js";
+import { check } from "k6";
 
 /**
  * Follow pagination for SystemUsers using a fully qualified URL from links.next.
  * @param {SystemUserApiClient} systemUserApiClient A client to interact with the System User API
  * @param {string} url Fully qualified URL from the API response (links.next)
- * @returns {Object} Parsed JSON response
+ * @returns {string | null} Raw JSON response body
  */
 export function GetSystemUsersByUrl(systemUserApiClient, url) {
     const res = systemUserApiClient.GetSystemUsersByNextUrl(url);
-    const succeed = CheckAndVerifyResponse(res);
-    if (!succeed) return null;
-    return JSON.parse(res.body);
+    check(res, {
+        "status is 200": (r) => r.status === 200,
+        "status text is 200 OK": (r) => r.status_text === "200 OK",
+    });
+    return res.body;
 }
-

@@ -1,5 +1,5 @@
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
-import { CheckAndVerifyResponse } from "./system-user-request-helper.js";
+import { check } from "k6";
 
 /**
  * Get agent SystemUserRequests for a given systemId (vendor endpoint).
@@ -7,10 +7,17 @@ import { CheckAndVerifyResponse } from "./system-user-request-helper.js";
  * @param {string} systemId
  * @returns {Object} Parsed JSON response
  */
-export function GetAgentSystemUserRequestsBySystemId(systemUserRequestApiClient, systemId) {
-    const res = systemUserRequestApiClient.GetAgentSystemUserRequestsBySystemIdForVendor(systemId);
-    const succeed = CheckAndVerifyResponse(res);
-    if (!succeed) return null;
-    return JSON.parse(res.body);
+export function GetAgentSystemUserRequestsBySystemId(
+    systemUserRequestApiClient,
+    systemId,
+) {
+    const res =
+        systemUserRequestApiClient.GetAgentSystemUserRequestsBySystemIdForVendor(
+            systemId,
+        );
+    check(res, {
+        "status is 200": (r) => r.status === 200,
+        "status text is 200 OK": (r) => r.status_text === "200 OK",
+    });
+    return res.body;
 }
-

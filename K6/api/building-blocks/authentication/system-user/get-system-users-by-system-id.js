@@ -1,17 +1,17 @@
-import { check } from "k6";
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { CheckAndVerifyResponse } from "../system-user-request/system-user-request-helper.js";
+import { check } from "k6";
 
 /**
  * Get SystemUsers for a given systemId (vendor endpoint).
  * @param {SystemUserApiClient} systemUserApiClient A client to interact with the System User API
  * @param {string} systemId
- * @returns {Object} Parsed JSON response
+ * @returns {string | null} Raw JSON response body
  */
 export function GetSystemUsersBySystemId(systemUserApiClient, systemId) {
     const res = systemUserApiClient.GetSystemUsersBySystemIdForVendor(systemId);
-    const succeed = CheckAndVerifyResponse(res);
-    if (!succeed) return null;
-    return JSON.parse(res.body);
+    check(res, {
+        "status is 200": (r) => r.status === 200,
+        "status text is 200 OK": (r) => r.status_text === "200 OK",
+    });
+    return res.body;
 }
-

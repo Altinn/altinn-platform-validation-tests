@@ -47,11 +47,8 @@ class SystemUserApiClient {
      * @returns http.RefinedResponse
      */
     GetSystemUsersByNextUrl(url) {
-        return getNextUrlPaginatedResponse({
-            url,
-            tokenGenerator: this.tokenGenerator,
-            tagName: `${this.FULL_PATH}/systemUsers-by-next-url`,
-        });
+        const token = this.tokenGenerator.getToken();
+        return getNextUrlPaginatedResponse(token, url);
     }
 }
 

@@ -164,11 +164,8 @@ class SystemUserRequestApiClient {
      * @returns http.RefinedResponse
      */
     GetSystemUserRequestsByUrl(url) {
-        return getNextUrlPaginatedResponse({
-            url,
-            tokenGenerator: this.tokenGenerator,
-            tagName: `${this.FULL_PATH}/by-next-url`,
-        });
+        const token = this.tokenGenerator.getToken();
+        return getNextUrlPaginatedResponse(token, url);
     }
 }
 
