@@ -50,7 +50,7 @@ export default function () {
                     const ok = check(firstJson, {
                         "The response has a 'data' field.": (r) => "data" in r,
                         "The response has a 'links' field.": (r) => "links" in r,
-                        "The response body is not empty.": () => firstBody.length > 0,
+                        "The response body is not empty.": (r) => r.data.length > 0,
                     });
                     if (!ok) {
                         fail("Expected to find agent system user requests, but found none");

@@ -22,8 +22,19 @@ export function extractNextUrl(parsedBody) {
  * @param {{ maxPages?: number }} [options]
  * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
  */
-export function followNextUrlPagination(token, nextUrl, options = {}) {
-    const maxPages = options.maxPages ?? 10;
+/**
+ * Follow `links.next` pagination starting at `nextUrl`.
+ *
+ * This helper is intentionally generic: **only** `token` + `nextUrl`.
+ * It keeps following `links.next` and ensures each response body changes
+ * (to avoid "stuck" pagination) and that URLs don't loop.
+ *
+ * @param {string} token
+ * @param {string|null} nextUrl Fully qualified URL from `links.next`
+ * @param {number} [maxPages=10] Maximum number of pages to fetch
+ * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
+ */
+export function followNextUrlPagination(token, nextUrl, maxPages = 10) {
     const seenUrls = new Set();
     let pages = 0;
     let previousBody = null;

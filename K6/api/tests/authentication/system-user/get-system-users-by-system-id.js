@@ -42,10 +42,7 @@ export default function () {
             group(
                 "Step: System users by system id - Fetch the first page of system users.",
                 () => {
-                    firstBody = GetSystemUsersBySystemId(
-                        systemUserApiClient,
-                        systemId,
-                    );
+                    firstBody = GetSystemUsersBySystemId(systemUserApiClient, systemId);
                     if (typeof firstBody !== "string" || firstBody.length === 0) {
                         fail("The response body is empty or missing.");
                     }
@@ -54,7 +51,7 @@ export default function () {
                     const ok = check(firstJson, {
                         "The response has a 'data' field.": (r) => "data" in r,
                         "The response has a 'links' field.": (r) => "links" in r,
-                        "The response body is not empty.": () => firstBody.length > 0,
+                        "The response body is not empty.": (r) => r.data.length > 0,
                     });
                     if (!ok) {
                         fail("Expected to find system users, but found none");
