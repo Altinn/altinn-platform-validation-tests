@@ -10,6 +10,53 @@ const label = "test-lookup-on-username";
 
 export const options = getOptions([label]);
 
+function tryParseJson(str) {
+    try {
+        return JSON.parse(str);
+    } catch {
+        return null;
+    }
+}
+
+function assertLookupResponse(response, expectedUsername) {
+    const body = tryParseJson(response.body);
+    if (body === null) {
+        check(null, {
+            "Register lookup response is valid JSON": () => false,
+        });
+        console.log(response.body);
+        throw new Error("Register lookup response is not valid JSON");
+    }
+
+    const data = body.data;
+    const okShape = check(data, {
+        "Register lookup response has data array with 1 item": (d) =>
+            Array.isArray(d) && d.length === 1,
+    });
+    if (!okShape) {
+        console.log(response.body);
+        throw new Error("Register lookup response shape was unexpected");
+    }
+
+    const party = data[0];
+
+    const okHard = check(party, {
+        "partyType is self-identified-user": (p) =>
+            p.partyType === "self-identified-user",
+        "displayName matches testdata username": (p) =>
+            p.displayName === expectedUsername,
+    });
+
+    const okUserHard = check(party.user, {
+        "user.username matches testdata username": (u) =>
+            u?.username === expectedUsername,
+    });
+
+    if (!(okHard && okUserHard)) {
+        console.log(response.body);
+    }
+}
+
 export function setup() {
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
@@ -54,12 +101,7 @@ export default function (usernames) {
             label,
         );
 
-        check(response, {
-            "Username is included in the response 'Vegard'": (r) =>
-                r.body.toLowerCase().includes(username.toLowerCase()),
-            "User is of type self-identified-user": (r) =>
-                r.body.includes("self-identified-user"),
-        });
+        assertLookupResponse(response, username);
 
         group("Look up username in Register - case insensitivity", () => {
             // Uppercase the username if not already, to test case insensitivity
@@ -76,10 +118,7 @@ export default function (usernames) {
                 label,
             );
 
-            check(response, {
-                "Username with case variant was found in the response": (r) =>
-                    r.body.includes(username),
-            });
+            assertLookupResponse(response, username);
         });
     });
 }

@@ -1,4 +1,4 @@
-import { check, group } from "k6";
+import { check, group, fail } from "k6";
 import { PlatformTokenGenerator } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
@@ -29,6 +29,18 @@ function isIsoDateString(v) {
     return !Number.isNaN(d.getTime());
 }
 
+function isYearDateString(v, year) {
+    return typeof v === "string" && v.startsWith(`${year}-`);
+}
+
+function tryParseJson(str) {
+    try {
+        return JSON.parse(str);
+    } catch {
+        return null;
+    }
+}
+
 export default function () {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
@@ -55,15 +67,9 @@ export default function () {
         group(
             "Register: Look up party by idporten email - verify response body",
             () => {
-                const body = JSON.parse(response.body);
-
-                const okJson = check(body, {
-                    "Register lookup response is valid JSON": (b) => b !== null,
-                });
-                if (!okJson) {
-                    console.log("Got response body:");
-                    console.log(response.body);
-                    return;
+                const body = tryParseJson(response.body);
+                if (body === null) {
+                    fail("Register lookup response is not valid JSON");
                 }
 
                 const data = body.data;
@@ -72,9 +78,7 @@ export default function () {
                         Array.isArray(d) && d.length === 1,
                 });
                 if (!okShape) {
-                    console.error("Got response body:");
-                    console.error(response.body);
-                    return;
+                    console.log(response.body);
                 }
 
                 const party = data[0];
@@ -85,15 +89,16 @@ export default function () {
                     "partyType is self-identified-user": (p) =>
                         p.partyType === "self-identified-user",
                     "email matches request": (p) => p.email === email,
-                    "externalUrn matches request": (p) =>
+                    "externalUrn matches email URN": (p) =>
                         p.externalUrn === `urn:altinn:person:idporten-email:${email}`,
                     "displayName equals email": (p) => p.displayName === email,
                     "isDeleted is false": (p) => p.isDeleted === false,
                     "deletedAt is null": (p) => p.deletedAt === null,
                 });
-                const okUserHard = check(user, {
+
+                const userFound = check(user, {
                     "user.username is epost:<email>": (u) =>
-                        u.username === `epost:${email}`,
+                        u?.username === `epost:${email}`,
                 });
 
                 // Type/shape asserts (may vary between envs)
@@ -105,8 +110,8 @@ export default function () {
             p.urn.includes(p.partyUuid),
                     "partyId is a number": (p) => isNumber(p.partyId),
                     "versionId is a number": (p) => isNumber(p.versionId),
-                    "createdAt is a date string": (p) => isIsoDateString(p.createdAt),
-                    "modifiedAt is a date string": (p) => isIsoDateString(p.modifiedAt),
+                    "createdAt is in 2026": (p) => isYearDateString(p.createdAt, 2026),
+                    "modifiedAt is in 2026": (p) => isYearDateString(p.modifiedAt, 2026),
                 });
 
                 const okUserTypes = check(user, {
@@ -118,9 +123,8 @@ export default function () {
             u.userIds.includes(u.userId),
                 });
 
-                if (!(okHard && okUserHard && okTypes && okUserTypes)) {
-                    console.error("Got response body:");
-                    console.error(response.body);
+                if (!okHard || !userFound || !okTypes || !okUserTypes) {
+                    console.log(response.body);
                 }
             },
         );
