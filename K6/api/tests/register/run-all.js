@@ -1,4 +1,5 @@
 import runAddRemoveRevisorRoleForClient from "./add-rm-revisor-role-for-client.js";
+import runLookUpOnIdportenEmail from "./look-up-on-idporten-email.js";
 import runLookUpOnUsername from "./look-up-on-username.js";
 import { setup as runLookUpOnUsernameSetup } from "./look-up-on-username.js";
 
@@ -10,6 +11,7 @@ export function setup() {
 
 export default function (data) {
     runLookUpOnUsername(data.runLookUpOnUsername);
+    runLookUpOnIdportenEmail();
     runAddRemoveRevisorRoleForClient();
 }
 
