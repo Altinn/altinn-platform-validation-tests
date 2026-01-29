@@ -9,7 +9,6 @@ import {
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 
 export default function () {
-    const testRef = "Agent system user requests by system id";
     group(
         "Scenario: As a vendor, I can list agent system user requests by system id and follow pagination.",
         () => {
@@ -36,7 +35,7 @@ export default function () {
             let firstBody;
             let firstJson;
             group(
-                `Step: ${testRef} - Fetch the first page of agent system user requests.`,
+                "Step: Agent system user requests by system id - Fetch the first page of agent system user requests.",
                 () => {
                     firstBody = GetAgentSystemUserRequestsBySystemId(
                         systemUserRequestApiClient,
@@ -60,7 +59,7 @@ export default function () {
             );
 
             group(
-                `Step: ${testRef} - Follow the next-link pagination (links.next).`,
+                "Step: Agent system user requests by system id - Follow the next-link pagination (links.next).",
                 () => {
                     const nextUrl = extractNextUrl(firstJson);
                     if (!nextUrl) {

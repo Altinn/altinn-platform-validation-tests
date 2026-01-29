@@ -14,7 +14,6 @@ import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
  * Ensures that paginated access to system user requests by systemId (vendor endpoint) works correctly through APIM.
  */
 export default function () {
-    const testRef = "System user requests by system id";
     group(
         "Scenario: As a vendor, I can list system user requests by system id and follow pagination.",
         () => {
@@ -41,7 +40,7 @@ export default function () {
             let firstBody;
             let firstJson;
             group(
-                `Step: ${testRef} - Fetch the first page of system user requests.`,
+                "Step: System user requests by system id - Fetch the first page of system user requests.",
                 () => {
                     firstBody = GetSystemUserRequestsBySystemId(
                         systemUserRequestApiClient,
@@ -65,7 +64,7 @@ export default function () {
             );
 
             group(
-                `Step: ${testRef} - Follow the next-link pagination (links.next).`,
+                "Step: System user requests by system id - Follow the next-link pagination (links.next).",
                 () => {
                     const nextUrl = extractNextUrl(firstJson);
                     if (!nextUrl) {
