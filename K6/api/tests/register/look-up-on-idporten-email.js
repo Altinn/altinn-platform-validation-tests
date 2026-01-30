@@ -23,14 +23,8 @@ function isUuid(v) {
     );
 }
 
-function isIsoDateString(v) {
-    if (typeof v !== "string") return false;
-    const d = new Date(v);
-    return !Number.isNaN(d.getTime());
-}
-
-function isYearDateString(v, year) {
-    return typeof v === "string" && v.startsWith(`${year}-`);
+function isDateString(v) {
+    return typeof v === "string" && !Number.isNaN(Date.parse(v));
 }
 
 function tryParseJson(str) {
@@ -101,7 +95,6 @@ export default function () {
                         u?.username === `epost:${email}`,
                 });
 
-                // Type/shape asserts (may vary between envs)
                 const okTypes = check(party, {
                     "partyUuid is a UUID": (p) => isUuid(p.partyUuid),
                     "urn is non-empty and contains partyUuid": (p) =>
@@ -110,8 +103,8 @@ export default function () {
             p.urn.includes(p.partyUuid),
                     "partyId is a number": (p) => isNumber(p.partyId),
                     "versionId is a number": (p) => isNumber(p.versionId),
-                    "createdAt is in 2026": (p) => isYearDateString(p.createdAt, 2026),
-                    "modifiedAt is in 2026": (p) => isYearDateString(p.modifiedAt, 2026),
+                    "createdAt is a date string": (p) => isDateString(p.createdAt),
+                    "modifiedAt is a date string": (p) => isDateString(p.modifiedAt),
                 });
 
                 const okUserTypes = check(user, {
@@ -130,6 +123,3 @@ export default function () {
         );
     });
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../common-imports.js";
