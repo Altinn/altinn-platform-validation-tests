@@ -26,7 +26,7 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves the List of all the Registered Systems, except those marked as deleted.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister|/systemregister}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister}
      * @returns http.RefinedResponse
      */
     GetAllSystemsFromRegister() {
@@ -44,7 +44,6 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a Registered System frontend DTO for the systemId.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister__systemId_|/systemregister/systemId}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -63,7 +62,7 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a Registered System for the systemId.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister_vendor__systemId_|/systemregister/vendor/systemId}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId_}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -82,7 +81,7 @@ class SystemRegisterApiClient {
 
     /**
      * Replaces the entire registered system
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_|/systemregister/vendor/systemId}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_}
      * @param {string } systemId The Id of the Registered System
      * @param {string } vendorId
      * @param {string } name
@@ -149,7 +148,7 @@ class SystemRegisterApiClient {
 
     /**
      * Updates the rights on a registered system
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId__rights|/systemregister/vendor/systemId/rights}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
     *  @param {string } systemId The Id of the Registered System
     *  @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body
      * @returns http.RefinedResponse
@@ -169,7 +168,7 @@ class SystemRegisterApiClient {
 
     /**
      * Set the registered system to be deleted.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/delete_systemregister_vendor__systemId_|/systemregister/vendor/systemId}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/delete_systemregister_vendor__systemId_}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -188,7 +187,7 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a list of the predfined default rights for the Product type, if any
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights|/systemregister/systemId/rights}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -207,7 +206,7 @@ class SystemRegisterApiClient {
 
     /**
     * Create a new System
-    * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/post_systemregister_vendor|/systemregister/vendor}
+    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/post_systemregister_vendor}
     * @param {string } vendorId
     * @param {string } name
     * @param {string[] } clientId

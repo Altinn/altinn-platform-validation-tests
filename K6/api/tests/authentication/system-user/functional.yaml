@@ -1,0 +1,7 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/system-user
+test_definitions:
+  - test_file: run-paginated-systemuser-tests.js
+    contexts:
+      - environment: tt02
+      - environment: at22
