@@ -98,6 +98,10 @@ function getClients(orgNo, userId, partyUuid) {
 }
 
 export default function (data) {
+    if (!__ENV.ENVIRONMENT) {
+        throw new Error("Test aborted due to missing ENVIRONMENT variable.");
+    }
+
     if (!from || !to) {
         [from, to] = selectRandomFromToPair(data);
     }
