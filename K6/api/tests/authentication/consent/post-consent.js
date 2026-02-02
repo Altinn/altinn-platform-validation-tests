@@ -123,7 +123,7 @@ export default function (data) {
             },
         },
     ];
-    let response = RequestConsent(
+    RequestConsent(
         consenteeApiClient,
         id,
         personIdentifierNo,
@@ -133,10 +133,10 @@ export default function (data) {
         "https://altinn.no"
     );
 
-    response = ApproveConsent(consenterApiClient, id);
+    ApproveConsent(consenterApiClient, id);
 
     // Simulate fetching the Maskinporten consent token (lookup)
-    response = LookupConsent(
+    LookupConsent(
         consentLookupApiClient,
         id,
         personIdentifierNo,
