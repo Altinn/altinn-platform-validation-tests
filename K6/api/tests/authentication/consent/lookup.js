@@ -1,5 +1,4 @@
 import http from "k6/http";
-import exec from "k6/execution";
 import { group } from "k6";
 import { uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
@@ -16,6 +15,10 @@ import {
     ApproveConsent,
     LookupConsent,
 } from "../../../building-blocks/authentication/consent/index.js";
+
+export const options = {
+    setupTimeout: "300s",
+};
 
 function getClients(orgNo, userId, partyUuid) {
     const consentee = new ConsentApiClient(

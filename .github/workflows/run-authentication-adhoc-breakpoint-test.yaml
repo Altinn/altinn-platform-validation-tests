@@ -43,6 +43,7 @@ on:
           - yt01-get-roles-break
           # - K6/api/tests/authentication/consent/breakpoint.yaml
           - yt01-post-consent-break
+          - yt01-lookup-break
 
       target_vus:
         description: "The target VUs to reach"
