@@ -15,9 +15,8 @@ export function LookupConsent(consentApiClient, id, from, to, label = null) {
     const res = consentApiClient.LookupConsent(id, from, to, label);
 
     const success = check(res, {
-        "LookupConsentToken - status code should be 200": (r) => r.status === 200,
-        "LookupConsentToken - status text is 200 OK": (r) =>
-            r.status_text == "200 OK",
+        "Lookup consent: - status code should be 200": (r) => r.status === 200,
+        "Lookup consent - status text is 200 OK": (r) => r.status_text == "200 OK",
     });
 
     if (!success) {

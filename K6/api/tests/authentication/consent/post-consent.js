@@ -52,7 +52,6 @@ function getClients(orgNo, userId, partyUuid) {
         optionsConsentee.set("env", __ENV.ENVIRONMENT);
         optionsConsentee.set("ttl", 3600);
         optionsConsentee.set("scopes", "altinn:consentrequests.write");
-        //optionsConsentee.set("org", "ttd");
         optionsConsentee.set("orgNo", orgNo);
 
         const tokenGeneratorConsentee = new EnterpriseTokenGenerator(
@@ -79,9 +78,8 @@ function getClients(orgNo, userId, partyUuid) {
             tokenGeneratorConsenter
         );
 
-        // consent lookup (Maskinporten consent token)
+        // consent lookup (Maskinporten uses this endpoint to lookup consent before fetching the token)
         // Requires an org token with scope: altinn:maskinporten/consent.read
-        // No organization id is required for the token generator.
         const optionsConsentLookup = new Map();
         optionsConsentLookup.set("env", __ENV.ENVIRONMENT);
         optionsConsentLookup.set("ttl", 3600);
@@ -139,7 +137,6 @@ export default function (data) {
 
     ApproveConsent(consenterApiClient, id);
 
-    // Simulate fetching the Maskinporten consent token (lookup)
     LookupConsent(
         consentLookupApiClient,
         id,

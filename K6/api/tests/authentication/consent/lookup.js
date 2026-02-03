@@ -1,83 +1,148 @@
+import http from "k6/http";
 import exec from "k6/execution";
-import { check } from "k6";
-import { SharedArray } from "k6/data";
+import { group } from "k6";
+import { uuidv4 } from "../../../../common-imports.js";
+import { parseCsvData } from "../../../../helpers.js";
+import { getItemFromList } from "../../../../helpers.js";
 
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { getOptions, parseCsvData } from "../../../../helpers.js";
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
-import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
+import {
+  PersonalTokenGenerator,
+  EnterpriseTokenGenerator,
+} from "../../../../common-imports.js";
 
-const label = "consent-lookup";
-const environment = __ENV.ENVIRONMENT ?? "yt01";
+import {
+  RequestConsent,
+  ApproveConsent,
+  LookupConsent,
+} from "../../../building-blocks/authentication/consent/index.js";
 
-const consentRows = new SharedArray("consent-data-rows", () => {
-    const csv = open(
-        import.meta.resolve(
-            `../../../../testdata/authentication/consent/consentData-${environment}.csv`
-        )
-    );
-    const parsed = parseCsvData(csv);
-    return (parsed ?? [])
-        .map((r) => {
-            // Headers in this file include spaces after the commas:
-            // "consentId, personIdentifierNo, orgIdentifierNo"
-            const consentId = String(r?.consentId ?? "").trim();
-            const personIdentifierNo = String(
-                r?.personIdentifierNo ?? r?.[" personIdentifierNo"] ?? ""
-            ).trim();
-            const orgIdentifierNo = String(
-                r?.orgIdentifierNo ?? r?.[" orgIdentifierNo"] ?? ""
-            ).trim();
-            return { consentId, personIdentifierNo, orgIdentifierNo };
-        })
-        .filter((r) => r.consentId && r.personIdentifierNo && r.orgIdentifierNo);
-});
+const env = __ENV.ENVIRONMENT ?? "yt01";
+const LOOKUPS = 10;
 
+// Help a brother out, how do we configure this for breakpoint tests?
 export const options = {
-    ...getOptions([label]),
-    vus: 1,
-    iterations: consentRows.length,
+  scenarios: {
+    default: {
+      executor: "shared-iterations",
+      vus: 1,
+      iterations: LOOKUPS,
+      maxDuration: __ENV.MAX_DURATION ?? "15m",
+    },
+  },
 };
 
-let consentLookupApiClient = undefined;
-function getConsentLookupClient() {
-    if (consentLookupApiClient) {
-        return consentLookupApiClient;
-    }
+function getClients(orgNo, userId, partyUuid) {
+  const consentee = new ConsentApiClient(
+    __ENV.BASE_URL,
+    new EnterpriseTokenGenerator(
+      new Map([
+        ["env", env],
+        ["ttl", 3600],
+        ["scopes", "altinn:consentrequests.write"],
+        ["orgNo", orgNo],
+      ])
+    )
+  );
 
-    const tokenOptions = new Map();
-    tokenOptions.set("env", environment);
-    tokenOptions.set("ttl", 3600);
-    tokenOptions.set("scopes", "altinn:maskinporten/consent.read");
-    // No orgNo required for this token according to requirements.
+  const consenter = new ConsentApiClient(
+    __ENV.BASE_URL,
+    new PersonalTokenGenerator(
+      new Map([
+        ["env", env],
+        ["ttl", 3600],
+        ["scopes", "altinn:portal/enduser"],
+        ["userId", userId],
+        ["partyuuid", partyUuid],
+      ])
+    )
+  );
 
-    const tokenGenerator = new EnterpriseTokenGenerator(tokenOptions);
-    consentLookupApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
-    return consentLookupApiClient;
+  return [consentee, consenter];
 }
 
-export default function () {
-    if (!__ENV.BASE_URL) {
-        throw new Error("Missing required env var: BASE_URL");
-    }
+function consentRights() {
+  return [
+    {
+      action: ["consent"],
+      resource: [
+        { type: "urn:altinn:resource", value: "samtykke-performance-test" },
+      ],
+      metaData: { inntektsaar: "2026" },
+    },
+  ];
+}
 
-    if (consentRows.length === 0) {
-        throw new Error(
-            `No consent rows found in consentData-${environment}.csv (expected at least 1 data row).`
-        );
-    }
+export function setup() {
+  if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
 
-    const idx = exec.scenario.iterationInTest;
-    if (idx >= consentRows.length) {
-        throw new Error(
-            `Iteration ${idx} exceeded consentRows.length=${consentRows.length}`
-        );
-    }
-    const row = consentRows[idx];
+  const res = http.get(
+    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${env}-with-party-uuid.csv`
+  );
 
-    const fromUrn = `urn:altinn:person:identifier-no:${row.personIdentifierNo}`;
-    const toUrn = `urn:altinn:organization:identifier-no:${row.orgIdentifierNo}`;
+  const orgs = parseCsvData(res.body);
+  const rows = [];
 
-    const client = getConsentLookupClient();
-    LookupConsent(client, row.consentId, fromUrn, toUrn, label);
+  for (let i = 0; i < LOOKUPS; i++) {
+    const row = getItemFromList(orgs, true);
+
+    const consentId = uuidv4();
+
+    const pid = String(row.ssn);
+    const orgNo = String(row.orgNo);
+
+    rows.push({ consentId, pid, orgNo });
+
+    const [consentee, consenter] = getClients(
+      row.orgNo,
+      row.userId,
+      row.partyUuid
+    );
+
+    RequestConsent(
+      consentee,
+      consentId,
+      `urn:altinn:person:identifier-no:${pid}`,
+      `urn:altinn:organization:identifier-no:${orgNo}`,
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      consentRights(),
+      "https://altinn.no"
+    );
+
+    ApproveConsent(consenter, consentId);
+  }
+  console.log(`Setup complete: prepared ${rows.length} consents`);
+  return rows;
+}
+
+/**
+ * Verify lookup endpoint used by Maskinporten. Only works if consent request is already approved.
+ */
+export default function (data) {
+  group("Look up consent after user approval", () => {
+    const i = exec.scenario.iterationInTest;
+    const row = data[i % data.length];
+
+    const lookupClient = new ConsentApiClient(
+      __ENV.BASE_URL,
+      new PersonalTokenGenerator(
+        new Map([
+          ["env", env],
+          ["ttl", 3600],
+          ["scopes", "altinn:maskinporten/consent.read"],
+        ])
+      )
+    );
+
+    LookupConsent(
+      lookupClient,
+      row.consentId,
+      `urn:altinn:person:identifier-no:${row.pid}`,
+      `urn:altinn:organization:identifier-no:${row.orgNo}`
+    );
+  });
+}
+
+export function teardown(data) {
+  console.log("test finished");
 }
