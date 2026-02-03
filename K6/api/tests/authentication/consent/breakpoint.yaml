@@ -12,3 +12,17 @@ test_definitions:
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
+  - test_file: K6/api/tests/authentication/consent/lookup.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+            - name: LOOKUPS
+              value: 500 # No clue what makes sense here
