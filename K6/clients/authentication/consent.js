@@ -88,7 +88,6 @@ class ConsentApiClient {
    */
     LookupConsent(id, from, to, label = null) {
         const token = this.tokenGenerator.getToken();
-        console.log("Token: ", token);
         const url = `${this.FULL_PATH}/maskinporten/consent/lookup/`;
         const body = {
             id,

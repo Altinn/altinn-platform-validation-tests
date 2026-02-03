@@ -1,6 +1,5 @@
 import http from "k6/http";
 import exec from "k6/execution";
-import { check } from "k6";
 
 import { uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
@@ -17,20 +16,16 @@ import {
     LookupConsent,
 } from "../../../building-blocks/authentication/consent/index.js";
 
-/**
- * ===== INIT =====
- */
 const env = __ENV.ENVIRONMENT ?? "yt01";
-const PREP = Math.max(Number.parseInt(__ENV.PREP ?? "10", 10), 1);
-const LOOKUPS = Math.max(Number.parseInt(__ENV.ITERATIONS ?? PREP, 10), 1);
+const LOOKUPS = 10;
 
 export const options = {
     scenarios: {
         default: {
             executor: "shared-iterations",
-            vus: Math.max(Number.parseInt(__ENV.VUS ?? "1", 10), 1),
+            vus: 2,
             iterations: LOOKUPS,
-            maxDuration: __ENV.MAX_DURATION ?? "30m",
+            maxDuration: __ENV.MAX_DURATION ?? "15m",
         },
     },
 };
@@ -67,8 +62,7 @@ function getClients(orgNo, userId, partyUuid) {
             new Map([
                 ["env", env],
                 ["ttl", 3600],
-                ["scopes", "altinn:consentrequests.read"],
-                ["orgNo", orgNo],
+                ["scopes", "altinn:maskinporten/consent.read"],
             ])
         )
     );
@@ -88,10 +82,6 @@ function consentRights() {
     ];
 }
 
-/**
- * ===== SETUP =====
- * Fetch orgs via HTTP, prepare consents, return lookup data
- */
 export function setup() {
     if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
 
@@ -102,15 +92,16 @@ export function setup() {
     const orgs = parseCsvData(res.body);
     const rows = [];
 
-    for (let i = 0; i < PREP; i++) {
+    for (let i = 0; i < LOOKUPS; i++) {
         const from = orgs[i % orgs.length];
         const to = orgs[(i + 1) % orgs.length];
 
         const consentId = uuidv4();
+
         const pid = String(from.ssn);
         const orgNo = String(to.orgNo);
 
-        console.log("Testdata used: ", from.ssn, to.orgNo, consentId);
+        rows.push({ consentId, pid, orgNo });
 
         const [consentee, consenter] = getClients(
             to.orgNo,
@@ -130,28 +121,19 @@ export function setup() {
 
         ApproveConsent(consenter, consentId);
 
-        rows.push({ consentId, pid, orgNo });
-
-        if (i > 0 && i % 500 === 0) {
-            console.log(`Prepared ${i}/${PREP} consents`);
-        }
+        console.log("Consent data: ", consentId, pid, orgNo);
+        console.log(`Setup complete: prepared ${rows.length} consents`);
     }
-
-    console.log(`Setup complete: prepared ${rows.length} consents`);
     return rows;
 }
 
 /**
- * ===== VU =====
- * Lookup only (breakpoint here)
+ * ===== The real (breakpoint test) starts here =====
+ * Verify lookup endpoint used by Maskinporten in isolation after consent request and approval.
  */
 export default function (data) {
     const i = exec.scenario.iterationInTest;
     const row = data[i % data.length];
-    console.log("Lookup data: ", row.consentId, row.pid, row.orgNo);
-
-    check(row, { "lookup row exists": (r) => !!r });
-    if (!row) return;
 
     const lookupClient = new ConsentApiClient(
         __ENV.BASE_URL,
@@ -159,14 +141,11 @@ export default function (data) {
             new Map([
                 ["env", env],
                 ["ttl", 3600],
-                ["scopes", "altinn:consentrequests.read"],
-                ["orgNo", row.orgNo],
-                ["scopes", "altinn:portal/enduser"],
+                ["scopes", "altinn:maskinporten/consent.read"],
             ])
         )
     );
 
-    // 🔴 BREAKPOINT HERE
     LookupConsent(
         lookupClient,
         row.consentId,
@@ -175,9 +154,6 @@ export default function (data) {
     );
 }
 
-/**
- * ===== TEARDOWN =====
- */
 export function teardown(data) {
-    console.log(`Teardown finished. Rows prepared: ${data?.length ?? 0}`);
+    console.log("test finished");
 }
