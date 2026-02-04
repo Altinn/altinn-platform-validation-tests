@@ -1,3 +1,8 @@
+/*
+* Returns a resource body based on the provided templateId.
+* Used for creating resources in the Resource Registry for testing purposes.
+* Create other templates as needed by modifying or adding to the definitions below.
+*/
 export function getResourceBody(templateId, id, org, orgCode) {
   switch (templateId) {
     case 'access-package':

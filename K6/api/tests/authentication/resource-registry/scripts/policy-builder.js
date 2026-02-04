@@ -1,3 +1,8 @@
+/*
+* Builds XACML policy XML strings based on provided definitions.
+* Used for creating policies in the Resource Registry for testing purposes.
+* Create other policies as needed by modifying or adding to the definitions below.
+*/
 export function getDefaultPolicyXml(id) {
   const policyDefinition = {
       rules: [
@@ -26,21 +31,6 @@ export function getDefaultPolicyXml(id) {
               actions: ["read", "write", "sign", "open"],
           },
       ],
-    //obligationExpressions: [
-      // {
-      //   obligationId: "urn:altinn:obligation:authenticationLevel1",
-      //   fulfillOn: "Permit",
-      //   attributeId: "urn:altinn:obligation1-assignment1",
-      //   category: "urn:altinn:minimum-authenticationlevel",
-      //   value: 3,
-      // },{
-      //   obligationId: "urn:altinn:obligation:authenticationLevel2",
-      //   fulfillOn: "Permit",
-      //   attributeId: "urn:altinn:obligation2-assignment2",
-      //   category: "urn:altinn:minimum-authenticationlevel-org",
-      //   value: 3,
-      // },
-    //],
   };
   return buildPolicy(policyDefinition, id);
 }

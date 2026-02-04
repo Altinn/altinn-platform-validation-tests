@@ -1,3 +1,14 @@
+/*
+* An example script that demonstrates how to patch a resource in the Resource Registry API using k6.
+* It retrieves an existing resource, applies specified changes, and updates the resource.
+* Run: k6 run patch-resource.js
+* Set environment variables:
+*   ENVIRONMENT - the target environment (e.g., "yt01", "at23", "tt02")
+*   BASE_URL - the base URL of the Resource Registry API
+* Example:
+*   ENVIRONMENT=yt01 BASE_URL=https://platform.at22.altinn.cloud k6 run patch-resource.js
+* TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
+*/
 import { ResourceRegistryApiClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 

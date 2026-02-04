@@ -1,3 +1,13 @@
+/*
+* Script to create access package resources with PRIV in policy file in addition to access package
+* Run: k6 run create-access-package-priv-resource.js
+* Set environment variables: 
+*   ENVIRONMENT - the target environment (e.g., "yt01", "at23", "tt02")
+*   BASE_URL - the base URL of the resource registry API
+*  Example:
+*   ENVIRONMENT=yt01 BASE_URL=https://platform.at22.altinn.cloud k6 run create-access-package-priv-resource.js
+*  TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
+*/
 import { ResourceRegistryApiClient, AccessPackagesApiClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getResourceBody } from "./resource-templates.js";
@@ -7,7 +17,10 @@ let resourceRegistryApiClient = undefined;
 let accessPackagesApiClient = undefined;
 
 export default function () {
-    const orgNo = "991825827"; //"713431400";
+    let orgNo = "713431400";
+    if (__ENV.ENVIRONMENT !== "yt01") {
+        orgNo = "991825827";
+    }
     const orgCode = "digdir";
 
     if (resourceRegistryApiClient == undefined) {
@@ -19,11 +32,13 @@ export default function () {
         resourceRegistryApiClient = new ResourceRegistryApiClient(__ENV.BASE_URL, tokenGenerator);
     }
 
+    // Get all access packages
     accessPackagesApiClient = new AccessPackagesApiClient(__ENV.BASE_URL);
     const searchOpt = { typeName: "person" };
     const accessPackageResp = accessPackagesApiClient.Search(searchOpt);
-
     const resp = JSON.parse(accessPackageResp.body);
+
+    // Create resource and policy for each access package
     for (const item of resp) {
         const accessPackage = item.object.urn.split(":").pop();
         const resourceId = `k6-test-${accessPackage}-with-priv`;
@@ -42,5 +57,4 @@ export default function () {
         }
         break;
     }
-
 }

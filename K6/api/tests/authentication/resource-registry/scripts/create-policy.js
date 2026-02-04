@@ -1,3 +1,16 @@
+/*
+* Example script to create a policy in the Resource Registry for testing purposes.
+* No resource is created in this script, it is assumed that the resource already exists.
+* A predefined policy XML is used for the creation, but can be modified as needed.
+* See policy-builder.js for building custom policies.
+* Run: k6 run create-policy.js
+* Set environment variables:
+*   ENVIRONMENT - the target environment (e.g., "yt01", "at23", "tt02")
+*   BASE_URL - the base URL of the Resource Registry API
+* Example:
+*   ENVIRONMENT=yt01 BASE_URL=https://platform.at22.altinn.cloud k6 run create-policy.js
+* TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
+*/
 import { ResourceRegistryApiClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { buildPolicy, getDefaultPolicyXml } from "./policy-builder.js";
@@ -13,34 +26,6 @@ export default function () {
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         resourceRegistryApiClient = new ResourceRegistryApiClient(__ENV.BASE_URL, tokenGenerator);
     }
-
-    const policyDefinition = {
-      rules: [
-          {
-              effect: "Permit",
-              description: "Består av tilgangspakken",
-              subjects: [
-                  { id: "urn:altinn:accesspackage", value: "godkjenning-av-personell" },
-              ],
-              actions: ["read", "write"],
-          },
-      ],
-      obligationExpressions: [
-          {
-              obligationId: "urn:altinn:obligation:authenticationLevel1",
-              fulfillOn: "Permit",
-              attributeId: "urn:altinn:obligation1-assignment1",
-              category: "urn:altinn:minimum-authenticationlevel",
-              value: 3,
-          },{
-              obligationId: "urn:altinn:obligation:authenticationLevel2",
-              fulfillOn: "Permit",
-              attributeId: "urn:altinn:obligation2-assignment2",
-              category: "urn:altinn:minimum-authenticationlevel-org",
-              value: 3,
-          },
-      ],
-  };
 
   const resourceName = "k6-test-innbygger-forsikring";
 
