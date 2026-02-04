@@ -5,7 +5,7 @@
 */
 export function getResourceBody(templateId, id, org, orgCode) {
     switch (templateId) {
-        case 'access-package':
+        case "access-package":
             return accessPackageTemplate(id, org, orgCode);
         default:
             return getDefaultResourceBody(id, org, orgCode);
@@ -45,21 +45,21 @@ function getDefaultResourceBody(id, org, orgCode) {
             },
             "organization": org,
             "orgcode": orgCode
-          },
-          "keywords": [],
-          "accessListMode": "Disabled",
-          "selfIdentifiedUserEnabled": false,
-          "enterpriseUserEnabled": false,
-          "resourceType": "GenericAccessResource",
-          "authorizationReference": [
-              {
-                  "id": "urn:altinn:resource",
-                  "value": id
-              }
-          ],
-          "isOneTimeConsent": false,
-          "versionId": 58
-    } 
+        },
+        "keywords": [],
+        "accessListMode": "Disabled",
+        "selfIdentifiedUserEnabled": false,
+        "enterpriseUserEnabled": false,
+        "resourceType": "GenericAccessResource",
+        "authorizationReference": [
+            {
+                "id": "urn:altinn:resource",
+                "value": id
+            }
+        ],
+        "isOneTimeConsent": false,
+        "versionId": 58
+    }; 
 }
 
 function accessPackageTemplate(id, org, orgCode) {
@@ -118,5 +118,5 @@ function accessPackageTemplate(id, org, orgCode) {
         ],
         "isOneTimeConsent": false,
         "versionId": 323
-    }
+    };
 }

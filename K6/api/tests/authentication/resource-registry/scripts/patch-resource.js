@@ -46,7 +46,7 @@ export default function () {
             ["resourceReferences"],
             ["authorizationReference"]
         ],
-    }
+    };
     const resourceName = "k6-generated-resource-01";
     const updatedResource = applyPatch(resource, patch);
     console.log("Merged Resource:", JSON.stringify(updatedResource, null, 2));
@@ -66,7 +66,7 @@ function deepMerge(target, source) {
         }
     }
     return out;
-  }
+}
 
 function removePath(obj, path) {
     if (path.length === 0) return obj;
@@ -92,7 +92,7 @@ function applyPatch(original, patch) {
     // 1) removals
     if (patch.remove) {
         for (const path of patch.remove) {
-          result = removePath(result, path);
+            result = removePath(result, path);
         }
     }
 

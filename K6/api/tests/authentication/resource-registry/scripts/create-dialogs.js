@@ -57,8 +57,8 @@ let serviceOwnerApiClient = undefined;
 const label = "create-dialog";
 
 export function setup() {
-  const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
-  return parseCsvData(res.body);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
+    return parseCsvData(res.body);
 }
 
 /**
@@ -67,17 +67,17 @@ export function setup() {
 * @returns {Array} An array containing the AuthorizedPartiesClient instance
 */
 export function getClients() {
-  if (serviceOwnerApiClient == undefined) {
-      const tokenOpts = new Map();
-      tokenOpts.set("env", __ENV.ENVIRONMENT);
-      tokenOpts.set("ttl", 3600);
-      tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider");
-      tokenOpts.set("org", "ttd");
-      tokenOpts.set("orgNo", orgNo);
-      const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-      serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
-  }
-  return [serviceOwnerApiClient];
+    if (serviceOwnerApiClient == undefined) {
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider");
+        tokenOpts.set("org", "ttd");
+        tokenOpts.set("orgNo", orgNo);
+        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
+    }
+    return [serviceOwnerApiClient];
 }
 
 export default function (data) {

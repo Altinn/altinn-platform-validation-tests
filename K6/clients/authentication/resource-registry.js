@@ -118,7 +118,7 @@ class ResourceRegistryApiClient {
         const url = new URL(`${this.FULL_PATH}${resourceId}/policy`);
 
         const payload = {
-          policyFile: http.file(xml, "request.xml", "application/xml"),
+            policyFile: http.file(xml, "request.xml", "application/xml"),
         };
 
         const params = {

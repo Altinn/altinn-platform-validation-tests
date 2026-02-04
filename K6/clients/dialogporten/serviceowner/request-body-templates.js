@@ -49,7 +49,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
     if (!title) {
         title = `Dialog for ${serviceOwner} - ${new Date().toISOString()}`;
     }
-    const summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`
+    const summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`;
     return {
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
         "party": `urn:altinn:person:identifier-no:${endUser}`, // or urn:altinn:organization:identifier-no:<9 digits>

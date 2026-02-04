@@ -36,34 +36,34 @@ export function getDefaultPolicyXml(id) {
 }
 
 export function getAccessPackagePolicyXml(id, accessPackage) {
-  const policyDefinition = {
-    rules: [
-        {
-            effect: "Permit",
-            description: `Består av tilgangspakken ${accessPackage}`,
-            subjects: [
-                { id: "urn:altinn:accesspackage", value: accessPackage },
-            ],
-            actions: ["read", "write", "access"],
-        },
-    ],
-    obligationExpressions: [
-        {
-            obligationId: "urn:altinn:obligation:authenticationLevel1",
-            fulfillOn: "Permit",
-            attributeId: "urn:altinn:obligation1-assignment1",
-            category: "urn:altinn:minimum-authenticationlevel",
-            value: 3,
-        },{
-            obligationId: "urn:altinn:obligation:authenticationLevel2",
-            fulfillOn: "Permit",
-            attributeId: "urn:altinn:obligation2-assignment2",
-            category: "urn:altinn:minimum-authenticationlevel-org",
-            value: 3,
-        },
-    ],
-  };
-  return buildPolicy(policyDefinition, id);
+    const policyDefinition = {
+      rules: [
+          {
+              effect: "Permit",
+              description: `Består av tilgangspakken ${accessPackage}`,
+              subjects: [
+                  { id: "urn:altinn:accesspackage", value: accessPackage },
+              ],
+              actions: ["read", "write", "access"],
+          },
+      ],
+      obligationExpressions: [
+          {
+              obligationId: "urn:altinn:obligation:authenticationLevel1",
+              fulfillOn: "Permit",
+              attributeId: "urn:altinn:obligation1-assignment1",
+              category: "urn:altinn:minimum-authenticationlevel",
+              value: 3,
+          },{
+              obligationId: "urn:altinn:obligation:authenticationLevel2",
+              fulfillOn: "Permit",
+              attributeId: "urn:altinn:obligation2-assignment2",
+              category: "urn:altinn:minimum-authenticationlevel-org",
+              value: 3,
+          },
+      ],
+    };
+    return buildPolicy(policyDefinition, id);
 }
 
 export function getAccessPackageWithPrivPolicyXml(id, accessPackage) {
@@ -105,7 +105,7 @@ export function buildPolicy(definition, id) {
     let policyXml = `<?xml version="1.0" encoding="utf-8"?>
     <xacml:Policy PolicyId="urn:altinn:policyid:1" Version="1.0" RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-overrides" xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17">
       <xacml:Target/>`;
-    let ruleId = 0
+    let ruleId = 0;
     for (const rule of definition.rules) {
         ruleId += 1;
         policyXml += `
@@ -113,7 +113,7 @@ export function buildPolicy(definition, id) {
             <xacml:Description>${rule.description}</xacml:Description>
             <xacml:Target>
                 <xacml:AnyOf>`;
-            // add subjects
+        // add subjects
         for (const subject of rule.subjects) {
             policyXml += `
                       <xacml:AllOf>
@@ -152,7 +152,7 @@ export function buildPolicy(definition, id) {
     }
     if (definition.obligationExpressions && definition.obligationExpressions.length > 0) {
         policyXml += `
-        <xacml:ObligationExpressions>`
+        <xacml:ObligationExpressions>`;
 
         for (const obligation of definition.obligationExpressions) {
             policyXml += `

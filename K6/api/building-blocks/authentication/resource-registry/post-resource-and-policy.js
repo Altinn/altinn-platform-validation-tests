@@ -15,7 +15,7 @@ export function PostResourceAndPolicy(resourceRegistryClient, resourceId, org, o
     let succeedPolicy = false;
 
     succeed = check(res, {
-       "GetUpdatedResources - status code is 201": (r) => r.status === 201,
+        "GetUpdatedResources - status code is 201": (r) => r.status === 201,
     });
 
     if (succeed) {
@@ -24,11 +24,11 @@ export function PostResourceAndPolicy(resourceRegistryClient, resourceId, org, o
             "PostPolicy - status code is 201": (r) => r.status === 201,
         });
         if (!succeedPolicy) {
-            console.log("Post policy response status:", resPolicy.status)
-            console.log("Post policy response body:", resPolicy.body)
+            console.log("Post policy response status:", resPolicy.status);
+            console.log("Post policy response body:", resPolicy.body);
         }
     } else {
-        console.log("Post resource esponse status:", res.status)
+        console.log("Post resource esponse status:", res.status);
     }
 
     return [succeed, succeedPolicy];
@@ -43,18 +43,18 @@ export function PostResourceAndPolicy(resourceRegistryClient, resourceId, org, o
  * @returns {Object} Parsed JSON response
  */
 export function PostResource(resourceRegistryClient, resourceId, org, orgCode) {
-  const res = resourceRegistryClient.PostResource(resourceId, org, orgCode);
+    const res = resourceRegistryClient.PostResource(resourceId, org, orgCode);
 
-  const succeed = check(res, {
-     "GetUpdatedResources - status code is 201": (r) => r.status === 201,
-  });
+    const succeed = check(res, {
+        "GetUpdatedResources - status code is 201": (r) => r.status === 201,
+    });
 
-  if (!succeed) {
-      console.log("Post resource response status:", res.status)
-      console.warn("Post resource response body")
-  }
+    if (!succeed) {
+        console.log("Post resource response status:", res.status);
+        console.warn("Post resource response body");
+    }
 
-  return res;
+    return res;
 }
 
 /**
@@ -66,18 +66,18 @@ export function PostResource(resourceRegistryClient, resourceId, org, orgCode) {
  * @returns {Object} Parsed JSON response
  */
 export function PostPolicy(resourceRegistryClient, resourceId, policyDefinition = null) {
-  const res = resourceRegistryClient.PostPolicy(resourceId, policyDefinition);
+    const res = resourceRegistryClient.PostPolicy(resourceId, policyDefinition);
 
-  const succeed = check(res, {
-     "GetUpdatedResources - status code is 201": (r) => r.status === 201,
-  });
+    const succeed = check(res, {
+        "GetUpdatedResources - status code is 201": (r) => r.status === 201,
+    });
 
-  if (!succeed) {
-      console.log("Post policy response status:", res.status)
-      console.warn("Post policy response body:", res.body)
-  }
+    if (!succeed) {
+        console.log("Post policy response status:", res.status);
+        console.warn("Post policy response body:", res.body);
+    }
 
-  return res;
+    return res;
 }
 
 

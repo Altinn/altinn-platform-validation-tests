@@ -12,7 +12,7 @@ class AccessPackagesApiClient {
         *
         * @property {string} BASE_PATH The path to the api without host information
         */
-        this.BASE_PATH = "/accessmanagement/api/v1/meta/info/accesspackages"
+        this.BASE_PATH = "/accessmanagement/api/v1/meta/info/accesspackages";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
@@ -27,7 +27,7 @@ class AccessPackagesApiClient {
     * @returns http.RefinedResponse
     */
     Search(searchOptions, label = null) {
-        const url = new URL(`${this.FULL_PATH}` + `/search`);
+        const url = new URL(`${this.FULL_PATH}` + "/search");
         let nameTag = label ? label : url.toString();
         const params = {
             tags: { name: nameTag },
