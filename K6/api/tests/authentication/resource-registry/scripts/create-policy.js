@@ -1,6 +1,6 @@
-import { PostResource, PostPolicy } from "../../../building-blocks/authentication/resource-registry/index.js";
-import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { ResourceRegistryApiClient } from "../../../../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
+import { buildPolicy, getDefaultPolicyXml } from "./policy-builder.js";
 
 let resourceRegistryApiClient = undefined;
 
@@ -18,15 +18,11 @@ export default function () {
       rules: [
           {
               effect: "Permit",
-              description: "Copy of policy created by Vegard via GUI",
+              description: "Består av tilgangspakken",
               subjects: [
-                  { id: "urn:altinn:rolecode", value: "dagl" },
-                  { id: "urn:altinn:rolecode", value: "bobes" },
-                  { id: "urn:altinn:rolecode", value: "PRIV" },
-                  { id: "urn:altinn:rolecode", value: "SELN" },
-                  { id: "urn:altinn:accesspackage", value: "byggesoknad" },
+                  { id: "urn:altinn:accesspackage", value: "godkjenning-av-personell" },
               ],
-              actions: ["read", "confirm", "delete"],
+              actions: ["read", "write"],
           },
       ],
       obligationExpressions: [
@@ -44,8 +40,11 @@ export default function () {
               value: 3,
           },
       ],
-};
+  };
 
-    const policyResp = PostPolicy(resourceRegistryApiClient, "k6-generated-resource-01", policyDefinition);
+  const resourceName = "k6-test-innbygger-forsikring";
+
+  const policy = getDefaultPolicyXml(resourceName); //buildPolicy(policyDefinition, resourceName);
+  const policyResp = resourceRegistryApiClient.PostPolicy(resourceName, policy);
 
 }

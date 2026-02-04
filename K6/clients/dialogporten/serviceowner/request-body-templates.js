@@ -45,7 +45,11 @@ function uuidv7() {
     );
 }
 
-export function getDialogBody ( endUser, serviceResource, serviceOwner) {
+export function getDialogBody ( endUser, serviceResource, serviceOwner, title = null) {
+    if (!title) {
+        title = `Dialog for ${serviceOwner} - ${new Date().toISOString()}`;
+    }
+    const summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`
     return {
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
         "party": `urn:altinn:person:identifier-no:${endUser}`, // or urn:altinn:organization:identifier-no:<9 digits>
@@ -66,13 +70,13 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
         ],
         "content": {
             "Title": {
-                "value": [{ "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" }]
+                "value": [{ "languageCode": "nb", "value": title }]
             },
             "SenderName": {
-                "value": [{ "languageCode": "nb", "value": "Avsendernavn" }]
+                "value": [{ "languageCode": "nb", "value": serviceOwner }]
             },
             "Summary": {
-                "value": [{ "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." }]
+                "value": [{ "languageCode": "nb", "value": summary }]
             },
             "AdditionalInfo": {
                 "mediaType": "text/plain",
@@ -367,8 +371,8 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
     };
 };
 
-export function getDialogBodyWithoutTransmissionsAndActivities ( endUser, serviceResource) {
-    let body = getDialogBody( endUser, serviceResource);
+export function getDialogBodyWithoutTransmissionsAndActivities ( endUser, serviceResource, title = null) {
+    let body = getDialogBody( endUser, serviceResource, title);
     body.transmissions = [];
     body.activities = [];
     return body;
