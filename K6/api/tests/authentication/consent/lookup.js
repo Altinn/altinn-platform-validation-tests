@@ -37,11 +37,6 @@ export default function (rows) {
     const i = exec.scenario.iterationInTest;
     const row = rows[i % rows.length];
 
-    // console.log(row);
-
-    // TODO: TEMPORARILY - Fix before merge
-    console.log(`LookupConsent: ${row.Pid} ${row.Org} ${row.ConsentId}`);
-
     group("LookupConsent", () => {
         const pidUrn = `urn:altinn:person:identifier-no:${row.Pid}`;
         const orgUrn = `urn:altinn:organization:identifier-no:${row.Org}`;
