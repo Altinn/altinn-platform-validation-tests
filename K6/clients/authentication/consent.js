@@ -2,49 +2,46 @@ import http from "k6/http";
 
 class ConsentApiClient {
     /**
-     *
-     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
-     */
-    constructor(
-        baseUrl,
-        tokenGenerator
-    ) {
+   *
+   * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
+   * @param {*} tokenGenerator
+   */
+    constructor(baseUrl, tokenGenerator) {
     /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+     * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+     */
         this.tokenGenerator = tokenGenerator;
         /**
-         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
-         */
+     * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+     */
         this.FULL_PATH = baseUrl + "/accessmanagement/api/v1";
         /**
-         * @property {string} BASE_PATH The path to the api without host information
-         */
+     * @property {string} BASE_PATH The path to the api without host information
+     */
         this.BASE_PATH = "/accessmanagement/api/v1";
     }
 
     /**
-    * Request Consent
-    * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
-    * @param {string} id
-    * @param {string} from
-    * @param {string} to
-    * @param {string} validTo
-    * @param {Array<{ action: string[], resource: [ {type: string, value: string}], metaData: Object }> } consentRights
-    * @param {string} redirectUrl
-    * @returns http.RefinedResponse
-    */
+   * Request Consent
+   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * @param {string} id
+   * @param {string} from
+   * @param {string} to
+   * @param {string} validTo
+   * @param {Array<{ action: string[], resource: [ {type: string, value: string}], metaData: Object }> } consentRights
+   * @param {string} redirectUrl
+   * @returns http.RefinedResponse
+   */
     RequestConsent(id, from, to, validTo, consentRights, redirectUrl) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/enterprise/consentrequests`;
         const body = {
-            "id": id,
-            "from": from,
-            "to": to,
-            "validTo": validTo,
-            "consentRights": consentRights,
-            "redirectUrl": redirectUrl
+            id: id,
+            from: from,
+            to: to,
+            validTo: validTo,
+            consentRights: consentRights,
+            redirectUrl: redirectUrl,
         };
 
         const params = {
@@ -58,15 +55,15 @@ class ConsentApiClient {
     }
 
     /**
-    * Approve Consent
-    * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
-    * @param {string } id
-    * @returns http.RefinedResponse
-    */
+   * Approve Consent
+   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * @param {string } id
+   * @returns http.RefinedResponse
+   */
     ApproveConsent(id) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
-        const body = { "language": "nb" };
+        const body = { language: "nb" };
 
         const params = {
             tags: { name: `${this.FULL_PATH}/bff/consentrequests/id/accept` },
@@ -75,6 +72,37 @@ class ConsentApiClient {
                 "Content-type": "application/json",
             },
         };
+        return http.post(url, JSON.stringify(body), params);
+    }
+
+    /**
+   * Lookup Maskinporten consent token for a consent request.
+   *
+   * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
+   *
+   * @param {string} id
+   * @param {string} from
+   * @param {string} to
+   * @param {string|null} label - Optional label for the request tag.
+   * @returns http.RefinedResponse
+   */
+    LookupConsent(id, from, to, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/maskinporten/consent/lookup/`;
+        const body = {
+            id,
+            from,
+            to,
+        };
+
+        const params = {
+            tags: { name: label || url },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
         return http.post(url, JSON.stringify(body), params);
     }
 }
