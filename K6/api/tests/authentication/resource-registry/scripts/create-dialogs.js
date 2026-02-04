@@ -81,18 +81,18 @@ export function getClients() {
 }
 
 export default function (data) {
-  const [serviceOwnerApiClient] = getClients();
-  const ssn = "06925398878"; //data[0].ssn;
-  const resource = "k6-test-innbygger-vapen"; //"k6-test-innbygger-vapen"; 
-  //const resource = resources[0];
-  console.log(`Creating dialog for ssn: ${ssn} and resource: ${resource}`);
-  CreateDialog(
-      serviceOwnerApiClient,
-      ssn,
-      resource,
-      orgNo,
-      label,
-      false,
-      "Dialog for access package"
-  );
+    const [serviceOwnerApiClient] = getClients();
+    const ssn = "06925398878"; //data[0].ssn;
+    const resource = "k6-test-innbygger-vapen"; //"k6-test-innbygger-vapen"; 
+    //const resource = resources[0];
+    console.log(`Creating dialog for ssn: ${ssn} and resource: ${resource}`);
+    CreateDialog(
+        serviceOwnerApiClient,
+        ssn,
+        resource,
+        orgNo,
+        label,
+        false,
+        "Dialog for access package"
+    );
 }

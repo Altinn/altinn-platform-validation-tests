@@ -27,9 +27,9 @@ export default function () {
         resourceRegistryApiClient = new ResourceRegistryApiClient(__ENV.BASE_URL, tokenGenerator);
     }
 
-  const resourceName = "k6-test-innbygger-forsikring";
+    const resourceName = "k6-test-innbygger-forsikring";
 
-  const policy = getDefaultPolicyXml(resourceName); //buildPolicy(policyDefinition, resourceName);
-  const policyResp = resourceRegistryApiClient.PostPolicy(resourceName, policy);
+    const policy = getDefaultPolicyXml(resourceName); //buildPolicy(policyDefinition, resourceName);
+    const policyResp = resourceRegistryApiClient.PostPolicy(resourceName, policy);
 
 }
