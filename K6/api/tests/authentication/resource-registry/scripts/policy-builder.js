@@ -37,31 +37,31 @@ export function getDefaultPolicyXml(id) {
 
 export function getAccessPackagePolicyXml(id, accessPackage) {
     const policyDefinition = {
-      rules: [
-          {
-              effect: "Permit",
-              description: `Består av tilgangspakken ${accessPackage}`,
-              subjects: [
-                  { id: "urn:altinn:accesspackage", value: accessPackage },
-              ],
-              actions: ["read", "write", "access"],
-          },
-      ],
-      obligationExpressions: [
-          {
-              obligationId: "urn:altinn:obligation:authenticationLevel1",
-              fulfillOn: "Permit",
-              attributeId: "urn:altinn:obligation1-assignment1",
-              category: "urn:altinn:minimum-authenticationlevel",
-              value: 3,
-          },{
-              obligationId: "urn:altinn:obligation:authenticationLevel2",
-              fulfillOn: "Permit",
-              attributeId: "urn:altinn:obligation2-assignment2",
-              category: "urn:altinn:minimum-authenticationlevel-org",
-              value: 3,
-          },
-      ],
+        rules: [
+            {
+                effect: "Permit",
+                description: `Består av tilgangspakken ${accessPackage}`,
+                subjects: [
+                    { id: "urn:altinn:accesspackage", value: accessPackage },
+                ],
+                actions: ["read", "write", "access"],
+            },
+        ],
+        obligationExpressions: [
+            {
+                obligationId: "urn:altinn:obligation:authenticationLevel1",
+                fulfillOn: "Permit",
+                attributeId: "urn:altinn:obligation1-assignment1",
+                category: "urn:altinn:minimum-authenticationlevel",
+                value: 3,
+            },{
+                obligationId: "urn:altinn:obligation:authenticationLevel2",
+                fulfillOn: "Permit",
+                attributeId: "urn:altinn:obligation2-assignment2",
+                category: "urn:altinn:minimum-authenticationlevel-org",
+                value: 3,
+            },
+        ],
     };
     return buildPolicy(policyDefinition, id);
 }
