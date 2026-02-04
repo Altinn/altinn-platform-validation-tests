@@ -37,13 +37,15 @@ export default function (rows) {
     const i = exec.scenario.iterationInTest;
     const row = rows[i % rows.length];
 
+    // console.log(row);
+
     // TODO: TEMPORARILY - Fix before merge
-    console.log(`LookupConsent: ${row.pid} ${row.orgNo} ${row.consentId}`);
+    console.log(`LookupConsent: ${row.Pid} ${row.Org} ${row.ConsentId}`);
 
     group("LookupConsent", () => {
-        const pidUrn = `urn:altinn:person:identifier-no:${row.pid}`;
-        const orgUrn = `urn:altinn:organization:identifier-no:${row.orgNo}`;
+        const pidUrn = `urn:altinn:person:identifier-no:${row.Pid}`;
+        const orgUrn = `urn:altinn:organization:identifier-no:${row.Org}`;
 
-        LookupConsent(lookupClient, row.consentId, pidUrn, orgUrn);
+        LookupConsent(lookupClient, row.ConsentId, pidUrn, orgUrn);
     });
 }
