@@ -76,6 +76,7 @@ class ServiceOwnerApiClient {
         serviceOwner,
         label = null,
         noTransmissionsActivities = false,
+        title = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
@@ -90,9 +91,9 @@ class ServiceOwnerApiClient {
 
         let requestBody = null;
         if (!noTransmissionsActivities) {
-            requestBody = getDialogBody(endUser, serviceResource, serviceOwner);
+            requestBody = getDialogBody(endUser, serviceResource, serviceOwner, title);
         } else { 
-            requestBody = getDialogBodyWithoutTransmissionsAndActivities(endUser, serviceResource, serviceOwner);
+            requestBody = getDialogBodyWithoutTransmissionsAndActivities(endUser, serviceResource, serviceOwner, title);
         }
         if (__ENV.TRACE_CALL) {
             params.headers["traceparent"] = uuidv4();
