@@ -20,7 +20,7 @@ local utils = import './utils.libsonnet';
         steps: [
           {
             name: 'Checkout code',
-            uses: 'actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98',
+            uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd',
           },
           {
             name: 'Setup k8s client',
