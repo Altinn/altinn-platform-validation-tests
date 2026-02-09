@@ -22,11 +22,11 @@ local utils = import './utils.libsonnet';
       steps: [
         {
           name: 'Checkout code',
-          uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd',
+          uses: utils.checkoutAction,
         },
         {
           name: 'Use Node.js',
-          uses: 'actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238',
+          uses: utils.setupNode,
           with: {
             'node-version': '24.x',
           },
@@ -55,7 +55,7 @@ local utils = import './utils.libsonnet';
       },
       steps: [
         {
-          uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd',
+          uses: utils.checkoutAction,
         },
         {
           uses: utils.generateK6ManifetsAction,
