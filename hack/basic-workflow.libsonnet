@@ -20,7 +20,7 @@ local utils = import './utils.libsonnet';
         steps: [
           {
             name: 'Checkout code',
-            uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd',
+            uses: utils.checkoutAction,
           },
           {
             name: 'Setup k8s client',
@@ -45,7 +45,7 @@ local utils = import './utils.libsonnet';
     },
   },
 
-  generate_apply_manifests(path=null):
+  generate_apply_manifests(path=null, one_by_one=false):
     {
       name: 'Apply k8s manifests',
       shell: 'bash',
@@ -54,6 +54,9 @@ local utils = import './utils.libsonnet';
       run: std.format('kubectl apply --server-side -f .dist/%s', path),
     }
     else {
-      run: 'kubectl apply --server-side -f .dist/ -R || true',
+      run: if one_by_one then
+        './hack/apply-one-by-one.sh'
+      else
+        'kubectl apply --server-side -f .dist/ -R || true',
     },
 }
