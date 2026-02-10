@@ -45,11 +45,21 @@ function uuidv7() {
     );
 }
 
-export function getDialogBody ( endUser, serviceResource, serviceOwner, title = null) {
+export function getDialogBody ( endUser, serviceResource, serviceOwner, title = null, otherResource = null) {
     if (!title) {
         title = `Dialog for ${serviceOwner} - ${new Date().toISOString()}`;
     }
-    const summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`;
+    let summary = undefined;
+    let authorizationAttribute = "";
+    let transmissionTitleExtra = "";
+    if (otherResource) {
+        summary = `Dialog på tjeneste '${serviceResource}' som har en transmission på '${otherResource}'.`;
+        authorizationAttribute = `urn:altinn:resource:${otherResource}`;
+        transmissionTitleExtra = ` (${otherResource})`;
+    } else {
+        authorizationAttribute = `urn:altinn:resource:${serviceResource}`;
+        summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`;
+    }
     return {
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
         "party": `urn:altinn:person:identifier-no:${endUser}`, // or urn:altinn:organization:identifier-no:<9 digits>
@@ -89,7 +99,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
         "transmissions": [
             {
                 "type": "Information",
-                "authorizationAttribute": "element1",
+                "authorizationAttribute": authorizationAttribute,
                 "sender": {
                     "actorType": "serviceOwner",
                 },
@@ -107,7 +117,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                         ],
                         "urls": [
                             {
-                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "url": "https://digdir.no",
                                 "consumerType": "Gui"
                             }
                         ]
@@ -118,11 +128,11 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                         "value": [
                             {
                                 "languageCode": "nb",
-                                "value": "Forsendelsestittel"
+                                "value": "Forsendelsestittel" + transmissionTitleExtra
                             },
                             {
                                 "languageCode": "en",
-                                "value": "Transmission title"
+                                "value": "Transmission title" + transmissionTitleExtra
                             }
                         ]
                     },
@@ -159,8 +169,9 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                         ],
                         "urls": [
                             {
-                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
-                                "consumerType": "Gui"
+                                "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
+                                "consumerType": "gui",
+                                "mediaType": "application/pdf"
                             }
                         ]
                     }
@@ -170,7 +181,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                         "value": [
                             {
                                 "languageCode": "nb",
-                                "value": "Forsendelsesstittel"
+                                "value": "Forsendelsestittel"
                             },
                             {
                                 "languageCode": "en",
@@ -194,7 +205,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
             },
             {
                 "type": "Information",
-                "authorizationAttribute": "elementius",
+                //"authorizationAttribute": "elementius",
                 "sender": {
                     "actorType": "serviceOwner"
                 },
@@ -212,7 +223,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                         ],
                         "urls": [
                             {
-                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "url": "https://digdir.no",
                                 "consumerType": "Gui"
                             }
                         ]
@@ -300,7 +311,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "https://foo.com/foo.pdf",
+                        "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
                         "mediaType": "application/pdf"
                     }
                 ]
@@ -315,7 +326,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "https://foo.com/foo.pdf",
+                        "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
                         "mediaType": "application/pdf"
                     }
                 ]
@@ -330,7 +341,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "https://foo.com/foo.pdf",
+                        "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
                         "mediaType": "application/pdf"
                     }
                 ]

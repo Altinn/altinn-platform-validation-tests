@@ -17,11 +17,12 @@ let resourceRegistryApiClient = undefined;
 let accessPackagesApiClient = undefined;
 
 export default function () {
-    let orgNo = "713431400";
-    if (__ENV.ENVIRONMENT !== "yt01") {
-        orgNo = "991825827";
+    // OrgNo for ttd is 991825827 except in yt01 where it is 713431400.
+    let orgNo = "991825827";
+    if (__ENV.ENVIRONMENT === "yt01") {
+        orgNo = "713431400";
     }
-    const orgCode = "digdir";
+    const orgCode = "ttd";
 
     if (resourceRegistryApiClient == undefined) {
         const tokenOpts = new Map();
@@ -42,7 +43,7 @@ export default function () {
     for (const item of resp) {
         const accessPackage = item.object.urn.split(":").pop();
         const resourceId = `k6-test-${accessPackage}-with-priv`;
-        const resourceBody = getResourceBody("access-package", resourceId, orgNo, orgCode);
+        const resourceBody = getResourceBody("access-package-with-priv", resourceId, orgNo, orgCode);
 
         const resourceResp = resourceRegistryApiClient.PostResource(resourceBody); 
         if (resourceResp.status === 201) {
@@ -55,6 +56,5 @@ export default function () {
         } else {
             console.log(`Failed to create resource: ${resourceId}. Status: ${resourceResp.status}`);
         }
-        break;
     }
 }

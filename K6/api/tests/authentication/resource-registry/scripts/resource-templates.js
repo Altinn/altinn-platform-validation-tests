@@ -3,10 +3,12 @@
 * Used for creating resources in the Resource Registry for testing purposes.
 * Create other templates as needed by modifying or adding to the definitions below.
 */
-export function getResourceBody(templateId, id, org, orgCode) {
+export function getResourceBody(templateId, id, org, orgCode, accessPackage=null) {
     switch (templateId) {
         case "access-package":
-            return accessPackageTemplate(id, org, orgCode);
+            return accessPackageTemplate(id, org, orgCode, accessPackage);
+        case "access-package-with-priv":
+            return accessPackageTemplate(id, org, orgCode, accessPackage, true);
         default:
             return getDefaultResourceBody(id, org, orgCode);
     }
@@ -16,19 +18,19 @@ function getDefaultResourceBody(id, org, orgCode) {
     return {
         "identifier": id,
         "title": {
-            "en": "Testing resource for digdir",
-            "nb": "Testressurs for digdir",
-            "nn": "Testressurs for digdir"
+            "en": `Testing resource for ${orgCode}`,
+            "nb": `Testressurs for ${orgCode}`,
+            "nn": `Testressurs for ${orgCode}`
         },
         "description": {
-            "en": "Testing resource for digdir",
-            "nb": "Testressurs for digdir",
-            "nn": "Testressurs for digdir"
+            "en": `Generic test resource for ${orgCode}`,
+            "nb": `Generisk testressurs for ${orgCode}`,
+            "nn": `Generisk testressurs for ${orgCode}`,
         },
         "rightDescription": {
-            "en": "Testing resource for digdir",
-            "nb": "Testressurs for digdir",
-            "nn": "Testressurs for digdir"
+            "en": `Generic test resource for ${orgCode}, check policy-file for rights`,
+            "nb": `Generisk testressurs for ${orgCode}, sjekk policy-fil for rettigheter`,
+            "nn": `Generisk testressurs for ${orgCode}, sjekk policy-fil for rettigheter`,
         },
         "homepage": "https://platform.at22.altinn.cloud/",
         "status": "Active",
@@ -39,9 +41,9 @@ function getDefaultResourceBody(id, org, orgCode) {
         "visible": false,
         "hasCompetentAuthority": {
             "name": {
-                "en": "Digitaliseringsdirektoratet",
-                "nb": "Digitaliseringsdirektoratet",
-                "nn": "Digitaliseringsdirektoratet"
+                "en": "Test department",
+                "nb": "testdepartementet",
+                "nn": "Testdepartementet"
             },
             "organization": org,
             "orgcode": orgCode
@@ -62,24 +64,25 @@ function getDefaultResourceBody(id, org, orgCode) {
     }; 
 }
 
-function accessPackageTemplate(id, org, orgCode) {
+function accessPackageTemplate(id, org, orgCode, accessPackage, withPriv=false) {
+    let withPrivText = withPriv ? " + PRIV" : "";
     return {
         "identifier": id,
-        "version": "versjon 1",
+        "version": "1",
         "title": {
-            "en": "Testing resource for digdir",
-            "nb": "Testressurs for digdir",
-            "nn": "Testressurs for digdir"
+            "en": `Testing resource for ${orgCode}`,
+            "nb": `Testressurs for ${orgCode}`,
+            "nn": `Testressurs for ${orgCode}`
         },
         "description": {
-            "en": "Updated description in English",
-            "nb": "Oppdatert beskrivelse på norsk",
-            "nn": "Testressurs for digdir"
+          "en": `Generic test resource for ${orgCode} on access package ${accessPackage}`,
+          "nb": `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}`,
+          "nn": `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}`,
         },
         "rightDescription": {
-            "en": "Testing resource for digdir",
-            "nb": "Testressurs for digdir",
-            "nn": "Testressurs for digdir"
+            "en": `Read, write and access on access package ${accessPackage}${withPrivText}`,
+            "nb": `Read, write and access på tilgangspakke ${accessPackage}${withPrivText}`,
+            "nn": `Read, write and access på tilgangspakke ${accessPackage}${withPrivText}`,
         },
         "homepage": "https://platform.at22.altinn.cloud/",
         "status": "Completed",
@@ -95,9 +98,9 @@ function accessPackageTemplate(id, org, orgCode) {
         "visible": true,
         "hasCompetentAuthority": {
             "name": {
-                "en": "Digitaliseringsdirektoratet",
-                "nb": "Digitaliseringsdirektoratet",
-                "nn": "Digitaliseringsdirektoratet"
+                "en": "Test department",
+                "nb": "testdepartementet",
+                "nn": "Testdepartementet"
             },
             "organization": org,
             "orgcode": orgCode
