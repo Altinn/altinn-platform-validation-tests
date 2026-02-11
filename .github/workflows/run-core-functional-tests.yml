@@ -20,14 +20,14 @@ jobs:
           azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
       - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@dfcaed7b1320a7c6775893dd4e6ec7ce9b0c2953"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@95b12546a386deaf2672aefc4f76ee4f4104df71"
         with:
           config_file: "K6/api/tests/core/notifications/functional.yaml"
       - name: "Apply k8s manifests"
         run: "kubectl apply --server-side -f .dist/ -R || true"
         shell: "bash"
       - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@dfcaed7b1320a7c6775893dd4e6ec7ce9b0c2953"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@95b12546a386deaf2672aefc4f76ee4f4104df71"
         with:
           config_file: "K6/api/tests/core/notifications/order-with-reminders/functional.yaml"
       - name: "Apply k8s manifests"
