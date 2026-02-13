@@ -9,3 +9,4 @@ export { ConnectionsApiClient } from "./connections.js";
 export { RolesApiClient } from "./roles.js";
 export { ResourceRegistryApiClient } from "./resource-registry.js";
 export { RegisterLookupClient } from "../register/lookup.js";
+export { AccessPackagesApiClient } from "./access-packages.js";
