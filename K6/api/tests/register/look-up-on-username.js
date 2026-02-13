@@ -20,10 +20,11 @@ function tryParseJson(str) {
 
 function assertLookupResponse(response, expectedUsername) {
     const body = tryParseJson(response.body);
-    if (body === null) {
-        check(null, {
-            "Register lookup response is valid JSON": () => false,
-        });
+
+    let isValidJson = check(response, {
+        "Register lookup response is valid JSON": () => body !== null,
+    });
+    if (!isValidJson) {
         console.log(response.body);
         throw new Error("Register lookup response is not valid JSON");
     }
