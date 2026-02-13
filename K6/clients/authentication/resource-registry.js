@@ -126,7 +126,7 @@ class ResourceRegistryApiClient {
                 Authorization: "Bearer " + token,
             },
         };
-        return http.post(url.toString(), payload, params);
+        return http.put(url.toString(), payload, params);
     }
 }
 

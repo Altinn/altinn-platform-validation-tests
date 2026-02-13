@@ -50,17 +50,20 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
         title = `Dialog for ${serviceOwner} - ${new Date().toISOString()}`;
     }
     let summary = undefined;
+    let guiActionTitleExtra = "";
     let authorizationAttribute = "";
     let transmissionTitleExtra = "";
     if (otherResource) {
         summary = `Dialog på tjeneste '${serviceResource}' som har en transmission på '${otherResource}'.`;
         authorizationAttribute = `urn:altinn:resource:${otherResource}`;
         transmissionTitleExtra = ` (${otherResource})`;
+        guiActionTitleExtra = ` for ressurs ${otherResource}`;
     } else {
         authorizationAttribute = `urn:altinn:resource:${serviceResource}`;
         summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`;
     }
     return {
+        //"id": uuidv7(),
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
         "party": `urn:altinn:person:identifier-no:${endUser}`, // or urn:altinn:organization:identifier-no:<9 digits>
         "status": "notApplicable", // valid values: notApplicable, inprogress, draft, awaiting, equiresAttention, completed
@@ -124,6 +127,15 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                     }
                 ],
                 "content": {
+                      "contentReference": {
+                        "value": [
+                            {
+                                "value": "https://dialogporten-serviceprovider-ahb4fkchhgceevej.norwayeast-01.azurewebsites.net/fce/019c4c6b-1de4-7ff4-a59a-abd448e27b38",
+                                "languageCode": "nb"
+                            }
+                        ],
+                        "mediaType": "application/vnd.dialogporten.frontchannelembed+json;type=markdown"
+                    },
                     "title": {
                         "value": [
                             {
@@ -260,14 +272,15 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
         "guiActions": [
             {
                 "action": "read",
+                "authorizationAttribute": authorizationAttribute,
                 "url": "https://digdir.no",
                 "priority": "Primary",
                 "title": [
                     {
-                        "value": "Gå til dialog",
+                        "value": `Gui action${guiActionTitleExtra}`,
                         "languageCode": "nb"
                     }
-                ]
+                ],
             },
             {
                 "action": "read",
@@ -394,7 +407,7 @@ export function getTransmissionBody (relatedTransmissionId = 0) {
         {
             "id": uuidv7(),
             "createdAt": new Date().toISOString(),
-            "authorizationAttribute": "element1",
+            //"authorizationAttribute": "element1",
             "extendedType": "string",
             "type": "Information",
             "sender": {

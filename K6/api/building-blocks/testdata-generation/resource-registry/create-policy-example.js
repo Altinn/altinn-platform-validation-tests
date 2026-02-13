@@ -11,9 +11,9 @@
 *   ENVIRONMENT=yt01 BASE_URL=https://platform.at22.altinn.cloud k6 run create-policy.js
 * TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
 */
-import { ResourceRegistryApiClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { buildPolicy, getDefaultPolicyXml } from "./policy-builder.js";
+import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { buildPolicy, getDefaultPolicyXml } from "./templates/policy-builder.js";
 
 let resourceRegistryApiClient = undefined;
 
@@ -27,7 +27,7 @@ export default function () {
         resourceRegistryApiClient = new ResourceRegistryApiClient(__ENV.BASE_URL, tokenGenerator);
     }
 
-    const resourceName = "k6-test-innbygger-forsikring";
+    const resourceName = "k6-resource-example";
 
     const policy = getDefaultPolicyXml(resourceName); //buildPolicy(policyDefinition, resourceName);
     const policyResp = resourceRegistryApiClient.PostPolicy(resourceName, policy);

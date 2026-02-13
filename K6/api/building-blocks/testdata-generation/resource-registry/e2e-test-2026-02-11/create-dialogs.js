@@ -10,11 +10,11 @@
 * TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
 */
 import http from "k6/http";
-import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { CreateDialog } from "../../../../building-blocks/dialogporten/serviceowner/index.js";
-import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { CreateDialog } from "../../dialogporten/serviceowner/index.js";
+import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
-import { getItemFromList, getOptions, parseCsvData } from "../../../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
 
 const resources = [
     "k6-test-innbygger-stotte-tilskudd",
@@ -233,7 +233,7 @@ export function getClients() {
 export default function () {
     const [serviceOwnerApiClient] = getClients();
     const ssn = getItemFromList(users);
-    const resource = getItemFromList(resources);// +"-with-priv";
+    const resource = getItemFromList(resources);
     const otherResource = getOtherResource(resource);
     console.log(`Creating dialog for ssn: ${ssn} and resource: ${resource}`);
     CreateDialog(

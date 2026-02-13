@@ -75,9 +75,9 @@ function accessPackageTemplate(id, org, orgCode, accessPackage, withPriv=false) 
             "nn": `Testressurs for ${orgCode}`
         },
         "description": {
-          "en": `Generic test resource for ${orgCode} on access package ${accessPackage}`,
-          "nb": `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}`,
-          "nn": `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}`,
+          "en": `Generic test resource for ${orgCode} on access package ${accessPackage}${withPrivText}`,
+          "nb": `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}${withPrivText}`,
+          "nn": `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}${withPrivText}`,
         },
         "rightDescription": {
             "en": `Read, write and access on access package ${accessPackage}${withPrivText}`,
