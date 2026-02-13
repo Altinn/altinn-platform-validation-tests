@@ -6,8 +6,8 @@
 *   ENVIRONMENT - the target environment (e.g., "yt01", "at23", "tt02")
 *   BASE_URL - the base URL of the Dialogporten Service Owner API
 * Example:
-*   ENVIRONMENT=yt01 BASE_URL=https://platform.at22.altinn.cloud k6 run create-dialogs.js
-* TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
+*   ENVIRONMENT=yt01 BASE_URL=https://platform.yt01.altinn.cloud k6 run create-dialogs.js
+* TOKEN_GENERATOR_USERNAME and TOKEN_GENERATOR_PASSWORD must also be set in the environment for token generation
 */
 import http from "k6/http";
 import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";

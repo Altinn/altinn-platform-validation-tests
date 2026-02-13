@@ -6,7 +6,7 @@
  *   BASE_URL - the base URL of the resource registry API
  *   Example:
  *   ENVIRONMENT=yt01 BASE_URL=https://platform.yt01.altinn.cloud k6 run create-access-package-resource.js
- *   Also the TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must be set in the environment for token generation
+ *   Also the TOKEN_GENERATOR_USERNAME and TOKEN_GENERATOR_PASSWORD must be set in the environment for token generation
 */
 
 import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
