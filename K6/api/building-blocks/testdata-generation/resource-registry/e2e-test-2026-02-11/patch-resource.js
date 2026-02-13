@@ -46,16 +46,16 @@ export default function () {
                     en: `Testing resource for ${orgCode}`,
                     nb: `Testressurs for ${orgCode}`,
                     nn: `Testressurs for ${orgCode}`,
-              },
+                },
                 description: {
                     en: `Generic test resource for ${orgCode} on access package ${accessPackage}${withPrivText}`,
                     nb: `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}${withPrivText}`,
                     nn: `Generisk testressurs for ${orgCode} på tilgangspakke ${accessPackage}${withPrivText}`,
                 },
                 rightDescription: {
-                      en: `Read, write and access on access package ${accessPackage}${withPrivText}`,
-                      nb: `Lese, skrive og aksess på tilgangspakke ${accessPackage}${withPrivText}`,
-                      nn: `Lese, skrive og aksess på tilgangspakke ${accessPackage}${withPrivText}`,
+                    en: `Read, write and access on access package ${accessPackage}${withPrivText}`,
+                    nb: `Lese, skrive og aksess på tilgangspakke ${accessPackage}${withPrivText}`,
+                    nn: `Lese, skrive og aksess på tilgangspakke ${accessPackage}${withPrivText}`,
                 },
             }
         };

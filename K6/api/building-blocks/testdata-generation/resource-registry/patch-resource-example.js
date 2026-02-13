@@ -36,7 +36,7 @@ export default function () {
                 en: `Testing resource for ${orgCode} (patched)`,
                 nb: `Testressurs for ${orgCode} (patched)`,
                 nn: `Testressurs for ${orgCode} (patched)`,
-          },
+            },
             description: {
                 en: `Generic test resource for ${orgCode} (patched)`,
                 nb: `Generisk testressurs for ${orgCode} (patched)`,

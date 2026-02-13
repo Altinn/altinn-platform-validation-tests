@@ -33,7 +33,7 @@ export default function () {
         resourceRegistryApiClient = new ResourceRegistryApiClient(__ENV.BASE_URL, tokenGenerator);
     }
   
-    const resourceId = "k6-resource-example"
+    const resourceId = "k6-resource-example";
     const resourceBody = getResourceBody("default", resourceId, orgNo, orgCode);
 
     const resourceResp = resourceRegistryApiClient.PostResource(resourceBody); 

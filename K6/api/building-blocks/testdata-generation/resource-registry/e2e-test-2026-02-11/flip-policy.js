@@ -42,9 +42,6 @@ export default function () {
         const accessPackage = item.object.urn.split(":").pop();
         const resourceId = `k6-test-${accessPackage}`;
         console.log(`Processing resource: ${resourceId}`);
-        if (resourceId !== "k6-test-innbygger-sykefravaer") {
-          continue;
-        }
         const policy = getDefaultPolicyXml(resourceId); //buildPolicy(policyDefinition, resourceName);
         const policyResp1 = resourceRegistryApiClient.PostPolicy(resourceId, policy);
         if (policyResp1.status === 201) {
@@ -55,7 +52,6 @@ export default function () {
         if (policyResp2.status === 201) {
             console.log(`Policy created for resource: ${resourceId}`);
         }
-        break;
     }
 
 }

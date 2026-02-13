@@ -10,11 +10,11 @@
 * TOKEM_GENERATOR_USERNAME and TOKEM_GENERATOR_PASSWORD must also be set in the environment for token generation
 */
 import http from "k6/http";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { CreateDialog } from "../../dialogporten/serviceowner/index.js";
-import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
+import { CreateDialog } from "../../../dialogporten/serviceowner/index.js";
+import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 
-import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData } from "../../../../../helpers.js";
 
 const resources = [
     "k6-test-innbygger-stotte-tilskudd",
@@ -196,7 +196,7 @@ const users = [
     "26884698331",
     "04855698884",
     "48907602519",
-]
+];
 
 //const orgNo = "713431400"; //"991825827"; //
 let orgNo = "991825827";

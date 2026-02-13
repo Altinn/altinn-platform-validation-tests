@@ -127,7 +127,7 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner, title = 
                     }
                 ],
                 "content": {
-                      "contentReference": {
+                    "contentReference": {
                         "value": [
                             {
                                 "value": "https://dialogporten-serviceprovider-ahb4fkchhgceevej.norwayeast-01.azurewebsites.net/fce/019c4c6b-1de4-7ff4-a59a-abd448e27b38",
