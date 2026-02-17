@@ -20,7 +20,8 @@ export function getClients(bff=false) {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator, bff);
+        const baseUrl = bff ? __ENV.BFF_BASE_URL : __ENV.BASE_URL;   
+        connectionsApiClient = new ConnectionsApiClient(baseUrl, tokenGenerator, bff);
     }
     return [connectionsApiClient, tokenGenerator];
 }
@@ -30,12 +31,17 @@ export function getClients(bff=false) {
  * @param {string} ssn - social security number
  * @returns map of token options
  */
-export function getTokenOpts(userId) {
+export function getTokenOpts(userId=null, partyuuid=null) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "altinn:portal/enduser");
-    tokenOpts.set("userId", userId);
+    if (userId) {
+        tokenOpts.set("userId", userId);
+    }
+    if (partyuuid) {
+        tokenOpts.set("partyuuid", partyuuid);
+    } 
     return tokenOpts;
 }
 
