@@ -10,3 +10,5 @@ export { RolesApiClient } from "./roles.js";
 export { ResourceRegistryApiClient } from "./resource-registry.js";
 export { RegisterLookupClient } from "../register/lookup.js";
 export { AccessPackageApiClient } from "./access-package.js";
+export { BffConnectionsApiClient } from "./bff-connections.js";
+export { ClientDelegationsApiClient } from "./client-delegations.js";

@@ -28,6 +28,21 @@ export function GetAccessPackages(connectionsApiClient, queryParams, label = nul
 }
 
 /**
+ *
+ * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the /enduser/connections API
+ * @param {uuid} partyId - party id of the end user
+ * @param {string} direction - from or to
+ * @param {*} label - label for the request
+ */
+export function PostAccessPackages(connectionsApiClient, queryParams, label = null) {
+  const res = connectionsApiClient.PostAccessPackages(queryParams, label);
+  checker(res, "PostAccessPackages");
+  return res.body;
+}
+
+
+
+/**
  * Function to check common response properties
  * @param {} res - response object
  * @param {*} method - method name for logging

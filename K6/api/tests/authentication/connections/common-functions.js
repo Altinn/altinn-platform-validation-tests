@@ -20,8 +20,7 @@ export function getClients(bff=false) {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {
-        const baseUrl = bff ? __ENV.BFF_BASE_URL : __ENV.BASE_URL;   
-        connectionsApiClient = new ConnectionsApiClient(baseUrl, tokenGenerator, bff);
+        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator, bff);
     }
     return [connectionsApiClient, tokenGenerator];
 }

@@ -50,6 +50,7 @@ class ConnectionsApiClient {
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        console.log(`Making request to ${url.toString()}`);
         return http.get(url.toString(), params);
     }
 
@@ -74,6 +75,28 @@ class ConnectionsApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
     }
+
+    /**
+    * Post access packages
+    * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections_accesspackages}
+    * @param {Object} queryParams
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+   PostAccessPackages(queryParams, label = null) {
+    const token = this.tokenGenerator.getToken();
+    const url = new URL(`${this.FULL_PATH}/accesspackages`);
+    const tags = label ? label : url.toString();
+    const params = {
+        tags: { name: tags },
+        headers: {
+            Authorization: "Bearer " + token,
+            "Content-type": "application/json",
+        },
+    };
+    Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+    return http.post(url.toString(), null, params);
+}
 
 }
 

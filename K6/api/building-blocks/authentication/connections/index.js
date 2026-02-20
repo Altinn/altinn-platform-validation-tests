@@ -1,1 +1,1 @@
-export { GetConnections, GetAccessPackages } from "./get-connections.js";
+export { GetConnections, GetAccessPackages, PostAccessPackages } from "./get-connections.js";
