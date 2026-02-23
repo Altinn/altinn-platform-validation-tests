@@ -49,7 +49,6 @@ class ClientDelegationsApiClient {
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        console.log(`Making request to ${url.toString()}`);
         return http.get(url.toString(), params);
     }
 
@@ -122,7 +121,6 @@ class ClientDelegationsApiClient {
         },
     };
     Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-    console.log(`Making request to ${url.toString()}`);
     return http.get(url.toString(), params);
   }
 
@@ -153,7 +151,6 @@ class ClientDelegationsApiClient {
             ]
           };
       Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-      console.log(`Post request to ${url.toString()}`);
       return http.post(url.toString(), JSON.stringify(body),  params);
     }
 
@@ -184,7 +181,6 @@ class ClientDelegationsApiClient {
             ]
           };
       Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-      console.log(`Delete request to ${url.toString()}`);
       return http.del(url.toString(), JSON.stringify(body),  params);
     }
 
@@ -208,7 +204,6 @@ class ClientDelegationsApiClient {
           },
       };
       Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-      console.log(`Making request to ${url.toString()}`);
       return http.get(url.toString(), params);
   }
 }

@@ -11,13 +11,13 @@ import { BffConnectionsApiClient, AccessPackageApiClient } from "../../../../../
 import { PostRightholder } from "../../../../../building-blocks/authentication/bff-connections/index.js";
 
 // Labels for different actions
-const postRightholderLabel = "Connecting users with PostRightholder";
-const getRightholdersToLabel = "Get rightholders with to parameter";
-const getRightholdersWithoutToLabel = "Get rightholders without to parameter";
+const postRightholderLabel = "1. Connecting users with PostRightholder";
+const getRightholdersToLabel = "2. Get rightholders";
+const getRightholdersWithoutToLabel = "3. Get rightholders";
 const tokenGeneratorLabel = "Personal Token Generator";
-const accessPackageLabel = "Access Package Delegation";
-const accessPackageDeleteLabel = "Access Package Delete Delegation";
-const groupLabel = "Delegate accesspackage from user to user";
+const accessPackageLabel = "4. Access Package Delegation";
+const accessPackageDeleteLabel = "5. Access Package Delete Delegation";
+const groupLabel = "0. Delegate accesspackage from user to user";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;  
 

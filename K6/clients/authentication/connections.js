@@ -50,7 +50,6 @@ class ConnectionsApiClient {
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        console.log(`Making request to ${url.toString()}`);
         return http.get(url.toString(), params);
     }
 

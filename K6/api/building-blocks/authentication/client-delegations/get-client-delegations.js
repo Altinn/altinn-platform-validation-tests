@@ -21,7 +21,6 @@ export function GetAgents(clientDelegationsApiClient, queryParams, label = null)
  */
 export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, label = null) {
   const res = clientDelegationsApiClient.PostAgents(queryParams, to, lastName, label);
-  console.log(res.status, res.status_text, res.body);
   checker(res, "Post agents");
   return res.body;
 }
@@ -34,7 +33,6 @@ export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName
  */
 export function DeleteAgents(clientDelegationsApiClient, queryParams, label = null) {
   const res = clientDelegationsApiClient.DeleteAgents(queryParams, label);
-  console.log(res.status, res.status_text, res.body);
   checker(res, "Delete agents", 204, "204 No Content");
   return res.body;
 }

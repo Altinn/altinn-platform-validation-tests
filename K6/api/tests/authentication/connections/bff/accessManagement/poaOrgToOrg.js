@@ -73,7 +73,7 @@ export const options = getOptions(
  */
 export function setup() {
   const numberOfVUs = getNumberOfVUs();
-  const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/performance-fullmakt/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+  const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/performance-fullmakt/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-mange-avgivere.csv`);
   const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
   const baseUrl = __ENV.ENVIRONMENT === "tt02"  ? "https://platform.tt02.altinn.no" : `https://platform.${__ENV.ENVIRONMENT}.altinn.cloud`;
   const apResp= http.get(`${baseUrl}/accessmanagement/api/v1/meta/info/accesspackages/search?typeName=organization`);
@@ -84,7 +84,7 @@ export function setup() {
       const id = item.object.id;
       const isAssignable = item.object.isAssignable;
       const isDelegable = item.object.isDelegable;
-      if (isAssignable && isDelegable) {
+      if (isAssignable && isDelegable && !accessPackage.includes("konkursbo")) {
           accessPackages.push({ id, accessPackage });
       }
   }
@@ -110,17 +110,17 @@ export default function (testData) {
     const clientDelegationsApiClient = new ClientDelegationsApiClient(__ENV.BASE_URL, tokenGenerator, bff);
 
     // Get from org, to org and userto be agent for current VU iteration. Ensure that from and to are not the same, and that user is different from from and to.
-    const { from, to, agent } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
+    const { from, to, user } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
     const accessPackage = getItemFromList(accessPackages, true);
-    console.log(`VU ${exec.vu.idInTest} - Testing: ${from.ssn}/${from.orgUuid}/${from.orgNo} -> ${to.ssn}/${to.orgUuid}/${to.orgNo} and access package: ${accessPackage.accessPackage} - ${accessPackage.id}`);
-    console.log(`VU ${exec.vu.idInTest} - Agent for testing client delegation: ${agent.ssn}/${agent.partyUuid}/${agent.orgNo}`);
+    //console.log(`VU ${exec.vu.idInTest} - Testing: ${from.ssn}/${from.orgUuid}/${from.orgNo} -> ${to.ssn}/${to.orgUuid}/${to.orgNo} and access package: ${accessPackage.accessPackage} - ${accessPackage.id}`);
+    //console.log(`VU ${exec.vu.idInTest} - Agent for testing client delegation: ${user.ssn}/${user.partyUuid}/${user.orgNo}`);
 
     // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(fullmaktGroup, function () {
-       GetPermission(accessPackageApiClient, accessPackage.id,  { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
+        GetPermission(accessPackageApiClient, accessPackage.id,  { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1b);
         //`https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
         PostRightholder(bffConnectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
@@ -132,38 +132,22 @@ export default function (testData) {
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(to.userId, to.partyUuid));
 
     group(addUserGroup, function () {
-        //{
-        //"personIdentifier": "13811848780", 
-        //"lastName": "astrolog"
-
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/agents?party=bf241e19-cdab-420a-a3f1-b9f700089416
-        PostAgents(clientDelegationsApiClient, { party: to.orgUuid }, agent.ssn, agent.lastName, postAgentsLabel);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/agents?party=bf241e19-cdab-420a-a3f1-b9f700089416
+        PostAgents(clientDelegationsApiClient, { party: to.orgUuid }, user.ssn, user.lastName, postAgentsLabel);
         GetAgents(clientDelegationsApiClient, { party: to.orgUuid }, getAgentsLabel);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/agents/accesspackages?party=bf241e19-cdab-420a-a3f1-b9f700089416&to=1dff4de7-dec1-4e6a-8f26-8c29ecb1d568
-        GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, to: agent.partyUuid }, getAccessPackagesLabel);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/clients?party=bf241e19-cdab-420a-a3f1-b9f700089416
+        GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, getAccessPackagesLabel);
         GetClients(clientDelegationsApiClient, { party: to.orgUuid }, getClientsLabel);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=bf241e19-cdab-420a-a3f1-b9f700089416&from=bf241e19-cdab-420a-a3f1-b9f700089416&to=1dff4de7-dec1-4e6a-8f26-8c29ecb1d568&includeClientDelegations=true&includeAgentConnections=true
-        getRightHolders(connectionsApiClient, to, agent, getRightholdersToLabel2e);
-    }
-  );
+        getRightHolders(connectionsApiClient, to, user, getRightholdersToLabel2e);
+    });
 
      group(clientDelegationGroup, function () {
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=bf241e19-cdab-420a-a3f1-b9f700089416&from=5dcc7e5c-c120-4101-8433-0d19dbe9b76e&to=bf241e19-cdab-420a-a3f1-b9f700089416&includeClientDelegations=true&includeAgentConnections=true
         GetConnections(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/agents/accesspackages?party=bf241e19-cdab-420a-a3f1-b9f700089416&from=5dcc7e5c-c120-4101-8433-0d19dbe9b76e&to=1dff4de7-dec1-4e6a-8f26-8c29ecb1d568
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/agents/accesspackages?party=7a6aff91-c15f-4003-ad16-70c6962de810&from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=4f08f455-5005-4c12-9ed2-f1d66f016af7
-        {values: [{role: "rettighetshaver", packages: ["urn:altinn:accesspackage:politi-og-domstol"]}]}
-        PostAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: agent.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/clients/accesspackages?party=bf241e19-cdab-420a-a3f1-b9f700089416&from=5dcc7e5c-c120-4101-8433-0d19dbe9b76e
+        PostAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
         GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid }, getAccessPackagesLabel3c);
     });
 
     group(cleanupGroup, function () {
-        DeleteAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: agent.partyUuid }, accessPackage.accessPackage, deleteClientDelegationLabel);
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/clientdelegations/agents?party=7a6aff91-c15f-4003-ad16-70c6962de810&to=1c17ceb5-3e28-4c85-ba20-29e84d831785
-        DeleteAgents(clientDelegationsApiClient, { party: to.orgUuid, to: agent.partyUuid },  deleteAgentsLabel);
+        DeleteAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, deleteClientDelegationLabel);
+        DeleteAgents(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid },  deleteAgentsLabel);
         tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
         DeleteDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackageLabel); 
     });
