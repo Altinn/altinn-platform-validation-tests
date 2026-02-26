@@ -116,11 +116,7 @@ export default function (testData) {
     group(fullmaktGroup, function () {
         PostRightholder(bffConnectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         PostDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationLabel); 
-    });
-
-    
-
-     
+    });  
 
 }
 
@@ -142,4 +138,18 @@ function getFromTo(list) {
     return { from, to, user };
     
 }
+
+/*
+digdir-maskinportenschemaid-39
+skd-maskinportenschemaid-100
+skd-maskinportenschemaid-95
+skd-maskinportenschemaid-96
+skd-maskinportenschemaid-97
+skd-maskinportenschemaid-98
+skd-maskinportenschemaid-99
+skd-maskinportenschemaid-92
+skd-maskinportenschemaid-93
+skd-maskinportenschemaid-94
+digdir-maskinportenschemaid-1103
+*/
 

@@ -12,3 +12,4 @@ export { RegisterLookupClient } from "../register/lookup.js";
 export { AccessPackageApiClient } from "./access-package.js";
 export { BffConnectionsApiClient } from "./bff-connections.js";
 export { ClientDelegationsApiClient } from "./client-delegations.js";
+export { MaskinportenSchemaApiClient } from "./maskinporten-schema.js";
