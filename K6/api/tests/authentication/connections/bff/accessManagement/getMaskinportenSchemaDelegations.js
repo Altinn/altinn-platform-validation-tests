@@ -7,11 +7,13 @@ import { MaskinportenSchemaApiClient } from "../../../../../../clients/authentic
 import { EnterpriseTokenGenerator, randomIntBetween } from "../../../../../../common-imports.js";
 
 // Labels for different actions
-const getMaskinportenSchemaLabel1 = "Get maskinportenSchema supplierOrg as query param";
-const getMaskinportenSchemaLabel2 = "Get maskinportenSchema supplierOrg and consumerOrg as query params";
-const getMaskinportenSchemaLabel3 = "Get maskinportenSchema supplierOrg consumerOrg and scope as query params";
-const getMaskinportenSchemaLabel4 = "Get maskinportenSchema supplierOrg and scope as query params";
-const getMaskinportenSchemaLabel5 = "Get maskinportenSchema consumerOrg and scope as query params";
+const getMaskinportenSchemaLabel1 = "1. Get maskinportenSchema supplierOrg as query param";
+const getMaskinportenSchemaLabel2 = "2. Get maskinportenSchema supplierOrg and consumerOrg as query params";
+const getMaskinportenSchemaLabel3 = "3. Get maskinportenSchema supplierOrg consumerOrg and scope as query params";
+const getMaskinportenSchemaLabel4 = "4. Get maskinportenSchema supplierOrg and scope as query params";
+const getMaskinportenSchemaLabel5 = "5. Get maskinportenSchema consumerOrg and scope as query params";
+const getMaskinportenSchemaLabel6 = "6. Get maskinportenSchema consumerOrg as query param";
+const getMaskinportenSchemaLabel7 = "7. Get maskinportenSchema scope as query param";
 
 const tokenGeneratorLabel = "Enterprise Token Generator";
 
@@ -54,6 +56,8 @@ export const options = getOptions(
         getMaskinportenSchemaLabel3,
         getMaskinportenSchemaLabel4,
         getMaskinportenSchemaLabel5,
+        getMaskinportenSchemaLabel6,
+        getMaskinportenSchemaLabel7,
         tokenGeneratorLabel,
     ], 
     []
@@ -102,7 +106,7 @@ function getQueryParams(list) {
     const queryParams = {};
     let supplierOrg = undefined;
     let label = "";
-    const randomValue = randomIntBetween(0, 4);
+    const randomValue = randomIntBetween(0,6);
     switch (randomValue) {
         case 0:
             queryParams.supplierOrg = getOrganization(list, randomize).orgNo;
@@ -130,6 +134,14 @@ function getQueryParams(list) {
             queryParams.consumerOrg = getOrganization(list, randomize).orgNo;
             queryParams.scope = getItemFromList(scopes, true);
             label = getMaskinportenSchemaLabel5;
+            break;
+        case 5:
+            queryParams.consumerOrg = getOrganization(list, randomize).orgNo;
+            label = getMaskinportenSchemaLabel6;
+            break;
+        case 6:
+            queryParams.scope = getItemFromList(scopes, true);
+            label = getMaskinportenSchemaLabel7;
             break;
         default:
             queryParams.supplierOrg = getOrganization(list, randomize).orgNo;
