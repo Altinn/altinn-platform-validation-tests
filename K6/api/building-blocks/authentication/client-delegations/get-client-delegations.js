@@ -85,6 +85,12 @@ export function GetClients(clientDelegationsApiClient, queryParams, label = null
   return res.body;
 }
 
+export function PostSingleRight(BffSingleRightApiClient, queryParams, resource, label = null) {
+  const res = BffSingleRightApiClient.PostDelegate(queryParams, resource, label);
+  checker(res, "Post single right");
+  return res.body;
+}
+
 /**
  * Function to check common response properties
  * @param {} res - response object

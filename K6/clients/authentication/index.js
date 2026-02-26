@@ -13,3 +13,4 @@ export { AccessPackageApiClient } from "./access-package.js";
 export { BffConnectionsApiClient } from "./bff-connections.js";
 export { ClientDelegationsApiClient } from "./client-delegations.js";
 export { MaskinportenSchemaApiClient } from "./maskinporten-schema.js";
+export { BffSingleRightApiClient } from "./bff-single-right.js";

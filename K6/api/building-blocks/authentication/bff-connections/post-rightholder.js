@@ -20,6 +20,7 @@ export function PostRightholder(bffConnectionsApiClient, from, to, lastName = nu
         "PostRightholder - status code is 200": (r) => r.status === 200,
     });
     if (!succeed) {
+        console.log("PostRightholder failed");
         console.log(res.status);
         console.log(res.body);
     }

@@ -115,6 +115,8 @@ export default function (testData) {
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(fullmaktGroup, function () {
         PostRightholder(bffConnectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
+        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/singleright/delegate?party=16b6fcaa-65e3-4042-ac7e-987b65c4c6de&from=16b6fcaa-65e3-4042-ac7e-987b65c4c6de&to=611d1e21-bb37-4590-833f-bd1504c4d5fd&resourceId=testressurs-tilgangspakke-org-miljorydding-miljorensing-og-lignende-1
+        // ["urn:altinn:resource:testressurs-tilgangspakke-org-miljorydding-miljorensing-og-lignende-1:urn:oasis:names:tc:xacml:1.0:action:action-id:read","urn:altinn:resource:testressurs-tilgangspakke-org-miljorydding-miljorensing-og-lignende-1:urn:oasis:names:tc:xacml:1.0:action:action-id:write","urn:altinn:resource:testressurs-tilgangspakke-org-miljorydding-miljorensing-og-lignende-1:urn:oasis:names:tc:xacml:1.0:action:action-id:access"]
         PostDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationLabel); 
     });  
 
