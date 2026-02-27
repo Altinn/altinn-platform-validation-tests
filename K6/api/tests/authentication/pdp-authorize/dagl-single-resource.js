@@ -1,6 +1,7 @@
 import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getItemFromList, getOptions, segmentData, parseCsvData, getNumberOfVUs } from "../../../../helpers.js";
-import { getClients, getActionLabelAndExpectedResponse } from "./common-functions.js";
+import { randomIntBetween } from "../../../../common-imports.js";
+import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
 
@@ -37,4 +38,19 @@ export default function (testData) {
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
         label
     );
+}
+
+/**
+ * Function to randomly select action, label, and expected response.
+ * 90% read with Permit, 10% sign with NotApplicable.
+ * @return {Array} [action, label, expectedResponse]
+ */
+function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
+  const randNumber = randomIntBetween(0, 10);
+  switch (randNumber) {
+      case 0:
+          return ["sign", denyLabel, "NotApplicable"];
+      default:
+          return ["read", permitLabel, "Permit"];
+  }
 }
