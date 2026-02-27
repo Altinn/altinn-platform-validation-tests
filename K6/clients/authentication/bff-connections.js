@@ -72,8 +72,6 @@ class BffConnectionsApiClient {
                 "Content-type": "application/json",
             },
         };
-        console.log(url.toString());
-        console.log(params);
         return http.post(url.toString(), null, params);
     }
 }
