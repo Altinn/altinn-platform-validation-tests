@@ -1,6 +1,7 @@
 name: "authentication - run k6 pdp-authorize breakpoint tests"
 on:
   schedule:
+    - cron: "40 3 * * 2"
     - cron: "0 4 * * 2"
     - cron: "20 4 * * 2"
     - cron: "40 4 * * 2"
@@ -26,6 +27,10 @@ jobs:
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@95b12546a386deaf2672aefc4f76ee4f4104df71"
         with:
           config_file: "K6/api/tests/authentication/pdp-authorize/breakpoint.yaml"
+      - if: "github.event.schedule == '40 3 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-dagl-single-resource-break"
+        run: "kubectl apply --server-side -f .dist/yt01-dagl-single-resource-break"
+        shell: "bash"
       - if: "github.event.schedule == '0 4 * * 2'"
         name: "Run Breakpoint for .dist/yt01-enduser-break"
         run: "kubectl apply --server-side -f .dist/yt01-enduser-break"
