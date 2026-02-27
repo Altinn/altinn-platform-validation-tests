@@ -14,10 +14,10 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 // Setup function to fetch test data and segment it for each VU. The CSV file should have columns: ssn, orgno, resourceid
 export function setup() {
-  const numberOfVUs = getNumberOfVUs();
-  const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/pdp-single-rights/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}.csv`);
-  const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
-  return segmentedData;
+    const numberOfVUs = getNumberOfVUs();
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/pdp-single-rights/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}.csv`);
+    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    return segmentedData;
 }
 
 /**
