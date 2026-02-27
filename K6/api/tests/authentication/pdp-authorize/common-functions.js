@@ -17,7 +17,7 @@ export function getClients() {
         const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (pdpAuthorizeClient == undefined) {
