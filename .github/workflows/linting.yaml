@@ -15,7 +15,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+        uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
       - name: "Use Node.js"
         uses: "actions/setup-node@d02c89dce7e1ba9ef629ce0680989b3a1cc72edb"
         with:
@@ -30,7 +30,7 @@ jobs:
   validate_generation:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+      - uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
       - uses: "Altinn/altinn-platform/actions/generate-k6-manifests@95b12546a386deaf2672aefc4f76ee4f4104df71"
         with:
           config_file: "${{ matrix.config_file }}"
