@@ -1,7 +1,8 @@
 import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getItemFromList, getOptions, segmentData, parseCsvData, getNumberOfVUs } from "../../../../helpers.js";
-import { getClients, getTokenOpts, getActionLabelAndExpectedResponse } from "./common-functions.js";
+import { getClients, getActionLabelAndExpectedResponse } from "./common-functions.js";
 import exec from "k6/execution";
+import http from "k6/http";
 
 // Labels for different actions
 const pdpAuthorizeLabel = "PDP Authorize";
@@ -15,20 +16,7 @@ export function setup() {
   const numberOfVUs = getNumberOfVUs();
   const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/pdp-single-rights/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}.csv`);
   const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
-  const baseUrl = __ENV.ENVIRONMENT === "tt02"  ? "https://platform.tt02.altinn.no" : `https://platform.${__ENV.ENVIRONMENT}.altinn.cloud`;
-  const apResp= http.get(`${baseUrl}/accessmanagement/api/v1/meta/info/accesspackages/search?typeName=organization`);
-  const resp = JSON.parse(apResp.body);
-  const resources = [];
-  for (const item of resp) {
-      const accessPackage = item.object.urn.split(":").pop();
-      const isAssignable = item.object.isAssignable;
-      const isDelegable = item.object.isDelegable;
-      if (isAssignable && isDelegable && !accessPackage.includes("konkursbo")) {
-          const resource = `testressurs-tilgangspakke-org-${accessPackage}-1`;
-          resources.push(resource);
-      }
-  }
-  return [segmentedData, resources];
+  return segmentedData;
 }
 
 /**
@@ -43,7 +31,7 @@ export default function (testData) {
         pdpAuthorizeClient,
         party.ssn,
         party.orgno,
-        resource,
+        party.resourceid,
         action,
         expectedResponse,
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
