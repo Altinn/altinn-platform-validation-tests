@@ -12,7 +12,7 @@ const tokenGeneratorLabel = "Personal Token Generator";
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
-// resource with read/write for PRIV and DAGL
+// Setup function to fetch test data and segment it for each VU. The CSV file should have columns: ssn, orgno, resourceid
 export function setup() {
   const numberOfVUs = getNumberOfVUs();
   const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/pdp-single-rights/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}.csv`);
