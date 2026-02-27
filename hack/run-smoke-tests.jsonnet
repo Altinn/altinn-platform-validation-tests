@@ -8,9 +8,6 @@ local config_files = std.split(input_config_files, '\n');
 local interleaved_tasks = [
   [
     basic_workflow.generate_manifests_job(c),
-    if c == 'K6/api/tests/authentication/get-authorized-parties/for-user-many-parties/smoke.yaml' then
-      basic_workflow.generate_apply_manifests(one_by_one=true)
-    else
       basic_workflow.generate_apply_manifests(one_by_one=false),
   ]
   for c in config_files
