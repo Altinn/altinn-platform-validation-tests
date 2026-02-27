@@ -17,6 +17,9 @@ export function getClients() {
         const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
+        
+        // this scope means that the token can be used for all users,
+        // no need to generate a token for each user in the test data
         tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
