@@ -3,7 +3,7 @@ import http from "k6/http";
 class BffConnectionsApiClient {
     /**
      *
-     * @param {string} baseUrl e.g. https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/reportee/83eab202-c2ff-4bf0-bbea-25cbbed5efe7/rightholder?rightholderPartyUuid=undefined
+     * @param {string} baseUrl e.g. https://am.ui.at23.altinn.cloud/
      * @param {*} tokenGenerator
      */
     constructor(
