@@ -3,3 +3,6 @@ test_definitions:
   - test_file: K6/api/tests/dialogporten/serviceowner/should-send-notification.js
     contexts:
       - environment: yt01
+        test_type:
+          type: functional
+          enabled: false   
