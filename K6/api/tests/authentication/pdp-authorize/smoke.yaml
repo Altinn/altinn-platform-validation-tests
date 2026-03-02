@@ -43,3 +43,14 @@ test_definitions:
         test_run:
           secrets:
             - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-single-resource.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01

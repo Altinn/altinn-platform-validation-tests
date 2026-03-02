@@ -63,3 +63,19 @@ test_definitions:
               value: 100
           secrets:
             - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-single-resource.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01

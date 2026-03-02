@@ -14,11 +14,11 @@
 
   checkoutAction: std.format(
     'actions/checkout@%s',
-    '0c366fd6a839edf440554fa01a7085ccba70ac98'
+    'de0fac2e4500dabe0009e67214ff5f5447ce83dd'
   ),
 
   setupNode: std.format(
     'actions/setup-node@%s',
-    'd02c89dce7e1ba9ef629ce0680989b3a1cc72edb'
+    '54045abd5dcd3b0fee9ca02fa24c57545834c9cc'
   ),
 }
