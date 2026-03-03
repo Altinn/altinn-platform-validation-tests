@@ -13,6 +13,7 @@ on:
           - K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml
           - K6/api/tests/authentication/roles/breakpoint.yaml
           - K6/api/tests/authentication/consent/breakpoint.yaml
+          - K6/api/tests/authentication/access-management/bff/breakpoint.yaml
 
       testId:
         type: choice
@@ -27,6 +28,7 @@ on:
           - yt01-dagl-break
           - yt01-dagl-deny-break
           - yt01-dagl-direct-delegation-break
+          - yt01-dagl-single-resource-break
           - yt01-enduser-break
           #- K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml
           - yt01-for-org-with-a2-break
@@ -44,6 +46,8 @@ on:
           # - K6/api/tests/authentication/consent/breakpoint.yaml
           - yt01-post-consent-break
           - yt01-lookup-break
+          # K6/api/tests/authentication/access-management/bff/breakpoint.yaml
+          - yt01-client-admin-break
 
       target_vus:
         description: "The target VUs to reach"
