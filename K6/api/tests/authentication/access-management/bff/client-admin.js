@@ -22,10 +22,10 @@ import { PersonalTokenGenerator } from "../../../../../common-imports.js";
 const tokenGeneratorLabel = "Personal Token Generator";
 const groupLabel = "Open client administration";
 
-const getConnectionsLabel = "1a. Get connections/rightholders";
-const getAgentsLabel = "1b. Get agents";
-const getClientsLabel = "1c. Get clients";
-const getDelegationCheckLabel = "1d. Get delegation check";
+const getConnectionsLabel = "1. Get connections/rightholders";
+const getAgentsLabel = "2. Get agents";
+const getClientsLabel = "2. Get clients";
+const getDelegationCheckLabel = "4. Get delegation check";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 

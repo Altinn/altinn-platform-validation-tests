@@ -17,7 +17,7 @@ class BffConnectionsApiClient {
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/accessmanagement/api/v1/connection/rightholders";
+        this.BASE_PATH = "/accessmanagement/api/v1/connection/";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
@@ -34,7 +34,7 @@ class BffConnectionsApiClient {
     */
     GetConnections(queryParams, label = null) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}`);
+        const url = new URL(`${this.FULL_PATH}/rightholders`);
         const tags = label ? label : url.toString();
         const params = {
             tags: { name: tags },
@@ -45,6 +45,55 @@ class BffConnectionsApiClient {
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
+    }
+
+    /**
+    * Post rightholder for an user
+    * @param {string} from
+    * @param {Object} to - person identifier for the rightholder
+    * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    PostRightholder(from, to, lastName, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        const body = {
+            personIdentifier: to,
+            lastName: lastName
+        };
+        return http.post(url.toString(), JSON.stringify(body), params);
+    }
+
+    /**
+    * Post rightholder for an organization
+    * @param {Object} from - party uuid for the reportee organization
+    * @param {Object} to - organization number for the rightholder organization
+    * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
+    * @param {Object} queryParams
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    PostRightholderOrg(from, to, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.post(url.toString(), null, params);
     }
 }
 
