@@ -48,6 +48,7 @@ on:
           - yt01-lookup-break
           # K6/api/tests/authentication/access-management/bff/breakpoint.yaml
           - yt01-client-admin-break
+          - yt01-fullmakt-user-user-break
 
       target_vus:
         description: "The target VUs to reach"

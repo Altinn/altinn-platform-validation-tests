@@ -12,3 +12,15 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+
+  - test_scope: access-management-bff
+    test_file: fullmakt-user-user.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
