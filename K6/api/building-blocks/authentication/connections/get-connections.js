@@ -1,9 +1,9 @@
 import { check } from "k6";
-import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
+import { ConnectionsApiClient, BffConnectionsApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  *
- * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
+ * @param {ConnectionsApiClient | BffConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
  * @param {uuid} partyId - party id of the end user
  * @param {string} direction - from or to
  * @param {*} label - label for the request

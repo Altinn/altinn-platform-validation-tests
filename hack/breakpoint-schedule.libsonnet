@@ -41,6 +41,9 @@
       '0 6 * * 3': 'yt01-for-user-include-parties-via-key-role-break',  // “At 06:00 on Wednesday.”
     },
 
+    "K6/api/tests/authentication/access-management/bff/breakpoint.yaml": {
+
+    },
 
   },
   dialogporten: {
