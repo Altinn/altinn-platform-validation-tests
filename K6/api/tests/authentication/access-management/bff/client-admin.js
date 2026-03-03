@@ -57,13 +57,13 @@ function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (clientDelegationsApiClient == undefined) {
-        clientDelegationsApiClient = new BffClientDelegationsApiClient(__ENV.BASE_URL, tokenGenerator);
+        clientDelegationsApiClient = new BffClientDelegationsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new BffConnectionsApiClient(__ENV.BASE_URL, tokenGenerator);
+        connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new BffAccessPackageApiClient(__ENV.BASE_URL, tokenGenerator);
+        accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     return [connectionsApiClient, clientDelegationsApiClient, accessPackageApiClient, tokenGenerator];
 }
