@@ -24,7 +24,7 @@ const groupLabel = "Open client administration";
 
 const getConnectionsLabel = "1. Get connections/rightholders";
 const getAgentsLabel = "2. Get agents";
-const getClientsLabel = "2. Get clients";
+const getClientsLabel = "3. Get clients";
 const getDelegationCheckLabel = "4. Get delegation check";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
