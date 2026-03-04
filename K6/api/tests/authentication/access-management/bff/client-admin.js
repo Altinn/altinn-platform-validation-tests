@@ -17,6 +17,7 @@ import { GetAgents, GetClients } from "../../../../building-blocks/authenticatio
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = "Personal Token Generator";
@@ -67,17 +68,6 @@ function getClients() {
     }
     return [connectionsApiClient, clientDelegationsApiClient, accessPackageApiClient, tokenGenerator];
 }
-
-export function getTokenOpts(userId, partyuuid) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:portal/enduser");
-    tokenOpts.set("userId", userId);
-    tokenOpts.set("partyuuid", partyuuid);
-    return tokenOpts;
-}
-
 
 /**
  * Main function executed by each VU.
