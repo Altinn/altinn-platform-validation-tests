@@ -17,6 +17,7 @@ import { GetAgents, GetClients } from "../../../../building-blocks/authenticatio
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = "Personal Token Generator";
