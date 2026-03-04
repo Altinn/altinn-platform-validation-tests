@@ -123,8 +123,6 @@ export default function (segmentedData) {
     // Get from org, to org and userto be agent for current VU iteration. Ensure that from and to are not the same, and that user is different from from and to.
     const { from, to, user } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
     const accessPackage = getItemFromList(accessPackages, true);
-    //console.log(`VU ${exec.vu.idInTest} - Testing: ${from.ssn}/${from.orgUuid}/${from.orgNo} -> ${to.ssn}/${to.orgUuid}/${to.orgNo} and access package: ${accessPackage.accessPackage} - ${accessPackage.id}`);
-    //console.log(`VU ${exec.vu.idInTest} - Agent for testing client delegation: ${user.ssn}/${user.partyUuid}/${user.orgNo}`);
 
     // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
@@ -133,7 +131,7 @@ export default function (segmentedData) {
     group(fullmaktGroup, function () {
         GetPermission(accessPackageApiClient, accessPackage.id, { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1b);
-        //`https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
+        // TODO: add this to test: `https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
         PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         getRightHolders(connectionsApiClient, from, to, getRightholdersToLabel1e);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1f);
