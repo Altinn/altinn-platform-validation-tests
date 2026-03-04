@@ -25,4 +25,3 @@ export function GetDelegations(maskinportenSchemaApiClient, queryParams, label =
     }
     return res.body;
 }
-

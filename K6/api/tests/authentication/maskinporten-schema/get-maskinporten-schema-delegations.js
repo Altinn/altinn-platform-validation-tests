@@ -71,7 +71,6 @@ export function setup() {
     return segmentedData;
 }
 
-
 /**
  * Main function executed by each VU.
  */
@@ -80,10 +79,7 @@ export default function (data) {
     const segmentedData = data;
     const maskinportenSchemaApiClient = getClients();
     const [queryParams, label] = getQueryParams(segmentedData[exec.vu.idInTest - 1])
-    const resp = GetDelegations(maskinportenSchemaApiClient, queryParams, label);
-    //const json = JSON.parse(resp);
-    //console.log(`VU ${exec.vu.idInTest} - ${label} - Number of delegations received: ${json.length}`);
-
+    GetDelegations(maskinportenSchemaApiClient, queryParams, label);
 }
 
 function getClients() {
@@ -159,6 +155,3 @@ function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "
     }
     return from;
 }
-
-
-
