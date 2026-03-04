@@ -61,7 +61,7 @@ class MaskinportenSchemaApiClient {
                     ]
                 }
             ]
-        }
+        };
         return http.post(url.toString(), JSON.stringify(body), params);
     }
 

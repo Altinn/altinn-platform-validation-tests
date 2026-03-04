@@ -78,7 +78,7 @@ export function setup() {
 export default function (data) {
     const segmentedData = data;
     const maskinportenSchemaApiClient = getClients();
-    const [queryParams, label] = getQueryParams(segmentedData[exec.vu.idInTest - 1])
+    const [queryParams, label] = getQueryParams(segmentedData[exec.vu.idInTest - 1]);
     GetDelegations(maskinportenSchemaApiClient, queryParams, label);
 }
 
