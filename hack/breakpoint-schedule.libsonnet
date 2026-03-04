@@ -45,6 +45,10 @@
 
     },
 
+    "K6/api/tests/authentication/maskinporten-schema/breakpoint.yaml": {
+
+    },
+
   },
   dialogporten: {
     'K6/api/tests/dialogporten/serviceowner/breakpoint.yaml': {

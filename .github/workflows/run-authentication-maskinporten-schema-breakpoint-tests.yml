@@ -1,0 +1,24 @@
+name: "authentication - run k6 maskinporten-schema breakpoint tests"
+on:
+  workflow_dispatch: {}
+run-name: "run breakpoint"
+permissions:
+  contents: "read"
+  id-token: "write"
+jobs:
+  k6-breakpoint:
+    environment: "test"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@95b12546a386deaf2672aefc4f76ee4f4104df71"
+        with:
+          config_file: "K6/api/tests/authentication/maskinporten-schema/breakpoint.yaml"
