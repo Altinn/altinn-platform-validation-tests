@@ -13,3 +13,4 @@ export { ClientDelegationsApiClient } from "./client-delegations.js";
 export { BffClientDelegationsApiClient } from "./bff-client-delegations.js";
 export { BffAccessPackageApiClient } from "./bff-access-package.js";
 export { BffConnectionsApiClient } from "./bff-connections.js";
+export { MaskinportenSchemaApiClient } from "./maskinporten-schema.js";
