@@ -1,0 +1,9 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/browser/access-package-delegation/access-management.js
+    env_file: K6/browser/common.env
+    contexts:
+      - environment: at22
+        test_type:
+          type: browser
+          enabled: true

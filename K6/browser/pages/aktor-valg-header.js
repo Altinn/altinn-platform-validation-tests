@@ -1,0 +1,185 @@
+import { Page } from "k6/browser";
+import { expect } from "../../common-imports.js";
+
+export class AktorvalgHeader {
+    /**
+    *
+    * @param {Page} page
+    */
+    constructor(page) {
+        this.page = page;
+        this.infoportalLogo = this.page.getByRole('link', { name: 'Gå til forsiden' });
+        this.searchButton = this.page.getByText('Søk', { exact: true });
+        this.menuButton = this.page.getByRole('button', { name: 'Meny', exact: true });
+        this.dummy = this.page.getByRole('link', { name: 'Sjekk innboks' });
+        this.searchBar = this.page.getByRole('searchbox', { name: 'Søk på altinn.no' });
+
+        // Menu / Navigation
+        this.menuNavigation = this.page.getByRole('navigation', { name: 'Menu' });
+        this.menuInbox = this.menuItem('Innboks');
+        this.menuAccessManagement = this.menuItem('Tilgangsstyring');
+        this.menuApps = this.menuItem('Alle skjema og tjenester');
+        this.menuStartCompany = this.menuItem('Starte og drive bedrift');
+        this.menuHelp = this.menuItem('Trenger du hjelp?');
+        this.menuLanguage = this.menuItem('Språk/language');
+        this.menuProfile = this.menuItem('Din profil');
+
+        this.menuLogout = this.page.getByRole('button', { name: 'Logg ut' });
+        this.aktorvalgSearch = this.page.getByRole('searchbox', { name: 'Søk i aktører' });
+        this.showDeletedSwitch = this.page.getByRole('switch', { name: 'Vis slettede' });
+        this.bokmalLanguageOption = this.page.locator('#no_nb');
+        this.addFavoriteButtons = this.page.getByRole('button', { name: 'Legg til i favorittar' });
+        this.removeFavoriteButtons = this.page.getByRole('button', { name: 'Fjern frå favorittar' });
+        this.closeMenuButton = this.page.getByRole('button', { name: 'Lukk Meny' });
+        this.deletedActorBadge = this.page.getByText('Slettet');
+
+        const actorDetails = this.page
+            .getByText('Født:', { exact: false })
+            .or(this.page.getByText('Org.nr', { exact: false }));
+
+        this.VisibleActors = this.page
+            .getByRole('menuitem')
+            .filter({ has: actorDetails })
+            .filter({ hasNot: this.page.getByRole('menuitem') });
+    }
+
+    menuItem(label) {
+        return this.menuNavigation.getByLabel(label);
+    }
+
+    actorOption(actorName) {
+        return this.page.getByLabel(actorName).first();
+    }
+
+    selectedActorButton(actorName) {
+        return this.page.getByRole('button', { name: actorName }).first();
+    }
+
+    deletedActorOption(actorName) {
+        return this.VisibleActors.filter({ hasText: actorName })
+            .filter({ has: this.deletedActorBadge })
+            .first();
+    }
+
+    async goToSelectActor(actorName) {
+        await expect(this.actorOption(actorName)).toBeVisible();
+        await this.actorOption(actorName).click();
+    }
+
+    async selectActorFromHeaderMenu(actorName) {
+        await expect(this.actorOption(actorName)).toBeVisible();
+        await this.actorOption(actorName).click();
+    }
+
+    async currentlySelectedActor(actorName) {
+        await expect(this.selectedActorButton(actorName)).toBeVisible();
+    }
+
+    async goToInfoportal() {
+        await this.infoportalLogo.click();
+        await expect(this.dummy).toBeVisible();
+    }
+
+    async goToInbox() {
+        await this.menuButton.click();
+        await this.menuInbox.click();
+        await this.closePopups();
+    }
+
+    async goToAccessManagement() {
+        await this.menuButton.click();
+        await this.menuAccessManagement.click();
+    }
+
+    async goToProfile() {
+        await this.menuButton.click();
+        await this.menuProfile.click();
+        await this.closePopups();
+    }
+
+    async clickSearchButton() {
+        await this.searchButton.click();
+        await expect(this.searchBar).toBeVisible();
+    }
+
+    async typeInSearchField(text) {
+        await this.aktorvalgSearch.fill(text);
+    }
+
+    async actorIsListed(name) {
+        await expect(this.page.getByLabel(name).first()).toBeVisible();
+    }
+
+    async checkAllMenuButtons() {
+        await this.menuButton.click();
+        await expect(this.menuInbox).toBeVisible();
+        await expect(this.menuAccessManagement).toBeVisible();
+        await expect(this.menuApps).toBeVisible();
+        await expect(this.menuStartCompany).toBeVisible();
+        await expect(this.menuHelp).toBeVisible();
+        await expect(this.menuProfile).toBeVisible();
+        await expect(this.menuLanguage).toBeVisible();
+        await expect(this.menuLogout).toBeVisible();
+        await this.closeMenuButton.click();
+    }
+
+    async clickFavorite() {
+        await this.addFavoriteButtons.first().click();
+        await expect(this.removeFavoriteButtons.first()).toBeVisible();
+    }
+
+    async removeAllFavorites() {
+        var unfavoriteButtons = await this.removeFavoriteButtons.all();
+        for (const button of unfavoriteButtons) {
+            await button.click();
+        }
+    }
+
+    async unfavoriteFirstActor() {
+        await this.removeFavoriteButtons.first().click();
+        await expect(this.removeFavoriteButtons).toHaveCount(0);
+    }
+
+    async checkShowDeletedSwitch() {
+        const isChecked = await this.showDeletedSwitch.isChecked();
+        if (!isChecked) {
+            await this.showDeletedSwitch.click();
+        }
+    }
+
+    async uncheckShowDeletedSwitch() {
+        const isChecked = await this.showDeletedSwitch.isChecked();
+        if (isChecked) {
+            await this.showDeletedSwitch.click();
+        }
+    }
+
+    async chooseBokmalLanguage() {
+        await this.menuButton.click();
+        await this.menuLanguage.click();
+        await this.bokmalLanguageOption.click();
+    }
+
+    async expectedNumberOfActors(number) {
+        await expect(this.VisibleActors).toHaveCount(number);
+    }
+
+    async expectActorToBeVisible(name) {
+        await expect(this.VisibleActors.filter({ hasText: name })).toBeVisible();
+    }
+
+    async expectDeletedActorToBeVisible(name) {
+        await expect(this.deletedActorOption(name)).toBeVisible();
+    }
+
+    async closePopups() {
+        try {
+            await this.page.waitForTimeout(50);
+            await this.page.getByRole('button', { name: 'Close' }).click();
+        } catch (e) { }
+        try {
+            await this.page.waitForTimeout(50);
+            await this.page.getByRole('button', { name: 'Lukk' }).click();
+        } catch (e) { }
+    }
+}
