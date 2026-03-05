@@ -19,6 +19,6 @@
 
   setupNode: std.format(
     'actions/setup-node@%s',
-    '54045abd5dcd3b0fee9ca02fa24c57545834c9cc'
+    '53b83947a5a98c8d113130e565377fae1a50d02f'
   ),
 }
