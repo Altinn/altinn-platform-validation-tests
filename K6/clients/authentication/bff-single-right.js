@@ -63,6 +63,48 @@ class BffSingleRightApiClient {
             `urn:altinn:resource:${resource}:urn:oasis:names:tc:xacml:1.0:action:action-id:access`,
         ]
     }
+
+    /**
+     * Delete single right delegation
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {*} label - label for the request, if null the url will be used as label
+     * @return http.RefinedResponse
+     */
+    DeleteDelegate(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/revoke`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.del(url.toString(), null, params);
+    }
+
+
+    /**
+     * Get delegation check for a resource
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {*} label - label for the request, if null the url will be used as label
+     * @return http.RefinedResponse
+     */
+    GetDelegationCheck(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/delegationcheck`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
 }
 
 export { BffSingleRightApiClient };

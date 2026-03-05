@@ -67,6 +67,27 @@ class BffAccessPackageApiClient {
     }
 
     /**
+     * Get delegations.
+     * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
+     * @param {*} label - optional label for the request, if not provided the url will be used as label
+     * @returns http response object    
+     */
+    GetDelegations(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/delegations`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
      * Get delegation check.
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
      * @param {*} label - optional label for the request, if not provided the url will be used as label

@@ -55,6 +55,32 @@ export function DeleteDelegations(accessPackageApiClient, queryParams, label = n
 }
 
 /**
+ * Get Delegations
+ * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
+ * @param {*} queryParams - query parameters for the request
+ * @param {*} label - label for the request
+ * @return (string | ArrayBuffer | null)
+ */
+export function GetDelegations(accessPackageApiClient, queryParams, label = null) {
+    const res = accessPackageApiClient.GetDelegations(queryParams, label);
+    const succeed = check(res, {
+        "GetDelegations - status code is 200": (r) => r.status === 200,
+        "GetDelegations - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "GetDelegations - body is not empty": (r) => {
+            const res_body = JSON.parse(r.body);
+            return res_body !== null && res_body !== undefined;
+        }
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.status_text);
+        console.log(res.body);
+    }
+    return res.body;
+}
+
+/**
  * Get Delegation Check
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
