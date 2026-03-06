@@ -171,7 +171,7 @@ export const resourcesForOrg = [
     },
     {
         resourceId: "testressurs-tilgangspakke-org-a-ordning-1",
-        searchTerm: "a"
+        searchTerm: "ordning"
     },
     {
         resourceId: "testressurs-tilgangspakke-org-attester-1",

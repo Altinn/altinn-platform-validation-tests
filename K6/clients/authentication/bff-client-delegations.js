@@ -198,7 +198,6 @@ class BffClientDelegationsApiClient {
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        console.log(url.toString());
         return http.get(url.toString(), params);
     }
 }

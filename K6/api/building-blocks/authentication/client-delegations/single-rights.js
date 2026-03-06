@@ -26,7 +26,6 @@ export function RevokeSingleRight(bffSingleRightApiClient, queryParams, label = 
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/singleright/delegationcheck?from=5b0220fb-ed4b-474c-b648-135fd29c509b&resource=testressurs-tilgangspakke-org-damp-varmtvann-1
 /**
  * Get delegation check for a resource
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API

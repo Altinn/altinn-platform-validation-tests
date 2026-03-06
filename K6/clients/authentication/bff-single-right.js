@@ -46,7 +46,6 @@ class BffSingleRightApiClient {
                 "Content-type": "application/json",
             },
         };
-        //const boy = this.#getBody(resource);
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.post(url.toString(), JSON.stringify(rights), params);
     }
