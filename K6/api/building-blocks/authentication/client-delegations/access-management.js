@@ -124,7 +124,7 @@ export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgN
 export function DeleteRightholderConnection(bffAccessManagementApiClient, queryParams, label = null) {
     const res = bffAccessManagementApiClient.DeleteRightholderConnection(queryParams, label);
     const succeed = check(res, {
-        [`delete rightholder - status code is 204`]: (r) => r.status === 204,
+        ["delete rightholder - status code is 204"]: (r) => r.status === 204,
     });
     if (!succeed) {
         console.log(res.status);

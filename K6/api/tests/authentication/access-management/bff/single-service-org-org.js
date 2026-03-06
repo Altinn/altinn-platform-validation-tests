@@ -176,7 +176,7 @@ export default function (segmentedData) {
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
-        }
+        };
         GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1a);
         queryParams = {
             party: from.partyUuid,
@@ -184,14 +184,14 @@ export default function (segmentedData) {
             to: from.partyUuid,
             includeClientDelegations: true,
             includeAgentConnections: true,
-        }
+        };
         GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1c);
         queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
-        }
+        };
         GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1d);
         queryParams = {
             party: from.orgUuid,
@@ -199,7 +199,7 @@ export default function (segmentedData) {
             to: to.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: true,
-        }
+        };
         GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1e);
         GetIsHovedAdmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminLabel);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel);
@@ -246,7 +246,7 @@ export default function (segmentedData) {
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
-        }
+        };
         GetConnections(connectionsApiClient, queryParams, getRightholdersLabel3m);
     });
 
