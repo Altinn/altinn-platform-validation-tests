@@ -37,7 +37,6 @@ export function GetDelegatedResources(bffAccessManagementApiClient, queryParams,
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/singleright/delegation/resources/rights?party=5b0220fb-ed4b-474c-b648-135fd29c509b&to=223c8f0e-3887-4dba-8e2b-45ace76decfd&from=5b0220fb-ed4b-474c-b648-135fd29c509b&resourceId=testressurs-tilgangspakke-org-damp-varmtvann-1
 /**
  * Get delegated rights for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -146,7 +145,6 @@ export function GetRoleMeta(bffAccessManagementApiClient, queryParams, label = n
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/singleright/rightsmeta?resource=testressurs-tilgangspakke-org-damp-varmtvann-1
 /**
  * Get rights metadata for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API    
