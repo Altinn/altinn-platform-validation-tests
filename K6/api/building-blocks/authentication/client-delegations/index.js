@@ -1,3 +1,18 @@
 export { GetMyClients } from "./get-client-delegations.js";
 export { GetAgents, PostAgents, DeleteAgents, GetClients } from "./agents.js";
-export { GetAccessPackages, PostAccessPackages, DeleteAccessPackages } from "./agents-access-packages.js";
+export { GetAccessPackages, PostAccessPackages, DeleteAccessPackages, } from "./agents-access-packages.js";
+export { PostSingleRight, GetDelegationCheck, RevokeSingleRight } from "./single-rights.js";
+export {
+    GetIsHovedAdmin,
+    GetRolePermissions,
+    GetDelegatedResources,
+    SearchAccessPackages,
+    SearchResources,
+    GetResourceOwners,
+    GetOrganizationData,
+    GetOrganizationDataFromLookup,
+    GetDelegatedRightsForResource,
+    DeleteRightholderConnection,
+    GetRoleMeta,
+    GetRightsMeta,
+} from "./access-management.js";

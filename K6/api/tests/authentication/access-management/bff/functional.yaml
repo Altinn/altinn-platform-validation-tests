@@ -18,3 +18,10 @@ test_definitions:
     contexts:
       - environment: yt01
       - environment: at23
+
+  - test_scope: access-management-bff
+    test_file: single-service-org-org.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+
