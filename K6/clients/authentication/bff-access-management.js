@@ -224,6 +224,47 @@ class BffAccessManagementApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.del(url.toString(), null, params);
     }
+
+    /** 
+     * Get role metadata
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {*} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     * 
+    */
+    GetRoleMeta(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/role/meta`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * Get rights metadata for a resource
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {*} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
+    GetRightsMeta(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/singleright/rightsmeta`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
 }
 
 export { BffAccessManagementApiClient };

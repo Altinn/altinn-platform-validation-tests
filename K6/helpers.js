@@ -99,8 +99,8 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
 export function getNumberOfVUs() {
     return (
         exec.test.options.scenarios.default.vus ??
-    __ENV.BREAKPOINT_STAGE_TARGET ??
-    1
+        __ENV.BREAKPOINT_STAGE_TARGET ??
+        1
     );
 }
 
@@ -109,7 +109,7 @@ export function getNumberOfVUs() {
  * @param {} labels
  * @returns
  */
-export function getOptions(labels) {
+export function getOptions(labels, groups = []) {
     const options = {
         summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
@@ -121,6 +121,12 @@ export function getOptions(labels) {
         options.thresholds[`http_req_duration{name:${label}}`] = [];
         options.thresholds[`http_req_failed{name:${label}}`] = [];
         options.thresholds[`http_reqs{name:${label}}`] = [];
+    }
+
+    for (const group of groups) {
+        options.thresholds[`http_req_duration{group:${group}}`] = [];
+        options.thresholds[`http_req_failed{group:${group}}`] = [];
+        options.thresholds[`http_reqs{group:${group}}`] = [];
     }
 
     return options;

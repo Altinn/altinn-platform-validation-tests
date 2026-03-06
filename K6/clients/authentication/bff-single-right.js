@@ -1,4 +1,5 @@
 import http from "k6/http";
+import crypto from "k6/crypto";
 
 class BffSingleRightApiClient {
     /**
@@ -34,7 +35,7 @@ class BffSingleRightApiClient {
      * @returns http.RefinedResponse
      */
 
-    PostDelegate(queryParams, resource, label = null) {
+    PostDelegate(queryParams, rights, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegate`);
         const tags = label ? label : url.toString();
@@ -45,23 +46,9 @@ class BffSingleRightApiClient {
                 "Content-type": "application/json",
             },
         };
-        const body = this.#getBody(resource);
+        //const boy = this.#getBody(resource);
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        return http.post(url.toString(), JSON.stringify(body), params);
-    }
-
-    /**
-     * Method to generate the body for the PostDelegate request based on the resource. 
-     * The body is hardcoded to include the actions "read", "write" and "access" for the given resource, modify or extend as needed for different test scenarios.
-     * @param {*} resource - the resource for which the right is delegated, e.g. "ttd/altinn-app-frontend/tilgangstest/resource1"
-     * @returns - request body for the PostDelegate request
-     */
-    #getBody(resource) {
-        return [
-            `urn:altinn:resource:${resource}:urn:oasis:names:tc:xacml:1.0:action:action-id:read`,
-            `urn:altinn:resource:${resource}:urn:oasis:names:tc:xacml:1.0:action:action-id:write`,
-            `urn:altinn:resource:${resource}:urn:oasis:names:tc:xacml:1.0:action:action-id:access`,
-        ]
+        return http.post(url.toString(), JSON.stringify(rights), params);
     }
 
     /**
@@ -83,7 +70,6 @@ class BffSingleRightApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.del(url.toString(), null, params);
     }
-
 
     /**
      * Get delegation check for a resource

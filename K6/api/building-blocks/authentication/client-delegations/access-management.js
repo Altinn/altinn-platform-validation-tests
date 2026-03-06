@@ -115,7 +115,6 @@ export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgN
     return res.body;
 }
 
-//// Del https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/reportee?party=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=f1399084-2814-4f54-ab0e-75a931628762&from=0d8e92cb-febc-46df-bf38-0540a084bfb1
 /**
  * Delete rightholder connection for a reportee
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -131,6 +130,33 @@ export function DeleteRightholderConnection(bffAccessManagementApiClient, queryP
         console.log(res.status);
         console.log(res.body);
     };
+    return res.body;
+}
+
+/**
+ * Get role metadata
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetRoleMeta(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.GetRoleMeta(queryParams, label);
+    checker(res, "Get role meta");
+    return res.body;
+}
+
+// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/singleright/rightsmeta?resource=testressurs-tilgangspakke-org-damp-varmtvann-1
+/**
+ * Get rights metadata for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API    
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetRightsMeta(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.GetRightsMeta(queryParams, label);
+    checker(res, "Get rights meta");
     return res.body;
 }
 

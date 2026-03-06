@@ -1,4 +1,4 @@
-import { BffSingleRightApiClient } from "../../../../clients/authentication/bff-single-right.js";
+import { BffSingleRightApiClient } from "../../../../clients/authentication/index.js";
 import { check } from "k6";
 
 /**
@@ -7,8 +7,8 @@ import { check } from "k6";
  * @param {} queryParams - queryParams for the request
  * @param {*} label - label for the request
  */
-export function PostSingleRight(bffSingleRightApiClient, queryParams, resource, label = null) {
-    const res = bffSingleRightApiClient.PostDelegate(queryParams, resource, label);
+export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, label = null) {
+    const res = bffSingleRightApiClient.PostDelegate(queryParams, rights, label);
     checker(res, "Post single right");
     return res.body;
 }

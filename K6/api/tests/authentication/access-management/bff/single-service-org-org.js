@@ -16,12 +16,14 @@ import {
     GetDelegatedRightsForResource,
     RevokeSingleRight,
     DeleteRightholderConnection,
+    GetRoleMeta,
+    GetRightsMeta,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
 import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getTokenOpts } from "./commons.js";
+import { getTokenOpts, resourcesForOrg as resources } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = "1a. Get rightholders from org";
@@ -39,27 +41,37 @@ const getResourceOwnersLabel = "1l. Get resource owners for org";
 const getOrganizationDataLabel = "1m. Get organization data for org";
 
 const searchAccessPackagesLabel2a = "2a. Search access packages for org";
-const getDelegationCheckLabel = "2b. Get delegation check for client delegation";
-const postDelegationLabel = "2c. Delegate serviceresource from org to org";
-const getDelegatedResourcesLabel2d = "2d. Get delegated resources for client delegation";
-const getDelegationCheckLabel2e = "2e. Get delegation check for client delegation after delegating";
-const getDelegatedRightsForResourceLabel2f = "2f. Get delegated rights for resource for client delegation";
+const getRightsMetadataLabel2b = "2b. Get rights metadata for resource";
+const getDelegationCheckLabel = "2c. Get delegation check for client delegation";
+const postDelegationLabel = "2d. Delegate serviceresource from org to org";
+const getDelegatedResourcesLabel2d = "2e. Get delegated resources for client delegation";
+const getDelegationCheckLabel2e = "2f. Get delegation check for client delegation after delegating";
+const getDelegatedRightsForResourceLabel2f = "2g. Get delegated rights for resource for client delegation";
 
 const revokeSingleRightLabel = "3a. Revoke single right for client delegation";
 const getDelegatedResourcesLabel3b = "3b. Get delegated resources for client delegation after revoking single right";
 const getDelegationCheckLabel3c = "3c. Get delegation check for client delegation after revoking single right";
-const getRolePermissionsLabel3d = "3d. Get role permissions for org to org";
-const deleteRightholderConnectionLabel = "3f. Delete rightholder connection between orgs";
+const getRolePermissionsLabel3d = "3d. Get role permissions for user to org";
+const getRolePermissionsLabel3e = "3e. Get role permissions for org to org";
+const getRoleMetaLabel3f = "3f. Get role meta before revoking single right";
+const getDelegationsLabel3g = "3g. Get delegations from org to org";
+const deleteRightholderConnectionLabel = "3h. Delete rightholder connection between orgs";
+const getRolePermissionsLabel3i = "3i. Get role permissions for user to org after delete";
+const getRolePermissionsLabel3j = "3j. Get role permissions for org to org after delete";
+const getRoleMetaLabel3k = "3k. Get role meta after revoking single right";
+const getDelegationsLabel3l = "3l. Get delegations from org to org after delete";
+const getRightholdersLabel3m = "3m. Get rightholders from org after delete";
 
-const fullmaktGroup = "1. Delegate accesspackage from organization to organization";
-const clientDelegationGroup = "3. Client delegation from organization to user";
-const cleanupGroup = "4. Cleanup - delete delegation";
+const addUserGroup = "1. Add organization as user to another organization";
+const resourceDelegationGroup = "2. Delegate a single resource to the added organization";
+const cleanupGroup = "3. Cleanup - delete delegation and connection";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
 // get k6 options
 export const options = getOptions(
     [
+        addUserGroup,
         getRightholdersLabel1a,
         postRightholderLabel,
         getRightholdersLabel1c,
@@ -74,22 +86,32 @@ export const options = getOptions(
         getResourceOwnersLabel,
         getOrganizationDataLabel,
 
+        resourceDelegationGroup,
         searchAccessPackagesLabel2a,
+        getRightsMetadataLabel2b,
         getDelegationCheckLabel,
         postDelegationLabel,
         getDelegatedResourcesLabel2d,
         getDelegationCheckLabel2e,
         getDelegatedRightsForResourceLabel2f,
 
+        cleanupGroup,
         revokeSingleRightLabel,
         getDelegatedResourcesLabel3b,
         getDelegationCheckLabel3c,
         getRolePermissionsLabel3d,
-
+        getRolePermissionsLabel3e,
+        getRoleMetaLabel3f,
+        getDelegationsLabel3g,
         deleteRightholderConnectionLabel,
+        getRolePermissionsLabel3i,
+        getRolePermissionsLabel3j,
+        getRoleMetaLabel3k,
+        getDelegationsLabel3l,
+        getRightholdersLabel3m,
+
     ],
 );
-
 
 let tokenGenerator = undefined;
 let connectionsApiClient = undefined;
@@ -127,29 +149,27 @@ function getClients() {
  */
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/fullmakt-enkelttjenester/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-worst-cases.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/fullmakt-enkelttjenester/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
-
 
 /**
  * Main function executed by each VU.
  */
 export default function (segmentedData) {
-    // testdata. [0] contains segmented user data for each VU, [1] contains access packages
     const [connectionsApiClient, accessPackageApiClient, singleRightsApiClient, userApiClient, tokenGenerator] = getClients();
 
-    // Get from org, to org and userto be agent for current VU iteration. Ensure that from and to are not the same, and that user is different from from and to.
+    // Get from and to organizations and resource for the current iteration
     const { from, to } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
-
-    console.log(`VU ${exec.vu.idInTest} - From org: ${from.orgNo}/${from.ssn}), To org: ${to.orgNo}/${to.ssn}`);
+    const resource = getItemFromList(resources, true);
 
     // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 
-    group(fullmaktGroup, function () {
-        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/reportee/f1399084-2814-4f54-ab0e-75a931628762/rightholder?rightholderPartyUuid=223c8f0e-3887-4dba-8e2b-45ace76decfd
+    // Part 1. 
+    // Add organization as user to another organization,
+    group(addUserGroup, function () {
         PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         let queryParams = {
             party: from.orgUuid,
@@ -192,40 +212,63 @@ export default function (segmentedData) {
     });
 
 
-    group(clientDelegationGroup, function () {
-        SearchAccessPackages(userApiClient, { searchString: "testre", typeName: "organisasjon" }, searchAccessPackagesLabel2a);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, getDelegationCheckLabel);
-        PostSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, "testressurs-tilgangspakke-org-damp-varmtvann-1", postDelegationLabel);
+    // Part 2.
+    // Delegate a single resource to the added organization and verify delegation
+    group(resourceDelegationGroup, function () {
+        SearchAccessPackages(userApiClient, { searchString: resource.searchTerm, typeName: "organisasjon" }, searchAccessPackagesLabel2a);
+        const rightsMeta = GetRightsMeta(userApiClient, { resource: resource.resourceId }, getRightsMetadataLabel2b);
+        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel);
+        PostSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationLabel);
         GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel2d);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, getDelegationCheckLabel2e);
-        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, getDelegatedRightsForResourceLabel2f);
+        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel2e);
+        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2f);
     });
 
+    // Part 3.
+    // Revoke the delegated resource and verify that the delegation has been removed, 
+    // then clean up by deleting the rightholder connection between the organizations and verify deletion
     group(cleanupGroup, function () {
-        RevokeSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, revokeSingleRightLabel);
+        RevokeSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
         GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel3b);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, getDelegationCheckLabel3c);
-        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: "testressurs-tilgangspakke-org-damp-varmtvann-1" }, getRolePermissionsLabel);
-
-        GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3d);
-
-
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/permissions?party=4f08f455-5005-4c12-9ed2-f1d66f016af7&from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=4f08f455-5005-4c12-9ed2-f1d66f016af7
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/permissions?party=0d8e92cb-febc-46df-bf38-0540a084bfb1&from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=f1399084-2814-4f54-ab0e-75a931628762
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/meta
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/accesspackage/delegations?from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=f1399084-2814-4f54-ab0e-75a931628762&party=0d8e92cb-febc-46df-bf38-0540a084bfb1
+        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel3c);
+        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getRolePermissionsLabel);
+        GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel3d);
+        GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3e);
+        GetRoleMeta(userApiClient, {}, getRoleMetaLabel3f);
+        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3g);
         DeleteRightholderConnection(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
-        // Del https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/reportee?party=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=f1399084-2814-4f54-ab0e-75a931628762&from=0d8e92cb-febc-46df-bf38-0540a084bfb1
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/permissions?party=0d8e92cb-febc-46df-bf38-0540a084bfb1&from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=f1399084-2814-4f54-ab0e-75a931628762
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/permissions?party=4f08f455-5005-4c12-9ed2-f1d66f016af7&from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=4f08f455-5005-4c12-9ed2-f1d66f016af7
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/meta
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/accesspackage/delegations?from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=f1399084-2814-4f54-ab0e-75a931628762&party=0d8e92cb-febc-46df-bf38-0540a084bfb1
-        // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=0d8e92cb-febc-46df-bf38-0540a084bfb1&from=0d8e92cb-febc-46df-bf38-0540a084bfb1&to=&includeClientDelegations=true&includeAgentConnections=false
-
+        GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel3i);
+        GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3j);
+        GetRoleMeta(userApiClient, {}, getRoleMetaLabel3k);
+        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3l);
+        let queryParams = {
+            party: from.orgUuid,
+            from: from.orgUuid,
+            includeClientDelegations: true,
+            includeAgentConnections: false,
+        }
+        GetConnections(connectionsApiClient, queryParams, getRightholdersLabel3m);
     });
 
 }
 
+/**
+ * Helper function to extract rights from rights metadata response
+ * @returns list of rights
+ */
+function getRights(rightsMeta) {
+    const jsonResp = JSON.parse(rightsMeta);
+    const rights = [];
+    for (const right of jsonResp) {
+        rights.push(right.key);
+    }
+    return rights;
+}
+
+/**
+ * Helper function to get from and to organizations for the current iteration, ensuring that they are not the same
+ * @returns object with from and to organizations
+ */
 function getFromTo(list) {
     let from = undefined;
     if (randomize) {

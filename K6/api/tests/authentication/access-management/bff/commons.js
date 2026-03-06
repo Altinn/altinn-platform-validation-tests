@@ -160,6 +160,69 @@ export const accessPackagesForOrgs = [
     { accessPackage: "samle-behandle-avlopsvann", id: "fef4aac0-d227-4ef6-834b-cc2eb4b942ed" }
 ];
 
+export const resourcesForOrg = [
+    {
+        resourceId: "testressurs-tilgangspakke-org-akvakultur-1",
+        searchTerm: "akvakultur"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-annen-tjenesteyting-1",
+        searchTerm: "annen"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-a-ordning-1",
+        searchTerm: "a"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-attester-1",
+        searchTerm: "attester"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-avfall-behandle-gjenvinne-1",
+        searchTerm: "avfall"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-barnehageeier-1",
+        searchTerm: "barnehageeier"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-barnehagemyndighet-1",
+        searchTerm: "barnehagemyndighet"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-barnevern-1",
+        searchTerm: "barnevern"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-beredskap-1",
+        searchTerm: "beredskap"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-bergverk-1",
+        searchTerm: "bergverk"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-biblioteker-museer-arkiver-og-annen-kultur-1",
+        searchTerm: "biblioteker"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-byggesoknad-1",
+        searchTerm: "byggesoknad"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-damp-varmtvann-1",
+        searchTerm: "damp"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-dyrehold-1",
+        searchTerm: "dyrehold"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-org-eiendomsmegler-1",
+        searchTerm: "eiendomsmegler"
+    },
+];
+
 export function getTokenOpts(userId, partyuuid) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
