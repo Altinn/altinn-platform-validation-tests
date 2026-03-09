@@ -263,18 +263,18 @@ export const userWithManyConnections = {
         { ssn: "26091077719", userId: "975384", partyUuid: "c6d68294-e422-459e-9b83-606da00d39f3", lastName: "LastName3247378" },
     ],
     tt02: [
-        { pid: "06095101567", userId: "", partyUuid: "", lastName: "" },
-        { pid: "22877497392", userId: "", partyUuid: "", lastName: "" },
-        { pid: "05897398887", userId: "", partyUuid: "", lastName: "" },
-        { pid: "13886499404", userId: "", partyUuid: "", lastName: "" },
-        { pid: "01055902352", userId: "", partyUuid: "", lastName: "" },
+        { pid: "06095101567", userId: "70913", partyUuid: "8d31a675-a346-4b63-bd79-8e4d3b5a9b80", lastName: "ANTONSEN" },
+        { pid: "22877497392", userId: "157587", partyUuid: "420e98ce-7204-4ae0-b1f5-553df83f6a1f", lastName: "KJEDE" },
+        { pid: "05897398887", userId: "277373", partyUuid: "3c1c6e2d-a501-4da0-b711-7cd807599395", lastName: "AMBISJON" },
+        { pid: "13886499404", userId: "163193", partyUuid: "ed0cdb8d-6e8b-4fb9-a5a4-29e6b0dbb3c7", lastName: "DOKTORGRAD" },
+        { pid: "01055902352", userId: "70417", partyUuid: "df2770ef-5e6d-43dc-acd4-8097639d0213", lastName: "LØYNING" },
     ],
     at23: [
-        { pid: "22877497392", userId: "", partyUuid: "", lastName: "" },
-        { pid: "13886499404", userId: "", partyUuid: "", lastName: "" },
-        { pid: "14836599080", userId: "", partyUuid: "", lastName: "" },
-        { pid: "23812849735", userId: "", partyUuid: "", lastName: "" },
-        { pid: "24916399592", userId: "", partyUuid: "", lastName: "" },
+        { pid: "22877497392", userId: "20017189", partyUuid: "64aa2ca5-9ab1-4074-af1d-af30da0fffa6", lastName: "KJEDE" },
+        { pid: "13886499404", userId: "21049881", partyUuid: "e56acc5a-7269-46f6-99aa-9fdfc12c29c3", lastName: "DOKTORGRAD" },
+        { pid: "14836599080", userId: "20434965", partyUuid: "5c7c3c27-38c1-4c8c-9941-cbd94fb4013f", lastName: "BAKTANKE" },
+        { pid: "23812849735", userId: "20504866", partyUuid: "6c01e549-c8f9-4dd8-8510-eb2582e04288", lastName: "TELEFONKATALOG" },
+        { pid: "24916399592", userId: "20453748", partyUuid: "60aa45af-e089-4469-8976-ed18b0d9e606", lastName: "SKJORTE" },
     ],
 };
 
