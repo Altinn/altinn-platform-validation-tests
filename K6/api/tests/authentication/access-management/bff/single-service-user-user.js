@@ -10,7 +10,6 @@ import {
     SearchAccessPackages,
     SearchResources,
     GetResourceOwners,
-    GetOrganizationData,
     GetDelegationCheck,
     PostSingleRight,
     GetDelegatedRightsForResource,
@@ -150,7 +149,7 @@ export function setup() {
 export default function (segmentedData) {
     const [connectionsApiClient, accessPackageApiClient, singleRightsApiClient, userApiClient, tokenGenerator] = getClients();
 
-    // Get from and to organizations and resource for the current iteration
+    // Get from and to users and resource for the current iteration
     const { from, to } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources, true);
 
@@ -160,7 +159,7 @@ export default function (segmentedData) {
 
 
     // Part 1. 
-    // Add organization as user to another organization,
+    // Add user to auser,
     group(addUserGroup, function () {
         PostRightholder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
         let queryParams = {
@@ -196,7 +195,7 @@ export default function (segmentedData) {
     });
 
     // Part 2.
-    // Delegate a single resource to the added organization and verify delegation
+    // Delegate a single resource to the added user and verify delegation
     group(resourceDelegationGroup, function () {
         SearchAccessPackages(userApiClient, { searchString: resource.searchTerm, typeName: "person" }, searchAccessPackagesLabel2a);
         const rightsMeta = GetRightsMeta(userApiClient, { resource: resource.resourceId }, getRightsMetadataLabel2b);
@@ -209,7 +208,7 @@ export default function (segmentedData) {
 
     // Part 3.
     // Revoke the delegated resource and verify that the delegation has been removed, 
-    // then clean up by deleting the rightholder connection between the organizations and verify deletion
+    // then clean up by deleting the rightholder connection between the users and verify deletion
     group(cleanupGroup, function () {
         RevokeSingleRight(singleRightsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
         GetDelegatedResources(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegatedResourcesLabel3b);
@@ -244,7 +243,7 @@ function getRights(rightsMeta) {
 }
 
 /**
- * Helper function to get from and to organizations for the current iteration, ensuring that they are not the same
+ * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
  * @returns object with from and to organizations
  */
 function getFromTo(list) {
