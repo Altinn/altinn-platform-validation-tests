@@ -50,6 +50,7 @@ on:
           - yt01-client-admin-break
           - yt01-fullmakt-org-org-break
           - yt01-fullmakt-user-user-break
+          - yt01-single-service-user-user-break
           - yt01-single-service-org-org-break
           # K6/api/tests/authentication/maskinporten-schema/breakpoint.yaml
           - yt01-get-maskinporten-schema-delegations-break

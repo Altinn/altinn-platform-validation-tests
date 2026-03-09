@@ -223,6 +223,61 @@ export const resourcesForOrg = [
     },
 ];
 
+export const resourcesForUsers = [
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-arbeidsliv-1",
+        searchTerm: "arbeidsliv"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-attester-1",
+        searchTerm: "attester"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-bank-finans-1",
+        searchTerm: "bank"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-barn-foreldre-1",
+        searchTerm: "barn"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-behandling-1",
+        searchTerm: "behandling"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-bolig-eiendom-1",
+        searchTerm: "bolig"
+    },
+    {
+        resourceId: "testressurs-tilgangspakke-innbygger-forsikring-1",
+        searchTerm: "forsikring"
+    },
+];
+
+export const usersWithManyConnections = {
+    yt01: [
+        { ssn: "14022216091", userId: "8897961", partyUuid: "ef7242a0-eaf1-45bb-b898-4a5c17747340", lastName: "LastName6061534" },
+        { ssn: "21070450361", userId: "634565", partyUuid: "1251a17d-9dfb-4a1e-b6d9-0c592854fd12", lastName: "LastName1847225" },
+        { ssn: "10121251049", userId: "1292822", partyUuid: "2fa5d6a6-40dc-4f45-94d6-ec3a8de92224", lastName: "LastName3749397" },
+        { ssn: "11111574113", userId: "1911278", partyUuid: "bdfc5a1c-98a7-4748-b987-88f9821f8f80", lastName: "LastName4410710" },
+        { ssn: "26091077719", userId: "975384", partyUuid: "c6d68294-e422-459e-9b83-606da00d39f3", lastName: "LastName3247378" },
+    ],
+    tt02: [
+        { pid: "06095101567", userId: "70913", partyUuid: "8d31a675-a346-4b63-bd79-8e4d3b5a9b80", lastName: "ANTONSEN" },
+        { pid: "22877497392", userId: "157587", partyUuid: "420e98ce-7204-4ae0-b1f5-553df83f6a1f", lastName: "KJEDE" },
+        { pid: "05897398887", userId: "277373", partyUuid: "3c1c6e2d-a501-4da0-b711-7cd807599395", lastName: "AMBISJON" },
+        { pid: "13886499404", userId: "163193", partyUuid: "ed0cdb8d-6e8b-4fb9-a5a4-29e6b0dbb3c7", lastName: "DOKTORGRAD" },
+        { pid: "01055902352", userId: "70417", partyUuid: "df2770ef-5e6d-43dc-acd4-8097639d0213", lastName: "LØYNING" },
+    ],
+    at23: [
+        { pid: "22877497392", userId: "20017189", partyUuid: "64aa2ca5-9ab1-4074-af1d-af30da0fffa6", lastName: "KJEDE" },
+        { pid: "13886499404", userId: "21049881", partyUuid: "e56acc5a-7269-46f6-99aa-9fdfc12c29c3", lastName: "DOKTORGRAD" },
+        { pid: "14836599080", userId: "20434965", partyUuid: "5c7c3c27-38c1-4c8c-9941-cbd94fb4013f", lastName: "BAKTANKE" },
+        { pid: "23812849735", userId: "20504866", partyUuid: "6c01e549-c8f9-4dd8-8510-eb2582e04288", lastName: "TELEFONKATALOG" },
+        { pid: "24916399592", userId: "20453748", partyUuid: "60aa45af-e089-4469-8976-ed18b0d9e606", lastName: "SKJORTE" },
+    ],
+};
+
 export function getTokenOpts(userId, partyuuid) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
