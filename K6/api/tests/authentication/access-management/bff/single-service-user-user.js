@@ -41,9 +41,9 @@ const searchAccessPackagesLabel2a = "2a. Search resources for person";
 const getRightsMetadataLabel2b = "2b. Get rights metadata for resource";
 const getDelegationCheckLabel = "2c. Get delegation check for client delegation";
 const postDelegationLabel = "2d. Delegate serviceresource from user to user";
-const getDelegatedResourcesLabel2d = "2e. Get delegated resources for user";
-const getDelegationCheckLabel2e = "2f. Get delegation check for user after delegating";
-const getDelegatedRightsForResourceLabel2f = "2g. Get delegated rights for resource for user";
+const getDelegatedResourcesLabel2e = "2e. Get delegated resources for user";
+const getDelegationCheckLabel2f = "2f. Get delegation check for user after delegating";
+const getDelegatedRightsForResourceLabel2g = "2g. Get delegated rights for resource for user";
 
 const revokeSingleRightLabel = "3a. Revoke single right for user";
 const getDelegatedResourcesLabel3b = "3b. Get delegated resources for user after revoking single right";
@@ -83,9 +83,9 @@ export const options = getOptions(
         getRightsMetadataLabel2b,
         getDelegationCheckLabel,
         postDelegationLabel,
-        getDelegatedResourcesLabel2d,
-        getDelegationCheckLabel2e,
-        getDelegatedRightsForResourceLabel2f,
+        getDelegatedResourcesLabel2e,
+        getDelegationCheckLabel2f,
+        getDelegatedRightsForResourceLabel2g,
 
         cleanupGroup,
         revokeSingleRightLabel,
@@ -201,9 +201,9 @@ export default function (segmentedData) {
         const rightsMeta = GetRightsMeta(userApiClient, { resource: resource.resourceId }, getRightsMetadataLabel2b);
         GetDelegationCheck(singleRightsApiClient, { from: from.partyUuid, resource: resource.resourceId }, getDelegationCheckLabel);
         PostSingleRight(singleRightsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationLabel);
-        GetDelegatedResources(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegatedResourcesLabel2d);
-        GetDelegationCheck(singleRightsApiClient, { from: from.partyUuid, resource: resource.resourceId }, getDelegationCheckLabel2e);
-        GetDelegatedRightsForResource(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2f);
+        GetDelegatedResources(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegatedResourcesLabel2e);
+        GetDelegationCheck(singleRightsApiClient, { from: from.partyUuid, resource: resource.resourceId }, getDelegationCheckLabel2f);
+        GetDelegatedRightsForResource(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2g);
     });
 
     // Part 3.
