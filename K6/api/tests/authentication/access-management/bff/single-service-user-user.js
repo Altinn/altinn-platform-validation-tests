@@ -258,6 +258,4 @@ function getFromTo(list) {
         to = getItemFromList(list, true);
     }
     return { from, to };
-
 }
-

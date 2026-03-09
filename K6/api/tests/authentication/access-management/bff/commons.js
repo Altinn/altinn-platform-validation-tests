@@ -254,7 +254,7 @@ export const resourcesForUsers = [
     },
 ];
 
-export const userWithManyConnections = {
+export const usersWithManyConnections = {
     yt01: [
         { ssn: "14022216091", userId: "8897961", partyUuid: "ef7242a0-eaf1-45bb-b898-4a5c17747340", lastName: "LastName6061534" },
         { ssn: "21070450361", userId: "634565", partyUuid: "1251a17d-9dfb-4a1e-b6d9-0c592854fd12", lastName: "LastName1847225" },
