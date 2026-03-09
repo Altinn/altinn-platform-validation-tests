@@ -153,7 +153,6 @@ export default function (segmentedData) {
     const { from, to } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources, true);
 
-    console.log(`VU ${exec.vu.idInTest} - Testing: ${from.ssn}/${from.partyUuid} -> ${to.ssn}/${to.partyUuid})`);
     // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 
