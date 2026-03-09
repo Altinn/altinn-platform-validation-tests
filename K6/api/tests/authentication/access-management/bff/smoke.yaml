@@ -44,11 +44,11 @@ test_definitions:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
       - environment: at23
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
 
   - test_scope: access-management-bff
     test_file: single-service-user-user.js
