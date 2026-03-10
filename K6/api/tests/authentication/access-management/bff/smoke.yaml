@@ -8,6 +8,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: conf.json
       - environment: at23
         test_type:
           type: smoke
@@ -20,6 +21,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: conf.json
       - environment: at23
         test_type:
           type: smoke
@@ -32,6 +34,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: conf.json
       - environment: at23
         test_type:
           type: smoke
