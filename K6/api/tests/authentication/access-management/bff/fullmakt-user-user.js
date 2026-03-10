@@ -50,7 +50,7 @@ function getClients() {
  */
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -64,7 +64,6 @@ export default function (segmentedData) {
     // // Get from and to users for the test iteration
     const { from, to } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
     const accessPackage = getItemFromList(accessPackages, true);
-    console.log(`VU ${exec.vu.idInTest} - Testing: ${from.ssn}/${from.partyUuid} -> ${to.ssn}/${to.partyUuid} and access package: ${accessPackage.accessPackage} - ${accessPackage.id}`);
 
     // // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
