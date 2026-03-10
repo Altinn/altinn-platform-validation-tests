@@ -39,12 +39,12 @@ test_definitions:
 
   - test_scope: access-management-bff
     test_file: single-service-org-org.js
-    config_file: K6/api/tests/authentication/access-management/bff/conf.json
     contexts:
       - environment: yt01
         test_type:
           type: smoke
           enabled: true
+          config_file: conf.json
       - environment: at23
         test_type:
           type: smoke
@@ -52,12 +52,12 @@ test_definitions:
 
   - test_scope: access-management-bff
     test_file: single-service-user-user.js
-    config_file: K6/api/tests/authentication/access-management/bff/conf.json
     contexts:
       - environment: yt01
         test_type:
           type: smoke
           enabled: true
+          config_file: conf.json
       - environment: at23
         test_type:
           type: smoke

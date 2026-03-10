@@ -9,8 +9,8 @@
 
   generateK6ManifetsAction: std.format(
     'Altinn/altinn-platform/actions/generate-k6-manifests@%s',
-    '95b12546a386deaf2672aefc4f76ee4f4104df71'
-  ),  // v0.0.31
+    '6bf8cecf54785d0c46531d0595821aa347fbb678'
+  ),  // v0.0.33
 
   checkoutAction: std.format(
     'actions/checkout@%s',
