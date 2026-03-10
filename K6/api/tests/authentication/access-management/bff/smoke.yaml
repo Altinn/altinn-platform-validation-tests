@@ -43,12 +43,12 @@ test_definitions:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: false
+          enabled: true
           config_file: conf.json
       - environment: at23
         test_type:
           type: smoke
-          enabled: false
+          enabled: true
 
   - test_scope: access-management-bff
     test_file: single-service-user-user.js
