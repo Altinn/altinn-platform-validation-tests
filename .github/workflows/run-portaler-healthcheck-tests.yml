@@ -20,7 +20,7 @@ jobs:
           azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
       - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@6bf8cecf54785d0c46531d0595821aa347fbb678"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@9ab5906e1fca77e6175546fd5440aef1594717c6"
         with:
           config_file: "K6/api/tests/portaler/healthcheck.yaml"
       - name: "Apply k8s manifests"
