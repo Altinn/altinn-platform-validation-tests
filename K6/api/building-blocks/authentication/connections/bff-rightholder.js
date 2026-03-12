@@ -28,3 +28,21 @@ export function PostRightholder(bffConnectionsApiClient, from, to, lastName = nu
     return res.json();
 }
 
+/**
+ * Delete rightholder connection for a reportee
+ * @param {BffConnectionsApiClient} BffConnectionsApiClient A client to interact with the bff connections API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ */
+export function DeleteRightholder(bffConnectionsApiClient, queryParams, label = null) {
+    const res = bffConnectionsApiClient.DeleteRightholder(queryParams, label);
+    const succeed = check(res, {
+        ["DeleteRightholder - status code is 204"]: (r) => r.status === 204,
+    });
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+    };
+    return res.body;
+}
+

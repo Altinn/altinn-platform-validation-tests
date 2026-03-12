@@ -2,7 +2,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
 
-import { GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import { PostDelegations, DeleteDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
@@ -16,6 +16,7 @@ const getRightholdersWithoutToLabel = "3. Get rightholders";
 const tokenGeneratorLabel = "Personal Token Generator";
 const accessPackageLabel = "4. Access Package Delegation";
 const accessPackageDeleteLabel = "5. Access Package Delete Delegation";
+const deleteRightholderConnectionLabel = "6. Delete rightholder connection";
 const groupLabel = "0. Delegate accesspackage from user to user";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
@@ -25,7 +26,15 @@ let connectionsApiClient = undefined;
 let accessPackageApiClient = undefined;
 
 // get k6 options
-export const options = getOptions([postRightholderLabel, getRightholdersToLabel, getRightholdersWithoutToLabel, accessPackageLabel, accessPackageDeleteLabel, tokenGeneratorLabel]);
+export const options = getOptions([
+    postRightholderLabel,
+    getRightholdersToLabel,
+    getRightholdersWithoutToLabel,
+    accessPackageLabel,
+    accessPackageDeleteLabel,
+    deleteRightholderConnectionLabel,
+    tokenGeneratorLabel
+]);
 
 
 function getClients() {
@@ -75,6 +84,7 @@ export default function (segmentedData) {
         getRightHoldersWithoutTo(connectionsApiClient, from);
         PostDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageLabel);
         DeleteDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageDeleteLabel);
+        DeleteRightholder(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
     });
 }
 

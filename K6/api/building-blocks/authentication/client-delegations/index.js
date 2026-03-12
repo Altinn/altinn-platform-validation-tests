@@ -12,7 +12,6 @@ export {
     GetOrganizationData,
     GetOrganizationDataFromLookup,
     GetDelegatedRightsForResource,
-    DeleteRightholderConnection,
     GetRoleMeta,
     GetRightsMeta,
 } from "./access-management.js";

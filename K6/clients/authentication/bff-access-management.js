@@ -205,26 +205,6 @@ class BffAccessManagementApiClient {
         return http.get(url.toString(), params);
     }
 
-    /**
-     * Delete rightholder connection for a reportee
-     * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
-     * returns http.RefinedResponse
-     */
-    DeleteRightholderConnection(queryParams, label = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}/connection/reportee`);
-        const tags = label ? label : url.toString();
-        const params = {
-            tags: { name: tags },
-            headers: {
-                Authorization: "Bearer " + token,
-            },
-        };
-        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        return http.del(url.toString(), null, params);
-    }
-
     /** 
      * Get role metadata
      * @param {*} queryParams - object with query parameters to be appended to the url

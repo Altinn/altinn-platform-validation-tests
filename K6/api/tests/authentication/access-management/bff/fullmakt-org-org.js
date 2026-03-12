@@ -2,7 +2,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
 
-import { GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
 import { PostDelegations, DeleteDelegations, GetPermission } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffClientDelegationsApiClient } from "../../../../../clients/authentication/index.js";
@@ -39,6 +39,7 @@ const getAccessPackagesLabel3c = "3c. Get access packages for client delegation"
 const deleteClientDelegationLabel = "4a. Delete access package delegation from org to org";
 const deleteAgentsLabel = "4b. Delete agent delegation";
 const deleteAccessPackageLabel = "4c. Delete access package for client delegation";
+const deleteRightholderConnectionLabel = "4d. Delete rightholder connection between orgs";
 
 const tokenGeneratorLabel = "Personal Token Generator";
 
@@ -70,7 +71,8 @@ export const options = getOptions(
         getAccessPackagesLabel3c,
         deleteClientDelegationLabel,
         deleteAgentsLabel,
-        deleteAccessPackageLabel
+        deleteAccessPackageLabel,
+        deleteRightholderConnectionLabel
     ],
 );
 
@@ -159,6 +161,7 @@ export default function (segmentedData) {
         DeleteAgents(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, deleteAgentsLabel);
         tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
         DeleteDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackageLabel);
+        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
     });
 
 }

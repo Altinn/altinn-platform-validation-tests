@@ -2,7 +2,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
 
-import { GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import {
     GetIsHovedAdmin,
     GetRolePermissions,
@@ -14,7 +14,6 @@ import {
     PostSingleRight,
     GetDelegatedRightsForResource,
     RevokeSingleRight,
-    DeleteRightholderConnection,
     GetRoleMeta,
     GetRightsMeta,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
@@ -213,7 +212,7 @@ export default function (segmentedData) {
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getRolePermissionsLabel3d);
         GetRoleMeta(userApiClient, {}, getRoleMetaLabel3f);
         GetDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegationsLabel3g);
-        DeleteRightholderConnection(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
+        DeleteRightholder(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getRolePermissionsLabel3j);
         GetRoleMeta(userApiClient, {}, getRoleMetaLabel3k);
         GetDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegationsLabel3l);
