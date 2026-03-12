@@ -115,24 +115,6 @@ export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgN
 }
 
 /**
- * Delete rightholder connection for a reportee
- * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
- * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
- */
-export function DeleteRightholderConnection(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.DeleteRightholderConnection(queryParams, label);
-    const succeed = check(res, {
-        ["delete rightholder - status code is 204"]: (r) => r.status === 204,
-    });
-    if (!succeed) {
-        console.log(res.status);
-        console.log(res.body);
-    };
-    return res.body;
-}
-
-/**
  * Get role metadata
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request

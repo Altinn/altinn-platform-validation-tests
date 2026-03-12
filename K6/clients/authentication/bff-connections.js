@@ -95,6 +95,26 @@ class BffConnectionsApiClient {
         };
         return http.post(url.toString(), null, params);
     }
+
+    /**
+     * Delete rightholder connection for a reportee
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {*} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
+    DeleteRightholder(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/reportee`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.del(url.toString(), null, params);
+    }
 }
 
 export { BffConnectionsApiClient };
