@@ -30,7 +30,7 @@ export function PostRightholder(bffConnectionsApiClient, from, to, lastName = nu
 
 /**
  * Delete rightholder connection for a reportee
- * @param {BffConnectionsApiClient} BffConnectionsApiClient A client to interact with the user API
+ * @param {BffConnectionsApiClient} BffConnectionsApiClient A client to interact with the bff connections API
  * @param {} queryParams - queryParams for the request
  * @param {*} label - label for the request
  */
