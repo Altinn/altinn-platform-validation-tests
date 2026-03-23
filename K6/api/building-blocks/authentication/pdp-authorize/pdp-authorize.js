@@ -42,6 +42,26 @@ export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, res
 /**
  *
  * @param {PdpAuthorizeClient} pdpAuthorizeClient A client to interact with the Pdp Authorize API
+ * @param {*} tossn - social security number of the user performing the action
+ * @param {*} fromorg - organization number og organization giving access
+ * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+ * @param {*} instanceId - instance id of the resource instance
+ * @param {*} task - task for the instance, e.g. task_1
+ * @param {*} action - e.g. read, write, sign
+ * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
+ * @param {*} subscriptionKey - subscription key for the API
+ * @param {*} label - label for the request
+ */
+
+export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, label = null) {
+    const res = pdpAuthorizeClient.authorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, label);
+    checker(res, "PdpAuthorizeOrgInstance", expectedResponse);
+    return res.body;
+}
+
+/**
+ *
+ * @param {PdpAuthorizeClient} pdpAuthorizeClient A client to interact with the Pdp Authorize API
  * @param {*} ssn - social security number of the end user
  * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
  * @param {*} org - organization number
