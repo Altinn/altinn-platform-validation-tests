@@ -87,9 +87,12 @@ class PdpAuthorizeClient {
     /**
     * POST authorize enduser, check access to instance
     * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
-    * @param {string} ssn - social security number
+    * @param {string} tossn - social security number of the user being given access
+    * @param {string} fromssn - social security number of the end user giving access
     * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
     * @param {string} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+    * @param {string} task - e.g. SigningTask_Founders
+    * @param {string} action - e.g. read, write, sign
     * @param {string} subscriptionKey - subscription key for the API
     * @param {string} action - e.g. read, write, sign
     * @param {string|null} label - label for the request
@@ -139,8 +142,11 @@ class PdpAuthorizeClient {
 
     /**
      * get body for enduser authorization
-     * @param {*} ssn - social security number
+     * @param {*} tossn - social security number of the user being given access
+     * @param {*} fromssn - social security number of the end user giving access
      * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+     * @param {*} task - e.g. SigningTask_Founders
      * @param {*} action -  e.g. read, write, sign
      * @returns body for authorize enduser
      */
