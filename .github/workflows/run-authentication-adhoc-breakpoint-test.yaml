@@ -31,6 +31,7 @@ on:
           - yt01-dagl-single-resource-break
           - yt01-enduser-break
           - yt01-enduser-enduser-instances-break
+          - yt01-org-enduser-instances-break
           #- K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml
           - yt01-for-org-with-a2-break
           - yt01-for-system-user-break

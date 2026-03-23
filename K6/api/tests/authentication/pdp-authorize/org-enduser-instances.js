@@ -1,7 +1,7 @@
 /*
- * Test for PDP Authorize - Enduser to Enduser instance delegations
+ * Test for PDP Authorize - Organization to Enduser instance delegations
 */
-import { PdpAuthorizeUserInstance } from "../../../building-blocks/authentication/pdp-authorize/index.js";
+import { PdpAuthorizeOrgInstance } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getItemFromList, getOptions, getNumberOfVUs, segmentData, parseCsvData } from "../../../../helpers.js";
 import { randomIntBetween } from "../../../../common-imports.js";
 import { getClients } from "./common-functions.js";
@@ -25,7 +25,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/instance-delegations-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/pdp-instance-delegation-org/K6/testdata/authentication/instance-delegations-org-${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -41,10 +41,10 @@ export default function (testData) {
     // instance id format: urn:altinn:instance-id:{partyId}/{uuid}
     // only instance in yt so far is aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
     const instance = `urn:altinn:instance-id:${party.partyid}/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`;
-    PdpAuthorizeUserInstance(
+    PdpAuthorizeOrgInstance(
         pdpAuthorizeClient,
         party.tossn,
-        party.fromssn,
+        party.fromorgno,
         resource,
         instance,
         task,
