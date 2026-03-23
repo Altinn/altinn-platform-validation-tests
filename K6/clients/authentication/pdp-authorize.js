@@ -11,8 +11,8 @@ class PdpAuthorizeClient {
         tokenGenerator
     ) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
+        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+        */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
