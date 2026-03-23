@@ -3,6 +3,7 @@ import { getItemFromList, getOptions, getNumberOfVUs, segmentData, parseCsvData 
 import { randomIntBetween } from "../../../../common-imports.js";
 import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
+import http from "k6/http";
 
 // Labels for different actions
 const pdpAuthorizeLabel = "PDP Authorize";
@@ -47,7 +48,7 @@ export default function (testData) {
 
 /**
  * Function to randomly select action, label, and expected response.
- * 90% read and write with Permit, 10% sign with NotApplicable.
+ * 90% sign with Permit, 10% read with NotApplicable.
  * @return {Array} [action, label, expectedResponse]
  */
 function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
