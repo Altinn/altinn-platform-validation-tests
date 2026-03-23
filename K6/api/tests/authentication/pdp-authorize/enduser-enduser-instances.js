@@ -8,6 +8,8 @@ import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
 
+const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
+
 // Labels for different actions
 const pdpAuthorizeLabel = "PDP Authorize";
 const pdpAuthorizeLabelDenyPermit = "PDP Authorize Deny";
@@ -35,7 +37,7 @@ export function setup() {
  */
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], false);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
 
     // instance id format: urn:altinn:instance-id:{partyId}/{uuid}
