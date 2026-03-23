@@ -10,7 +10,7 @@ class PdpAuthorizeClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
+        /**
         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
         */
         this.tokenGenerator = tokenGenerator;
@@ -85,6 +85,39 @@ class PdpAuthorizeClient {
     }
 
     /**
+    * POST authorize enduser, check access to instance
+    * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
+    * @param {string} tossn - social security number of the user being given access
+    * @param {string} fromssn - social security number of the end user giving access
+    * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+    * @param {string} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+    * @param {string} task - e.g. SigningTask_Founders
+    * @param {string} action - e.g. read, write, sign
+    * @param {string} subscriptionKey - subscription key for the API
+    * @param {string} action - e.g. read, write, sign
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    authorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let nameTag = label ? label : url.toString();
+        const params = {
+            tags: { name: nameTag },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
+            },
+        };
+
+
+        const body = this.#getEnduserBodyWithInstance(tossn, fromssn, resourceId, instanceId, task, action);
+        const res = http.post(url.toString(), JSON.stringify(body), params);
+        return res;
+    }
+
+    /**
      * get body for enduser authorization
      * @param {*} ssn - social security number
      * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
@@ -108,17 +141,52 @@ class PdpAuthorizeClient {
     }
 
     /**
+     * get body for enduser authorization
+     * @param {*} tossn - social security number of the user being given access
+     * @param {*} fromssn - social security number of the end user giving access
+     * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+     * @param {*} task - e.g. SigningTask_Founders
+     * @param {*} action -  e.g. read, write, sign
+     * @returns body for authorize enduser
+     */
+    #getEnduserBodyWithInstance(tossn, fromssn, resourceId, instanceId, task, action) {
+        let body = this.#buildAuthorizeBody(resourceId, action);
+        body.Request.AccessSubject[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": tossn
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": fromssn,
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:resource:instance-id",
+                "Value": instanceId,
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:task",
+                "Value": task,
+            });
+        return body;
+    }
+
+    /**
      * get body for dagl authorization
      * @param {*} ssn - social security number
      * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
      * @param {*} orgno - organization number
      * @param {*} action -  e.g. read, write, sign
      * @returns body for authorize dagl
-     */  
+     */
     #getDaglBody(ssn, resourceId, orgno, action) {
         let body = this.#buildAuthorizeBody(resourceId, action);
         body.Request.AccessSubject[0].Attribute.push(
-            { 
+            {
                 "AttributeId": "urn:altinn:person:identifier-no",
                 "Value": ssn
             });
