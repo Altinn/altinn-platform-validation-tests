@@ -140,6 +140,77 @@ export function GetRightsMeta(bffAccessManagementApiClient, queryParams, label =
     return res.body;
 }
 
+// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
+/**
+ * Get delegated instances for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.GetDelegatedInstancesForResource(queryParams, label);
+    checker(res, "Get delegated instances for resource");
+    return res.body;
+}
+
+// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegationcheck?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
+/**
+ * Get delegation check for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ * */
+export function CheckDelegationForResource(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.CheckDelegationForResource(queryParams, label);
+    checker(res, "Get delegation check for resource");
+    return res.body;
+}
+
+// POST: https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances/rights?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
+/**
+ * Post delegated rights for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} body - body for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function DelegateRightsForResource(bffAccessManagementApiClient, queryParams, body, label = null) {
+    const res = bffAccessManagementApiClient.DelegateRightsForResource(queryParams, body, label);
+    checker(res, "Post delegated rights for resource", 200);
+    return res.body;
+}
+
+// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/consent/active/5f453a8c-86e2-4bef-bbd9-6235edf414f0
+/**
+ * Get active consent for a user
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = null) {
+    const res = bffAccessManagementApiClient.GetActiveConsentsForUser(uuid, label);
+    checker(res, "Get active consent");
+    return res.body;
+}
+
+// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/resources?resourceId=k6-instancedelegation-test
+/**
+ * Get resource by id
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetResourceById(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.GetResourceById(queryParams, label);
+    checker(res, "Get resource by id");
+    return res.body;
+}
+
 /**
  * Function to check common response properties
  * @param {} res - response object

@@ -14,4 +14,9 @@ export {
     GetDelegatedRightsForResource,
     GetRoleMeta,
     GetRightsMeta,
+    GetDelegatedInstancesForResource,
+    GetActiveConsent,
+    GetResourceById,
+    CheckDelegationForResource,
+    DelegateRightsForResource,
 } from "./access-management.js";
