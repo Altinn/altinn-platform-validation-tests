@@ -1,0 +1,24 @@
+name: "core - run k6 order-with-reminders breakpoint tests"
+on:
+  workflow_dispatch: {}
+run-name: "run breakpoint"
+permissions:
+  contents: "read"
+  id-token: "write"
+jobs:
+  k6-breakpoint:
+    environment: "test"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@6bf8cecf54785d0c46531d0595821aa347fbb678"
+        with:
+          config_file: "K6/api/tests/core/notifications/order-with-reminders/breakpoint.yaml"
