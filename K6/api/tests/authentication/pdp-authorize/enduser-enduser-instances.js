@@ -1,5 +1,5 @@
 /*
- * Test for PDP Authorize - Enduser to Enduser instance delagations
+ * Test for PDP Authorize - Enduser to Enduser instance delegations
 */
 import { PdpAuthorizeUserInstance } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getItemFromList, getOptions, getNumberOfVUs, segmentData, parseCsvData } from "../../../../helpers.js";
