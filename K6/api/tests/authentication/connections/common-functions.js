@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenGenerator } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 import { parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.js";
 
 let connectionsApiClient = undefined;
@@ -11,7 +11,7 @@ let tokenGenerator = undefined;
  *
  * @returns {Array} An array containing the ConnectionsApiClient and PersonalTokenGenerator instances
  */
-export function getClients(bff=false) {
+export function getClients(bff = false) {
     if (tokenGenerator == undefined) {
         const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);

@@ -6,7 +6,7 @@ import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
 import { PostDelegations, DeleteDelegations, GetPermission } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffClientDelegationsApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 import {
     GetAgents,
     PostAgents,
@@ -86,7 +86,7 @@ let clientDelegationsApiClient = undefined;
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
@@ -215,4 +215,3 @@ function getFromTo(list) {
     return { from, to, user };
 
 }
-

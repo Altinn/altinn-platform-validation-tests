@@ -1,6 +1,6 @@
 /**
  * Performance test for client administration in the authentication service.
- * This test simulates the actions browser actions for opening the client administrator, 
+ * This test simulates the actions browser actions for opening the client administrator,
  * including retrieving connections/rightholders, agents, clients, and delegation checks.
  * The test data is segmented for each VU to ensure that each virtual user operates on a unique set of data.
  * The test includes options for randomizing data selection and is designed to run in different environments based on the provided environment variables.
@@ -16,8 +16,9 @@ import { BffConnectionsApiClient, BffClientDelegationsApiClient, BffAccessPackag
 import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 import { getTokenOpts } from "./commons.js";
+
 
 // Labels for different actions
 const tokenGeneratorLabel = "Personal Token Generator";
@@ -51,7 +52,7 @@ export function setup() {
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
@@ -98,4 +99,3 @@ export default function (testData) {
         GetDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationCheckLabel);
     });
 }
-

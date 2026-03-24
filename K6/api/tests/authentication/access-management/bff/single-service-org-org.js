@@ -21,7 +21,7 @@ import {
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
 import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 import { getTokenOpts, resourcesForOrg as resources } from "./commons.js";
 
 // Labels for different actions
@@ -122,7 +122,7 @@ let userApiClient = undefined;
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();;
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
@@ -166,7 +166,7 @@ export default function (segmentedData) {
     // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 
-    // Part 1. 
+    // Part 1.
     // Add organization as user to another organization,
     group(addUserGroup, function () {
         PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
@@ -224,7 +224,7 @@ export default function (segmentedData) {
     });
 
     // Part 3.
-    // Revoke the delegated resource and verify that the delegation has been removed, 
+    // Revoke the delegated resource and verify that the delegation has been removed,
     // then clean up by deleting the rightholder connection between the organizations and verify deletion
     group(cleanupGroup, function () {
         RevokeSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
@@ -282,4 +282,3 @@ function getFromTo(list) {
     return { from, to };
 
 }
-
