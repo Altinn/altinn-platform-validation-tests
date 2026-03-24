@@ -4,6 +4,8 @@ import { group } from "k6";
 import { EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { CreateDialog } from "../../../../building-blocks/dialogporten/serviceowner/index.js";
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
+import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../../building-blocks/dialogporten/graphql/index.js";
 import {
     GetLookupPartyUser,
     GetIsCompanyProfileAdmin,
@@ -23,27 +25,39 @@ import { GetDelegationCheck } from "../../../../building-blocks/authentication/a
 import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
 import { getTokenOpts } from "./commons.js";
 
-const resources = [
-    //"testressurs-tilgangspakke-innbygger-loyve-1"
-    "k6-instancedelegation-test",
-    //"ttd-dialogporten-performance-test-01",
-    // "k6-test-innbygger-stotte-tilskudd",
-    // "k6-test-innbygger-avlastning-stotte",
-    // "k6-test-innbygger-design-varemerke",
-    // "k6-test-innbygger-kultur",
-    // "k6-test-innbygger-pleie-omsorg"
-];
+const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
+// serviceowner which will create a dialog.
+// The yt serviceOwner is different from the other environments.
 let serviceOwnerOrgNo = "991825827";
 if (__ENV.ENVIRONMENT === "yt01") {
     serviceOwnerOrgNo = "713431400";
 }
+
+// List of resources to test with. Use only one for now, 
+// make sure to have the resource created in the environment before running the test, and that the service owner owns it,
+// and that it is delegable (see the "delegable" property when getting the resource by id in the access management API).
+const resources = [
+    "k6-instancedelegation-test",
+];
+
+// All apiclient used in this test
 let serviceOwnerApiClient = undefined;
 let userApiClient = undefined;
 let accessManagementApiClient = undefined;
 let bffConnectionsApiClient = undefined;
 let bffAccessPackageApiClient = undefined;
+let graphqlClient = undefined;
+
+// personal tokengenerator.
 let personalTokenGenerator = undefined;
+
+// Use unique laber for each request to be able to check them separately in the results.
+// Number them to make sumary report easier to read and to be able to see the flow of the test in the results. 
+const group0Label = "Group 0 - Create dialog";
+const group1Label = "Group 1 - Open access management";
+const group2Label = "Group 2 - Delegate rights for resource and instance";
+const group3Label = "Group 3 - Check delegated dialog is visible for delegated user";
 
 const createDialog = "0. Create dialog";
 
@@ -75,7 +89,9 @@ const getConnectionsWithToAfter = "2f. Get connections for user with to paramete
 const getConnectionsLabelAfter = "2g. Get connections for user after delegation";
 const getRoleMetaLabel = "2h. Get role meta";
 
-const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
+const partThreeLabel = "3 - Check delegated dialog is visible for delegated user";
+const getDialogByIdLabel = "3a. Get dialog by id for delegated user";
+const getAllDialogsForPartyLabel = "3b. Get all dialogs for party for delegated user";
 
 export const options = getOptions([
     createDialog,
@@ -108,7 +124,12 @@ export const options = getOptions([
     getConnectionsWithToAfter,
     getConnectionsLabelAfter,
     getRoleMetaLabel,
-]);
+
+    partThreeLabel,
+    getDialogByIdLabel,
+    getAllDialogsForPartyLabel,
+], [group0Label, group1Label, group2Label, group3Label]
+);
 
 /**
 * Function to set up and return clients to interact with the Service Owner Dialog API
@@ -136,8 +157,9 @@ export function getClients() {
         accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         bffConnectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         bffAccessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        graphqlClient = new GraphqlClient(__ENV.BASE_URL, personalTokenGenerator);
     }
-    return [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, personalTokenGenerator];
+    return [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, personalTokenGenerator];
 }
 
 /**
@@ -145,19 +167,28 @@ export function getClients() {
  */
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/performance-instance-delegation/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
 
+/**
+ * Main function to test instance delegation from user to user. 
+ * The test will create a dialog, then delegate it to another user, 
+ * and check that the delegation is successful by calling the same endpoints as 
+ * the browser would do when navigating in the access management UI.
+ * Finally, check that the delegated dialog is visible for the delegated user 
+ * by using the dialogporten graphql API to get the dialog by id.
+ * (The groups are not used for anything else than to be able to see the flow of the test)
+ */
 export default function (data) {
-    const [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, tokenGenerator] = getClients();
+    const [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, tokenGenerator] = getClients();
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources);
-    console.log(`Creating dialog for ssn: ${from.ssn} and resource: ${resource}`);
     let dialogId = null;
 
-    group(`VU ${exec.vu.idInTest} - Create dialog for instance delegation`, function () {
+    // create a dialog to have an instance to delegate on, and to be able to test with a realistic instance in the access management API
+    group(group0Label, function () {
         const resp = CreateDialog(
             serviceOwnerApiClient,
             from.ssn,
@@ -172,10 +203,13 @@ export default function (data) {
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-    group('Open access management', function () {
+
+    // Open access management after creating the dialog.
+    // Call every bff endpoint that the browser uses when navigating from arbeidsflate/del og gi tilgang
+    group(group1Label, function () {
         GetLookupPartyUser(userApiClient, getLookupPartyUserLabel);
         GetIsCompanyProfileAdmin(userApiClient, { party: from.partyUuid }, getIsCompanyProfileAdminLabel);
-        GetReportee(userApiClient, "50508927", getReporteeLabel);
+        GetReportee(userApiClient, from.partyId, getReporteeLabel);
         GetProfile(userApiClient, getProfileLabel);
         GetIsAdmin(userApiClient, { party: from.partyUuid }, getIsAdminLabel);
         GetIsClientAdmin(userApiClient, { party: from.partyUuid }, getIsClientAdminLabel);
@@ -190,7 +224,10 @@ export default function (data) {
         GetDelegationCheck(bffAccessPackageApiClient, { party: from.partyUuid }, getDelegationCheckLabel);
         GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithTo);
     });
-    group('Delegate rights for resource and instance', function () {
+
+    // Delegate dialog to other user.
+    // Calls every bff as the browser would do
+    group(group2Label, function () {
         const resp = GetRightsMeta(accessManagementApiClient, { resource: resource }, getRightsMetaLabel);
         CheckDelegationForResource(accessManagementApiClient, { party: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabel);
         DelegateRightsForResource(accessManagementApiClient, { party: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getInstanceDelegationBody(JSON.parse(resp), to), delegateRightsForResourceLabel);
@@ -201,28 +238,33 @@ export default function (data) {
         GetRoleMeta(accessManagementApiClient, {}, getRoleMetaLabel);
     });
 
-    // åpne tilgangsstyring
+    group(group3Label, function () {
+        tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
+        GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.ssn, dialogId, getAllDialogsForPartyLabel);
+        GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdLabel);
+    });
+
+    // Check these two endpoints, which returns 404 now. Called when opening access management
     // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/sent?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
     // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/received?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
-
-
-    // Ny bruker
-
-    // Legg til bruker
-    // POST: https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances/rights?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
-    // {"to":{"personIdentifier":"27820698741","lastName":"lørdag"},"directRightKeys":["018e9eb719996e0a45054bf68a3fa14aebcfad4ec944194b08149a1d9eb5b5ec7f","010c7c883aa8fa5ce7824aa263a4c01be0bac14104e7eb3c4e72b8dca45d54b188","01c93af1e19e132972aa7b87cbf04a19fd9d66cd5e6ff10b61079fd3665396a536","01a7d7336a2b8929d61e352c05d2efb015309b231a6001952d2099c7e0ae775031"]}
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegationcheck?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=5f453a8c-86e2-4bef-bbd9-6235edf414f0&includeClientDelegations=true&includeAgentConnections=true
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=&includeClientDelegations=true&includeAgentConnections=true
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/meta        
-
-
-
-
-
 }
 
+function getDialogportenOpts(ssn) {
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "digdir:dialogporten");
+    tokenOpts.set("pid", ssn);
+    return tokenOpts;
+}
+
+/**
+ * Helper function to create the body for delegating rights for a resource and instance to another user, 
+ * based on the rights meta for the resource and the "to" user.
+ * @param { JSON } rightsMeta 
+ * @param {*} to 
+ * @returns 
+ */
 function getInstanceDelegationBody(rightsMeta, to) {
     return {
         to: {

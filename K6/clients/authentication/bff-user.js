@@ -26,7 +26,6 @@ class BffUserApiClient {
 
     }
 
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/party/user
     /**
      * Get lookup party user
      * @param {*} label - label for the request, if null the url will be used as label
@@ -42,7 +41,6 @@ class BffUserApiClient {
                 Authorization: "Bearer " + token,
             },
         };
-        console.log(`GetUserIdByLookup url: ${url.toString()}`);
         return http.get(url.toString(), params);
     }
 
@@ -63,7 +61,6 @@ class BffUserApiClient {
             },
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        console.log(`GetIsCompanyProfileAdmin url: ${url.toString()}`);
         return http.get(url.toString(), params);
     }
 
@@ -83,7 +80,6 @@ class BffUserApiClient {
                 Authorization: "Bearer " + token,
             },
         };
-        console.log(`GetReportee url: ${url.toString()}`);
         return http.get(url.toString(), params);
     }
 
@@ -105,7 +101,6 @@ class BffUserApiClient {
         return http.get(url.toString(), params);
     }
 
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isAdmin?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
     /**
      * Get is admin
      * @param {*} queryParams - object with query parameters to be appended to the url
@@ -126,7 +121,6 @@ class BffUserApiClient {
         return http.get(url.toString(), params);
     }
 
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isClientAdmin?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
     /**
      * Get is client admin
      * @param {*} queryParams - object with query parameters to be appended to the url
@@ -147,9 +141,6 @@ class BffUserApiClient {
         return http.get(url.toString(), params);
     }
 
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/sent?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/received?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/actorlist/old
     /**
      * Get actor list old
      * @param {*} label - label for the request, if null the url will be used as label
@@ -165,10 +156,9 @@ class BffUserApiClient {
                 Authorization: "Bearer " + token,
             },
         };
-        console.log(`GetActorListOld url: ${url.toString()}`);
         return http.get(url.toString(), params);
     }
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/actorlist/favorites
+
     /**
      * Get actor list favorites
      * @param {*} label - label for the request, if null the url will be used as label
@@ -187,8 +177,6 @@ class BffUserApiClient {
         return http.get(url.toString(), params);
     }
 
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/cdn/orgdata
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isInstanceAdmin?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
     /**
      * Get is instance admin
      * @param {*} queryParams - object with query parameters to be appended to the url

@@ -45,7 +45,7 @@ function uuidv7() {
     );
 }
 
-export function getDialogBody ( endUser, serviceResource, serviceOwner) {
+export function getDialogBody(endUser, serviceResource, serviceOwner) {
     return {
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
         "party": `urn:altinn:person:identifier-no:${endUser}`, // or urn:altinn:organization:identifier-no:<9 digits>
@@ -53,11 +53,11 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
         "expiresAt": "2053-11-25T06:37:54.2920190Z", // must be UTC
-        "visibleFrom": new Date(Date.now() + 5000).toISOString(), // must be UTC
+        //"visibleFrom": new Date(Date.now() + 5000).toISOString(), // must be UTC
         "process": "urn:test:process:1",
         "serviceOwnerContext": {
             "serviceOwnerLabels": [
-                { "value" : "dialogporten-performance-sentinel" } // Do not remove this, this is used to look for unpurged dialogs after a run
+                { "value": "dialogporten-performance-sentinel" } // Do not remove this, this is used to look for unpurged dialogs after a run
             ]
         },
         "searchTags": [
@@ -367,71 +367,71 @@ export function getDialogBody ( endUser, serviceResource, serviceOwner) {
     };
 };
 
-export function getDialogBodyWithoutTransmissionsAndActivities ( endUser, serviceResource) {
-    let body = getDialogBody( endUser, serviceResource);
+export function getDialogBodyWithoutTransmissionsAndActivities(endUser, serviceResource) {
+    let body = getDialogBody(endUser, serviceResource);
     body.transmissions = [];
     body.activities = [];
     return body;
 }
 
-export function getTransmissionBody (relatedTransmissionId = 0) {
-    let transmission = 
-        {
-            "id": uuidv7(),
-            "createdAt": new Date().toISOString(),
-            "authorizationAttribute": "element1",
-            "extendedType": "string",
-            "type": "Information",
-            "sender": {
-                "actorType": "serviceOwner"
+export function getTransmissionBody(relatedTransmissionId = 0) {
+    let transmission =
+    {
+        "id": uuidv7(),
+        "createdAt": new Date().toISOString(),
+        "authorizationAttribute": "element1",
+        "extendedType": "string",
+        "type": "Information",
+        "sender": {
+            "actorType": "serviceOwner"
+        },
+        "content": {
+            "title": {
+                "value": [
+                    {
+                        "value": "Forsendelsestittel",
+                        "languageCode": "nb"
+                    },
+                    {
+                        "languageCode": "en",
+                        "value": "Transmission title"
+                    }
+                ],
             },
-            "content": {
-                "title": {
-                    "value": [
-                        {
-                            "value": "Forsendelsestittel",
-                            "languageCode": "nb"
-                        },
-                        {
-                            "languageCode": "en",
-                            "value": "Transmission title"
-                        }
-                    ],
-                },
-                "summary": {
-                    "value": [
-                        {
-                            "languageCode": "nb",
-                            "value": "Forsendelse oppsummering"
-                        },
-                        {
-                            "languageCode": "en",
-                            "value": "Transmission summary"
-                        }
-                    ],
-                },
+            "summary": {
+                "value": [
+                    {
+                        "languageCode": "nb",
+                        "value": "Forsendelse oppsummering"
+                    },
+                    {
+                        "languageCode": "en",
+                        "value": "Transmission summary"
+                    }
+                ],
             },
-            "attachments": [
-                {
-                    "displayName": [
-                        {
-                            "languageCode": "nb",
-                            "value": "Forsendelse visningsnavn"
-                        },
-                        {
-                            "languageCode": "en",
-                            "value": "Transmission attachment display name"
-                        }
-                    ],
-                    "urls": [
-                        {
-                            "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
-                            "consumerType": "Gui"
-                        }
-                    ]
-                }
-            ]
-        };
+        },
+        "attachments": [
+            {
+                "displayName": [
+                    {
+                        "languageCode": "nb",
+                        "value": "Forsendelse visningsnavn"
+                    },
+                    {
+                        "languageCode": "en",
+                        "value": "Transmission attachment display name"
+                    }
+                ],
+                "urls": [
+                    {
+                        "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                        "consumerType": "Gui"
+                    }
+                ]
+            }
+        ]
+    };
     if (relatedTransmissionId != 0) {
         transmission.relatedTransmissionId = relatedTransmissionId;
     }
