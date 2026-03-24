@@ -4,7 +4,7 @@ import { parseCsvData } from "../../../../helpers.js";
 import http from "k6/http";
 
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 
 import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
 
@@ -21,7 +21,7 @@ function getLookupClient() {
     return new ConsentApiClient(
         __ENV.BASE_URL,
         new EnterpriseTokenGenerator(
-            new Map([
+            new EnterpriseTokenGeneratorOptions([
                 ["env", env],
                 ["ttl", 3600],
                 ["scopes", "altinn:maskinporten/consent.read"],

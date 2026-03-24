@@ -3,7 +3,11 @@ import http from "k6/http";
 import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.js";
 import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
+import { randomIntBetween } from "../../../../common-imports.js";
+import {
+    EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+
 
 // Labels for different actions
 const getMaskinportenSchemaLabel1 = "1. Get maskinportenSchema supplierOrg as query param";
@@ -84,7 +88,7 @@ export default function (data) {
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:maskinporten/delegations.admin");

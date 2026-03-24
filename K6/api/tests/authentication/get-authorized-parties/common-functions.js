@@ -1,5 +1,5 @@
 import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 import { parseCsvData } from "../../../../helpers.js";
 import http from "k6/http";
 
@@ -12,7 +12,7 @@ let authorizedPartiesClient = undefined;
  */
 export function getClients() {
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");

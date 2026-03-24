@@ -1,6 +1,6 @@
 import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authentication/client-delegations.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 
 // Labels for different actions
@@ -9,8 +9,8 @@ const tokenGeneratorLabel = "Personal Token Generator";
 const environment = __ENV.ENVIRONMENT || "yt01";
 
 // Testdata - fetched from yt01, some systemusers with lots of clients, and some regular users with fewer clients
-// Note that the testdata is not deterministic, and the number of clients for each user may change over time. 
-// Add for other environments as needed, but be aware that the testdata may change over time, 
+// Note that the testdata is not deterministic, and the number of clients for each user may change over time.
+// Add for other environments as needed, but be aware that the testdata may change over time,
 // and the test may need to be updated accordingly.
 const endUsersByEnvironment = {
     yt01: [
@@ -39,7 +39,7 @@ export const options = getOptions(endUserLabels);
  */
 export default function () {
     if (tokenGenerator === undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();;
         tokenOpts.set("env", environment);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:portal/enduser");
@@ -57,7 +57,7 @@ export default function () {
 }
 
 function getTokenOpts(uuid) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PersonalTokenGeneratorOptions();;
     tokenOpts.set("env", environment);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "altinn:portal/enduser");
