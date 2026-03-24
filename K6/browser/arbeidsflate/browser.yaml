@@ -1,4 +1,4 @@
-namespace: authentication
+namespace: dialogporten
 test_definitions:
   - test_file: K6/browser/arbeidsflate/open-arbeidsflate.js
     env_file: K6/browser/common.env
