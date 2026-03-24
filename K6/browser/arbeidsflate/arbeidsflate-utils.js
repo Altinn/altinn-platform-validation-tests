@@ -1,5 +1,5 @@
-import http from 'k6/http';
-import { PersonalTokenGenerator } from '../../common-imports.js';
+import http from "k6/http";
+import { PersonalTokenGenerator } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
@@ -11,14 +11,14 @@ const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
 export const afUrl = (() => {
     switch (environment) {
-        case 'yt01':
-            return 'https://af.yt01.altinn.cloud/';
-        case 'tt02':
-            return 'https://af.tt02.altinn.no/';
-        case 'at23':
-            return 'https://af.at23.altinn.cloud/';
+        case "yt01":
+            return "https://af.yt01.altinn.cloud/";
+        case "tt02":
+            return "https://af.tt02.altinn.no/";
+        case "at23":
+            return "https://af.at23.altinn.cloud/";
         default:
-            return 'https://af.yt01.altinn.cloud/';
+            return "https://af.yt01.altinn.cloud/";
     }
 })();
 
@@ -31,17 +31,17 @@ export const afUrl = (() => {
 export function getCookie(user) {
     const token = getToken(user.pid, user.userId, user.partyId, user.partyUuid);
     const cookie = {
-        name: 'arbeidsflate',
+        name: "arbeidsflate",
         value: getSessionId(token),
         domain: afUrl
-            .replace(/https?:\/\//, '')
-            .replace(/http?:\/\//, '')
-            .replace(/\/$/, ''), // Remove protocol and trailing slash
-        path: '/',
+            .replace(/https?:\/\//, "")
+            .replace(/http?:\/\//, "")
+            .replace(/\/$/, ""), // Remove protocol and trailing slash
+        path: "/",
         httpOnly: true,
         secure: false,
-        sameSite: '',
-        url: '',
+        sameSite: "",
+        url: "",
     };
     return cookie;
 }
@@ -78,9 +78,9 @@ function getSessionId(token) {
     });
     const params = {
         headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'User-Agent': 'systembruker-k6',
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": "systembruker-k6",
         },
     };
     const resp = http.post(url.toString(), body, params);
@@ -88,6 +88,6 @@ function getSessionId(token) {
         console.error(resp.status_text);
         return null; // Handle error appropriately
     }
-    const sessionId = resp.json().cookie.split('=')[1]; // Assuming the session ID is the first part of the response body
+    const sessionId = resp.json().cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
     return sessionId;
 }

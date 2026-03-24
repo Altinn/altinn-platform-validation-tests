@@ -4,10 +4,10 @@
  * The five worst performing users in the AT23, YT01 and TT02 environments are tested.
  */
 
-import { browser } from 'k6/browser';
-import { check } from 'k6';
-import { Trend } from 'k6/metrics';
-import { getCookie, afUrl, environment } from './arbeidsflate-utils.js';
+import { browser } from "k6/browser";
+import { check } from "k6";
+import { Trend } from "k6/metrics";
+import { getCookie, afUrl, environment } from "./arbeidsflate-utils.js";
 
 const endUsersByEnvironment = {
     yt01: [
@@ -61,12 +61,12 @@ export function setup() {
 export const options = {
     scenarios: {
         ui: {
-            executor: 'shared-iterations',
+            executor: "shared-iterations",
             vus: 1,
             iterations: 15,
             options: {
                 browser: {
-                    type: 'chromium',
+                    type: "chromium",
                 },
             },
         },
@@ -88,7 +88,7 @@ export default async function (data) {
     try {
         await context.addCookies([testData.cookie]);
         startTime = new Date();
-        await page.goto(afUrl + '?mock=true'); // The mock is to avoid a popup telling about the new arbeidsflate
+        await page.goto(afUrl + "?mock=true"); // The mock is to avoid a popup telling about the new arbeidsflate
 
         // Check if we are on the right page
         const currentUrl = page.url();
@@ -116,11 +116,11 @@ export default async function (data) {
  * @return {Promise<void>} - A promise that resolves when the page is loaded.
  */
 export async function waitForPageLoaded(page, empties = 1) {
-    let busyItems = await page.$$('li [aria-busy="true"]');
+    let busyItems = await page.$$("li [aria-busy=\"true\"]");
     let noEmptys = 0;
     while (busyItems.length > 0 || noEmptys < empties) {
         await page.waitForTimeout(10); // Wait for 10 ms before checking again
-        busyItems = await page.$$('li [aria-busy="true"]');
+        busyItems = await page.$$("li [aria-busy=\"true\"]");
         if (busyItems.length === 0) {
             noEmptys++;
         }
