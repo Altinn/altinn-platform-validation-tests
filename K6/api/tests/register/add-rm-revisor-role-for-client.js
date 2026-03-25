@@ -1,5 +1,5 @@
 import { check, group } from "k6";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator } from "../../../common-imports.js";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import {
     AddRevisorRoleToErForOrg,
@@ -10,7 +10,7 @@ import { retry } from "../../../helpers.js";
 
 export default function () {
     group("Remove org from ER and make sure it's reflected in Register", () => {
-        const options = new PersonalTokenGeneratorOptions();
+        const options = new Map();
         options.set("env", __ENV.ENVIRONMENT);
         options.set("ttl", 3600);
         options.set("scopes", "altinn:register/partylookup.admin");
@@ -52,7 +52,7 @@ export default function () {
 
         check(res.body, {
             "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED":
-                (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
+        (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
 
         let success = retry(
@@ -64,7 +64,8 @@ export default function () {
                 );
                 const stillPresent = orgs.includes(targetOrg);
                 console.log(
-                    `[remove role] Org ${targetOrg} is ${stillPresent ? "still" : "no longer"
+                    `[remove role] Org ${targetOrg} is ${
+                        stillPresent ? "still" : "no longer"
                     } in the list (${orgs.length})`,
                 );
                 return !stillPresent;
@@ -93,7 +94,7 @@ export default function () {
             "AddRevisorRoleToErForOrg - body is not empty": (r) =>
                 r.body && r.body.length > 0,
             "AddRevisorRoleToErForOrg - response contains status OK_ER_DATA_PROCESSED":
-                (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
+        (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
         if (!outcome) {
             console.error(res.status);
@@ -109,7 +110,8 @@ export default function () {
                 );
                 const nowPresent = orgs.includes(targetOrg);
                 console.log(
-                    `[add role] Org ${targetOrg} is ${nowPresent ? "now" : "still not"
+                    `[add role] Org ${targetOrg} is ${
+                        nowPresent ? "now" : "still not"
                     } in the list (${orgs.length})`,
                 );
                 return nowPresent;

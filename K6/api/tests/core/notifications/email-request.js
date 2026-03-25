@@ -1,11 +1,11 @@
 import { check, fail } from "k6";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { OrdersApiClient } from "../../../../clients/core/notifications/index.js";
 import { PostEmailNotificationOrder } from "../../../building-blocks/core/notifications/orders/index.js";
 import { uuidv4 } from "../../../../common-imports.js";
 
 export default function () {
-    const options = new EnterpriseTokenGeneratorOptions();
+    const options = new Map();
     options.set("env", __ENV.ENVIRONMENT);
     options.set("ttl", 3600);
     options.set("scopes", "altinn:serviceowner/notifications.create");

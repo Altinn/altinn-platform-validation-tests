@@ -1,5 +1,5 @@
 import { check, group, fail } from "k6";
-import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PlatformTokenGenerator } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
 
@@ -18,7 +18,7 @@ function tryParseJson(str) {
 }
 
 export default function () {
-    const tokenOpts = new PlatformTokenGeneratorOptions();
+    const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
 

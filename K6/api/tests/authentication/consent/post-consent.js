@@ -1,12 +1,10 @@
 import http from "k6/http";
-import { uuidv4, randomItem, } from "../../../../common-imports.js";
 import {
     PersonalTokenGenerator,
-    PersonalTokenGeneratorOptions,
     EnterpriseTokenGenerator,
-    EnterpriseTokenGeneratorOptions,
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
-
+    uuidv4,
+    randomItem,
+} from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import {
@@ -43,13 +41,13 @@ let consentLookupApiClient = undefined;
 function getClients(orgNo, userId, partyUuid) {
     if (
         consenterApiClient == undefined ||
-        consenteeApiClient == undefined ||
-        consentLookupApiClient == undefined
+    consenteeApiClient == undefined ||
+    consentLookupApiClient == undefined
     ) {
         console.log("Configuring Clients");
         console.log(`orgNo: ${orgNo} -- userId: ${userId}`);
         // consentee
-        const optionsConsentee = new EnterpriseTokenGeneratorOptions();
+        const optionsConsentee = new Map();
         optionsConsentee.set("env", __ENV.ENVIRONMENT);
         optionsConsentee.set("ttl", 3600);
         optionsConsentee.set("scopes", "altinn:consentrequests.write");
@@ -64,7 +62,7 @@ function getClients(orgNo, userId, partyUuid) {
         );
 
         // consenter
-        const optionsConsenter = new PersonalTokenGeneratorOptions();
+        const optionsConsenter = new Map();
         optionsConsenter.set("env", __ENV.ENVIRONMENT);
         optionsConsenter.set("ttl", 3600);
         optionsConsenter.set("scopes", "altinn:portal/enduser");
@@ -81,7 +79,7 @@ function getClients(orgNo, userId, partyUuid) {
 
         // consent lookup (Maskinporten uses this endpoint to lookup consent before fetching the token)
         // Requires an org token with scope: altinn:maskinporten/consent.read
-        const optionsConsentLookup = new EnterpriseTokenGeneratorOptions();
+        const optionsConsentLookup = new Map();
         optionsConsentLookup.set("env", __ENV.ENVIRONMENT);
         optionsConsentLookup.set("ttl", 3600);
         optionsConsentLookup.set("scopes", "altinn:maskinporten/consent.read");

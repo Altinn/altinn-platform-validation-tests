@@ -1,11 +1,7 @@
 import { check, group } from "k6";
 import http from "k6/http";
 import { vu } from "k6/execution";
-import { uuidv4 } from "../../../../common-imports.js";
-import {
-    EnterpriseTokenGenerator, PersonalTokenGenerator, PersonalTokenGeneratorOptions, EnterpriseTokenGeneratorOptions
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
-
+import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
@@ -20,7 +16,7 @@ export default function (data) {
 
     const systemOwner = "713431400";
 
-    const options = new EnterpriseTokenGeneratorOptions();
+    const options = new Map();
     options.set("env", __ENV.ENVIRONMENT);
     options.set("ttl", 3600);
     options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize");
@@ -98,7 +94,7 @@ export default function (data) {
 
         const requestId = JSON.parse(res).id;
 
-        const options = new PersonalTokenGeneratorOptions();
+        const options = new Map();
         options.set("env", __ENV.ENVIRONMENT);
         options.set("ttl", 3600);
         options.set("scopes", "altinn:portal/enduser");

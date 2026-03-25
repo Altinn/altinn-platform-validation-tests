@@ -1,10 +1,9 @@
 
 import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGeneratorOptions, EnterpriseTokenGenerator } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { endUsers, endUserLabels } from "./end-users.js";
-
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 
@@ -34,7 +33,7 @@ let authorizedPartiesClient = undefined;
  */
 function getClients() {
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
+        const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");
@@ -54,7 +53,7 @@ export default function () {
         includeAccessPackages: "true",
         orgCode: getItemFromList(orgCodes, randomizeOrgCodes),
     };
-
+    
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",

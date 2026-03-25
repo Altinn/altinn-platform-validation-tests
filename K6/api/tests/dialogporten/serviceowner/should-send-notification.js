@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
@@ -27,7 +27,7 @@ let serviceOwnerApiClient = undefined;
  */
 export function getClients() {
     if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
+        const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:system/notifications.condition.check");

@@ -1,9 +1,6 @@
 import { browser } from "k6/browser";
 import { check, fail } from "k6";
-import { expect } from "../../common-imports.js";
-import {
-    EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { expect, EnterpriseTokenGenerator } from "../../common-imports.js";
 import { LoginPage, ClientDelegationPage } from "../pages/index.js";
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/authentication/index.js";
 import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";
@@ -109,7 +106,7 @@ export default async function () {
 
         const name = `k6browser-e2e-${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const options = new EnterpriseTokenGeneratorOptions();
+        const options = new Map();
         options.set("env", __ENV.ENVIRONMENT);
         options.set("ttl", 3600);
         options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize altinn:resourceregistry/resource.admin altinn:register/partylookup.admin");

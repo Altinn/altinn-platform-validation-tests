@@ -1,8 +1,8 @@
 import http from "k6/http";
 import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js";
-import { randomIntBetween } from "../../../../common-imports.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { segmentData, parseCsvData, getNumberOfVUs } from "../../../../helpers.js";
+
 
 let pdpAuthorizeClient = undefined;
 let tokenGenerator = undefined;
@@ -14,10 +14,10 @@ let tokenGenerator = undefined;
  */
 export function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
+        const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
-
+        
         // this scope means that the token can be used for all users,
         // no need to generate a token for each user in the test data
         tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
@@ -35,7 +35,7 @@ export function getClients() {
  * @returns map of token options
  */
 export function getTokenOpts(ssn) {
-    const tokenOpts = new PersonalTokenGeneratorOptions();
+    const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
