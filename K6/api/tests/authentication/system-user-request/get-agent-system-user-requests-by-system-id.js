@@ -6,7 +6,7 @@ import {
     extractNextUrl,
     followNextUrlPagination,
 } from "../../../building-blocks/common/follow-next-url-pagination.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 
 export default function () {
     group(
@@ -15,7 +15,7 @@ export default function () {
             const systemOwnerOrgNo = "312605031";
             const systemId = "312605031_Virksomhetsbruker";
 
-            const vendorTokenOptions = new EnterpriseTokenGeneratorOptions();
+            const vendorTokenOptions = new Map();
             vendorTokenOptions.set("env", __ENV.ENVIRONMENT);
             vendorTokenOptions.set("ttl", 3600);
             vendorTokenOptions.set(
@@ -73,7 +73,7 @@ export default function () {
                     );
                     check(additionalPages, {
                         "Agent system user requests: At least one additional page is returned.":
-                            (p) => p > 0,
+              (p) => p > 0,
                     });
                 },
             );

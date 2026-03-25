@@ -1,8 +1,5 @@
 import { check, group } from "k6";
-import { uuidv4 } from "../../../../common-imports.js";
-import {
-    MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { uuidv4, MaskinportenAccessTokenGenerator } from "../../../../common-imports.js";
 import {
     CreateNewSystem,
     GetSystems,
@@ -48,7 +45,7 @@ function defaultObject() {
 }
 
 export default function () {
-    const options = new MaskinportenTokenGeneratorOptions();
+    const options = new Map();
     options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemregister.write altinn:authentication/systemuser.request.read altinn:authentication/systemregister.admin");
 
     const tokenGenerator
