@@ -1,7 +1,7 @@
 namespace: core
-base_dir: K6/api/tests/core/notifications/order-with-reminders/
 test_definitions:
-  - test_file: for-email-addr.js
+  - test_file: K6/api/tests/core/notifications/order-with-reminders/for-email-addr.js
+    env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: yt01
         test_type:
@@ -14,7 +14,8 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: for-mobile-number.js
+  - test_file: K6/api/tests/core/notifications/order-with-reminders/for-mobile-number.js
+    env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: yt01
         test_type:
@@ -27,7 +28,8 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: for-orgs.js
+  - test_file: K6/api/tests/core/notifications/order-with-reminders/for-orgs.js
+    env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: yt01
         test_type:
@@ -42,7 +44,8 @@ test_definitions:
           secrets:
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
 
-  - test_file: for-persons.js
+  - test_file: K6/api/tests/core/notifications/order-with-reminders/for-persons.js
+    env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: yt01
         test_type:
