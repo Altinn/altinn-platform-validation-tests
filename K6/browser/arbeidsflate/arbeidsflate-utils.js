@@ -3,11 +3,7 @@ import { PersonalTokenGenerator } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
-const tokenOpts = new Map();
-tokenOpts.set("env", environment);
-tokenOpts.set("ttl", 3600);
-tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser");
-const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+let tokenGenerator = undefined
 
 export const afUrl = (() => {
     switch (environment) {
@@ -60,6 +56,10 @@ function getToken(pid, userId, partyId, partyUuid) {
     tokenOpts.set("userId", userId);
     tokenOpts.set("partyId", partyId);
     tokenOpts.set("partyuuid", partyUuid);
+
+    if (tokenGenerator == undefined) {
+        tokenGenerator = new PersonalTokenGenerator()
+    }
     tokenGenerator.setTokenGeneratorOptions(tokenOpts);
 
     const token = tokenGenerator.getToken();
