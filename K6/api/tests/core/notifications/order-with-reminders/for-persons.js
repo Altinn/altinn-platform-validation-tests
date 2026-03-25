@@ -2,7 +2,7 @@ import { check } from "k6";
 import { uuidv4 } from "../../../../../common-imports.js";
 import {
     EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
 import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 

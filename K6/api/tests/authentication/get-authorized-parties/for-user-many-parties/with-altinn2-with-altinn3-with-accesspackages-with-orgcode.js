@@ -1,7 +1,7 @@
 
 import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGeneratorOptions, EnterpriseTokenGenerator } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGeneratorOptions, EnterpriseTokenGenerator } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { endUsers, endUserLabels } from "./end-users.js";
 

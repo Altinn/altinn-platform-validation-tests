@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { check, group } from "k6";
-import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
 import { getItemFromList, getOptions, parseCsvData } from "../../../helpers.js";

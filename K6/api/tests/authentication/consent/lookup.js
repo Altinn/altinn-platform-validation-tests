@@ -4,7 +4,7 @@ import { parseCsvData } from "../../../../helpers.js";
 import http from "k6/http";
 
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 
 import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
 

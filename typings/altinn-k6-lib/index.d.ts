@@ -1,4 +1,4 @@
-declare module 'https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js' {
+declare module 'https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js' {
     export type TokenOptionValue = string | number | boolean;
 
     /**

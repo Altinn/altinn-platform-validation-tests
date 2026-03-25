@@ -20,7 +20,7 @@ import {
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
 import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { getTokenOpts, resourcesForUsers as resources } from "./commons.js";
 
 // Labels for different actions

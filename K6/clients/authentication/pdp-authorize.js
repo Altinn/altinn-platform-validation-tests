@@ -67,6 +67,7 @@ class PdpAuthorizeClient {
     */
     authorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, label = null) {
         const token = this.tokenGenerator.getToken();
+        console.log(token);
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : url.toString();
         const params = {

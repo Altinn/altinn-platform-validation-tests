@@ -6,7 +6,7 @@ import {
     extractNextUrl,
     followNextUrlPagination,
 } from "../../../building-blocks/common/follow-next-url-pagination.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 
 /**
  * Test: System User Requests By SystemId (vendor) + pagination.

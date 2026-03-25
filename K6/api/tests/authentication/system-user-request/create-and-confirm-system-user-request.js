@@ -4,7 +4,7 @@ import { vu } from "k6/execution";
 import { uuidv4 } from "../../../../common-imports.js";
 import {
     EnterpriseTokenGenerator, PersonalTokenGenerator, PersonalTokenGeneratorOptions, EnterpriseTokenGeneratorOptions
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";

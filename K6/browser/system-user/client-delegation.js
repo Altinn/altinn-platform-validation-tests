@@ -3,7 +3,7 @@ import { check, fail } from "k6";
 import { expect } from "../../common-imports.js";
 import {
     EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { LoginPage, ClientDelegationPage } from "../pages/index.js";
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/authentication/index.js";
 import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";

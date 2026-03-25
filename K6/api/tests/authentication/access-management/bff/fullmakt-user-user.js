@@ -4,7 +4,7 @@ import { group } from "k6";
 
 import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import { PostDelegations, DeleteDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
 import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
 import { accessPackagesForUsers as accessPackages, getTokenOpts } from "./commons.js";

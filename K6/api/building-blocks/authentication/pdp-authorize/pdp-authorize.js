@@ -83,6 +83,7 @@ export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, actio
  * @param {*} method - method name for logging
  */
 function checker(res, method, expectedResponse) {
+    console.log(res)
     const succeed = check(res, {
         [`${method} - status code is 200`]: (r) => r.status === 200,
         [`${method} - status text is 200 OK`]: (r) => r.status_text == "200 OK",

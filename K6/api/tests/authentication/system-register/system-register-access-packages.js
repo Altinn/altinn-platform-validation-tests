@@ -1,6 +1,6 @@
 import { check, group } from "k6";
 import { uuidv4 } from "../../../../common-imports.js";
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { CreateNewSystem, DeleteSystem, UpdateVendorAccessPackages } from "../../../building-blocks/authentication/system-register/index.js";
 

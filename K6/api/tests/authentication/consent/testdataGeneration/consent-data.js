@@ -9,7 +9,7 @@ import { ConsentApiClient } from "../../../../../clients/authentication/index.js
 import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 
 import {
     RequestConsent,

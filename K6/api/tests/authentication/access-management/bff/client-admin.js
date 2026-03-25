@@ -16,7 +16,7 @@ import { BffConnectionsApiClient, BffClientDelegationsApiClient, BffAccessPackag
 import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { getTokenOpts } from "./commons.js";
 
 

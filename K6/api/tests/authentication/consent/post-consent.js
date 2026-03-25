@@ -5,7 +5,7 @@ import {
     PersonalTokenGeneratorOptions,
     EnterpriseTokenGenerator,
     EnterpriseTokenGeneratorOptions,
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 
 import { parseCsvData } from "../../../../helpers.js";
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";

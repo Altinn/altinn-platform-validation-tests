@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.js";
 
 let connectionsApiClient = undefined;

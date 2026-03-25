@@ -1,5 +1,5 @@
 import { check, group } from "k6";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.9/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.10/index.js";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import {
     AddRevisorRoleToErForOrg,
