@@ -1,0 +1,58 @@
+namespace: core
+base_dir: K6/api/tests/core/notifications/order-with-reminders/
+test_definitions:
+  - test_file: for-email-addr.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: for-mobile-number.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: for-orgs.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
+
+  - test_file: for-persons.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - email-order # Added the ninRecipient, but is this even a secret?

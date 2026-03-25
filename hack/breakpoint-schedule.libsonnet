@@ -50,6 +50,11 @@
     },
 
   },
+  core: {
+    'K6/api/tests/core/notifications/order-with-reminders/breakpoint.yaml': {
+
+    },
+  },
   dialogporten: {
     'K6/api/tests/dialogporten/serviceowner/breakpoint.yaml': {
 
