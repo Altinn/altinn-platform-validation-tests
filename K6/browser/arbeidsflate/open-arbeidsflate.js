@@ -9,7 +9,7 @@ import { check } from "k6";
 import { Trend } from "k6/metrics";
 import { getCookie, afUrl, environment } from "./arbeidsflate-utils.js";
 
-const pageLoadingTime = new Trend('page_loading_time', true);
+const pageLoadingTime = new Trend("page_loading_time", true);
 
 const endUsersByEnvironment = {
     yt01: [
