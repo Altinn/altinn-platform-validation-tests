@@ -3,7 +3,7 @@ import { PersonalTokenGenerator } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
-let tokenGenerator = undefined
+let tokenGenerator = undefined;
 
 export const afUrl = (() => {
     switch (environment) {
@@ -58,7 +58,7 @@ function getToken(pid, userId, partyId, partyUuid) {
     tokenOpts.set("partyuuid", partyUuid);
 
     if (tokenGenerator == undefined) {
-        tokenGenerator = new PersonalTokenGenerator()
+        tokenGenerator = new PersonalTokenGenerator();
     }
     tokenGenerator.setTokenGeneratorOptions(tokenOpts);
 
