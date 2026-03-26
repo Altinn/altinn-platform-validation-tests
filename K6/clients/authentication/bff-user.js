@@ -28,7 +28,7 @@ class BffUserApiClient {
 
     /**
      * Get lookup party user
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetLookupPartUser(label = null) {
@@ -46,8 +46,8 @@ class BffUserApiClient {
 
     /**
     * Is company profile admin
-    * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} label - label for the request, if null the url will be used as label
+    * @param {object} queryParams - object with query parameters to be appended to the url
+    * @param {string} label - label for the request, if null the url will be used as label
     * @returns http.RefinedResponse
     */
     GetIsCompanyProfileAdmin(queryParams, label = null) {
@@ -66,8 +66,8 @@ class BffUserApiClient {
 
     /**
      * Get reportees for a user
-     * @param {*} userId - id of the user to get reportees for
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {string} userId - id of the user to get reportees for
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetReportee(userId, label = null) {
@@ -85,7 +85,7 @@ class BffUserApiClient {
 
     /**
      * Get profile
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {string} label - label for the request, if null the url will be used as label
      * @returns http.RefinedResponse 
      */
     GetProfile(label = null) {
@@ -103,8 +103,8 @@ class BffUserApiClient {
 
     /**
      * Get is admin
-     * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse 
      */
     GetIsAdmin(queryParams, label = null) {
@@ -123,8 +123,8 @@ class BffUserApiClient {
 
     /**
      * Get is client admin
-     * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
     GetIsClientAdmin(queryParams, label = null) {
@@ -143,7 +143,7 @@ class BffUserApiClient {
 
     /**
      * Get actor list old
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetActorListOld(label = null) {
@@ -161,7 +161,7 @@ class BffUserApiClient {
 
     /**
      * Get actor list favorites
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
     GetActorListFavorites(label = null) {
@@ -179,8 +179,8 @@ class BffUserApiClient {
 
     /**
      * Get is instance admin
-     * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetIsInstanceAdmin(queryParams, label = null) {

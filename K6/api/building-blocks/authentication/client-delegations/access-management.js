@@ -140,7 +140,6 @@ export function GetRightsMeta(bffAccessManagementApiClient, queryParams, label =
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
 /**
  * Get delegated instances for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -154,7 +153,6 @@ export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, q
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegationcheck?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
 /**
  * Get delegation check for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -168,7 +166,6 @@ export function CheckDelegationForResource(bffAccessManagementApiClient, queryPa
     return res.body;
 }
 
-// POST: https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances/rights?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
 /**
  * Post delegated rights for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -183,7 +180,6 @@ export function DelegateRightsForResource(bffAccessManagementApiClient, queryPar
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/consent/active/5f453a8c-86e2-4bef-bbd9-6235edf414f0
 /**
  * Get active consent for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -197,7 +193,6 @@ export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = nul
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/resources?resourceId=k6-instancedelegation-test
 /**
  * Get resource by id
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
@@ -211,7 +206,6 @@ export function GetResourceById(bffAccessManagementApiClient, queryParams, label
     return res.body;
 }
 
-//https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/systemuser/f1399084-2814-4f54-ab0e-75a931628762/pending
 /**
  * Get pending delegations for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API

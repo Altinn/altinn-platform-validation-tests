@@ -27,8 +27,8 @@ class GraphqlClient {
 
     /**
      * Get all dialogs for party
-     * @param {*} partyId 
-     * @param {*} label 
+     * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
+     * @param {string} label - a label to add to the request in k6
      * @returns response from the API
      */
     GetAllDialogsForParty(partyId, label = null) {
@@ -46,6 +46,12 @@ class GraphqlClient {
         return http.post(url.toString(), JSON.stringify(query), params);
     }
 
+    /**
+     * Get dialog by id
+     * @param {uuidv7} dialogId - the id of the dialog to get
+     * @param {string} label - a label to add to the request in k6
+     * @return response from the API
+     */
     GetDialogById(dialogId, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);

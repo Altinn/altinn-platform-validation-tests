@@ -1,3 +1,13 @@
+/**
+ * GraphQL queries for Dialogporten
+ * TODO: These can be moved to separate files if the number of queries grows too large
+ */
+
+/**
+ * Get dialog by id
+ * @param {uuidv7} id 
+ * @returns graphql query to get dialog by id
+ */
 export function getDialogById(id) {
     const q = {
         query: `query getDialogById($id: UUID!) {
@@ -195,9 +205,15 @@ export function getDialogById(id) {
     return q;
 }
 
-
-
+/**
+ * Get all dialogs for party
+ * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
+ * returns graphql query to get all dialogs for party
+ */
 export function getAllDialogsForParty(partyId) {
+    // The API expects a party URI in the format urn:altinn:person:identifier-no:{pid} for individuals and urn:altinn:organization:identifier-no:{orgnr} for organizations
+    // We can determine the type of party based on the length of the id, as pids are 11 digits and org numbers are 9 digits
+    // TODO: This is a bit brittle, as it relies on the format of the ids, but it is a simple way to determine the party type without making an additional API call
     let partyUri = `urn:altinn:person:identifier-no:${partyId}`;
     if (partyId.length == 9) {
         partyUri = `urn:altinn:organization:identifier-no:${partyId}`;

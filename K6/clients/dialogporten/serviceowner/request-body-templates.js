@@ -4,6 +4,9 @@ function hex2(b) {
     return b.toString(16).padStart(2, "0");
 }
 
+/**
+ * uuidv7 implmentation copied from the altinn/dialogporten repo
+ */
 function uuidv7() {
     // Date.now() is < 2^53, so integer math via division is safe/precise here.
     const ts = Date.now();
@@ -45,7 +48,16 @@ function uuidv7() {
     );
 }
 
+/**
+ * 
+ * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
+ * @param {string} serviceResource - the service resource
+ * @param {string} serviceOwner - the org number of the service owner
+ * @returns json object to be used as body when creating a dialog via the API. 
+ */
 export function getDialogBody(partyId, serviceResource, serviceOwner) {
+    // The partyId can be either a pid/ssn (11 digits) or an org number (9 digits). We determine which one it is based on the length of the string, and construct the party urn accordingly.
+    // For a pid/ssn, the urn should be in the format urn:altinn:person:identifier-no:{pid}, and for an org number, it should be urn:altinn:organization:identifier-no:{orgnr}
     let party = null;
     if (partyId.length == 11) {
         party = `urn:altinn:person:identifier-no:${partyId}`;
@@ -373,13 +385,24 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
     };
 };
 
-export function getDialogBodyWithoutTransmissionsAndActivities(endUser, serviceResource) {
-    let body = getDialogBody(endUser, serviceResource);
+/**
+ * Get a dialog body without transmissions and activities, used for testing creation of dialogs without these.
+ * @param {string} endUser - either a pid/ssn (11 digits) or an org number (9 digits)
+ * @param {string} serviceResource - the service resource
+ * @returns json object to be used as body when creating a dialog via the API, without transmissions and activities.
+ */
+export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource) {
+    let body = getDialogBody(partyId, serviceResource);
     body.transmissions = [];
     body.activities = [];
     return body;
 }
 
+/**
+ * Get a transmission body, used for testing creation of transmissions. By default, the transmission will not be related to any other transmission, but you can provide an id of a transmission to relate it to.
+ * @param {uuidv7} relatedTransmissionId - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
+ * @returns json object to be used as body when creating a transmission via the API.
+ */
 export function getTransmissionBody(relatedTransmissionId = 0) {
     let transmission =
     {
@@ -444,6 +467,10 @@ export function getTransmissionBody(relatedTransmissionId = 0) {
     return transmission;
 }
 
+/**
+ * Get a activity body, used for testing creation of activities. By default, the activity will be of type DialogCreated and performed by an actor of type ServiceOwner, but you can modify the returned object as needed.
+ * @returns json object to be used as body when creating an activity via the API. The activity will have a random id, and the performedBy actor will be of type ServiceOwner with no id or name.
+ */
 export function getActivityBody() {
     return {
         "id": uuidv7(),

@@ -63,7 +63,7 @@ export const options = {
         ui: {
             executor: "shared-iterations",
             vus: 1,
-            iterations: 1,
+            iterations: 15,
             options: {
                 browser: {
                     type: "chromium",
@@ -97,7 +97,6 @@ export default async function (data) {
         });
         // Wait for the page to load
         await waitForPageLoaded(page);
-        await page.screenshot({ path: `${testData.pid}.png` });
         endTime = new Date();
         trend.add(endTime - startTime);
     }

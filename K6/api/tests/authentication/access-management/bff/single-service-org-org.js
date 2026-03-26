@@ -22,7 +22,7 @@ import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions 
 import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getTokenOpts, resourcesForOrg as resources } from "./commons.js";
+import { getTokenOpts, resourcesForOrg as resources, getFromTo } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = "1a. Get rightholders from org";
@@ -264,22 +264,4 @@ function getRights(rightsMeta) {
     return rights;
 }
 
-/**
- * Helper function to get from and to organizations for the current iteration, ensuring that they are not the same
- * @returns object with from and to organizations
- */
-function getFromTo(list) {
-    let from = undefined;
-    if (randomize) {
-        from = getItemFromList(list, randomize);
-    } else {
-        from = list[__ITER % list.length];
-    }
-    let to = getItemFromList(list, true);
-    while (to.ssn === from.ssn) {
-        to = getItemFromList(list, true);
-    }
-    return { from, to };
-
-}
 

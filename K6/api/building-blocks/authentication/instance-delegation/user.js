@@ -1,7 +1,6 @@
 import { check } from "k6";
 import { BffUserApiClient } from "../../../../clients/authentication/bff-user.js";
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/party/user
 /**
  * Get user id by lookup
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -13,6 +12,7 @@ export function GetLookupPartyUser(bffUserApiClient, label = null) {
     checker(res, "Get user id by lookup");
     return res.body;
 }
+
 /**
  * Post single right for the specified query parameters
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -25,7 +25,6 @@ export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, label = 
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/reportee/50508927
 /**
  * Get reportee for the specified user id
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -39,7 +38,6 @@ export function GetReportee(bffUserApiClient, userId, label = null) {
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/profile
 /**
  * Get profile
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -52,7 +50,6 @@ export function GetProfile(bffUserApiClient, label = null) {
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isAdmin?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
 /**
  * Get is admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -66,7 +63,6 @@ export function GetIsAdmin(bffUserApiClient, queryParams, label = null) {
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isClientAdmin?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
 /**
  * Get is client admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -80,10 +76,6 @@ export function GetIsClientAdmin(bffUserApiClient, queryParams, label = null) {
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/sent?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/received?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
-
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/actorlist/old
 /**
  * Get actor list old
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -96,7 +88,6 @@ export function GetActorListOld(bffUserApiClient, label = null) {
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/actorlist/favorites
 /**
  * Get actor list favorites
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -109,8 +100,6 @@ export function GetActorListFavorites(bffUserApiClient, label = null) {
     return res.body;
 }
 
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/cdn/orgdata
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isInstanceAdmin?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
 /**
  * Get is instance admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
@@ -123,13 +112,6 @@ export function GetIsInstanceAdmin(bffUserApiClient, queryParams, label = null) 
     checker(res, "Get is instance admin");
     return res.body;
 }
-
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d19ee-3e8e-7713-896e-e2fac1f8b77b
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/consent/active/5f453a8c-86e2-4bef-bbd9-6235edf414f0
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=&includeClientDelegations=true&includeAgentConnections=true
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/resources?resourceId=k6-instancedelegation-test
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/accesspackage/delegationcheck?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0
-// https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=5f453a8c-86e2-4bef-bbd9-6235edf414f0&to=5f453a8c-86e2-4bef-bbd9-6235edf414f0&includeClientDelegations=true&includeAgentConnections=
 
 /**
  * Function to check common response properties

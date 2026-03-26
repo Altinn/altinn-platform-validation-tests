@@ -4,7 +4,7 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
 /**
  * Function to get all dialogs for a party
  * @param {GraphqlClient} graphqlClient 
- * @param {*} partyId 
+ * @param {*} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
  * @param {*} label 
  * @returns 
  */
@@ -30,9 +30,9 @@ export function GetAllDialogsForParty(graphqlClient, partyId, label = null) {
 /**
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
  * @param {GraphqlClient} graphqlClient 
- * @param {*} partyId 
- * @param {*} dialogId
- * @param {*} label 
+ * @param {string} partyId - either a pid/ssn (11 digits) or a organization number (9 digits) 
+ * @param {uuidv7} dialogId
+ * @param {string} label 
  * @returns 
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, partyId, dialogId, label = null) {
@@ -69,8 +69,8 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, partyId, di
 /**
  * Function to get a dialog by id
  * @param {GraphqlClient} graphqlClient
- * @param {*} dialogId
- * @param {*} label
+ * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {string} label
  * @return
  * 
  */
@@ -96,8 +96,8 @@ export function GetDialogById(graphqlClient, dialogId, label = null) {
 /**
  * Function to get a dialog by id and verify that the response contains the correct dialogId
  * @param {GraphqlClient} graphqlClient
- * @param {*} dialogId
- * @param {*} label
+ * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {string} label
  * @return
  * 
  */
