@@ -171,8 +171,8 @@ export default function (data) {
         GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithTo);
     });
 
-    // // Delegate dialog to other user.
-    // // Calls every bff as the browser would do
+    // Delegate dialog to other user.
+    // Calls every bff as the browser would do
     group(group2Label, function () {
         const resp = GetRightsMeta(accessManagementApiClient, { resource: resource }, getRightsMetaLabel);
         CheckDelegationForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabel);
@@ -183,6 +183,10 @@ export default function (data) {
         GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabelAfter);
     });
 
+    // Finally, check that the delegated dialog is visible for the delegated user by 
+    // using the dialogporten graphql API to get the dialog by id, and to get all dialogs for party 
+    // and check that the dialog is there. This is to verify that the delegation is working end to end, 
+    // and that the delegated user can see the dialog in their list of dialogs and access it.
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
         GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.orgNo, dialogId, getAllDialogsForPartyLabel);

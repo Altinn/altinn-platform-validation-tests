@@ -36,3 +36,13 @@ test_definitions:
     contexts:
       - environment: yt01
       - environment: at23
+
+  - test_scope: access-management-bff
+    test_file: instance-delegation-user-user.js
+    contexts:
+      - environment: at23
+
+  - test_scope: access-management-bff
+    test_file: instance-delegation-org-user.js
+    contexts:
+      - environment: at23

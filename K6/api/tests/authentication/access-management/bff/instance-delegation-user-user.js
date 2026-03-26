@@ -179,6 +179,10 @@ export default function (data) {
         GetRoleMeta(accessManagementApiClient, {}, getRoleMetaLabel);
     });
 
+    // Finally, check that the delegated dialog is visible for the delegated user by 
+    // using the dialogporten graphql API to get the dialog by id, and to get all dialogs for party 
+    // and check that the dialog is there. This is to verify that the delegation is working end to end, 
+    // and that the delegated user can see the dialog in their list of dialogs and access it.
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
         GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.ssn, dialogId, getAllDialogsForPartyLabel);
