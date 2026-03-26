@@ -129,7 +129,6 @@ export const options = getOptions([
 export default function (data) {
     const [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, tokenGenerator] = getClients(serviceOwnerOrgNo);
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
-    console.log(`VU: ${exec.vu.idInTest} - from: ${from.ssn} (${from.orgNo}) to: ${to.ssn}`);
     const resource = getItemFromList(resources);
     let dialogId = null;
 
@@ -145,7 +144,6 @@ export default function (data) {
             `Dialog created for instance delegation test with resource ${resource}`,
         );
         dialogId = JSON.parse(resp);
-        console.log(`Dialog created with id: ${dialogId}`);
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
