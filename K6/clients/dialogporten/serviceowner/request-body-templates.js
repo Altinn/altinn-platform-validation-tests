@@ -66,7 +66,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
     }
     return {
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
-        "party": party, // or urn:altinn:organization:identifier-no:<9 digits>
+        "party": party,
         "status": "notApplicable", // valid values: notApplicable, inprogress, draft, awaiting, equiresAttention, completed
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC
