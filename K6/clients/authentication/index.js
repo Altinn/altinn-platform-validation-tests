@@ -16,3 +16,4 @@ export { BffConnectionsApiClient } from "./bff-connections.js";
 export { MaskinportenSchemaApiClient } from "./maskinporten-schema.js";
 export { BffSingleRightApiClient } from "./bff-single-right.js";
 export { BffAccessManagementApiClient } from "./bff-access-management.js";
+export { BffUserApiClient } from "./bff-user.js";

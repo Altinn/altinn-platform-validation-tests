@@ -1,3 +1,5 @@
+export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
+
 export const accessPackagesForUsers = [
     { id: "449d3027-9ef4-4363-a5a1-99edef3e67ab", accessPackage: "innbygger-frivillighet" },
     { accessPackage: "innbygger-forsikring", id: "4de3029b-bbab-4c76-96bd-3eb377a2b63f" },
@@ -287,3 +289,106 @@ export function getTokenOpts(userId, partyuuid) {
     tokenOpts.set("partyuuid", partyuuid);
     return tokenOpts;
 }
+
+/**
+ * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
+ * @returns object with from and to organizations
+ */
+export function getFromTo(list) {
+    let from = undefined;
+    if (randomize) {
+        from = getItemFromList(list, randomize);
+    } else {
+        from = list[__ITER % list.length];
+    }
+    let to = getItemFromList(list, true);
+    while (to.ssn === from.ssn) {
+        to = getItemFromList(list, true);
+    }
+    return { from, to };
+}
+
+/**
+* Function to set up and return clients to interact with the Service Owner Dialog API
+*
+* @returns {Array} An array containing the AuthorizedPartiesClient instance
+*/
+import http from "k6/http";
+import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
+import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
+// All apiclient used in this test
+let serviceOwnerApiClient = undefined;
+let userApiClient = undefined;
+let accessManagementApiClient = undefined;
+let bffConnectionsApiClient = undefined;
+let bffAccessPackageApiClient = undefined;
+let graphqlClient = undefined;
+// personal tokengenerator.
+let personalTokenGenerator = undefined;
+
+export function getClients(serviceOwnerOrgNo) {
+    if (serviceOwnerApiClient == undefined) {
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider");
+        tokenOpts.set("org", "ttd");
+        tokenOpts.set("orgNo", serviceOwnerOrgNo);
+        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
+    }
+    if (userApiClient == undefined) {
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
+        userApiClient = new BffUserApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        bffConnectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        bffAccessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        graphqlClient = new GraphqlClient(__ENV.BASE_URL, personalTokenGenerator);
+    }
+    return [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, personalTokenGenerator];
+}
+
+/**
+ * Setup function to segment data for VUs.
+ */
+export function setup() {
+    const numberOfVUs = getNumberOfVUs();
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    return segmentedData;
+}
+
+export function getDialogportenOpts(ssn) {
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "digdir:dialogporten");
+    tokenOpts.set("pid", ssn);
+    return tokenOpts;
+}
+
+/**
+ * Helper function to create the body for delegating rights for a resource and instance to another user, 
+ * based on the rights meta for the resource and the "to" user.
+ * @param { JSON } rightsMeta 
+ * @param {*} to 
+ * @returns 
+ */
+export function getInstanceDelegationBody(rightsMeta, to) {
+    return {
+        to: {
+            personIdentifier: to.ssn,
+            lastName: to.lastName,
+        },
+        directRightKeys: rightsMeta.map((right) => right.key),
+    };
+}
+
+

@@ -7,7 +7,7 @@ import { PostDelegations, DeleteDelegations } from "../../../../building-blocks/
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
 import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
-import { accessPackagesForUsers as accessPackages, getTokenOpts } from "./commons.js";
+import { accessPackagesForUsers as accessPackages, getTokenOpts, getFromTo } from "./commons.js";
 
 // Labels for different actions
 const postRightholderLabel = "1. Connecting users with PostRightholder";
@@ -119,22 +119,4 @@ function getRightHoldersWithoutTo(connectionsApiClient, party) {
     return respBody;
 }
 
-function getFromTo(list) {
-    if (randomize) {
-        const from = getItemFromList(list, randomize);
-        let to = getItemFromList(list, randomize);
-        while (to.ssn === from.ssn) {
-            to = getItemFromList(list, randomize);
-        }
-        return { from, to };
-    } else {
-        const from = list[__ITER % list.length];
-        let to = getItemFromList(list, true);
-        while (to.ssn === from.ssn) {
-            to = getItemFromList(list, true);
-        }
-        return { from, to };
-    }
-
-}
 

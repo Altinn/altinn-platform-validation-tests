@@ -65,3 +65,21 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+
+  - test_scope: access-management-bff
+    test_file: instance-delegation-user-user.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: conf.json
+
+  - test_scope: access-management-bff
+    test_file: instance-delegation-org-user.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: conf.json

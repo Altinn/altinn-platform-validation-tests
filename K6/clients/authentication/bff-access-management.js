@@ -245,6 +245,166 @@ class BffAccessManagementApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
     }
+
+    /**
+     * Get delegated instances for a resource
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
+    GetDelegatedInstancesForResource(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * Check if user has delegated rights for a resource
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     * */
+    CheckDelegationForResource(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * Delegate rights for a resource to a user
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} body - object with the body of the request
+     * @param {string} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
+    DelegateRightsForResource(queryParams, body, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/instances/delegation/instances/rights`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-Type": "application/json",
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.post(url.toString(), JSON.stringify(body), params);
+    }
+
+    /**
+     * Get delegated instances for a resource
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
+    GetDelegatedInstancesForResource(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * Check if user has delegated rights for a resource
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {string} label - label for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     * */
+    CheckInstanceDelegationForResource(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
+    * Get active consents for a user
+    * @param {object} queryParams - object with query parameters to be appended to the url
+    * @param {string} label - label for the request, if null the url will be used as label
+    * returns http.RefinedResponse
+    */
+    GetActiveConsentsForUser(uuid, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/consent/active/${uuid}`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        return http.get(url.toString(), params);
+    }
+
+    /**
+    * Get resource by id
+    * @param {object} queryParams - object with query parameters to be appended to the url
+    * @param {string} label - label for the request, if null the url will be used as label
+    * returns http.RefinedResponse
+    */
+    GetResourceById(queryParams, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/resources`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+    /**
+    * Get pending delegations for a user
+    * @param {object} queryParams - object with query parameters to be appended to the url
+    * @param {string} label - label for the request, if null the url will be used as label
+    * returns http.RefinedResponse
+    */
+    GetPendingDelegationsForUser(uuid, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/systemuser/${uuid}/pending`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        return http.get(url.toString(), params);
+    }
 }
 
 export { BffAccessManagementApiClient };

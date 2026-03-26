@@ -141,6 +141,85 @@ export function GetRightsMeta(bffAccessManagementApiClient, queryParams, label =
 }
 
 /**
+ * Get delegated instances for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.GetDelegatedInstancesForResource(queryParams, label);
+    checker(res, "Get delegated instances for resource");
+    return res.body;
+}
+
+/**
+ * Get delegation check for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ * */
+export function CheckDelegationForResource(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.CheckDelegationForResource(queryParams, label);
+    checker(res, "Get delegation check for resource");
+    return res.body;
+}
+
+/**
+ * Post delegated rights for a resource
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} body - body for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function DelegateRightsForResource(bffAccessManagementApiClient, queryParams, body, label = null) {
+    const res = bffAccessManagementApiClient.DelegateRightsForResource(queryParams, body, label);
+    checker(res, "Post delegated rights for resource", 200);
+    return res.body;
+}
+
+/**
+ * Get active consent for a user
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = null) {
+    const res = bffAccessManagementApiClient.GetActiveConsentsForUser(uuid, label);
+    checker(res, "Get active consent");
+    return res.body;
+}
+
+/**
+ * Get resource by id
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetResourceById(bffAccessManagementApiClient, queryParams, label = null) {
+    const res = bffAccessManagementApiClient.GetResourceById(queryParams, label);
+    checker(res, "Get resource by id");
+    return res.body;
+}
+
+/**
+ * Get pending delegations for a user
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} uuid - uuid for the user
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetPendingDelegationsForUser(bffAccessManagementApiClient, uuid, label = null) {
+    const res = bffAccessManagementApiClient.GetPendingDelegationsForUser(uuid, label);
+    checker(res, "Get pending delegations for user");
+    return res.body;
+}
+
+/**
  * Function to check common response properties
  * @param {} res - response object
  * @param {*} method - method name for logging

@@ -124,9 +124,7 @@ export function getOptions(labels, groups = []) {
     }
 
     for (const group of groups) {
-        options.thresholds[`http_req_duration{group:${group}}`] = [];
-        options.thresholds[`http_req_failed{group:${group}}`] = [];
-        options.thresholds[`http_reqs{group:${group}}`] = [];
+        options.thresholds[`http_req_duration{group:::${group}}`] = [];
     }
 
     return options;
