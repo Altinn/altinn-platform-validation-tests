@@ -71,7 +71,7 @@ class ServiceOwnerApiClient {
      */
 
     PostDialog(
-        endUser,
+        partyId,
         serviceResource,
         serviceOwner,
         label = null,
@@ -90,9 +90,9 @@ class ServiceOwnerApiClient {
 
         let requestBody = null;
         if (!noTransmissionsActivities) {
-            requestBody = getDialogBody(endUser, serviceResource, serviceOwner);
-        } else { 
-            requestBody = getDialogBodyWithoutTransmissionsAndActivities(endUser, serviceResource, serviceOwner);
+            requestBody = getDialogBody(partyId, serviceResource, serviceOwner);
+        } else {
+            requestBody = getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource, serviceOwner);
         }
         if (__ENV.TRACE_CALL) {
             params.headers["traceparent"] = uuidv4();
@@ -158,7 +158,7 @@ class ServiceOwnerApiClient {
         }
 
         return http.post(url.toString(), JSON.stringify(requestBody), params);
-    }  
+    }
 }
 
 export { ServiceOwnerApiClient };

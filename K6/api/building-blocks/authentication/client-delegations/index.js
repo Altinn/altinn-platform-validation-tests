@@ -19,4 +19,5 @@ export {
     GetResourceById,
     CheckDelegationForResource,
     DelegateRightsForResource,
+    GetPendingDelegationsForUser,
 } from "./access-management.js";

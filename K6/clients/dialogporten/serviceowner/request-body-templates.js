@@ -45,10 +45,16 @@ function uuidv7() {
     );
 }
 
-export function getDialogBody(endUser, serviceResource, serviceOwner) {
+export function getDialogBody(partyId, serviceResource, serviceOwner) {
+    let party = null;
+    if (partyId.length == 11) {
+        party = `urn:altinn:person:identifier-no:${partyId}`;
+    } else {
+        party = `urn:altinn:organization:identifier-no:${partyId}`;
+    }
     return {
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
-        "party": `urn:altinn:person:identifier-no:${endUser}`, // or urn:altinn:organization:identifier-no:<9 digits>
+        "party": party, // or urn:altinn:organization:identifier-no:<9 digits>
         "status": "notApplicable", // valid values: notApplicable, inprogress, draft, awaiting, equiresAttention, completed
         "extendedStatus": "urn:any/valid/uri",
         "dueAt": "2033-11-25T06:37:54.2920190Z", // must be UTC

@@ -197,7 +197,11 @@ export function getDialogById(id) {
 
 
 
-export function getAllDialogsForParty(ssn) {
+export function getAllDialogsForParty(partyId) {
+    let partyUri = `urn:altinn:person:identifier-no:${partyId}`;
+    if (partyId.length == 9) {
+        partyUri = `urn:altinn:organization:identifier-no:${partyId}`;
+    }
     const q = {
         query: `query getAllDialogsForParties($partyURIs: [String!], $search: String, $org: [String!], $status: [DialogStatus!], $continuationToken: String, $limit: Int, $label: [SystemLabel!], $updatedAfter: DateTime, $updatedBefore: DateTime, $searchLanguageCode: String, $serviceResources: [String!]) {
             searchDialogs(
@@ -268,7 +272,7 @@ export function getAllDialogsForParty(ssn) {
           }`,
         operationName: "getAllDialogsForParties",
         variables: {
-            partyURIs: [`urn:altinn:person:identifier-no:${ssn}`],
+            partyURIs: [partyUri],
             status: ["NOT_APPLICABLE", "IN_PROGRESS", "AWAITING", "REQUIRES_ATTENTION", "COMPLETED"],
             serviceResources: [],
             label: ["DEFAULT"],

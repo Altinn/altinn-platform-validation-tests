@@ -7,14 +7,14 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  */
 export function CreateDialog(
     serviceOwnerApiClient,
-    endUser,
+    partyId,
     serviceResource,
     serviceOwner,
     label = null,
     noTransmissionsActivities = false,
 ) {
     const res = serviceOwnerApiClient.PostDialog(
-        endUser,
+        partyId,
         serviceResource,
         serviceOwner,
         label,

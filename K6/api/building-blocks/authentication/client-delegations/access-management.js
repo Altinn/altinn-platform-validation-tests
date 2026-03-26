@@ -211,6 +211,20 @@ export function GetResourceById(bffAccessManagementApiClient, queryParams, label
     return res.body;
 }
 
+//https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/systemuser/f1399084-2814-4f54-ab0e-75a931628762/pending
+/**
+ * Get pending delegations for a user
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
+ * @param {} uuid - uuid for the user
+ * @param {*} label - label for the request
+ * return (string | ArrayBuffer | null)
+ */
+export function GetPendingDelegationsForUser(bffAccessManagementApiClient, uuid, label = null) {
+    const res = bffAccessManagementApiClient.GetPendingDelegationsForUser(uuid, label);
+    checker(res, "Get pending delegations for user");
+    return res.body;
+}
+
 /**
  * Function to check common response properties
  * @param {} res - response object

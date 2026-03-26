@@ -17,9 +17,9 @@ import {
     GetActorListFavorites,
     GetIsInstanceAdmin,
 } from "../../../../building-blocks/authentication/instance-delegation/index.js";
-import { GetDelegatedInstancesForResource, GetActiveConsent, GetResourceById, GetRightsMeta, DelegateRightsForResource } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { GetDelegatedInstancesForResource, GetActiveConsent, GetResourceById, GetRightsMeta, DelegateRightsForResource, GetRolePermissions } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
-import { GetOrganizationData, CheckDelegationForResource, GetRoleMeta } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { GetOrganizationData, CheckDelegationForResource, GetRoleMeta, GetPendingDelegationsForUser } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/index.js";
 import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
@@ -78,6 +78,8 @@ const getConnectionsLabel = "1m. Get connections for user";
 const getResourceByIdLabel = "1n. Get resource by id for user";
 const getDelegationCheckLabel = "1o. Get delegation check for resource and instance for user";
 const getConnectionsWithTo = "1p. Get connections for user with to parameter";
+const getRolePermissionsLabel = "1q. Get role permissions for user from and to";
+const GetPendingDelegationsForUserLabel = "1r. Get pending delegations for user";
 
 const partTwoLabel = "2 - Get access management data for user and resource";
 const getRightsMetaLabel = "2a. Get rights meta for resource";
@@ -113,6 +115,8 @@ export const options = getOptions([
     getResourceByIdLabel,
     getDelegationCheckLabel,
     getConnectionsWithTo,
+    getRolePermissionsLabel,
+    GetPendingDelegationsForUserLabel,
 
     partTwoLabel,
     getRightsMetaLabel,
@@ -184,6 +188,7 @@ export function setup() {
 export default function (data) {
     const [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, tokenGenerator] = getClients();
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
+    console.log(`VU: ${exec.vu.idInTest} - from: ${from.ssn} (${from.orgNo}) to: ${to.ssn}`);
     const resource = getItemFromList(resources);
     let dialogId = null;
 
@@ -191,7 +196,7 @@ export default function (data) {
     group(group0Label, function () {
         const resp = CreateDialog(
             serviceOwnerApiClient,
-            from.ssn,
+            from.orgNo,
             resource,
             serviceOwnerOrgNo,
             createDialog,
@@ -207,46 +212,70 @@ export default function (data) {
     // Open access management after creating the dialog.
     // Call every bff endpoint that the browser uses when navigating from arbeidsflate/del og gi tilgang
     group(group1Label, function () {
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/party/user
         GetLookupPartyUser(userApiClient, getLookupPartyUserLabel);
-        GetIsCompanyProfileAdmin(userApiClient, { party: from.partyUuid }, getIsCompanyProfileAdminLabel);
-        GetReportee(userApiClient, from.userPartyId, getReporteeLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isCompanyProfileAdmin?party=f1399084-2814-4f54-ab0e-75a931628762
+        GetIsCompanyProfileAdmin(userApiClient, { party: from.orgUuid }, getIsCompanyProfileAdminLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/reportee/51267137
+        GetReportee(userApiClient, from.partyId, getReporteeLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/profile
         GetProfile(userApiClient, getProfileLabel);
-        GetIsAdmin(userApiClient, { party: from.partyUuid }, getIsAdminLabel);
-        GetIsClientAdmin(userApiClient, { party: from.partyUuid }, getIsClientAdminLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isAdmin?party=f1399084-2814-4f54-ab0e-75a931628762
+        GetIsAdmin(userApiClient, { party: from.orgUuid }, getIsAdminLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isClientAdmin?party=f1399084-2814-4f54-ab0e-75a931628762
+        GetIsClientAdmin(userApiClient, { party: from.orgUuid }, getIsClientAdminLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/actorlist/old
         GetActorListOld(userApiClient, getActorListOldLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/actorlist/favorites
         GetActorListFavorites(userApiClient, getActorListFavoritesLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/role/permissions?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=f1399084-2814-4f54-ab0e-75a931628762&to=5f453a8c-86e2-4bef-bbd9-6235edf414f0
+        GetRolePermissions(accessManagementApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/cdn/orgdata
         GetOrganizationData(accessManagementApiClient, {}, getOrganizationDataLabel);
-        GetIsInstanceAdmin(userApiClient, { party: from.partyUuid }, getIsInstanceAdminLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/user/isInstanceAdmin?party=f1399084-2814-4f54-ab0e-75a931628762
+        GetIsInstanceAdmin(userApiClient, { party: from.orgUuid }, getIsInstanceAdminLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances?party=f1399084-2814-4f54-ab0e-75a931628762&from=f1399084-2814-4f54-ab0e-75a931628762&to=&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d24e3-4c4b-72d7-97ba-eb55c92c4263
         GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.partyUuid, from: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceLabel);
-        GetActiveConsent(accessManagementApiClient, from.partyUuid, getActiveConsentLabel);
-        GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/consent/active/f1399084-2814-4f54-ab0e-75a931628762
+        GetActiveConsent(accessManagementApiClient, from.orgUuid, getActiveConsentLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/systemuser/f1399084-2814-4f54-ab0e-75a931628762/pending
+        GetPendingDelegationsForUser(accessManagementApiClient, from.orgUuid, GetPendingDelegationsForUserLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=f1399084-2814-4f54-ab0e-75a931628762&from=f1399084-2814-4f54-ab0e-75a931628762&to=&includeClientDelegations=true&includeAgentConnections=true
+        GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/resources?resourceId=k6-instancedelegation-test
         GetResourceById(accessManagementApiClient, { resourceId: resource }, getResourceByIdLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/accesspackage/delegationcheck?party=f1399084-2814-4f54-ab0e-75a931628762
         GetDelegationCheck(bffAccessPackageApiClient, { party: from.partyUuid }, getDelegationCheckLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=f1399084-2814-4f54-ab0e-75a931628762&to=5f453a8c-86e2-4bef-bbd9-6235edf414f0&includeClientDelegations=true&includeAgentConnections=true
         GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithTo);
+
+
+
     });
 
-    // Delegate dialog to other user.
-    // Calls every bff as the browser would do
+    // // Delegate dialog to other user.
+    // // Calls every bff as the browser would do
     group(group2Label, function () {
         const resp = GetRightsMeta(accessManagementApiClient, { resource: resource }, getRightsMetaLabel);
-        CheckDelegationForResource(accessManagementApiClient, { party: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabel);
-        DelegateRightsForResource(accessManagementApiClient, { party: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getInstanceDelegationBody(JSON.parse(resp), to), delegateRightsForResourceLabel);
-        GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.partyUuid, from: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceAfterLabel);
-        CheckDelegationForResource(accessManagementApiClient, { party: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabelAfter);
-        GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithToAfter);
-        GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabelAfter);
-        GetRoleMeta(accessManagementApiClient, {}, getRoleMetaLabel);
+        CheckDelegationForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances/rights?party=f1399084-2814-4f54-ab0e-75a931628762&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d24e3-4c4b-72d7-97ba-eb55c92c4263
+        DelegateRightsForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getInstanceDelegationBody(JSON.parse(resp), to), delegateRightsForResourceLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegation/instances?party=f1399084-2814-4f54-ab0e-75a931628762&from=f1399084-2814-4f54-ab0e-75a931628762&to=&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d24e3-4c4b-72d7-97ba-eb55c92c4263
+        GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.orgUuid, from: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceAfterLabel);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/instances/delegationcheck?party=f1399084-2814-4f54-ab0e-75a931628762&resource=k6-instancedelegation-test&instance=urn%3Aaltinn%3Adialog-id%3A019d24e3-4c4b-72d7-97ba-eb55c92c4263
+        CheckDelegationForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabelAfter);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&from=f1399084-2814-4f54-ab0e-75a931628762&to=5f453a8c-86e2-4bef-bbd9-6235edf414f0&includeClientDelegations=true&includeAgentConnections=true
+        GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithToAfter);
+        //https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/connection/rightholders?party=f1399084-2814-4f54-ab0e-75a931628762&from=f1399084-2814-4f54-ab0e-75a931628762&to=&includeClientDelegations=true&includeAgentConnections=true
+        GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabelAfter);
+        //     GetRoleMeta(accessManagementApiClient, {}, getRoleMetaLabel);
     });
 
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
-        GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.ssn, dialogId, getAllDialogsForPartyLabel);
+        GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.orgNo, dialogId, getAllDialogsForPartyLabel);
         GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdLabel);
     });
-
-    // Check these two endpoints, which returns 404 now. Called when opening access management
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/sent?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
-    // https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/request/received?party=5f453a8c-86e2-4bef-bbd9-6235edf414f0&status=Pending (404)
 }
 
 function getDialogportenOpts(ssn) {
