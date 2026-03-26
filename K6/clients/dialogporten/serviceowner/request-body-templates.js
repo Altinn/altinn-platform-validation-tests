@@ -404,8 +404,7 @@ export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceR
  * @returns json object to be used as body when creating a transmission via the API.
  */
 export function getTransmissionBody(relatedTransmissionId = 0) {
-    let transmission =
-    {
+    let transmission = {
         "id": uuidv7(),
         "createdAt": new Date().toISOString(),
         "authorizationAttribute": "element1",

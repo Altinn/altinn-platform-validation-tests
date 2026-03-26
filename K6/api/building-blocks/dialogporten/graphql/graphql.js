@@ -1,4 +1,4 @@
-import { check } from 'k6';
+import { check } from "k6";
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
 
 /**
@@ -54,7 +54,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, partyId, di
                 // which would cause a false negative failure in the test
                 return true;
             }
-            return true
+            return true;
         }
     });
 
@@ -115,7 +115,7 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, label = null) {
                 console.log(`DialogId ${dialogId} not found in response`);
                 return false;
             }
-            return true
+            return true;
         }
     });
 
