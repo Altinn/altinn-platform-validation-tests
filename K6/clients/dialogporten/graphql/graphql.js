@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { getAllDialogsForParty, getDialogById } from "./graphqlQueries.js";
+import { getAllDialogsForParty, getDialogById } from "./graphql-queries.js";
 
 class GraphqlClient {
     /**
