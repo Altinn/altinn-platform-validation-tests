@@ -67,7 +67,7 @@ test_definitions:
           enabled: true
 
   - test_scope: access-management-bff
-    test_file: instance-delagation-user-user.js
+    test_file: instance-delegation-user-user.js
     contexts:
       - environment: at23
         test_type:
@@ -76,7 +76,7 @@ test_definitions:
           config_file: conf.json
 
   - test_scope: access-management-bff
-    test_file: instance-delagation-org-user.js
+    test_file: instance-delegation-org-user.js
     contexts:
       - environment: at23
         test_type:
