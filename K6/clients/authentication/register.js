@@ -10,9 +10,9 @@ class RegisterApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -34,7 +34,7 @@ class RegisterApiClient {
      * @returns http.RefinedResponse
      */
     RemoveRevisorRoleFromEr(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`;
+        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false`;
 
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapReqBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -70,7 +70,7 @@ class RegisterApiClient {
 
 
     AddRevisorRoleToErForOrg(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`;
+        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false`;
 
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
