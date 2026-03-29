@@ -1,0 +1,14 @@
+namespace: authentication
+test_definitions:
+  - test_file: K6/api/tests/authentication/consent/post-consent.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+  - test_file: K6/api/tests/authentication/consent/lookup.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
