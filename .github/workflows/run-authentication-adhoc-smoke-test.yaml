@@ -68,7 +68,7 @@ jobs:
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@9ca589133f649746a0d43ac7dcd4f2face1fe70a
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@ba1d39be9f49a11bc15836c92e70b39543fe255c
         with:
           config_file: "${{ inputs.configFilePath }}"
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}

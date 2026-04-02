@@ -20,7 +20,7 @@ jobs:
           azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
       - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@9ca589133f649746a0d43ac7dcd4f2face1fe70a"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@ba1d39be9f49a11bc15836c92e70b39543fe255c"
         with:
           config_file: "K6/api/tests/authentication/roles/breakpoint.yaml"
       - if: "github.event.schedule == '40 4 * * 3'"
