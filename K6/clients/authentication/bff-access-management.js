@@ -350,7 +350,7 @@ class BffAccessManagementApiClient {
 
     /**
     * Get active consents for a user
-    * @param {object} queryParams - object with query parameters to be appended to the url
+    * @param {object} uuid - uuid for the user to get active consents for
     * @param {string} label - label for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
@@ -366,6 +366,26 @@ class BffAccessManagementApiClient {
         };
         return http.get(url.toString(), params);
     }
+
+    /**
+    * Get consent log for a user
+    * @param {object} uuid - uuid for the user to get consent log for
+    * @param {string} label - label for the request, if null the url will be used as label
+    * returns http.RefinedResponse
+    */
+    GetConsentLogForUser(uuid, label = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/consent/log/${uuid}`);
+        const tags = label ? label : url.toString();
+        const params = {
+            tags: { name: tags },
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        return http.get(url.toString(), params);
+    }
+
 
     /**
     * Get resource by id

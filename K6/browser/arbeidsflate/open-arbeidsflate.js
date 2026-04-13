@@ -113,6 +113,7 @@ export default async function (data) {
         await waitForPageLoaded(page);
         endTime = new Date();
         pageLoadingTime.add(endTime - startTime, { pid_avgivere: label });
+        await page.waitForTimeout(2000); // Wait for 1 second before closing the page to ensure all resources are loaded
     }
     catch (error) {
         console.error(`Error opening arbeidsflate for pid ${testData.pid}:`, error);

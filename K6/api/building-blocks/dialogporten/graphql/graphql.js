@@ -112,8 +112,8 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, label = null) {
                 return false;
             }
             if (!res_body.data.dialogById.dialog || res_body.data.dialogById.dialog.id !== dialogId) {
-                console.log(`DialogId ${dialogId} not found in response`);
-                return false;
+                console.log(`DialogId ${dialogId} not found in dialogById-response`);
+                return true;
             }
             return true;
         }

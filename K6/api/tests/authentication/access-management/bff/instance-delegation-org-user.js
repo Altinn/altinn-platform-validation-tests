@@ -71,7 +71,6 @@ const getDelegatedInstancesForResourceAfterLabel = "2d. Get delegated instances 
 const checkDelegationForResourceLabelAfter = "2e. Check delegation for resource and instance for user after delegation";
 const getConnectionsWithToAfter = "2f. Get connections for user with to parameterafter delegation";
 const getConnectionsLabelAfter = "2g. Get connections for user after delegation";
-const getRoleMetaLabel = "2h. Get role meta";
 
 const partThreeLabel = "3 - Check delegated dialog is visible for delegated user";
 const getDialogByIdLabel = "3a. Get dialog by id for delegated user";
@@ -109,7 +108,6 @@ export const options = getOptions([
     getConnectionsWithTo,
     getConnectionsWithToAfter,
     getConnectionsLabelAfter,
-    getRoleMetaLabel,
 
     partThreeLabel,
     getDialogByIdLabel,
