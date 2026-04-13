@@ -6,12 +6,14 @@ import {
     randomItem,
 } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
-import { ConsentApiClient } from "../../../../clients/authentication/index.js";
+import { BffAccessManagementApiClient, ConsentApiClient } from "../../../../clients/authentication/index.js";
 import {
     RequestConsent,
     ApproveConsent,
     LookupConsent,
 } from "../../../building-blocks/authentication/consent/index.js";
+
+import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
 
 export function setup() {
     const res = http.get(
@@ -37,12 +39,13 @@ function selectRandomFromToPair(data) {
 let consenterApiClient = undefined;
 let consenteeApiClient = undefined;
 let consentLookupApiClient = undefined;
+let accessManagementApiClient = undefined;
 
 function getClients(orgNo, userId, partyUuid) {
     if (
         consenterApiClient == undefined ||
-    consenteeApiClient == undefined ||
-    consentLookupApiClient == undefined
+        consenteeApiClient == undefined ||
+        consentLookupApiClient == undefined
     ) {
         console.log("Configuring Clients");
         console.log(`orgNo: ${orgNo} -- userId: ${userId}`);
@@ -90,8 +93,10 @@ function getClients(orgNo, userId, partyUuid) {
             __ENV.BASE_URL,
             tokenGeneratorConsentLookup
         );
+
+        accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGeneratorConsenter);
     }
-    return [consenteeApiClient, consenterApiClient, consentLookupApiClient];
+    return [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient];
 }
 
 export default function (data) {
@@ -103,7 +108,7 @@ export default function (data) {
         [from, to] = selectRandomFromToPair(data);
     }
 
-    let [consenteeApiClient, consenterApiClient, consentLookupApiClient] =
+    let [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient] =
         getClients(to.orgNo, from.userId, from.partyUuid);
 
     const id = uuidv4();
@@ -135,6 +140,8 @@ export default function (data) {
     );
 
     ApproveConsent(consenterApiClient, id);
+
+    GetConsentLog(accessManagementApiClient, from.partyUuid);
 
     LookupConsent(
         consentLookupApiClient,

@@ -202,7 +202,7 @@ export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = nul
  */
 export function GetConsentLog(bffAccessManagementApiClient, uuid, label = null) {
     const res = bffAccessManagementApiClient.GetConsentLogForUser(uuid, label);
-    checker(res, "Get active consent");
+    checker(res, "Get consent log");
     return res.body;
 }
 
