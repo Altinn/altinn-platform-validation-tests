@@ -190,9 +190,6 @@ export function DelegateRightsForResource(bffAccessManagementApiClient, queryPar
 export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = null) {
     const res = bffAccessManagementApiClient.GetActiveConsentsForUser(uuid, label);
     checker(res, "Get active consent");
-    if (res.timings.duration > 5000) {
-        console.warn(`Warning: Get active consent for user ${uuid} took ${res.timings.duration} ms`);
-    }
     return res.body;
 }
 
@@ -206,9 +203,6 @@ export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = nul
 export function GetConsentLog(bffAccessManagementApiClient, uuid, label = null) {
     const res = bffAccessManagementApiClient.GetConsentLogForUser(uuid, label);
     checker(res, "Get active consent");
-    if (res.timings.duration > 5000) {
-        console.warn(`Warning: Get consent log for user ${uuid} took ${res.timings.duration} ms`);
-    }
     return res.body;
 }
 
