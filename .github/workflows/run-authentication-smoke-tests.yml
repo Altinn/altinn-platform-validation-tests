@@ -89,4 +89,3 @@ jobs:
       - name: "Apply k8s manifests"
         run: "kubectl apply --server-side -f .dist/ -R || true"
         shell: "bash"
-        
