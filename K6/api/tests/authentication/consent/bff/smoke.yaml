@@ -1,0 +1,38 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/consent/bff
+test_definitions:
+  - test_scope: get-consent-worst-case
+    test_file: consent-log-worst-case.js
+    config_file: "conf-worst-case.json"
+    contexts:
+      - environment: yt01
+  - test_scope: get-consent-worst-case
+    test_file: consent-requests-worst-case.js
+    config_file: "conf-worst-case.json"
+    contexts:
+      - environment: yt01
+
+  - test_scope: get-consent
+    test_file: get-consent-log.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: conf.json
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
+  - test_scope: get-consent
+    test_file: get-consent-requests.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: conf.json
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
