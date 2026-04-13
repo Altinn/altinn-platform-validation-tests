@@ -71,6 +71,7 @@ jobs:
           - "K6/api/tests/authentication/system-user-request/functional.yaml"
           - "K6/api/tests/authentication/consent/functional.yaml"
           - "K6/api/tests/authentication/consent/smoke.yaml"
+          - "K6/api/tests/authentication/consent/bff/smoke.yaml"
           - "K6/api/tests/authentication/consent/breakpoint.yaml"
           - "K6/api/tests/platform/service_owner/healthcheck.yaml"
           - "K6/api/tests/core/notifications/functional.yaml"

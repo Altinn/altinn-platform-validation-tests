@@ -16,6 +16,7 @@ export {
     GetRightsMeta,
     GetDelegatedInstancesForResource,
     GetActiveConsent,
+    GetConsentLog,
     GetResourceById,
     CheckDelegationForResource,
     DelegateRightsForResource,
