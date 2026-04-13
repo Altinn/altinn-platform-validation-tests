@@ -96,7 +96,7 @@ function getClients(orgNo, userId, partyUuid) {
 
         accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGeneratorConsenter);
     }
-    return [consenteeApiClient, consenterApiClient, consentLookupApiClient];
+    return [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient];
 }
 
 export default function (data) {
@@ -108,7 +108,7 @@ export default function (data) {
         [from, to] = selectRandomFromToPair(data);
     }
 
-    let [consenteeApiClient, consenterApiClient, consentLookupApiClient] =
+    let [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient] =
         getClients(to.orgNo, from.userId, from.partyUuid);
 
     const id = uuidv4();
