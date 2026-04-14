@@ -7,9 +7,9 @@ class ConsentApiClient {
    * @param {*} tokenGenerator
    */
     constructor(baseUrl, tokenGenerator) {
-    /**
-     * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-     */
+        /**
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
      * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -32,7 +32,7 @@ class ConsentApiClient {
    * @param {string} redirectUrl
    * @returns http.RefinedResponse
    */
-    RequestConsent(id, from, to, validTo, consentRights, redirectUrl) {
+    RequestConsent(id, from, to, validTo, consentRights, redirectUrl, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/enterprise/consentrequests`;
         const body = {
@@ -45,7 +45,7 @@ class ConsentApiClient {
         };
 
         const params = {
-            tags: { name: url },
+            tags: { name: label || url },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -60,13 +60,13 @@ class ConsentApiClient {
    * @param {string } id
    * @returns http.RefinedResponse
    */
-    ApproveConsent(id) {
+    ApproveConsent(id, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
         const body = { language: "nb" };
 
         const params = {
-            tags: { name: `${this.FULL_PATH}/bff/consentrequests/id/accept` },
+            tags: { name: label || `${this.FULL_PATH}/bff/consentrequests/id/accept` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

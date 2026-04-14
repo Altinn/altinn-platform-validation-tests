@@ -14,6 +14,7 @@ import {
 } from "../../../building-blocks/authentication/consent/index.js";
 
 import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
+import { getOptions } from "../../../../helpers.js";
 
 export function setup() {
     const res = http.get(
@@ -99,6 +100,14 @@ function getClients(orgNo, userId, partyUuid) {
     return [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient];
 }
 
+// Labels for the different steps in the consent process, used for tagging requests in K6 and improving readability of test results.
+const requestConsentLabel = "Request Consent";
+const approveConsentLabel = "Approve Consent";
+const getConsentLogLabel = "Get Consent Log";
+const lookupConsentLabel = "Lookup Consent";
+
+export const options = getOptions([requestConsentLabel, approveConsentLabel, getConsentLogLabel, lookupConsentLabel]);
+
 export default function (data) {
     if (!__ENV.ENVIRONMENT) {
         throw new Error("Test aborted due to missing ENVIRONMENT variable.");
@@ -136,17 +145,19 @@ export default function (data) {
         orgIdentifierNo,
         new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         consentRights,
-        "https://altinn.no"
+        "https://altinn.no",
+        requestConsentLabel
     );
 
-    ApproveConsent(consenterApiClient, id);
+    ApproveConsent(consenterApiClient, id, approveConsentLabel);
 
-    GetConsentLog(accessManagementApiClient, from.partyUuid);
+    GetConsentLog(accessManagementApiClient, from.partyUuid, getConsentLogLabel);
 
     LookupConsent(
         consentLookupApiClient,
         id,
         personIdentifierNo,
-        orgIdentifierNo
+        orgIdentifierNo,
+        lookupConsentLabel
     );
 }
