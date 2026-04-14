@@ -12,8 +12,8 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
  * @param {string} redirectUrl
  * @returns (string | ArrayBuffer | null)
  */
-export function RequestConsent(consentApiClient, id, from, to, validTo, consentRights, redirectUrl) {
-    const res = consentApiClient.RequestConsent(id, from, to, validTo, consentRights, redirectUrl);
+export function RequestConsent(consentApiClient, id, from, to, validTo, consentRights, redirectUrl, label = null) {
+    const res = consentApiClient.RequestConsent(id, from, to, validTo, consentRights, redirectUrl, label);
     const succeed = check(res, {
         "RequestConsent - status code is 201": (r) => r.status === 201,
         "RequestConsent - status text is 201 Created": (r) => r.status_text == "201 Created",

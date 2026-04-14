@@ -7,8 +7,8 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
  * @param {string } id
  * @returns (string | ArrayBuffer | null)
  */
-export function ApproveConsent(consentApiClient, id) {
-    const res = consentApiClient.ApproveConsent(id);
+export function ApproveConsent(consentApiClient, id, label = null) {
+    const res = consentApiClient.ApproveConsent(id, label);
     const succeed = check(res, {
         "ApproveConsent - status code is 200": (r) => r.status === 200,
         "ApproveConsent - status text is 200 OK": (r) => r.status_text == "200 OK",
