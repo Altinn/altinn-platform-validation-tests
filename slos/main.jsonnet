@@ -38,11 +38,11 @@ local slo = {
         ratio: {
           errors: {
             // metric: 'k6_http_reqs_total{ name=~".*/kuberneteswrapper/api/v1/Deployments", status=~"5...|418" }',
-            metric: std.format('k6_http_reqs_total{ url=~%s, status=~"5...|418" }', url_path),
+            metric: std.format('k6_http_reqs_total{ url=~"%s", status=~"5...|418" }', url_path),
           },
           total: {
             // metric: 'k6_http_reqs_total{ name=~".*/kuberneteswrapper/api/v1/Deployments" }',
-            metric: std.format('k6_http_reqs_total{ url=~%s }', url_path),
+            metric: std.format('k6_http_reqs_total{ url=~"%s" }', url_path),
           },
         },
       },
