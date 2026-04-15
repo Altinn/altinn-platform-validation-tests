@@ -36,7 +36,7 @@ class AuthorizedPartiesClient {
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let nameTag = label ? label : url.toString();
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, url: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
