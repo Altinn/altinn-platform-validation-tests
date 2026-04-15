@@ -49,7 +49,7 @@ class ServiceOwnerApiClient {
         url.searchParams.append("transmissionId", transmissionId);
         let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification";
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification" },
             headers: {
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
@@ -81,7 +81,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + "/dialogs");
         let nameTag = label ? label : this.FULL_PATH + "/dialogs";
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -102,8 +102,8 @@ class ServiceOwnerApiClient {
 
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Transmission
-     * @param { string } dialogId 
-     * @param { string } label 
+     * @param { string } dialogId
+     * @param { string } label
      * @returns http.RefinedResponse
      */
 
@@ -113,9 +113,10 @@ class ServiceOwnerApiClient {
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions`);
-        let nameTag = label ? label : this.FULL_PATH + "/dialogs/transmissions";
+        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/transmissions";
+
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions" },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -132,8 +133,8 @@ class ServiceOwnerApiClient {
 
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Activity
-     * @param { string } dialogId 
-     * @param { string } label 
+     * @param { string } dialogId
+     * @param { string } label
      * @returns http.RefinedResponse
      */
 
@@ -143,9 +144,10 @@ class ServiceOwnerApiClient {
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);
-        let nameTag = label ? label : this.FULL_PATH + "/dialogs/activities";
+
+        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/activities";
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: this.FULL_PATH + "/dialogs/dialogId/activities" },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

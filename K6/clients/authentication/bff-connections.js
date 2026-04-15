@@ -26,7 +26,7 @@ class BffConnectionsApiClient {
 
     /**
     * Get connections
-    * Docs 
+    * Docs
     * @param {string} partyId
     * @param {Object} queryParams
     * @param {string|null} label - label for the request
@@ -37,7 +37,7 @@ class BffConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/rightholders`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -57,10 +57,10 @@ class BffConnectionsApiClient {
     */
     PostRightholder(from, to, lastName, label = null) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`);
+        const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`); // TODO: Is this correct?
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/reportee/from/rightholder` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -87,7 +87,7 @@ class BffConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -107,7 +107,7 @@ class BffConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/reportee`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },

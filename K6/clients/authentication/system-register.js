@@ -10,9 +10,9 @@ class SystemRegisterApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -33,7 +33,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = this.FULL_PATH;
         const params = {
-            tags: { name: url },
+            tags: { endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -51,7 +51,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/systemId` },
+            tags: { endpoint: `${this.FULL_PATH}/systemId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -70,7 +70,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/systemId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -103,7 +103,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/systemId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -137,7 +137,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId/accesspackages` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/systemId/accesspackages` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -157,7 +157,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId/rights` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/systemId/rights` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -176,7 +176,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/systemId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -195,7 +195,7 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/${systemId}/rights`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/systemId/rights` },
+            tags: { endpoint: `${this.FULL_PATH}/systemId/rights` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -244,7 +244,7 @@ class SystemRegisterApiClient {
             "ClientId": [`${clientId}`]
         };
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

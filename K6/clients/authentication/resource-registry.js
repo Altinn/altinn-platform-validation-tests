@@ -38,7 +38,7 @@ class ResourceRegistryApiClient {
 
         let nameTag = label ? label : url.pathname;
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: url.toString() },
             headers: {
                 "Content-type": "application/json",
             },

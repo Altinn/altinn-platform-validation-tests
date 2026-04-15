@@ -37,7 +37,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/user/ishovedadmin`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -56,7 +56,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/role/permissions`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -76,7 +76,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -96,7 +96,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources/rights`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -116,7 +116,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/accesspackage/search`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -136,7 +136,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/resources/search`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -156,7 +156,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/resources/resourceowners`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -176,7 +176,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/cdn/orgdata`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -196,7 +196,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/lookup/org/${orgNo}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/lookup/org/orgNo` },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -205,19 +205,19 @@ class BffAccessManagementApiClient {
         return http.get(url.toString(), params);
     }
 
-    /** 
+    /**
      * Get role metadata
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {*} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
-     * 
+     *
     */
     GetRoleMeta(queryParams, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/meta`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -237,7 +237,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/singleright/rightsmeta`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -257,7 +257,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -277,7 +277,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -298,7 +298,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances/rights`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",
@@ -319,7 +319,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -339,7 +339,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -359,7 +359,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/consent/active/${uuid}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/consent/active/uuid` },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -378,7 +378,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/consent/log/${uuid}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/consent/log/uuid` },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -398,7 +398,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/resources`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -418,7 +418,7 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/systemuser/${uuid}/pending`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/systemuser/uuid/pending` },
             headers: {
                 Authorization: "Bearer " + token,
             },

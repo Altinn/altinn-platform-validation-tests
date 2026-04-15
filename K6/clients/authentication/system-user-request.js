@@ -7,9 +7,9 @@ class SystemUserRequestApiClient {
    * @param {*} tokenGenerator
    */
     constructor(baseUrl, tokenGenerator) {
-    /**
-     * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-     */
+        /**
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
      * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -48,7 +48,7 @@ class SystemUserRequestApiClient {
             redirectUrl: redirectUrl,
         };
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -69,7 +69,7 @@ class SystemUserRequestApiClient {
         const url = `${this.FULL_PATH}/${partyId}/${requestId}/approve`;
 
         const params = {
-            tags: { name: `${this.FULL_PATH}/partyId/requestId/approve` },
+            tags: { endpoint: `${this.FULL_PATH}/partyId/requestId/approve` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -105,7 +105,7 @@ class SystemUserRequestApiClient {
             redirectUrl: redirectUrl,
         };
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/agent` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/agent` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -124,7 +124,7 @@ class SystemUserRequestApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/bysystem/systemId` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -142,7 +142,7 @@ class SystemUserRequestApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/agent/bysystem/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/agent/bysystem/systemId` },
+            tags: { endpoint: `${this.FULL_PATH}/vendor/agent/bysystem/systemId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

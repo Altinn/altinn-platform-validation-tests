@@ -37,7 +37,7 @@ class MaskinportenSchemaApiClient {
         const url = new URL(`${this.FULL_PATH}/${from}/maskinportenschema/offered`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/from/maskinportenschema/offered` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -77,7 +77,7 @@ class MaskinportenSchemaApiClient {
         Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

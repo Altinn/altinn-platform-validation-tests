@@ -9,9 +9,9 @@ class AuthorizedPartiesClient {
    * @param {*} tokenGenerator
    */
     constructor(baseUrl, tokenGenerator) {
-    /**
-     * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-     */
+        /**
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
      * @property {string} BASE_PATH The path to the api without host information
@@ -36,7 +36,7 @@ class AuthorizedPartiesClient {
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let nameTag = label ? label : url.toString();
         const params = {
-            tags: { name: nameTag, url: url.toString() },
+            tags: { name: nameTag, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
