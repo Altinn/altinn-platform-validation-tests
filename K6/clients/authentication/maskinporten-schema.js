@@ -77,7 +77,7 @@ class MaskinportenSchemaApiClient {
         Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}maskinporten/delegations` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
