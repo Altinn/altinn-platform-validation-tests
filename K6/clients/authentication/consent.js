@@ -45,7 +45,7 @@ class ConsentApiClient {
         };
 
         const params = {
-            tags: { name: label || url },
+            tags: { name: label || url, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -64,9 +64,8 @@ class ConsentApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
         const body = { language: "nb" };
-
         const params = {
-            tags: { name: label || `${this.FULL_PATH}/bff/consentrequests/id/accept` },
+            tags: { name: label || `${this.FULL_PATH}/bff/consentrequests/id/accept`, endpoint: `${this.FULL_PATH}/bff/consentrequests/id/accept` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -96,7 +95,7 @@ class ConsentApiClient {
         };
 
         const params = {
-            tags: { name: label || url },
+            tags: { name: label || url, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

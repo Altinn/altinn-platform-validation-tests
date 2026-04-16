@@ -9,11 +9,11 @@ class ConnectionsApiClient {
     constructor(
         baseUrl,
         tokenGenerator,
-        bff=false,
+        bff = false,
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -43,7 +43,7 @@ class ConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -65,7 +65,7 @@ class ConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/accesspackages`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

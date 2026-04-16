@@ -36,7 +36,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -59,7 +59,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -86,7 +86,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -108,7 +108,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -130,7 +130,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -160,7 +160,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -191,7 +191,7 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/clients`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

@@ -10,9 +10,9 @@ class OrdersApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -42,7 +42,7 @@ class OrdersApiClient {
         };
 
         const params = {
-            tags: { name: url },
+            tags: { endpoint: url },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

@@ -40,7 +40,7 @@ class BffSingleRightApiClient {
         const url = new URL(`${this.FULL_PATH}/delegate`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -61,7 +61,7 @@ class BffSingleRightApiClient {
         const url = new URL(`${this.FULL_PATH}/revoke`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -81,7 +81,7 @@ class BffSingleRightApiClient {
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

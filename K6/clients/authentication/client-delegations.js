@@ -35,7 +35,7 @@ class ClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/my/clients`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
