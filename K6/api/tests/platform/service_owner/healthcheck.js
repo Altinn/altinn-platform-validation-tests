@@ -28,9 +28,12 @@ export function setup() {
 export default function (data) {
     console.log(`Querying ${data.length} endpoints`);
     for (let [org, deploy_env, endpoint] of data) {
-        const tags = { "org": org, "url": endpoint, "deploy_env": deploy_env };
+        const tags = { "org": org, "endpoint": endpoint, "deploy_env": deploy_env };
+        const params = {
+            tags: tags,
+        };
         try {
-            const res = http.get(endpoint);
+            const res = http.get(endpoint, params);
             check(res, { "HTTP version is valid": (res) => ["HTTP/1.1", "HTTP/2.0"].includes(res.proto), }, tags);
             check(res, { "response code was 200": (res) => res.status == 200, }, tags);
             const res_body = res.body;

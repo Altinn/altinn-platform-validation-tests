@@ -17,7 +17,7 @@ class BffConnectionsApiClient {
         /**
          * @property {string} BASE_PATH The path to the api without host information
          */
-        this.BASE_PATH = "/accessmanagement/api/v1/connection/";
+        this.BASE_PATH = "/accessmanagement/api/v1/connection";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
