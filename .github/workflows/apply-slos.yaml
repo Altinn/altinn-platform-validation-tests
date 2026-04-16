@@ -2,7 +2,7 @@ name: "Apply SLOs"
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "./slos/**"
       - "hack/generate_slos.sh"
