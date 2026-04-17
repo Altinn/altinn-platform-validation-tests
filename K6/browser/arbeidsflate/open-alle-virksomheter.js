@@ -1,7 +1,8 @@
 /**
- * This script is designed to test the performance of opening the "arbeidsflate" page for users with many parties.
- * It uses the K6 browser extension to simulate real user interactions and measure the time taken to load the page.
- * The five worst performing users in the AT23, YT01 and TT02 environments are tested.
+ * This script is designed to test the performance of clicking "Alle virksomheter/All enterprises" after opening arebeidsflate.
+ * "Alle virksomheter" is a feature that allows users to see all the enterprises they are connected to, maximum 100 enterprises
+ * It uses the K6 browser extension to simulate real user interactions and measure the time taken to load the pages.
+ * 7 selected users are testet in at23, tt02 and yt01, varying number of enterprises and total number of dialogs that can be hit
  */
 
 import { browser } from "k6/browser";
@@ -12,6 +13,10 @@ import { getCookie, afUrl, environment } from "./arbeidsflate-utils.js";
 const pageLoadingTime = new Trend("page_loading_time", true);
 const allOrganizationsTime = new Trend("all_organizations_time", true);
 
+/**
+ * The endUsersByEnvironment object contains the test users for each environment (YT01, TT02, AT23) along with their details such as pid, label, userId, partyId, and partyUuid.
+ * The labels are named with a format that includes the pid, number of enterprises, and number of dialogs to easily identify the users during testing and analysis of results.
+ */
 const endUsersByEnvironment = {
     yt01: [
         { pid: "09856699762", label: "a_09856699762_82_22k", userId: "4543406", partyId: "61711995", partyUuid: "fe2071c7-772b-4210-857e-5f0ff5178fd5" },
@@ -135,6 +140,13 @@ export default async function (data) {
     }
 }
 
+/**
+ * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
+ * @param {} page 
+ * @param {*} trend 
+ * @param {*} labels 
+ * @returns 
+ */
 export async function selectAllEnterprises(page, trend, labels) {
     const startTime = new Date();
     await page.locator('#toolbar-menu-root > button').click();
