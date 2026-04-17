@@ -149,11 +149,11 @@ export default async function (data) {
  */
 export async function selectAllEnterprises(page, trend, labels) {
     const startTime = new Date();
-    await page.locator('#toolbar-menu-root > button').click();
+    await page.locator("#toolbar-menu-root > button").click();
 
     try {
-        const el = page.locator('#ALL');
-        await el.waitFor({ state: 'visible', timeout: 500 });
+        const el = page.locator("#ALL");
+        await el.waitFor({ state: "visible", timeout: 500 });
         await el.click();
     } catch {
         // return without measurement? If #ALL is not present, as this is not a failure of the test scenario
