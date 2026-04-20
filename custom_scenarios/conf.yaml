@@ -1,0 +1,271 @@
+# Compilation of all smoke tests running in yt01
+#
+#
+namespace: authentication
+test_definitions:
+  # ./K6/api/tests/authentication/connections/smoke.yaml
+  - test_file: K6/api/tests/authentication/connections/get-connections-to.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/connections/get-connections-from.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/connections/get-access-packages-to.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/connections/get-access-packages-from.js
+    env_file: K6/api/tests/authentication/connections/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  # ./K6/api/tests/authentication/pdp-authorize/smoke.yaml
+  - test_file: K6/api/tests/authentication/pdp-authorize/enduser.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-direct-delegation.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-deny.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-single-resource.js
+    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  # ./K6/api/tests/authentication/get-authorized-parties/smoke.yaml
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-org.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-system-user.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-include-parties-via-key-role.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-avgiver-liste.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_file: K6/api/tests/authentication/get-authorized-parties/for-user-dialogporten-with-filter.js
+    env_file: K6/api/tests/authentication/get-authorized-parties/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  # ./K6/api/tests/authentication/maskinporten-schema/smoke.yaml
+  - test_file: K6/api/tests/authentication/maskinporten-schema/get-maskinporten-schema-delegations.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  # ./K6/api/tests/authentication/access-management/bff/smoke.yaml
+  - test_scope: access-management-bff
+    test_file: K6/api/tests/authentication/access-management/bff/client-admin.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_scope: access-management-bff
+    test_file: K6/api/tests/authentication/access-management/bff/fullmakt-user-user.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_scope: access-management-bff
+    test_file: K6/api/tests/authentication/access-management/bff/fullmakt-org-org.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_scope: access-management-bff
+    test_file: K6/api/tests/authentication/access-management/bff/single-service-org-org.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  - test_scope: access-management-bff
+    test_file: K6/api/tests/authentication/access-management/bff/single-service-user-user.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  # ./K6/api/tests/authentication/client-delegations/smoke.yaml
+  - test_file: K6/api/tests/authentication/client-delegations/get-my-clients.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  # ./K6/api/tests/authentication/roles/smoke.yaml
+  - test_file: K6/api/tests/authentication/roles/get-roles.js
+    env_file: K6/api/tests/authentication/roles/common.env
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+
+  # ./K6/api/tests/authentication/consent/smoke.yaml
+  - test_file: K6/api/tests/authentication/consent/post-consent.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+  - test_file: K6/api/tests/authentication/consent/lookup.js
+    config_file: "custom_scenarios/conf.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
