@@ -5,10 +5,10 @@ import { check } from "k6";
  * Post single right for the specified query parameters
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetIsHovedAdmin(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetIsHovedAdmin(queryParams, label);
+export function GetIsHovedAdmin(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetIsHovedAdmin(queryParams, labels);
     checker(res, "Get is hoved admin");
     return res.body;
 }
@@ -17,10 +17,10 @@ export function GetIsHovedAdmin(bffAccessManagementApiClient, queryParams, label
  * Get permissions for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetRolePermissions(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetRolePermissions(queryParams, label);
+export function GetRolePermissions(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetRolePermissions(queryParams, labels);
     checker(res, "Get role permissions");
     return res.body;
 }
@@ -29,10 +29,10 @@ export function GetRolePermissions(bffAccessManagementApiClient, queryParams, la
  * Get delegated resources for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetDelegatedResources(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetDelegatedResources(queryParams, label);
+export function GetDelegatedResources(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetDelegatedResources(queryParams, labels);
     checker(res, "Get delegated resources");
     return res.body;
 }
@@ -41,11 +41,11 @@ export function GetDelegatedResources(bffAccessManagementApiClient, queryParams,
  * Get delegated rights for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * @return (string | ArrayBuffer | null)
  */
-export function GetDelegatedRightsForResource(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetDelegatedRightsForResource(queryParams, label);
+export function GetDelegatedRightsForResource(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetDelegatedRightsForResource(queryParams, labels);
     checker(res, "Get delegated rights for resource");
     return res.body;
 }
@@ -54,11 +54,11 @@ export function GetDelegatedRightsForResource(bffAccessManagementApiClient, quer
  *  Get search for access packages
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * @return (string | ArrayBuffer | null)
  */
-export function SearchAccessPackages(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.SearchAccessPackages(queryParams, label);
+export function SearchAccessPackages(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.SearchAccessPackages(queryParams, labels);
     checker(res, "search access packages");
     return res.body;
 }
@@ -67,10 +67,10 @@ export function SearchAccessPackages(bffAccessManagementApiClient, queryParams, 
  * Get search for resources
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function SearchResources(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.SearchResources(queryParams, label);
+export function SearchResources(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.SearchResources(queryParams, labels);
     checker(res, "search resources");
     return res.body;
 }
@@ -79,11 +79,11 @@ export function SearchResources(bffAccessManagementApiClient, queryParams, label
  * Get resource owners for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetResourceOwners(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetResourceOwners(queryParams, label);
+export function GetResourceOwners(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetResourceOwners(queryParams, labels);
     checker(res, "Get resource owners");
     return res.body;
 }
@@ -92,11 +92,11 @@ export function GetResourceOwners(bffAccessManagementApiClient, queryParams, lab
  *  Get organizational data for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetOrganizationData(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetOrganizationData(queryParams, label);
+export function GetOrganizationData(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetOrganizationData(queryParams, labels);
     checker(res, "Get organization data");
     return res.body;
 }
@@ -105,11 +105,11 @@ export function GetOrganizationData(bffAccessManagementApiClient, queryParams, l
  * Get organizational data from lookup for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {*} orgNo - organization number to lookup
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgNo, label = null) {
-    const res = bffAccessManagementApiClient.GetOrganizationDataFromLookup(orgNo, label);
+export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgNo, labels = null) {
+    const res = bffAccessManagementApiClient.GetOrganizationDataFromLookup(orgNo, labels);
     checker(res, "Get organization data from lookup");
     return res.body;
 }
@@ -118,24 +118,24 @@ export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgN
  * Get role metadata
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetRoleMeta(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetRoleMeta(queryParams, label);
+export function GetRoleMeta(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetRoleMeta(queryParams, labels);
     checker(res, "Get role meta");
     return res.body;
 }
 
 /**
  * Get rights metadata for a resource
- * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API    
+ * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetRightsMeta(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetRightsMeta(queryParams, label);
+export function GetRightsMeta(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetRightsMeta(queryParams, labels);
     checker(res, "Get rights meta");
     return res.body;
 }
@@ -144,11 +144,11 @@ export function GetRightsMeta(bffAccessManagementApiClient, queryParams, label =
  * Get delegated instances for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetDelegatedInstancesForResource(queryParams, label);
+export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetDelegatedInstancesForResource(queryParams, labels);
     checker(res, "Get delegated instances for resource");
     return res.body;
 }
@@ -157,11 +157,11 @@ export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, q
  * Get delegation check for a resource
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  * */
-export function CheckDelegationForResource(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.CheckDelegationForResource(queryParams, label);
+export function CheckDelegationForResource(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.CheckDelegationForResource(queryParams, labels);
     checker(res, "Get delegation check for resource");
     return res.body;
 }
@@ -171,11 +171,11 @@ export function CheckDelegationForResource(bffAccessManagementApiClient, queryPa
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
  * @param {*} body - body for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function DelegateRightsForResource(bffAccessManagementApiClient, queryParams, body, label = null) {
-    const res = bffAccessManagementApiClient.DelegateRightsForResource(queryParams, body, label);
+export function DelegateRightsForResource(bffAccessManagementApiClient, queryParams, body, labels = null) {
+    const res = bffAccessManagementApiClient.DelegateRightsForResource(queryParams, body, labels);
     checker(res, "Post delegated rights for resource", 200);
     return res.body;
 }
@@ -184,11 +184,11 @@ export function DelegateRightsForResource(bffAccessManagementApiClient, queryPar
  * Get active consent for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} uuid - uuid for the user
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = null) {
-    const res = bffAccessManagementApiClient.GetActiveConsentsForUser(uuid, label);
+export function GetActiveConsent(bffAccessManagementApiClient, uuid, labels = null) {
+    const res = bffAccessManagementApiClient.GetActiveConsentsForUser(uuid, labels);
     checker(res, "Get active consent");
     return res.body;
 }
@@ -197,11 +197,11 @@ export function GetActiveConsent(bffAccessManagementApiClient, uuid, label = nul
  * Get consent log for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} uuid - uuid for the user
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetConsentLog(bffAccessManagementApiClient, uuid, label = null) {
-    const res = bffAccessManagementApiClient.GetConsentLogForUser(uuid, label);
+export function GetConsentLog(bffAccessManagementApiClient, uuid, labels = null) {
+    const res = bffAccessManagementApiClient.GetConsentLogForUser(uuid, labels);
     checker(res, "Get consent log");
     return res.body;
 }
@@ -210,11 +210,11 @@ export function GetConsentLog(bffAccessManagementApiClient, uuid, label = null) 
  * Get resource by id
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetResourceById(bffAccessManagementApiClient, queryParams, label = null) {
-    const res = bffAccessManagementApiClient.GetResourceById(queryParams, label);
+export function GetResourceById(bffAccessManagementApiClient, queryParams, labels = null) {
+    const res = bffAccessManagementApiClient.GetResourceById(queryParams, labels);
     checker(res, "Get resource by id");
     return res.body;
 }
@@ -223,11 +223,11 @@ export function GetResourceById(bffAccessManagementApiClient, queryParams, label
  * Get pending delegations for a user
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param {} uuid - uuid for the user
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * return (string | ArrayBuffer | null)
  */
-export function GetPendingDelegationsForUser(bffAccessManagementApiClient, uuid, label = null) {
-    const res = bffAccessManagementApiClient.GetPendingDelegationsForUser(uuid, label);
+export function GetPendingDelegationsForUser(bffAccessManagementApiClient, uuid, labels = null) {
+    const res = bffAccessManagementApiClient.GetPendingDelegationsForUser(uuid, labels);
     checker(res, "Get pending delegations for user");
     return res.body;
 }

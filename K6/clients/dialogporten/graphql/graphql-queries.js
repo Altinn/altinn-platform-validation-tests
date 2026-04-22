@@ -5,7 +5,7 @@
 
 /**
  * Get dialog by id
- * @param {uuidv7} id 
+ * @param {uuidv7} id
  * @returns graphql query to get dialog by id
  */
 export function getDialogById(id) {
@@ -21,7 +21,7 @@ export function getDialogById(id) {
               }
             }
           }
-          
+
           fragment DialogByIdFields on Dialog {
             id
             dialogToken
@@ -75,7 +75,7 @@ export function getDialogById(id) {
               }
             }
           }
-          
+
           fragment AttachmentFields on Attachment {
             id
             displayName {
@@ -87,14 +87,14 @@ export function getDialogById(id) {
               ...AttachmentUrlFields
             }
           }
-          
+
           fragment AttachmentUrlFields on AttachmentUrl {
             id
             url
             consumerType
             mediaType
           }
-          
+
           fragment DialogActivity on Activity {
             id
             transmissionId
@@ -110,7 +110,7 @@ export function getDialogById(id) {
             type
             createdAt
           }
-          
+
           fragment GuiActionFields on GuiAction {
             id
             url
@@ -129,7 +129,7 @@ export function getDialogById(id) {
               languageCode
             }
           }
-          
+
           fragment SeenLogFields on SeenLog {
             id
             seenAt
@@ -140,7 +140,7 @@ export function getDialogById(id) {
             }
             isCurrentEndUser
           }
-          
+
           fragment TransmissionFields on Transmission {
             id
             isAuthorized
@@ -189,7 +189,7 @@ export function getDialogById(id) {
               }
             }
           }
-          
+
           fragment DialogContentFields on ContentValue {
             mediaType
             value {
@@ -230,7 +230,7 @@ export function getAllDialogsForParty(partyId) {
               continuationToken
             }
           }
-          
+
           fragment SearchDialogFields on SearchDialog {
             id
             party
@@ -267,7 +267,7 @@ export function getAllDialogsForParty(partyId) {
               systemLabels
             }
           }
-          
+
           fragment SeenLogFields on SeenLog {
             id
             seenAt
@@ -278,7 +278,7 @@ export function getAllDialogsForParty(partyId) {
             }
             isCurrentEndUser
           }
-          
+
           fragment DialogContentFields on ContentValue {
             mediaType
             value {

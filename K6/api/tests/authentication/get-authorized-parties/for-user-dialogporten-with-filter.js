@@ -28,8 +28,9 @@ export default function (data) {
         "urn:altinn:person:identifier-no",
         userParty.ssn,
         queryParams,
-        label,
-        parties
+        parties,
+        label
+
     );
 }
 

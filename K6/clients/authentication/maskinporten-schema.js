@@ -32,7 +32,7 @@ class MaskinportenSchemaApiClient {
      * @param {*} label - An optional label for the delegation, used for tagging and logging purposes. If not provided, the URL of the API call will be used as the label.
      * @returns A k6 HTTP response object from the POST request to the Maskinporten Schema API
      */
-    PostOffered(from, to, resource, label = null) {
+    PostOffered(from, to, resource, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/${from}/maskinportenschema/offered`);
         const tags = label ? label : url.toString();
@@ -71,7 +71,7 @@ class MaskinportenSchemaApiClient {
      * @param {*} label - An optional label for the delegation, used for tagging and logging purposes. If not provided, the URL of the API call will be used as the label.
      * @return A k6 HTTP response object from the GET request to the Maskinporten Schema API
      */
-    GetDelegations(queryParams, label = null) {
+    GetDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}maskinporten/delegations`);
         Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));

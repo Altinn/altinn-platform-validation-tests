@@ -75,7 +75,7 @@ class BffConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    PostRightholder(from, to, lastName, label = null) {
+    PostRightholder(from, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`); // TODO: Is this correct?
         const tags = label ? label : url.toString();
@@ -102,7 +102,7 @@ class BffConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    PostRightholderOrg(from, to, label = null) {
+    PostRightholderOrg(from, to, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
         const tags = label ? label : url.toString();
@@ -119,10 +119,10 @@ class BffConnectionsApiClient {
     /**
      * Delete rightholder connection for a reportee
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    DeleteRightholder(queryParams, label = null) {
+    DeleteRightholder(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee`);
         const tags = label ? label : url.toString();

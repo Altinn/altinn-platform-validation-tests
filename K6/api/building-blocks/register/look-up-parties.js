@@ -17,13 +17,13 @@ export function LookUpPartyInRegister(
     registerLookupClient,
     fields,
     requestBody,
-    label = null,
+    labels = null,
 ) {
     if (requestBody === null || requestBody === undefined) {
         throw new Error("LookUpPartyInRegister: requestBody is required");
     }
 
-    const res = registerLookupClient.LookupParties(fields, requestBody, label);
+    const res = registerLookupClient.LookupParties(fields, requestBody, labels);
 
     const success = check(res, {
         "Register LookupParties - status code should be 200": (r) =>

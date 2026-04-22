@@ -25,7 +25,10 @@ jobs:
       - name: "Lint Code"
         run: "npm run lint"
       - name: "Ensure javascript files are Kebab Case"
-        run: "./validate.sh"
+        run: "./hack/validate.sh"
+        shell: "bash"
+      - name: "Ensure there are no trailing white spaces"
+        run: "./hack/fix_whitespaces.sh"
         shell: "bash"
   validate_generation:
     runs-on: "ubuntu-latest"

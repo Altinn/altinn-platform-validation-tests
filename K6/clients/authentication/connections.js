@@ -38,7 +38,7 @@ class ConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetConnections(queryParams, label = null) {
+    GetConnections(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}`);
         const tags = label ? label : url.toString();
@@ -60,7 +60,7 @@ class ConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetAccessPackages(queryParams, label = null) {
+    GetAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackages`);
         const tags = label ? label : url.toString();

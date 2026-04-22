@@ -149,9 +149,9 @@ export default function (data) {
         requestConsentLabel
     );
 
-    ApproveConsent(consenterApiClient, id, approveConsentLabel);
+    ApproveConsent(consenterApiClient, id, approveConsentlabels);
 
-    GetConsentLog(accessManagementApiClient, from.partyUuid, getConsentLogLabel);
+    GetConsentLog(accessManagementApiClient, from.partyUuid, getConsentLoglabels);
 
     LookupConsent(
         consentLookupApiClient,

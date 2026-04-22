@@ -32,7 +32,7 @@ class ConsentApiClient {
    * @param {string} redirectUrl
    * @returns http.RefinedResponse
    */
-    RequestConsent(id, from, to, validTo, consentRights, redirectUrl, label = null) {
+    RequestConsent(id, from, to, validTo, consentRights, redirectUrl, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/enterprise/consentrequests`;
         const body = {
@@ -60,7 +60,7 @@ class ConsentApiClient {
    * @param {string } id
    * @returns http.RefinedResponse
    */
-    ApproveConsent(id, label = null) {
+    ApproveConsent(id, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
         const body = { language: "nb" };
@@ -85,7 +85,7 @@ class ConsentApiClient {
    * @param {string|null} label - Optional label for the request tag.
    * @returns http.RefinedResponse
    */
-    LookupConsent(id, from, to, label = null) {
+    LookupConsent(id, from, to, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/maskinporten/consent/lookup/`;
         const body = {

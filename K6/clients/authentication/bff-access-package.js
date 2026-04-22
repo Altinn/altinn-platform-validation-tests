@@ -41,7 +41,7 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    PostDelegations(queryParams, label = null) {
+    PostDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
         const tags = label ? label : url.toString();
@@ -62,7 +62,7 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    DeleteDelegations(queryParams, label = null) {
+    DeleteDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
         const tags = label ? label : url.toString();
@@ -83,7 +83,7 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    GetDelegations(queryParams, label = null) {
+    GetDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
         const tags = label ? label : url.toString();
@@ -132,7 +132,7 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    GetPermission(accessPackageId, queryParams, label = null) {
+    GetPermission(accessPackageId, queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/permission/${accessPackageId}`);
         const tags = label ? label : url.toString();

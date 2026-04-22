@@ -15,7 +15,7 @@ export function CreateDialog(
     partyId,
     serviceResource,
     serviceOwner,
-    label = null,
+    labels = null,
     noTransmissionsActivities = false,
 ) {
     const res = serviceOwnerApiClient.PostDialog(
@@ -40,15 +40,15 @@ export function CreateDialog(
 
 /**
  * Create a transmission for a dialog
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient 
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
- * @param {string} label 
+ * @param {string} label
  * @returns response body of the request
  */
 export function CreateTransmission(
     serviceOwnerApiClient,
     dialogId,
-    label = null,
+    labels = null,
 ) {
     const res = serviceOwnerApiClient.PostTransmission(
         dialogId,
@@ -69,15 +69,15 @@ export function CreateTransmission(
 
 /**
  * Create an activity for a dialog
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient 
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {uuidv7} dialogId - the id of the dialog to create the activity for
  * @param {string} label - label for the request
- * @returns 
+ * @returns
  */
 export function CreateActivity(
     serviceOwnerApiClient,
     dialogId,
-    label = null,
+    labels = null,
 ) {
     const res = serviceOwnerApiClient.PostActivity(
         dialogId,

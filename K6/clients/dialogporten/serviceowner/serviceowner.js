@@ -39,7 +39,7 @@ class ServiceOwnerApiClient {
         conditionType,
         activityType,
         transmissionId,
-        label = null
+        labels = null
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs" + `/${dialogId}` + "/actions/should-send-notification");
@@ -74,7 +74,7 @@ class ServiceOwnerApiClient {
         partyId,
         serviceResource,
         serviceOwner,
-        label = null,
+        labels = null,
         noTransmissionsActivities = false,
     ) {
         const token = this.tokenGenerator.getToken();
@@ -109,7 +109,7 @@ class ServiceOwnerApiClient {
 
     PostTransmission(
         dialogId,
-        label = null,
+        labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions`);
@@ -140,7 +140,7 @@ class ServiceOwnerApiClient {
 
     PostActivity(
         dialogId,
-        label = null,
+        labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);

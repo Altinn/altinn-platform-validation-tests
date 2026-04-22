@@ -26,7 +26,7 @@ class RolesApiClient {
     * @param {string} label
     * @returns http.RefinedResponse
     */
-    GetRoles(label) {
+    GetRoles(labels) {
         const url = new URL(`${this.FULL_PATH}`);
         let nameTag = label ? label : url.toString();
         const params = {

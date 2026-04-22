@@ -10,5 +10,5 @@ export default function () {
     if (rolesApiClient == undefined) {
         rolesApiClient = new RolesApiClient(__ENV.BASE_URL);
     }
-    GetRoles(rolesApiClient, label);
+    GetRoles(rolesApiClient, labels);
 }

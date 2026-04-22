@@ -31,7 +31,7 @@ class ResourceRegistryApiClient {
     * @param {string|null} label Label for the request
     * @returns http.RefinedResponse
     */
-    GetUpdatedResources(since, limit, label = null) {
+    GetUpdatedResources(since, limit, labels = null) {
         const url = new URL(`${this.FULL_PATH}`);
         url.searchParams.append("since", since);
         url.searchParams.append("limit", limit);

@@ -16,7 +16,7 @@ export default function () {
         includePartiesViaKeyRoles: "false",
         includeAccessPackages: "true",
     };
-    
+
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",

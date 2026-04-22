@@ -31,7 +31,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetLookupPartUser(label = null) {
+    GetLookupPartUser(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/lookup/party/user`);
         const tags = label ? label : url.toString();
@@ -50,7 +50,7 @@ class BffUserApiClient {
     * @param {string} label - label for the request, if null the url will be used as label
     * @returns http.RefinedResponse
     */
-    GetIsCompanyProfileAdmin(queryParams, label = null) {
+    GetIsCompanyProfileAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isCompanyProfileAdmin`);
         const tags = label ? label : url.toString();
@@ -70,7 +70,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetReportee(userId, label = null) {
+    GetReportee(userId, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/reportee/${userId}`);
         const tags = label ? label : url.toString();
@@ -88,7 +88,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * @returns http.RefinedResponse
      */
-    GetProfile(label = null) {
+    GetProfile(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/profile`);
         const tags = label ? label : url.toString();
@@ -107,7 +107,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetIsAdmin(queryParams, label = null) {
+    GetIsAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isAdmin`);
         const tags = label ? label : url.toString();
@@ -127,7 +127,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
-    GetIsClientAdmin(queryParams, label = null) {
+    GetIsClientAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isClientAdmin`);
         const tags = label ? label : url.toString();
@@ -146,7 +146,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetActorListOld(label = null) {
+    GetActorListOld(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/actorlist/old`);
         const tags = label ? label : url.toString();
@@ -164,7 +164,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
-    GetActorListFavorites(label = null) {
+    GetActorListFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/actorlist/favorites`);
         const tags = label ? label : url.toString();
@@ -183,7 +183,7 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetIsInstanceAdmin(queryParams, label = null) {
+    GetIsInstanceAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isInstanceAdmin`);
         const tags = label ? label : url.toString();

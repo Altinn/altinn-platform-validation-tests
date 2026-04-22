@@ -49,7 +49,7 @@ export const worst_case_users = [
 let accessManagementApiClient;
 let personalTokenGenerator;
 
-/* 
+/*
 * Since the token generator and the API client are used in every test, we initialize them once and reuse them.
 * The token generator will be updated with the correct user and party for each iteration, but the client can be reused since it doesn't hold any state related to the user.
 */

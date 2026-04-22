@@ -15,7 +15,7 @@ export function GetDialogsQueriesNotificationCondition(
     conditionType,
     activityType,
     transmissionId,
-    label = null
+    labels = null
 ) {
     const res = serviceOwnerApiClient.GetDialogsQueriesNotificationCondition(
         dialogId,

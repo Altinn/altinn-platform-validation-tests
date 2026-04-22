@@ -29,10 +29,10 @@ class BffAccessManagementApiClient {
     /**
     * Get is hoved admin
     * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} label - label for the request, if null the url will be used as label
+    * @param {*} labels - labels for the request, if null the url will be used as label
     * @returns http.RefinedResponse
     */
-    GetIsHovedAdmin(queryParams, label = null) {
+    GetIsHovedAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/ishovedadmin`);
         const tags = label ? label : url.toString();
@@ -49,9 +49,9 @@ class BffAccessManagementApiClient {
     /**
      * Get permissions for a user
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      */
-    GetRolePermissions(queryParams, label = null) {
+    GetRolePermissions(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/permissions`);
         const tags = label ? label : url.toString();
@@ -68,10 +68,10 @@ class BffAccessManagementApiClient {
     /**
      * Get delegated resources for a user
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetDelegatedResources(queryParams, label = null) {
+    GetDelegatedResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources`);
         const tags = label ? label : url.toString();
@@ -88,10 +88,10 @@ class BffAccessManagementApiClient {
     /**
      * Get delegated rights for a resource
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetDelegatedRightsForResource(queryParams, label = null) {
+    GetDelegatedRightsForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources/rights`);
         const tags = label ? label : url.toString();
@@ -108,10 +108,10 @@ class BffAccessManagementApiClient {
     /**
     * Search for access packages
     * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} label - label for the request, if null the url will be used as label
+    * @param {*} labels - labels for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    SearchAccessPackages(queryParams, label = null) {
+    SearchAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackage/search`);
         const tags = label ? label : url.toString();
@@ -128,10 +128,10 @@ class BffAccessManagementApiClient {
     /**
      * Search for resources
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    SearchResources(queryParams, label = null) {
+    SearchResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources/search`);
         const tags = label ? label : url.toString();
@@ -148,10 +148,10 @@ class BffAccessManagementApiClient {
     /**
      * Get resource owners
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetResourceOwners(queryParams, label = null) {
+    GetResourceOwners(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources/resourceowners`);
         const tags = label ? label : url.toString();
@@ -168,10 +168,10 @@ class BffAccessManagementApiClient {
     /**
     * Get organization data from cdn
     * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} label - label for the request, if null the url will be used as label
+    * @param {*} labels - labels for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    GetOrganizationData(queryParams, label = null) {
+    GetOrganizationData(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/cdn/orgdata`);
         const tags = label ? label : url.toString();
@@ -188,10 +188,10 @@ class BffAccessManagementApiClient {
     /**
     * Get organization data from lookup
     * @param {*} orgNo - organization number to get data for
-    * @param {*} label - label for the request, if null the url will be used as label
+    * @param {*} labels - labels for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    GetOrganizationDataFromLookup(orgNo, label = null) {
+    GetOrganizationDataFromLookup(orgNo, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/lookup/org/${orgNo}`);
         const tags = label ? label : url.toString();
@@ -208,11 +208,11 @@ class BffAccessManagementApiClient {
     /**
      * Get role metadata
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      *
     */
-    GetRoleMeta(queryParams, label = null) {
+    GetRoleMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/meta`);
         const tags = label ? label : url.toString();
@@ -229,10 +229,10 @@ class BffAccessManagementApiClient {
     /**
      * Get rights metadata for a resource
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetRightsMeta(queryParams, label = null) {
+    GetRightsMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/rightsmeta`);
         const tags = label ? label : url.toString();
@@ -252,7 +252,7 @@ class BffAccessManagementApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetDelegatedInstancesForResource(queryParams, label = null) {
+    GetDelegatedInstancesForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
         const tags = label ? label : url.toString();
@@ -272,7 +272,7 @@ class BffAccessManagementApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
-    CheckDelegationForResource(queryParams, label = null) {
+    CheckDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
         const tags = label ? label : url.toString();
@@ -293,7 +293,7 @@ class BffAccessManagementApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    DelegateRightsForResource(queryParams, body, label = null) {
+    DelegateRightsForResource(queryParams, body, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances/rights`);
         const tags = label ? label : url.toString();
@@ -314,7 +314,7 @@ class BffAccessManagementApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetDelegatedInstancesForResource(queryParams, label = null) {
+    GetDelegatedInstancesForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
         const tags = label ? label : url.toString();
@@ -334,7 +334,7 @@ class BffAccessManagementApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
-    CheckInstanceDelegationForResource(queryParams, label = null) {
+    CheckInstanceDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
         const tags = label ? label : url.toString();
@@ -354,7 +354,7 @@ class BffAccessManagementApiClient {
     * @param {string} label - label for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    GetActiveConsentsForUser(uuid, label = null) {
+    GetActiveConsentsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/consent/active/${uuid}`);
         const tags = label ? label : url.toString();
@@ -373,7 +373,7 @@ class BffAccessManagementApiClient {
     * @param {string} label - label for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    GetConsentLogForUser(uuid, label = null) {
+    GetConsentLogForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/consent/log/${uuid}`);
         const tags = label ? label : url.toString();
@@ -393,7 +393,7 @@ class BffAccessManagementApiClient {
     * @param {string} label - label for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    GetResourceById(queryParams, label = null) {
+    GetResourceById(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources`);
         const tags = label ? label : url.toString();
@@ -413,7 +413,7 @@ class BffAccessManagementApiClient {
     * @param {string} label - label for the request, if null the url will be used as label
     * returns http.RefinedResponse
     */
-    GetPendingDelegationsForUser(uuid, label = null) {
+    GetPendingDelegationsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/systemuser/${uuid}/pending`);
         const tags = label ? label : url.toString();

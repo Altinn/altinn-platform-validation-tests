@@ -31,7 +31,7 @@ class AuthorizedPartiesClient {
    * @param {string} label
    * @returns http.RefinedResponse
    */
-    GetAuthorizedParties(type, value, queryParams, label = null, parties = null) {
+    GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let nameTag = label ? label : url.toString();

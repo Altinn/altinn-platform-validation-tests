@@ -9,8 +9,8 @@ import { AuthorizedPartiesClient } from "../../../../clients/authentication/inde
  * @param {*} label
  */
 
-export function GetAuthorizedParties(authorizedPartiesClient, type, value, queryParams, label = null, partyFilter = null) {
-    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, queryParams, label, partyFilter);
+export function GetAuthorizedParties(authorizedPartiesClient, type, value, queryParams, partyFilter = null, labels = null) {
+    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, queryParams, partyFilter, labels);
 
     const succeed = check(res, {
         "GetAuthorizedParties - status code is 200": (r) => r.status === 200,

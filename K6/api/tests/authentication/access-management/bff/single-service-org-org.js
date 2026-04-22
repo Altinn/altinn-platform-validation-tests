@@ -166,10 +166,10 @@ export default function (segmentedData) {
     // Set token generator options for current iteration
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 
-    // Part 1. 
+    // Part 1.
     // Add organization as user to another organization,
     group(addUserGroup, function () {
-        PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
+        PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderlabels);
         let queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
@@ -200,14 +200,14 @@ export default function (segmentedData) {
             includeAgentConnections: true,
         };
         GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1e);
-        GetIsHovedAdmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminLabel);
-        GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel);
-        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel);
-        GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel);
-        SearchAccessPackages(userApiClient, { searchString: "", typeName: "organisasjon" }, searchAccessPackagesLabel);
-        SearchResources(userApiClient, { Page: 1, ResultsPerPage: 7, searchString: "", includeA2Services: false }, searchResourcesLabel);
-        GetResourceOwners(userApiClient, { undefined }, getResourceOwnersLabel);
-        GetOrganizationData(userApiClient, {}, getOrganizationDataLabel);
+        GetIsHovedAdmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminlabels);
+        GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionslabels);
+        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationslabels);
+        GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourceslabels);
+        SearchAccessPackages(userApiClient, { searchString: "", typeName: "organisasjon" }, searchAccessPackageslabels);
+        SearchResources(userApiClient, { Page: 1, ResultsPerPage: 7, searchString: "", includeA2Services: false }, searchResourceslabels);
+        GetResourceOwners(userApiClient, { undefined }, getResourceOwnerslabels);
+        GetOrganizationData(userApiClient, {}, getOrganizationDatalabels);
     });
 
 
@@ -216,26 +216,26 @@ export default function (segmentedData) {
     group(resourceDelegationGroup, function () {
         SearchAccessPackages(userApiClient, { searchString: resource.searchTerm, typeName: "organisasjon" }, searchAccessPackagesLabel2a);
         const rightsMeta = GetRightsMeta(userApiClient, { resource: resource.resourceId }, getRightsMetadataLabel2b);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel);
-        PostSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationLabel);
+        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationChecklabels);
+        PostSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationlabels);
         GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel2d);
         GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel2e);
         GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2f);
     });
 
     // Part 3.
-    // Revoke the delegated resource and verify that the delegation has been removed, 
+    // Revoke the delegated resource and verify that the delegation has been removed,
     // then clean up by deleting the rightholder connection between the organizations and verify deletion
     group(cleanupGroup, function () {
-        RevokeSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
+        RevokeSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, revokeSingleRightlabels);
         GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel3b);
         GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel3c);
-        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getRolePermissionsLabel);
+        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getRolePermissionslabels);
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel3d);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3e);
         GetRoleMeta(userApiClient, {}, getRoleMetaLabel3f);
         GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3g);
-        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
+        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionlabels);
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel3i);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3j);
         GetRoleMeta(userApiClient, {}, getRoleMetaLabel3k);
@@ -263,5 +263,3 @@ function getRights(rightsMeta) {
     }
     return rights;
 }
-
-

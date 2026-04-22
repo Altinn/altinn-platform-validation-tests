@@ -49,7 +49,7 @@ export class RegisterLookupClient {
    * @param {string|null} label - Optional label for the request tag.
    * @returns http.RefinedResponse
    */
-    LookupParties(fields, query, label = null) {
+    LookupParties(fields, query, labels = null) {
         if (query === null || query === undefined) {
             throw new Error("LookupParties: query is required but was not provided");
         }

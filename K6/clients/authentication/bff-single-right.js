@@ -31,11 +31,11 @@ class BffSingleRightApiClient {
      * Post single right delegation
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {*} resource - the resource for which the right is delegated, e.g. "ttd/altinn-app-frontend/tilgangstest/resource1"
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * @returns http.RefinedResponse
      */
 
-    PostDelegate(queryParams, rights, label = null) {
+    PostDelegate(queryParams, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegate`);
         const tags = label ? label : url.toString();
@@ -53,10 +53,10 @@ class BffSingleRightApiClient {
     /**
      * Delete single right delegation
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * @return http.RefinedResponse
      */
-    DeleteDelegate(queryParams, label = null) {
+    DeleteDelegate(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/revoke`);
         const tags = label ? label : url.toString();
@@ -73,10 +73,10 @@ class BffSingleRightApiClient {
     /**
      * Get delegation check for a resource
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} label - label for the request, if null the url will be used as label
+     * @param {*} labels - labels for the request, if null the url will be used as label
      * @return http.RefinedResponse
      */
-    GetDelegationCheck(queryParams, label = null) {
+    GetDelegationCheck(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
         const tags = label ? label : url.toString();

@@ -5,10 +5,10 @@ import { ClientDelegationsApiClient } from "../../../../clients/authentication/i
  * Get clients for the specified query parameters
  * @param {ClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetMyClients(clientDelegationsApiClient, label = null) {
-    const res = clientDelegationsApiClient.GetMyClients(label);
+export function GetMyClients(clientDelegationsApiClient, labels = null) {
+    const res = clientDelegationsApiClient.GetMyClients(labels);
     checker(res, "Get my clients");
     return res.body;
 }

@@ -36,7 +36,7 @@ export function setup() {
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
-    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
+    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizelabels);
 
     // instance id format: urn:altinn:instance-id:{partyId}/{uuid}
     // only instance in yt so far is aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
@@ -61,7 +61,7 @@ export default function (testData) {
  * 90% sign with Permit, 10% read with NotApplicable.
  * @return {Array} [action, label, expectedResponse]
  */
-function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
+function getActionLabelAndExpectedResponse(denyLabel, permitlabels) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:

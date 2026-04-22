@@ -10,11 +10,11 @@ import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js"
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
 
-export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, expectedResponse, subscriptionKey, label = null) {
-    const res = pdpAuthorizeClient.authorizeEnduser(ssn, resourceId, action, subscriptionKey, label);
+export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, expectedResponse, subscriptionKey, labels = null) {
+    const res = pdpAuthorizeClient.authorizeEnduser(ssn, resourceId, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeUser", expectedResponse);
     return res.body;
 }
@@ -30,11 +30,11 @@ export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, ex
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
 
-export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, label = null) {
-    const res = pdpAuthorizeClient.authorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, label);
+export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, labels = null) {
+    const res = pdpAuthorizeClient.authorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeUserInstance", expectedResponse);
     return res.body;
 }
@@ -50,11 +50,11 @@ export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, res
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
 
-export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, label = null) {
-    const res = pdpAuthorizeClient.authorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, label);
+export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, labels = null) {
+    const res = pdpAuthorizeClient.authorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeOrgInstance", expectedResponse);
     return res.body;
 }
@@ -68,11 +68,11 @@ export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, reso
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
 
-export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, action, expectedResponse, subscriptionKey, label = null) {
-    const res = pdpAuthorizeClient.authorizeDagl(ssn, resourceId, org, action, subscriptionKey, label);
+export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, action, expectedResponse, subscriptionKey, labels = null) {
+    const res = pdpAuthorizeClient.authorizeDagl(ssn, resourceId, org, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeDagl", expectedResponse);
     return res.body;
 }

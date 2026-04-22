@@ -22,5 +22,5 @@ export default function (data) {
     const [accessManagementApiClient, tokenGenerator] = getClients();
     const from = randomItem(data[exec.vu.idInTest - 1]);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-    GetActiveConsent(accessManagementApiClient, from.partyUuid, getActiveConsentLabel);
+    GetActiveConsent(accessManagementApiClient, from.partyUuid, getActiveConsentlabels);
 }

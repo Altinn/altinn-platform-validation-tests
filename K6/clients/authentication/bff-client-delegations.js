@@ -74,7 +74,7 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    PostAgents(queryParams, to, lastName, label = null) {
+    PostAgents(queryParams, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
         const tags = label ? label : url.toString();
@@ -101,7 +101,7 @@ class BffClientDelegationsApiClient {
       * @param {string|null} label - label for the request
       * @returns http.RefinedResponse
       */
-    DeleteAgents(queryParams, label = null) {
+    DeleteAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
         const tags = label ? label : url.toString();
@@ -123,7 +123,7 @@ class BffClientDelegationsApiClient {
       * @param {string|null} label - label for the request
       * @returns http.RefinedResponse
       */
-    GetAgentsAccessPackages(queryParams, label = null) {
+    GetAgentsAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
         const tags = label ? label : url.toString();
@@ -145,7 +145,7 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    PostAgentsAccessPackages(queryParams, accessPackage, label = null) {
+    PostAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
         const tags = label ? label : url.toString();
@@ -175,7 +175,7 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    DeleteAgentsAccessPackages(queryParams, accessPackage, label = null) {
+    DeleteAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
         const tags = label ? label : url.toString();

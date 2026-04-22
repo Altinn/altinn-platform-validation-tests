@@ -4,7 +4,7 @@
 found_non_kebab_case=false
 
 # Loop through all .js files in the current directory and subdirectories
-for file in $(find ./K6 -type f -name "*.js"); do
+for file in $(find ../K6 -type f -name "*.js"); do
   # Extract the filename from the full path
   filename=$(basename "$file")
 

@@ -2,13 +2,13 @@ import { check } from "k6";
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
 
 /**
- * 
+ *
  * @param {MaskinportenSchemaApiClient} maskinportenSchemaApiClient A client to interact with the /accesspackage API
- * 
+ *
  * @returns (string | ArrayBuffer | null)
  */
-export function PostOffered(maskinportenSchemaApiClient, from, to, resource, label = null) {
-    const res = maskinportenSchemaApiClient.PostOffered(from, to, resource, label);
+export function PostOffered(maskinportenSchemaApiClient, from, to, resource, labels = null) {
+    const res = maskinportenSchemaApiClient.PostOffered(from, to, resource, labels);
     const succeed = check(res, {
         "PostOffered - status code is 201": (r) => r.status === 201,
         "PostOffered - status text is 201 Created": (r) => r.status_text == "201 Created",

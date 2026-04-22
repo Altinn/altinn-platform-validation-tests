@@ -14,9 +14,9 @@ export default function () {
     const queryParams = {
         includeAltinn3: "true",
         includeAccessPackages: "true",
-        includeResources: "false" 
+        includeResources: "false"
     };
-    
+
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",

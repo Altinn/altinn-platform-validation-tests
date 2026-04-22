@@ -17,7 +17,7 @@ export function getClients() {
         const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
-        
+
         // this scope means that the token can be used for all users,
         // no need to generate a token for each user in the test data
         tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
@@ -48,7 +48,7 @@ export function getTokenOpts(ssn) {
  * 90% read and write with Permit, 10% sign with NotApplicable.
  * @return {Array} [action, label, expectedResponse]
  */
-export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
+export function getActionLabelAndExpectedResponse(denyLabel, permitlabels) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:

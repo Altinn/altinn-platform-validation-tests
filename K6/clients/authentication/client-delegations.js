@@ -30,7 +30,7 @@ class ClientDelegationsApiClient {
      * @param {string|null} label - label for the request
      * @return http.RefinedResponse
      */
-    GetMyClients(label = null) {
+    GetMyClients(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/my/clients`);
         const tags = label ? label : url.toString();

@@ -21,7 +21,7 @@ export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
-    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
+    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizelabels);
     PdpAuthorizeUser(
         pdpAuthorizeClient,
         party.ssn,

@@ -4,11 +4,11 @@ import { BffUserApiClient } from "../../../../clients/authentication/bff-user.js
 /**
  * Get user id by lookup
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * returns http.RefinedResponse
  */
-export function GetLookupPartyUser(bffUserApiClient, label = null) {
-    const res = bffUserApiClient.GetLookupPartUser(label);
+export function GetLookupPartyUser(bffUserApiClient, labels = null) {
+    const res = bffUserApiClient.GetLookupPartUser(labels);
     checker(res, "Get user id by lookup");
     return res.body;
 }
@@ -17,10 +17,10 @@ export function GetLookupPartyUser(bffUserApiClient, label = null) {
  * Post single right for the specified query parameters
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, label = null) {
-    const res = bffUserApiClient.GetIsCompanyProfileAdmin(queryParams, label);
+export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels = null) {
+    const res = bffUserApiClient.GetIsCompanyProfileAdmin(queryParams, labels);
     checker(res, "Get is hoved admin");
     return res.body;
 }
@@ -29,11 +29,11 @@ export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, label = 
  * Get reportee for the specified user id
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {*} userId - id of the user to get reportees for
- * @param {*} label - label for the request
- * returns http.RefinedResponse 
+ * @param {*} labels - labels for the request
+ * returns http.RefinedResponse
  */
-export function GetReportee(bffUserApiClient, userId, label = null) {
-    const res = bffUserApiClient.GetReportee(userId, label);
+export function GetReportee(bffUserApiClient, userId, labels = null) {
+    const res = bffUserApiClient.GetReportee(userId, labels);
     checker(res, "Get reportee");
     return res.body;
 }
@@ -41,11 +41,11 @@ export function GetReportee(bffUserApiClient, userId, label = null) {
 /**
  * Get profile
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} label - label for the request
- * @returns http.RefinedResponse 
+ * @param {*} labels - labels for the request
+ * @returns http.RefinedResponse
  */
-export function GetProfile(bffUserApiClient, label = null) {
-    const res = bffUserApiClient.GetProfile(label);
+export function GetProfile(bffUserApiClient, labels = null) {
+    const res = bffUserApiClient.GetProfile(labels);
     checker(res, "Get profile");
     return res.body;
 }
@@ -54,11 +54,11 @@ export function GetProfile(bffUserApiClient, label = null) {
  * Get is admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * returns http.RefinedResponse
  * */
-export function GetIsAdmin(bffUserApiClient, queryParams, label = null) {
-    const res = bffUserApiClient.GetIsAdmin(queryParams, label);
+export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
+    const res = bffUserApiClient.GetIsAdmin(queryParams, labels);
     checker(res, "Get is admin");
     return res.body;
 }
@@ -67,11 +67,11 @@ export function GetIsAdmin(bffUserApiClient, queryParams, label = null) {
  * Get is client admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * returns http.RefinedResponse
  * */
-export function GetIsClientAdmin(bffUserApiClient, queryParams, label = null) {
-    const res = bffUserApiClient.GetIsClientAdmin(queryParams, label);
+export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
+    const res = bffUserApiClient.GetIsClientAdmin(queryParams, labels);
     checker(res, "Get is client admin");
     return res.body;
 }
@@ -79,11 +79,11 @@ export function GetIsClientAdmin(bffUserApiClient, queryParams, label = null) {
 /**
  * Get actor list old
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * returns http.RefinedResponse
  * */
-export function GetActorListOld(bffUserApiClient, label = null) {
-    const res = bffUserApiClient.GetActorListOld(label);
+export function GetActorListOld(bffUserApiClient, labels = null) {
+    const res = bffUserApiClient.GetActorListOld(labels);
     checker(res, "Get actor list old");
     return res.body;
 }
@@ -91,11 +91,11 @@ export function GetActorListOld(bffUserApiClient, label = null) {
 /**
  * Get actor list favorites
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * returns http.RefinedResponse
  * */
-export function GetActorListFavorites(bffUserApiClient, label = null) {
-    const res = bffUserApiClient.GetActorListFavorites(label);
+export function GetActorListFavorites(bffUserApiClient, labels = null) {
+    const res = bffUserApiClient.GetActorListFavorites(labels);
     checker(res, "Get actor list favorites");
     return res.body;
 }
@@ -104,11 +104,11 @@ export function GetActorListFavorites(bffUserApiClient, label = null) {
  * Get is instance admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * returns http.RefinedResponse
  */
-export function GetIsInstanceAdmin(bffUserApiClient, queryParams, label = null) {
-    const res = bffUserApiClient.GetIsInstanceAdmin(queryParams, label);
+export function GetIsInstanceAdmin(bffUserApiClient, queryParams, labels = null) {
+    const res = bffUserApiClient.GetIsInstanceAdmin(queryParams, labels);
     checker(res, "Get is instance admin");
     return res.body;
 }
