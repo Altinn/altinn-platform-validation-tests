@@ -1,9 +1,11 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetConnections: {
-        action: "Get connections/rightholders"
-    },
+    GetConnections: { action: "Get connections/rightholders" },
+    PostRightholder: { action: "PostRightholder" },
+    PostRightholderOrg: { action: "PostRightholderOrg" },
+    DeleteRightholder: { action: "DeleteRightholder" },
+
 };
 
 class BffConnectionsApiClient {

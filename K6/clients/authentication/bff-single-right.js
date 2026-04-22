@@ -1,6 +1,12 @@
 import http from "k6/http";
 import crypto from "k6/crypto";
 
+const TAGS = {
+    PostDelegate: { action: "PostDelegate" },
+    DeleteDelegate: { action: "DeleteDelegate" },
+    GetDelegationCheck: { action: "GetDelegationCheck" },
+};
+
 class BffSingleRightApiClient {
     /**
      *
@@ -25,6 +31,10 @@ class BffSingleRightApiClient {
 
         this.FULL_PATH = baseUrl + this.BASE_PATH;
 
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

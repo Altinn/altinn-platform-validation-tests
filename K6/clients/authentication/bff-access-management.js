@@ -1,5 +1,28 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetIsHovedAdmin: { action: "Get IsHovedAdmin" },
+    GetRolePermissions: { action: "Get RolePermissions" },
+    GetDelegatedResources: { action: "Get DelegatedResources" },
+    GetDelegatedRightsForResource: { action: "Get DelegatedRightsForResource" },
+    SearchAccessPackages: { action: "SearchAccessPackages" },
+    SearchResources: { action: "SearchResources" },
+    GetResourceOwners: { action: "Get ResourceOwners" },
+    GetOrganizationData: { action: "Get OrganizationData" },
+    GetOrganizationDataFromLookup: { action: "Get OrganizationDataFromLookup" },
+    GetRoleMeta: { action: "Get RoleMeta" },
+    GetRightsMeta: { action: "Get RightsMeta" },
+    GetDelegatedInstancesForResource: { action: "Get DelegatedInstancesForResource" },
+    CheckDelegationForResource: { action: "CheckDelegationForResource" },
+    DelegateRightsForResource: { action: "DelegateRightsForResource" },
+    CheckInstanceDelegationForResource: { action: "CheckInstanceDelegationForResource" },
+    GetActiveConsentsForUser: { action: "Get ActiveConsentsForUser" },
+    GetConsentLogForUser: { action: "Get ConsentLogForUser" },
+    GetResourceById: { action: "Get ResourceById" },
+    GetPendingDelegationsForUser: { action: "Get PendingDelegationsForUser" },
+};
+
+
 class BffAccessManagementApiClient {
     /**
      *
@@ -26,6 +49,9 @@ class BffAccessManagementApiClient {
 
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
     /**
     * Get is hoved admin
     * @param {*} queryParams - object with query parameters to be appended to the url
@@ -308,25 +334,6 @@ class BffAccessManagementApiClient {
         return http.post(url.toString(), JSON.stringify(body), params);
     }
 
-    /**
-     * Get delegated instances for a resource
-     * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {string} label - label for the request, if null the url will be used as label
-     * returns http.RefinedResponse
-     */
-    GetDelegatedInstancesForResource(queryParams, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
-        const tags = label ? label : url.toString();
-        const params = {
-            tags: { name: tags, endpoint: url.toString() },
-            headers: {
-                Authorization: "Bearer " + token,
-            },
-        };
-        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
-        return http.get(url.toString(), params);
-    }
 
     /**
      * Check if user has delegated rights for a resource

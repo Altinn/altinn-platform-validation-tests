@@ -1,12 +1,13 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetClients: {
-        action: "Get clients"
-    },
-    GetAgents: {
-        action: "Get agents"
-    },
+    GetAgents: { action: "Get agents" },
+    PostAgents: { action: "Post Agents" },
+    DeleteAgents: { action: "Delete Agents" },
+    GetAgentsAccessPackages: { action: "Get AgentsAccessPackages" },
+    PostAgentsAccessPackages: { action: "Post AgentsAccessPackages" },
+    DeleteAgentsAccessPackages: { action: "Delete AgentsAccessPackages" },
+    GetClients: { action: "Get clients" },
 };
 
 class BffClientDelegationsApiClient {

@@ -2,6 +2,10 @@ import http from "k6/http";
 
 const lengthPartyFilter = __ENV.LENGTH_PARTY_FILTER ?? "25";
 
+const TAGS = {
+    GetAuthorizedParties: { action: "Get AuthorizedParties" },
+};
+
 class AuthorizedPartiesClient {
     /**
    *
@@ -21,6 +25,10 @@ class AuthorizedPartiesClient {
      * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
      */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
