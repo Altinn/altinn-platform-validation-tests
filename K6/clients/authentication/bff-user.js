@@ -1,5 +1,17 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetLookupPartUser: { action: "GetLookupPartUser" },
+    GetIsCompanyProfileAdmin: { action: "GetIsCompanyProfileAdmin" },
+    GetReportee: { action: "GetReportee" },
+    GetProfile: { action: "GetProfile" },
+    GetIsAdmin: { action: "GetIsAdmin" },
+    GetIsClientAdmin: { action: "GetIsClientAdmin" },
+    GetActorListOld: { action: "GetActorListOld" },
+    GetActorListFavorites: { action: "GetActorListFavorites" },
+    GetIsInstanceAdmin: { action: "GetIsInstanceAdmin" },
+};
+
 class BffUserApiClient {
     /**
      *
@@ -24,6 +36,11 @@ class BffUserApiClient {
 
         this.FULL_PATH = baseUrl + this.BASE_PATH;
 
+    }
+
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetMyClients: { action: "GetMyClients" },
+};
+
 class ClientDelegationsApiClient {
     /**
      *
@@ -22,6 +26,10 @@ class ClientDelegationsApiClient {
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

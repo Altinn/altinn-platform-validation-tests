@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    RequestConsent: { action: "RequestConsent" },
+    ApproveConsent: { action: "ApproveConsent" },
+    LookupConsent: { action: "LookupConsent" },
+};
+
 class ConsentApiClient {
     /**
    *
@@ -19,6 +25,10 @@ class ConsentApiClient {
      * @property {string} BASE_PATH The path to the api without host information
      */
         this.BASE_PATH = "/accessmanagement/api/v1";
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

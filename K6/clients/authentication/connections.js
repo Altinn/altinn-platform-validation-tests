@@ -1,5 +1,10 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetConnections: { action: "GetConnections" },
+    GetAccessPackages: { action: "GetAccessPackages" },
+};
+
 class ConnectionsApiClient {
     /**
      *
@@ -28,6 +33,11 @@ class ConnectionsApiClient {
         } else {
             this.FULL_PATH = baseUrl + this.BASE_PATH;
         }
+    }
+
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

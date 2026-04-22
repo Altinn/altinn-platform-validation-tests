@@ -1,5 +1,17 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetAllSystemsFromRegister: { action: "GetAllSystemsFromRegister" },
+    GetSystemRegisterById: { action: "GetSystemRegisterById" },
+    GetVendorSystemRegisterById: { action: "GetVendorSystemRegisterById" },
+    UpdateVendorSystemRegister: { action: "UpdateVendorSystemRegister" },
+    UpdateVendorAccessPackages: { action: "UpdateVendorAccessPackages" },
+    UpdateRightsVendorSystemRegister: { action: "UpdateRightsVendorSystemRegister" },
+    DeleteSystemSystemRegister: { action: "DeleteSystemSystemRegister" },
+    GetSystemRegisterRights: { action: "GetSystemRegisterRights" },
+    CreateSystemRegister: { action: "CreateSystemRegister" },
+};
+
 class SystemRegisterApiClient {
     /**
      *
@@ -22,6 +34,11 @@ class SystemRegisterApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/authentication/api/v1/systemregister";
+    }
+
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

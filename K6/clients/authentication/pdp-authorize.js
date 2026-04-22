@@ -1,5 +1,12 @@
 import http from "k6/http";
 
+const TAGS = {
+    AuthorizeEnduser: { action: "AuthorizeEnduser" },
+    AuthorizeDagl: { action: "AuthorizeDagl" },
+    AuthorizeEnduserInstance: { action: "AuthorizeEnduserInstance" },
+    AuthorizeOrganizationInstance: { action: "AuthorizeOrganizationInstance" },
+};
+
 class PdpAuthorizeClient {
     /**
      *
@@ -25,6 +32,11 @@ class PdpAuthorizeClient {
 
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * POST authorize enduser
     * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
@@ -35,7 +47,7 @@ class PdpAuthorizeClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    authorizeEnduser(ssn, resourceId, action, subscriptionKey, labels = null) {
+    AuthorizeEnduser(ssn, resourceId, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : url.toString();
@@ -65,7 +77,7 @@ class PdpAuthorizeClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    authorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, labels = null) {
+    AuthorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : url.toString();
@@ -98,7 +110,7 @@ class PdpAuthorizeClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    authorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
+    AuthorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : url.toString();
@@ -131,7 +143,7 @@ class PdpAuthorizeClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    authorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
+    AuthorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : url.toString();

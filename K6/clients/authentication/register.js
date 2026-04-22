@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    RemoveRevisorRoleFromEr: { action: "RemoveRevisorRoleFromEr" },
+    AddRevisorRoleToErForOrg: { action: "AddRevisorRoleToErForOrg" },
+    GetRevisorCustomerIdentifiersForParty: { action: "GetRevisorCustomerIdentifiersForParty" },
+};
+
 class RegisterApiClient {
     /**
      *
@@ -24,7 +30,9 @@ class RegisterApiClient {
         this.BASE_PATH = "/register/api/v1";
     }
 
-
+    static get TAGS() {
+        return TAGS;
+    }
     /**
      *
      * @param {string} soapErUsername

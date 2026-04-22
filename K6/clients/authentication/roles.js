@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetRoles: { action: "GetRoles" },
+};
+
 class RolesApiClient {
     /**
      *
@@ -18,6 +22,11 @@ class RolesApiClient {
          */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
 
+    }
+
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

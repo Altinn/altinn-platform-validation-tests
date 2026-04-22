@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetSystemUsersBySystemIdForVendor: { action: "GetSystemUsersBySystemIdForVendor" },
+};
+
 class SystemUserApiClient {
     /**
    *
@@ -20,6 +24,12 @@ class SystemUserApiClient {
      */
         this.BASE_PATH = "/authentication/api/v1/systemuser";
     }
+
+
+    static get TAGS() {
+        return TAGS;
+    }
+
 
     /**
    * Retrieves system users for a given systemId for a vendor.

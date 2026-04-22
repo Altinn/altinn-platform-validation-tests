@@ -1,5 +1,13 @@
 import http from "k6/http";
 
+const TAGS = {
+    CreateSystemUserRequest: { action: "CreateSystemUserRequest" },
+    ApproveSystemUserRequest: { action: "ApproveSystemUserRequest" },
+    CreateAgentSystemUserRequest: { action: "CreateAgentSystemUserRequest" },
+    GetSystemUserRequestsBySystemIdForVendor: { action: "GetSystemUserRequestsBySystemIdForVendor" },
+    GetAgentSystemUserRequestsBySystemIdForVendor: { action: "GetAgentSystemUserRequestsBySystemIdForVendor" },
+};
+
 class SystemUserRequestApiClient {
     /**
    *
@@ -19,6 +27,10 @@ class SystemUserRequestApiClient {
      * @property {string} BASE_PATH The path to the api without host information
      */
         this.BASE_PATH = "/authentication/api/v1/systemuser/request";
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**

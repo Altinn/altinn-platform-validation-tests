@@ -14,7 +14,7 @@ import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js"
  */
 
 export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, expectedResponse, subscriptionKey, labels = null) {
-    const res = pdpAuthorizeClient.authorizeEnduser(ssn, resourceId, action, subscriptionKey, labels);
+    const res = pdpAuthorizeClient.AuthorizeEnduser(ssn, resourceId, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeUser", expectedResponse);
     return res.body;
 }
@@ -34,7 +34,7 @@ export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, ex
  */
 
 export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, labels = null) {
-    const res = pdpAuthorizeClient.authorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels);
+    const res = pdpAuthorizeClient.AuthorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeUserInstance", expectedResponse);
     return res.body;
 }
@@ -54,7 +54,7 @@ export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, res
  */
 
 export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, labels = null) {
-    const res = pdpAuthorizeClient.authorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels);
+    const res = pdpAuthorizeClient.AuthorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeOrgInstance", expectedResponse);
     return res.body;
 }
@@ -72,7 +72,7 @@ export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, reso
  */
 
 export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, action, expectedResponse, subscriptionKey, labels = null) {
-    const res = pdpAuthorizeClient.authorizeDagl(ssn, resourceId, org, action, subscriptionKey, labels);
+    const res = pdpAuthorizeClient.AuthorizeDagl(ssn, resourceId, org, action, subscriptionKey, labels);
     checker(res, "PdpAuthorizeDagl", expectedResponse);
     return res.body;
 }
