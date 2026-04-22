@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetConnections: {
+        action: "Get connections/rightholders"
+    },
+};
+
 class BffConnectionsApiClient {
     /**
      *
@@ -24,6 +30,12 @@ class BffConnectionsApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * Get connections
     * Docs
@@ -32,12 +44,19 @@ class BffConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetConnections(queryParams, label = null) {
+    GetConnections(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/rightholders`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            action: "Get connections/rightholders"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags }
+        }
+
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -46,6 +65,7 @@ class BffConnectionsApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
     }
+
 
     /**
     * Post rightholder for an user

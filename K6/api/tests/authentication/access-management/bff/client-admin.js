@@ -1,6 +1,6 @@
 /**
  * Performance test for client administration in the authentication service.
- * This test simulates the actions browser actions for opening the client administrator, 
+ * This test simulates the actions browser actions for opening the client administrator,
  * including retrieving connections/rightholders, agents, clients, and delegation checks.
  * The test data is segmented for each VU to ensure that each virtual user operates on a unique set of data.
  * The test includes options for randomizing data selection and is designed to run in different environments based on the provided environment variables.
@@ -20,13 +20,13 @@ import { PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
-const tokenGeneratorLabel = "Personal Token Generator";
-const groupLabel = "Open client administration";
+const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const groupLabelValue = "Open client administration";
 
-const getConnectionsLabel = "1. Get connections/rightholders";
-const getAgentsLabel = "2. Get agents";
-const getClientsLabel = "3. Get clients";
-const getDelegationCheckLabel = "4. Get delegation check";
+const getConnectionsLabel = { step: "1. " + BffConnectionsApiClient.TAGS.GetConnections.action };
+const getAgentsLabel = { step: "2. " + BffClientDelegationsApiClient.TAGS.GetAgents.action };
+const getClientsLabel = { step: "3. " + BffClientDelegationsApiClient.TAGS.GetClients.action };
+const getDelegationCheckLabel = { step: "4. " + BffAccessPackageApiClient.TAGS.GetDelegationCheck.action };
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
@@ -81,7 +81,7 @@ export default function (testData) {
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(testObject.userId, testObject.partyUuid));
 
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
-    group(groupLabel, function () {
+    group(groupLabelValue, function () {
         const connectionsQueryParams = {
             party: testObject.partyUuid,
             from: testObject.orgUuid,
@@ -98,4 +98,3 @@ export default function (testData) {
         GetDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationCheckLabel);
     });
 }
-

@@ -117,16 +117,18 @@ export function getOptions(labels, groups = []) {
     };
 
     // Set labels with empty arrays to collect stats.
-    for (const label of labels) {
-        options.thresholds[`http_req_duration{name:${label}}`] = [];
-        options.thresholds[`http_req_failed{name:${label}}`] = [];
-        options.thresholds[`http_reqs{name:${label}}`] = [];
+    for (let label of labels) {
+        for (let [key, value] of Object.entries(label)) {
+            options.thresholds[`http_req_duration{${key}:${value}}`] = [];
+            options.thresholds[`http_req_failed{${key}:${value}}`] = [];
+            options.thresholds[`http_reqs{${key}:${value}}`] = [];
+        }
     }
+
 
     for (const group of groups) {
         options.thresholds[`http_req_duration{group:::${group}}`] = [];
     }
-
     return options;
 }
 

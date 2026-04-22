@@ -1,5 +1,12 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetDelegationCheck: {
+        action: "Get delegation check"
+    }
+
+};
+
 class BffAccessPackageApiClient {
     /**
      *
@@ -22,6 +29,10 @@ class BffAccessPackageApiClient {
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
          */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
@@ -93,12 +104,18 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    GetDelegationCheck(queryParams, label = null) {
+    GetDelegationCheck(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            action: "Get delegation check"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags }
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
