@@ -44,9 +44,12 @@ class MaskinportenSchemaApiClient {
     PostOffered(from, to, resource, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/${from}/maskinportenschema/offered`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: `${this.FULL_PATH}/from/maskinportenschema/offered` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/from/maskinportenschema/offered` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -84,9 +87,12 @@ class MaskinportenSchemaApiClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}maskinporten/delegations`);
         Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: `${this.FULL_PATH}maskinporten/delegations` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}maskinporten/delegations` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

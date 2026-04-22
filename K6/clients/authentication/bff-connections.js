@@ -54,7 +54,7 @@ class BffConnectionsApiClient {
             action: "Get connections/rightholders"
         };
         if (labels != null) {
-            tags = { ...labels, ...tags }
+            tags = { ...labels, ...tags };
         }
 
         const params = {

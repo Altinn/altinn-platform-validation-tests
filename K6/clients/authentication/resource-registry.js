@@ -44,9 +44,12 @@ class ResourceRegistryApiClient {
         url.searchParams.append("since", since);
         url.searchParams.append("limit", limit);
 
-        let nameTag = label ? label : url.pathname;
+        let tags = { endpoint: `${this.FULL_PATH}` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: `${this.FULL_PATH}` },
+            tags: tags,
             headers: {
                 "Content-type": "application/json",
             },

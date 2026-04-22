@@ -22,7 +22,7 @@ export function GetDialogsQueriesNotificationCondition(
         conditionType,
         activityType,
         transmissionId,
-        label
+        labels
     );
 
     const success = check(res, {

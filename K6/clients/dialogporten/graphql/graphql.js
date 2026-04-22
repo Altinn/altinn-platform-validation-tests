@@ -34,9 +34,13 @@ class GraphqlClient {
     GetAllDialogsForParty(partyId, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let nameTag = label ? label : this.FULL_PATH;
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",
@@ -55,9 +59,12 @@ class GraphqlClient {
     GetDialogById(dialogId, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let nameTag = label ? label : this.FULL_PATH;
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",

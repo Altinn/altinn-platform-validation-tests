@@ -37,9 +37,12 @@ class RolesApiClient {
     */
     GetRoles(labels) {
         const url = new URL(`${this.FULL_PATH}`);
-        let nameTag = label ? label : url.toString();
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 "Content-type": "application/json",
             },

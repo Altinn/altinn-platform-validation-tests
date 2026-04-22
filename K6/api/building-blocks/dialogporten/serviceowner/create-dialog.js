@@ -22,7 +22,7 @@ export function CreateDialog(
         partyId,
         serviceResource,
         serviceOwner,
-        label,
+        labels,
         noTransmissionsActivities,
     );
 
@@ -52,7 +52,7 @@ export function CreateTransmission(
 ) {
     const res = serviceOwnerApiClient.PostTransmission(
         dialogId,
-        label,
+        labels,
     );
 
     const success = check(res, {
@@ -81,7 +81,7 @@ export function CreateActivity(
 ) {
     const res = serviceOwnerApiClient.PostActivity(
         dialogId,
-        label,
+        labels,
     );
 
     const success = check(res, {

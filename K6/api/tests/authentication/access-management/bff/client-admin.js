@@ -89,12 +89,12 @@ export default function (testData) {
             includeClientDelegations: true,
             includeAgentConnections: true
         };
-        GetConnections(connectionsApiClient, connectionsQueryParams, getConnectionslabels);
+        GetConnections(connectionsApiClient, connectionsQueryParams, getConnectionsLabel);
         const queryParams = {
             party: testObject.orgUuid,
         };
-        GetAgents(clientDelegationsApiClient, queryParams, getAgentslabels);
-        GetClients(clientDelegationsApiClient, queryParams, getClientslabels);
+        GetAgents(clientDelegationsApiClient, queryParams, getAgentsLabel);
+        GetClients(clientDelegationsApiClient, queryParams, getClientsLabel);
         GetDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationChecklabels);
     });
 }

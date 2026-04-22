@@ -113,7 +113,7 @@ class BffAccessPackageApiClient {
             action: "Get delegation check"
         };
         if (labels != null) {
-            tags = { ...labels, ...tags }
+            tags = { ...labels, ...tags };
         }
         const params = {
             tags: tags,

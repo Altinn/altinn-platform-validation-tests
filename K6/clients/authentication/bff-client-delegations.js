@@ -53,7 +53,7 @@ class BffClientDelegationsApiClient {
             action: "Get agents"
         };
         if (labels != null) {
-            tags = { ...labels, ...tags }
+            tags = { ...labels, ...tags };
         }
 
         const params = {
@@ -215,7 +215,7 @@ class BffClientDelegationsApiClient {
             action: "Get clients"
         };
         if (labels != null) {
-            tags = { ...labels, ...tags }
+            tags = { ...labels, ...tags };
         }
         const params = {
             tags: tags,

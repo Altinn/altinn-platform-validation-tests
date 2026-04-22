@@ -67,9 +67,18 @@ export class RegisterLookupClient {
         }
         const url = new URL(urlString);
 
+        let tags = {
+            endpoint: this.FULL_PATH
+        };
+        if (labels != null) {
+            tags = {
+                ...labels, ...tags
+            };
+        }
+
         const body = JSON.stringify(query);
         const params = {
-            tags: { name: label || url.toString(), endpoint: url.toString() },
+            tags: tags,
             headers: {
                 PlatformAccessToken: `${token}`,
                 "Content-Type": "application/json",
