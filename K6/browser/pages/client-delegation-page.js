@@ -80,9 +80,9 @@ export class ClientDelegationPage {
         await this.clientSearchBox.fill(orgnummer);
 
         // Add customer
-        const customerButton = this.addCustomerButtonByName(customerlabels);
+        const customerButton = this.addCustomerButtonByName(customerLabel);
         await expect(customerButton).toBeVisible();
-        await this.addCustomerButtonByName(customerlabels).click();
+        await this.addCustomerButtonByName(customerLabel).click();
 
         // Verify customer was added
         const confirmation = this.confirmationText(`${confirmationText} er lagt`);

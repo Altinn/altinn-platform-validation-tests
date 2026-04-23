@@ -80,9 +80,12 @@ class BffConnectionsApiClient {
     PostRightholder(from, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`); // TODO: Is this correct?
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/reportee/from/rightholder` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/reportee/from/rightholder` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -107,9 +110,12 @@ class BffConnectionsApiClient {
     PostRightholderOrg(from, to, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -127,9 +133,12 @@ class BffConnectionsApiClient {
     DeleteRightholder(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },

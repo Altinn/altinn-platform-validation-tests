@@ -48,9 +48,12 @@ class BffSingleRightApiClient {
     PostDelegate(queryParams, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegate`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -69,9 +72,12 @@ class BffSingleRightApiClient {
     DeleteDelegate(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/revoke`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -89,9 +95,12 @@ class BffSingleRightApiClient {
     GetDelegationCheck(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

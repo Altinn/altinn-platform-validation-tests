@@ -95,6 +95,6 @@ export default function (testData) {
         };
         GetAgents(clientDelegationsApiClient, queryParams, getAgentsLabel);
         GetClients(clientDelegationsApiClient, queryParams, getClientsLabel);
-        GetDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationChecklabels);
+        GetDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationCheckLabel);
     });
 }

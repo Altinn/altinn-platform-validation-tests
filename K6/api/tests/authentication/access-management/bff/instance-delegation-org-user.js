@@ -149,33 +149,33 @@ export default function (data) {
     // Open access management after creating the dialog.
     // Call every bff endpoint that the browser uses when navigating from arbeidsflate/del og gi tilgang
     group(group1Label, function () {
-        GetLookupPartyUser(userApiClient, getLookupPartyUserlabels);
-        GetIsCompanyProfileAdmin(userApiClient, { party: from.orgUuid }, getIsCompanyProfileAdminlabels);
-        GetReportee(userApiClient, from.partyId, getReporteelabels);
-        GetProfile(userApiClient, getProfilelabels);
-        GetIsAdmin(userApiClient, { party: from.orgUuid }, getIsAdminlabels);
-        GetIsClientAdmin(userApiClient, { party: from.orgUuid }, getIsClientAdminlabels);
-        GetActorListOld(userApiClient, getActorListOldlabels);
-        GetActorListFavorites(userApiClient, getActorListFavoriteslabels);
-        GetRolePermissions(accessManagementApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionslabels);
-        GetOrganizationData(accessManagementApiClient, {}, getOrganizationDatalabels);
-        GetIsInstanceAdmin(userApiClient, { party: from.orgUuid }, getIsInstanceAdminlabels);
-        GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.partyUuid, from: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourcelabels);
-        GetActiveConsent(accessManagementApiClient, from.orgUuid, getActiveConsentlabels);
-        GetPendingDelegationsForUser(accessManagementApiClient, from.orgUuid, GetPendingDelegationsForUserlabels);
-        GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionslabels);
-        GetResourceById(accessManagementApiClient, { resourceId: resource }, getResourceByIdlabels);
-        GetDelegationCheck(bffAccessPackageApiClient, { party: from.partyUuid }, getDelegationChecklabels);
+        GetLookupPartyUser(userApiClient, getLookupPartyUserLabel);
+        GetIsCompanyProfileAdmin(userApiClient, { party: from.orgUuid }, getIsCompanyProfileAdminLabel);
+        GetReportee(userApiClient, from.partyId, getReporteeLabel);
+        GetProfile(userApiClient, getProfileLabel);
+        GetIsAdmin(userApiClient, { party: from.orgUuid }, getIsAdminLabel);
+        GetIsClientAdmin(userApiClient, { party: from.orgUuid }, getIsClientAdminLabel);
+        GetActorListOld(userApiClient, getActorListOldLabel);
+        GetActorListFavorites(userApiClient, getActorListFavoritesLabel);
+        GetRolePermissions(accessManagementApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel);
+        GetOrganizationData(accessManagementApiClient, {}, getOrganizationDataLabel);
+        GetIsInstanceAdmin(userApiClient, { party: from.orgUuid }, getIsInstanceAdminLabel);
+        GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.partyUuid, from: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceLabel);
+        GetActiveConsent(accessManagementApiClient, from.orgUuid, getActiveConsentLabel);
+        GetPendingDelegationsForUser(accessManagementApiClient, from.orgUuid, GetPendingDelegationsForUserLabel);
+        GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabel);
+        GetResourceById(accessManagementApiClient, { resourceId: resource }, getResourceByIdLabel);
+        GetDelegationCheck(bffAccessPackageApiClient, { party: from.partyUuid }, getDelegationCheckLabel);
         GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithTo);
     });
 
     // Delegate dialog to other user.
     // Calls every bff as the browser would do
     group(group2Label, function () {
-        const resp = GetRightsMeta(accessManagementApiClient, { resource: resource }, getRightsMetalabels);
-        CheckDelegationForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourcelabels);
-        DelegateRightsForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getInstanceDelegationBody(JSON.parse(resp), to), delegateRightsForResourcelabels);
-        GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.orgUuid, from: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceAfterlabels);
+        const resp = GetRightsMeta(accessManagementApiClient, { resource: resource }, getRightsMetaLabel);
+        CheckDelegationForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabel);
+        DelegateRightsForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getInstanceDelegationBody(JSON.parse(resp), to), delegateRightsForResourceLabel);
+        GetDelegatedInstancesForResource(accessManagementApiClient, { party: from.orgUuid, from: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceAfterLabel);
         CheckDelegationForResource(accessManagementApiClient, { party: from.orgUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, checkDelegationForResourceLabelAfter);
         GetConnections(bffConnectionsApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsWithToAfter);
         GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabelAfter);
@@ -187,7 +187,7 @@ export default function (data) {
     // and that the delegated user can see the dialog in their list of dialogs and access it.
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
-        GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.orgNo, dialogId, getAllDialogsForPartylabels);
-        GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdlabels);
+        GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.orgNo, dialogId, getAllDialogsForPartyLabel);
+        GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdLabel);
     });
 }

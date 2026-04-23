@@ -42,9 +42,12 @@ class AuthorizedPartiesClient {
     GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
-        let nameTag = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

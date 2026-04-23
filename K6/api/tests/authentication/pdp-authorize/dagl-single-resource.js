@@ -26,7 +26,7 @@ export function setup() {
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
-    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizelabels);
+    const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
     PdpAuthorizeDagl(
         pdpAuthorizeClient,
         party.ssn,
@@ -44,7 +44,7 @@ export default function (testData) {
  * 90% read with Permit, 10% sign with NotApplicable.
  * @return {Array} [action, label, expectedResponse]
  */
-function getActionLabelAndExpectedResponse(denyLabel, permitlabels) {
+function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:

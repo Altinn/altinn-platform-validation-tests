@@ -78,9 +78,12 @@ class BffClientDelegationsApiClient {
     PostAgents(queryParams, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -105,9 +108,12 @@ class BffClientDelegationsApiClient {
     DeleteAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -127,9 +133,12 @@ class BffClientDelegationsApiClient {
     GetAgentsAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -149,9 +158,12 @@ class BffClientDelegationsApiClient {
     PostAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -179,9 +191,12 @@ class BffClientDelegationsApiClient {
     DeleteAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

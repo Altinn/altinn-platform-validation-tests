@@ -45,9 +45,12 @@ class BffAccessPackageApiClient {
     PostDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -66,9 +69,12 @@ class BffAccessPackageApiClient {
     DeleteDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -87,9 +93,12 @@ class BffAccessPackageApiClient {
     GetDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -136,9 +145,12 @@ class BffAccessPackageApiClient {
     GetPermission(accessPackageId, queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/permission/${accessPackageId}`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/permission/accessPackageId` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/permission/accessPackageId` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

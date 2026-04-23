@@ -48,7 +48,7 @@ export function getTokenOpts(ssn) {
  * 90% read and write with Permit, 10% sign with NotApplicable.
  * @return {Array} [action, label, expectedResponse]
  */
-export function getActionLabelAndExpectedResponse(denyLabel, permitlabels) {
+export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:

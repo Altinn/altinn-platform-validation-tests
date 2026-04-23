@@ -61,9 +61,12 @@ class BffAccessManagementApiClient {
     GetIsHovedAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/ishovedadmin`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -80,9 +83,12 @@ class BffAccessManagementApiClient {
     GetRolePermissions(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/permissions`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -100,9 +106,12 @@ class BffAccessManagementApiClient {
     GetDelegatedResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -120,9 +129,12 @@ class BffAccessManagementApiClient {
     GetDelegatedRightsForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources/rights`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -140,9 +152,12 @@ class BffAccessManagementApiClient {
     SearchAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackage/search`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -160,9 +175,12 @@ class BffAccessManagementApiClient {
     SearchResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources/search`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -180,9 +198,12 @@ class BffAccessManagementApiClient {
     GetResourceOwners(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources/resourceowners`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -200,9 +221,12 @@ class BffAccessManagementApiClient {
     GetOrganizationData(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/cdn/orgdata`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -220,9 +244,12 @@ class BffAccessManagementApiClient {
     GetOrganizationDataFromLookup(orgNo, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/lookup/org/${orgNo}`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/lookup/org/orgNo` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/lookup/org/orgNo` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -241,9 +268,12 @@ class BffAccessManagementApiClient {
     GetRoleMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/meta`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -261,9 +291,12 @@ class BffAccessManagementApiClient {
     GetRightsMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/rightsmeta`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -281,9 +314,12 @@ class BffAccessManagementApiClient {
     GetDelegatedInstancesForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -301,9 +337,12 @@ class BffAccessManagementApiClient {
     CheckDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -322,9 +361,12 @@ class BffAccessManagementApiClient {
     DelegateRightsForResource(queryParams, body, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances/rights`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",
@@ -344,9 +386,12 @@ class BffAccessManagementApiClient {
     CheckInstanceDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -364,9 +409,12 @@ class BffAccessManagementApiClient {
     GetActiveConsentsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/consent/active/${uuid}`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/consent/active/uuid` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/consent/active/uuid` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -383,9 +431,12 @@ class BffAccessManagementApiClient {
     GetConsentLogForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/consent/log/${uuid}`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/consent/log/uuid` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/consent/log/uuid` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -403,9 +454,12 @@ class BffAccessManagementApiClient {
     GetResourceById(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -423,9 +477,12 @@ class BffAccessManagementApiClient {
     GetPendingDelegationsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/systemuser/${uuid}/pending`);
-        const tags = label ? label : url.toString();
+        let tags = {  endpoint: `${this.FULL_PATH}/systemuser/uuid/pending` };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/systemuser/uuid/pending` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },

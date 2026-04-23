@@ -79,12 +79,12 @@ export default function (segmentedData) {
 
     // // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(groupLabel, function () {
-        PostRightholder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderlabels);
+        PostRightholder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
         getRightHolders(connectionsApiClient, from);
         getRightHoldersWithoutTo(connectionsApiClient, from);
-        PostDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackagelabels);
-        DeleteDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageDeletelabels);
-        DeleteRightholder(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionlabels);
+        PostDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageLabel);
+        DeleteDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageDeleteLabel);
+        DeleteRightholder(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
     });
 }
 

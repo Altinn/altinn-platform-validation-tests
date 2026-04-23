@@ -131,37 +131,37 @@ export default function (segmentedData) {
 
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(fullmaktGroup, function () {
-        GetPermission(accessPackageApiClient, accessPackage.id, { from: from.orgUuid, party: from.orgUuid }, getPermissionslabels);
+        GetPermission(accessPackageApiClient, accessPackage.id, { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1b);
         // TODO: add this to test: `https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
-        PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderlabels);
+        PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         getRightHolders(connectionsApiClient, from, to, getRightholdersToLabel1e);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1f);
-        PostDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationlabels);
+        PostDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationLabel);
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(to.userId, to.partyUuid));
 
     group(addUserGroup, function () {
-        PostAgents(clientDelegationsApiClient, { party: to.orgUuid }, user.ssn, user.lastName, postAgentslabels);
-        GetAgents(clientDelegationsApiClient, { party: to.orgUuid }, getAgentslabels);
-        GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, getAccessPackageslabels);
-        GetClients(clientDelegationsApiClient, { party: to.orgUuid }, getClientslabels);
+        PostAgents(clientDelegationsApiClient, { party: to.orgUuid }, user.ssn, user.lastName, postAgentsLabel);
+        GetAgents(clientDelegationsApiClient, { party: to.orgUuid }, getAgentsLabel);
+        GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, getAccessPackagesLabel);
+        GetClients(clientDelegationsApiClient, { party: to.orgUuid }, getClientsLabel);
         getRightHolders(connectionsApiClient, to, user, getRightholdersToLabel2e);
     });
 
     group(clientDelegationGroup, function () {
         GetConnections(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
-        PostAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackagelabels);
+        PostAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
         GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid }, getAccessPackagesLabel3c);
     });
 
     group(cleanupGroup, function () {
-        DeleteAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, deleteClientDelegationlabels);
-        DeleteAgents(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, deleteAgentslabels);
+        DeleteAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, deleteClientDelegationLabel);
+        DeleteAgents(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, deleteAgentsLabel);
         tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-        DeleteDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackagelabels);
-        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionlabels);
+        DeleteDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackageLabel);
+        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
     });
 
 }
@@ -177,7 +177,7 @@ function getRightHolders(connectionsApiClient, from, to, labels) {
     const respBody = GetConnections(
         connectionsApiClient,
         queryParamsTo,
-        label
+        labels
     );
     return respBody;
 }
@@ -192,7 +192,7 @@ function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
     const respBody = GetConnections(
         connectionsApiClient,
         queryParamsTo,
-        label,
+        labels,
     );
     return respBody;
 }
