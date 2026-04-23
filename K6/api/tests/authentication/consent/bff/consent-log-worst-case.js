@@ -16,5 +16,5 @@ export default function () {
     const [accessManagementApiClient, tokenGenerator] = getClients();
     const from = users[__ITER % users.length];
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-    GetConsentLog(accessManagementApiClient, from.partyUuid, from.labels);
+    GetConsentLog(accessManagementApiClient, from.partyUuid, from.label);
 }
