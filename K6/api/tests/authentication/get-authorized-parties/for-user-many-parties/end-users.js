@@ -28,7 +28,7 @@ const endUsersByEnvironment = {
 };
 
 export const endUsers = endUsersByEnvironment[environment] || [];
-export const endUserLabels = endUsers.map(user => user.label);
+export const endUserLabels = endUsers.map(user => { unique_id: user.label; });
 
 // Some more if needed:
 // Environment: yt01:

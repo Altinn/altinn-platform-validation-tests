@@ -10,13 +10,13 @@ import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions 
 import { accessPackagesForUsers as accessPackages, getTokenOpts, getFromTo } from "./commons.js";
 
 // Labels for different actions
-const postRightholderLabel = "1. Connecting users with PostRightholder";
-const getRightholdersToLabel = "2. Get rightholders";
-const getRightholdersWithoutToLabel = "3. Get rightholders";
-const tokenGeneratorLabel = "Personal Token Generator";
-const accessPackageLabel = "4. Access Package Delegation";
-const accessPackageDeleteLabel = "5. Access Package Delete Delegation";
-const deleteRightholderConnectionLabel = "6. Delete rightholder connection";
+const postRightholderLabel = { step: "1. Connecting users with PostRightholder" };
+const getRightholdersToLabel = { step: "2. Get rightholders" };
+const getRightholdersWithoutToLabel = { step: "3. Get rightholders" };
+const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const accessPackageLabel = { step: "4. Access Package Delegation" };
+const accessPackageDeleteLabel = { step: "5. Access Package Delete Delegation" };
+const deleteRightholderConnectionLabel = { step: "6. Delete rightholder connection" };
 const groupLabel = "0. Delegate accesspackage from user to user";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;

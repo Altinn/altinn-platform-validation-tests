@@ -19,29 +19,29 @@ import {
 import { accessPackagesForOrgs as accessPackages, getTokenOpts } from "./commons.js";
 
 // Labels for different actions
-const getPermissionsLabel = "1a. Get permissions";
-const getRightholdersWithoutToLabel1b = "1b. Get rightholders without to parameter";
-const postRightholderLabel = "1d. Connecting organizations with PostRightholder";
-const getRightholdersToLabel1e = "1e. Get rightholders with to parameter";
-const getRightholdersWithoutToLabel1f = "1f. Get rightholders without to parameter";
-const postDelegationLabel = "1g. Delegate access package from org to org";
+const getPermissionsLabel = { step: "1a. Get permissions" };
+const getRightholdersWithoutToLabel1b = { step: "1b. Get rightholders without to parameter" };
+const postRightholderLabel = { step: "1d. Connecting organizations with PostRightholder" };
+const getRightholdersToLabel1e = { step: "1e. Get rightholders with to parameter" };
+const getRightholdersWithoutToLabel1f = { step: "1f. Get rightholders without to parameter" };
+const postDelegationLabel = { step: "1g. Delegate access package from org to org" };
 
-const postAgentsLabel = "2a. Add agent to organization";
-const getAgentsLabel = "2b. Get agents for organization";
-const getAccessPackagesLabel = "2c. Get access packages for agent delegation";
-const getClientsLabel = "2d. Get clients for organization";
-const getRightholdersToLabel2e = "2e. Get rightholders with to parameter after adding agent delegation";
+const postAgentsLabel = { step: "2a. Add agent to organization" };
+const getAgentsLabel = { step: "2b. Get agents for organization" };
+const getAccessPackagesLabel = { step: "2c. Get access packages for agent delegation" };
+const getClientsLabel = { step: "2d. Get clients for organization" };
+const getRightholdersToLabel2e = { step: "2e. Get rightholders with to parameter after adding agent delegation" };
 
-const getRightholdersToLabel3a = "3a. Get rightholders with to parameter for client delegation";
-const postAccessPackageLabel = "3b. Delegate access package to user for client delegation";
-const getAccessPackagesLabel3c = "3c. Get access packages for client delegation";
+const getRightholdersToLabel3a = { step: "3a. Get rightholders with to parameter for client delegation" };
+const postAccessPackageLabel = { step: "3b. Delegate access package to user for client delegation" };
+const getAccessPackagesLabel3c = { step: "3c. Get access packages for client delegation" };
 
-const deleteClientDelegationLabel = "4a. Delete access package delegation from org to org";
-const deleteAgentsLabel = "4b. Delete agent delegation";
-const deleteAccessPackageLabel = "4c. Delete access package for client delegation";
-const deleteRightholderConnectionLabel = "4d. Delete rightholder connection between orgs";
+const deleteClientDelegationLabel = { step: "4a. Delete access package delegation from org to org" };
+const deleteAgentsLabel = { step: "4b. Delete agent delegation" };
+const deleteAccessPackageLabel = { step: "4c. Delete access package for client delegation" };
+const deleteRightholderConnectionLabel = { step: "4d. Delete rightholder connection between orgs" };
 
-const tokenGeneratorLabel = "Personal Token Generator";
+const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 
 const fullmaktGroup = "1. Delegate accesspackage from organization to organization";

@@ -6,7 +6,7 @@ import { LookupPartiesInRegister } from "../../building-blocks/register/index.js
 import { getItemFromList, getOptions, parseCsvData } from "../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-const label = "test-lookup-on-username";
+const label = { step: "test-lookup-on-username" };
 
 export const options = getOptions([label]);
 

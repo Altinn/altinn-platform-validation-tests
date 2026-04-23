@@ -6,7 +6,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForUserAvgiverListe";
+const label = { step: "getAuthorizedPartiesForUserAvgiverListe" };
 
 export const options = getOptions([label]);
 

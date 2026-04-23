@@ -8,7 +8,7 @@ import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.j
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNo = "713431400"; // digdir orgno
 
-const label = "create-dialog";
+const label = { step: "create-dialog" };
 
 export const serviceResources = [
     "ttd-dialogporten-performance-test-01",
@@ -61,4 +61,3 @@ export default function (data) {
         label,
     );
 }
-

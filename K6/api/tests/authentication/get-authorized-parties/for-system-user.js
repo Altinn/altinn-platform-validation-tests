@@ -6,7 +6,7 @@ import { getClients } from "./common-functions.js";
 const includeAltinn2 = false;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForSystemUser";
+const label = { step: "getAuthorizedPartiesForSystemUser" };
 
 export const options = getOptions([label]);
 

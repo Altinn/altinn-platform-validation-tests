@@ -14,7 +14,7 @@ export function setup() {
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNos = ["713431400"];
 
-const label = "should-send-notifications";
+const label = { step: "should-send-notifications" };
 
 export const options = getOptions([label]);
 

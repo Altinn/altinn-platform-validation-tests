@@ -6,9 +6,9 @@ export { setup } from "./create-dialog.js";
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNo = "713431400"; // digdir orgno
 
-const create_dialog_label = "create-dialog";
-const create_transmission_label = "create-transmission";
-const create_activity_label = "create-activity";
+const create_dialog_label = { step: "create-dialog" };
+const create_transmission_label = { step: "create-transmission" };
+const create_activity_label = { step: "create-activity" };
 
 export const options = getOptions([create_dialog_label, create_transmission_label, create_activity_label]);
 
@@ -34,4 +34,3 @@ export default function (data) {
         create_activity_label,
     );
 }
-
