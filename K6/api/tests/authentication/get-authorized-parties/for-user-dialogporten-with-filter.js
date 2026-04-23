@@ -6,7 +6,7 @@ import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.j
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { step: "getAuthorizedPartiesForUserDPWithFilter" };
+const label = { action: "getAuthorizedPartiesForUserDPWithFilter" };
 
 export const options = getOptions([label]);
 

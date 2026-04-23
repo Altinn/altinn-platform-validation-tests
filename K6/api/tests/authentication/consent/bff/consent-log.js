@@ -8,7 +8,7 @@ import { getOptions } from "../../../../../helpers.js";
 import { getClients, getTokenOpts } from "./commons.js";
 export { setup } from "./commons.js";
 
-const getConsentLogLabel = { step: "Get consent log for user" };
+const getConsentLogLabel = { action: "Get consent log for user" };
 
 export const options = getOptions([getConsentLogLabel],);
 

@@ -2,7 +2,7 @@ import { GetRoles } from "../../../building-blocks/authentication/roles/index.js
 import { RolesApiClient } from "../../../../clients/authentication/index.js";
 import { getOptions } from "../../../../helpers.js";
 
-const labels = { step: "getRoles" };
+const labels = { action: "getRoles" };
 let rolesApiClient = undefined;
 export const options = getOptions([labels]);
 

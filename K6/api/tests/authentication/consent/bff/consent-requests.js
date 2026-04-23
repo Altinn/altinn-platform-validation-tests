@@ -9,7 +9,7 @@ import { getTokenOpts } from "../../access-management/bff/commons.js";
 import { getClients } from "./commons.js";
 export { setup } from "./commons.js";
 
-const getActiveConsentLabel = { step: "Get active consent for user" };
+const getActiveConsentLabel = { action: "Get active consent for user" };
 
 export const options = getOptions([getActiveConsentLabel],);
 

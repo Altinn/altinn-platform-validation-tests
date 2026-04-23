@@ -7,7 +7,7 @@ export { setup } from "./common-functions.js";
 const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { step: "getAuthorizedPartiesForUserIncludePartiesViaKeyRole" };
+const label = { action: "getAuthorizedPartiesForUserIncludePartiesViaKeyRole" };
 
 export const options = getOptions([label]);
 

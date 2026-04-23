@@ -6,7 +6,7 @@ export { setup } from "./common-functions.js";
 import exec from "k6/execution";
 
 // Labels for different actions
-const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
+const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
 const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 export const options = getOptions([pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);

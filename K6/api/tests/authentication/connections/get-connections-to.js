@@ -5,7 +5,7 @@ import exec from "k6/execution";
 export { setup } from "./common-functions.js";
 
 // Labels for different actions
-const getConnectionsToLabel = { step: "Get connections to" };
+const getConnectionsToLabel = { action: "Get connections to" };
 const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 // get k6 options
