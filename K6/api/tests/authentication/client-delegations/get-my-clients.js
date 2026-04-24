@@ -26,7 +26,7 @@ const endUsersByEnvironment = {
 };
 
 const endUsers = endUsersByEnvironment[environment] || [];
-const endUserLabels = [...endUsers.map(user => { unique_id: user.label; }), tokenGeneratorLabel];
+const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel];
 let tokenGenerator = undefined;
 let clientDelegationsApiClient = undefined;
 

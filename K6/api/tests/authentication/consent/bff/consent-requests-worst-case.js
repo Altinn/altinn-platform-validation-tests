@@ -6,7 +6,7 @@ import { getOptions } from "../../../../../helpers.js";
 import { getTokenOpts } from "../../access-management/bff/commons.js";
 import { worst_case_users as users, getClients } from "./commons.js";
 
-export const options = getOptions(users.map(user => { unique_id: user.label; }));
+export const options = getOptions(users.map(user => { return { unique_id: user.label }; }));
 
 /**
  * The default function for the K6 test, which retrieves the active consent for a user in a worst-case scenario.

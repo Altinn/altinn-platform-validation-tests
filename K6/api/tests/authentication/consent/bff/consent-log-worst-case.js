@@ -5,7 +5,7 @@ import { GetConsentLog } from "../../../../building-blocks/authentication/client
 import { getOptions } from "../../../../../helpers.js";
 import { worst_case_users as users, getClients, getTokenOpts } from "./commons.js";
 
-export const options = getOptions(users.map(user => { unique_id: user.label; }));
+export const options = getOptions(users.map(user => { return { unique_id: user.label }; }));
 
 /**
  * The default function for the K6 test, which retrieves the consent log for a user in a worst-case scenario.
