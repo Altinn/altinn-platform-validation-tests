@@ -59,7 +59,7 @@ class RegisterApiClient {
 
         return http.post(registerUrl, soapReqBody,
             {
-                tags: { name: registerUrl },
+                tags: { name: registerUrl, endpoint: registerUrl },
                 headers: {
                     "Content-Type": "text/xml",
                     SOAPAction: submitERDataBasic,
@@ -95,7 +95,7 @@ class RegisterApiClient {
 
         return http.post(registerUrl, soapBody,
             {
-                tags: { name: registerUrl },
+                tags: { name: registerUrl, endpoint: registerUrl },
                 headers: {
                     "Content-Type": "text/xml",
                     SOAPAction: submitERDataBasic,
@@ -107,10 +107,9 @@ class RegisterApiClient {
     GetRevisorCustomerIdentifiersForParty(facilitatorPartyUuid, subscriptionKey) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/internal/parties/${facilitatorPartyUuid}/customers/ccr/revisor`;
-
         return http.get(url,
             {
-                tags: { name: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor` },
+                tags: { endpoint: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor` },
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Ocp-Apim-Subscription-Key": subscriptionKey,

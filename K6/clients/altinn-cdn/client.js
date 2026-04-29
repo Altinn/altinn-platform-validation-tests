@@ -21,7 +21,12 @@ class AltinnCdnClient {
             environment = "production";
         }
         const orgs = [];
-        const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json");
+
+        const params = {
+            tags: { "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json" },
+        };
+
+        const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params);
         console.log(this.BASE_URL + "/orgs/altinn-orgs.json");
         if (res.status == 200) {
             const res_body = JSON.parse(res.body);

@@ -36,7 +36,7 @@ class GraphqlClient {
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : this.FULL_PATH;
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",
@@ -57,7 +57,7 @@ class GraphqlClient {
         const url = new URL(this.FULL_PATH);
         let nameTag = label ? label : this.FULL_PATH;
         const params = {
-            tags: { name: nameTag },
+            tags: { name: nameTag, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",

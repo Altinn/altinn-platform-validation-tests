@@ -26,7 +26,7 @@ class BffAccessPackageApiClient {
 
     /**
      * Post delegation.
-     * @param {*} queryParams - object with key value pairs to be added as query parameters to the request 
+     * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
@@ -35,7 +35,7 @@ class BffAccessPackageApiClient {
         const url = new URL(`${this.FULL_PATH}/delegations`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -56,7 +56,7 @@ class BffAccessPackageApiClient {
         const url = new URL(`${this.FULL_PATH}/delegations`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -70,14 +70,14 @@ class BffAccessPackageApiClient {
      * Get delegations.
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
      * @param {*} label - optional label for the request, if not provided the url will be used as label
-     * @returns http response object    
+     * @returns http response object
      */
     GetDelegations(queryParams, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -98,7 +98,7 @@ class BffAccessPackageApiClient {
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -120,7 +120,7 @@ class BffAccessPackageApiClient {
         const url = new URL(`${this.FULL_PATH}/permission/${accessPackageId}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/permission/accessPackageId` },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

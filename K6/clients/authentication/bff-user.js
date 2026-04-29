@@ -36,7 +36,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/lookup/party/user`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -55,7 +55,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/isCompanyProfileAdmin`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -75,7 +75,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/reportee/${userId}`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: `${this.FULL_PATH}/user/reportee/userId` },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -86,14 +86,14 @@ class BffUserApiClient {
     /**
      * Get profile
      * @param {string} label - label for the request, if null the url will be used as label
-     * @returns http.RefinedResponse 
+     * @returns http.RefinedResponse
      */
     GetProfile(label = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/profile`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -105,14 +105,14 @@ class BffUserApiClient {
      * Get is admin
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {string} label - label for the request, if null the url will be used as label
-     * returns http.RefinedResponse 
+     * returns http.RefinedResponse
      */
     GetIsAdmin(queryParams, label = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isAdmin`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -132,7 +132,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/isClientAdmin`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -151,7 +151,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/actorlist/old`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -169,7 +169,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/actorlist/favorites`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -188,7 +188,7 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/isInstanceAdmin`);
         const tags = label ? label : url.toString();
         const params = {
-            tags: { name: tags },
+            tags: { name: tags, endpoint: url.toString() },
             headers: {
                 Authorization: "Bearer " + token,
             },

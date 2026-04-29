@@ -69,7 +69,7 @@ export class RegisterLookupClient {
 
         const body = JSON.stringify(query);
         const params = {
-            tags: { name: label || url.toString() },
+            tags: { name: label || url.toString(), endpoint: url.toString() },
             headers: {
                 PlatformAccessToken: `${token}`,
                 "Content-Type": "application/json",
