@@ -11,7 +11,7 @@ import { retry, parseCsvData } from "../../../helpers.js";
 
 export function setup() {
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/register%2Fmore-environments/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
     );
     return parseCsvData(res.body)[0];
 }
