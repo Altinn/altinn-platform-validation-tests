@@ -318,7 +318,7 @@ import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient
 import { EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
+import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs } from "../../../../../helpers.js";
 // All apiclient used in this test
 let serviceOwnerApiClient = undefined;
 let userApiClient = undefined;
