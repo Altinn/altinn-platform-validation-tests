@@ -15,12 +15,13 @@ export default function () {
         includeAltinn3: "true",
         includeAltinn2: "true",
     };
-    
+
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",
         userParty.pid,
         queryParams,
-        userParty.label,
+        null,
+        { unique_id: userParty.label },
     );
 }

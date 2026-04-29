@@ -101,10 +101,10 @@ function getClients(orgNo, userId, partyUuid) {
 }
 
 // Labels for the different steps in the consent process, used for tagging requests in K6 and improving readability of test results.
-const requestConsentLabel = "Request Consent";
-const approveConsentLabel = "Approve Consent";
-const getConsentLogLabel = "Get Consent Log";
-const lookupConsentLabel = "Lookup Consent";
+const requestConsentLabel = { action: "Request Consent" };
+const approveConsentLabel = { action: "Approve Consent" };
+const getConsentLogLabel = { action: "Get Consent Log" };
+const lookupConsentLabel = { action: "Lookup Consent" };
 
 export const options = getOptions([requestConsentLabel, approveConsentLabel, getConsentLogLabel, lookupConsentLabel]);
 

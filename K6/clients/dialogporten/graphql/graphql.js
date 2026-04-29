@@ -31,12 +31,16 @@ class GraphqlClient {
      * @param {string} label - a label to add to the request in k6
      * @returns response from the API
      */
-    GetAllDialogsForParty(partyId, label = null) {
+    GetAllDialogsForParty(partyId, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let nameTag = label ? label : this.FULL_PATH;
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",
@@ -52,12 +56,15 @@ class GraphqlClient {
      * @param {string} label - a label to add to the request in k6
      * @return response from the API
      */
-    GetDialogById(dialogId, label = null) {
+    GetDialogById(dialogId, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let nameTag = label ? label : this.FULL_PATH;
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-Type": "application/json",

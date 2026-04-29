@@ -1,5 +1,10 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetConnections: { action: "GetConnections" },
+    GetAccessPackages: { action: "GetAccessPackages" },
+};
+
 class ConnectionsApiClient {
     /**
      *
@@ -30,6 +35,11 @@ class ConnectionsApiClient {
         }
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * Get connections
     * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections}
@@ -38,12 +48,15 @@ class ConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetConnections(queryParams, label = null) {
+    GetConnections(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -60,12 +73,15 @@ class ConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetAccessPackages(queryParams, label = null) {
+    GetAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

@@ -1,5 +1,13 @@
 import http from "k6/http";
 
+const TAGS = {
+    PostDelegations: { action: "PostDelegations" },
+    DeleteDelegations: { action: "DeleteDelegations" },
+    GetDelegations: { action: "GetDelegations" },
+    GetDelegationCheck: { action: "Get delegation check" },
+    GetPermission: { action: "GetPermission" },
+};
+
 class BffAccessPackageApiClient {
     /**
      *
@@ -24,18 +32,25 @@ class BffAccessPackageApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Post delegation.
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    PostDelegations(queryParams, label = null) {
+    PostDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -51,12 +66,15 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    DeleteDelegations(queryParams, label = null) {
+    DeleteDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -72,12 +90,15 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    GetDelegations(queryParams, label = null) {
+    GetDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -93,12 +114,19 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    GetDelegationCheck(queryParams, label = null) {
+    GetDelegationCheck(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            action: "Get delegation check",
+            name: url.toString()
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -115,12 +143,18 @@ class BffAccessPackageApiClient {
      * @param {*} label - optional label for the request, if not provided the url will be used as label
      * @returns http response object
      */
-    GetPermission(accessPackageId, queryParams, label = null) {
+    GetPermission(accessPackageId, queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/permission/${accessPackageId}`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: `${this.FULL_PATH}/permission/accessPackageId`,
+            name: `${this.FULL_PATH}/permission/accessPackageId`
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/permission/accessPackageId` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

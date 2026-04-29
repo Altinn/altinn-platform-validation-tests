@@ -5,12 +5,12 @@ import { BffAccessPackageApiClient } from "../../../../clients/authentication/in
  * Post Delegations
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {*} label - label for the request
- * 
+ * @param {*} labels - labels for the request
+ *
  * @returns (string | ArrayBuffer | null)
  */
-export function PostDelegations(accessPackageApiClient, queryParams, label = null) {
-    const res = accessPackageApiClient.PostDelegations(queryParams, label);
+export function PostDelegations(accessPackageApiClient, queryParams, labels = null) {
+    const res = accessPackageApiClient.PostDelegations(queryParams, labels);
     const succeed = check(res, {
         "PostDelegations - status code is 200": (r) => r.status === 200,
         "PostDelegations - status text is 200 OK": (r) => r.status_text == "200 OK",
@@ -32,11 +32,11 @@ export function PostDelegations(accessPackageApiClient, queryParams, label = nul
  * Delete Delegations
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {*} label - label for the request 
+ * @param {*} labels - labels for the request
  * @returns (string | ArrayBuffer | null)
  */
-export function DeleteDelegations(accessPackageApiClient, queryParams, label = null) {
-    const res = accessPackageApiClient.DeleteDelegations(queryParams, label);
+export function DeleteDelegations(accessPackageApiClient, queryParams, labels = null) {
+    const res = accessPackageApiClient.DeleteDelegations(queryParams, labels);
     const succeed = check(res, {
         "DeleteDelegations - status code is 200": (r) => r.status === 200,
         "DeleteDelegations - status text is 200 OK": (r) => r.status_text == "200 OK",
@@ -58,11 +58,11 @@ export function DeleteDelegations(accessPackageApiClient, queryParams, label = n
  * Get Delegations
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * @return (string | ArrayBuffer | null)
  */
-export function GetDelegations(accessPackageApiClient, queryParams, label = null) {
-    const res = accessPackageApiClient.GetDelegations(queryParams, label);
+export function GetDelegations(accessPackageApiClient, queryParams, labels = null) {
+    const res = accessPackageApiClient.GetDelegations(queryParams, labels);
     const succeed = check(res, {
         "GetDelegations - status code is 200": (r) => r.status === 200,
         "GetDelegations - status text is 200 OK": (r) => r.status_text == "200 OK",
@@ -84,11 +84,11 @@ export function GetDelegations(accessPackageApiClient, queryParams, label = null
  * Get Delegation Check
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * @returns (string | ArrayBuffer | null)
  */
-export function GetDelegationCheck(accessPackageApiClient, queryParams, label = null) {
-    const res = accessPackageApiClient.GetDelegationCheck(queryParams, label);
+export function GetDelegationCheck(accessPackageApiClient, queryParams, labels = null) {
+    const res = accessPackageApiClient.GetDelegationCheck(queryParams, labels);
     const succeed = check(res, {
         "GetDelegationCheck - status code is 200": (r) => r.status === 200,
         "GetDelegationCheck - status text is 200 OK": (r) => r.status_text == "200 OK",
@@ -111,11 +111,11 @@ export function GetDelegationCheck(accessPackageApiClient, queryParams, label = 
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} accessPackageId - id of the access package
  * @param {*} queryParams - query parameters for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * @returns (string | ArrayBuffer | null)
  */
-export function GetPermission(accessPackageApiClient, accessPackageId, queryParams, label = null) {
-    const res = accessPackageApiClient.GetPermission(accessPackageId, queryParams, label);
+export function GetPermission(accessPackageApiClient, accessPackageId, queryParams, labels = null) {
+    const res = accessPackageApiClient.GetPermission(accessPackageId, queryParams, labels);
     const succeed = check(res, {
         "GetPermission - status code is 200": (r) => r.status === 200,
         "GetPermission - status text is 200 OK": (r) => r.status_text == "200 OK",

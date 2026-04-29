@@ -5,10 +5,10 @@ import { check } from "k6";
  * Post single right for the specified query parameters
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, label = null) {
-    const res = bffSingleRightApiClient.PostDelegate(queryParams, rights, label);
+export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, labels = null) {
+    const res = bffSingleRightApiClient.PostDelegate(queryParams, rights, labels);
     checker(res, "Post single right");
     return res.body;
 }
@@ -17,11 +17,11 @@ export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, la
  * Revoke single right for the specified query parameters
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  * @return (string | ArrayBuffer | null)
  * */
-export function RevokeSingleRight(bffSingleRightApiClient, queryParams, label = null) {
-    const res = bffSingleRightApiClient.DeleteDelegate(queryParams, label);
+export function RevokeSingleRight(bffSingleRightApiClient, queryParams, labels = null) {
+    const res = bffSingleRightApiClient.DeleteDelegate(queryParams, labels);
     checker(res, "Revoke single right");
     return res.body;
 }
@@ -30,11 +30,11 @@ export function RevokeSingleRight(bffSingleRightApiClient, queryParams, label = 
  * Get delegation check for a resource
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {*} queryParams - query parameters for the request
- * @param {*} label - label for the request, if null the url will be used as label
+ * @param {*} labels - labels for the request, if null the url will be used as label
  * @return (string | ArrayBuffer | null)
  */
-export function GetDelegationCheck(bffSingleRightApiClient, queryParams, label = null) {
-    const res = bffSingleRightApiClient.GetDelegationCheck(queryParams, label);
+export function GetDelegationCheck(bffSingleRightApiClient, queryParams, labels = null) {
+    const res = bffSingleRightApiClient.GetDelegationCheck(queryParams, labels);
     checker(res, "Get delegation check");
     return res.body;
 }

@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    RequestConsent: { action: "RequestConsent" },
+    ApproveConsent: { action: "ApproveConsent" },
+    LookupConsent: { action: "LookupConsent" },
+};
+
 class ConsentApiClient {
     /**
    *
@@ -21,6 +27,10 @@ class ConsentApiClient {
         this.BASE_PATH = "/accessmanagement/api/v1";
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
    * Request Consent
    * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
@@ -32,7 +42,7 @@ class ConsentApiClient {
    * @param {string} redirectUrl
    * @returns http.RefinedResponse
    */
-    RequestConsent(id, from, to, validTo, consentRights, redirectUrl, label = null) {
+    RequestConsent(id, from, to, validTo, consentRights, redirectUrl, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/enterprise/consentrequests`;
         const body = {
@@ -44,8 +54,13 @@ class ConsentApiClient {
             redirectUrl: redirectUrl,
         };
 
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const params = {
-            tags: { name: label || url, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -60,12 +75,19 @@ class ConsentApiClient {
    * @param {string } id
    * @returns http.RefinedResponse
    */
-    ApproveConsent(id, label = null) {
+    ApproveConsent(id, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
+        let tags = {
+            endpoint: `${this.FULL_PATH}/bff/consentrequests/id/accept`,
+            name: `${this.FULL_PATH}/bff/consentrequests/id/accept`
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const body = { language: "nb" };
         const params = {
-            tags: { name: label || `${this.FULL_PATH}/bff/consentrequests/id/accept`, endpoint: `${this.FULL_PATH}/bff/consentrequests/id/accept` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -85,7 +107,7 @@ class ConsentApiClient {
    * @param {string|null} label - Optional label for the request tag.
    * @returns http.RefinedResponse
    */
-    LookupConsent(id, from, to, label = null) {
+    LookupConsent(id, from, to, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/maskinporten/consent/lookup/`;
         const body = {
@@ -94,8 +116,13 @@ class ConsentApiClient {
             to,
         };
 
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const params = {
-            tags: { name: label || url, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

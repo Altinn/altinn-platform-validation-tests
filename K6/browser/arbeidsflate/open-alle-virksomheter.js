@@ -142,10 +142,10 @@ export default async function (data) {
 
 /**
  * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
- * @param {} page 
- * @param {*} trend 
- * @param {*} labels 
- * @returns 
+ * @param {} page
+ * @param {*} trend
+ * @param {*} labels
+ * @returns
  */
 export async function selectAllEnterprises(page, trend, labels) {
     const startTime = new Date();

@@ -1,5 +1,13 @@
 import http from "k6/http";
 
+const TAGS = {
+    CreateSystemUserRequest: { action: "CreateSystemUserRequest" },
+    ApproveSystemUserRequest: { action: "ApproveSystemUserRequest" },
+    CreateAgentSystemUserRequest: { action: "CreateAgentSystemUserRequest" },
+    GetSystemUserRequestsBySystemIdForVendor: { action: "GetSystemUserRequestsBySystemIdForVendor" },
+    GetAgentSystemUserRequestsBySystemIdForVendor: { action: "GetAgentSystemUserRequestsBySystemIdForVendor" },
+};
+
 class SystemUserRequestApiClient {
     /**
    *
@@ -19,6 +27,10 @@ class SystemUserRequestApiClient {
      * @property {string} BASE_PATH The path to the api without host information
      */
         this.BASE_PATH = "/authentication/api/v1/systemuser/request";
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
@@ -69,7 +81,10 @@ class SystemUserRequestApiClient {
         const url = `${this.FULL_PATH}/${partyId}/${requestId}/approve`;
 
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/partyId/requestId/approve` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/partyId/requestId/approve`,
+                name: `${this.FULL_PATH}/partyId/requestId/approve`
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -124,7 +139,10 @@ class SystemUserRequestApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId`,
+                name: `${this.FULL_PATH}/vendor/bysystem/systemId`
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -142,7 +160,10 @@ class SystemUserRequestApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/agent/bysystem/${systemId}`;
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor/agent/bysystem/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/agent/bysystem/systemId`,
+                name: `${this.FULL_PATH}/vendor/agent/bysystem/systemId`
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

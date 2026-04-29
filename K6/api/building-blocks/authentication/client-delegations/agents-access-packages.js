@@ -5,10 +5,10 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authenticatio
  * Get access packages for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetAccessPackages(clientDelegationsApiClient, queryParams, label = null) {
-    const res = clientDelegationsApiClient.GetAgentsAccessPackages(queryParams, label);
+export function GetAccessPackages(clientDelegationsApiClient, queryParams, labels = null) {
+    const res = clientDelegationsApiClient.GetAgentsAccessPackages(queryParams, labels);
     checker(res, "Get access packages");
     return res.body;
 }
@@ -17,10 +17,10 @@ export function GetAccessPackages(clientDelegationsApiClient, queryParams, label
  * Post access packages for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function PostAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, label = null) {
-    const res = clientDelegationsApiClient.PostAgentsAccessPackages(queryParams, accessPackage, label);
+export function PostAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
+    const res = clientDelegationsApiClient.PostAgentsAccessPackages(queryParams, accessPackage, labels);
     checker(res, "Post access packages");
     return res.body;
 }
@@ -29,10 +29,10 @@ export function PostAccessPackages(clientDelegationsApiClient, queryParams, acce
  * Delete access packages for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, label = null) {
-    const res = clientDelegationsApiClient.DeleteAgentsAccessPackages(queryParams, accessPackage, label);
+export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
+    const res = clientDelegationsApiClient.DeleteAgentsAccessPackages(queryParams, accessPackage, labels);
     checker(res, "Delete access packages", 204, "204 No Content");
     return res.body;
 }

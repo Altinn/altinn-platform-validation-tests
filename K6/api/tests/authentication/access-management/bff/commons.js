@@ -375,11 +375,11 @@ export function getDialogportenOpts(ssn) {
 }
 
 /**
- * Helper function to create the body for delegating rights for a resource and instance to another user, 
+ * Helper function to create the body for delegating rights for a resource and instance to another user,
  * based on the rights meta for the resource and the "to" user.
- * @param { JSON } rightsMeta 
- * @param {*} to 
- * @returns 
+ * @param { JSON } rightsMeta
+ * @param {*} to
+ * @returns
  */
 export function getInstanceDelegationBody(rightsMeta, to) {
     return {

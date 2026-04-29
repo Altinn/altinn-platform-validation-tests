@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetMyClients: { action: "GetMyClients" },
+};
+
 class ClientDelegationsApiClient {
     /**
      *
@@ -24,18 +28,25 @@ class ClientDelegationsApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Get clients where the user is agent
      * Docs: TODO: add link to docs
      * @param {string|null} label - label for the request
      * @return http.RefinedResponse
      */
-    GetMyClients(label = null) {
+    GetMyClients(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/my/clients`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

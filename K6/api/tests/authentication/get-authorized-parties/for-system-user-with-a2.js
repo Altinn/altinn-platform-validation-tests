@@ -6,7 +6,7 @@ import { getClients } from "./common-functions.js";
 const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForSystemUser";
+const label = { action: "getAuthorizedPartiesForSystemUser" };
 
 export const options = getOptions([label]);
 
@@ -23,6 +23,7 @@ export default function (data) {
         "urn:altinn:systemuser:uuid",
         systemUser.systemuserUuid,
         includeAltinn2,
+        null,
         label
     );
 }
