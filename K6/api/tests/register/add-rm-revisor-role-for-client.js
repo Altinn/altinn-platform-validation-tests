@@ -1,4 +1,5 @@
 import { check, group } from "k6";
+import http from "k6/http";
 import { PersonalTokenGenerator } from "../../../common-imports.js";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import {
@@ -6,9 +7,16 @@ import {
     GetRevisorCustomerIdentifiersForParty,
     RemoveRevisorRoleFromEr,
 } from "../../building-blocks/register/index.js";
-import { retry } from "../../../helpers.js";
+import { retry, parseCsvData } from "../../../helpers.js";
 
-export default function () {
+export function setup() {
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
+    );
+    return parseCsvData(res.body)[0];
+}
+
+export default function (facilitator) {
     group("Remove org from ER and make sure it's reflected in Register", () => {
         const options = new Map();
         options.set("env", __ENV.ENVIRONMENT);
@@ -23,8 +31,9 @@ export default function () {
             tokenGenerator,
         );
 
-        const facilitatorPartyUuidRevisor = "7c1170ec-8232-4998-a277-0ba224808541";
-        const facilitatorOrg = "314239458";
+        const facilitatorPartyUuidRevisor = facilitator.partyUuid;
+        const facilitatorOrg = facilitator.org;
+
         const currentOrgs = GetRevisorCustomerIdentifiersForParty(
             registerApiClient,
             facilitatorPartyUuidRevisor,
@@ -72,7 +81,7 @@ export default function () {
             },
             {
                 retries: 10,
-                intervalSeconds: 30,
+                intervalSeconds: 5,
                 testscenario: "remove revisor role",
             },
         );
