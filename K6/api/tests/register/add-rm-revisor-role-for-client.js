@@ -98,7 +98,7 @@ export default function (facilitator) {
             },
             {
                 retries: 10,
-                intervalSeconds: 5,
+                intervalSeconds: 20,
                 testscenario: "remove revisor role",
             },
         );
