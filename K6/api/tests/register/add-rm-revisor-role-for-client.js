@@ -1,4 +1,5 @@
 import { check, group } from "k6";
+import http from "k6/http";
 import { PersonalTokenGenerator } from "../../../common-imports.js";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import {
@@ -6,9 +7,34 @@ import {
     GetRevisorCustomerIdentifiersForParty,
     RemoveRevisorRoleFromEr,
 } from "../../building-blocks/register/index.js";
-import { retry } from "../../../helpers.js";
+import { retry, parseCsvData, getItemFromList } from "../../../helpers.js";
 
-export default function () {
+/**
+ * @file add-rm-revisor-role-for-client.js
+ * @description Verifies that role changes in ER (Enhetsregisteret / Brønnøysundregisteret)
+ * are correctly propagated to Altinn's internal Register component.
+ *
+ * The test simulates a real-world ER event by removing a revisor role from a client
+ * organization via the ER SOAP API, then verifying that Altinn Register reflects the
+ * removal. The role is subsequently re-added to leave the system in its original state
+ * and verifying that it's present again in the Register
+ *
+ * @requires ENV.ENVIRONMENT - Target environment (e.g. tt02, yt01, at22, at23)
+ * @requires ENV.BASE_URL - Base URL for the Register API
+ * @requires ENV.REGISTER_SUBSCRIPTION_KEY - Subscription key for the Register API
+ * @requires ENV.SOAP_ER_USERNAME - Username for the ER SOAP API
+ * @requires ENV.SOAP_ER_PASSWORD - Password for the ER SOAP API
+ */
+
+export function setup() {
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
+    );
+    return parseCsvData(res.body);
+}
+
+export default function (facilitatorList) {
+    const facilitator = getItemFromList(facilitatorList);
     group("Remove org from ER and make sure it's reflected in Register", () => {
         const options = new Map();
         options.set("env", __ENV.ENVIRONMENT);
@@ -23,8 +49,9 @@ export default function () {
             tokenGenerator,
         );
 
-        const facilitatorPartyUuidRevisor = "7c1170ec-8232-4998-a277-0ba224808541";
-        const facilitatorOrg = "314239458";
+        const facilitatorPartyUuidRevisor = facilitator.partyUuid;
+        const facilitatorOrg = facilitator.org;
+
         const currentOrgs = GetRevisorCustomerIdentifiersForParty(
             registerApiClient,
             facilitatorPartyUuidRevisor,
@@ -52,7 +79,7 @@ export default function () {
 
         check(res.body, {
             "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED":
-        (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
+                (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
 
         let success = retry(
@@ -64,15 +91,14 @@ export default function () {
                 );
                 const stillPresent = orgs.includes(targetOrg);
                 console.log(
-                    `[remove role] Org ${targetOrg} is ${
-                        stillPresent ? "still" : "no longer"
+                    `[remove role] Org ${targetOrg} is ${stillPresent ? "still" : "no longer"
                     } in the list (${orgs.length})`,
                 );
                 return !stillPresent;
             },
             {
                 retries: 10,
-                intervalSeconds: 30,
+                intervalSeconds: 20,
                 testscenario: "remove revisor role",
             },
         );
@@ -94,7 +120,7 @@ export default function () {
             "AddRevisorRoleToErForOrg - body is not empty": (r) =>
                 r.body && r.body.length > 0,
             "AddRevisorRoleToErForOrg - response contains status OK_ER_DATA_PROCESSED":
-        (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
+                (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
         if (!outcome) {
             console.error(res.status);
@@ -110,8 +136,7 @@ export default function () {
                 );
                 const nowPresent = orgs.includes(targetOrg);
                 console.log(
-                    `[add role] Org ${targetOrg} is ${
-                        nowPresent ? "now" : "still not"
+                    `[add role] Org ${targetOrg} is ${nowPresent ? "now" : "still not"
                     } in the list (${orgs.length})`,
                 );
                 return nowPresent;
