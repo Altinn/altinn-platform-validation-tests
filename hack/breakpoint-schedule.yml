@@ -1,0 +1,50 @@
+- config_file: "K6/api/tests/authentication/consent/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-post-consent-break"
+        cron_expression: "0 08 * * 1" # “At 08:00 on Monday.”
+- config_file: "K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-for-org-with-a2-break"
+        cron_expression: "0 10 * * 1" # “At 10:00 on Monday.”
+      - testid: "yt01-for-system-user-break"
+        cron_expression: "0 12 * * 1" # “At 12:00 on Monday.”
+      - testid: "yt01-for-user-break"
+        cron_expression: "0 14 * * 1" # “At 14:00 on Monday.”
+- config_file: "K6/api/tests/authentication/pdp-authorize/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-dagl-single-resource-break"
+        cron_expression: "40 3 * * 2" # “At 03:40 on Tuesday.”
+      - testid: "'yt01-enduser-break'"
+        cron_expression: "0 4 * * 2" # “At 04:00 on Tuesday.”
+      - testid: "yt01-dagl-break"
+        cron_expression: "20 4 * * 2" # “At 04:20 on Tuesday.”
+      - testid: "yt01-dagl-direct-delegation-break"
+        cron_expression: "40 4 * * 2" # “At 04:40 on Tuesday.”
+      - testid: "yt01-dagl-deny-break"
+        cron_expression: "0 5 * * 2" # “At 05:00 on Tuesday.”
+- config_file: "K6/api/tests/authentication/connections/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-get-connections-to-break"
+        cron_expression: "20 5 * * 2" # “At 05:20 on Tuesday.”
+      - testid: "yt01-get-connections-from-break"
+        cron_expression: "40 5 * * 2" # “At 05:40 on Tuesday.”
+- config_file: "K6/api/tests/authentication/connections/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-get-access-packages-to-break"
+        cron_expression: "0 6 * * 2" # “At 06:00 on Tuesday.”
+      - testid: "yt01-get-access-packages-from-break"
+        cron_expression: "20 6 * * 2" # “At 06:20 on Tuesday.”
+- config_file: "K6/api/tests/authentication/roles/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-get-roles-break"
+        cron_expression: "40 4 * * 3" # “At 04:40 on Wednesday.”
+- config_file: "K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml"
+  schedule:
+      - testid: "yt01-for-user-avgiver-liste-break"
+        cron_expression: "0 5 * * 3" # “At 05:00 on Wednesday.”
+      - testid: "yt01-for-user-dialogporten-break"
+        cron_expression: "20 5 * * 3" # “At 05:20 on Wednesday.”
+      - testid: "yt01-for-user-dialogporten-with-filter-break"
+        cron_expression: "40 5 * * 3" # “At 05:40 on Wednesday.”
+      - testid: "yt01-for-user-include-parties-via-key-role-break"
+        cron_expression: "0 6 * * 3" # “At 06:00 on Wednesday.”
