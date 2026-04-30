@@ -7,7 +7,11 @@ local cronJobName = std.asciiLower(
     std.strReplace(
       std.strReplace(
         std.strReplace(
-          input_config_file,
+          std.strReplace(
+            input_config_file,
+            namespace + "/",
+            ''
+          ),
           './K6/browser/',
           ''
         ),

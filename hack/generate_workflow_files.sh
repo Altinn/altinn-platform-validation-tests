@@ -2,7 +2,6 @@
 set -euo pipefail
 
 TEAMS=(authentication dialogporten core portaler platform register)
-BROWSER_TEAMS=(authentication arbeidsflate)
 WORKFLOWS_DIR=".github/workflows"
 
 
@@ -21,22 +20,11 @@ generate() {
   yq '.. style="double"' "$temp_file2" > "$output"
 }
 
-iter=0
+
 for team in "${TEAMS[@]}"; do
   base="K6/api/tests/$team"
 
-  smoke=$(find "$base" -type f -name smoke.yaml)
   breakpoint=$(find "$base" -type f -name breakpoint.yaml)
-
-  if [[ -n "$smoke" ]]; then
-    minutes=$(( (iter * 5 + 20) % 60 ))
-    generate "$WORKFLOWS_DIR/run-$team-smoke-tests.yml" \
-      --ext-str team="$team" \
-      --ext-str cron_expression="$minutes * * * *" \
-      --ext-str config_files="$smoke" \
-      hack/run-smoke-tests.jsonnet
-    iter=$((iter + 1))
-  fi
 
   for conf in $breakpoint; do
     scope=$(basename "$(dirname "$conf")")
@@ -46,21 +34,6 @@ for team in "${TEAMS[@]}"; do
       --ext-str test_scope="$scope" \
       hack/run-breakpoint-tests.jsonnet
   done
-done
-
-iter=0
-for team in "${BROWSER_TEAMS[@]}"; do
-  base="K6/browser/$team"
-  browser=$(find "$base" -type f -name browser.yaml)
-  if [[ -n "$browser" ]]; then
-    minutes=$(( (iter * 5 + 20) % 60 ))
-    generate "$WORKFLOWS_DIR/run-$team-browser-tests.yml" \
-      --ext-str team="$team" \
-      --ext-str cron_expression="$minutes * * * *" \
-      --ext-str config_files="$browser" \
-      hack/run-browser-tests.jsonnet
-    iter=$((iter + 1))
-  fi
 done
 
 all_configs=$(find K6/ -type f \( \
