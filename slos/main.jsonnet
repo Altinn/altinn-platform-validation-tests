@@ -59,7 +59,7 @@ local slo = {
     },
     spec: {
       target: '99.9',
-      window: '28d',
+      window: '7d',
     },
   },
 
@@ -82,7 +82,7 @@ local slo = {
   newLatencyNative(namespace, slo_name, team, application, endpoint, latency): common(namespace, slo_name, team, application) + {
     spec+: {
       target: '99.9',
-      window: '28d',
+      window: '7d',
       indicator: {
         latencyNative: {
           latency: latency,
