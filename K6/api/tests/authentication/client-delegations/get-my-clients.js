@@ -4,13 +4,13 @@ import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 
 // Labels for different actions
-const tokenGeneratorLabel = "Personal Token Generator";
+const tokenGeneratorLabel = {tokenGenerator: "Personal Token Generator"};
 
 const environment = __ENV.ENVIRONMENT || "yt01";
 
 // Testdata - fetched from yt01, some systemusers with lots of clients, and some regular users with fewer clients
-// Note that the testdata is not deterministic, and the number of clients for each user may change over time. 
-// Add for other environments as needed, but be aware that the testdata may change over time, 
+// Note that the testdata is not deterministic, and the number of clients for each user may change over time.
+// Add for other environments as needed, but be aware that the testdata may change over time,
 // and the test may need to be updated accordingly.
 const endUsersByEnvironment = {
     yt01: [
@@ -26,7 +26,7 @@ const endUsersByEnvironment = {
 };
 
 const endUsers = endUsersByEnvironment[environment] || [];
-const endUserLabels = [...endUsers.map(user => user.label), tokenGeneratorLabel];
+const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel];
 let tokenGenerator = undefined;
 let clientDelegationsApiClient = undefined;
 
@@ -52,7 +52,7 @@ export default function () {
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.uuid));
     GetMyClients(
         clientDelegationsApiClient,
-        party.label,
+        { unique_id: party.label },
     );
 }
 

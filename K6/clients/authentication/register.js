@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    RemoveRevisorRoleFromEr: { action: "RemoveRevisorRoleFromEr" },
+    AddRevisorRoleToErForOrg: { action: "AddRevisorRoleToErForOrg" },
+    GetRevisorCustomerIdentifiersForParty: { action: "GetRevisorCustomerIdentifiersForParty" },
+};
+
 class RegisterApiClient {
     /**
      *
@@ -24,7 +30,9 @@ class RegisterApiClient {
         this.BASE_PATH = "/register/api/v1";
     }
 
-
+    static get TAGS() {
+        return TAGS;
+    }
     /**
      *
      * @param {string} soapErUsername
@@ -109,7 +117,10 @@ class RegisterApiClient {
         const url = `${this.FULL_PATH}/internal/parties/${facilitatorPartyUuid}/customers/ccr/revisor`;
         return http.get(url,
             {
-                tags: { endpoint: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor` },
+                tags: {
+                    endpoint: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor`,
+                    name: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor`
+                },
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Ocp-Apim-Subscription-Key": subscriptionKey,

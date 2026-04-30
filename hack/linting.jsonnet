@@ -42,7 +42,12 @@ local utils = import './utils.libsonnet';
         {
           name: 'Ensure javascript files are Kebab Case',
           shell: 'bash',
-          run: './validate.sh',
+          run: './hack/validate.sh',
+        },
+        {
+          name: 'Ensure there are no trailing white spaces',
+          shell: 'bash',
+          run: './hack/fix_whitespaces.sh',
         },
       ],
     },

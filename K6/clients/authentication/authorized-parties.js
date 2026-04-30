@@ -2,6 +2,10 @@ import http from "k6/http";
 
 const lengthPartyFilter = __ENV.LENGTH_PARTY_FILTER ?? "25";
 
+const TAGS = {
+    GetAuthorizedParties: { action: "Get AuthorizedParties" },
+};
+
 class AuthorizedPartiesClient {
     /**
    *
@@ -23,6 +27,10 @@ class AuthorizedPartiesClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
    * Get Authorized Parties
    * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
@@ -31,12 +39,18 @@ class AuthorizedPartiesClient {
    * @param {string} label
    * @returns http.RefinedResponse
    */
-    GetAuthorizedParties(type, value, queryParams, label = null, parties = null) {
+    GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
-        let nameTag = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString()
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

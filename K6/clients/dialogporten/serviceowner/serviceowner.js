@@ -39,7 +39,7 @@ class ServiceOwnerApiClient {
         conditionType,
         activityType,
         transmissionId,
-        label = null
+        labels = null
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs" + `/${dialogId}` + "/actions/should-send-notification");
@@ -47,9 +47,16 @@ class ServiceOwnerApiClient {
         url.searchParams.append("conditionType", conditionType);
         url.searchParams.append("activityType", activityType);
         url.searchParams.append("transmissionId", transmissionId);
-        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification";
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
+            name: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification" },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
@@ -74,14 +81,18 @@ class ServiceOwnerApiClient {
         partyId,
         serviceResource,
         serviceOwner,
-        label = null,
+        labels = null,
         noTransmissionsActivities = false,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
-        let nameTag = label ? label : this.FULL_PATH + "/dialogs";
+
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -109,14 +120,21 @@ class ServiceOwnerApiClient {
 
     PostTransmission(
         dialogId,
-        label = null,
+        labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions`);
-        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/transmissions";
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+            name: this.FULL_PATH + "/dialogs/dialogId/transmissions"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
 
         const params = {
-            tags: { name: nameTag, endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions" },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -140,14 +158,22 @@ class ServiceOwnerApiClient {
 
     PostActivity(
         dialogId,
-        label = null,
+        labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);
 
-        let nameTag = label ? label : this.FULL_PATH + "/dialogs/dialogId/activities";
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
+            name: this.FULL_PATH + "/dialogs/dialogId/activities"
+        };
+
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const params = {
-            tags: { name: nameTag, endpoint: this.FULL_PATH + "/dialogs/dialogId/activities" },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

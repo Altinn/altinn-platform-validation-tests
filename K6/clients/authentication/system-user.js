@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetSystemUsersBySystemIdForVendor: { action: "GetSystemUsersBySystemIdForVendor" },
+};
+
 class SystemUserApiClient {
     /**
    *
@@ -21,6 +25,12 @@ class SystemUserApiClient {
         this.BASE_PATH = "/authentication/api/v1/systemuser";
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
+
     /**
    * Retrieves system users for a given systemId for a vendor.
    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemUser/vendor}
@@ -31,7 +41,10 @@ class SystemUserApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId`,
+                name: `${this.FULL_PATH}/vendor/bysystem/systemId`
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

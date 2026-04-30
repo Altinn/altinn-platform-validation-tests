@@ -53,12 +53,13 @@ export default function () {
         includeAccessPackages: "true",
         orgCode: getItemFromList(orgCodes, randomizeOrgCodes),
     };
-    
+
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",
         userParty.pid,
         queryParams,
-        userParty.label,
+        null,
+        { unique_id: userParty.label },
     );
 }

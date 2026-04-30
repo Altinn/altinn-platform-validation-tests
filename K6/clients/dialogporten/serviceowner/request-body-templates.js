@@ -49,11 +49,11 @@ function uuidv7() {
 }
 
 /**
- * 
+ *
  * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
  * @param {string} serviceResource - the service resource
  * @param {string} serviceOwner - the org number of the service owner
- * @returns json object to be used as body when creating a dialog via the API. 
+ * @returns json object to be used as body when creating a dialog via the API.
  */
 export function getDialogBody(partyId, serviceResource, serviceOwner) {
     // The partyId can be either a pid/ssn (11 digits) or an org number (9 digits). We determine which one it is based on the length of the string, and construct the party urn accordingly.

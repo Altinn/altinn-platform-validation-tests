@@ -6,7 +6,7 @@ import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.j
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForUserDPWithFilter";
+const label = { action: "getAuthorizedPartiesForUserDPWithFilter" };
 
 export const options = getOptions([label]);
 
@@ -28,8 +28,9 @@ export default function (data) {
         "urn:altinn:person:identifier-no",
         userParty.ssn,
         queryParams,
-        label,
-        parties
+        parties,
+        label
+
     );
 }
 

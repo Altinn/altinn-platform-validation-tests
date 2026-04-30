@@ -1,5 +1,15 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetAgents: { action: "Get agents" },
+    PostAgents: { action: "Post Agents" },
+    DeleteAgents: { action: "Delete Agents" },
+    GetAgentsAccessPackages: { action: "Get AgentsAccessPackages" },
+    PostAgentsAccessPackages: { action: "Post AgentsAccessPackages" },
+    DeleteAgentsAccessPackages: { action: "Delete AgentsAccessPackages" },
+    GetClients: { action: "Get clients" },
+};
+
 class BffClientDelegationsApiClient {
     /**
      *
@@ -24,6 +34,10 @@ class BffClientDelegationsApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * Get agents
     * Docs: TODO: add docs link
@@ -31,12 +45,20 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetAgents(queryParams, label = null) {
+    GetAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            action: "Get agents",
+            name: url.toString()
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -54,12 +76,15 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    PostAgents(queryParams, to, lastName, label = null) {
+    PostAgents(queryParams, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -81,12 +106,15 @@ class BffClientDelegationsApiClient {
       * @param {string|null} label - label for the request
       * @returns http.RefinedResponse
       */
-    DeleteAgents(queryParams, label = null) {
+    DeleteAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -103,12 +131,15 @@ class BffClientDelegationsApiClient {
       * @param {string|null} label - label for the request
       * @returns http.RefinedResponse
       */
-    GetAgentsAccessPackages(queryParams, label = null) {
+    GetAgentsAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -125,12 +156,15 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    PostAgentsAccessPackages(queryParams, accessPackage, label = null) {
+    PostAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -155,12 +189,15 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    DeleteAgentsAccessPackages(queryParams, accessPackage, label = null) {
+    DeleteAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -186,12 +223,19 @@ class BffClientDelegationsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetClients(queryParams, label = null) {
+    GetClients(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/clients`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            action: "Get clients",
+            name: url.toString()
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -200,6 +244,7 @@ class BffClientDelegationsApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
     }
+
 }
 
 export { BffClientDelegationsApiClient };

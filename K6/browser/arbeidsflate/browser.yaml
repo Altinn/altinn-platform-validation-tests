@@ -13,7 +13,7 @@ test_definitions:
         test_type:
           type: browser
           enabled: true
-  
+
   - test_file: K6/browser/arbeidsflate/open-alle-virksomheter.js
     contexts:
       - environment: tt02

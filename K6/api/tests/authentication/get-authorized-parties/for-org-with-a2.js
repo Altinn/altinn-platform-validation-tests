@@ -6,7 +6,7 @@ import { getItemFromList, getOptions } from "../../../../helpers.js";
 const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForOrg";
+const label = { action: "getAuthorizedPartiesForOrg" };
 
 export const options = getOptions([label]);
 
@@ -18,6 +18,7 @@ export default function (data) {
         "urn:altinn:organization:identifier-no",
         party.orgno,
         includeAltinn2,
+        null,
         label
     );
 }

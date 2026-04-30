@@ -11,9 +11,9 @@ import http from "k6/http";
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
 // Labels for different actions
-const pdpAuthorizeLabel = "PDP Authorize";
-const pdpAuthorizeLabelDenyPermit = "PDP Authorize Deny";
-const tokenGeneratorLabel = "Personal Token Generator";
+const pdpAuthorizeLabel = { action: "PDP Authorize" };
+const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
+const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 // Only resource in use for now, but can be extended with more resources if needed
 const resource = "app_ttd_signering-brukerstyrt";

@@ -1,5 +1,17 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetLookupPartUser: { action: "GetLookupPartUser" },
+    GetIsCompanyProfileAdmin: { action: "GetIsCompanyProfileAdmin" },
+    GetReportee: { action: "GetReportee" },
+    GetProfile: { action: "GetProfile" },
+    GetIsAdmin: { action: "GetIsAdmin" },
+    GetIsClientAdmin: { action: "GetIsClientAdmin" },
+    GetActorListOld: { action: "GetActorListOld" },
+    GetActorListFavorites: { action: "GetActorListFavorites" },
+    GetIsInstanceAdmin: { action: "GetIsInstanceAdmin" },
+};
+
 class BffUserApiClient {
     /**
      *
@@ -26,17 +38,25 @@ class BffUserApiClient {
 
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Get lookup party user
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetLookupPartUser(label = null) {
+    GetLookupPartUser(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/lookup/party/user`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -50,12 +70,15 @@ class BffUserApiClient {
     * @param {string} label - label for the request, if null the url will be used as label
     * @returns http.RefinedResponse
     */
-    GetIsCompanyProfileAdmin(queryParams, label = null) {
+    GetIsCompanyProfileAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isCompanyProfileAdmin`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -70,12 +93,18 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetReportee(userId, label = null) {
+    GetReportee(userId, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/reportee/${userId}`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: `${this.FULL_PATH}/user/reportee/userId`,
+            name: `${this.FULL_PATH}/user/reportee/userId`
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: `${this.FULL_PATH}/user/reportee/userId` },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -88,12 +117,15 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * @returns http.RefinedResponse
      */
-    GetProfile(label = null) {
+    GetProfile(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/profile`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -107,12 +139,15 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetIsAdmin(queryParams, label = null) {
+    GetIsAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isAdmin`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -127,12 +162,15 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
-    GetIsClientAdmin(queryParams, label = null) {
+    GetIsClientAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isClientAdmin`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -146,12 +184,15 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetActorListOld(label = null) {
+    GetActorListOld(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/actorlist/old`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -164,12 +205,15 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      * */
-    GetActorListFavorites(label = null) {
+    GetActorListFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/actorlist/favorites`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },
@@ -183,12 +227,15 @@ class BffUserApiClient {
      * @param {string} label - label for the request, if null the url will be used as label
      * returns http.RefinedResponse
      */
-    GetIsInstanceAdmin(queryParams, label = null) {
+    GetIsInstanceAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isInstanceAdmin`);
-        const tags = label ? label : url.toString();
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags, endpoint: url.toString() },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
             },

@@ -11,8 +11,8 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
  * @param {string | null} label - Optional label for the request tag.
  * @returns {import("k6/http").RefinedResponse}
  */
-export function LookupConsent(consentApiClient, id, from, to, label = null) {
-    const res = consentApiClient.LookupConsent(id, from, to, label);
+export function LookupConsent(consentApiClient, id, from, to, labels = null) {
+    const res = consentApiClient.LookupConsent(id, from, to, labels);
 
     const success = check(res, {
         "Lookup consent: - status code should be 200": (r) => r.status === 200,

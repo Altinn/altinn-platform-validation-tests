@@ -2,13 +2,13 @@ import { check } from "k6";
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
 
 /**
- * 
+ *
  * @param {MaskinportenSchemaApiClient} maskinportenSchemaApiClient A client to interact with the /accesspackage API
- * 
+ *
  * @returns (string | ArrayBuffer | null)
  */
-export function GetDelegations(maskinportenSchemaApiClient, queryParams, label = null) {
-    const res = maskinportenSchemaApiClient.GetDelegations(queryParams, label);
+export function GetDelegations(maskinportenSchemaApiClient, queryParams, labels = null) {
+    const res = maskinportenSchemaApiClient.GetDelegations(queryParams, labels);
     const succeed = check(res, {
         "GetDelegations - status code is 200": (r) => r.status === 200,
         "GetDelegations - status text is 200 OK": (r) => r.status_text == "200 OK",

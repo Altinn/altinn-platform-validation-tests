@@ -6,15 +6,15 @@ import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/
 import { EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 
 // Labels for different actions
-const getMaskinportenSchemaLabel1 = "1. Get maskinportenSchema supplierOrg as query param";
-const getMaskinportenSchemaLabel2 = "2. Get maskinportenSchema supplierOrg and consumerOrg as query params";
-const getMaskinportenSchemaLabel3 = "3. Get maskinportenSchema supplierOrg consumerOrg and scope as query params";
-const getMaskinportenSchemaLabel4 = "4. Get maskinportenSchema supplierOrg and scope as query params";
-const getMaskinportenSchemaLabel5 = "5. Get maskinportenSchema consumerOrg and scope as query params";
-const getMaskinportenSchemaLabel6 = "6. Get maskinportenSchema consumerOrg as query param";
-const getMaskinportenSchemaLabel7 = "7. Get maskinportenSchema scope as query param";
+const getMaskinportenSchemaLabel1 = { step: "1. Get maskinportenSchema supplierOrg as query param" };
+const getMaskinportenSchemaLabel2 = { step: "2. Get maskinportenSchema supplierOrg and consumerOrg as query params" };
+const getMaskinportenSchemaLabel3 = { step: "3. Get maskinportenSchema supplierOrg consumerOrg and scope as query params" };
+const getMaskinportenSchemaLabel4 = { step: "4. Get maskinportenSchema supplierOrg and scope as query params" };
+const getMaskinportenSchemaLabel5 = { step: "5. Get maskinportenSchema consumerOrg and scope as query params" };
+const getMaskinportenSchemaLabel6 = { step: "6. Get maskinportenSchema consumerOrg as query param" };
+const getMaskinportenSchemaLabel7 = { step: "7. Get maskinportenSchema scope as query param" };
 
-const tokenGeneratorLabel = "Enterprise Token Generator";
+const tokenGeneratorLabel = { tokenGenerator: "Enterprise Token Generator" };
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 

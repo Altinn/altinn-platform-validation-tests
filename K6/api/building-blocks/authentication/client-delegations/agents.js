@@ -5,10 +5,10 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authenticatio
  * Get agents for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetAgents(clientDelegationsApiClient, queryParams, label = null) {
-    const res = clientDelegationsApiClient.GetAgents(queryParams, label);
+export function GetAgents(clientDelegationsApiClient, queryParams, labels = null) {
+    const res = clientDelegationsApiClient.GetAgents(queryParams, labels);
     checker(res, "Get agents");
     return res.body;
 }
@@ -17,10 +17,10 @@ export function GetAgents(clientDelegationsApiClient, queryParams, label = null)
  * Post agents for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, label = null) {
-    const res = clientDelegationsApiClient.PostAgents(queryParams, to, lastName, label);
+export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, labels = null) {
+    const res = clientDelegationsApiClient.PostAgents(queryParams, to, lastName, labels);
     checker(res, "Post agents");
     return res.body;
 }
@@ -29,10 +29,10 @@ export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName
  * Delete agents for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function DeleteAgents(clientDelegationsApiClient, queryParams, label = null) {
-    const res = clientDelegationsApiClient.DeleteAgents(queryParams, label);
+export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = null) {
+    const res = clientDelegationsApiClient.DeleteAgents(queryParams, labels);
     checker(res, "Delete agents", 204, "204 No Content");
     return res.body;
 }
@@ -41,10 +41,10 @@ export function DeleteAgents(clientDelegationsApiClient, queryParams, label = nu
  * Get clients for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetClients(clientDelegationsApiClient, queryParams, label = null) {
-    const res = clientDelegationsApiClient.GetClients(queryParams, label);
+export function GetClients(clientDelegationsApiClient, queryParams, labels = null) {
+    const res = clientDelegationsApiClient.GetClients(queryParams, labels);
     checker(res, "Get clients");
     return res.body;
 }

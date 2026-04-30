@@ -6,7 +6,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForUserAvgiverListe";
+const label = { action: "getAuthorizedPartiesForUserAvgiverListe" };
 
 export const options = getOptions([label]);
 
@@ -27,6 +27,7 @@ export default function (data) {
         "urn:altinn:person:identifier-no",
         userParty.ssn,
         queryParams,
+        null,
         label
     );
 }

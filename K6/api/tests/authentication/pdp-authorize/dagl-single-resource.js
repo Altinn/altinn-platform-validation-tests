@@ -6,9 +6,9 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 // Labels for different actions
-const pdpAuthorizeLabel = "PDP Authorize";
-const pdpAuthorizeLabelDenyPermit = "PDP Authorize Deny";
-const tokenGeneratorLabel = "Personal Token Generator";
+const pdpAuthorizeLabel = { action: "PDP Authorize" };
+const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
+const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 

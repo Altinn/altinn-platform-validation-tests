@@ -27,7 +27,7 @@ if (__ENV.ENVIRONMENT === "yt01") {
     serviceOwnerOrgNo = "713431400";
 }
 
-// List of resources to test with. Use only one for now, 
+// List of resources to test with. Use only one for now,
 // make sure to have the resource created in the environment before running the test, and that the service owner owns it,
 // and that it is delegable (see the "delegable" property when getting the resource by id in the access management API).
 const resources = [
@@ -35,46 +35,46 @@ const resources = [
 ];
 
 // Use unique laber for each request to be able to check them separately in the results.
-// Number them to make sumary report easier to read and to be able to see the flow of the test in the results. 
+// Number them to make sumary report easier to read and to be able to see the flow of the test in the results.
 const group0Label = "Group 0 - Create dialog";
 const group1Label = "Group 1 - Open access management";
 const group2Label = "Group 2 - Delegate rights for resource and instance";
 const group3Label = "Group 3 - Check delegated dialog is visible for delegated user";
 
-const createDialog = "0. Create dialog";
+const createDialog = { step: "0. Create dialog" };
 
-const partOneLabel = "1 - Get user info and access management data for user";
-const getLookupPartyUserLabel = "1a. Get lookup party user for ssn";
-const getIsCompanyProfileAdminLabel = "1b. Get is company profile admin";
-const getReporteeLabel = "1c. Get reportee for user";
-const getProfileLabel = "1d. Get profile for user";
-const getIsAdminLabel = "1e. Get is admin for user";
-const getIsClientAdminLabel = "1f. Get is client admin for user";
-const getActorListOldLabel = "1g. Get actor list old for user";
-const getActorListFavoritesLabel = "1h. Get actor list favorites for user";
-const getOrganizationDataLabel = "1i. Get organization data for user";
-const getIsInstanceAdminLabel = "1j. Get is instance admin for user";
-const getDelegatedInstancesForResourceLabel = "1k. Get delegated instances for resource for user";
-const getActiveConsentLabel = "1l. Get active consent for user";
-const getConnectionsLabel = "1m. Get connections for user";
-const getResourceByIdLabel = "1n. Get resource by id for user";
-const getDelegationCheckLabel = "1o. Get delegation check for resource and instance for user";
-const getConnectionsWithTo = "1p. Get connections for user with to parameter";
-const getRolePermissionsLabel = "1q. Get role permissions for user from and to";
-const GetPendingDelegationsForUserLabel = "1r. Get pending delegations for user";
+const partOneLabel = { step: "1 - Get user info and access management data for user" };
+const getLookupPartyUserLabel = { step: "1a. Get lookup party user for ssn" };
+const getIsCompanyProfileAdminLabel = { step: "1b. Get is company profile admin" };
+const getReporteeLabel = { step: "1c. Get reportee for user" };
+const getProfileLabel = { step: "1d. Get profile for user" };
+const getIsAdminLabel = { step: "1e. Get is admin for user" };
+const getIsClientAdminLabel = { step: "1f. Get is client admin for user" };
+const getActorListOldLabel = { step: "1g. Get actor list old for user" };
+const getActorListFavoritesLabel = { step: "1h. Get actor list favorites for user" };
+const getOrganizationDataLabel = { step: "1i. Get organization data for user" };
+const getIsInstanceAdminLabel = { step: "1j. Get is instance admin for user" };
+const getDelegatedInstancesForResourceLabel = { step: "1k. Get delegated instances for resource for user" };
+const getActiveConsentLabel = { step: "1l. Get active consent for user" };
+const getConnectionsLabel = { step: "1m. Get connections for user" };
+const getResourceByIdLabel = { step: "1n. Get resource by id for user" };
+const getDelegationCheckLabel = { step: "1o. Get delegation check for resource and instance for user" };
+const getConnectionsWithTo = { step: "1p. Get connections for user with to parameter" };
+const getRolePermissionsLabel = { step: "1q. Get role permissions for user from and to" };
+const GetPendingDelegationsForUserLabel = { step: "1r. Get pending delegations for user" };
 
-const partTwoLabel = "2 - Get access management data for user and resource";
-const getRightsMetaLabel = "2a. Get rights meta for resource";
-const checkDelegationForResourceLabel = "2b. Check delegation for resource and instance for user";
-const delegateRightsForResourceLabel = "2c. Delegate rights for resource and instance for user";
-const getDelegatedInstancesForResourceAfterLabel = "2d. Get delegated instances for resource for user after delegation";
-const checkDelegationForResourceLabelAfter = "2e. Check delegation for resource and instance for user after delegation";
-const getConnectionsWithToAfter = "2f. Get connections for user with to parameterafter delegation";
-const getConnectionsLabelAfter = "2g. Get connections for user after delegation";
+const partTwoLabel = { step: "2 - Get access management data for user and resource" };
+const getRightsMetaLabel = { step: "2a. Get rights meta for resource" };
+const checkDelegationForResourceLabel = { step: "2b. Check delegation for resource and instance for user" };
+const delegateRightsForResourceLabel = { step: "2c. Delegate rights for resource and instance for user" };
+const getDelegatedInstancesForResourceAfterLabel = { step: "2d. Get delegated instances for resource for user after delegation" };
+const checkDelegationForResourceLabelAfter = { step: "2e. Check delegation for resource and instance for user after delegation" };
+const getConnectionsWithToAfter = { step: "2f. Get connections for user with to parameterafter delegation" };
+const getConnectionsLabelAfter = { step: "2g. Get connections for user after delegation" };
 
-const partThreeLabel = "3 - Check delegated dialog is visible for delegated user";
-const getDialogByIdLabel = "3a. Get dialog by id for delegated user";
-const getAllDialogsForPartyLabel = "3b. Get all dialogs for party for delegated user";
+const partThreeLabel = { step: "3 - Check delegated dialog is visible for delegated user" };
+const getDialogByIdLabel = { step: "3a. Get dialog by id for delegated user" };
+const getAllDialogsForPartyLabel = { step: "3b. Get all dialogs for party for delegated user" };
 
 export const options = getOptions([
     createDialog,
@@ -126,11 +126,11 @@ export function setup() {
 }
 
 /**
- * Main function to test instance delegation from user to user. 
- * The test will create a dialog, then delegate it to another user, 
- * and check that the delegation is successful by calling the same endpoints as 
+ * Main function to test instance delegation from user to user.
+ * The test will create a dialog, then delegate it to another user,
+ * and check that the delegation is successful by calling the same endpoints as
  * the browser would do when navigating in the access management UI.
- * Finally, check that the delegated dialog is visible for the delegated user 
+ * Finally, check that the delegated dialog is visible for the delegated user
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
  */
@@ -191,9 +191,9 @@ export default function (data) {
         GetConnections(bffConnectionsApiClient, { party: from.orgUuid, from: from.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getConnectionsLabelAfter);
     });
 
-    // Finally, check that the delegated dialog is visible for the delegated user by 
-    // using the dialogporten graphql API to get the dialog by id, and to get all dialogs for party 
-    // and check that the dialog is there. This is to verify that the delegation is working end to end, 
+    // Finally, check that the delegated dialog is visible for the delegated user by
+    // using the dialogporten graphql API to get the dialog by id, and to get all dialogs for party
+    // and check that the dialog is there. This is to verify that the delegation is working end to end,
     // and that the delegated user can see the dialog in their list of dialogs and access it.
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
@@ -201,4 +201,3 @@ export default function (data) {
         GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdLabel);
     });
 }
-
