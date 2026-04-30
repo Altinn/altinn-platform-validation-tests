@@ -7,7 +7,7 @@ import {
     GetRevisorCustomerIdentifiersForParty,
     RemoveRevisorRoleFromEr,
 } from "../../building-blocks/register/index.js";
-import { retry, parseCsvData } from "../../../helpers.js";
+import { retry, parseCsvData, getItemFromList } from "../../../helpers.js";
 
 /**
  * @file add-rm-revisor-role-for-client.js
@@ -30,10 +30,11 @@ export function setup() {
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
     );
-    return parseCsvData(res.body)[0];
+    return parseCsvData(res.body);
 }
 
-export default function (facilitator) {
+export default function (facilitatorList) {
+    const facilitator = getItemFromList(facilitatorList);
     group("Remove org from ER and make sure it's reflected in Register", () => {
         const options = new Map();
         options.set("env", __ENV.ENVIRONMENT);
@@ -78,7 +79,7 @@ export default function (facilitator) {
 
         check(res.body, {
             "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED":
-        (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
+                (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
 
         let success = retry(
@@ -90,8 +91,7 @@ export default function (facilitator) {
                 );
                 const stillPresent = orgs.includes(targetOrg);
                 console.log(
-                    `[remove role] Org ${targetOrg} is ${
-                        stillPresent ? "still" : "no longer"
+                    `[remove role] Org ${targetOrg} is ${stillPresent ? "still" : "no longer"
                     } in the list (${orgs.length})`,
                 );
                 return !stillPresent;
@@ -120,7 +120,7 @@ export default function (facilitator) {
             "AddRevisorRoleToErForOrg - body is not empty": (r) =>
                 r.body && r.body.length > 0,
             "AddRevisorRoleToErForOrg - response contains status OK_ER_DATA_PROCESSED":
-        (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
+                (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
         });
         if (!outcome) {
             console.error(res.status);
@@ -136,8 +136,7 @@ export default function (facilitator) {
                 );
                 const nowPresent = orgs.includes(targetOrg);
                 console.log(
-                    `[add role] Org ${targetOrg} is ${
-                        nowPresent ? "now" : "still not"
+                    `[add role] Org ${targetOrg} is ${nowPresent ? "now" : "still not"
                     } in the list (${orgs.length})`,
                 );
                 return nowPresent;
