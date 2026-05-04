@@ -1,0 +1,1 @@
+export { GetAuthorizedParties, GetFavorites, GetCurrent } from "./infoportal.js";
