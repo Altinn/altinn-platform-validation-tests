@@ -1,9 +1,9 @@
 /**
- * @description This test simulates users accessing the InfoPortal API when logged in. It retrieves authorized parties, favorites, and current information for each user. 
+ * @description This test simulates users accessing the InfoPortal API when logged in. It retrieves authorized parties, favorites, and current information for each user.
  * The test is designed to run with multiple virtual users (VUs) and can randomize user selection from a provided CSV file.
- * The test includes setup to segment user data for VUs, and uses a personal token generator to authenticate API requests. 
+ * The test includes setup to segment user data for VUs, and uses a personal token generator to authenticate API requests.
  * The test checks the responses for correct status codes and logs any failures for further analysis.
- * 
+ *
  * To run the test, the following environment variables must be set:
  * - TOKEN_GENERATOR_USERNAME: Username for the token generator.
  * - TOKEN_GENERATOR_PASSWORD: Password for the token generator.
@@ -11,11 +11,11 @@
  * - `INFO_CLOUD_URL`: The base URL for the InfoPortal API (e.g., "https://info.at23.altinn.cloud").
  * Optional environment variables:
  * - `RANDOMIZE`: Whether to randomize user selection from the CSV file. Defaults to "true".
- * 
+ *
  * Cli command example:
  * ```bash
  * k6 run --vus 10 --duration 1m get-infoportal-api-when-logged-in.js
- * 
+ *
  * * @see https://k6.io/docs/ for more information on k6 testing.
  */
 

@@ -1,0 +1,46 @@
+namespace: portaler
+base_dir: K6/browser/portaler/
+test_definitions:
+  - test_file: open-info-altinn-cloud-skjemaoversikt.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: browser
+          enabled: true
+      - environment: yt01
+        test_type:
+          type: browser
+          enabled: true
+
+  - test_file: open-info-altinn-cloud-sok.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: browser
+          enabled: true
+      - environment: yt01
+        test_type:
+          type: browser
+          enabled: true
+
+  - test_file: open-info-altinn-cloud-starte-og-drive.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: browser
+          enabled: true
+      - environment: yt01
+        test_type:
+          type: browser
+          enabled: true
+
+  - test_file: open-info-altinn-cloud.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: browser
+          enabled: true
+      - environment: yt01
+        test_type:
+          type: browser
+          enabled: true
