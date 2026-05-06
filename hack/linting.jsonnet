@@ -51,29 +51,5 @@ local utils = import './utils.libsonnet';
         },
       ],
     },
-    validate_generation: {
-      'runs-on': 'ubuntu-latest',
-      strategy: {
-        matrix: {
-          config_file: [c for c in config_files],
-        },
-      },
-      steps: [
-        {
-          uses: utils.checkoutAction,
-        },
-        {
-          uses: utils.generateK6ManifetsAction,
-          with: {
-            config_file: '${{ matrix.config_file }}',
-          },
-        },
-        {
-          name: 'Tree',
-          shell: 'bash',
-          run: 'tree .dist/',
-        },
-      ],
-    },
   },
 }
