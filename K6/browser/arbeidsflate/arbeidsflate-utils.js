@@ -5,19 +5,7 @@ export const environment = __ENV.ENVIRONMENT || "yt01";
 
 let tokenGenerator = undefined;
 
-export const afUrl = (() => {
-    switch (environment) {
-        case "yt01":
-            return "https://af.yt01.altinn.cloud/";
-        case "tt02":
-            return "https://af.tt02.altinn.no/";
-        case "at23":
-            return "https://af.at23.altinn.cloud/";
-        default:
-            return "https://af.yt01.altinn.cloud/";
-    }
-})();
-
+export const afUrl = __ENV.AF_UI_BASE_URL;
 
 /**
  * Function to get a cookie object for the given PID.
