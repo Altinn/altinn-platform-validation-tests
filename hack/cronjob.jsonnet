@@ -72,5 +72,12 @@ local cronjob = {
 };
 
 {
-  [cronJobName + '.json']: cronjob,
+  [std.strReplace(
+    std.strReplace(
+      std.strReplace(
+      input_config_file,
+      ".yaml", ""),
+       "./", ""),
+      "/", "_" )
+      + '.json']: cronjob,
 }

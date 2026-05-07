@@ -3,10 +3,14 @@ base_dir: K6/api/tests/portaler/
 test_definitions:
   - test_file: get-info-dot-altinn-dot-cloud.js
     contexts:
-      - environment: at23
       - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
 
   - test_file: get-infoportal-api-when-loggedin.js
     contexts:
-      - environment: at23
       - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
