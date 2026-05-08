@@ -40,7 +40,7 @@ local utils = import './utils.libsonnet';
           run: 'npm run lint',
         },
         {
-          name: 'Ensure javascript files are Kebab Case',
+          name: 'Ensure javascript files are Kebab Case and that generation of manifests works',
           shell: 'bash',
           run: './hack/validate.sh',
         },

@@ -4,9 +4,6 @@ test_definitions:
   - test_file: should-send-notification.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -16,9 +13,6 @@ test_definitions:
   - test_file: create-dialog.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -28,9 +22,6 @@ test_definitions:
   - test_file: create-dialog-transmission-activity.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION

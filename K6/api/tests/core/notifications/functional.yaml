@@ -1,8 +1,9 @@
 namespace: core
+base_dir: K6/api/tests/core/notifications/
 test_definitions:
   # OLD API
-  - test_file: K6/api/tests/core/notifications/email-request.js
-    env_file: "K6/api/tests/core/notifications/common.env"
+  - test_file: email-request.js
+    env_file: common.env
     contexts:
       - environment: at22
         test_run:

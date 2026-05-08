@@ -1,9 +1,7 @@
 namespace: authentication
+base_dir: K6/api/tests/authentication/roles/
 test_definitions:
-  - test_file: K6/api/tests/authentication/roles/get-roles.js
-    env_file: K6/api/tests/authentication/roles/common.env
+  - test_file: get-roles.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: smoke
-          enabled: true
