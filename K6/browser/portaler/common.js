@@ -5,7 +5,7 @@ export function getOptions() {
             ui: {
                 executor: "shared-iterations",
                 vus: 5,
-                iterations: 10,
+                iterations: 100,
                 options: {
                     browser: {
                         type: "chromium",
