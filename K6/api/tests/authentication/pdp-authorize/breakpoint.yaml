@@ -1,12 +1,10 @@
 namespace: authentication
+base_dir: K6/api/tests/authentication/pdp-authorize/
 test_definitions:
-  - test_file: K6/api/tests/authentication/pdp-authorize/enduser.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: enduser.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -16,13 +14,10 @@ test_definitions:
           secrets:
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/authentication/pdp-authorize/dagl.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: dagl.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -32,13 +27,10 @@ test_definitions:
           secrets:
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-direct-delegation.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: dagl-direct-delegation.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -48,13 +40,10 @@ test_definitions:
           secrets:
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-deny.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: dagl-deny.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -64,13 +53,10 @@ test_definitions:
           secrets:
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/authentication/pdp-authorize/dagl-single-resource.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: dagl-single-resource.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -80,13 +66,10 @@ test_definitions:
           secrets:
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/authentication/pdp-authorize/enduser-enduser-instances.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: enduser-enduser-instances.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -96,13 +79,10 @@ test_definitions:
           secrets:
             - authorization-subscription-key-yt01
 
-  - test_file: K6/api/tests/authentication/pdp-authorize/org-enduser-instances.js
-    env_file: K6/api/tests/authentication/pdp-authorize/common.env
+  - test_file: org-enduser-instances.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION

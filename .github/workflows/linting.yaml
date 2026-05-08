@@ -24,7 +24,7 @@ jobs:
         run: "npm install"
       - name: "Lint Code"
         run: "npm run lint"
-      - name: "Ensure javascript files are Kebab Case"
+      - name: "Ensure javascript files are Kebab Case and that generation of manifests works"
         run: "./hack/validate.sh"
         shell: "bash"
       - name: "Ensure there are no trailing white spaces"

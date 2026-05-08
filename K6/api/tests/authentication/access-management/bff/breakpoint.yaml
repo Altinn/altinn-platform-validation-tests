@@ -5,9 +5,6 @@ test_definitions:
     test_file: client-admin.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -19,9 +16,6 @@ test_definitions:
     test_file: fullmakt-user-user.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -33,9 +27,6 @@ test_definitions:
     test_file: fullmakt-org-org.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -47,9 +38,6 @@ test_definitions:
     test_file: single-service-org-org.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -61,9 +49,6 @@ test_definitions:
     test_file: single-service-user-user.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -75,9 +60,6 @@ test_definitions:
     test_file: delegation-export.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION

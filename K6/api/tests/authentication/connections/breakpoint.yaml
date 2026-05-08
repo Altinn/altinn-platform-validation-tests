@@ -1,12 +1,10 @@
 namespace: authentication
+base_dir: K6/api/tests/authentication/connections/
 test_definitions:
-  - test_file: K6/api/tests/authentication/connections/get-connections-to.js
-    env_file: K6/api/tests/authentication/connections/common.env
+  - test_file: get-connections-to.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -14,13 +12,10 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: K6/api/tests/authentication/connections/get-connections-from.js
-    env_file: K6/api/tests/authentication/connections/common.env
+  - test_file: get-connections-from.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -28,13 +23,10 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: K6/api/tests/authentication/connections/get-access-packages-to.js
-    env_file: K6/api/tests/authentication/connections/common.env
+  - test_file: get-access-packages-to.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -42,13 +34,10 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: K6/api/tests/authentication/connections/get-access-packages-from.js
-    env_file: K6/api/tests/authentication/connections/common.env
+  - test_file: get-access-packages-from.js
+    env_file: common.env
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION

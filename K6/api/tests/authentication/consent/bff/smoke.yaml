@@ -21,9 +21,7 @@ test_definitions:
           enabled: true
           config_file: conf.json
       - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+
   - test_scope: consent-bff
     test_file: consent-requests.js
     contexts:
@@ -33,6 +31,3 @@ test_definitions:
           enabled: true
           config_file: conf.json
       - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
