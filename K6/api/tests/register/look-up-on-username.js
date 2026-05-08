@@ -80,7 +80,7 @@ export default function (usernames) {
    *
    * If a valid username is not available, create a new self identified user at:
    *   https://tt02.altinn.no/ui/Authentication/SelfIdentified
-   * Repeat this process for all relevant test environments: TT02, AT22, AT23 and AT24.
+   * Repeat this process for all relevant test environments: TT02, AT22 and AT23.
    * Note: YT01 does not currently have a frontend for user creation.
    * Username should be case insensitive.
    */

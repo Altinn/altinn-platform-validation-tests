@@ -12,7 +12,7 @@
 # General recommendations
 
 - Make sure tests are able to run in every environment. Do not, as much as possible, create tests that can only be run in a single environment.
-- Avoid hardcoding values as much as possible. e.g. values such as the BASE_URL, ALTINN2_BASE_URL, AM_UI_BASE_URL, ENVIRONMENT (at24, yt01, tt02, etc.) will be available at runtime. If there are other envvars that are reusable across teams, we can add them [here](https://github.com/Altinn/altinn-platform/blob/f546f2447021da6d2338863707f734c041145e45/infrastructure/adminservices-test/altinn-monitor-test-rg/k6_tests_rg_configs.tf#L13-L17).
+- Avoid hardcoding values as much as possible. e.g. values such as the BASE_URL, ALTINN2_BASE_URL, AM_UI_BASE_URL, ENVIRONMENT (at22, yt01, tt02, etc.) will be available at runtime. If there are other envvars that are reusable across teams, we can add them [here](https://github.com/Altinn/altinn-platform/blob/f546f2447021da6d2338863707f734c041145e45/infrastructure/adminservices-test/altinn-monitor-test-rg/k6_tests_rg_configs.tf#L13-L17).
 - Other envvars you might need, make them configurable, i.e. rely on [__ENV](https://grafana.com/docs/k6/latest/using-k6/environment-variables/) and pass them on in the [custom config file](conf/authentication-break.yaml).
 - Secrets are managed out-of-band, you simply need to reference them in the config file and they will be available once the test starts (in K8s).
 - Start small, start by running functional tests and exploring the dashboards, metrics, logs/reports in [Grafana](https://altinn-grafana-test-b2b8dpdkcvfuhfd3.eno.grafana.azure.com/dashboards/f/eedixo6wu18n4e/?orgId=1).

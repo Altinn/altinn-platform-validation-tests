@@ -4,7 +4,6 @@ test_definitions:
     contexts:
       - environment: at22
       - environment: at23
-      - environment: at24
       - environment: tt02
       - environment: yt01
       - environment: prod

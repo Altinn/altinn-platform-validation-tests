@@ -4,14 +4,12 @@ test_definitions:
     env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: at22
-      - environment: at24
       - environment: yt01
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders/for-mobile-number.js
     env_file: "K6/api/tests/core/notifications/common.env"
     contexts:
       - environment: at22
-      - environment: at24
       - environment: yt01
 
   - test_file: K6/api/tests/core/notifications/order-with-reminders/for-orgs.js
@@ -21,10 +19,7 @@ test_definitions:
         test_run:
           secrets:
             - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
-      - environment: at24
-        test_run:
-          secrets:
-            - reminders-for-org # resourceId and orgNoRecipient. Are these really secret?
+
       - environment: yt01
         test_run:
           secrets:
@@ -37,10 +32,7 @@ test_definitions:
         test_run:
           secrets:
             - email-order # Added the ninRecipient, but is this even a secret?
-      - environment: at24
-        test_run:
-          secrets:
-            - email-order # Added the ninRecipient, but is this even a secret?
+
       - environment: yt01
         test_run:
           secrets:
