@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Initialize a flag to track if any filenames are not in kebab-case
 found_non_kebab_case=false
 
 # Loop through all .js files in the current directory and subdirectories
-for file in $(find ../K6 -type f -name "*.js"); do
+for file in $(find ./K6 -type f -name "*.js"); do
   # Extract the filename from the full path
   filename=$(basename "$file")
 
@@ -19,3 +20,19 @@ done
 if [ "$found_non_kebab_case" = true ]; then
   exit 1
 fi
+
+for file in $(find ./K6/api -type f -name "functional.yaml" -o -name "healthcheck.yaml" -o -name "breakpoint.yaml" -o -name "smoke.yaml"); do
+  echo "Validating $file"
+  rm -rf .build/ .conf/ .dist/ && \
+  docker run -u $(id -u ${USER}):$(id -g ${USER}) -v .:/workspace --rm \
+  -e INPUT_CONFIG_FILE="$file" \
+  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.36
+done
+
+for file in $(find ./K6/browser -type f -name "browser.yaml"); do
+  echo "Validating $file"
+  rm -rf .build/ .conf/ .dist/ && \
+  docker run -u $(id -u ${USER}):$(id -g ${USER}) -v .:/workspace --rm \
+  -e INPUT_CONFIG_FILE="$file" \
+  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.36
+done

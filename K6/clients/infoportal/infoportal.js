@@ -56,9 +56,9 @@ class InfoPortalApiClient {
 
     /**
      * Method to do the actuel http call to the api, used by all the public methods in this class
-     * @param {url} url 
-     * @param {*} labels 
-     * @returns 
+     * @param {url} url
+     * @param {*} labels
+     * @returns
      */
     #getEndpoint(url, labels) {
         const token = this.tokenGenerator.getToken();
