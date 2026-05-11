@@ -18,6 +18,7 @@ export function RequestConsent(consentApiClient, id, from, to, validTo, consentR
         "RequestConsent - status code is 201": (r) => r.status === 201,
         "RequestConsent - status text is 201 Created": (r) => r.status_text == "201 Created",
         "RequestConsent - body is not empty": (r) => {
+            if (!r.body) return false;
             const res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
