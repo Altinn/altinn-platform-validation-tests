@@ -1,7 +1,7 @@
 import { getInfoCloud } from "./commons.js";
 import { getOptions } from "../../../helpers.js";
 
-const rootLabel = { step: "get infocloud" };
+const rootLabel = { step: "get infocloud starte og drive" };
 const authorizedPartiesLabel = { step: "authorizedParties" };
 const favoritesLabel = { step: "favorites" };
 const currentLabel = { step: "current" };
@@ -14,7 +14,7 @@ export const options = getOptions([
 ]);
 
 export default function () {
-    getInfoCloud("/", rootLabel);
+    getInfoCloud("/starte-og-drive", rootLabel);
     getInfoCloud("/api/users/authorized-parties", authorizedPartiesLabel);
     getInfoCloud("/api/users/favorites", favoritesLabel);
     getInfoCloud("/api/users/current", currentLabel);
