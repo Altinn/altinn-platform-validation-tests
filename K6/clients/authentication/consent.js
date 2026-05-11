@@ -135,15 +135,11 @@ class ConsentApiClient {
     /**
      * Get latest consent request status changes for the authenticated enterprise.
      * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/liststatuschanges/}
-     * @param {string|null} continuationToken
      * @returns http.RefinedResponse
      */
-    GetLatestChanges(continuationToken = null, labels = null) {
+    GetLatestChanges(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/enterprise/consentrequests/latestchanges`);
-        if (continuationToken) {
-            url.searchParams.append("continuationToken", continuationToken);
-        }
         let tags = {
             endpoint: `${this.FULL_PATH}/enterprise/consentrequests/latestchanges`,
             name: `${this.FULL_PATH}/enterprise/consentrequests/latestchanges`,

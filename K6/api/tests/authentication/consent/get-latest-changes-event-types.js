@@ -10,11 +10,11 @@ export function setup() {
     if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
 
     const testdataRes = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
     );
     if (testdataRes.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
-    const testdata = getItemFromList(parseCsvData(testdataRes.body));
-    if (!testdata.orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
+    const testdata = parseCsvData(testdataRes.body);
+    if (!testdata.length || !testdata[0].orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
 
     const verificationRes = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/consent-latest-changes-${__ENV.ENVIRONMENT}.csv`
@@ -24,7 +24,7 @@ export function setup() {
         console.warn(`No verification CSV found for environment ${__ENV.ENVIRONMENT}, skipping event-type verification`);
     }
 
-    return { orgNo: testdata.orgNo, rows };
+    return { testdata, rows };
 }
 
 let enterpriseClient = undefined;
@@ -45,7 +45,8 @@ function getClient(orgNo) {
     return enterpriseClient;
 }
 
-export default function ({ orgNo, rows }) {
+export default function ({ testdata, rows }) {
+    const { orgNo } = getItemFromList(testdata);
     const client = getClient(orgNo);
 
     group(

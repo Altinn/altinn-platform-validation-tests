@@ -1,5 +1,5 @@
-import http from "k6/http";
 import { group } from "k6";
+import http from "k6/http";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import { GetLatestChanges } from "../../../building-blocks/authentication/consent/index.js";
@@ -13,20 +13,19 @@ export function setup() {
     if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
 
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
     );
     if (res.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
-    const testdata = getItemFromList(parseCsvData(res.body));
-    if (!testdata.orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
-    return { orgNo: testdata.orgNo };
+    const testdata = parseCsvData(res.body);
+    if (!testdata.length || !testdata[0].orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
+    return testdata;
 }
 
 let client;
-let tokenGenerator;
 
 function getClient(orgNo) {
     if (!client) {
-        tokenGenerator = new EnterpriseTokenGenerator(
+        const tokenGenerator = new EnterpriseTokenGenerator(
             new Map([
                 ["env", __ENV.ENVIRONMENT],
                 ["ttl", 3600],
@@ -39,19 +38,19 @@ function getClient(orgNo) {
     return client;
 }
 
-export default function ({ orgNo }) {
+export default function (testdata) {
+    const { orgNo } = getItemFromList(testdata);
     group("Get latest consent request changes", () => {
         const body = GetLatestChanges(getClient(orgNo), getLatestChangesLabel);
         if (!body) return;
 
-        const parsed = JSON.parse(body);
-        let nextUrl = parsed.links?.next ?? null;
-        const token = tokenGenerator.getToken();
+        const token = getClient(orgNo).tokenGenerator.getToken();
+        let nextUrl = JSON.parse(body).links?.next ?? null;
         let pages = 1;
 
         while (nextUrl) {
             const res = http.get(nextUrl, {
-                tags: { ...getLatestChangesLabel, endpoint: nextUrl },
+                tags: getLatestChangesLabel,
                 headers: { Authorization: "Bearer " + token },
             });
             pages++;

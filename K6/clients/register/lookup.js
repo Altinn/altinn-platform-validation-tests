@@ -46,6 +46,7 @@ export class RegisterLookupClient {
    *   Examples:
    *   - <code>{ data: ["urn:altinn:party:username:Vegard"] }</code>
    *   - <code>{ data: ["urn:altinn:user:id:2051839"] }</code>
+   *   - <code>{"data":["urn:altinn:person:identifier-no:05848998356"] }</code>
    * @param {string|null} label - Optional label for the request tag.
    * @returns http.RefinedResponse
    */

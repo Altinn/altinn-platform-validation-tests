@@ -21,12 +21,13 @@ import { group } from "k6";
 
 import { uuidv4 } from "../../../../../common-imports.js";
 import { parseCsvData, getItemFromList } from "../../../../../helpers.js";
-import { ConsentApiClient, BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
+import { BffAccessManagementApiClient, ConsentApiClient, RegisterLookupClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, EnterpriseTokenGenerator, PlatformTokenGenerator } from "../../../../../common-imports.js";
 import { RequestConsent, ApproveConsent, RevokeConsent } from "../../../../building-blocks/authentication/consent/index.js";
+import { LookupPartiesInRegister } from "../../../../building-blocks/register/index.js";
 
-const ACCEPTED_COUNT = 1000;
-const REVOKED_COUNT = 50;
+const ACCEPTED_COUNT = 5;
+const REVOKED_COUNT = 1;
 const TOTAL = ACCEPTED_COUNT + REVOKED_COUNT;
 
 export const options = {
@@ -56,39 +57,41 @@ export function setup() {
     if (!__ENV.AM_UI_BASE_URL) throw new Error("Missing AM_UI_BASE_URL");
 
     const testdataRes = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
     );
     if (testdataRes.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
-    const testdata = getItemFromList(parseCsvData(testdataRes.body));
-    if (!testdata.orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
-    if (!testdata.pid) throw new Error(`Missing pid in testdata for environment: ${__ENV.ENVIRONMENT}`);
+    const testdata = parseCsvData(testdataRes.body);
+    if (!testdata.length || !testdata[0].orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`
+    const registerClient = new RegisterLookupClient(
+        __ENV.BASE_URL,
+        new PlatformTokenGenerator(new Map([["env", __ENV.ENVIRONMENT], ["ttl", 3600]]))
     );
-    const orgs = parseCsvData(res.body);
 
-    const consenter = orgs.find(o => String(o.ssn) === String(testdata.pid));
-    if (!consenter) throw new Error(`Consenter with pid ${testdata.pid} not found in orgs CSV for ${__ENV.ENVIRONMENT}`);
+    const urns = testdata.map(td => `urn:altinn:person:identifier-no:${td.pid}`);
+    const partiesRes = LookupPartiesInRegister(registerClient, "person,party,user", { data: urns });
+    if (!partiesRes) throw new Error("Failed to query parties from register");
+    const parties = JSON.parse(partiesRes.body).data;
 
-    const rows = [];
+    const resolvedTestdata = testdata.map(td => {
+        const party = parties.find(p => p.personIdentifier === String(td.pid));
+        if (!party) throw new Error(`Party not found for pid ${td.pid}`);
+        return { orgNo: td.orgNo, pid: td.pid, partyUuid: party.partyUuid, userId: party.user.userId };
+    });
+
+    const consents = [];
     for (let i = 0; i < TOTAL; i++) {
-        rows.push({
-            consentId: uuidv4(),
-            shouldRevoke: i < REVOKED_COUNT,
-            orgNo: String(testdata.orgNo),
-            pid: String(consenter.ssn),
-            fromUserId: consenter.userId,
-            fromPartyUuid: consenter.partyUuid,
-        });
+        consents.push({ consentId: uuidv4(), shouldRevoke: i < REVOKED_COUNT });
     }
+
     console.log(`Setup complete: ${ACCEPTED_COUNT} to accept, ${REVOKED_COUNT} to accept then revoke`);
-    return rows;
+    return { testdata: resolvedTestdata, consents };
 }
 
-export default function (rows) {
+export default function ({ testdata, consents }) {
     const i = exec.scenario.iterationInTest;
-    const row = rows[i];
+    const consent = consents[i];
+    const { orgNo, pid, partyUuid, userId } = getItemFromList(testdata);
 
     const consenteeClient = new ConsentApiClient(
         __ENV.BASE_URL,
@@ -96,61 +99,51 @@ export default function (rows) {
             ["env", __ENV.ENVIRONMENT],
             ["ttl", 3600],
             ["scopes", "altinn:consentrequests.write"],
-            ["orgNo", row.orgNo],
+            ["orgNo", orgNo],
         ]))
     );
-    const consenterClient = new ConsentApiClient(
-        __ENV.BASE_URL,
-        new PersonalTokenGenerator(new Map([
-            ["env", __ENV.ENVIRONMENT],
-            ["ttl", 3600],
-            ["scopes", "altinn:portal/enduser"],
-            ["userId", row.fromUserId],
-            ["partyuuid", row.fromPartyUuid],
-        ]))
-    );
-    const bffClient = new BffAccessManagementApiClient(
-        __ENV.AM_UI_BASE_URL,
-        new PersonalTokenGenerator(new Map([
-            ["env", __ENV.ENVIRONMENT],
-            ["ttl", 3600],
-            ["scopes", "altinn:portal/enduser"],
-            ["userId", row.fromUserId],
-            ["partyuuid", row.fromPartyUuid],
-        ]))
-    );
+    const personalTokenGenerator = new PersonalTokenGenerator(new Map([
+        ["env", __ENV.ENVIRONMENT],
+        ["ttl", 3600],
+        ["scopes", "altinn:portal/enduser"],
+        ["userId", userId],
+        ["partyuuid", partyUuid],
+    ]));
+    const consenterClient = new ConsentApiClient(__ENV.BASE_URL, personalTokenGenerator);
+    const bffClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
 
-    const pidUrn = `urn:altinn:person:identifier-no:${row.pid}`;
-    const orgUrn = `urn:altinn:organization:identifier-no:${row.orgNo}`;
+    const pidUrn = `urn:altinn:person:identifier-no:${pid}`;
+    const orgUrn = `urn:altinn:organization:identifier-no:${orgNo}`;
 
     group("Request and approve consent", () => {
         RequestConsent(
             consenteeClient,
-            row.consentId,
+            consent.consentId,
             pidUrn,
             orgUrn,
             new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString(),
             consentRights(),
             "https://altinn.no"
         );
-        ApproveConsent(consenterClient, row.consentId);
+        ApproveConsent(consenterClient, consent.consentId);
     });
 
-    if (row.shouldRevoke) {
+    if (consent.shouldRevoke) {
         group("Revoke consent", () => {
-            RevokeConsent(bffClient, row.consentId);
+            RevokeConsent(bffClient, consent.consentId);
         });
     }
 }
 
-export function teardown(rows) {
+export function teardown({ testdata, consents }) {
     // The endpoint returns only the latest event per consent request.
     // Revoked consents only appear as 'revoked', not as 'accepted' + 'revoked'.
     let csv = "ConsentId,EventType,OrgNo,Pid\n";
     try {
-        rows.forEach((row) => {
-            const eventType = row.shouldRevoke ? "revoked" : "accepted";
-            csv += `${row.consentId},${eventType},${row.orgNo},${row.pid}\n`;
+        consents.forEach((consent, i) => {
+            const { orgNo, pid } = testdata[i % testdata.length];
+            const eventType = consent.shouldRevoke ? "revoked" : "accepted";
+            csv += `${consent.consentId},${eventType},${orgNo},${pid}\n`;
         });
         console.log(csv);
     } catch (e) {
