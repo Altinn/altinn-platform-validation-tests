@@ -9,22 +9,14 @@ import { GetLatestChanges } from "../../../building-blocks/authentication/consen
 export function setup() {
     if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
 
-    const testdataRes = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/status/consent-latest-changes-${__ENV.ENVIRONMENT}.csv`
     );
-    if (testdataRes.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
-    const testdata = parseCsvData(testdataRes.body);
-    if (!testdata.length || !testdata[0].orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
+    if (res.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
+    const rows = parseCsvData(res.body);
+    if (!rows.length || !rows[0].OrgNo) throw new Error(`Missing OrgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
 
-    const verificationRes = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/consent-latest-changes-${__ENV.ENVIRONMENT}.csv`
-    );
-    const rows = verificationRes.status === 200 ? parseCsvData(verificationRes.body) : [];
-    if (rows.length === 0) {
-        console.warn(`No verification CSV found for environment ${__ENV.ENVIRONMENT}, skipping event-type verification`);
-    }
-
-    return { testdata, rows };
+    return rows;
 }
 
 let enterpriseClient = undefined;
@@ -45,9 +37,9 @@ function getClient(orgNo) {
     return enterpriseClient;
 }
 
-export default function ({ testdata, rows }) {
-    const { orgNo } = getItemFromList(testdata);
-    const client = getClient(orgNo);
+export default function (rows) {
+    const { OrgNo } = getItemFromList(rows);
+    const client = getClient(OrgNo);
 
     group(
         "Scenario: Latest changes contains the expected event types for known consent requests",
@@ -91,20 +83,18 @@ export default function ({ testdata, rows }) {
                 console.log(`Fetched ${pages} page(s), ${allEvents.length} total events`);
             });
 
-            if (rows.length > 0) {
-                group("Step: Verify expected events are present", () => {
-                    for (const row of rows) {
-                        const found = allEvents.some(
-                            (e) =>
-                                e.consentRequestId === row.ConsentId &&
-                                e.eventType.toLowerCase() === row.EventType.toLowerCase()
-                        );
-                        check(found, {
-                            [`Event '${row.EventType}' for consent '${row.ConsentId}' is present`]: (f) => f,
-                        });
-                    }
-                });
-            }
+            group("Step: Verify expected events are present", () => {
+                for (const row of rows) {
+                    const found = allEvents.some(
+                        (e) =>
+                            e.consentRequestId === row.ConsentId &&
+                            e.eventType.toLowerCase() === row.EventType.toLowerCase()
+                    );
+                    check(found, {
+                        [`Event '${row.EventType}' for consent '${row.ConsentId}' is present`]: (f) => f,
+                    });
+                }
+            });
         }
     );
 }

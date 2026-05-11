@@ -57,7 +57,7 @@ export function setup() {
     if (!__ENV.AM_UI_BASE_URL) throw new Error("Missing AM_UI_BASE_URL");
 
     const testdataRes = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/testdata/authentication/consentTestdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
     );
     if (testdataRes.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
     const testdata = parseCsvData(testdataRes.body);

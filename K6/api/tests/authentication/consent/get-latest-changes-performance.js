@@ -13,12 +13,12 @@ export function setup() {
     if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
 
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/get-status/K6/api/tests/authentication/consent/testdataGeneration/testdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/status/consent-latest-changes-${__ENV.ENVIRONMENT}.csv`
     );
     if (res.status !== 200) throw new Error(`Failed to fetch testdata for environment: ${__ENV.ENVIRONMENT}`);
-    const testdata = parseCsvData(res.body);
-    if (!testdata.length || !testdata[0].orgNo) throw new Error(`Missing orgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
-    return testdata;
+    const rows = parseCsvData(res.body);
+    if (!rows.length || !rows[0].OrgNo) throw new Error(`Missing OrgNo in testdata for environment: ${__ENV.ENVIRONMENT}`);
+    return rows;
 }
 
 let client;
@@ -38,13 +38,13 @@ function getClient(orgNo) {
     return client;
 }
 
-export default function (testdata) {
-    const { orgNo } = getItemFromList(testdata);
+export default function (rows) {
+    const { OrgNo } = getItemFromList(rows);
     group("Get latest consent request changes", () => {
-        const body = GetLatestChanges(getClient(orgNo), getLatestChangesLabel);
+        const body = GetLatestChanges(getClient(OrgNo), getLatestChangesLabel);
         if (!body) return;
 
-        const token = getClient(orgNo).tokenGenerator.getToken();
+        const token = getClient(OrgNo).tokenGenerator.getToken();
         let nextUrl = JSON.parse(body).links?.next ?? null;
         let pages = 1;
 
