@@ -8,11 +8,11 @@ export const options = getOptions();
 
 export function setup() {
     const response = http.get(
-        'https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt'
+        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt"
     );
 
     return response.body
-        .split('\n')
+        .split("\n")
         .map(w => w.trim())
         .filter(Boolean);
 }
