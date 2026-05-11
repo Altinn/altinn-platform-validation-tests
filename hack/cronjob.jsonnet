@@ -9,7 +9,7 @@ local cronJobName = std.asciiLower(
         std.strReplace(
           std.strReplace(
             input_config_file,
-            namespace + "/",
+            namespace + '/',
             ''
           ),
           './K6/browser/',
@@ -73,11 +73,17 @@ local cronjob = {
 
 {
   [std.strReplace(
-    std.strReplace(
-      std.strReplace(
-      input_config_file,
-      ".yaml", ""),
-       "./", ""),
-      "/", "_" )
-      + '.json']: cronjob,
+     std.strReplace(
+       std.strReplace(
+         input_config_file,
+         '.yaml',
+         ''
+       ),
+       './',
+       ''
+     ),
+     '/',
+     '_'
+   )
+   + '.json']: cronjob,
 }
