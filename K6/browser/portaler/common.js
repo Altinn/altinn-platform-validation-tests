@@ -4,7 +4,7 @@ export function getOptions() {
         scenarios: {
             ui: {
                 executor: "shared-iterations",
-                vus: 5,
+                vus: 1,
                 iterations: 100,
                 options: {
                     browser: {
