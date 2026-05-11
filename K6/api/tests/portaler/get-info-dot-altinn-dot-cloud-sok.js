@@ -1,15 +1,14 @@
 import { getInfoCloud } from "./commons.js";
 import { getOptions } from "../../../helpers.js";
-
-import http from 'k6/http';
+import http from "k6/http";
 
 export function setup() {
     const response = http.get(
-        'https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt'
+        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt"
     );
 
     return response.body
-        .split('\n')
+        .split("\n")
         .map(w => w.trim())
         .filter(Boolean);
 }

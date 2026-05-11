@@ -2,11 +2,9 @@
 import { browser } from "k6/browser";
 import { check } from "k6";
 import { getOptions } from "./common.js";
+import http from "k6/http";
 
 export const options = getOptions();
-
-
-import http from 'k6/http';
 
 export function setup() {
     const response = http.get(
