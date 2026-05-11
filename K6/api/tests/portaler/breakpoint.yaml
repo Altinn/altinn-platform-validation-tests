@@ -4,14 +4,15 @@ test_definitions:
   - test_file: get-info-dot-altinn-dot-cloud.js
     contexts:
       - environment: yt01
+        node_type: spot8cpu28gbmem
         test_type:
           type: breakpoint
           enabled: true
 
-
-  - test_file: get-info-dot-altinn-dot-cloud.js
+  - test_file: get-infoportal-api-when-loggedin.js
     contexts:
       - environment: yt01
+        node_type: spot8cpu28gbmem
         test_type:
           type: breakpoint
           enabled: true
@@ -19,6 +20,7 @@ test_definitions:
   - test_file: get-info-dot-altinn-dot-cloud-sok.js
     contexts:
       - environment: yt01
+        node_type: spot8cpu28gbmem
         test_type:
           type: breakpoint
           enabled: true
@@ -26,12 +28,14 @@ test_definitions:
   - test_file: get-info-dot-altinn-dot-cloud-skjemaoversikt.js
     contexts:
       - environment: yt01
+        node_type: spot8cpu28gbmem
         test_type:
           type: breakpoint
           enabled: true
-  - test_file: get-infoportal-api-when-loggedin-starte-og-drive.js
+  - test_file: get-info-dot-altinn-dot-cloud-starte-og-drive.js
     contexts:
       - environment: yt01
+        node_type: spot8cpu28gbmem
         test_type:
           type: breakpoint
           enabled: true
