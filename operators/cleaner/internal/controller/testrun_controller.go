@@ -18,8 +18,11 @@ package controller
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	k6iov1alpha1 "github.com/grafana/k6-operator/api/v1alpha1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -35,6 +38,10 @@ type TestRunReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+var (
+	DeletionThreshold = 5
+)
+
 // +kubebuilder:rbac:groups=k6.io,resources=testruns,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=k6.io,resources=testruns/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=k6.io,resources=testruns/finalizers,verbs=update
@@ -49,10 +56,30 @@ type TestRunReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.23.3/pkg/reconcile
 func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = logf.FromContext(ctx)
+	log := logf.FromContext(ctx)
 
-	// TODO(user): your logic here
-
+	var testRun k6iov1alpha1.TestRun
+	if err := r.Get(ctx, req.NamespacedName, &testRun); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		log.Error(err, "Unable to fetch TestRun", "namespace", req.Namespace, "name", req.Name)
+		return ctrl.Result{}, err
+	} else {
+		minutesSince := int(time.Now().UTC().Sub(testRun.CreationTimestamp.Time).Minutes())
+		if minutesSince > DeletionThreshold {
+			log.Info(fmt.Sprintf("Test run %s should be deleted", testRun.Name))
+			if err := r.Delete(ctx, &testRun); err != nil {
+				log.Error(err, "Unable to delete old testrun", "TestRun", testRun)
+				return ctrl.Result{}, err
+			}
+		} else {
+			log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
+			return ctrl.Result{
+				RequeueAfter: time.Duration(DeletionThreshold-minutesSince) * time.Minute,
+			}, nil
+		}
+	}
 	return ctrl.Result{}, nil
 }
 
