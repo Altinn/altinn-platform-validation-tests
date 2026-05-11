@@ -7,6 +7,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: "smoke.conf"
 
   - test_file: get-info-dot-altinn-dot-cloud-sok.js
     contexts:
@@ -14,6 +15,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: "smoke.conf"
 
   - test_file: get-info-dot-altinn-dot-cloud-skjemaoversikt.js
     contexts:
@@ -21,6 +23,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: "smoke.conf"
 
   - test_file: get-info-dot-altinn-dot-cloud-starte-og-drive.js
     contexts:
@@ -28,6 +31,7 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: "smoke.conf"
 
   - test_file: get-infoportal-api-when-loggedin.js
     contexts:
@@ -35,3 +39,4 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+          config_file: "smoke.conf"
