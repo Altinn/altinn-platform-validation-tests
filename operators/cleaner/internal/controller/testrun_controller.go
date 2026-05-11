@@ -67,7 +67,7 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, err
 	} else {
 		minutesSince := int(time.Now().UTC().Sub(testRun.CreationTimestamp.Time).Minutes())
-		if minutesSince > DeletionThreshold {
+		if minutesSince >= DeletionThreshold {
 			log.Info(fmt.Sprintf("Test run %s should be deleted", testRun.Name))
 			if err := r.Delete(ctx, &testRun); err != nil {
 				log.Error(err, "Unable to delete old testrun", "TestRun", testRun)
@@ -76,7 +76,7 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		} else {
 			log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
 			return ctrl.Result{
-				RequeueAfter: time.Duration(DeletionThreshold-minutesSince) * time.Minute,
+				RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
 			}, nil
 		}
 	}
@@ -88,7 +88,7 @@ func (r *TestRunReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&k6iov1alpha1.TestRun{}).
 		Watches(
-			&k6iov1alpha1.TestRun{}, // Watch the Busybox CR
+			&k6iov1alpha1.TestRun{},
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
 				if val, ok := obj.GetLabels()["app"]; ok && val == "k6" {
 					return []reconcile.Request{
