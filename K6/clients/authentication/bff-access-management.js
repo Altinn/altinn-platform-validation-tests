@@ -18,6 +18,7 @@ const TAGS = {
     CheckInstanceDelegationForResource: { action: "CheckInstanceDelegationForResource" },
     GetActiveConsentsForUser: { action: "Get ActiveConsentsForUser" },
     GetConsentLogForUser: { action: "Get ConsentLogForUser" },
+    RevokeConsent: { action: "Revoke Consent" },
     GetResourceById: { action: "Get ResourceById" },
     GetPendingDelegationsForUser: { action: "Get PendingDelegationsForUser" },
 };
@@ -484,6 +485,32 @@ class BffAccessManagementApiClient {
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
+    }
+
+    /**
+     * Revoke a consent as the consenter (end user).
+     * @param {string} id - consent request id
+     * @param {*} labels
+     * @returns http.RefinedResponse
+     */
+    RevokeConsent(id, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/consent/${id}/revoke`;
+        let tags = {
+            endpoint: `${this.FULL_PATH}/consent/id/revoke`,
+            name: `${this.FULL_PATH}/consent/id/revoke`,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.post(url, null, params);
     }
 
     /**

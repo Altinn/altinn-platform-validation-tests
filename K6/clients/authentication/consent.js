@@ -4,6 +4,7 @@ const TAGS = {
     RequestConsent: { action: "RequestConsent" },
     ApproveConsent: { action: "ApproveConsent" },
     LookupConsent: { action: "LookupConsent" },
+    GetLatestChanges: { action: "GetLatestChanges" },
 };
 
 class ConsentApiClient {
@@ -33,7 +34,7 @@ class ConsentApiClient {
 
     /**
    * Request Consent
-   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/liststatuschanges/}
    * @param {string} id
    * @param {string} from
    * @param {string} to
@@ -71,7 +72,6 @@ class ConsentApiClient {
 
     /**
    * Approve Consent
-   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
    * @param {string } id
    * @returns http.RefinedResponse
    */
@@ -130,6 +130,35 @@ class ConsentApiClient {
         };
 
         return http.post(url, JSON.stringify(body), params);
+    }
+
+    /**
+     * Get latest consent request status changes for the authenticated enterprise.
+     * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/liststatuschanges/}
+     * @param {string|null} continuationToken
+     * @returns http.RefinedResponse
+     */
+    GetLatestChanges(continuationToken = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/enterprise/consentrequests/latestchanges`);
+        if (continuationToken) {
+            url.searchParams.append("continuationToken", continuationToken);
+        }
+        let tags = {
+            endpoint: `${this.FULL_PATH}/enterprise/consentrequests/latestchanges`,
+            name: `${this.FULL_PATH}/enterprise/consentrequests/latestchanges`,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.get(url.toString(), params);
     }
 }
 

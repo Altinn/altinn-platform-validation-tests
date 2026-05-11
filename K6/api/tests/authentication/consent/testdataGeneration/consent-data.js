@@ -1,3 +1,12 @@
+/**
+ * Test data generation for the consent lookup test.
+ *
+ * Generates a large number of consents (requested + approved) used as isolated
+ * test data for the Maskinporten consent token lookup endpoint. Run this script
+ * once per environment to populate the data, then commit the CSV output from
+ * teardown as the test data file for that environment.
+ */
+
 import http from "k6/http";
 import exec from "k6/execution";
 import { group } from "k6";
