@@ -70,11 +70,14 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		if minutesSince >= DeletionThreshold {
 			log.Info(fmt.Sprintf("Test run %s should be deleted", testRun.Name))
 			if err := r.Delete(ctx, &testRun); err != nil {
+				if apierrors.IsNotFound(err) {
+					return ctrl.Result{}, nil
+				}
 				log.Error(err, "Unable to delete old testrun", "TestRun", testRun)
 				return ctrl.Result{}, err
 			}
 		} else {
-			log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
+			// log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
 			return ctrl.Result{
 				RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
 			}, nil

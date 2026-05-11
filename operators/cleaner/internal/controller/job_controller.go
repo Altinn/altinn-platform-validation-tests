@@ -23,8 +23,10 @@ import (
 
 	batchv1 "k8s.io/api/batch/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -63,14 +65,17 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return ctrl.Result{}, err
 	} else {
 		minutesSince := int(time.Now().UTC().Sub(job.CreationTimestamp.Time).Minutes())
-		if minutesSince > DeletionThreshold {
+		if minutesSince >= DeletionThreshold {
 			log.Info(fmt.Sprintf("Job run %s should be deleted", job.Name))
-			if err := r.Delete(ctx, &job); err != nil {
+			if err := r.Delete(ctx, &job, &client.DeleteOptions{PropagationPolicy: ptr.To(metav1.DeletePropagationBackground)}); err != nil {
+				if apierrors.IsNotFound(err) {
+					return ctrl.Result{}, nil
+				}
 				log.Error(err, "Unable to delete old Job", "Job", job)
 				return ctrl.Result{}, err
 			}
 		} else {
-			log.Info(fmt.Sprintf("Job will be deleted in %d minutes", DeletionThreshold-minutesSince))
+			// log.Info(fmt.Sprintf("Job will be deleted in %d minutes", DeletionThreshold-minutesSince))
 			return ctrl.Result{
 				RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
 			}, nil
