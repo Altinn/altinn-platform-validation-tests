@@ -8,4 +8,11 @@ layout:
 - go.kubebuilder.io/v4
 projectName: cleaner
 repo: github.com/Altinn/altinn-platform-validation-tests/operators/cleaner
+resources:
+- controller: true
+  external: true
+  group: k6.io
+  kind: TestRun
+  path: github.com/grafana/k6-operator/api/v1alpha1
+  version: v1alpha1
 version: "3"
