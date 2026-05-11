@@ -8,7 +8,28 @@ test_definitions:
           type: breakpoint
           enabled: true
 
-  - test_file: get-infoportal-api-when-loggedin.js
+
+  - test_file: get-info-dot-altinn-dot-cloud.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+
+  - test_file: get-info-dot-altinn-dot-cloud-sok.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+
+  - test_file: get-info-dot-altinn-dot-cloud-skjemaoversikt.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: true
+  - test_file: get-infoportal-api-when-loggedin-starte-og-drive.js
     contexts:
       - environment: yt01
         test_type:
