@@ -21,9 +21,12 @@ import (
 
 	k6iov1alpha1 "github.com/grafana/k6-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 // TestRunReconciler reconciles a TestRun object
@@ -57,6 +60,31 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 func (r *TestRunReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&k6iov1alpha1.TestRun{}).
-		Named("testrun").
+		Watches(
+			&k6iov1alpha1.TestRun{}, // Watch the Busybox CR
+			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
+				if val, ok := obj.GetLabels()["app"]; ok && val == "k6" {
+					return []reconcile.Request{
+						{
+							NamespacedName: types.NamespacedName{
+								Name:      "testrun",
+								Namespace: obj.GetNamespace(),
+							},
+						},
+					}
+				}
+				if val, ok := obj.GetLabels()["generated-by"]; ok && val == "k6-action-image" {
+					return []reconcile.Request{
+						{
+							NamespacedName: types.NamespacedName{
+								Name:      "testrun",
+								Namespace: obj.GetNamespace(),
+							},
+						},
+					}
+				}
+				return []reconcile.Request{}
+			}),
+		).
 		Complete(r)
 }
