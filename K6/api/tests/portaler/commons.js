@@ -13,6 +13,7 @@ export function getInfoCloud(path, label) {
         "status text is 200 OK": (r) => r.status_text == "200 OK",
     });
     if (!succeed) {
+        console.log(`Request to ${endpoint} failed.`);
         console.log(res.status);
         console.log(res.body);
     }
