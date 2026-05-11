@@ -1,18 +1,27 @@
 
 import { browser } from "k6/browser";
 import { check } from "k6";
-import { Trend } from "k6/metrics";
-import { expect } from "../../common-imports.js";
 import { getOptions } from "./common.js";
+import http from "k6/http";
 
 export const options = getOptions();
 
+export function setup() {
+    const response = http.get(
+        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt"
+    );
+
+    return response.body
+        .split("\n")
+        .map(w => w.trim())
+        .filter(Boolean);
+}
 
 
-
-
-export default async function () {
-    const url = `${__ENV.INFO_CLOUD_URL}/sok/?q=test`;
+export default async function (words) {
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    const encodedWord = encodeURIComponent(randomWord);
+    const url = `${__ENV.INFO_CLOUD_URL}/sok/?q=${encodedWord}`;
     const page = await browser.newPage();
     try {
         await page.goto(url);
