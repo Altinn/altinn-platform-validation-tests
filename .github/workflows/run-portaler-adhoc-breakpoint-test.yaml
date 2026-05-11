@@ -16,6 +16,9 @@ on:
         description: "The test to run"
         options:
           - yt01-get-info-dot-altinn-dot-cloud-break
+          - yt01-get-info-dot-altinn-dot-cloud-skjemaoversikt-break
+          - yt01-get-info-dot-altinn-dot-cloud-sok-break
+          - yt01-get-info-dot-altinn-dot-cloud-starte-og-drive-break
           - yt01-get-infoportal-api-when-loggedin-break
 
       target_vus:
