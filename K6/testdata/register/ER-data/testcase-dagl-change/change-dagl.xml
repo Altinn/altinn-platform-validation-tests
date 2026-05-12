@@ -1,0 +1,38 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ns:SubmitERDataBasic>
+        <ns:systemUserName>${soapErUsername}</ns:systemUserName>
+        <ns:systemPassword>${soapErPassword}</ns:systemPassword>
+            <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+        <batchAjourholdXML>
+            <head avsender="ER" dato="20260512" kjoerenr="00308" mottaker="ALT" type="A" />
+            <enhet organisasjonsnummer="316289215" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
+                <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
+                    <rolleFratraadt>J</rolleFratraadt>
+                    <rolleRekkefoelge>1</rolleRekkefoelge>
+                    <rolleFoedselsnr>26917031273</rolleFoedselsnr>
+                    <fornavn>Erik Test</fornavn>
+                    <slektsnavn>Testperson</slektsnavn>
+                    <postnr>0150</postnr>
+                    <adresse1>Testveien 14</adresse1>
+                    <adresseLandkode>NO</adresseLandkode>
+                    <personstatus>L</personstatus>
+                </samendringer>
+                <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
+                    <rolleFratraadt>N</rolleFratraadt>
+                    <rolleRekkefoelge>1</rolleRekkefoelge>
+                    <rolleFoedselsnr>28816327530</rolleFoedselsnr>
+                    <fornavn>Frida Test</fornavn>
+                    <slektsnavn>Testperson</slektsnavn>
+                    <postnr>0150</postnr>
+                    <adresse1>Testveien 20</adresse1>
+                    <adresseLandkode>NO</adresseLandkode>
+                    <personstatus>L</personstatus>
+                </samendringer>
+            </enhet>
+            <trai antallEnheter="1" avsender="ER" />
+        </batchAjourholdXML>]]></ns:ERData>
+        </ns:SubmitERDataBasic>
+    </soapenv:Body>
+</soapenv:Envelope>

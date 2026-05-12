@@ -4,6 +4,7 @@ const TAGS = {
     RemoveRevisorRoleFromEr: { action: "RemoveRevisorRoleFromEr" },
     AddRevisorRoleToErForOrg: { action: "AddRevisorRoleToErForOrg" },
     GetRevisorCustomerIdentifiersForParty: { action: "GetRevisorCustomerIdentifiersForParty" },
+    SubmitErData: { action: "SubmitErData" },
 };
 
 class RegisterApiClient {
@@ -110,6 +111,27 @@ class RegisterApiClient {
                 },
             }
         );
+    }
+
+    /**
+     * Posts a pre-built SOAP envelope to the ER update endpoint.
+     * The caller is responsible for loading the XML file and substituting
+     * ${soapErUsername} and ${soapErPassword} before passing the body here.
+     *
+     * @param {string} soapBody - Complete SubmitERDataBasic SOAP envelope
+     * @returns http.RefinedResponse
+     */
+    SubmitErData(soapBody) {
+        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false`;
+        const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
+
+        return http.post(registerUrl, soapBody, {
+            tags: { name: registerUrl, endpoint: registerUrl },
+            headers: {
+                "Content-Type": "text/xml",
+                SOAPAction: submitERDataBasic,
+            },
+        });
     }
 
     GetRevisorCustomerIdentifiersForParty(facilitatorPartyUuid, subscriptionKey) {
