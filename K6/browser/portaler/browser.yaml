@@ -7,20 +7,10 @@ test_definitions:
         test_type:
           type: browser
           enabled: true
-      - environment: yt01
-        node_type: spot8cpu28gbmem
-        test_type:
-          type: browser
-          enabled: true
 
   - test_file: open-info-altinn-cloud-sok.js
     contexts:
       - environment: at23
-        test_type:
-          type: browser
-          enabled: true
-      - environment: yt01
-        node_type: spot8cpu28gbmem
         test_type:
           type: browser
           enabled: true
@@ -31,20 +21,10 @@ test_definitions:
         test_type:
           type: browser
           enabled: true
-      - environment: yt01
-        node_type: spot8cpu28gbmem
-        test_type:
-          type: browser
-          enabled: true
 
   - test_file: open-info-altinn-cloud.js
     contexts:
       - environment: at23
-        test_type:
-          type: browser
-          enabled: true
-      - environment: yt01
-        node_type: spot8cpu28gbmem
         test_type:
           type: browser
           enabled: true
