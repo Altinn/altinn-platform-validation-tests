@@ -132,6 +132,36 @@ export function getOptions(labels, groups = []) {
     return options;
 }
 
+/**
+ * Generates a random syntetically valid Norwegian organization number.
+ * The checksum algorithm follows Enhetsregisteret's Modulus 11 specification.
+ * First digit is restricted to 2–6 to avoid ranges used by real enterprises.
+ *
+ * @returns {string} A 9-digit organization number string
+ */
+export function generateOrgNr() {
+    const weights = [3, 2, 7, 6, 5, 4, 3, 2];
+
+    while (true) {
+        const digits = new Array(9);
+        digits[0] = Math.floor(Math.random() * 5) + 2; // 2–6
+        for (let i = 1; i < 8; i++) {
+            digits[i] = Math.floor(Math.random() * 10);
+        }
+
+        let sum = 0;
+        for (let i = 0; i < 8; i++) {
+            sum += digits[i] * weights[i];
+        }
+
+        const checkDigit = 11 - (sum % 11);
+        if (checkDigit === 10) continue; // invalid combination, retry
+        digits[8] = checkDigit === 11 ? 0 : checkDigit;
+
+        return digits.join("");
+    }
+}
+
 export function checkIp(ip) {
     const ipv4 =
         /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;

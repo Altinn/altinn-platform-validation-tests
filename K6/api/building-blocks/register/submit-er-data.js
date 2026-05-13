@@ -2,19 +2,24 @@ import { check } from "k6";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 
 /**
- * Posts a pre-built SubmitERDataBasic SOAP envelope to the ER update endpoint
- * and checks that the response indicates successful processing.
+ * Posts a SubmitERDataBasic SOAP envelope to the ER update endpoint and checks
+ * that the response indicates successful processing.
  *
- * The caller loads the XML file and substitutes credentials before calling this:
- *   const soapBody = open("path/to/prep-file.xml")
- *       .replace("${soapErUsername}", __ENV.SOAP_ER_USERNAME)
- *       .replace("${soapErPassword}", __ENV.SOAP_ER_PASSWORD);
+ * Load the XML template with open() and pass it directly — credentials are
+ * substituted internally:
+ *   SubmitErData(registerClient, open("path/to/file.xml"), __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD);
  *
  * @param {RegisterApiClient} registerClient
- * @param {string} soapBody - Complete SOAP envelope with credentials substituted
+ * @param {string} soapTemplate - SOAP envelope loaded via open(), containing ${soapErUsername} and ${soapErPassword} placeholders
+ * @param {string} soapErUsername
+ * @param {string} soapErPassword
  * @returns (string | ArrayBuffer | null)
  */
-export function SubmitErData(registerClient, soapBody) {
+export function SubmitErData(registerClient, soapTemplate, soapErUsername, soapErPassword) {
+    const soapBody = soapTemplate
+        .replace("${soapErUsername}", soapErUsername)
+        .replace("${soapErPassword}", soapErPassword);
+
     const res = registerClient.SubmitErData(soapBody);
 
     check(res, {

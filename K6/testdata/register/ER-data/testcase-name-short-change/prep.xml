@@ -7,7 +7,7 @@
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
             <head avsender="ER" dato="20260512" kjoerenr="00201" mottaker="ALT" type="A" />
-            <enhet organisasjonsnummer="316289207" organisasjonsform="ENK" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20210101" datoSistEndret="20260512">
+            <enhet organisasjonsnummer="616772473" organisasjonsform="ENK" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20210101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
                     <navn1>ER SYNC ENK</navn1>
                     <rednavn>ER SYNC ENK</rednavn>
