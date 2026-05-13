@@ -23,6 +23,18 @@ export default async function (words) {
     const encodedWord = encodeURIComponent(randomWord);
     const url = `${__ENV.INFO_CLOUD_URL}/sok/?q=${encodedWord}`;
     const page = await browser.newPage();
+
+    page.on("metric", (metric) => {
+        metric.tag({
+            name: `${__ENV.INFO_CLOUD_URL}/sok/?q=`,
+            matches: [
+                {
+                    url: /\/sok\/\?q=.*/,
+                },
+            ],
+        });
+    });
+
     try {
         await page.goto(url);
 
