@@ -1,8 +1,5 @@
-import { group, check } from "k6";
-import { PlatformTokenGenerator } from "../../../../common-imports.js";
-import { RegisterApiClient, RegisterLookupClient } from "../../../../clients/authentication/index.js";
-import { SubmitErData } from "../../../building-blocks/register/index.js";
-import { retry, generateOrgNr } from "../../../../helpers.js";
+import { generateOrgNr } from "../../../../helpers.js";
+import { runErSyncTestcase } from "./helper.js";
 
 /**
  * @file change-fadr.js
@@ -26,83 +23,6 @@ export const options = {
         "testcase-fadr-change": { executor: "shared-iterations", exec: "fadrChange", vus: 1, iterations: 1 },
     },
 };
-
-function pollOrganization(lookupClient, orgNr) {
-    const res = lookupClient.LookupParties("party,person,org,user,si,sysuser", { data: [`urn:altinn:organization:identifier-no:${orgNr}`] });
-    return JSON.parse(res.body)?.data?.[0] ?? null;
-}
-
-function runTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-
-    const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
-    const lookupClient = new RegisterLookupClient(__ENV.BASE_URL, new PlatformTokenGenerator(tokenOpts));
-
-    console.log(`[${scenarioName}] BASE_URL: ${__ENV.BASE_URL}`);
-    console.log(`[${scenarioName}] Target org: ${orgNr}`);
-
-    group(scenarioName, () => {
-        group("Prep - submit organization to ER", () => {
-            for (const prep of preps) {
-                const res = SubmitErData(apiClient, prep);
-                console.log(`[${scenarioName}] Prep response: ${res.status} ${res.body}`);
-            }
-        });
-
-        group("Prep - verify organization is visible in Register", () => {
-            let prepParty = null;
-            retry(
-                () => {
-                    const party = pollOrganization(lookupClient, orgNr);
-                    if (!party) {
-                        console.log(`[${scenarioName}] Prep: Waiting for org to be added to register`);
-                        return false;
-                    }
-                    prepParty = party;
-                    return true;
-                },
-                { retries: 15, intervalSeconds: 20, testscenario: scenarioName },
-            );
-            if (prepParty) {
-                console.log(`[${scenarioName}] Prep - org displayName: ${prepParty.displayName}`);
-                check(prepParty, { "Prep - org is visible in Register": (p) => p.partyType === "organization" });
-            }
-        });
-
-        group("Change - submit ER update", () => {
-            const res = SubmitErData(apiClient, changeXml);
-            console.log(`[${scenarioName}] Change response: ${res.status} ${res.body}`);
-        });
-
-        group("Verify - Register reflects change", () => {
-            let verifiedParty = null;
-            retry(
-                () => {
-                    const party = pollOrganization(lookupClient, orgNr);
-                    if (!party) {
-                        console.log(`[${scenarioName}] Waiting for org to have updated Fadr address`);
-                        return false;
-                    }
-                    console.log(`[${scenarioName}] Waiting for org to have updated Fadr address - current: ${JSON.stringify(party.businessAddress)}`);
-                    const conditionResults = Object.entries(verifyChecks).map(([label, fn]) => {
-                        const result = fn(party);
-                        if (!result) console.log(`[${scenarioName}] Condition not met: "${label}"`);
-                        return result;
-                    });
-                    const conditionMet = conditionResults.every(Boolean);
-                    if (conditionMet) verifiedParty = party;
-                    return conditionMet;
-                },
-                { retries: 15, intervalSeconds: 20, testscenario: scenarioName },
-            );
-            if (verifiedParty) {
-                check(verifiedParty, verifyChecks);
-            }
-        });
-    });
-}
 
 export function fadrChange() {
     const orgNr = generateOrgNr();
@@ -207,7 +127,7 @@ export function fadrChange() {
     </soapenv:Body>
 </soapenv:Envelope>`;
 
-    runTestcase(
+    runErSyncTestcase(
         "testcase-fadr-change",
         [prep],
         change,
