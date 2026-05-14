@@ -1,8 +1,8 @@
 import { group, check } from "k6";
-import { PlatformTokenGenerator } from "../../../common-imports.js";
-import { RegisterApiClient, RegisterLookupClient } from "../../../clients/authentication/index.js";
-import { SubmitErData } from "../../building-blocks/register/index.js";
-import { retry, generateOrgNr } from "../../../helpers.js";
+import { PlatformTokenGenerator } from "../../../../common-imports.js";
+import { RegisterApiClient, RegisterLookupClient } from "../../../../clients/authentication/index.js";
+import { SubmitErData } from "../../../building-blocks/register/index.js";
+import { retry, generateOrgNr } from "../../../../helpers.js";
 
 /**
  * @file er-sync.js
@@ -31,10 +31,9 @@ export const options = {
     },
 };
 
-// ── Shared test runner ────────────────────────────────────────────────────────
 
-function pollParty(lookupClient, orgNr) {
-    const res = lookupClient.LookupParties("party", { data: [`urn:altinn:organization:identifier-no:${orgNr}`] });
+function pollOrganization(lookupClient, orgNr) {
+    const res = lookupClient.LookupParties("party,person,org,user,si,sysuser", { data: [`urn:altinn:organization:identifier-no:${orgNr}`] });
     return JSON.parse(res.body)?.data?.[0] ?? null;
 }
 
@@ -43,7 +42,7 @@ function runTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
 
-    const apiClient    = new RegisterApiClient(__ENV.BASE_URL, null);
+    const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
     const lookupClient = new RegisterLookupClient(__ENV.BASE_URL, new PlatformTokenGenerator(tokenOpts));
 
     console.log(`[${scenarioName}] BASE_URL: ${__ENV.BASE_URL}`);
@@ -52,7 +51,7 @@ function runTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
     group(scenarioName, () => {
         group("Prep - submit new organization to ER", () => {
             for (const prep of preps) {
-                const res = SubmitErData(apiClient, prep, __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD);
+                const res = SubmitErData(apiClient, prep);
                 console.log(`[${scenarioName}] Prep response: ${res.status} ${res.body}`);
             }
         });
@@ -61,7 +60,7 @@ function runTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
             let prepParty = null;
             retry(
                 () => {
-                    const party = pollParty(lookupClient, orgNr);
+                    const party = pollOrganization(lookupClient, orgNr);
                     if (!party) {
                         console.log(`[${scenarioName}] Org ${orgNr} not yet visible in Register after prep`);
                         return false;
@@ -78,7 +77,7 @@ function runTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
         });
 
         group("Change - submit new name to Register", () => {
-            const res = SubmitErData(apiClient, changeXml, __ENV.SOAP_ER_USERNAME, __ENV.SOAP_ER_PASSWORD);
+            const res = SubmitErData(apiClient, changeXml);
             console.log(`[${scenarioName}] Change response: ${res.status} ${res.body}`);
         });
 
@@ -86,7 +85,7 @@ function runTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
             let verifiedParty = null;
             retry(
                 () => {
-                    const party = pollParty(lookupClient, orgNr);
+                    const party = pollOrganization(lookupClient, orgNr);
                     if (!party) {
                         console.log(`[${scenarioName}] Org ${orgNr} not yet visible in Register`);
                         return false;
@@ -111,8 +110,8 @@ export function nameShortChange() {
     <soapenv:Header/>
     <soapenv:Body>
         <ns:SubmitERDataBasic>
-        <ns:systemUserName>\${soapErUsername}</ns:systemUserName>
-        <ns:systemPassword>\${soapErPassword}</ns:systemPassword>
+        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
+        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
             <head avsender="ER" dato="20260512" kjoerenr="00201" mottaker="ALT" type="A" />
@@ -149,8 +148,8 @@ export function nameShortChange() {
     <soapenv:Header/>
     <soapenv:Body>
         <ns:SubmitERDataBasic>
-        <ns:systemUserName>\${soapErUsername}</ns:systemUserName>
-        <ns:systemPassword>\${soapErPassword}</ns:systemPassword>
+        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
+        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
             <head avsender="ER" dato="20260512" kjoerenr="00301" mottaker="ALT" type="A" />
@@ -176,4 +175,4 @@ export function nameShortChange() {
 }
 
 // Reporting tools
-export { handleSummary } from "../../../common-imports.js";
+export { handleSummary } from "../../../../common-imports.js";

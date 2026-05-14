@@ -37,7 +37,7 @@ export function retry(conditionFn, options = {}) {
                 `${testscenario}] Attempt ${attempt}/${retries} — condition not met, retrying...`
             );
         } catch (err) {
-            console.warn(`${testscenario}: Error on attempt ${attempt}:`);
+            console.warn(`${testscenario}: Error on attempt ${attempt}: ${err}`);
         }
 
         if (attempt < retries) {
