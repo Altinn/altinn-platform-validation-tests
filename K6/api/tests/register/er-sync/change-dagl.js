@@ -1,10 +1,13 @@
-import { generateOrgNr } from "../../../../helpers.js";
+import { group, check } from "k6";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
+import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
  * @file change-dagl.js
  * @description Verifies that a change to DAGL (Daglig leder) in ER is correctly
- * propagated to Altinn Register.
+ * propagated to Altinn Register and reflected in authorized parties.
  *
  * k6 run change-dagl.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
@@ -23,6 +26,19 @@ export const options = {
         "testcase-dagl-change": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
     },
 };
+
+const OLD_DAGL_FNR = "20875798538"; // TALEFØR HAKE
+const NEW_DAGL_FNR = "26858396815"; // FLYKTIG GASSPEDAL
+
+function getAuthorizedParties(apClient, fnr) {
+    const res = apClient.GetAuthorizedParties(
+        "urn:altinn:person:identifier-no",
+        fnr,
+        { includeAltinn2: false, includePartiesViaKeyRoles: true },
+    );
+    if (res.status !== 200) return null;
+    return res.json();
+}
 
 export function daglChange() {
     const orgNr = generateOrgNr();
@@ -78,7 +94,7 @@ export function daglChange() {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>20875798538</rolleFoedselsnr>
+                    <rolleFoedselsnr>${OLD_DAGL_FNR}</rolleFoedselsnr>
                     <fornavn>TALEFØR</fornavn>
                     <slektsnavn>HAKE</slektsnavn>
                     <postnr>0150</postnr>
@@ -104,10 +120,10 @@ export function daglChange() {
             <head avsender="ER" dato="20260512" kjoerenr="00310" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>20875798538</rolleFoedselsnr>
+                    <rolleFoedselsnr>${OLD_DAGL_FNR}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
-                    <rolleFoedselsnr>26858396815</rolleFoedselsnr>
+                    <rolleFoedselsnr>${NEW_DAGL_FNR}</rolleFoedselsnr>
                     <fornavn>FLYKTIG</fornavn>
                     <slektsnavn>GASSPEDAL</slektsnavn>
                 </samendringer>
@@ -123,15 +139,44 @@ export function daglChange() {
         [prep],
         change,
         orgNr,
-        {
-            // TODO: assert on DAGL change once we know which Register field reflects it
-            // Temporary: log the full party to discover available fields
-            "org is accessible in Register after DAGL change": (p) => {
-                console.log(`[testcase-dagl-change] Party after change: ${JSON.stringify(p)}`);
-                return p.partyType === "organization";
-            },
-        },
+        { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
     );
+
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+
+    group("Verify - new DAGL has access to org", () => {
+        let verifiedParties = null;
+        retry(
+            () => {
+                const parties = getAuthorizedParties(apClient, NEW_DAGL_FNR);
+                if (!parties) {
+                    console.log(`[testcase-dagl-change] New DAGL: authorized parties not yet available`);
+                    return false;
+                }
+                // TODO: tighten field name once response shape is confirmed (organizationNumber vs orgNumber)
+                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                if (!hasAccess) console.log(`[testcase-dagl-change] New DAGL does not yet have access to org ${orgNr}`);
+                if (hasAccess) verifiedParties = parties;
+                return hasAccess;
+            },
+            { retries: 15, intervalSeconds: 20, testscenario: "testcase-dagl-change - new DAGL access" },
+        );
+        check(verifiedParties, {
+            "new DAGL (FLYKTIG GASSPEDAL) has access to org": (p) => p !== null,
+        });
+    });
+
+    group("Verify - old DAGL no longer has access to org", () => {
+        const parties = getAuthorizedParties(apClient, OLD_DAGL_FNR);
+        check(parties, {
+            "old DAGL (TALEFØR HAKE) no longer has access to org": (p) =>
+                Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        });
+    });
 }
 
 // Reporting tools

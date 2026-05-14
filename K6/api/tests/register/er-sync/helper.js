@@ -4,6 +4,10 @@ import { RegisterApiClient, RegisterLookupClient } from "../../../../clients/aut
 import { SubmitErData } from "../../../building-blocks/register/index.js";
 import { retry } from "../../../../helpers.js";
 
+for (const key of ["ENVIRONMENT", "BASE_URL", "SOAP_ER_USERNAME", "SOAP_ER_PASSWORD"]) {
+    if (!__ENV[key]) throw new Error(`Missing required env var: ${key}`);
+}
+
 function pollOrganization(lookupClient, orgNr) {
     const res = lookupClient.LookupParties("party,person,org,user,si,sysuser", { data: [`urn:altinn:organization:identifier-no:${orgNr}`] });
     if (res.status !== 200) return null;
@@ -25,7 +29,7 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
     group(scenarioName, () => {
         group("Prep - submit organization to ER", () => {
             for (const prep of preps) {
-                SubmitErData(apiClient, prep);
+                SubmitErData(apiClient, prep, "Prep");
                 console.log(`[${scenarioName}] Prep: ER data processed ok`);
             }
         });
@@ -42,7 +46,7 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
                     prepParty = party;
                     return true;
                 },
-                { retries: 15, intervalSeconds: 20, testscenario: scenarioName },
+                { retries: 15, intervalSeconds: 20, testscenario: `${scenarioName} - prep` },
             );
             if (prepParty) {
                 console.log(`[${scenarioName}] Prep - org displayName: ${prepParty.displayName}`);
@@ -51,7 +55,7 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
         });
 
         group("Change - submit ER update", () => {
-            SubmitErData(apiClient, changeXml);
+            SubmitErData(apiClient, changeXml, "Change");
             console.log(`[${scenarioName}] Change: ER data processed ok`);
         });
 
@@ -73,7 +77,7 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
                     if (conditionMet) verifiedParty = party;
                     return conditionMet;
                 },
-                { retries: 15, intervalSeconds: 20, testscenario: scenarioName },
+                { retries: 15, intervalSeconds: 20, testscenario: `${scenarioName} - verify` },
             );
             if (verifiedParty) {
                 check(verifiedParty, verifyChecks);

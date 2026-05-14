@@ -11,12 +11,12 @@ import { RegisterApiClient } from "../../../clients/authentication/index.js";
  * @param {string} soapBody - Complete SOAP envelope with credentials already set
  * @returns (string | ArrayBuffer | null)
  */
-export function SubmitErData(registerClient, soapBody) {
+export function SubmitErData(registerClient, soapBody, label = "SubmitErData") {
     const res = registerClient.SubmitErData(soapBody);
 
     check(res, {
-        "SubmitErData - status code MUST be 200": (r) => r.status === 200,
-        "SubmitErData - response contains OK_ER_DATA_PROCESSED": (r) =>
+        [`${label} - status code MUST be 200`]: (r) => r.status === 200,
+        [`${label} - response contains OK_ER_DATA_PROCESSED`]: (r) =>
             r.body && r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
     });
 
