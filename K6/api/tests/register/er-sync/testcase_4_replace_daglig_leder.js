@@ -7,32 +7,28 @@ import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
- * @file change-styr.js
- * @description Verifies that a change to LEDE (Styreleder) in ER is correctly
+ * @file change-dagl.js
+ * @description Verifies that a change to DAGL (Daglig leder) in ER is correctly
  * synced to Altinn Register and reflected in authorized parties.
  *
- * k6 run change-styr.js \
+ * k6 run change-dagl.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
  *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
  *   -e REGISTER_SUBSCRIPTION_KEY=<key>
  *
- * @requires ENV.ENVIRONMENT                - Target environment (e.g. tt02, at22)
- * @requires ENV.BASE_URL                   - Base URL for the Register API
- * @requires ENV.SOAP_ER_USERNAME           - Username for the ER SOAP API
- * @requires ENV.SOAP_ER_PASSWORD           - Password for the ER SOAP API
- * @requires ENV.REGISTER_SUBSCRIPTION_KEY  - Subscription key for the Register API
+ * @see README.md
  */
 
 export const options = {
     scenarios: {
-        "replace-styreleder": { executor: "shared-iterations", exec: "styrChange", vus: 1, iterations: 1 },
+        "replace-daglig-leder": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
     },
 };
 
-const OLD_STYR = { fnr: "16918598441", fornavn: "TREG", slektsnavn: "HUNKATT" };
-const NEW_STYR = { fnr: "20845996750", fornavn: "TYPISK", slektsnavn: "TIMEBU" };
-const MEDL = { fnr: "57925901581", fornavn: "PASSIV", slektsnavn: "EKORNHALE" };
-const DAGL = { fnr: "18914598245", fornavn: "UTÅLMODIG", slektsnavn: "MASKIN" };
+const OLD_DAGLIG_LEDER = { fnr: "20875798538", fornavn: "TALEFØR", slektsnavn: "HAKE" };
+const NEW_DAGLIG_LEDER = { fnr: "26858396815", fornavn: "FLYKTIG", slektsnavn: "GASSPEDAL" };
+const STYRELEDER = { fnr: "02895823468", fornavn: "Anne", slektsnavn: "Testperson" };
+const STYREMEDLEM = { fnr: "07855812899", fornavn: "Ola Test", slektsnavn: "Testperson" };
 
 
 function buildPrepXml(orgNr) {
@@ -44,11 +40,11 @@ function buildPrepXml(orgNr) {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00230" mottaker="ALT" type="A" />
+            <head avsender="ER" dato="20260512" kjoerenr="00214" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20200101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>BYTTE STYRELEDER AS</navn1>
-                    <rednavn>BYTTE STYRELEDER AS</rednavn>
+                    <navn1>DAGL CHANGE TEST AS</navn1>
+                    <rednavn>DAGL CHANGE TEST AS</rednavn>
                 </infotype>
                 <infotype felttype="FADR" endringstype="N">
                     <postnr>0150</postnr>
@@ -65,9 +61,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${OLD_STYR.fnr}</rolleFoedselsnr>
-                    <fornavn>${OLD_STYR.fornavn}</fornavn>
-                    <slektsnavn>${OLD_STYR.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYRELEDER.fornavn}</fornavn>
+                    <slektsnavn>${STYRELEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -76,9 +72,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
-                    <fornavn>${MEDL.fornavn}</fornavn>
-                    <slektsnavn>${MEDL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYREMEDLEM.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYREMEDLEM.fornavn}</fornavn>
+                    <slektsnavn>${STYREMEDLEM.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -87,9 +83,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
-                    <fornavn>${DAGL.fornavn}</fornavn>
-                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${OLD_DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${OLD_DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${OLD_DAGLIG_LEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -107,7 +103,7 @@ export function setup() {
     return { orgNr: generateOrgNr() };
 }
 
-export function styrChange({ orgNr = generateOrgNr() } = {}) {
+export function daglChange({ orgNr = generateOrgNr() } = {}) {
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -118,16 +114,15 @@ export function styrChange({ orgNr = generateOrgNr() } = {}) {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00322" mottaker="ALT" type="A" />
-            <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E"
-            undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
-                <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
-                    <rolleFoedselsnr>${OLD_STYR.fnr}</rolleFoedselsnr>
+            <head avsender="ER" dato="20260512" kjoerenr="00310" mottaker="ALT" type="A" />
+            <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
+                <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
+                    <rolleFoedselsnr>${OLD_DAGLIG_LEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
-                <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
-                    <rolleFoedselsnr>${NEW_STYR.fnr}</rolleFoedselsnr>
-                    <fornavn>${NEW_STYR.fornavn}</fornavn>
-                    <slektsnavn>${NEW_STYR.slektsnavn}</slektsnavn>
+                <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
+                    <rolleFoedselsnr>${NEW_DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${NEW_DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${NEW_DAGLIG_LEDER.slektsnavn}</slektsnavn>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -143,34 +138,34 @@ export function styrChange({ orgNr = generateOrgNr() } = {}) {
     const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
     runErSyncTestcase(
-        "Replace Styreleder (STYR)",
+        "Replace Daglig leder (DAGL)",
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after Styreleder is replaced": (p) => p.partyType === "organization" },
+        { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
         {
             afterChange: () => {
-                group("Verify - new STYR has access to org", () => {
+                group("Verify - new DAGL has access to org", () => {
                     let verifiedParties = null;
                     retry(
                         () => {
-                            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
                             if (!Array.isArray(parties)) return false;
                             const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
                             if (hasAccess) verifiedParties = parties;
                             return hasAccess;
                         },
-                        { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
+                        { retries: 15, intervalSeconds: 20, testscenario: "replace-daglig-leder - new DAGL access" },
                     );
                     check(verifiedParties, {
-                        [`new STYR (${NEW_STYR.fornavn} ${NEW_STYR.slektsnavn}) has access to org`]: (p) => p !== null,
+                        [`new DAGL (${NEW_DAGLIG_LEDER.fornavn} ${NEW_DAGLIG_LEDER.slektsnavn}) has access to org`]: (p) => p !== null,
                     });
                 });
 
-                group("Verify - old STYR no longer has access to org", () => {
-                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                group("Verify - old DAGL no longer has access to org", () => {
+                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
                     check(parties, {
-                        [`old STYR (${OLD_STYR.fornavn} ${OLD_STYR.slektsnavn}) no longer has access to org`]: (p) =>
+                        [`old DAGL (${OLD_DAGLIG_LEDER.fornavn} ${OLD_DAGLIG_LEDER.slektsnavn}) no longer has access to org`]: (p) =>
                             Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
                     });
                 });
@@ -196,16 +191,16 @@ function buildCleanupXml(orgNr) {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00401" mottaker="ALT" type="A" />
+            <head avsender="ER" dato="20260512" kjoerenr="00406" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
-                    <rolleFoedselsnr>${NEW_STYR.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYREMEDLEM.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${NEW_DAGLIG_LEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />

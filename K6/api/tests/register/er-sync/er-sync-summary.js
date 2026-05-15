@@ -4,8 +4,8 @@
  * Outputs one line per testcase:
  *   ✅  testcase-name       (all checks passed)
  *   ❌  testcase-name       (one or more checks failed)
- *       ↳ failing check name
- *       ↳ another failing check name
+ *       - failing check name
+ *       - another failing check name
  */
 
 function collectFailingChecks(group) {
@@ -25,6 +25,7 @@ export function handleSummary(data) {
     let failed = 0;
 
     for (const group of data.root_group.groups || []) {
+        if (group.name === "Cleanup") continue;
         const failingChecks = collectFailingChecks(group);
 
         if (failingChecks.length === 0) {
@@ -33,7 +34,7 @@ export function handleSummary(data) {
         } else {
             lines.push(`❌  ${group.name}`);
             for (const name of failingChecks) {
-                lines.push(`    ↳ ${name}`);
+                lines.push(`      ❌ ${name}`);
             }
             failed++;
         }

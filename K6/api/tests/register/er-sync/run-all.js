@@ -1,11 +1,11 @@
-import { nameShortChange } from "./er-sync.js";
-import { addFmva } from "./add-fmva.js";
-import { fadrChange } from "./change-fadr.js";
-import { daglChange } from "./change-dagl.js";
-import { contactChange } from "./change-contact.js";
-import { styrChange } from "./change-styr.js";
-import { addMedl } from "./add-medl.js";
-import { removeMedl } from "./remove-medl.js";
+import { nameShortChange } from "./testcase_1_change_org_name.js";
+import { addMedl } from "./testcase_2_add_styremedlem.js";
+import { removeMedl } from "./testcase_3_remove_styremedlem.js";
+import { daglChange } from "./testcase_4_replace_daglig_leder.js";
+import { styrChange } from "./testcase_5_replace_styreleder.js";
+import { fadrChange } from "./testcase_6_change_forretningsadresse.js";
+import { contactChange } from "./testcase_7_update_contact_info.js";
+import { addFmva } from "./testcase_8_add_frivillig_mva.js";
 
 /**
  * @file run-all.js
