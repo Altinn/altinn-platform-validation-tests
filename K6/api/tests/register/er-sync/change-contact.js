@@ -20,12 +20,12 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-contact-change": { executor: "shared-iterations", exec: "contactChange", vus: 1, iterations: 1 },
+        "update-contact-info": { executor: "shared-iterations", exec: "contactChange", vus: 1, iterations: 1 },
     },
 };
 
-const LEDE_FNR = "28824198537"; // SNÅL LERKE
-const DAGL_FNR = "57896202792"; // INTERESSERT FANGE
+const LEDE = { fnr: "28824198537", fornavn: "SNÅL",       slektsnavn: "LERKE" };
+const DAGL = { fnr: "57896202792", fornavn: "INTERESSERT", slektsnavn: "FANGE" };
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -69,9 +69,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
-                    <fornavn>SNÅL</fornavn>
-                    <slektsnavn>LERKE</slektsnavn>
+                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                    <fornavn>${LEDE.fornavn}</fornavn>
+                    <slektsnavn>${LEDE.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -80,9 +80,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>INTERESSERT</fornavn>
-                    <slektsnavn>FANGE</slektsnavn>
+                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGL.fornavn}</fornavn>
+                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -98,6 +98,7 @@ function buildPrepXml(orgNr) {
 
 export function contactChange() {
     const orgNr = generateOrgNr();
+    const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -129,8 +130,8 @@ export function contactChange() {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "testcase-contact-change",
-        [buildPrepXml(orgNr)],
+        "Update contact information",
+        prep,
         change,
         orgNr,
         {
@@ -143,4 +144,4 @@ export function contactChange() {
 }
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

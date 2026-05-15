@@ -1,6 +1,7 @@
 import { group, check } from "k6";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
@@ -23,24 +24,15 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-dagl-change": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
+        "replace-daglig-leder": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
     },
 };
 
-const OLD_DAGL_FNR = "20875798538"; // TALEFØR HAKE
-const NEW_DAGL_FNR = "26858396815"; // FLYKTIG GASSPEDAL
-const LEDE_FNR     = "02895823468"; // Anne Testperson
-const MEDL_FNR     = "07855812899"; // Ola Test Testperson
+const OLD_DAGL = { fnr: "20875798538", fornavn: "TALEFØR",  slektsnavn: "HAKE" };
+const NEW_DAGL = { fnr: "26858396815", fornavn: "FLYKTIG",  slektsnavn: "GASSPEDAL" };
+const LEDE     = { fnr: "02895823468", fornavn: "Anne",     slektsnavn: "Testperson" };
+const MEDL     = { fnr: "07855812899", fornavn: "Ola Test", slektsnavn: "Testperson" };
 
-function getAuthorizedParties(apClient, fnr) {
-    const res = apClient.GetAuthorizedParties(
-        "urn:altinn:person:identifier-no",
-        fnr,
-        { includeAltinn2: false, includePartiesViaKeyRoles: true },
-    );
-    if (res.status !== 200) return null;
-    return res.json();
-}
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -72,9 +64,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
-                    <fornavn>Anne</fornavn>
-                    <slektsnavn>Testperson</slektsnavn>
+                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                    <fornavn>${LEDE.fornavn}</fornavn>
+                    <slektsnavn>${LEDE.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -83,9 +75,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL_FNR}</rolleFoedselsnr>
-                    <fornavn>Ola Test</fornavn>
-                    <slektsnavn>Testperson</slektsnavn>
+                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
+                    <fornavn>${MEDL.fornavn}</fornavn>
+                    <slektsnavn>${MEDL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -94,9 +86,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${OLD_DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>TALEFØR</fornavn>
-                    <slektsnavn>HAKE</slektsnavn>
+                    <rolleFoedselsnr>${OLD_DAGL.fnr}</rolleFoedselsnr>
+                    <fornavn>${OLD_DAGL.fornavn}</fornavn>
+                    <slektsnavn>${OLD_DAGL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -112,6 +104,7 @@ function buildPrepXml(orgNr) {
 
 export function daglChange() {
     const orgNr = generateOrgNr();
+    const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -124,12 +117,12 @@ export function daglChange() {
             <head avsender="ER" dato="20260512" kjoerenr="00310" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${OLD_DAGL_FNR}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${OLD_DAGL.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
-                    <rolleFoedselsnr>${NEW_DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>FLYKTIG</fornavn>
-                    <slektsnavn>GASSPEDAL</slektsnavn>
+                    <rolleFoedselsnr>${NEW_DAGL.fnr}</rolleFoedselsnr>
+                    <fornavn>${NEW_DAGL.fornavn}</fornavn>
+                    <slektsnavn>${NEW_DAGL.slektsnavn}</slektsnavn>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -138,52 +131,50 @@ export function daglChange() {
     </soapenv:Body>
 </soapenv:Envelope>`;
 
-    runErSyncTestcase(
-        "testcase-dagl-change",
-        [buildPrepXml(orgNr)],
-        change,
-        orgNr,
-        { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
-    );
-
-    if (__ENV.STOP_AFTER_PREP === "true") return;
-
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
-
-    group("Verify - new DAGL has access to org", () => {
-        let verifiedParties = null;
-        retry(
-            () => {
-                const parties = getAuthorizedParties(apClient, NEW_DAGL_FNR);
-                if (!parties) {
-                    console.log(`[testcase-dagl-change] New DAGL: authorized parties not yet available`);
-                    return false;
-                }
-                // TODO: tighten field name once response shape is confirmed (organizationNumber vs orgNumber)
-                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                if (!hasAccess) console.log(`[testcase-dagl-change] New DAGL does not yet have access to org ${orgNr}`);
-                if (hasAccess) verifiedParties = parties;
-                return hasAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "testcase-dagl-change - new DAGL access" },
+    group("Replace Daglig leder (DAGL)", () => {
+        runErSyncTestcase(
+            "Replace Daglig leder - register",
+            prep,
+            change,
+            orgNr,
+            { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
         );
-        check(verifiedParties, {
-            "new DAGL (FLYKTIG GASSPEDAL) has access to org": (p) => p !== null,
-        });
-    });
 
-    group("Verify - old DAGL no longer has access to org", () => {
-        const parties = getAuthorizedParties(apClient, OLD_DAGL_FNR);
-        check(parties, {
-            "old DAGL (TALEFØR HAKE) no longer has access to org": (p) =>
-                Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        if (__ENV.STOP_AFTER_PREP === "true") return;
+
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+        const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+
+        group("Verify - new DAGL has access to org", () => {
+            let verifiedParties = null;
+            retry(
+                () => {
+                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_DAGL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                    if (!Array.isArray(parties)) return false;
+                    // TODO: tighten field name once response shape is confirmed (organizationNumber vs orgNumber)
+                    const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                    if (hasAccess) verifiedParties = parties;
+                    return hasAccess;
+                },
+                { retries: 15, intervalSeconds: 20, testscenario: "replace-daglig-leder - new DAGL access" },
+            );
+            check(verifiedParties, {
+                [`new DAGL (${NEW_DAGL.fornavn} ${NEW_DAGL.slektsnavn}) has access to org`]: (p) => p !== null,
+            });
+        });
+
+        group("Verify - old DAGL no longer has access to org", () => {
+            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_DAGL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+            check(parties, {
+                [`old DAGL (${OLD_DAGL.fornavn} ${OLD_DAGL.slektsnavn}) no longer has access to org`]: (p) =>
+                    Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+            });
         });
     });
 }
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

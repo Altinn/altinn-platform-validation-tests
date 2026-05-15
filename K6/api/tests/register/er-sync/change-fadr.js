@@ -20,14 +20,14 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-fadr-change": { executor: "shared-iterations", exec: "fadrChange", vus: 1, iterations: 1 },
+        "change-business-address": { executor: "shared-iterations", exec: "fadrChange", vus: 1, iterations: 1 },
     },
 };
 
-const LEDE_FNR = "02831899053"; // LILLA NETTADRESSE
-const MEDL_FNR = "03823648714"; // SEIN ELV
-const MEDL2_FNR = "26812099719"; // STOR KAPPE
-const DAGL_FNR = "05830299450"; // SPENNENDE BRØKSTREK
+const LEDE  = { fnr: "02831899053", fornavn: "LILLA",     slektsnavn: "NETTADRESSE" };
+const MEDL  = { fnr: "03823648714", fornavn: "SEIN",      slektsnavn: "ELV" };
+const MEDL2 = { fnr: "26812099719", fornavn: "STOR",      slektsnavn: "KAPPE" };
+const DAGL  = { fnr: "05830299450", fornavn: "SPENNENDE", slektsnavn: "BRØKSTREK" };
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -59,9 +59,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
-                    <fornavn>LILLA</fornavn>
-                    <slektsnavn>NETTADRESSE</slektsnavn>
+                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                    <fornavn>${LEDE.fornavn}</fornavn>
+                    <slektsnavn>${LEDE.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -70,9 +70,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL_FNR}</rolleFoedselsnr>
-                    <fornavn>SEIN</fornavn>
-                    <slektsnavn>ELV</slektsnavn>
+                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
+                    <fornavn>${MEDL.fornavn}</fornavn>
+                    <slektsnavn>${MEDL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -81,9 +81,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>2</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL2_FNR}</rolleFoedselsnr>
-                    <fornavn>STOR</fornavn>
-                    <slektsnavn>KAPPE</slektsnavn>
+                    <rolleFoedselsnr>${MEDL2.fnr}</rolleFoedselsnr>
+                    <fornavn>${MEDL2.fornavn}</fornavn>
+                    <slektsnavn>${MEDL2.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 13</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -92,9 +92,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>SPENNENDE</fornavn>
-                    <slektsnavn>BRØKSTREK</slektsnavn>
+                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGL.fornavn}</fornavn>
+                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -110,6 +110,7 @@ function buildPrepXml(orgNr) {
 
 export function fadrChange() {
     const orgNr = generateOrgNr();
+    const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -135,8 +136,8 @@ export function fadrChange() {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "testcase-fadr-change",
-        [buildPrepXml(orgNr)],
+        "Change business address (FADR)",
+        prep,
         change,
         orgNr,
         {
@@ -147,4 +148,4 @@ export function fadrChange() {
 }
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

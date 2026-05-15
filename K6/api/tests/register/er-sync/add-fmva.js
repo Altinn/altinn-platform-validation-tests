@@ -20,11 +20,11 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-add-fmva": { executor: "shared-iterations", exec: "addFmva", vus: 1, iterations: 1 },
+        "register-fmva": { executor: "shared-iterations", exec: "addFmva", vus: 1, iterations: 1 },
     },
 };
 
-const LEDE_FNR = "02895823468"; // Anne Testperson
+const LEDE = { fnr: "02895823468", fornavn: "Anne", slektsnavn: "Testperson" };
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -50,9 +50,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
-                    <fornavn>Anne</fornavn>
-                    <slektsnavn>Testperson</slektsnavn>
+                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                    <fornavn>${LEDE.fornavn}</fornavn>
+                    <slektsnavn>${LEDE.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -68,6 +68,7 @@ function buildPrepXml(orgNr) {
 
 export function addFmva() {
     const orgNr = generateOrgNr();
+    const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -90,8 +91,8 @@ export function addFmva() {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "testcase-add-fmva",
-        [buildPrepXml(orgNr)],
+        "Register Frivillig MVA-registrering (FMVA)",
+        prep,
         change,
         orgNr,
         { "org is accessible in Register after FMVA added": (p) => p.partyType === "organization" },
@@ -99,4 +100,4 @@ export function addFmva() {
 }
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

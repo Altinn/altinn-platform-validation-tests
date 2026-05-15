@@ -122,7 +122,7 @@ class RegisterApiClient {
      * @returns http.RefinedResponse
      */
     SubmitErData(soapBody) {
-        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false?`;
+        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false`;
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
 
         return http.post(registerUrl, soapBody, {

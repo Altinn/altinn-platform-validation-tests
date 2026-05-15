@@ -1,4 +1,4 @@
-import { group, check } from "k6";
+import { group, check, fail } from "k6";
 import { PlatformTokenGenerator } from "../../../../common-imports.js";
 import { RegisterApiClient, RegisterLookupClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
@@ -15,7 +15,7 @@ function pollOrganization(lookupClient, orgNr) {
     return body.data[0] || null;
 }
 
-export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks, { stopAfterPrep = false } = {}) {
+export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verifyChecks, { stopAfterPrep = false } = {}) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
@@ -23,15 +23,10 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
     const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
     const lookupClient = new RegisterLookupClient(__ENV.BASE_URL, new PlatformTokenGenerator(tokenOpts));
 
-    console.log(`[${scenarioName}] environment ${__ENV.env}`);
-    console.log(`[${scenarioName}] Target org: ${orgNr}`);
-
     group(scenarioName, () => {
         group("Prep - submit organization to ER", () => {
-            for (const prep of preps) {
-                SubmitErData(apiClient, prep, "Prep");
-                console.log(`[${scenarioName}] Prep: ER data processed ok`);
-            }
+            const res = SubmitErData(apiClient, prepXml, "Prep");
+            if (res.status !== 200) fail(`[${scenarioName}] Prep failed with status ${res.status} — aborting test`);
         });
 
         group("Prep - verify organization is visible in Register", () => {
@@ -39,17 +34,13 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
             retry(
                 () => {
                     const party = pollOrganization(lookupClient, orgNr);
-                    if (!party) {
-                        console.log(`[${scenarioName}] Prep: Waiting for org to be added to register`);
-                        return false;
-                    }
+                    if (!party) return false;
                     prepParty = party;
                     return true;
                 },
                 { retries: 15, intervalSeconds: 20, testscenario: `${scenarioName} - prep` },
             );
             if (prepParty) {
-                console.log(`[${scenarioName}] Prep - org displayName: ${prepParty.displayName}`);
                 check(prepParty, { "Prep - org is visible in Register": (p) => p.partyType === "organization" });
             }
         });
@@ -58,7 +49,6 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
 
         group("Change - submit ER update", () => {
             SubmitErData(apiClient, changeXml, "Change");
-            console.log(`[${scenarioName}] Change: ER data processed ok`);
         });
 
         group("Verify - Register reflects change", () => {
@@ -66,16 +56,8 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
             retry(
                 () => {
                     const party = pollOrganization(lookupClient, orgNr);
-                    if (!party) {
-                        console.log(`[${scenarioName}] Waiting for org to be updated in Register`);
-                        return false;
-                    }
-                    const conditionResults = Object.entries(verifyChecks).map(([label, fn]) => {
-                        const result = fn(party);
-                        if (!result) console.log(`[${scenarioName}] Condition not met: "${label}"`);
-                        return result;
-                    });
-                    const conditionMet = conditionResults.every(Boolean);
+                    if (!party) return false;
+                    const conditionMet = Object.values(verifyChecks).every((fn) => fn(party));
                     if (conditionMet) verifiedParty = party;
                     return conditionMet;
                 },

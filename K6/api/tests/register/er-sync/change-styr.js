@@ -1,6 +1,7 @@
 import { group, check } from "k6";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
@@ -23,26 +24,15 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-styr-change": { executor: "shared-iterations", exec: "styrChange", vus: 1, iterations: 1 },
+        "replace-styreleder": { executor: "shared-iterations", exec: "styrChange", vus: 1, iterations: 1 },
     },
 };
 
-const OLD_STYR_FNR = "16918598441"; // TREG HUNKATT
+const OLD_STYR = { fnr: "16918598441", fornavn: "TREG", slektsnavn: "HUNKATT" };
+const NEW_STYR = { fnr: "56828300941", fornavn: "ETTERPÅKLOK", slektsnavn: "MÅNEFERD" };
+const MEDL = { fnr: "57925901581", fornavn: "PASSIV", slektsnavn: "EKORNHALE" };
+const DAGL = { fnr: "18914598245", fornavn: "ALLSLAGS", slektsnavn: "VIFTE" };
 
-// Want to verify this person is added to the org
-const NEW_STYR_FNR = "56828300941"; // ETTERPÅKLOK MÅNEFERD
-const MEDL_FNR = "57925901581"; // PASSIV EKORNHALE
-const DAGL_FNR = "18914598245";
-
-function getAuthorizedParties(apClient, fnr) {
-    const res = apClient.GetAuthorizedParties(
-        "urn:altinn:person:identifier-no",
-        fnr,
-        { includeAltinn2: false, includePartiesViaKeyRoles: true },
-    );
-    if (res.status !== 200) return null;
-    return res.json();
-}
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -74,9 +64,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${OLD_STYR_FNR}</rolleFoedselsnr>
-                    <fornavn>TREG</fornavn>
-                    <slektsnavn>HUNKATT</slektsnavn>
+                    <rolleFoedselsnr>${OLD_STYR.fnr}</rolleFoedselsnr>
+                    <fornavn>${OLD_STYR.fornavn}</fornavn>
+                    <slektsnavn>${OLD_STYR.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -85,9 +75,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL_FNR}</rolleFoedselsnr>
-                    <fornavn>PASSIV</fornavn>
-                    <slektsnavn>EKORNHALE</slektsnavn>
+                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
+                    <fornavn>${MEDL.fornavn}</fornavn>
+                    <slektsnavn>${MEDL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -96,9 +86,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>ALLSLAGS</fornavn>
-                    <slektsnavn>VIFTE</slektsnavn>
+                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGL.fornavn}</fornavn>
+                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -114,6 +104,7 @@ function buildPrepXml(orgNr) {
 
 export function styrChange() {
     const orgNr = generateOrgNr();
+    const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -127,12 +118,12 @@ export function styrChange() {
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E"
             undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
-                    <rolleFoedselsnr>${OLD_STYR_FNR}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${OLD_STYR.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
-                    <rolleFoedselsnr>${NEW_STYR_FNR}</rolleFoedselsnr>
-                    <fornavn>ETTERPÅKLOK</fornavn>
-                    <slektsnavn>MÅNEFERD</slektsnavn>
+                    <rolleFoedselsnr>${NEW_STYR.fnr}</rolleFoedselsnr>
+                    <fornavn>${NEW_STYR.fornavn}</fornavn>
+                    <slektsnavn>${NEW_STYR.slektsnavn}</slektsnavn>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -141,51 +132,49 @@ export function styrChange() {
     </soapenv:Body>
 </soapenv:Envelope>`;
 
-    runErSyncTestcase(
-        "testcase-styr-change",
-        [buildPrepXml(orgNr)],
-        change,
-        orgNr,
-        { "org is accessible in Register after STYR change": (p) => p.partyType === "organization" },
-    );
-
-    if (__ENV.STOP_AFTER_PREP === "true") return;
-
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
-
-    group("Verify - new STYR has access to org", () => {
-        let verifiedParties = null;
-        retry(
-            () => {
-                const parties = getAuthorizedParties(apClient, NEW_STYR_FNR);
-                if (!parties) {
-                    console.log("[testcase-styr-change] New STYR: authorized parties not yet available");
-                    return false;
-                }
-                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                if (!hasAccess) console.log(`[testcase-styr-change] New STYR does not yet have access to org ${orgNr}`);
-                if (hasAccess) verifiedParties = parties;
-                return hasAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "testcase-styr-change - new STYR access" },
+    group("Replace Styreleder (STYR)", () => {
+        runErSyncTestcase(
+            "Replace Styreleder - register",
+            prep,
+            change,
+            orgNr,
+            { "org is accessible in Register after STYR change": (p) => p.partyType === "organization" },
         );
-        check(verifiedParties, {
-            "new STYR (ETTERPÅKLOK MÅNEFERD) has access to org": (p) => p !== null,
-        });
-    });
 
-    group("Verify - old STYR no longer has access to org", () => {
-        const parties = getAuthorizedParties(apClient, OLD_STYR_FNR);
-        check(parties, {
-            "old STYR (TREG HUNKATT) no longer has access to org": (p) =>
-                Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        if (__ENV.STOP_AFTER_PREP === "true") return;
+
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+        const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+
+        group("Verify - new STYR has access to org", () => {
+            let verifiedParties = null;
+            retry(
+                () => {
+                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                    if (!Array.isArray(parties)) return false;
+                    const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                    if (hasAccess) verifiedParties = parties;
+                    return hasAccess;
+                },
+                { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
+            );
+            check(verifiedParties, {
+                [`new STYR (${NEW_STYR.fornavn} ${NEW_STYR.slektsnavn}) has access to org`]: (p) => p !== null,
+            });
+        });
+
+        group("Verify - old STYR no longer has access to org", () => {
+            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+            check(parties, {
+                [`old STYR (${OLD_STYR.fornavn} ${OLD_STYR.slektsnavn}) no longer has access to org`]: (p) =>
+                    Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+            });
         });
     });
 }
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

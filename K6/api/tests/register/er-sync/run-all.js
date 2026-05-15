@@ -17,16 +17,16 @@ import { styrChange } from "./change-styr.js";
 
 export const options = {
     scenarios: {
-        "testcase-name-short-change": { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
-        "testcase-add-fmva":          { executor: "shared-iterations", exec: "addFmva",         vus: 1, iterations: 1 },
-        "testcase-fadr-change":       { executor: "shared-iterations", exec: "fadrChange",       vus: 1, iterations: 1 },
-        "testcase-dagl-change":       { executor: "shared-iterations", exec: "daglChange",       vus: 1, iterations: 1 },
-        "testcase-contact-change":    { executor: "shared-iterations", exec: "contactChange",    vus: 1, iterations: 1 },
-        "testcase-styr-change":       { executor: "shared-iterations", exec: "styrChange",       vus: 1, iterations: 1 },
+        "change-org-short-name":   { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
+        "register-fmva":           { executor: "shared-iterations", exec: "addFmva",         vus: 1, iterations: 1 },
+        "change-business-address": { executor: "shared-iterations", exec: "fadrChange",      vus: 1, iterations: 1 },
+        "replace-daglig-leder":    { executor: "shared-iterations", exec: "daglChange",      vus: 1, iterations: 1 },
+        "update-contact-info":     { executor: "shared-iterations", exec: "contactChange",   vus: 1, iterations: 1 },
+        "replace-styreleder":      { executor: "shared-iterations", exec: "styrChange",      vus: 1, iterations: 1 },
     },
 };
 
 export { nameShortChange, addFmva, fadrChange, daglChange, contactChange, styrChange };
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

@@ -20,11 +20,11 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-name-short-change": { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
+        "change-org-short-name": { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
     },
 };
 
-const INNH_FNR = "12864421537"; // Elise Testperson
+const INNH = { fnr: "12864421537", fornavn: "Elise", slektsnavn: "Testperson" };
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -50,9 +50,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="INNH" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${INNH_FNR}</rolleFoedselsnr>
-                    <fornavn>Elise</fornavn>
-                    <slektsnavn>Testperson</slektsnavn>
+                    <rolleFoedselsnr>${INNH.fnr}</rolleFoedselsnr>
+                    <fornavn>${INNH.fornavn}</fornavn>
+                    <slektsnavn>${INNH.slektsnavn}</slektsnavn>
                     <postnr>1234</postnr>
                     <adresse1>Testveien 29</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -68,6 +68,7 @@ function buildPrepXml(orgNr) {
 
 export function nameShortChange() {
     const orgNr = generateOrgNr();
+    const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -91,8 +92,8 @@ export function nameShortChange() {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "testcase-name-short-change",
-        [buildPrepXml(orgNr)],
+        "Change organization short name",
+        prep,
         change,
         orgNr,
         { "org name updated to NAVN CHANGE TEST ENK OPPDATERT": (p) => p.displayName === "NAVN CHANGE TEST ENK OPPDATERT" },
@@ -100,4 +101,4 @@ export function nameShortChange() {
 }
 
 // Reporting tools
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "./er-sync-summary.js";

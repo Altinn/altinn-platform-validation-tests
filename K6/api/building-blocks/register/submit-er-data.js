@@ -14,7 +14,7 @@ import { RegisterApiClient } from "../../../clients/authentication/index.js";
 export function SubmitErData(registerClient, soapBody, label = "SubmitErData") {
     const res = registerClient.SubmitErData(soapBody);
 
-    check(res, {
+    const ok = check(res, {
         [`${label} - status code MUST be 200`]: (r) => r.status === 200,
         [`${label} - response contains OK_ER_DATA_PROCESSED`]: (r) =>
             r.body && r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
