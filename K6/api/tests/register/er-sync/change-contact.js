@@ -1,5 +1,7 @@
 import { generateOrgNr } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
+import { RegisterApiClient } from "../../../../clients/authentication/index.js";
+import { SubmitErData } from "../../../building-blocks/register/index.js";
 
 /**
  * @file change-contact.js
@@ -96,8 +98,11 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function contactChange() {
-    const orgNr = generateOrgNr();
+export function setup() {
+    return { orgNr: generateOrgNr() };
+}
+
+export function contactChange({ orgNr = generateOrgNr() } = {}) {
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -145,3 +150,34 @@ export function contactChange() {
 
 // Reporting tools
 export { handleSummary } from "./er-sync-summary.js";
+
+export function teardown({ orgNr } = {}) {
+    if (!orgNr) return;
+    const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+    SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
+}
+
+function buildCleanupXml(orgNr) {
+    return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ns:SubmitERDataBasic>
+        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
+        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
+            <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+        <batchAjourholdXML>
+            <head avsender="ER" dato="20260512" kjoerenr="00405" mottaker="ALT" type="A" />
+            <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
+                <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
+                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                </samendringer>
+                <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
+                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                </samendringer>
+            </enhet>
+            <trai antallEnheter="1" avsender="ER" />
+        </batchAjourholdXML>]]></ns:ERData>
+        </ns:SubmitERDataBasic>
+    </soapenv:Body>
+</soapenv:Envelope>`;
+}
