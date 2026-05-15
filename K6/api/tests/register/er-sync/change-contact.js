@@ -2,11 +2,11 @@ import { generateOrgNr } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
- * @file change-fadr.js
- * @description Verifies that a change to FADR (Forretningsadresse) in ER is correctly
- * propagated to Altinn Register.
+ * @file change-contact.js
+ * @description Verifies that changes to contact information (TFON, TFAX, EPOS, IADR) in ER
+ * are correctly propagated to Altinn Register.
  *
- * k6 run change-fadr.js \
+ * k6 run change-contact.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
  *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
  *   -e REGISTER_SUBSCRIPTION_KEY=<key>
@@ -20,14 +20,12 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-fadr-change": { executor: "shared-iterations", exec: "fadrChange", vus: 1, iterations: 1 },
+        "testcase-contact-change": { executor: "shared-iterations", exec: "contactChange", vus: 1, iterations: 1 },
     },
 };
 
-const LEDE_FNR = "02831899053"; // LILLA NETTADRESSE
-const MEDL_FNR = "03823648714"; // SEIN ELV
-const MEDL2_FNR = "26812099719"; // STOR KAPPE
-const DAGL_FNR = "05830299450"; // SPENNENDE BRØKSTREK
+const LEDE_FNR = "28824198537"; // SNÅL LERKE
+const DAGL_FNR = "57896202792"; // INTERESSERT FANGE
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -38,11 +36,11 @@ function buildPrepXml(orgNr) {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00210" mottaker="ALT" type="A" />
+            <head avsender="ER" dato="20260512" kjoerenr="00229" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20200101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>FADR CHANGE TEST AS</navn1>
-                    <rednavn>FADR CHANGE TEST AS</rednavn>
+                    <navn1>CONTACT CHANGE TEST AS</navn1>
+                    <rednavn>CONTACT CHANGE TEST AS</rednavn>
                 </infotype>
                 <infotype felttype="FADR" endringstype="N">
                     <postnr>0150</postnr>
@@ -56,36 +54,26 @@ function buildPrepXml(orgNr) {
                     <kommunenr>0301</kommunenr>
                     <adresse1>Testveien 10</adresse1>
                 </infotype>
+                <infotype felttype="TFON" endringstype="N">
+                    <opplysning>22334455</opplysning>
+                </infotype>
+                <infotype felttype="TFAX" endringstype="N">
+                    <opplysning>22334456</opplysning>
+                </infotype>
+                <infotype felttype="EPOS" endringstype="N">
+                    <opplysning>contact-test@example.com</opplysning>
+                </infotype>
+                <infotype felttype="IADR" endringstype="N">
+                    <opplysning>http://initial.example.com</opplysning>
+                </infotype>
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
                     <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
-                    <fornavn>LILLA</fornavn>
-                    <slektsnavn>NETTADRESSE</slektsnavn>
+                    <fornavn>SNÅL</fornavn>
+                    <slektsnavn>LERKE</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
-                    <adresseLandkode>NO</adresseLandkode>
-                    <personstatus>L</personstatus>
-                </samendringer>
-                <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
-                    <rolleFratraadt>N</rolleFratraadt>
-                    <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL_FNR}</rolleFoedselsnr>
-                    <fornavn>SEIN</fornavn>
-                    <slektsnavn>ELV</slektsnavn>
-                    <postnr>0150</postnr>
-                    <adresse1>Testveien 12</adresse1>
-                    <adresseLandkode>NO</adresseLandkode>
-                    <personstatus>L</personstatus>
-                </samendringer>
-                <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
-                    <rolleFratraadt>N</rolleFratraadt>
-                    <rolleRekkefoelge>2</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL2_FNR}</rolleFoedselsnr>
-                    <fornavn>STOR</fornavn>
-                    <slektsnavn>KAPPE</slektsnavn>
-                    <postnr>0150</postnr>
-                    <adresse1>Testveien 13</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
                     <personstatus>L</personstatus>
                 </samendringer>
@@ -93,8 +81,8 @@ function buildPrepXml(orgNr) {
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
                     <rolleFoedselsnr>${DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>SPENNENDE</fornavn>
-                    <slektsnavn>BRØKSTREK</slektsnavn>
+                    <fornavn>INTERESSERT</fornavn>
+                    <slektsnavn>FANGE</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -108,7 +96,7 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function fadrChange() {
+export function contactChange() {
     const orgNr = generateOrgNr();
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -119,13 +107,19 @@ export function fadrChange() {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00306" mottaker="ALT" type="A" />
+            <head avsender="ER" dato="20260512" kjoerenr="00321" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
-                <infotype felttype="FADR" endringstype="N">
-                    <postnr>0350</postnr>
-                    <landkode>NO</landkode>
-                    <kommunenr>0301</kommunenr>
-                    <adresse1>Ny Forretningsgate 5</adresse1>
+                <infotype felttype="TFON" endringstype="N">
+                    <opplysning>99887711</opplysning>
+                </infotype>
+                <infotype felttype="TFAX" endringstype="N">
+                    <opplysning>99887712</opplysning>
+                </infotype>
+                <infotype felttype="EPOS" endringstype="N">
+                    <opplysning>contact-test-oppdatert@example.com</opplysning>
+                </infotype>
+                <infotype felttype="IADR" endringstype="N">
+                    <opplysning>http://oppdatert.example.com</opplysning>
                 </infotype>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -135,13 +129,15 @@ export function fadrChange() {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "testcase-fadr-change",
+        "testcase-contact-change",
         [buildPrepXml(orgNr)],
         change,
         orgNr,
         {
-            "org businessAddress updated to Ny Forretningsgate 5": (p) => p.businessAddress?.address === "Ny Forretningsgate 5",
-            "org businessAddress postalCode updated to 0350": (p) => p.businessAddress?.postalCode === "0350",
+            "org telephoneNumber updated to 99887711": (p) => p.telephoneNumber === "99887711",
+            "org faxNumber updated to 99887712": (p) => p.faxNumber === "99887712",
+            "org emailAddress updated to contact-test-oppdatert@example.com": (p) => p.emailAddress === "contact-test-oppdatert@example.com",
+            "org internetAddress updated to http://oppdatert.example.com": (p) => p.internetAddress === "http://oppdatert.example.com",
         },
     );
 }

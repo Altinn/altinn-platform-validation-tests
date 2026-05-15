@@ -3,17 +3,13 @@ import { runErSyncTestcase } from "./helper.js";
 
 /**
  * @file er-sync.js
- * @description Verifies that ER (Enhetsregisteret) changes are correctly propagated
- * to Altinn Register. Each testcase is a named scenario that can be run individually.
+ * @description Verifies that a change to NAVN (short name) in ER is correctly
+ * propagated to Altinn Register.
  *
- * Run a specific testcase:
- *   k6 run er-sync.js --scenario testcase-name-short-change \
- *     -e ENVIRONMENT=tt02 -e BASE_URL=https://platform.tt02.altinn.cloud \
- *     -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *     -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
- * Run all testcases:
- *   k6 run er-sync.js -e ENVIRONMENT=... (same env vars)
+ * k6 run er-sync.js \
+ *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
+ *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
+ *   -e REGISTER_SUBSCRIPTION_KEY=<key>
  *
  * @requires ENV.ENVIRONMENT                - Target environment (e.g. tt02, at22)
  * @requires ENV.BASE_URL                   - Base URL for the Register API
@@ -28,10 +24,10 @@ export const options = {
     },
 };
 
-export function nameShortChange() {
-    const orgNr = generateOrgNr();
+const INNH_FNR = "12864421537"; // Elise Testperson
 
-    const prep = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
+function buildPrepXml(orgNr) {
+    return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
     <soapenv:Body>
         <ns:SubmitERDataBasic>
@@ -42,8 +38,8 @@ export function nameShortChange() {
             <head avsender="ER" dato="20260512" kjoerenr="00201" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="ENK" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20210101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>ER SYNC ENK</navn1>
-                    <rednavn>ER SYNC ENK</rednavn>
+                    <navn1>NAVN CHANGE TEST ENK</navn1>
+                    <rednavn>NAVN CHANGE TEST ENK</rednavn>
                 </infotype>
                 <infotype felttype="FADR" endringstype="N">
                     <postnr>1234</postnr>
@@ -54,7 +50,7 @@ export function nameShortChange() {
                 <samendringer data="D" felttype="INNH" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>12864421537</rolleFoedselsnr>
+                    <rolleFoedselsnr>${INNH_FNR}</rolleFoedselsnr>
                     <fornavn>Elise</fornavn>
                     <slektsnavn>Testperson</slektsnavn>
                     <postnr>1234</postnr>
@@ -68,6 +64,10 @@ export function nameShortChange() {
         </ns:SubmitERDataBasic>
     </soapenv:Body>
 </soapenv:Envelope>`;
+}
+
+export function nameShortChange() {
+    const orgNr = generateOrgNr();
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -80,8 +80,8 @@ export function nameShortChange() {
             <head avsender="ER" dato="20260512" kjoerenr="00301" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="ENK" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20210101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>ER SYNC ENK OPPDATERT</navn1>
-                    <rednavn>ER SYNC ENK OPPDATERT</rednavn>
+                    <navn1>NAVN CHANGE TEST ENK OPPDATERT</navn1>
+                    <rednavn>NAVN CHANGE TEST ENK OPPDATERT</rednavn>
                 </infotype>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -92,10 +92,10 @@ export function nameShortChange() {
 
     runErSyncTestcase(
         "testcase-name-short-change",
-        [prep],
+        [buildPrepXml(orgNr)],
         change,
         orgNr,
-        { "org name updated to ER SYNC ENK OPPDATERT": (p) => p.displayName === "ER SYNC ENK OPPDATERT" },
+        { "org name updated to NAVN CHANGE TEST ENK OPPDATERT": (p) => p.displayName === "NAVN CHANGE TEST ENK OPPDATERT" },
     );
 }
 

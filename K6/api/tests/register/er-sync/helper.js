@@ -15,7 +15,7 @@ function pollOrganization(lookupClient, orgNr) {
     return body.data[0] || null;
 }
 
-export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks) {
+export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyChecks, { stopAfterPrep = false } = {}) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
@@ -23,7 +23,7 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
     const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
     const lookupClient = new RegisterLookupClient(__ENV.BASE_URL, new PlatformTokenGenerator(tokenOpts));
 
-    console.log(`[${scenarioName}] BASE_URL: ${__ENV.BASE_URL}`);
+    console.log(`[${scenarioName}] environment ${__ENV.env}`);
     console.log(`[${scenarioName}] Target org: ${orgNr}`);
 
     group(scenarioName, () => {
@@ -53,6 +53,8 @@ export function runErSyncTestcase(scenarioName, preps, changeXml, orgNr, verifyC
                 check(prepParty, { "Prep - org is visible in Register": (p) => p.partyType === "organization" });
             }
         });
+
+        if (stopAfterPrep || __ENV.STOP_AFTER_PREP === "true") return;
 
         group("Change - submit ER update", () => {
             SubmitErData(apiClient, changeXml, "Change");

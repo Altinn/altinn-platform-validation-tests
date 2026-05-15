@@ -5,11 +5,11 @@ import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
- * @file change-dagl.js
- * @description Verifies that a change to DAGL (Daglig leder) in ER is correctly
+ * @file change-styr.js
+ * @description Verifies that a change to LEDE (Styreleder) in ER is correctly
  * propagated to Altinn Register and reflected in authorized parties.
  *
- * k6 run change-dagl.js \
+ * k6 run change-styr.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
  *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
  *   -e REGISTER_SUBSCRIPTION_KEY=<key>
@@ -23,14 +23,16 @@ import { runErSyncTestcase } from "./helper.js";
 
 export const options = {
     scenarios: {
-        "testcase-dagl-change": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
+        "testcase-styr-change": { executor: "shared-iterations", exec: "styrChange", vus: 1, iterations: 1 },
     },
 };
 
-const OLD_DAGL_FNR = "20875798538"; // TALEFØR HAKE
-const NEW_DAGL_FNR = "26858396815"; // FLYKTIG GASSPEDAL
-const LEDE_FNR     = "02895823468"; // Anne Testperson
-const MEDL_FNR     = "07855812899"; // Ola Test Testperson
+const OLD_STYR_FNR = "16918598441"; // TREG HUNKATT
+
+// Want to verify this person is added to the org
+const NEW_STYR_FNR = "56828300941"; // ETTERPÅKLOK MÅNEFERD
+const MEDL_FNR = "57925901581"; // PASSIV EKORNHALE
+const DAGL_FNR = "18914598245";
 
 function getAuthorizedParties(apClient, fnr) {
     const res = apClient.GetAuthorizedParties(
@@ -51,11 +53,11 @@ function buildPrepXml(orgNr) {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00214" mottaker="ALT" type="A" />
+            <head avsender="ER" dato="20260512" kjoerenr="00230" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20200101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>DAGL CHANGE TEST AS</navn1>
-                    <rednavn>DAGL CHANGE TEST AS</rednavn>
+                    <navn1>BYTTE STYRELEDER AS</navn1>
+                    <rednavn>BYTTE STYRELEDER AS</rednavn>
                 </infotype>
                 <infotype felttype="FADR" endringstype="N">
                     <postnr>0150</postnr>
@@ -72,9 +74,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
-                    <fornavn>Anne</fornavn>
-                    <slektsnavn>Testperson</slektsnavn>
+                    <rolleFoedselsnr>${OLD_STYR_FNR}</rolleFoedselsnr>
+                    <fornavn>TREG</fornavn>
+                    <slektsnavn>HUNKATT</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -84,8 +86,8 @@ function buildPrepXml(orgNr) {
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
                     <rolleFoedselsnr>${MEDL_FNR}</rolleFoedselsnr>
-                    <fornavn>Ola Test</fornavn>
-                    <slektsnavn>Testperson</slektsnavn>
+                    <fornavn>PASSIV</fornavn>
+                    <slektsnavn>EKORNHALE</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -94,9 +96,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${OLD_DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>TALEFØR</fornavn>
-                    <slektsnavn>HAKE</slektsnavn>
+                    <rolleFoedselsnr>${DAGL_FNR}</rolleFoedselsnr>
+                    <fornavn>ALLSLAGS</fornavn>
+                    <slektsnavn>VIFTE</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -110,7 +112,7 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function daglChange() {
+export function styrChange() {
     const orgNr = generateOrgNr();
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -121,15 +123,16 @@ export function daglChange() {
         <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
             <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
         <batchAjourholdXML>
-            <head avsender="ER" dato="20260512" kjoerenr="00310" mottaker="ALT" type="A" />
-            <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
-                <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${OLD_DAGL_FNR}</rolleFoedselsnr>
+            <head avsender="ER" dato="20260512" kjoerenr="00322" mottaker="ALT" type="A" />
+            <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E"
+            undersakstype="NY" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
+                <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
+                    <rolleFoedselsnr>${OLD_STYR_FNR}</rolleFoedselsnr>
                 </samendringer>
-                <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
-                    <rolleFoedselsnr>${NEW_DAGL_FNR}</rolleFoedselsnr>
-                    <fornavn>FLYKTIG</fornavn>
-                    <slektsnavn>GASSPEDAL</slektsnavn>
+                <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
+                    <rolleFoedselsnr>${NEW_STYR_FNR}</rolleFoedselsnr>
+                    <fornavn>ETTERPÅKLOK</fornavn>
+                    <slektsnavn>MÅNEFERD</slektsnavn>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -139,11 +142,11 @@ export function daglChange() {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "testcase-dagl-change",
+        "testcase-styr-change",
         [buildPrepXml(orgNr)],
         change,
         orgNr,
-        { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
+        { "org is accessible in Register after STYR change": (p) => p.partyType === "organization" },
     );
 
     if (__ENV.STOP_AFTER_PREP === "true") return;
@@ -154,32 +157,31 @@ export function daglChange() {
     tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
     const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
-    group("Verify - new DAGL has access to org", () => {
+    group("Verify - new STYR has access to org", () => {
         let verifiedParties = null;
         retry(
             () => {
-                const parties = getAuthorizedParties(apClient, NEW_DAGL_FNR);
+                const parties = getAuthorizedParties(apClient, NEW_STYR_FNR);
                 if (!parties) {
-                    console.log(`[testcase-dagl-change] New DAGL: authorized parties not yet available`);
+                    console.log("[testcase-styr-change] New STYR: authorized parties not yet available");
                     return false;
                 }
-                // TODO: tighten field name once response shape is confirmed (organizationNumber vs orgNumber)
                 const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                if (!hasAccess) console.log(`[testcase-dagl-change] New DAGL does not yet have access to org ${orgNr}`);
+                if (!hasAccess) console.log(`[testcase-styr-change] New STYR does not yet have access to org ${orgNr}`);
                 if (hasAccess) verifiedParties = parties;
                 return hasAccess;
             },
-            { retries: 15, intervalSeconds: 20, testscenario: "testcase-dagl-change - new DAGL access" },
+            { retries: 15, intervalSeconds: 20, testscenario: "testcase-styr-change - new STYR access" },
         );
         check(verifiedParties, {
-            "new DAGL (FLYKTIG GASSPEDAL) has access to org": (p) => p !== null,
+            "new STYR (ETTERPÅKLOK MÅNEFERD) has access to org": (p) => p !== null,
         });
     });
 
-    group("Verify - old DAGL no longer has access to org", () => {
-        const parties = getAuthorizedParties(apClient, OLD_DAGL_FNR);
+    group("Verify - old STYR no longer has access to org", () => {
+        const parties = getAuthorizedParties(apClient, OLD_STYR_FNR);
         check(parties, {
-            "old DAGL (TALEFØR HAKE) no longer has access to org": (p) =>
+            "old STYR (TREG HUNKATT) no longer has access to org": (p) =>
                 Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });
     });

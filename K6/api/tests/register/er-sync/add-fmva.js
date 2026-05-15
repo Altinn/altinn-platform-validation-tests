@@ -24,10 +24,10 @@ export const options = {
     },
 };
 
-export function addFmva() {
-    const orgNr = generateOrgNr();
+const LEDE_FNR = "02895823468"; // Anne Testperson
 
-    const prep = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
+function buildPrepXml(orgNr) {
+    return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
     <soapenv:Body>
         <ns:SubmitERDataBasic>
@@ -38,8 +38,8 @@ export function addFmva() {
             <head avsender="ER" dato="20260512" kjoerenr="00223" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20200101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>ER SYNC AS</navn1>
-                    <rednavn>ER SYNC AS</rednavn>
+                    <navn1>FMVA ADD TEST AS</navn1>
+                    <rednavn>FMVA ADD TEST AS</rednavn>
                 </infotype>
                 <infotype felttype="FADR" endringstype="N">
                     <postnr>0150</postnr>
@@ -50,7 +50,7 @@ export function addFmva() {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>02895823468</rolleFoedselsnr>
+                    <rolleFoedselsnr>${LEDE_FNR}</rolleFoedselsnr>
                     <fornavn>Anne</fornavn>
                     <slektsnavn>Testperson</slektsnavn>
                     <postnr>0150</postnr>
@@ -64,6 +64,10 @@ export function addFmva() {
         </ns:SubmitERDataBasic>
     </soapenv:Body>
 </soapenv:Envelope>`;
+}
+
+export function addFmva() {
+    const orgNr = generateOrgNr();
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
     <soapenv:Header/>
@@ -87,7 +91,7 @@ export function addFmva() {
 
     runErSyncTestcase(
         "testcase-add-fmva",
-        [prep],
+        [buildPrepXml(orgNr)],
         change,
         orgNr,
         { "org is accessible in Register after FMVA added": (p) => p.partyType === "organization" },
