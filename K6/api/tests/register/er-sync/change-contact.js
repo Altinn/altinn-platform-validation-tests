@@ -1,3 +1,4 @@
+import { group } from "k6";
 import { generateOrgNr } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 import { RegisterApiClient } from "../../../../clients/authentication/index.js";
@@ -6,7 +7,7 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
 /**
  * @file change-contact.js
  * @description Verifies that changes to contact information (TFON, TFAX, EPOS, IADR) in ER
- * are correctly propagated to Altinn Register.
+ * are correctly synced to Altinn Register.
  *
  * k6 run change-contact.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
@@ -146,16 +147,15 @@ export function contactChange({ orgNr = generateOrgNr() } = {}) {
             "org internetAddress updated to http://oppdatert.example.com": (p) => p.internetAddress === "http://oppdatert.example.com",
         },
     );
+
+    group("Cleanup", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
+    });
 }
 
 // Reporting tools
 export { handleSummary } from "./er-sync-summary.js";
-
-export function teardown({ orgNr } = {}) {
-    if (!orgNr) return;
-    const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
-    SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
-}
 
 function buildCleanupXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">

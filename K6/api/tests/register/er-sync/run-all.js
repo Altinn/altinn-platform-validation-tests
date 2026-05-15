@@ -4,6 +4,8 @@ import { fadrChange } from "./change-fadr.js";
 import { daglChange } from "./change-dagl.js";
 import { contactChange } from "./change-contact.js";
 import { styrChange } from "./change-styr.js";
+import { addMedl } from "./add-medl.js";
+import { removeMedl } from "./remove-medl.js";
 
 /**
  * @file run-all.js
@@ -23,10 +25,12 @@ export const options = {
         "replace-daglig-leder":    { executor: "shared-iterations", exec: "daglChange",      vus: 1, iterations: 1 },
         "update-contact-info":     { executor: "shared-iterations", exec: "contactChange",   vus: 1, iterations: 1 },
         "replace-styreleder":      { executor: "shared-iterations", exec: "styrChange",      vus: 1, iterations: 1 },
+        "add-board-member":        { executor: "shared-iterations", exec: "addMedl",         vus: 1, iterations: 1 },
+        "remove-board-member":     { executor: "shared-iterations", exec: "removeMedl",      vus: 1, iterations: 1 },
     },
 };
 
-export { nameShortChange, addFmva, fadrChange, daglChange, contactChange, styrChange };
+export { nameShortChange, addFmva, fadrChange, daglChange, contactChange, styrChange, addMedl, removeMedl };
 
 // Reporting tools
 export { handleSummary } from "./er-sync-summary.js";

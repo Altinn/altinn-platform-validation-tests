@@ -9,7 +9,7 @@ import { runErSyncTestcase } from "./helper.js";
 /**
  * @file change-styr.js
  * @description Verifies that a change to LEDE (Styreleder) in ER is correctly
- * propagated to Altinn Register and reflected in authorized parties.
+ * synced to Altinn Register and reflected in authorized parties.
  *
  * k6 run change-styr.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
@@ -107,12 +107,6 @@ export function setup() {
     return { orgNr: generateOrgNr() };
 }
 
-export function teardown({ orgNr } = {}) {
-    if (!orgNr) return;
-    const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
-    SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
-}
-
 export function styrChange({ orgNr = generateOrgNr() } = {}) {
     const prep = buildPrepXml(orgNr);
 
@@ -142,47 +136,51 @@ export function styrChange({ orgNr = generateOrgNr() } = {}) {
     </soapenv:Body>
 </soapenv:Envelope>`;
 
-    group("Replace Styreleder (LEDE)", () => {
-        runErSyncTestcase(
-            "Replace Styreleder - register",
-            prep,
-            change,
-            orgNr,
-            { "org is accessible in Register after Styreleder is replaced": (p) => p.partyType === "organization" },
-        );
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
-        if (__ENV.STOP_AFTER_PREP === "true") return;
+    runErSyncTestcase(
+        "Replace Styreleder (STYR)",
+        prep,
+        change,
+        orgNr,
+        { "org is accessible in Register after Styreleder is replaced": (p) => p.partyType === "organization" },
+        {
+            afterChange: () => {
+                group("Verify - new STYR has access to org", () => {
+                    let verifiedParties = null;
+                    retry(
+                        () => {
+                            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                            if (!Array.isArray(parties)) return false;
+                            const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                            if (hasAccess) verifiedParties = parties;
+                            return hasAccess;
+                        },
+                        { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
+                    );
+                    check(verifiedParties, {
+                        [`new STYR (${NEW_STYR.fornavn} ${NEW_STYR.slektsnavn}) has access to org`]: (p) => p !== null,
+                    });
+                });
 
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-        const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+                group("Verify - old STYR no longer has access to org", () => {
+                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                    check(parties, {
+                        [`old STYR (${OLD_STYR.fornavn} ${OLD_STYR.slektsnavn}) no longer has access to org`]: (p) =>
+                            Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+                    });
+                });
+            },
+        },
+    );
 
-        group("Verify - new STYR has access to org", () => {
-            let verifiedParties = null;
-            retry(
-                () => {
-                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                    if (!Array.isArray(parties)) return false;
-                    const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                    if (hasAccess) verifiedParties = parties;
-                    return hasAccess;
-                },
-                { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
-            );
-            check(verifiedParties, {
-                [`new STYR (${NEW_STYR.fornavn} ${NEW_STYR.slektsnavn}) has access to org`]: (p) => p !== null,
-            });
-        });
-
-        group("Verify - old STYR no longer has access to org", () => {
-            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYR.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-            check(parties, {
-                [`old STYR (${OLD_STYR.fornavn} ${OLD_STYR.slektsnavn}) no longer has access to org`]: (p) =>
-                    Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
-            });
-        });
+    group("Cleanup", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
     });
 }
 

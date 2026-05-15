@@ -28,16 +28,11 @@ export function retry(conditionFn, options = {}) {
             const result = conditionFn();
 
             if (result) {
-                console.log(`${testscenario}] condition met on attempt ${attempt}`);
                 success = true;
                 break;
             }
-
-            console.log(
-                `${testscenario}] Attempt ${attempt}/${retries} — condition not met, retrying...`
-            );
         } catch (err) {
-            console.warn(`${testscenario}: Error on attempt ${attempt}: ${err}`);
+            console.warn(`[${testscenario}] Error on attempt ${attempt}: ${err}`);
         }
 
         if (attempt < retries) {

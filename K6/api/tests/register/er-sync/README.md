@@ -1,6 +1,6 @@
 # ER Sync Tests
 
-Verifies that data submitted to the Enhetsregisteret (ER) via SOAP is correctly propagated to Altinn Register. Each test submits a **prep** state (creates the organization), then a **change**, and finally verifies the change is reflected in Register.
+Verifies that data submitted to the Enhetsregisteret (ER) via SOAP is correctly synced to Altinn Register. Each test submits a **prep** state (creates the organization), then a **change**, and finally verifies the change is reflected in Register.
 
 ## Running
 

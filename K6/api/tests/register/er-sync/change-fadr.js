@@ -1,3 +1,4 @@
+import { group } from "k6";
 import { generateOrgNr } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 import { RegisterApiClient } from "../../../../clients/authentication/index.js";
@@ -6,7 +7,7 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
 /**
  * @file change-fadr.js
  * @description Verifies that a change to FADR (Forretningsadresse) in ER is correctly
- * propagated to Altinn Register.
+ * synced to Altinn Register.
  *
  * k6 run change-fadr.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
@@ -150,16 +151,15 @@ export function fadrChange({ orgNr = generateOrgNr() } = {}) {
             "org businessAddress postalCode updated to 0350": (p) => p.businessAddress?.postalCode === "0350",
         },
     );
+
+    group("Cleanup", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
+    });
 }
 
 // Reporting tools
 export { handleSummary } from "./er-sync-summary.js";
-
-export function teardown({ orgNr } = {}) {
-    if (!orgNr) return;
-    const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
-    SubmitErData(apiClient, buildCleanupXml(orgNr), "Cleanup");
-}
 
 function buildCleanupXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
