@@ -1,0 +1,23 @@
+{
+    "name": "playwright-bdd",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test:login": "bddgen && playwright test tests/features/innlogging-alle-flater.feature",
+        "test:refresh": "bddgen && playwright test tests/features/innlogging-refresh-alle-flater.feature",
+        "test:logout": "bddgen && playwright test tests/features/utlogging-alle-flater.feature",
+        "test:infoportal": "bddgen && playwright test tests/features/infoportal-innlogging.feature",
+        "test": "bddgen && playwright test"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@playwright/test": "^1.60.0",
+        "playwright-bdd": "^8.5.1"
+    },
+    "directories": {
+        "test": "tests"
+    },
+    "description": ""
+}
