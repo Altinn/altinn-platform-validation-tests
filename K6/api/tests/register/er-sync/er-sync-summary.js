@@ -24,8 +24,11 @@ export function handleSummary(data) {
     let passed = 0;
     let failed = 0;
 
-    for (const group of data.root_group.groups || []) {
-        if (group.name === "Cleanup") continue;
+    const groups = (data.root_group.groups || [])
+        .filter((g) => g.name !== "Cleanup")
+        .sort((a, b) => parseInt(a.name) - parseInt(b.name));
+
+    for (const group of groups) {
         const failingChecks = collectFailingChecks(group);
 
         if (failingChecks.length === 0) {

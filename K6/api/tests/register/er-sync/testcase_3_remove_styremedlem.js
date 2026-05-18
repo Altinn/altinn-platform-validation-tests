@@ -7,26 +7,20 @@ import { generateOrgNr } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
- * @file remove-medl.js
+ * @file testcase_3_remove_styremedlem.js
  * @description Verifies that removing a MEDL (Styremedlem) in ER is correctly
  * synced to Altinn Register and reflected in authorized parties.
- *
- * k6 run remove-medl.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 
 export const options = {
     scenarios: {
-        "remove-board-member": { executor: "shared-iterations", exec: "removeMedl", vus: 1, iterations: 1 },
+        "testcase-3-remove-styremedlem": { executor: "shared-iterations", exec: "removeMedl", vus: 1, iterations: 1 },
     },
 };
 
 const DAGL = { fnr: "26827896992", fornavn: "VIKTIG", slektsnavn: "ORIDÉ" };
-const MEDL = { fnr: "10921148513", fornavn: "UKLAR",  slektsnavn: "PLAST" };
+const MEDL = { fnr: "10921148513", fornavn: "UKLAR", slektsnavn: "PLAST" };
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -85,11 +79,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function removeMedl({ orgNr = generateOrgNr() } = {}) {
+export function removeMedl() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -119,7 +110,7 @@ export function removeMedl({ orgNr = generateOrgNr() } = {}) {
     const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
     runErSyncTestcase(
-        "Remove board member (MEDL)",
+        "3. Remove styremedlem (MEDL)",
         prep,
         change,
         orgNr,

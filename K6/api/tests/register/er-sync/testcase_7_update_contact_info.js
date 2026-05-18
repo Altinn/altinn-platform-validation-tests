@@ -5,11 +5,11 @@ import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
 
 /**
- * @file change-contact.js
+ * @file testcase_7_update_contact_info.js
  * @description Verifies that changes to contact information (TFON, TFAX, EPOS, IADR) in ER
  * are correctly synced to Altinn Register.
  *
- * k6 run change-contact.js \
+ * k6 run testcase_7_update_contact_info.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
  *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
  *   -e REGISTER_SUBSCRIPTION_KEY=<key>
@@ -19,7 +19,7 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
 
 export const options = {
     scenarios: {
-        "update-contact-info": { executor: "shared-iterations", exec: "contactChange", vus: 1, iterations: 1 },
+        "testcase-7-update-contact-info": { executor: "shared-iterations", exec: "contactChange", vus: 1, iterations: 1 },
     },
 };
 
@@ -95,11 +95,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function contactChange({ orgNr = generateOrgNr() } = {}) {
+export function contactChange() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -132,7 +129,7 @@ export function contactChange({ orgNr = generateOrgNr() } = {}) {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "Update contact information",
+        "7. Update contact info",
         prep,
         change,
         orgNr,

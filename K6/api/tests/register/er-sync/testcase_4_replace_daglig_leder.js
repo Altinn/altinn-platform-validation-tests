@@ -7,21 +7,15 @@ import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
- * @file change-dagl.js
+ * @file testcase_4_replace_daglig_leder.js
  * @description Verifies that a change to DAGL (Daglig leder) in ER is correctly
  * synced to Altinn Register and reflected in authorized parties.
- *
- * k6 run change-dagl.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 
 export const options = {
     scenarios: {
-        "replace-daglig-leder": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
+        "testcase-4-replace-daglig-leder": { executor: "shared-iterations", exec: "daglChange", vus: 1, iterations: 1 },
     },
 };
 
@@ -99,11 +93,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function daglChange({ orgNr = generateOrgNr() } = {}) {
+export function daglChange() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -138,7 +129,7 @@ export function daglChange({ orgNr = generateOrgNr() } = {}) {
     const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
     runErSyncTestcase(
-        "Replace Daglig leder (DAGL)",
+        "4. Replace daglig leder (DAGL)",
         prep,
         change,
         orgNr,

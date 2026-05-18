@@ -9,17 +9,12 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
  * @description Verifies that a change to NAVN (short name) in ER is correctly
  * synced to Altinn Register.
  *
- * k6 run testcase_1_change_org_name.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 
 export const options = {
     scenarios: {
-        "change-org-short-name": { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
+        "testcase-1-change-org-name": { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
     },
 };
 
@@ -65,11 +60,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function nameShortChange({ orgNr = generateOrgNr() } = {}) {
+export function nameShortChange() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -94,7 +86,7 @@ export function nameShortChange({ orgNr = generateOrgNr() } = {}) {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "Change organization short name",
+        "1. Change org name",
         prep,
         change,
         orgNr,

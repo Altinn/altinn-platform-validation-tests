@@ -19,14 +19,14 @@ import { addFmva } from "./testcase_8_add_frivillig_mva.js";
 
 export const options = {
     scenarios: {
-        "change-org-short-name":   { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
-        "register-fmva":           { executor: "shared-iterations", exec: "addFmva",         vus: 1, iterations: 1 },
-        "change-business-address": { executor: "shared-iterations", exec: "fadrChange",      vus: 1, iterations: 1 },
-        "replace-daglig-leder":    { executor: "shared-iterations", exec: "daglChange",      vus: 1, iterations: 1 },
-        "update-contact-info":     { executor: "shared-iterations", exec: "contactChange",   vus: 1, iterations: 1 },
-        "replace-styreleder":      { executor: "shared-iterations", exec: "styrChange",      vus: 1, iterations: 1 },
-        "add-board-member":        { executor: "shared-iterations", exec: "addMedl",         vus: 1, iterations: 1 },
-        "remove-board-member":     { executor: "shared-iterations", exec: "removeMedl",      vus: 1, iterations: 1 },
+        "testcase-1-change-org-name":          { executor: "shared-iterations", exec: "nameShortChange", vus: 1, iterations: 1 },
+        "testcase-2-add-styremedlem":          { executor: "shared-iterations", exec: "addMedl",         vus: 1, iterations: 1 },
+        "testcase-3-remove-styremedlem":       { executor: "shared-iterations", exec: "removeMedl",      vus: 1, iterations: 1 },
+        "testcase-4-replace-daglig-leder":     { executor: "shared-iterations", exec: "daglChange",      vus: 1, iterations: 1 },
+        "testcase-5-replace-styreleder":       { executor: "shared-iterations", exec: "styrChange",      vus: 1, iterations: 1 },
+        "testcase-6-change-forretningsadresse":{ executor: "shared-iterations", exec: "fadrChange",      vus: 1, iterations: 1 },
+        "testcase-7-update-contact-info":      { executor: "shared-iterations", exec: "contactChange",   vus: 1, iterations: 1 },
+        "testcase-8-add-frivillig-mva":        { executor: "shared-iterations", exec: "addFmva",         vus: 1, iterations: 1 },
     },
 };
 

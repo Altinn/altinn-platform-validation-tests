@@ -5,11 +5,11 @@ import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
 
 /**
- * @file add-fmva.js
+ * @file testcase_8_add_frivillig_mva.js
  * @description Verifies that adding FMVA (Frivillig MVA-registrering) in ER is correctly
  * synced to Altinn Register.
  *
- * k6 run add-fmva.js \
+ * k6 run testcase_8_add_frivillig_mva.js \
  *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
  *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
  *   -e REGISTER_SUBSCRIPTION_KEY=<key>
@@ -19,7 +19,7 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
 
 export const options = {
     scenarios: {
-        "register-fmva": { executor: "shared-iterations", exec: "addFmva", vus: 1, iterations: 1 },
+        "testcase-8-add-frivillig-mva": { executor: "shared-iterations", exec: "addFmva", vus: 1, iterations: 1 },
     },
 };
 
@@ -65,11 +65,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function addFmva({ orgNr = generateOrgNr() } = {}) {
+export function addFmva() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -93,7 +90,7 @@ export function addFmva({ orgNr = generateOrgNr() } = {}) {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "Register Frivillig MVA-registrering (FMVA)",
+        "8. Add frivillig MVA (FMVA)",
         prep,
         change,
         orgNr,

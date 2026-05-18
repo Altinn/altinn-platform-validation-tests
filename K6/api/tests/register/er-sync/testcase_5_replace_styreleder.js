@@ -7,21 +7,15 @@ import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase } from "./helper.js";
 
 /**
- * @file change-styr.js
+ * @file testcase_5_replace_styreleder.js
  * @description Verifies that a change to LEDE (Styreleder) in ER is correctly
  * synced to Altinn Register and reflected in authorized parties.
- *
- * k6 run change-styr.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 
 export const options = {
     scenarios: {
-        "replace-styreleder": { executor: "shared-iterations", exec: "styrChange", vus: 1, iterations: 1 },
+        "testcase-5-replace-styreleder": { executor: "shared-iterations", exec: "styrChange", vus: 1, iterations: 1 },
     },
 };
 
@@ -99,11 +93,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function styrChange({ orgNr = generateOrgNr() } = {}) {
+export function styrChange() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -139,7 +130,7 @@ export function styrChange({ orgNr = generateOrgNr() } = {}) {
     const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
     runErSyncTestcase(
-        "Replace Styreleder (LEDE)",
+        "5. Replace styreleder (STYR)",
         prep,
         change,
         orgNr,

@@ -5,28 +5,22 @@ import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
 
 /**
- * @file change-fadr.js
+ * @file testcase_6_change_forretningsadresse.js
  * @description Verifies that a change to FADR (Forretningsadresse) in ER is correctly
  * synced to Altinn Register.
- *
- * k6 run change-fadr.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 
 export const options = {
     scenarios: {
-        "change-business-address": { executor: "shared-iterations", exec: "fadrChange", vus: 1, iterations: 1 },
+        "testcase-6-change-forretningsadresse": { executor: "shared-iterations", exec: "fadrChange", vus: 1, iterations: 1 },
     },
 };
 
-const LEDE  = { fnr: "02831899053", fornavn: "LILLA",     slektsnavn: "NETTADRESSE" };
-const MEDL  = { fnr: "03823648714", fornavn: "SEIN",      slektsnavn: "ELV" };
-const MEDL2 = { fnr: "26812099719", fornavn: "STOR",      slektsnavn: "KAPPE" };
-const DAGL  = { fnr: "05830299450", fornavn: "SPENNENDE", slektsnavn: "BRØKSTREK" };
+const LEDE = { fnr: "02831899053", fornavn: "LILLA", slektsnavn: "NETTADRESSE" };
+const MEDL = { fnr: "03823648714", fornavn: "SEIN", slektsnavn: "ELV" };
+const MEDL2 = { fnr: "26812099719", fornavn: "STOR", slektsnavn: "KAPPE" };
+const DAGL = { fnr: "05830299450", fornavn: "SPENNENDE", slektsnavn: "BRØKSTREK" };
 
 function buildPrepXml(orgNr) {
     return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -107,11 +101,8 @@ function buildPrepXml(orgNr) {
 </soapenv:Envelope>`;
 }
 
-export function setup() {
-    return { orgNr: generateOrgNr() };
-}
-
-export function fadrChange({ orgNr = generateOrgNr() } = {}) {
+export function fadrChange() {
+    const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
     const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -138,7 +129,7 @@ export function fadrChange({ orgNr = generateOrgNr() } = {}) {
 </soapenv:Envelope>`;
 
     runErSyncTestcase(
-        "Change business address (FADR)",
+        "6. Change forretningsadresse (FADR)",
         prep,
         change,
         orgNr,
