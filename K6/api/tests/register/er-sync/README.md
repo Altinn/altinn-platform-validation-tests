@@ -18,7 +18,7 @@ k6 run run-all.js     -e STOP_AFTER_PREP=true <env vars>
 
 | Variable | Description |
 |---|---|
-| `ENVIRONMENT` | Target environment, e.g. `at22`, `tt02` |
+| `ENVIRONMENT` | Target environment, e.g. `at22`, `at23`, `tt02` |
 | `BASE_URL` | Base URL for the Register API |
 | `SOAP_ER_USERNAME` | Username for the ER SOAP endpoint |
 | `SOAP_ER_PASSWORD` | Password for the ER SOAP endpoint |
