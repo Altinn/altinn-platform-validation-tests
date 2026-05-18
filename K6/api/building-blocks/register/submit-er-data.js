@@ -20,5 +20,10 @@ export function SubmitErData(registerClient, soapBody, label = "SubmitErData") {
             r.body && r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
     });
 
+    if (!ok) {
+        console.error(res.status);
+        console.error(res.body);
+    }
+
     return res;
 }
