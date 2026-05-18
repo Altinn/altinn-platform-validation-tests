@@ -1,6 +1,6 @@
 import { group } from "k6";
 import { generateOrgNr } from "../../../../helpers.js";
-import { runErSyncTestcase } from "./helper.js";
+import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
 import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
 
@@ -21,14 +21,7 @@ const LEDE = { fnr: "28824198537", fornavn: "SNÅL", slektsnavn: "LERKE" };
 const DAGL = { fnr: "57896202792", fornavn: "INTERESSERT", slektsnavn: "FANGE" };
 
 function buildPrepXml(orgNr) {
-    return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
-    <soapenv:Header/>
-    <soapenv:Body>
-        <ns:SubmitERDataBasic>
-        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
-        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
-            <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-        <batchAjourholdXML>
+    return buildErSoapEnvelope(`<batchAjourholdXML>
             <head avsender="ER" dato="20260512" kjoerenr="00229" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20200101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
@@ -83,24 +76,14 @@ function buildPrepXml(orgNr) {
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
-        </batchAjourholdXML>]]></ns:ERData>
-        </ns:SubmitERDataBasic>
-    </soapenv:Body>
-</soapenv:Envelope>`;
+        </batchAjourholdXML>`);
 }
 
 export function contactChange() {
     const orgNr = generateOrgNr();
     const prep = buildPrepXml(orgNr);
 
-    const change = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
-    <soapenv:Header/>
-    <soapenv:Body>
-        <ns:SubmitERDataBasic>
-        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
-        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
-            <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-        <batchAjourholdXML>
+    const change = buildErSoapEnvelope(`<batchAjourholdXML>
             <head avsender="ER" dato="20260512" kjoerenr="00321" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <infotype felttype="TFON" endringstype="N">
@@ -117,10 +100,7 @@ export function contactChange() {
                 </infotype>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
-        </batchAjourholdXML>]]></ns:ERData>
-        </ns:SubmitERDataBasic>
-    </soapenv:Body>
-</soapenv:Envelope>`;
+        </batchAjourholdXML>`);
 
     runErSyncTestcase(
         "7. Update contact info",
@@ -145,14 +125,7 @@ export function contactChange() {
 export { handleSummary } from "./er-sync-summary.js";
 
 function buildCleanupXml(orgNr) {
-    return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
-    <soapenv:Header/>
-    <soapenv:Body>
-        <ns:SubmitERDataBasic>
-        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
-        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
-            <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-        <batchAjourholdXML>
+    return buildErSoapEnvelope(`<batchAjourholdXML>
             <head avsender="ER" dato="20260512" kjoerenr="00405" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
@@ -163,8 +136,5 @@ function buildCleanupXml(orgNr) {
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
-        </batchAjourholdXML>]]></ns:ERData>
-        </ns:SubmitERDataBasic>
-    </soapenv:Body>
-</soapenv:Envelope>`;
+        </batchAjourholdXML>`);
 }

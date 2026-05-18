@@ -8,6 +8,20 @@ for (const key of ["ENVIRONMENT", "BASE_URL", "SOAP_ER_USERNAME", "SOAP_ER_PASSW
     if (!__ENV[key]) throw new Error(`Missing required env var: ${key}`);
 }
 
+export function buildErSoapEnvelope(batchXml) {
+    return `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ns:SubmitERDataBasic>
+        <ns:systemUserName>${__ENV.SOAP_ER_USERNAME}</ns:systemUserName>
+        <ns:systemPassword>${__ENV.SOAP_ER_PASSWORD}</ns:systemPassword>
+            <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+        ${batchXml}]]></ns:ERData>
+        </ns:SubmitERDataBasic>
+    </soapenv:Body>
+</soapenv:Envelope>`;
+}
+
 function pollOrganization(lookupClient, orgNr) {
     const res = lookupClient.LookupParties("party,person,org,user,si,sysuser", { data: [`urn:altinn:organization:identifier-no:${orgNr}`] });
     if (res.status !== 200) return null;
