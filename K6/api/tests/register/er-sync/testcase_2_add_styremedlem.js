@@ -92,27 +92,24 @@ export function addMedl() {
         change,
         orgNr,
         { "org is accessible in Register after MEDL added": (p) => p.partyType === "organization" },
-        {
-            afterChange: () => {
-                group("Verify - new MEDL has access to org", () => {
-                    let verifiedParties = null;
-                    retry(
-                        () => {
-                            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                            if (!Array.isArray(parties)) return false;
-                            const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                            if (hasAccess) verifiedParties = parties;
-                            return hasAccess;
-                        },
-                        { retries: 15, intervalSeconds: 20, testscenario: "add-board-member - new MEDL access" },
-                    );
-                    check(verifiedParties, {
-                        [`new MEDL (${NEW_MEDL.fornavn} ${NEW_MEDL.slektsnavn}) has access to org`]: (p) => p !== null,
-                    });
-                });
-            },
-        },
     );
+
+    group("Verify - new MEDL has access to org", () => {
+        let verifiedParties = null;
+        retry(
+            () => {
+                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                if (!Array.isArray(parties)) return false;
+                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                if (hasAccess) verifiedParties = parties;
+                return hasAccess;
+            },
+            { retries: 15, intervalSeconds: 20, testscenario: "add-board-member - new MEDL access" },
+        );
+        check(verifiedParties, {
+            [`new MEDL (${NEW_MEDL.fornavn} ${NEW_MEDL.slektsnavn}) has access to org`]: (p) => p !== null,
+        });
+    });
 
     group("Cleanup", () => {
         const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);

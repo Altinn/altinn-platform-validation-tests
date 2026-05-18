@@ -115,35 +115,32 @@ export function styrChange() {
         change,
         orgNr,
         { "org is accessible in Register after Styreleder is replaced": (p) => p.partyType === "organization" },
-        {
-            afterChange: () => {
-                group("Verify - new STYR has access to org", () => {
-                    let verifiedParties = null;
-                    retry(
-                        () => {
-                            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYRELEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                            if (!Array.isArray(parties)) return false;
-                            const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                            if (hasAccess) verifiedParties = parties;
-                            return hasAccess;
-                        },
-                        { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
-                    );
-                    check(verifiedParties, {
-                        [`new Styreleder (${NEW_STYRELEDER.fornavn} ${NEW_STYRELEDER.slektsnavn}) has access to org`]: (p) => p !== null,
-                    });
-                });
-
-                group("Verify - old STYR no longer has access to org", () => {
-                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYRELEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                    check(parties, {
-                        [`old STYR (${OLD_STYRELEDER.fornavn} ${OLD_STYRELEDER.slektsnavn}) no longer has access to org`]: (p) =>
-                            Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
-                    });
-                });
-            },
-        },
     );
+
+    group("Verify - new STYR has access to org", () => {
+        let verifiedParties = null;
+        retry(
+            () => {
+                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYRELEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                if (!Array.isArray(parties)) return false;
+                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                if (hasAccess) verifiedParties = parties;
+                return hasAccess;
+            },
+            { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
+        );
+        check(verifiedParties, {
+            [`new Styreleder (${NEW_STYRELEDER.fornavn} ${NEW_STYRELEDER.slektsnavn}) has access to org`]: (p) => p !== null,
+        });
+    });
+
+    group("Verify - old STYR no longer has access to org", () => {
+        const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYRELEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+        check(parties, {
+            [`old STYR (${OLD_STYRELEDER.fornavn} ${OLD_STYRELEDER.slektsnavn}) no longer has access to org`]: (p) =>
+                Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        });
+    });
 
     group("Cleanup", () => {
         const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);

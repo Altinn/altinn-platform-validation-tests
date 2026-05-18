@@ -114,35 +114,32 @@ export function daglChange() {
         change,
         orgNr,
         { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
-        {
-            afterChange: () => {
-                group("Verify - new DAGL has access to org", () => {
-                    let verifiedParties = null;
-                    retry(
-                        () => {
-                            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                            if (!Array.isArray(parties)) return false;
-                            const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                            if (hasAccess) verifiedParties = parties;
-                            return hasAccess;
-                        },
-                        { retries: 15, intervalSeconds: 20, testscenario: "replace-daglig-leder - new DAGL access" },
-                    );
-                    check(verifiedParties, {
-                        [`new DAGL (${NEW_DAGLIG_LEDER.fornavn} ${NEW_DAGLIG_LEDER.slektsnavn}) has access to org`]: (p) => p !== null,
-                    });
-                });
-
-                group("Verify - old DAGL no longer has access to org", () => {
-                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                    check(parties, {
-                        [`old DAGL (${OLD_DAGLIG_LEDER.fornavn} ${OLD_DAGLIG_LEDER.slektsnavn}) no longer has access to org`]: (p) =>
-                            Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
-                    });
-                });
-            },
-        },
     );
+
+    group("Verify - new DAGL has access to org", () => {
+        let verifiedParties = null;
+        retry(
+            () => {
+                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                if (!Array.isArray(parties)) return false;
+                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+                if (hasAccess) verifiedParties = parties;
+                return hasAccess;
+            },
+            { retries: 15, intervalSeconds: 20, testscenario: "replace-daglig-leder - new DAGL access" },
+        );
+        check(verifiedParties, {
+            [`new DAGL (${NEW_DAGLIG_LEDER.fornavn} ${NEW_DAGLIG_LEDER.slektsnavn}) has access to org`]: (p) => p !== null,
+        });
+    });
+
+    group("Verify - old DAGL no longer has access to org", () => {
+        const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+        check(parties, {
+            [`old DAGL (${OLD_DAGLIG_LEDER.fornavn} ${OLD_DAGLIG_LEDER.slektsnavn}) no longer has access to org`]: (p) =>
+                Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        });
+    });
 
     group("Cleanup", () => {
         const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);

@@ -29,7 +29,7 @@ function pollOrganization(lookupClient, orgNr) {
     return body.data[0] || null;
 }
 
-export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verifyChecks, { stopAfterPrep = false, afterChange = null } = {}) {
+export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verifyChecks, { stopAfterPrep = false } = {}) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
@@ -82,6 +82,5 @@ export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verif
             }
         });
 
-        if (afterChange) afterChange();
     });
 }

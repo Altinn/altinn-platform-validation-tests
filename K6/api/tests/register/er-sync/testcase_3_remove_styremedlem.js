@@ -95,18 +95,15 @@ export function removeMedl() {
         change,
         orgNr,
         { "org is accessible in Register after MEDL removed": (p) => p.partyType === "organization" },
-        {
-            afterChange: () => {
-                group("Verify - MEDL no longer has access to org", () => {
-                    const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                    check(parties, {
-                        [`MEDL (${MEDL.fornavn} ${MEDL.slektsnavn}) no longer has access to org`]: (p) =>
-                            Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
-                    });
-                });
-            },
-        },
     );
+
+    group("Verify - MEDL no longer has access to org", () => {
+        const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+        check(parties, {
+            [`MEDL (${MEDL.fornavn} ${MEDL.slektsnavn}) no longer has access to org`]: (p) =>
+                Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        });
+    });
 
     group("Cleanup", () => {
         const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);

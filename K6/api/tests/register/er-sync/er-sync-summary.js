@@ -25,7 +25,7 @@ export function handleSummary(data) {
     let failed = 0;
 
     const groups = (data.root_group.groups || [])
-        .filter((g) => g.name !== "Cleanup")
+        .filter((g) => g.name !== "Cleanup" && !g.name.startsWith("Verify -"))
         .sort((a, b) => parseInt(a.name) - parseInt(b.name));
 
     for (const group of groups) {
