@@ -8,12 +8,6 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
  * @file testcase_8_add_frivillig_mva.js
  * @description Verifies that adding FMVA (Frivillig MVA-registrering) in ER is correctly
  * synced to Altinn Register.
- *
- * k6 run testcase_8_add_frivillig_mva.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 

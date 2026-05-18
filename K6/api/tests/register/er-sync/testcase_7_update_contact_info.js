@@ -8,12 +8,6 @@ import { SubmitErData } from "../../../building-blocks/register/index.js";
  * @file testcase_7_update_contact_info.js
  * @description Verifies that changes to contact information (TFON, TFAX, EPOS, IADR) in ER
  * are correctly synced to Altinn Register.
- *
- * k6 run testcase_7_update_contact_info.js \
- *   -e ENVIRONMENT=at22 -e BASE_URL=https://platform.at22.altinn.cloud \
- *   -e SOAP_ER_USERNAME=<u> -e SOAP_ER_PASSWORD=<p> \
- *   -e REGISTER_SUBSCRIPTION_KEY=<key>
- *
  * @see README.md
  */
 
@@ -23,7 +17,7 @@ export const options = {
     },
 };
 
-const LEDE = { fnr: "28824198537", fornavn: "SNÅL",       slektsnavn: "LERKE" };
+const LEDE = { fnr: "28824198537", fornavn: "SNÅL", slektsnavn: "LERKE" };
 const DAGL = { fnr: "57896202792", fornavn: "INTERESSERT", slektsnavn: "FANGE" };
 
 function buildPrepXml(orgNr) {
