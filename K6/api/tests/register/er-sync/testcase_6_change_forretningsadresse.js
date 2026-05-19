@@ -17,10 +17,10 @@ export const options = {
     },
 };
 
-const LEDE = { fnr: "02831899053", fornavn: "LILLA", slektsnavn: "NETTADRESSE" };
-const MEDL = { fnr: "03823648714", fornavn: "SEIN", slektsnavn: "ELV" };
-const MEDL2 = { fnr: "26812099719", fornavn: "STOR", slektsnavn: "KAPPE" };
-const DAGL = { fnr: "05830299450", fornavn: "SPENNENDE", slektsnavn: "BRØKSTREK" };
+const STYRELEDER = { fnr: "02831899053", fornavn: "LILLA", slektsnavn: "NETTADRESSE" };
+const STYREMEDLEM = { fnr: "03823648714", fornavn: "SEIN", slektsnavn: "ELV" };
+const STYREMEDLEM2 = { fnr: "26812099719", fornavn: "STOR", slektsnavn: "KAPPE" };
+const DAGLIG_LEDER = { fnr: "05830299450", fornavn: "SPENNENDE", slektsnavn: "BRØKSTREK" };
 
 function buildPrepXml(orgNr) {
     return buildErSoapEnvelope(`<batchAjourholdXML>
@@ -45,9 +45,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
-                    <fornavn>${LEDE.fornavn}</fornavn>
-                    <slektsnavn>${LEDE.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYRELEDER.fornavn}</fornavn>
+                    <slektsnavn>${STYRELEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -56,9 +56,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
-                    <fornavn>${MEDL.fornavn}</fornavn>
-                    <slektsnavn>${MEDL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYREMEDLEM.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYREMEDLEM.fornavn}</fornavn>
+                    <slektsnavn>${STYREMEDLEM.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -67,9 +67,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>2</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL2.fnr}</rolleFoedselsnr>
-                    <fornavn>${MEDL2.fornavn}</fornavn>
-                    <slektsnavn>${MEDL2.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYREMEDLEM2.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYREMEDLEM2.fornavn}</fornavn>
+                    <slektsnavn>${STYREMEDLEM2.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 13</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -78,9 +78,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
-                    <fornavn>${DAGL.fornavn}</fornavn>
-                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${DAGLIG_LEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -133,16 +133,16 @@ function buildCleanupXml(orgNr) {
             <head avsender="ER" dato="20260512" kjoerenr="00404" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
-                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYREMEDLEM.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${MEDL2.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYREMEDLEM2.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />

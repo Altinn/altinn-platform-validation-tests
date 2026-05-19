@@ -19,8 +19,8 @@ export const options = {
     },
 };
 
-const DAGL = { fnr: "26827896992", fornavn: "VIKTIG", slektsnavn: "ORIDÉ" };
-const MEDL = { fnr: "10921148513", fornavn: "UKLAR", slektsnavn: "PLAST" };
+const DAGLIG_LEDER = { fnr: "26827896992", fornavn: "VIKTIG", slektsnavn: "ORIDÉ" };
+const STYREMEDLEM = { fnr: "10921148513", fornavn: "UKLAR", slektsnavn: "PLAST" };
 
 function buildPrepXml(orgNr) {
     return buildErSoapEnvelope(`<batchAjourholdXML>
@@ -45,9 +45,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
-                    <fornavn>${MEDL.fornavn}</fornavn>
-                    <slektsnavn>${MEDL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYREMEDLEM.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYREMEDLEM.fornavn}</fornavn>
+                    <slektsnavn>${STYREMEDLEM.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -56,9 +56,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
-                    <fornavn>${DAGL.fornavn}</fornavn>
-                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${DAGLIG_LEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -77,7 +77,7 @@ export function removeMedl() {
             <head avsender="ER" dato="20260512" kjoerenr="00340" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${MEDL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYREMEDLEM.fnr}</rolleFoedselsnr>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />
@@ -100,7 +100,7 @@ export function removeMedl() {
     group("Verify - MEDL no longer has access to org", () => {
         const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
         check(parties, {
-            [`MEDL (${MEDL.fornavn} ${MEDL.slektsnavn}) no longer has access to org`]: (p) =>
+            [`MEDL (${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn}) no longer has access to org`]: (p) =>
                 Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });
     });
@@ -119,7 +119,7 @@ function buildCleanupXml(orgNr) {
             <head avsender="ER" dato="20260512" kjoerenr="00411" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />

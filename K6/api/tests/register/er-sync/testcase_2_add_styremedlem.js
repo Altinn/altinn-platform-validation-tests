@@ -19,8 +19,8 @@ export const options = {
     },
 };
 
-const DAGL = { fnr: "09861798434", fornavn: "AKADEMISK", slektsnavn: "HAKE" };
-const NEW_MEDL = { fnr: "10921148513", fornavn: "UKLAR", slektsnavn: "PLAST" };
+const DAGLIG_LEDER = { fnr: "09861798434", fornavn: "AKADEMISK", slektsnavn: "HAKE" };
+const NYTT_STYREMEDLEM = { fnr: "10921148513", fornavn: "UKLAR", slektsnavn: "PLAST" };
 
 function buildPrepXml(orgNr) {
     return buildErSoapEnvelope(`<batchAjourholdXML>
@@ -45,9 +45,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
-                    <fornavn>${DAGL.fornavn}</fornavn>
-                    <slektsnavn>${DAGL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${DAGLIG_LEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 14</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -68,9 +68,9 @@ export function addMedl() {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${NEW_MEDL.fnr}</rolleFoedselsnr>
-                    <fornavn>${NEW_MEDL.fornavn}</fornavn>
-                    <slektsnavn>${NEW_MEDL.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${NYTT_STYREMEDLEM.fnr}</rolleFoedselsnr>
+                    <fornavn>${NYTT_STYREMEDLEM.fornavn}</fornavn>
+                    <slektsnavn>${NYTT_STYREMEDLEM.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -107,7 +107,7 @@ export function addMedl() {
             { retries: 15, intervalSeconds: 20, testscenario: "add-board-member - new MEDL access" },
         );
         check(verifiedParties, {
-            [`new MEDL (${NEW_MEDL.fornavn} ${NEW_MEDL.slektsnavn}) has access to org`]: (p) => p !== null,
+            [`new MEDL (${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn}) has access to org`]: (p) => p !== null,
         });
     });
 
@@ -125,10 +125,10 @@ function buildCleanupXml(orgNr) {
             <head avsender="ER" dato="20260512" kjoerenr="00410" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${DAGL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${NEW_MEDL.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${NYTT_STYREMEDLEM.fnr}</rolleFoedselsnr>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />

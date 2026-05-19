@@ -17,7 +17,7 @@ export const options = {
     },
 };
 
-const LEDE = { fnr: "02895823468", fornavn: "Anne", slektsnavn: "Testperson" };
+const STYRELEDER = { fnr: "02895823468", fornavn: "Anne", slektsnavn: "Testperson" };
 
 function buildPrepXml(orgNr) {
     return buildErSoapEnvelope(`<batchAjourholdXML>
@@ -36,9 +36,9 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="LEDE" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
-                    <fornavn>${LEDE.fornavn}</fornavn>
-                    <slektsnavn>${LEDE.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${STYRELEDER.fornavn}</fornavn>
+                    <slektsnavn>${STYRELEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 11</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -85,7 +85,7 @@ function buildCleanupXml(orgNr) {
             <head avsender="ER" dato="20260512" kjoerenr="00403" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="AS" hovedsakstype="E" undersakstype="EN" foersteOverfoering="N" datoFoedt="20200101" datoSistEndret="20260512">
                 <samendringer data="D" felttype="LEDE" endringstype="U" type="R">
-                    <rolleFoedselsnr>${LEDE.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
             </enhet>
             <trai antallEnheter="1" avsender="ER" />

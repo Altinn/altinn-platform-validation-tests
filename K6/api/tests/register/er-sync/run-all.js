@@ -6,6 +6,7 @@ import { styrChange } from "./testcase_5_replace_styreleder.js";
 import { fadrChange } from "./testcase_6_change_forretningsadresse.js";
 import { contactChange } from "./testcase_7_update_contact_info.js";
 import { addFmva } from "./testcase_8_add_frivillig_mva.js";
+import { kasteStyret } from "./testcase_9_kaste_styret.js";
 
 /**
  * @file run-all.js
@@ -27,10 +28,11 @@ export const options = {
         "testcase-6-change-forretningsadresse":{ executor: "shared-iterations", exec: "fadrChange",      vus: 1, iterations: 1 },
         "testcase-7-update-contact-info":      { executor: "shared-iterations", exec: "contactChange",   vus: 1, iterations: 1 },
         "testcase-8-add-frivillig-mva":        { executor: "shared-iterations", exec: "addFmva",         vus: 1, iterations: 1 },
+        "testcase-9-kaste-styret":             { executor: "shared-iterations", exec: "kasteStyret",     vus: 1, iterations: 1 },
     },
 };
 
-export { nameShortChange, addFmva, fadrChange, daglChange, contactChange, styrChange, addMedl, removeMedl };
+export { nameShortChange, addFmva, fadrChange, daglChange, contactChange, styrChange, addMedl, removeMedl, kasteStyret };
 
 // Reporting tools
 export { handleSummary } from "./er-sync-summary.js";
