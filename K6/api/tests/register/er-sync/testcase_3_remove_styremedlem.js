@@ -3,7 +3,7 @@ import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { AuthorizedPartiesClient, RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
-import { generateOrgNr } from "../../../../helpers.js";
+import { generateOrgNr, retry } from "../../../../helpers.js";
 import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
 
 /**
@@ -71,6 +71,8 @@ function buildPrepXml(orgNr) {
 
 export function removeMedl() {
     const orgNr = generateOrgNr();
+    console.log(`[TC3] orgNr: ${orgNr} | DAGLIG_LEDER: ${DAGLIG_LEDER.fnr} (${DAGLIG_LEDER.fornavn} ${DAGLIG_LEDER.slektsnavn}) | STYREMEDLEM: ${STYREMEDLEM.fnr} (${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -89,17 +91,53 @@ export function removeMedl() {
     tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
     const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
 
+    // Phase 1: Prep - submit org with MEDL+DAGL and wait for Register
     runErSyncTestcase(
-        "3. Remove styremedlem (MEDL)",
+        "3. Remove styremedlem (MEDL) - Prep",
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after MEDL removed": (p) => p.partyType === "organization" },
+        {},
+        { stopAfterPrep: true },
     );
 
+    // Phase 2: Confirm MEDL actually has access before testing removal
+    group("Verify - MEDL has access to org after prep", () => {
+        let grantedParties = null;
+        retry(
+            () => {
+                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", STYREMEDLEM.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                if (!Array.isArray(parties)) return false;
+                const hasAccess = parties.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr);
+                if (hasAccess) grantedParties = parties;
+                return hasAccess;
+            },
+            { retries: 15, intervalSeconds: 20, testscenario: "3. Remove styremedlem - MEDL access granted" },
+        );
+        console.log(`[TC3] Authorized parties for ${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn} after prep (has access): ${JSON.stringify(grantedParties)}`);
+    });
+
+    // Phase 3: Submit the MEDL removal
+    group("Change - submit MEDL removal", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, change, "Change");
+    });
+
+    // Phase 4: Poll until MEDL no longer appears in authorized parties
     group("Verify - MEDL no longer has access to org", () => {
-        const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-        check(parties, {
+        let verifiedParties = null;
+        retry(
+            () => {
+                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", STYREMEDLEM.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                if (!Array.isArray(parties)) return false;
+                const noAccess = !parties.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr);
+                if (noAccess) verifiedParties = parties;
+                return noAccess;
+            },
+            { retries: 15, intervalSeconds: 20, testscenario: "3. Remove styremedlem - MEDL access revoked" },
+        );
+        console.log(`[TC3] Authorized parties for ${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn} after removal (no access): ${JSON.stringify(verifiedParties)}`);
+        check(verifiedParties, {
             [`MEDL (${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn}) no longer has access to org`]: (p) =>
                 Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });

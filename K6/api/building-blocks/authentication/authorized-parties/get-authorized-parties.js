@@ -12,6 +12,7 @@ import { AuthorizedPartiesClient } from "../../../../clients/authentication/inde
 export function GetAuthorizedParties(authorizedPartiesClient, type, value, queryParams, partyFilter = null, labels = null) {
     const res = authorizedPartiesClient.GetAuthorizedParties(type, value, queryParams, partyFilter, labels);
 
+    console.log(`[GetAuthorizedParties] ${type}=${value} status: ${res.status}`);
     const succeed = check(res, {
         "GetAuthorizedParties - status code is 200": (r) => r.status === 200,
         "GetAuthorizedParties - status text is 200 OK": (r) => r.status_text == "200 OK",

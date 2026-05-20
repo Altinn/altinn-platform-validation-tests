@@ -60,6 +60,8 @@ function buildPrepXml(orgNr) {
 
 export function addMedl() {
     const orgNr = generateOrgNr();
+    console.log(`[TC2] orgNr: ${orgNr} | DAGLIG_LEDER: ${DAGLIG_LEDER.fnr} (${DAGLIG_LEDER.fornavn} ${DAGLIG_LEDER.slektsnavn}) | NYTT_STYREMEDLEM: ${NYTT_STYREMEDLEM.fnr} (${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -91,14 +93,14 @@ export function addMedl() {
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after MEDL added": (p) => p.partyType === "organization" },
+        { "org is accessible in Register after MEDL added": (p) => p.organizationIdentifier === orgNr },
     );
 
     group("Verify - new MEDL has access to org", () => {
         let verifiedParties = null;
         retry(
             () => {
-                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_MEDL.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NYTT_STYREMEDLEM.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
                 if (!Array.isArray(parties)) return false;
                 const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
                 if (hasAccess) verifiedParties = parties;
@@ -106,6 +108,7 @@ export function addMedl() {
             },
             { retries: 15, intervalSeconds: 20, testscenario: "add-board-member - new MEDL access" },
         );
+        console.log(`[TC2] Authorized parties for ${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn}: ${JSON.stringify(verifiedParties)}`);
         check(verifiedParties, {
             [`new MEDL (${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn}) has access to org`]: (p) => p !== null,
         });

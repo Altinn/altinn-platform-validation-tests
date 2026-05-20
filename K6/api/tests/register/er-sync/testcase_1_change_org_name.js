@@ -18,7 +18,7 @@ export const options = {
     },
 };
 
-const INNEHAVER = { fnr: "12864421537", fornavn: "Elise", slektsnavn: "Testperson" };
+const INNEHAVER = { fnr: "31927398861", fornavn: "RØD", slektsnavn: "TRANE" };
 
 function buildPrepXml(orgNr) {
     return buildErSoapEnvelope(`<batchAjourholdXML>
@@ -52,6 +52,8 @@ function buildPrepXml(orgNr) {
 
 export function nameShortChange() {
     const orgNr = generateOrgNr();
+    console.log(`[TC1] orgNr: ${orgNr} | INNEHAVER: ${INNEHAVER.fnr} (${INNEHAVER.fornavn} ${INNEHAVER.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>

@@ -55,7 +55,7 @@ export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verif
                 { retries: 15, intervalSeconds: 20, testscenario: `${scenarioName} - prep` },
             );
             if (prepParty) {
-                check(prepParty, { "Prep - org is visible in Register": (p) => p.partyType === "organization" });
+                check(prepParty, { "Prep - org is visible in Register": (p) => p.organizationIdentifier === orgNr });
             }
         });
 
@@ -70,10 +70,9 @@ export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verif
             retry(
                 () => {
                     const party = pollOrganization(lookupClient, orgNr);
-                    if (!party) return false;
-                    const conditionMet = Object.values(verifyChecks).every((fn) => fn(party));
-                    if (conditionMet) verifiedParty = party;
-                    return conditionMet;
+                    if (!party || !Object.values(verifyChecks).every((fn) => fn(party))) return false;
+                    verifiedParty = party;
+                    return true;
                 },
                 { retries: 15, intervalSeconds: 20, testscenario: `${scenarioName} - verify` },
             );
