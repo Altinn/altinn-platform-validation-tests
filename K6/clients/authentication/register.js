@@ -71,6 +71,7 @@ class RegisterApiClient {
                 headers: {
                     "Content-Type": "text/xml",
                     SOAPAction: submitERDataBasic,
+                    "X-Altinn-Register-Ccr": "Apply-In-A3",
                 },
             }
         );
@@ -107,6 +108,7 @@ class RegisterApiClient {
                 headers: {
                     "Content-Type": "text/xml",
                     SOAPAction: submitERDataBasic,
+                    "X-Altinn-Register-Ccr": "Apply-In-A3",
                 },
             }
         );
