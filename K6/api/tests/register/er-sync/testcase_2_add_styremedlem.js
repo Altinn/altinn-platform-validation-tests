@@ -1,10 +1,8 @@
 import { group, check } from "k6";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { AuthorizedPartiesClient, RegisterApiClient } from "../../../../clients/authentication/index.js";
-import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
+import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
-import { generateOrgNr, retry } from "../../../../helpers.js";
-import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
+import { generateOrgNr } from "../../../../helpers.js";
+import { runErSyncTestcase, buildErSoapEnvelope, createAuthorizedPartiesClient, retryUntilHasAccess } from "./helper.js";
 
 /**
  * @file testcase_2_add_styremedlem.js
@@ -82,11 +80,7 @@ export function addMedl() {
             <trai antallEnheter="1" avsender="ER" />
         </batchAjourholdXML>`);
 
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+    const apClient = createAuthorizedPartiesClient();
 
     runErSyncTestcase(
         "2. Add styremedlem (MEDL)",
@@ -97,20 +91,10 @@ export function addMedl() {
     );
 
     group("Verify - new MEDL has access to org", () => {
-        let verifiedParties = null;
-        retry(
-            () => {
-                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NYTT_STYREMEDLEM.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                if (!Array.isArray(parties)) return false;
-                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                if (hasAccess) verifiedParties = parties;
-                return hasAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "add-board-member - new MEDL access" },
-        );
-        console.log(`[TC2] Authorized parties for ${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn}: ${JSON.stringify(verifiedParties)}`);
-        check(verifiedParties, {
-            [`new MEDL (${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn}) has access to org`]: (p) => p !== null,
+        const parties = retryUntilHasAccess(apClient, NYTT_STYREMEDLEM.fnr, orgNr, "add-board-member - new MEDL access");
+        check(parties, {
+            [`new MEDL (${NYTT_STYREMEDLEM.fornavn} ${NYTT_STYREMEDLEM.slektsnavn}) has access to org`]: (p) =>
+                Array.isArray(p) && p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });
     });
 

@@ -1,6 +1,7 @@
 import { group, check, fail } from "k6";
-import { PlatformTokenGenerator } from "../../../../common-imports.js";
-import { RegisterApiClient, RegisterLookupClient } from "../../../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator, PlatformTokenGenerator } from "../../../../common-imports.js";
+import { AuthorizedPartiesClient, RegisterApiClient, RegisterLookupClient } from "../../../../clients/authentication/index.js";
+import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
 import { retry } from "../../../../helpers.js";
 
@@ -22,6 +23,44 @@ export function buildErSoapEnvelope(batchXml) {
 </soapenv:Envelope>`;
 }
 
+export function createAuthorizedPartiesClient() {
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+    return new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+}
+
+export function retryUntilHasAccess(apClient, fnr, orgNr, scenario) {
+    let result = null;
+    retry(
+        () => {
+            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+            if (!Array.isArray(parties)) return false;
+            const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+            if (hasAccess) result = parties;
+            return hasAccess;
+        },
+        { retries: 15, intervalSeconds: 20, testscenario: scenario },
+    );
+    return result;
+}
+
+export function retryUntilNoAccess(apClient, fnr, orgNr, scenario) {
+    let result = null;
+    retry(
+        () => {
+            const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+            if (!Array.isArray(parties)) return false;
+            const noAccess = !parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
+            if (noAccess) result = parties;
+            return noAccess;
+        },
+        { retries: 15, intervalSeconds: 20, testscenario: scenario },
+    );
+    return result;
+}
+
 function pollOrganization(lookupClient, orgNr) {
     const res = lookupClient.LookupParties("party,person,org,user,si,sysuser", { data: [`urn:altinn:organization:identifier-no:${orgNr}`] });
     if (res.status !== 200) return null;
@@ -29,7 +68,7 @@ function pollOrganization(lookupClient, orgNr) {
     return body.data[0] || null;
 }
 
-export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verifyChecks, { stopAfterPrep = false } = {}) {
+export function runErSyncTestcase(scenarioName, prepXml, changeXml, orgNr, verifyChecks = {}, { stopAfterPrep = false } = {}) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);

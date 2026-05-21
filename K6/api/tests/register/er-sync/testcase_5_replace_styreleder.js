@@ -1,10 +1,8 @@
 import { group, check } from "k6";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { AuthorizedPartiesClient, RegisterApiClient } from "../../../../clients/authentication/index.js";
-import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
+import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
-import { generateOrgNr, retry } from "../../../../helpers.js";
-import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
+import { generateOrgNr } from "../../../../helpers.js";
+import { runErSyncTestcase, buildErSoapEnvelope, createAuthorizedPartiesClient, retryUntilHasAccess, retryUntilNoAccess } from "./helper.js";
 
 /**
  * @file testcase_5_replace_styreleder.js
@@ -85,6 +83,8 @@ function buildPrepXml(orgNr) {
 
 export function styrChange() {
     const orgNr = generateOrgNr();
+    console.log(`[TC5] orgNr: ${orgNr} | OLD_STYR: ${OLD_STYRELEDER.fnr} (${OLD_STYRELEDER.fornavn} ${OLD_STYRELEDER.slektsnavn}) | NEW_STYR: ${NEW_STYRELEDER.fnr} (${NEW_STYRELEDER.fornavn} ${NEW_STYRELEDER.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -103,39 +103,41 @@ export function styrChange() {
             <trai antallEnheter="1" avsender="ER" />
         </batchAjourholdXML>`);
 
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+    const apClient = createAuthorizedPartiesClient();
 
+    // Phase 1: Prep - submit org with OLD_STYR and wait for Register
     runErSyncTestcase(
-        "5. Replace styreleder (STYR)",
+        "5. Replace styreleder (STYR) - Prep",
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after Styreleder is replaced": (p) => p.partyType === "organization" },
+        {},
+        { stopAfterPrep: true },
     );
 
+    // Phase 2: Confirm OLD_STYR has access before testing replacement
+    group("Verify - old STYR has access to org after prep", () => {
+        retryUntilHasAccess(apClient, OLD_STYRELEDER.fnr, orgNr, "5. Replace styreleder - old STYR access granted");
+    });
+
+    // Phase 3: Submit the STYR replacement
+    group("Change - submit STYR replacement", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, change, "Change");
+    });
+
+    // Phase 4: Verify new STYR has access
     group("Verify - new STYR has access to org", () => {
-        let verifiedParties = null;
-        retry(
-            () => {
-                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_STYRELEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                if (!Array.isArray(parties)) return false;
-                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                if (hasAccess) verifiedParties = parties;
-                return hasAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "replace-styreleder - new STYR access" },
-        );
-        check(verifiedParties, {
-            [`new Styreleder (${NEW_STYRELEDER.fornavn} ${NEW_STYRELEDER.slektsnavn}) has access to org`]: (p) => p !== null,
+        const parties = retryUntilHasAccess(apClient, NEW_STYRELEDER.fnr, orgNr, "replace-styreleder - new STYR access");
+        check(parties, {
+            [`new Styreleder (${NEW_STYRELEDER.fornavn} ${NEW_STYRELEDER.slektsnavn}) has access to org`]: (p) =>
+                Array.isArray(p) && p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });
     });
 
+    // Phase 5: Verify old STYR no longer has access
     group("Verify - old STYR no longer has access to org", () => {
-        const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_STYRELEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+        const parties = retryUntilNoAccess(apClient, OLD_STYRELEDER.fnr, orgNr, "replace-styreleder - old STYR access revoked");
         check(parties, {
             [`old STYR (${OLD_STYRELEDER.fornavn} ${OLD_STYRELEDER.slektsnavn}) no longer has access to org`]: (p) =>
                 Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),

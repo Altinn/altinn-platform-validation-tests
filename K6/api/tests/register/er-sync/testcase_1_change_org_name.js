@@ -25,8 +25,8 @@ function buildPrepXml(orgNr) {
             <head avsender="ER" dato="20260512" kjoerenr="00201" mottaker="ALT" type="A" />
             <enhet organisasjonsnummer="${orgNr}" organisasjonsform="ENK" hovedsakstype="N" undersakstype="NY" foersteOverfoering="J" datoFoedt="20210101" datoSistEndret="20260512">
                 <infotype felttype="NAVN" endringstype="N">
-                    <navn1>NAVN CHANGE TEST ENK</navn1>
-                    <rednavn>NAVN CHANGE TEST ENK</rednavn>
+                    <navn1>😍😍😍 Den beste orgen 😍😍😍</navn1>
+                    <rednavn>😍 rednavn 😍</rednavn>
                 </infotype>
                 <infotype felttype="FADR" endringstype="N">
                     <postnr>1234</postnr>

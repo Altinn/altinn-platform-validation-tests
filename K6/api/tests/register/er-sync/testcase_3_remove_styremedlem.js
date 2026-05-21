@@ -1,10 +1,8 @@
 import { group, check } from "k6";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { AuthorizedPartiesClient, RegisterApiClient } from "../../../../clients/authentication/index.js";
-import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
+import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
-import { generateOrgNr, retry } from "../../../../helpers.js";
-import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
+import { generateOrgNr } from "../../../../helpers.js";
+import { runErSyncTestcase, buildErSoapEnvelope, createAuthorizedPartiesClient, retryUntilHasAccess, retryUntilNoAccess } from "./helper.js";
 
 /**
  * @file testcase_3_remove_styremedlem.js
@@ -85,11 +83,7 @@ export function removeMedl() {
             <trai antallEnheter="1" avsender="ER" />
         </batchAjourholdXML>`);
 
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+    const apClient = createAuthorizedPartiesClient();
 
     // Phase 1: Prep - submit org with MEDL+DAGL and wait for Register
     runErSyncTestcase(
@@ -103,18 +97,7 @@ export function removeMedl() {
 
     // Phase 2: Confirm MEDL actually has access before testing removal
     group("Verify - MEDL has access to org after prep", () => {
-        let grantedParties = null;
-        retry(
-            () => {
-                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", STYREMEDLEM.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                if (!Array.isArray(parties)) return false;
-                const hasAccess = parties.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr);
-                if (hasAccess) grantedParties = parties;
-                return hasAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "3. Remove styremedlem - MEDL access granted" },
-        );
-        console.log(`[TC3] Authorized parties for ${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn} after prep (has access): ${JSON.stringify(grantedParties)}`);
+        retryUntilHasAccess(apClient, STYREMEDLEM.fnr, orgNr, "3. Remove styremedlem - MEDL access granted");
     });
 
     // Phase 3: Submit the MEDL removal
@@ -125,19 +108,8 @@ export function removeMedl() {
 
     // Phase 4: Poll until MEDL no longer appears in authorized parties
     group("Verify - MEDL no longer has access to org", () => {
-        let verifiedParties = null;
-        retry(
-            () => {
-                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", STYREMEDLEM.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                if (!Array.isArray(parties)) return false;
-                const noAccess = !parties.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr);
-                if (noAccess) verifiedParties = parties;
-                return noAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "3. Remove styremedlem - MEDL access revoked" },
-        );
-        console.log(`[TC3] Authorized parties for ${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn} after removal (no access): ${JSON.stringify(verifiedParties)}`);
-        check(verifiedParties, {
+        const parties = retryUntilNoAccess(apClient, STYREMEDLEM.fnr, orgNr, "3. Remove styremedlem - MEDL access revoked");
+        check(parties, {
             [`MEDL (${STYREMEDLEM.fornavn} ${STYREMEDLEM.slektsnavn}) no longer has access to org`]: (p) =>
                 Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });

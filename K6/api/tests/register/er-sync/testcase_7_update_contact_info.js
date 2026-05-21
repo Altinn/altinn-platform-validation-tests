@@ -81,6 +81,8 @@ function buildPrepXml(orgNr) {
 
 export function contactChange() {
     const orgNr = generateOrgNr();
+    console.log(`[TC7] orgNr: ${orgNr} | DAGLIG_LEDER: ${DAGLIG_LEDER.fnr} (${DAGLIG_LEDER.fornavn} ${DAGLIG_LEDER.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>

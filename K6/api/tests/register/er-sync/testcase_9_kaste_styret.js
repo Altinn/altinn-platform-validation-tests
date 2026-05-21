@@ -1,8 +1,8 @@
-import { group } from "k6";
-import { generateOrgNr } from "../../../../helpers.js";
-import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
+import { group, check } from "k6";
 import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
+import { generateOrgNr } from "../../../../helpers.js";
+import { runErSyncTestcase, buildErSoapEnvelope, createAuthorizedPartiesClient, retryUntilHasAccess, retryUntilNoAccess } from "./helper.js";
 
 /**
  * @file testcase_9_kaste_styret.js
@@ -19,7 +19,7 @@ export const options = {
 
 const STYRELEDER = { fnr: "11814997261", fornavn: "VRIEN", slektsnavn: "EKSPLOSJON" };
 const NESTLEDER = { fnr: "08924998319", fornavn: "ØVRIGE", slektsnavn: "EGGEPLOMME" };
-const STYREMEDLEM1 = { fnr: "28917699196", fornavn: "LANGFINGRET", slektsnavn: "BÅNDSALAT" };
+const DAGLIG_LEDER = { fnr: "28917699196", fornavn: "LANGFINGRET", slektsnavn: "BÅNDSALAT" };
 
 const STYREMEDLEM2 = { fnr: "18914598245", fornavn: "UTÅLMODIG", slektsnavn: "MASKIN" };
 const STYREMEDLEM3 = { fnr: "05830299450", fornavn: "SPENNENDE", slektsnavn: "BRØKSTREK" };
@@ -54,9 +54,20 @@ function buildPrepXml(orgNr) {
                 <samendringer data="D" felttype="MEDL" endringstype="N" type="R">
                     <rolleFratraadt>N</rolleFratraadt>
                     <rolleRekkefoelge>1</rolleRekkefoelge>
-                    <rolleFoedselsnr>${STYREMEDLEM1.fnr}</rolleFoedselsnr>
-                    <fornavn>${STYREMEDLEM1.fornavn}</fornavn>
-                    <slektsnavn>${STYREMEDLEM1.slektsnavn}</slektsnavn>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${DAGLIG_LEDER.slektsnavn}</slektsnavn>
+                    <postnr>0150</postnr>
+                    <adresse1>Testveien 12</adresse1>
+                    <adresseLandkode>NO</adresseLandkode>
+                    <personstatus>L</personstatus>
+                </samendringer>
+                <samendringer data="D" felttype="DAGL" endringstype="N" type="R">
+                    <rolleFratraadt>N</rolleFratraadt>
+                    <rolleRekkefoelge>1</rolleRekkefoelge>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                    <fornavn>${DAGLIG_LEDER.fornavn}</fornavn>
+                    <slektsnavn>${DAGLIG_LEDER.slektsnavn}</slektsnavn>
                     <postnr>0150</postnr>
                     <adresse1>Testveien 12</adresse1>
                     <adresseLandkode>NO</adresseLandkode>
@@ -124,6 +135,8 @@ function buildPrepXml(orgNr) {
 
 export function kasteStyret() {
     const orgNr = generateOrgNr();
+    console.log(`[TC9] orgNr: ${orgNr} | STYRELEDER: ${STYRELEDER.fnr} | NESTLEDER: ${NESTLEDER.fnr} | STYREMEDLEM1 (also DAGL): ${DAGLIG_LEDER.fnr} | STYREMEDLEM2: ${STYREMEDLEM2.fnr} | STYREMEDLEM3: ${STYREMEDLEM3.fnr} | STYREMEDLEM4: ${STYREMEDLEM4.fnr} | OBSERVATØR: ${OBSERVATØR.fnr}`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -136,13 +149,52 @@ export function kasteStyret() {
             <trai antallEnheter="1" avsender="ER" />
         </batchAjourholdXML>`);
 
+    const apClient = createAuthorizedPartiesClient();
+
+    // Phase 1: Prep - submit org with full board and wait for Register
     runErSyncTestcase(
-        "9. Kaste styret (SAMU/STYR)",
+        "9. Kaste styret (SAMU/STYR) - Prep",
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after board is dismissed": (p) => p.partyType === "organization" },
+        {},
+        { stopAfterPrep: true },
     );
+
+    // Phase 2: Confirm all board members have access before testing dismissal
+    group("Verify - all board members have access after prep", () => {
+        const allMembers = [STYRELEDER, NESTLEDER, DAGLIG_LEDER, STYREMEDLEM2, STYREMEDLEM3, STYREMEDLEM4, OBSERVATØR];
+        for (const person of allMembers) {
+            retryUntilHasAccess(apClient, person.fnr, orgNr, `9. Kaste styret - ${person.fornavn} ${person.slektsnavn} access granted`);
+        }
+    });
+
+    // Phase 3: Submit board dismissal
+    group("Change - submit board dismissal", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, change, "Change");
+    });
+
+    // Phase 4: Verify board-only members no longer have access
+    group("Verify - board members no longer have access after dismissal", () => {
+        const boardOnlyMembers = [STYRELEDER, NESTLEDER, STYREMEDLEM2, STYREMEDLEM3, STYREMEDLEM4, OBSERVATØR];
+        for (const person of boardOnlyMembers) {
+            const parties = retryUntilNoAccess(apClient, person.fnr, orgNr, `9. Kaste styret - ${person.fornavn} ${person.slektsnavn} access revoked`);
+            check(parties, {
+                [`${person.fornavn} ${person.slektsnavn} no longer has access to org`]: (p) =>
+                    Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+            });
+        }
+    });
+
+    // Phase 5: Verify DAGLIG LEDER still has access via DAGL (SAMU/STYR does not remove DAGL)
+    group("Verify - DAGL retains access via DAGL after board dismissal", () => {
+        const parties = retryUntilHasAccess(apClient, DAGLIG_LEDER.fnr, orgNr, "9. Kaste styret - DAGL retains DAGL access");
+        check(parties, {
+            [`${DAGLIG_LEDER.fornavn} ${DAGLIG_LEDER.slektsnavn} (DAGL) still has access to org after board dismissal`]: (p) =>
+                Array.isArray(p) && p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
+        });
+    });
 
     group("Cleanup", () => {
         const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
@@ -161,7 +213,10 @@ function buildCleanupXml(orgNr) {
                     <rolleFoedselsnr>${STYRELEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
-                    <rolleFoedselsnr>${STYREMEDLEM1.fnr}</rolleFoedselsnr>
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
+                </samendringer>
+                <samendringer data="D" felttype="DAGL" endringstype="U" type="R">
+                    <rolleFoedselsnr>${DAGLIG_LEDER.fnr}</rolleFoedselsnr>
                 </samendringer>
                 <samendringer data="D" felttype="MEDL" endringstype="U" type="R">
                     <rolleFoedselsnr>${STYREMEDLEM2.fnr}</rolleFoedselsnr>

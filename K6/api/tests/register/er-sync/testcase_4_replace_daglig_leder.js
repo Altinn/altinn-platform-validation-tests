@@ -1,10 +1,8 @@
 import { group, check } from "k6";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { AuthorizedPartiesClient, RegisterApiClient } from "../../../../clients/authentication/index.js";
-import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
+import { RegisterApiClient } from "../../../../clients/authentication/index.js";
 import { SubmitErData } from "../../../building-blocks/register/index.js";
-import { generateOrgNr, retry } from "../../../../helpers.js";
-import { runErSyncTestcase, buildErSoapEnvelope } from "./helper.js";
+import { generateOrgNr } from "../../../../helpers.js";
+import { runErSyncTestcase, buildErSoapEnvelope, createAuthorizedPartiesClient, retryUntilHasAccess, retryUntilNoAccess } from "./helper.js";
 
 /**
  * @file testcase_4_replace_daglig_leder.js
@@ -85,6 +83,8 @@ function buildPrepXml(orgNr) {
 
 export function daglChange() {
     const orgNr = generateOrgNr();
+    console.log(`[TC4] orgNr: ${orgNr} | OLD_DAGL: ${OLD_DAGLIG_LEDER.fnr} (${OLD_DAGLIG_LEDER.fornavn} ${OLD_DAGLIG_LEDER.slektsnavn}) | NEW_DAGL: ${NEW_DAGLIG_LEDER.fnr} (${NEW_DAGLIG_LEDER.fornavn} ${NEW_DAGLIG_LEDER.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -102,39 +102,41 @@ export function daglChange() {
             <trai antallEnheter="1" avsender="ER" />
         </batchAjourholdXML>`);
 
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
-    const apClient = new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+    const apClient = createAuthorizedPartiesClient();
 
+    // Phase 1: Prep - submit org with OLD_DAGL and wait for Register
     runErSyncTestcase(
-        "4. Replace daglig leder (DAGL)",
+        "4. Replace daglig leder (DAGL) - Prep",
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after DAGL change": (p) => p.partyType === "organization" },
+        {},
+        { stopAfterPrep: true },
     );
 
+    // Phase 2: Confirm OLD_DAGL has access before testing replacement
+    group("Verify - old DAGL has access to org after prep", () => {
+        retryUntilHasAccess(apClient, OLD_DAGLIG_LEDER.fnr, orgNr, "4. Replace daglig leder - old DAGL access granted");
+    });
+
+    // Phase 3: Submit the DAGL replacement
+    group("Change - submit DAGL replacement", () => {
+        const apiClient = new RegisterApiClient(__ENV.BASE_URL, null);
+        SubmitErData(apiClient, change, "Change");
+    });
+
+    // Phase 4: Verify new DAGL has access
     group("Verify - new DAGL has access to org", () => {
-        let verifiedParties = null;
-        retry(
-            () => {
-                const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", NEW_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
-                if (!Array.isArray(parties)) return false;
-                const hasAccess = parties.some((p) => p.organizationNumber === orgNr || p.orgNumber === orgNr);
-                if (hasAccess) verifiedParties = parties;
-                return hasAccess;
-            },
-            { retries: 15, intervalSeconds: 20, testscenario: "replace-daglig-leder - new DAGL access" },
-        );
-        check(verifiedParties, {
-            [`new DAGL (${NEW_DAGLIG_LEDER.fornavn} ${NEW_DAGLIG_LEDER.slektsnavn}) has access to org`]: (p) => p !== null,
+        const parties = retryUntilHasAccess(apClient, NEW_DAGLIG_LEDER.fnr, orgNr, "replace-daglig-leder - new DAGL access");
+        check(parties, {
+            [`new DAGL (${NEW_DAGLIG_LEDER.fornavn} ${NEW_DAGLIG_LEDER.slektsnavn}) has access to org`]: (p) =>
+                Array.isArray(p) && p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),
         });
     });
 
+    // Phase 5: Verify old DAGL no longer has access
     group("Verify - old DAGL no longer has access to org", () => {
-        const parties = GetAuthorizedParties(apClient, "urn:altinn:person:identifier-no", OLD_DAGLIG_LEDER.fnr, { includeAltinn2: false, includePartiesViaKeyRoles: true });
+        const parties = retryUntilNoAccess(apClient, OLD_DAGLIG_LEDER.fnr, orgNr, "replace-daglig-leder - old DAGL access revoked");
         check(parties, {
             [`old DAGL (${OLD_DAGLIG_LEDER.fornavn} ${OLD_DAGLIG_LEDER.slektsnavn}) no longer has access to org`]: (p) =>
                 Array.isArray(p) && !p.some((party) => party.organizationNumber === orgNr || party.orgNumber === orgNr),

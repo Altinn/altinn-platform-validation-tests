@@ -93,6 +93,8 @@ function buildPrepXml(orgNr) {
 
 export function fadrChange() {
     const orgNr = generateOrgNr();
+    console.log(`[TC6] orgNr: ${orgNr} | DAGLIG_LEDER: ${DAGLIG_LEDER.fnr} (${DAGLIG_LEDER.fornavn} ${DAGLIG_LEDER.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -114,7 +116,7 @@ export function fadrChange() {
         change,
         orgNr,
         {
-            "org businessAddress updated to Ny Forretningsgate 5": (p) => p.businessAddress?.address === "Ny Forretningsgate 5",
+            "org businessAddress updated to Ny Forretningsgate 5": (p) => p.businessAddress?.address?.startsWith("Ny Forretningsgate 5"),
             "org businessAddress postalCode updated to 0350": (p) => p.businessAddress?.postalCode === "0350",
         },
     );

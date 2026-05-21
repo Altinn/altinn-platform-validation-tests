@@ -51,6 +51,8 @@ function buildPrepXml(orgNr) {
 
 export function addFmva() {
     const orgNr = generateOrgNr();
+    console.log(`[TC8] orgNr: ${orgNr} | STYRELEDER: ${STYRELEDER.fnr} (${STYRELEDER.fornavn} ${STYRELEDER.slektsnavn})`);
+
     const prep = buildPrepXml(orgNr);
 
     const change = buildErSoapEnvelope(`<batchAjourholdXML>
@@ -68,7 +70,7 @@ export function addFmva() {
         prep,
         change,
         orgNr,
-        { "org is accessible in Register after FMVA added": (p) => p.partyType === "organization" },
+        { "org is accessible in Register after FMVA added": (p) => p.organizationIdentifier === orgNr },
     );
 
     group("Cleanup", () => {
