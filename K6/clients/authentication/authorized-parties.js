@@ -71,6 +71,8 @@ class AuthorizedPartiesClient {
                 value
             );
         }
+        console.log(url.toString());
+        console.log(JSON.stringify(body, null, 2));
         return http.post(url.toString(), JSON.stringify(body), params);
     }
 
