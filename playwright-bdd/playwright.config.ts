@@ -12,7 +12,7 @@ const testDir = defineBddConfig({
 export default defineConfig({
     testDir,
     use: {
-        headless: false,
+        headless: true,
         trace: 'on',
         video: 'retain-on-failure',
     },

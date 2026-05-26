@@ -1,3 +1,5 @@
+import { DataTable } from "playwright-bdd";
+
 export function getFullUrl(area: string): string {
     switch (area) {
         case 'arbeidsflate':
@@ -11,4 +13,9 @@ export function getFullUrl(area: string): string {
         default:
             throw new Error(`Ukjent område: ${area}`);
     }
+}
+
+export function getAreasFromTable(dataTable: DataTable, area: string): string[] {
+    const rows = dataTable.hashes();
+    return rows.map((r: any) => r.område).filter((a: string) => a !== area);
 }
