@@ -42,6 +42,10 @@ export class AuthFlow {
         await this.gotoAllowAborted(this.page, url);
     }
 
+    async refresh() {
+        await this.page.reload();
+    }
+
     private async gotoAllowAborted(page: any, url: string) {
         try {
             await page.goto(url, { waitUntil: 'commit', timeout: 15000 });
