@@ -1,16 +1,28 @@
 import { defineConfig } from '@playwright/test';
 import { defineBddConfig } from 'playwright-bdd';
 
-const testDir = defineBddConfig({
-    features: 'tests/features/**/*.feature',
+const bddTestDir = defineBddConfig({
+    features: 'tests/bdd/features/**/*.feature',
     steps: [
-        'tests/steps/**/*.ts',
+        'tests/bdd/steps/**/*.ts',
         'tests/fixtures/**/*.ts',
-    ]
+    ],
 });
 
 export default defineConfig({
-    testDir,
+    projects: [
+        {
+            name: 'bdd',
+            testDir: bddTestDir,
+        },
+
+        {
+            name: 'native',
+            testDir: './tests',
+            testMatch: '**/*.spec.ts',
+        },
+    ],
+
     use: {
         headless: true,
         trace: 'on',

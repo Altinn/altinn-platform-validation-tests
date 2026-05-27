@@ -29,7 +29,7 @@ export class AuthFlow {
         await this.menuPage.clickLogoutButton();
     }
 
-    async navigateToArea(area: string) {
+    async navigateToAreaAndVerify(area: string) {
         const url = getFullUrl(area);
         await this.gotoAllowAborted(this.page, url);
         if (area !== 'infoportalen') {
@@ -37,7 +37,7 @@ export class AuthFlow {
         }
     }
 
-    async navigateToAreaAndVerify(area: string) {
+    async navigateToArea(area: string) {
         const url = getFullUrl(area);
         await this.gotoAllowAborted(this.page, url);
     }
