@@ -34,6 +34,7 @@ When('bruker navigerer til andre områder skal bruker fortsatt være innlogget:'
 
 When('logger ut igjen', async ({ app }) => {
     await app.auth.logout(app.testContext.currentArea || '');
+    await app.auth.pause(5000); // Vent litt for å sikre at utloggingen er fullført før vi sjekker status på andre områder
 });
 
 Then('skal bruker være utlogget på alle områder:', async ({ app }, dataTable: DataTable) => {

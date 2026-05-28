@@ -4,6 +4,7 @@ import { getFullUrl } from "../common-functions";
 import { MenuPage } from "../pages/MenuPage";
 
 export class AuthFlow {
+
     constructor(
         private page: Page,
         private loginPage = new LoginPage(page),
@@ -44,6 +45,10 @@ export class AuthFlow {
 
     async refresh() {
         await this.page.reload();
+    }
+
+    async pause(arg0: number) {
+        await this.page.waitForTimeout(arg0);
     }
 
     private async gotoAllowAborted(page: any, url: string) {
