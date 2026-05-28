@@ -11,6 +11,13 @@ npm install -D @playwright/test playwright-bdd
 npx playwright install
 
 ```
+
+### Environment variabler
+Environment-variable som settes utfra ønbsket testmiljø:
+* AF_BASE_URL defaulter til https://af.at23.altinn.cloud
+* AM_UI_BASE_URL defaulter til https://am.ui.at23.altinn.cloud
+* INFO_CLOUD_URL default til https://info.at23.altinn.cloud
+
 ### Test
 For å kjøre alle testene 
 ```bash
