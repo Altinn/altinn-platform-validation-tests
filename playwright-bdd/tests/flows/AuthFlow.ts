@@ -30,7 +30,7 @@ export class AuthFlow {
         await this.menuPage.clickLogoutButton();
     }
 
-    async navigateToAreaAndVerify(area: string) {
+    async navigateToAreaAndVerifyOnLogin(area: string) {
         const url = getFullUrl(area);
         await this.gotoAllowAborted(this.page, url);
         if (area !== 'infoportalen') {
@@ -40,11 +40,17 @@ export class AuthFlow {
 
     async navigateToArea(area: string) {
         const url = getFullUrl(area);
-        await this.gotoAllowAborted(this.page, url);
+        await this.gotoWithRetry(this.page, url);
     }
 
     async refresh() {
         await this.page.reload();
+    }
+
+    async refreshWithGoto() {
+        await this.page.goto(this.page.url(), {
+            waitUntil: 'domcontentloaded'
+        });
     }
 
     async pause(arg0: number) {
@@ -53,7 +59,7 @@ export class AuthFlow {
 
     private async gotoAllowAborted(page: any, url: string) {
         try {
-            await page.goto(url, { waitUntil: 'commit', timeout: 15000 });
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
         } catch (err: any) {
             if (String(err.message).includes('net::ERR_ABORTED')) {
                 console.warn(`Navigation aborted, continuing: ${url}`);
@@ -61,5 +67,51 @@ export class AuthFlow {
                 throw err;
             }
         }
+    }
+
+
+    private async gotoWithRetry(
+        page: Page,
+        url: string,
+        maxAttempts = 3
+    ): Promise<void> {
+
+        let lastError: unknown;
+
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+
+            try {
+
+                await page.goto(url, {
+                    waitUntil: 'domcontentloaded',
+                    timeout: 15000,
+                });
+
+                return;
+
+            } catch (error) {
+
+                const message =
+                    error instanceof Error
+                        ? error.message
+                        : String(error);
+
+                if (!message.includes('net::ERR_ABORTED')) {
+                    throw error;
+                }
+
+                lastError = error;
+
+                console.warn(
+                    `Navigation aborted (${attempt}/${maxAttempts}): ${url}`
+                );
+
+                if (attempt < maxAttempts) {
+                    await page.waitForTimeout(1000);
+                }
+            }
+        }
+
+        throw new Error(`Navigation to ${url} failed after ${maxAttempts} attempts: ${lastError}`);
     }
 }

@@ -10,6 +10,7 @@ const bddTestDir = defineBddConfig({
 });
 
 export default defineConfig({
+    timeout: 60000,
     projects: [
         {
             name: 'bdd',

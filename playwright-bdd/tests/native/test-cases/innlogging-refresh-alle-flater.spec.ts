@@ -5,48 +5,40 @@ const user = {
     name: 'Oransje Tyr',
 };
 
-const startAreas = [
-    'arbeidsflate',
-    'arbeidsflate-profil',
-    'tilgangsstyring',
+const areas = [
+    { startarea: 'arbeidsflate', landingarea: 'arbeidsflate' },
+    { startarea: 'tilgangsstyring', landingarea: 'tilgangsstyring' },
+    { startarea: 'infoportalen', landingarea: 'arbeidsflate' },
+    { startarea: 'arbeidsflate-profil', landingarea: 'arbeidsflate-profil' },
 ];
 
-const allAreas = [
-    'arbeidsflate',
-    'tilgangsstyring',
-    'infoportalen',
-    'arbeidsflate-profil',
-];
+for (const area of areas) {
 
-for (const startArea of startAreas) {
+    test(`Bruker forblir innlogget på alle flater etter refresh fra ${area.startarea}`, async ({ app }) => {
 
-    test(`Bruker forblir innlogget på alle flater etter refresh fra ${startArea}`, async ({ app }) => {
-
-        await test.step(`Bruker går til ${startArea} uten å være logget inn`, async () => {
-            app.testContext.currentArea = startArea;
-            await app.auth.navigateToAreaAndVerify(startArea);
+        await test.step(`Bruker går til ${area.startarea} uten å være logget inn`, async () => {
+            app.testContext.currentArea = area.startarea;
+            await app.auth.navigateToAreaAndVerifyOnLogin(area.startarea);
         });
 
         await test.step('Bruker logger inn', async () => {
             await app.auth.login(user);
         });
 
-        await test.step(`Bruker skal være innlogget på ${startArea} også etter refresh`, async () => {
-            await app.assertions.checkLoggedIn(startArea, user);
+        await test.step(`Bruker skal være innlogget på ${area.landingarea} også etter refresh`, async () => {
+            await app.assertions.checkLoggedIn(area.landingarea, user);
             await app.auth.refresh();
-            await app.assertions.checkLoggedIn(startArea, user);
+            await app.assertions.checkLoggedIn(area.landingarea, user);
         });
 
         await test.step('Bruker skal fortsatt være innlogget på andre områder også etter refresh', async () => {
-            const otherAreas = allAreas.filter(
-                area => area !== startArea
-            );
+            const otherAreas = areas.filter(a => a.startarea !== area.startarea);
 
-            for (const area of otherAreas) {
-                await app.auth.navigateToArea(area);
-                await app.assertions.checkLoggedIn(area, user);
+            for (const a of otherAreas) {
+                await app.auth.navigateToArea(a.startarea);
+                await app.assertions.checkLoggedIn(a.startarea, user);
                 await app.auth.refresh();
-                await app.assertions.checkLoggedIn(area, user);
+                await app.assertions.checkLoggedIn(a.startarea, user);
             }
         });
     });

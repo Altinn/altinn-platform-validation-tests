@@ -7,18 +7,19 @@ const user = {
 };
 
 Given('at bruker er innlogget på {string}', async ({ app }, area: string) => {
-    await app.auth.navigateToAreaAndVerify(area);
+    await app.auth.navigateToAreaAndVerifyOnLogin(area);
     await app.auth.login(user);
     await app.assertions.checkLoggedIn(area, user);
 });
 
 Given('at bruker går til {string} uten å være logget inn', async ({ app }, area: string) => {
     app.testContext.currentArea = area;
-    await app.auth.navigateToAreaAndVerify(area);
+    await app.auth.navigateToAreaAndVerifyOnLogin(area);
 });
 
 When('bruker logger inn', async ({ app }) => {
     await app.auth.login(user);
+
 });
 
 Then('skal bruker være innlogget på {string}', async ({ app }, area: string) => {
@@ -32,12 +33,17 @@ When('bruker navigerer til andre områder skal bruker fortsatt være innlogget:'
     }
 });
 
-When('logger ut igjen', async ({ app }) => {
+When('bruker logger ut', async ({ app }) => {
     await app.auth.logout(app.testContext.currentArea || '');
-    await app.auth.pause(5000); // Vent litt for å sikre at utloggingen er fullført før vi sjekker status på andre områder
+
 });
 
-Then('skal bruker være utlogget på alle områder:', async ({ app }, dataTable: DataTable) => {
+Then('skal bruker være utlogget på infoportalen', async ({ app }) => {
+    await app.assertions.checkLoggedOut("infoportalen");
+    await app.auth.pause(2000); // legger inn en liten pause for å sikre at eventuelle asynkrone operasjoner er fullført før vi fortsetter testen
+});
+
+Then('fortsatt være utlogget når bruker går til område:', async ({ app }, dataTable: DataTable) => {
     for (const area of getAreasFromTable(dataTable, app.testContext.currentArea || '')) {
         await app.auth.navigateToArea(area);
         await app.assertions.checkLoggedOut(area);

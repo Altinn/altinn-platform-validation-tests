@@ -5,27 +5,21 @@ const user = {
     name: 'Oransje Tyr',
 };
 
-const startAreas = [
-    'arbeidsflate',
-    'arbeidsflate-profil',
-    'tilgangsstyring',
+const areas = [
+    { startarea: 'arbeidsflate', landingarea: 'arbeidsflate' },
+    { startarea: 'tilgangsstyring', landingarea: 'tilgangsstyring' },
+    { startarea: 'infoportalen', landingarea: 'arbeidsflate' },
+    { startarea: 'arbeidsflate-profil', landingarea: 'arbeidsflate-profil' },
 ];
 
-const allAreas = [
-    'arbeidsflate',
-    'tilgangsstyring',
-    'infoportalen',
-    'arbeidsflate-profil',
-];
+for (const area of areas) {
 
-for (const startArea of startAreas) {
-
-    test(`Bruker er innlogget på alle flater etter innlogging fra ${startArea}`, async ({ app }) => {
+    test(`Bruker er innlogget på alle flater etter innlogging fra ${area.startarea}`, async ({ app }) => {
 
         await test.step(
-            `Bruker går til ${startArea} uten å være logget inn`, async () => {
-                app.testContext.currentArea = startArea;
-                await app.auth.navigateToAreaAndVerify(startArea);
+            `Bruker går til ${area.startarea} uten å være logget inn`, async () => {
+                app.testContext.currentArea = area.startarea;
+                await app.auth.navigateToAreaAndVerifyOnLogin(area.startarea);
             }
         );
 
@@ -33,18 +27,16 @@ for (const startArea of startAreas) {
             await app.auth.login(user);
         });
 
-        await test.step(`Bruker skal være innlogget på ${startArea}`, async () => {
-            await app.assertions.checkLoggedIn(startArea, user);
+        await test.step(`Bruker skal være innlogget på ${area.landingarea}`, async () => {
+            await app.assertions.checkLoggedIn(area.landingarea, user);
         });
 
         await test.step('Bruker skal fortsatt være innlogget på andre områder', async () => {
-            const otherAreas = allAreas.filter(
-                area => area !== startArea
-            );
+            const otherAreas = areas.filter(a => a.startarea !== area.startarea);
 
             for (const area of otherAreas) {
-                await app.auth.navigateToArea(area);
-                await app.assertions.checkLoggedIn(area, user);
+                await app.auth.navigateToArea(area.startarea);
+                await app.assertions.checkLoggedIn(area.startarea, user);
             }
         }
         );

@@ -5,41 +5,43 @@ const user = {
     name: 'Oransje Tyr',
 };
 
-const startAreas = [
-    'arbeidsflate',
-    'arbeidsflate-profil',
-    'tilgangsstyring',
-    'infoportalen',
+const areas = [
+    { startarea: 'arbeidsflate', landingarea: 'arbeidsflate' },
+    { startarea: 'tilgangsstyring', landingarea: 'tilgangsstyring' },
+    { startarea: 'infoportalen', landingarea: 'arbeidsflate' },
+    { startarea: 'arbeidsflate-profil', landingarea: 'arbeidsflate-profil' },
 ];
 
-const allAreas = [
-    'arbeidsflate',
-    'tilgangsstyring',
-    'infoportalen',
-    'arbeidsflate-profil',
-];
-
-for (const startArea of startAreas) {
+for (const area of areas) {
 
     test(
-        `Bruker logges ut av alle flater etter utlogging fra ${startArea}`, async ({ app }) => {
-            await test.step(`Bruker går til ${startArea} uten å være logget inn`, async () => {
-                app.testContext.currentArea = startArea;
-                await app.auth.navigateToAreaAndVerify(startArea);
+        `Bruker logges ut av alle flater etter utlogging fra ${area.startarea}`, async ({ app }) => {
+            await test.step(`Bruker går til ${area.startarea} uten å være logget inn`, async () => {
+                app.testContext.currentArea = area.startarea;
+                await app.auth.navigateToAreaAndVerifyOnLogin(area.startarea);
             });
 
             await test.step('Bruker logger inn', async () => {
                 await app.auth.login(user);
             });
 
-            await test.step('Bruker logger ut igjen', async () => {
-                await app.auth.logout(startArea);
+            await test.step(`Bruker skal være innlogget på ${area.landingarea}`, async () => {
+                await app.assertions.checkLoggedIn(area.landingarea, user);
+            });
+
+            await test.step('Bruker logger ut', async () => {
+                await app.auth.logout(area.startarea);
+            });
+
+            await test.step('Bruker skal være utlogget på infoportalen', async () => {
+                await app.assertions.checkLoggedOut("infoportalen");
+                await app.auth.pause(2000); // legger inn en liten pause for å sikre at eventuelle asynkrone operasjoner er fullført før vi fortsetter testen
             });
 
             await test.step('Bruker skal være utlogget på alle områder', async () => {
-                for (const area of allAreas) {
-                    await app.auth.navigateToArea(area);
-                    await app.assertions.checkLoggedOut(area);
+                for (const a of areas) {
+                    await app.auth.navigateToArea(a.startarea);
+                    await app.assertions.checkLoggedOut(a.startarea);
                 }
             });
         }

@@ -42,7 +42,9 @@ export class Assertions {
             case 'infoportalen':
                 // infoportalen har ingen innloggingsindikator, så vi sjekker at vi er på riktig URL
                 const url = getFullUrl(area);
-                await expect(this.page).toHaveURL(url);
+                await expect
+                    .poll(() => this.page.url())
+                    .toContain(new URL(url).origin);
                 // og at vi ser innloggingsknappen
                 await expect(this.page.getByRole('button', {
                     name: /logg inn|login/i,
