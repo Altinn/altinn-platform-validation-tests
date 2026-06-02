@@ -25,7 +25,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/instance-delegations-org-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/fix-instance-delegation-pdp/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/org-user-instance-delegations.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -45,9 +45,9 @@ export default function (testData) {
         pdpAuthorizeClient,
         party.tossn,
         party.fromorgno,
-        resource,
-        instance,
-        task,
+        party.resourceid,
+        party.instanceid,
+        "task_1",
         action,
         expectedResponse,
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
@@ -65,8 +65,8 @@ function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:
-            return ["read", denyLabel, "NotApplicable"];
+            return ["read", denyLabel, "Permit"];
         default:
-            return ["sign", permitLabel, "Permit"];
+            return ["read", permitLabel, "Permit"];
     }
 }

@@ -25,7 +25,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/fix-instance-delegation-pdp/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -45,8 +45,8 @@ export default function (testData) {
         pdpAuthorizeClient,
         party.tossn,
         party.fromssn,
-        party.resource,
-        party.instance,
+        party.resourceid,
+        party.instanceid,
         "task_1",
         action,
         expectedResponse,
@@ -59,13 +59,14 @@ export default function (testData) {
 /**
  * Function to randomly select action, label, and expected response.
  * 90% sign with Permit, 10% read with NotApplicable.
+ * !! So far only Permit !!
  * @return {Array} [action, label, expectedResponse]
  */
 function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:
-            return ["read", denyLabel, "NotApplicable"];
+            return ["read", permitLabel, "Permit"];
         default:
             return ["sign", permitLabel, "Permit"];
     }
