@@ -9,6 +9,12 @@ export class MenuPage {
         }).click();
     }
 
+    async clickLoginButton() {
+        await this.page.getByRole('button', {
+            name: /logg inn|login/i,
+        }).click();
+    }
+
     async clickLogoutButton() {
         // vent på logout
         const logoutButton = this.page.getByRole('button', {

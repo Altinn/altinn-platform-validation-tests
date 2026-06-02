@@ -3,10 +3,10 @@ import { expect, Page } from "@playwright/test";
 export class LoginPage {
     constructor(private page: Page) { }
 
-    async clickLoginButton() {
-        await this.page.getByRole('button', {
-            name: /logg inn|login/i,
-        }).click();
+    async loginWithTestUser(user: { pid: string; name: string }) {
+        await this.selectTestUser();
+        await this.fillPid(user.pid);
+        await this.submit();
     }
 
     async fillPid(pid: string) {
@@ -22,6 +22,6 @@ export class LoginPage {
     }
 
     async verifyOnPage() {
-        await expect(this.page.locator('#testid1')).toBeVisible();
+        await expect(this.page.locator('#testid1'), "Verify on idporten login").toBeVisible();
     }
 }
