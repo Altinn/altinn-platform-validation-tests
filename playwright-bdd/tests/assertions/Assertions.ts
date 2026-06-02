@@ -10,7 +10,7 @@ export class Assertions {
             case 'arbeidsflate':
             case 'arbeidsflate-profil':
             case 'tilgangsstyring':
-                await expect(this.page).toHaveURL(expectedUrl);
+                await expect(this.page, 'expect example text').toHaveURL(expectedUrl);
                 break;
             case 'infoportalen':
                 // infoportalen har ingen innloggingsindikator, så vi sjekker at vi er på riktig URL

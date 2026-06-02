@@ -20,4 +20,8 @@ export class LoginPage {
     async selectTestUser() {
         await this.page.locator('#testid1').click();
     }
+
+    async verifyOnPage() {
+        await expect(this.page.locator('#testid1')).toBeVisible();
+    }
 }

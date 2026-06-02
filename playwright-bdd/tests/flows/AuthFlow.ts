@@ -69,7 +69,6 @@ export class AuthFlow {
         }
     }
 
-
     private async gotoWithRetry(
         page: Page,
         url: string,

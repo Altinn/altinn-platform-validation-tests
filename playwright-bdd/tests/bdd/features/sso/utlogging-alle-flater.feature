@@ -10,7 +10,7 @@ Egenskap: Utlogging skjer på tvers av områder
     Så skal bruker være utlogget på infoportalen
     Og fortsatt være utlogget når bruker går til område:
         | område              |
-        | arbeidsflate-profil |
+        | arbeidsflate        |
         | tilgangsstyring     |
         | infoportalen        |
         | arbeidsflate-profil |

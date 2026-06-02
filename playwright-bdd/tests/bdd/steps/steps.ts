@@ -44,7 +44,7 @@ Then('skal bruker være utlogget på infoportalen', async ({ app }) => {
 });
 
 Then('fortsatt være utlogget når bruker går til område:', async ({ app }, dataTable: DataTable) => {
-    for (const area of getAreasFromTable(dataTable, app.testContext.currentArea || '')) {
+    for (const area of getAreasFromTable(dataTable, '')) {
         await app.auth.navigateToArea(area);
         await app.assertions.checkLoggedOut(area);
     }
