@@ -25,7 +25,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 export function setup() {
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/instance-delegations-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -45,9 +45,9 @@ export default function (testData) {
         pdpAuthorizeClient,
         party.tossn,
         party.fromssn,
-        resource,
-        instance,
-        task,
+        party.resource,
+        party.instance,
+        "task_1",
         action,
         expectedResponse,
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,

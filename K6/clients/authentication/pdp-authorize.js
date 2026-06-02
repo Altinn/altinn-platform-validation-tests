@@ -236,11 +236,6 @@ class PdpAuthorizeClient {
                 "AttributeId": "urn:altinn:resource:instance-id",
                 "Value": instanceId,
             });
-        body.Request.Resource[0].Attribute.push(
-            {
-                "AttributeId": "urn:altinn:task",
-                "Value": task,
-            });
         return body;
     }
 
