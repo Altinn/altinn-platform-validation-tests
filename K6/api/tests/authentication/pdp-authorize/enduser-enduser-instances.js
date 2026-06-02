@@ -15,12 +15,6 @@ const pdpAuthorizeLabel = { action: "PDP Authorize" };
 const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
 const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
-// Only resource in use for now, but can be extended with more resources if needed
-const resource = "app_ttd_signering-brukerstyrt";
-
-// Only task for now, but can be extended with more tasks if needed
-const task = "SigningTask_Founders";
-
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
 export function setup() {
@@ -38,9 +32,6 @@ export default function (testData) {
     const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
 
-    // instance id format: urn:altinn:instance-id:{partyId}/{uuid}
-    // only instance in yt so far is aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-    const instance = `urn:altinn:instance-id:${party.partyid}/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`;
     PdpAuthorizeUserInstance(
         pdpAuthorizeClient,
         party.tossn,

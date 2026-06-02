@@ -168,7 +168,6 @@ class PdpAuthorizeClient {
             },
         };
 
-
         const body = this.#getBodyWithInstance(tossn, null, fromorg, resourceId, instanceId, task, action);
         const res = http.post(url.toString(), JSON.stringify(body), params);
         return res;
@@ -209,6 +208,7 @@ class PdpAuthorizeClient {
      * @returns body for authorize enduser
      */
     #getBodyWithInstance(tossn, fromssn, fromorg, resourceId, instanceId, task, action) {
+        console.log("fromorg: " + fromorg);
         let body = this.#buildAuthorizeBody(resourceId, action);
         body.Request.AccessSubject[0].Attribute.push(
             {
