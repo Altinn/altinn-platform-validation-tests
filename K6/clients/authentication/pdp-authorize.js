@@ -168,7 +168,6 @@ class PdpAuthorizeClient {
             },
         };
 
-
         const body = this.#getBodyWithInstance(tossn, null, fromorg, resourceId, instanceId, task, action);
         const res = http.post(url.toString(), JSON.stringify(body), params);
         return res;
@@ -236,6 +235,7 @@ class PdpAuthorizeClient {
                 "AttributeId": "urn:altinn:resource:instance-id",
                 "Value": instanceId,
             });
+
         body.Request.Resource[0].Attribute.push(
             {
                 "AttributeId": "urn:altinn:task",
