@@ -31,14 +31,13 @@ export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-
     PdpAuthorizeOrgInstance(
         pdpAuthorizeClient,
         party.tossn,
         party.fromorg,
         party.resourceid,
         party.instanceid,
-        "task_1",
+        "Task_2",
         action,
         expectedResponse,
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
@@ -56,7 +55,7 @@ function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);
     switch (randNumber) {
         case 0:
-            return ["read", denyLabel, "Permit"];
+            return ["read", permitLabel, "Permit"];
         default:
             return ["read", permitLabel, "Permit"];
     }

@@ -8,7 +8,7 @@ import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
 
-const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
+const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
 // Labels for different actions
 const pdpAuthorizeLabel = { action: "PDP Authorize" };
@@ -31,14 +31,13 @@ export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-
     PdpAuthorizeUserInstance(
         pdpAuthorizeClient,
         party.tossn,
         party.fromssn,
         party.resourceid,
         party.instanceid,
-        "task_1",
+        "Task_2",
         action,
         expectedResponse,
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
@@ -59,6 +58,6 @@ function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
         case 0:
             return ["read", permitLabel, "Permit"];
         default:
-            return ["sign", permitLabel, "Permit"];
+            return ["read", permitLabel, "Permit"];
     }
 }

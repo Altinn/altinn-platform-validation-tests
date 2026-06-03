@@ -208,7 +208,6 @@ class PdpAuthorizeClient {
      * @returns body for authorize enduser
      */
     #getBodyWithInstance(tossn, fromssn, fromorg, resourceId, instanceId, task, action) {
-        console.log("fromorg: " + fromorg);
         let body = this.#buildAuthorizeBody(resourceId, action);
         body.Request.AccessSubject[0].Attribute.push(
             {
@@ -235,6 +234,12 @@ class PdpAuthorizeClient {
             {
                 "AttributeId": "urn:altinn:resource:instance-id",
                 "Value": instanceId,
+            });
+
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:task",
+                "Value": task,
             });
         return body;
     }
