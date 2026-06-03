@@ -1,9 +1,9 @@
 import { expect, Page } from "@playwright/test";
 import { getFullUrl } from "../common-functions";
 import { LoginPage } from "../pages/LoginPage";
-import { ArbeidsFlate } from "../pages/ArbeidsFlate";
+import { ArbeidsFlate } from "../pages/arbeidsflate/ArbeidsFlate";
 import { MenuPage } from "../pages/MenuPage";
-import { ArbeidsFlateProfil } from "../pages/ArbeidsFlateProfil";
+import { ArbeidsFlateProfil } from "../pages/arbeidsflate/ArbeidsFlateProfil";
 import { InfoPortalen } from "../pages/Infoportalen";
 import { TilgangsStyring } from "../pages/TilgangsStyring";
 
