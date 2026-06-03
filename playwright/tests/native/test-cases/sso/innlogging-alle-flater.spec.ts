@@ -1,4 +1,4 @@
-import { test } from '../../../fixtures/app.fixtures';
+import { test } from '../../../../fixtures/app.fixture';
 
 const user = {
     pid: '13822649208',

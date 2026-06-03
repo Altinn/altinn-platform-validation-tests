@@ -1,5 +1,5 @@
 import { DataTable } from 'playwright-bdd';
-import { Given, When, Then } from '../../fixtures/app.fixtures';
+import { Given, When, Then } from '../../../fixtures/app.fixture';
 import { getAreasFromTable } from '../../common-functions';
 
 const user = {
@@ -62,4 +62,3 @@ When('bruker navigerer til andre områder skal bruker fortsatt være innlogget o
         await app.ssoFlow.checkLoggedIn(area, user);
     }
 });
-
