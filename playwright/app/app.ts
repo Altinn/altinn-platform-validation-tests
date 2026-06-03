@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { SsoFlow } from "../flows/SsoFlow";
+import { SsoFlow } from "../flows/sso-flow";
 
 export class TestContext {
     currentArea?: string;

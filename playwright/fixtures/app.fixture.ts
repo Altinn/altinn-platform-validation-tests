@@ -1,5 +1,5 @@
 import { test as base, createBdd } from 'playwright-bdd';
-import { App } from '../app/App';
+import { App } from '../app/app';
 
 type Fixtures = {
     app: App;

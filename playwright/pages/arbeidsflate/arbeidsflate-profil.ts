@@ -1,12 +1,12 @@
 import { expect, Page } from "@playwright/test";
-import { getFullUrl } from "../common-functions";
+import { getFullUrl } from "../../tests/common-functions";
 
-export class TilgangsStyring {
-    private fullUrl = getFullUrl('tilgangsstyring');
+export class ArbeidsFlateProfil {
+    private fullUrl = getFullUrl('arbeidsflate-profil');
     constructor(private page: Page) { }
 
     async assertOnPage() {
-        await expect(this.page, 'Assert on Tilgangsstyring main page').toHaveURL(this.fullUrl);
+        await expect(this.page, 'Assert on ArbeidsFlate profil page').toHaveURL(this.fullUrl);
     }
 
     async navigateTo() {

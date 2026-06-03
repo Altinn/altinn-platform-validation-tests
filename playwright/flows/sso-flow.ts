@@ -1,11 +1,10 @@
-import { expect, Page } from "@playwright/test";
-import { getFullUrl } from "../common-functions";
-import { LoginPage } from "../pages/LoginPage";
-import { ArbeidsFlate } from "../pages/ArbeidsFlate";
-import { MenuPage } from "../pages/MenuPage";
-import { ArbeidsFlateProfil } from "../pages/ArbeidsFlateProfil";
-import { InfoPortalen } from "../pages/Infoportalen";
-import { TilgangsStyring } from "../pages/TilgangsStyring";
+import { Page } from "@playwright/test";
+import { LoginPage } from "../pages/login-page";
+import { ArbeidsFlate } from "../pages/arbeidsflate/arbeidsflate";
+import { MenuPage } from "../pages/menu-page";
+import { ArbeidsFlateProfil } from "../pages/arbeidsflate/arbeidsflate-profil";
+import { InfoPortalen } from "../pages/infoportal/infoportalen";
+import { TilgangsStyring } from "../pages/access_management/tilgangsstyring";
 
 export class SsoFlow {
 

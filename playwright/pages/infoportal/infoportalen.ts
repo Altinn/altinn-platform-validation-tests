@@ -1,5 +1,5 @@
 import { expect, Page } from "@playwright/test";
-import { getFullUrl } from "../common-functions";
+import { getFullUrl } from "../../tests/common-functions";
 
 export class InfoPortalen {
     private fullUrl = getFullUrl('infoportalen');

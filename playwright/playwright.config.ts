@@ -5,11 +5,12 @@ const bddTestDir = defineBddConfig({
     features: 'tests/bdd/features/**/*.feature',
     steps: [
         'tests/bdd/steps/**/*.ts',
-        'tests/fixtures/**/*.ts',
+        'fixtures/**/*.ts',
     ],
 });
 
 export default defineConfig({
+    reporter: [['html', { open: 'never' }]],
     timeout: 60000,
     projects: [
         {
