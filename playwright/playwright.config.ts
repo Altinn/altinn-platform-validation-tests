@@ -10,6 +10,7 @@ const bddTestDir = defineBddConfig({
 });
 
 export default defineConfig({
+    reporter: [['html', { open: 'never' }]],
     timeout: 60000,
     projects: [
         {
