@@ -25,16 +25,13 @@ import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-b
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenGenerator } from "../../../common-imports.js";
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../helpers.js";
-import { getInfoCloud } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-const rootLabel = { step: "get infocloud root" };
 const authorizedPartiesLabel = { step: "authorizedParties" };
 const favoritesLabel = { step: "favorites" };
 const currentLabel = { step: "current" };
 
 export const options = getOptions([
-    rootLabel,
     authorizedPartiesLabel,
     favoritesLabel,
     currentLabel,
@@ -59,7 +56,6 @@ export default function (data) {
     const userId = user.userId;
     const [infoPortalApiClient, tokenGenerator] = getClients();
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(userId));
-    getInfoCloud("/", rootLabel);
     GetAuthorizedParties(infoPortalApiClient, authorizedPartiesLabel);
     GetFavorites(infoPortalApiClient, favoritesLabel);
     GetCurrent(infoPortalApiClient, currentLabel);
