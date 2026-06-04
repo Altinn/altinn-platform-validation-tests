@@ -26,7 +26,7 @@ export default defineConfig({
     ],
 
     use: {
-        headless: true,
+        headless: false,
         trace: 'on',
         video: 'retain-on-failure',
     },

@@ -3,7 +3,7 @@ import { Given, When, Then } from '../../../fixtures/app.fixture';
 import { getAreasFromTable } from '../../common-functions';
 
 const user = {
-    pid: '13822649208', name: "Oransje Tyr",
+    pid: '31851449372', name: "Ordinær Æresdoktor",
 };
 
 Given('at bruker er innlogget på {string}', async ({ app }, area: string) => {
@@ -61,4 +61,32 @@ When('bruker navigerer til andre områder skal bruker fortsatt være innlogget o
         await app.ssoFlow.refresh();
         await app.ssoFlow.checkLoggedIn(area, user);
     }
+});
+
+Given('at en innlogget bruker har åpnet siden for tilgangsstyring', async ({ app }) => {
+    await app.ssoFlow.navigateToAreaAndVerifyOnLogin('tilgangsstyring');
+    await app.ssoFlow.login(user);
+    await app.ssoFlow.checkLoggedIn('tilgangsstyring', user);
+}
+);
+
+When('siden vises', async ({ app }) => {
+    await app.ssoFlow.checkLoggedIn('tilgangsstyring', user);
+});
+
+Then('skal følgende seksjoner vises:', async ({ app }, dataTable: DataTable) => {
+    const sections = dataTable.raw().flat();
+    await app.ssoFlow.checkSectionsAreVisible('tilgangsstyring', sections);
+});
+
+When('språket er satt til norsk bokmål', async ({ app }) => {
+    await app.ssoFlow.setLanguage('bokmål');
+});
+
+When('språket er satt til norsk nynorsk', async ({ app }) => {
+    await app.ssoFlow.setLanguage('nynorsk');
+});
+
+When('språket er satt til engelsk', async ({ app }) => {
+    await app.ssoFlow.setLanguage('engelsk');
 });

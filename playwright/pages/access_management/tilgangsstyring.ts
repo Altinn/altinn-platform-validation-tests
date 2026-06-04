@@ -14,4 +14,16 @@ export class TilgangsStyring {
             waitUntil: 'domcontentloaded'
         });
     }
+
+    async checkSectionsAreVisible(sections: string[]) {
+        const sidebar = this.page.locator('aside');
+        for (const section of sections) {
+            await expect(
+                sidebar.getByLabel(
+                    section.trim(),
+                    { exact: true }
+                ).first()
+            ).toBeVisible();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import { expect, Page } from "@playwright/test";
 
 export class MenuPage {
+
     constructor(private page: Page) { }
 
     async clickMenuButton() {
@@ -23,5 +24,27 @@ export class MenuPage {
         await expect(logoutButton).toBeVisible({ timeout: 10000 });
         // klikk logout
         await logoutButton.click();
+    }
+
+    async setLanguage(language: string) {
+        await this.clickMenuButton();
+        await this.page
+            .locator('button[aria-label="Språk/language"]')
+            .click();
+
+        switch (language.toLowerCase()) {
+            case 'bokmål':
+                await this.page.locator('#no_nb').click();
+                break;
+            case 'nynorsk':
+                await this.page.locator('#no_nn').click();
+                break;
+            case 'english':
+            case 'engelsk':
+                await this.page.locator('#en').click();
+                break;
+            default:
+                throw new Error(`Unsupported language: ${language}`);
+        }
     }
 }
