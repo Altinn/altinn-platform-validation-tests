@@ -111,7 +111,7 @@ var (
 	)
 )
 
-func parseJUnit(file string) {
+func parseJUnit(file string) bool {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		log.Fatal(err)
@@ -122,7 +122,7 @@ func parseJUnit(file string) {
 	if err := xml.Unmarshal(data, &testSuites); err != nil {
 		log.Fatal(err)
 	}
-
+	hasFailedTests := false
 	for _, suite := range testSuites.TestSuites {
 		fmt.Println(suite.Name)
 		suiteDuration.WithLabelValues(suite.Name).Set(suite.Time)
@@ -134,6 +134,7 @@ func parseJUnit(file string) {
 			status := "passed"
 			statusValue := 0.0
 			if tc.Failure != nil || tc.Error != nil {
+				hasFailedTests = true
 				status = "failed"
 				statusValue = 1
 			} else if tc.Skipped != nil {
@@ -145,6 +146,7 @@ func parseJUnit(file string) {
 			testStatus.WithLabelValues(suite.Name, tc.Name).Set(statusValue)
 		}
 	}
+	return hasFailedTests
 }
 
 func main() {
@@ -155,7 +157,7 @@ func main() {
 	reg := prometheus.NewRegistry()
 	reg.MustRegister(suiteDuration, suiteTotal, suiteFailed, suiteSkipped, testDuration, testStatus)
 
-	parseJUnit(*xmlFile)
+	hasFailedTests := parseJUnit(*xmlFile)
 	/*
 		http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 		log.Println("Serving metrics on :8080/metrics")
@@ -169,5 +171,9 @@ func main() {
 	}
 
 	log.Println("Metrics successfully pushed to Pushgateway")
+
+	if hasFailedTests {
+		os.Exit(53)
+	}
 
 }
