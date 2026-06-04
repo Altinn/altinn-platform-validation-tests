@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright
+  namespace: platform
+spec:
+  schedule: "0 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            testrunner: playwright
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: playwright
+              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:latest
+              volumeMounts:
+                - name: swa-config
+                  mountPath: /etc/swa-config
+                  readOnly: true
+              env:
+                - name: APP_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: swa-app-token
+                      key: APP_TOKEN
+                - name: SUBSCRIPTION_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: swa-app-token
+                      key: SUBSCRIPTION_ID
+          volumes:
+            - name: swa-config
+              secret:
+                secretName: swa-config

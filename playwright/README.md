@@ -19,10 +19,9 @@ Environment-variable som settes utfra ønbsket testmiljø:
 * INFO_CLOUD_URL default til https://info.at23.altinn.cloud
 
 ### Test
-For å kjøre alle testene 
+For å kjøre alle testene
 ```bash
 npm run bdd
 npm run native
 ```
 For å kjøre enkelt-tester, se i `package.json` fila
-
