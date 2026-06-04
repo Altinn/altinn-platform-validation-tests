@@ -149,7 +149,7 @@ func parseJUnit(file string) {
 
 func main() {
 	xmlFile := flag.String("xml", "test-results.xml", "Path to JUnit XML file")
-	promRwEndpoint := flag.String("prometheus-rw-endpoint", "http://kube-prometheus-stack-prometheus.monitoring:9090/api/v1/write", "The Prometheus Remote Write Endpoint")
+	promPushGatewayEndpoint := flag.String("prometheus-pushgateway-endpoint", "http://prometheus-pushgateway.monitoring:9091", "The Prometheus Push Gateway Endpoint")
 	flag.Parse()
 
 	reg := prometheus.NewRegistry()
@@ -162,7 +162,7 @@ func main() {
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	*/
 
-	if err := push.New(*promRwEndpoint, "playwright_tests").
+	if err := push.New(*promPushGatewayEndpoint, "playwright_tests").
 		Gatherer(reg).
 		Push(); err != nil {
 		log.Fatalf("Could not push metrics: %v", err)
