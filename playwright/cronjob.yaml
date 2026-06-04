@@ -18,7 +18,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: playwright
-              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:latest
+              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:stable
               volumeMounts:
                 - name: swa-config
                   mountPath: /etc/swa-config
@@ -34,6 +34,16 @@ spec:
                     secretKeyRef:
                       name: swa-app-token
                       key: SUBSCRIPTION_ID
+                - name: SLACK_WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: slack-test
+                      key: SLACK_WEBHOOK_URL
+                - name: REPORT_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: swa-app-token
+                      key: REPORT_URL
           volumes:
             - name: swa-config
               secret:

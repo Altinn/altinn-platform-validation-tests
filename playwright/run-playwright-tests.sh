@@ -8,19 +8,29 @@ npm install -D \
     @playwright/test \
     playwright-bdd
 
-npm run example # Needs to be the input
+npm run example || true # Needs to be the input
 
+set +e
 /tmp/generateMetricsFromJunitReport
+exit_code=$?
+set -e
 
-# TODO: It doesn't make sense to publish the report all the time.
-# Maybe exit with a specific error code from the command above and decide to publish the report
-# and send a slack message.
+if [ "$exit_code" -eq 53 ]; then
+    echo "Not all Playwright Tests ran successfully, uploading the report..."
 
-#npx -y @azure/static-web-apps-cli deploy \
-#    --app-location "./playwright-report" \
-#    --deployment-token "$APP_TOKEN" \
-#    --subscription-id "$SUBSCRIPTION_ID" \
-#    --resource-group playwright-rg \
-#    --app-name playwright-reports-webapp \
-#    --swa-config-location /etc/swa-config/ \
-#	 --env Production
+    npx -y @azure/static-web-apps-cli deploy \
+        --app-location "./playwright-report" \
+        --deployment-token "$APP_TOKEN" \
+        --subscription-id "$SUBSCRIPTION_ID" \
+        --resource-group playwright-rg \
+        --app-name playwright-reports-webapp \
+        --swa-config-location /etc/swa-config/ \
+    	--env Production
+
+    curl \
+        -s -X POST "$SLACK_WEBHOOK_URL" \
+        -H 'Content-type: application/json' \
+        --data "{\"text\":\"Playwright tests failed, report in: $REPORT_URL\"}"
+else
+    echo "All Playwright Tests ran successfully."
+fi
