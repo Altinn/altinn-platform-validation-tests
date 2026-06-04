@@ -6,3 +6,5 @@ package-lock.json
 test-results
 .features-gen/
 playwright-report
+test-results.json
+test-results.xml
