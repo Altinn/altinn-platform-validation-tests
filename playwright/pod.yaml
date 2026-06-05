@@ -35,6 +35,9 @@ spec:
             secretKeyRef:
               name: swa-app-token
               key: REPORT_URL
+      envFrom:
+        - secretRef:
+            name: am-ui-playwright-env
   volumes:
     - name: swa-config
       secret:

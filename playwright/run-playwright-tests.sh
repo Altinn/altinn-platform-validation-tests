@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-git clone https://github.com/Altinn/altinn-platform-validation-tests.git
-cd altinn-platform-validation-tests/playwright
+# git clone https://github.com/Altinn/altinn-platform-validation-tests.git
+# cd altinn-platform-validation-tests/playwright
+git clone https://github.com/monteiro-renato/altinn-access-management-frontend.git
+cd altinn-access-management-frontend/playwright
 
-npm install -D \
-    @playwright/test \
-    playwright-bdd
+npm i --prefix .
 
-npm run example || true # Needs to be the input
+# npm run example || true # Needs to be the input
+./node_modules/.bin/playwright test
 
 set +e
 /tmp/generateMetricsFromJunitReport
@@ -25,12 +26,12 @@ if [ "$exit_code" -eq 53 ]; then
         --resource-group playwright-rg \
         --app-name playwright-reports-webapp \
         --swa-config-location /etc/swa-config/ \
-    	--env Production
+    	--env Production # TODO: Tweak this
 
-    curl \
-        -s -X POST "$SLACK_WEBHOOK_URL" \
-        -H 'Content-type: application/json' \
-        --data "{\"text\":\"Playwright tests failed, report in: $REPORT_URL\"}"
+    #curl \
+    #    -s -X POST "$SLACK_WEBHOOK_URL" \
+    #    -H 'Content-type: application/json' \
+    #    --data "{\"text\":\"Playwright tests failed, report in: $REPORT_URL\"}"
 else
     echo "All Playwright Tests ran successfully."
 fi
