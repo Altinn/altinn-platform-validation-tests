@@ -1,4 +1,4 @@
-"tossn","fromssn","resourceid","instanceid"
+tossn,fromssn,resourceid,instanceid,task
 "10906996443","20838198385",k6-test-innbygger-vapen,urn:altinn:dialog-id:019c2dc8-1698-72ba-9e2c-feb46d97465a
 "21915399719","20838198385",k6-test-innbygger-vapen,urn:altinn:dialog-id:019c2dc8-1698-72ba-9e2c-feb46d97465a
 "19895199357","20838198385",k6-test-innbygger-vapen,urn:altinn:dialog-id:019c2dc8-1698-72ba-9e2c-feb46d97465a
@@ -14,8 +14,8 @@
 "15812949400","08827999653",app_ttd_apps-test,urn:altinn:instance-id:50167157/5900ba57-1a32-414e-b7fb-611a3b4277c7
 "14821098786","08827999653",app_ttd_apps-test,urn:altinn:instance-id:50167157/5900ba57-1a32-414e-b7fb-611a3b4277c7
 "30892449089","08827999653",app_ttd_apps-test,urn:altinn:instance-id:50167157/5900ba57-1a32-414e-b7fb-611a3b4277c7
-"29833947506","04886896560",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:50441320/894e431e-68b5-47d8-8b43-f103c95eac3c
-"16812848473","04886896560",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:50441320/894e431e-68b5-47d8-8b43-f103c95eac3c
+"29833947506","04886896560",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:50441320/894e431e-68b5-47d8-8b43-f103c95eac3c,SigningTask_Founders
+"16812848473","04886896560",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:50441320/894e431e-68b5-47d8-8b43-f103c95eac3c,SigningTask_Founders
 "04865899438","20838198385",k6-test-innbygger-vapen,urn:altinn:dialog-id:019c2dc8-1698-72ba-9e2c-feb46d97465a
 "14894299364","20838198385",k6-test-innbygger-vapen,urn:altinn:dialog-id:019c2dbc-f052-7041-8724-fb00ccbeed76
 "12813448996","02816696197",k6-instancedelegation-test,urn:altinn:dialog-id:019ddd67-e6ae-7394-b1bb-105dea4f131d
