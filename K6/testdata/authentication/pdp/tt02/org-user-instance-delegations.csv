@@ -4,8 +4,6 @@
 "14902647547","311764837",correspondence-access-test,urn:altinn:correspondence-id:019dba0c-4ffd-7ce3-a056-22931049bbef
 "14902647547","311764837",correspondence-attachment-test,urn:altinn:correspondence-id:019d9126-8374-71d3-84db-83d819fadac1
 "19895199357","310202398",brg-migratedcorrespondence-5640-2021,urn:altinn:correspondence-id:01995d0f-e15b-733a-8dbf-821b9bd2ce79
-"30856499983","313816915",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51871764/74638d4c-275f-4568-8040-af6979246694
-"30856499983","315043336",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51961130/de5d0a27-3a5f-4c04-951e-70581c5b29d8
 "01896697567","210000992",ks-migratedcorrespondence-3702-1,urn:altinn:correspondence-id:019c09e9-6ab2-799b-8b16-48930a8e0577
 "31889699151","310202398",brg-migratedcorrespondence-5640-2021,urn:altinn:correspondence-id:01995d0f-e15b-733a-8dbf-821b9bd2ce79
 "01906197762","310418234",ske-motorvogn-soknad-vektaarsavgift-refusjon-avregistrering,urn:altinn:dialog-id:019d1ee7-773c-753d-b257-2557ffd39ee5
@@ -20,15 +18,9 @@
 "18898398036","312974703",app_slv_apotekdrift,urn:altinn:instance-id:51658404/9a18c5d4-c916-4d4d-bc46-1f0c01bbec76,Task_2
 "12813247737","313211231",hdir-migratedcorrespondence-4121-1,urn:altinn:correspondence-id:019cdc5e-5389-7518-9c41-9c89cf74ce33
 "01818199690","314242726",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51448647/32944057-7dd4-485c-9a68-7dd8c5086d03
-"29917997339","311041371",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51616797/e0c55fe6-442b-4442-aabc-aeafda8d94fe
 "29917997339","311041371",app_ttd_ttd-bruno-tilgangspakke-app,urn:altinn:instance-id:51616797/49986993-2cec-4e96-85a5-b07c5b7e4c5e
-"29917997339","315684617",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:52019430/3e8b4812-c26c-4bfa-82f5-5c99c9ad90e3
 "29917997339","315684617",app_ttd_ttd-bruno-tilgangspakke-app,urn:altinn:instance-id:52019430/3a875fb6-4610-4436-b179-df45bdbc9fa5
-"25884699358","310705071",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51587157/686f5f1b-4a15-4dc5-b6ce-6c0a1cbeb9ac
-"25884699358","310705071",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51587157/c26f0c8b-1fe6-462d-ba6f-b032c854183d
 "25884699358","310705071",app_ttd_ttd-bruno-tilgangspakke-app,urn:altinn:instance-id:51587157/0f894d28-a3a6-457b-a9e9-7e9827dd5b93
-"05869598129","315684617",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:52019430/1a404054-17b1-432a-979f-5be965441e5c
-"05869598129","315684617",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:52019430/ab194d3a-96a4-4237-8fb9-3a995cb177a6
 "16854795507","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/68f1d32e-39c6-48c0-aa75-a3eb5f1e4aff
 "27815499544","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/f6f1937d-c4fc-421a-9ea8-c7dcab01fd56
 "08875097688","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/670e4643-794e-4bfa-84dd-db1a41b0b964
@@ -76,7 +68,7 @@
 "58917800349","314152212",app_slv_grossisttillatelse,urn:altinn:instance-id:51472688/86a4ea99-d317-4bc4-a7de-4ab6731f32fc,Task_2
 "03815299433","310769738",app_slv_grossisttillatelse,urn:altinn:instance-id:51592838/db5593f2-c6ca-4dcc-8fe8-a92ebd76fd9d,Task_2
 "47910075159","312565846",app_slv_grossisttillatelse,urn:altinn:instance-id:51784897/e5527571-20a9-4d24-9bf2-58909638a5a9,Task_2
-"11854995997","210120912",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51450275/78f32ea4-90fe-4cff-ab47-274925d83de3
+"11854995997","210120912",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51450275/78f32ea4-90fe-4cff-ab47-274925d83de3,SigningTask_Founders
 "46877400166","311734792",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51700962/54cbade3-f1ca-45d7-bd3d-74d7f29ca819
 "17863249783","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/c51416f6-b931-40ef-8bf3-e4a8261eef6c
 "09926097986","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/72d3785d-c4e4-45b6-9c1d-10619c645dcc
@@ -86,7 +78,6 @@
 "03815299433","313859312",app_slv_grossisttillatelse,urn:altinn:instance-id:51874708/b040ade2-add8-4523-b30b-a0353f574fc1,Task_2
 "27894995357","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/96d3ba43-e1ab-40a7-88ab-b1625ad10f54
 "13827599756","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/37f1a74c-8d1c-4fd5-aaf8-4c0d55b71958
-"01828198544","313383113",app_brg_enkeltpersonforetak-react,urn:altinn:instance-id:51772305/623912d2-8605-476c-a856-8523c111ee03
 "47910075159","313905195",app_slv_grossisttillatelse,urn:altinn:instance-id:51877883/fd139089-7e82-4c66-bd5f-befa50e9b5e9,Task_2
 "47910075159","314229053",app_slv_grossisttillatelse,urn:altinn:instance-id:51900260/b3af649d-f3ac-4e29-8fb1-6e8cfc3fe157,Task_2
 "47910075159","314229053",app_slv_grossisttillatelse,urn:altinn:instance-id:51900260/4a490aab-8c3f-417d-b59f-82035ef295cd,Task_2
@@ -292,10 +283,6 @@
 "19909498719","310082414",app_brg_virksomhetsregistrering,urn:altinn:instance-id:51460801/66b54577-a577-451a-9b9f-35bbb63d4460
 "27888795680","316266517",app_brg_virksomhetsregistrering,urn:altinn:instance-id:53443247/99798252-fde8-491d-a80a-996a646a9444
 "27888795680","316266517",app_brg_virksomhetsregistrering,urn:altinn:instance-id:53443247/b0dfa9ef-6e17-4206-ab25-c1fd2450d81e
-"23862849957","310438707",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51563583/{{revokeallbeyondlimitinstanceid}}
-"23862849957","310438707",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51563583/d80b8481-0dfa-4125-ac0b-e33565b5cd74
-"08817498451","310438707",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51563583/{{revokeallbeyondlimitinstanceid}}
-"08817498451","310438707",app_ttd_authz-bruno-instancedelegation,urn:altinn:instance-id:51563583/d80b8481-0dfa-4125-ac0b-e33565b5cd74
 "27888795680","316268609",app_brg_virksomhetsregistrering,urn:altinn:instance-id:53443522/f9ae15cc-23a5-480a-93c6-5c170f29a6aa
 "26826198191","313549461",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51688238/2c03fc5d-8856-456b-bcfc-f59ea8d88b58
 "09886796797","313549461",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51688238/2c03fc5d-8856-456b-bcfc-f59ea8d88b58
