@@ -94,6 +94,5 @@ function checker(res, method, expectedResponse) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        console.log(__ITER);
     };
 }
