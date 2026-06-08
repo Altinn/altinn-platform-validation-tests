@@ -227,9 +227,6 @@
 "47910075159","313896021",app_slv_apotekdrift,urn:altinn:instance-id:51877255/43f665cc-d8eb-490e-9ea3-892d0c6cbb57,Task_2
 "06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/41626ac0-dfca-4af5-8e37-e4e22ecdd82b
 "06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/1f040a4d-b28b-4fdd-8bc6-307b20c87c3c
-"06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/a76ff26b-cdff-46f8-bec6-2809686e1bfe
-"06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/2ea8ae7a-b54d-4b16-911a-a1d4469598fd
-"06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/6018299b-3f56-41e9-ba05-ffbae66bf24b
 "06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/db01ef46-62b8-47a1-8b41-ac8fe6f7eb70
 "06817494380","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/b3e84c75-8321-40e9-aba7-27bb88c1f9bb
 "24855798685","313076407",app_ttd_poc-patentstyret,urn:altinn:instance-id:51820557/c1778e06-023c-4451-9fd3-a9babbcb8035
@@ -300,7 +297,6 @@
 "11925796583","310536261",app_ttd_tryggvirksomhet,urn:altinn:instance-id:51572263/e0418d1c-d776-4b02-a2eb-9a92684a6f9d
 "16057002054","810409282",app_ssb_ra0485-01,urn:altinn:instance-id:50135588/0e5d31f6-29b3-43e9-a942-20b424c3f060
 "16057002054","810409282",app_ssb_ra0485-01,urn:altinn:instance-id:50135588/ced34358-90f0-44b4-8e95-57255482413f
-"16057002054","810409282",app_ssb_ra1130-01,urn:altinn:instance-id:50135588/09f44fa5-fd4a-4627-8ab7-f623f82c2cf2
 "31889699151","210010882",app_ttd_tryggvirksomhet,urn:altinn:instance-id:51448760/d2cffef5-1697-47d8-9d33-203fc05a55f6
 "31889699151","210010882",app_pat_design,urn:altinn:instance-id:51448760/a98b4a5b-0129-4244-8a72-25873f630d93
 "31889699151","210010882",skd-migratedcorrespondence-3476-130314,urn:altinn:correspondence-id:019c3e1e-40b9-74c3-a040-060e6547302b
