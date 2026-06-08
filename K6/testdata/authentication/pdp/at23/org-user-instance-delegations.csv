@@ -1,4 +1,4 @@
-"tossn","fromorg","resourceid","instanceid"
+tossn,fromorg,resourceid,instanceid,task
 "27903449603","310330094",testressurs-tilgangspakke-org-revisorattesterer-3,urn:altinn:dialog-id:019cd145-73a7-7135-8ddc-a7d6d9162097
 "09886796797","310536261",app_ttd_tryggvirksomhet,urn:altinn:instance-id:51233517/f975c0ca-fbc5-432b-bcd1-7d8feddd5c5c
 "62917001303","310330094",testressurs-tilgangspakke-org-revisorattesterer-2,urn:altinn:dialog-id:019cd145-734a-760d-bfaa-2782b98e79bb
@@ -10,9 +10,8 @@
 "24816097319","310536261",app_ttd_tryggvirksomhet,urn:altinn:instance-id:51233517/f975c0ca-fbc5-432b-bcd1-7d8feddd5c5c
 "68844800952","310536261",app_ttd_tryggvirksomhet,urn:altinn:instance-id:51233517/f975c0ca-fbc5-432b-bcd1-7d8feddd5c5c
 "68844800952","310536261",app_ttd_tryggvirksomhet,urn:altinn:dialog-id:019d1f6c-8bae-70de-8311-5279290d7d32
-"14821098786","310937606",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51269134/c23828cc-f629-4272-8c09-687432e62f7f
-"14926097890","310842346",app_ttd_instance-gui-test,urn:altinn:instance-id:51260688/e39ce2dd-7892-44ad-91fd-1b9a03829fac
-"08896298330","310779628",app_ttd_apps-test,urn:altinn:instance-id:51255128/44e61ad7-ed1d-42aa-b4b7-0538e0af71c9
+"14821098786","310937606",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51269134/c23828cc-f629-4272-8c09-687432e62f7f,SigningTask_Founders
+"08896298330","310779628",app_ttd_apps-test,urn:altinn:instance-id:51255128/44e61ad7-ed1d-42aa-b4b7-0538e0af71c9,SigningTask_Founders
 "14816399069","310779628",app_ttd_apps-test,urn:altinn:instance-id:51255128/44e61ad7-ed1d-42aa-b4b7-0538e0af71c9
 "20848997014","310536261",app_ttd_tryggvirksomhet,urn:altinn:instance-id:51233517/f975c0ca-fbc5-432b-bcd1-7d8feddd5c5c
 "66928400205","314290046",app_ttd_signering-brukerstyrt,urn:altinn:instance-id:51564249/6a6bbfa2-1c5d-4673-8df7-28c55699ec84

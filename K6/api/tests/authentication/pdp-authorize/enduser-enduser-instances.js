@@ -37,7 +37,7 @@ export default function (testData) {
         party.fromssn,
         party.resourceid,
         party.instanceid,
-        "Task_2",
+        party.task,
         action,
         expectedResponse,
         __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
