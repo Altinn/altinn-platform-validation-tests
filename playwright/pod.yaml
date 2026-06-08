@@ -9,7 +9,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: playwright
-      image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:latest
+      image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:altinn-access-management-frontend
       volumeMounts:
         - name: swa-config
           mountPath: /etc/swa-config

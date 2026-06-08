@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export APP_ENV=altinn-access-management-frontend
-
 # git clone https://github.com/Altinn/altinn-platform-validation-tests.git
 # cd altinn-platform-validation-tests/playwright
 git clone https://github.com/monteiro-renato/altinn-access-management-frontend.git
@@ -20,7 +18,8 @@ set -e
 
 #if [ "$exit_code" -eq 53 ]; then
     #echo "Not all Playwright Tests ran successfully, uploading the report..."
-echo --env "$APP_ENV"
+    # azcopy cp --recursive "./playwright-report/data/*" "https://playwrightartifacts6546.blob.core.windows.net/playwright-artifacts"
+    # rm -rf playwright-report/data/
 npx -y @azure/static-web-apps-cli deploy \
         --app-location "./playwright-report" \
         --deployment-token "$APP_TOKEN" \
@@ -28,7 +27,7 @@ npx -y @azure/static-web-apps-cli deploy \
         --resource-group playwright-rg \
         --app-name playwright-reports-webapp \
         --swa-config-location /etc/swa-config/ \
-    	--env "$APP_ENV" \
+    	--env "altinn-access-management-frontend"
 
 
     #curl \
