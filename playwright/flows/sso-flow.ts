@@ -9,13 +9,13 @@ import { TilgangsStyring } from "../pages/access_management/tilgangsstyring";
 export class SsoFlow {
 
     constructor(
-        private page: Page,
-        private loginPage = new LoginPage(page),
-        private menuPage = new MenuPage(page),
-        private arbeidsflate = new ArbeidsFlate(page),
-        private arbeidsflateProfil = new ArbeidsFlateProfil(page),
-        private infoPortalen = new InfoPortalen(page),
-        private tilgangsStyring = new TilgangsStyring(page)
+        protected page: Page,
+        protected loginPage = new LoginPage(page),
+        protected menuPage = new MenuPage(page),
+        protected arbeidsflate = new ArbeidsFlate(page),
+        protected arbeidsflateProfil = new ArbeidsFlateProfil(page),
+        protected infoPortalen = new InfoPortalen(page),
+        protected tilgangsStyring = new TilgangsStyring(page)
 
     ) {
     }
@@ -27,10 +27,11 @@ export class SsoFlow {
         await this.loginPage.loginWithTestUser(user);
     }
 
-    async logout(area: string) {
+    async logout(area: string, user: { pid: string; name: string }) {
         if (area === 'infoportalen') {
             // sikre at vi er på infoportalen
             await this.infoPortalen.navigateTo();
+            await this.infoPortalen.assertOnPage(user);
         }
         await this.menuPage.clickMenuButton();
         await this.menuPage.clickLogoutButton();
@@ -109,19 +110,5 @@ export class SsoFlow {
             default:
                 throw new Error(`Ukjent område: ${area}`);
         }
-    }
-
-    async checkSectionsAreVisible(area: string, sections: string[]) {
-        switch (area) {
-            case 'tilgangsstyring':
-                await this.tilgangsStyring.checkSectionsAreVisible(sections);
-                break;
-            default:
-                throw new Error(`Ukjent område: ${area}`);
-        }
-    }
-
-    async setLanguage(language: string) {
-        await this.menuPage.setLanguage(language);
     }
 }

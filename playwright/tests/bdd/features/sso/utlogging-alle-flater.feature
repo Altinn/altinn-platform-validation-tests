@@ -19,4 +19,4 @@ Egenskap: Utlogging skjer på tvers av områder
       | arbeidsflate        | arbeidsflate        |
       | arbeidsflate-profil | arbeidsflate-profil |
       | tilgangsstyring     | tilgangsstyring     |
-      | infoportalen        | arbeidsflate        |
+      | infoportalen        | arbeidsflate        |

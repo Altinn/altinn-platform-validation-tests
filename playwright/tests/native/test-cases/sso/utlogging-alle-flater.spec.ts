@@ -30,7 +30,7 @@ for (const area of areas) {
             });
 
             await test.step('Bruker logger ut', async () => {
-                await app.ssoFlow.logout(area.startarea);
+                await app.ssoFlow.logout(area.startarea, user);
             });
 
             await test.step('Bruker skal være utlogget på infoportalen', async () => {

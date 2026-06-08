@@ -33,12 +33,11 @@ When('bruker navigerer til andre områder skal bruker fortsatt være innlogget:'
 });
 
 When('bruker logger ut', async ({ app }) => {
-    await app.ssoFlow.logout(app.testContext.currentArea || '');
+    await app.ssoFlow.logout(app.testContext.currentArea || '', user);
 });
 
 Then('skal bruker være utlogget på infoportalen', async ({ app }) => {
     await app.ssoFlow.checkLoggedOut("infoportalen");
-    await app.ssoFlow.pause(2000); // legger inn en liten pause for å sikre at eventuelle asynkrone operasjoner er fullført før vi fortsetter testen
 });
 
 Then('fortsatt være utlogget når bruker går til område:', async ({ app }, dataTable: DataTable) => {
