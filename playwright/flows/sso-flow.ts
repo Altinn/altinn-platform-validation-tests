@@ -111,4 +111,18 @@ export class SsoFlow {
                 throw new Error(`Ukjent område: ${area}`);
         }
     }
+
+    async checkSectionsAreVisible(area: string, sections: string[]) {
+        switch (area) {
+            case 'tilgangsstyring':
+                await this.tilgangsStyring.checkSectionsAreVisible(sections);
+                break;
+            default:
+                throw new Error(`Ukjent område: ${area}`);
+        }
+    }
+
+    async setLanguage(language: string) {
+        await this.menuPage.setLanguage(language);
+    }
 }
