@@ -9,13 +9,13 @@ import { TilgangsStyring } from "../pages/access_management/tilgangsstyring";
 export class SsoFlow {
 
     constructor(
-        protected page: Page,
-        protected loginPage = new LoginPage(page),
-        protected menuPage = new MenuPage(page),
-        protected arbeidsflate = new ArbeidsFlate(page),
-        protected arbeidsflateProfil = new ArbeidsFlateProfil(page),
-        protected infoPortalen = new InfoPortalen(page),
-        protected tilgangsStyring = new TilgangsStyring(page)
+        private page: Page,
+        private loginPage = new LoginPage(page),
+        private menuPage = new MenuPage(page),
+        private arbeidsflate = new ArbeidsFlate(page),
+        private arbeidsflateProfil = new ArbeidsFlateProfil(page),
+        private infoPortalen = new InfoPortalen(page),
+        private tilgangsStyring = new TilgangsStyring(page)
 
     ) {
     }
