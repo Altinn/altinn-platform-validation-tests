@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: playwright
+  namespace: platform
+  labels:
+    testrunner: playwright
+spec:
+  restartPolicy: Never
+  containers:
+    - name: playwright
+      image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:latest
+      volumeMounts:
+        - name: swa-config
+          mountPath: /etc/swa-config
+          readOnly: true
+      env:
+        - name: APP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: swa-app-token
+              key: APP_TOKEN
+        - name: SUBSCRIPTION_ID
+          valueFrom:
+            secretKeyRef:
+              name: swa-app-token
+              key: SUBSCRIPTION_ID
+        - name: SLACK_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: slack-test
+              key: SLACK_WEBHOOK_URL
+        - name: REPORT_URL
+          valueFrom:
+            secretKeyRef:
+              name: swa-app-token
+              key: REPORT_URL
+  volumes:
+    - name: swa-config
+      secret:
+        secretName: swa-config

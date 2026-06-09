@@ -236,11 +236,13 @@ class PdpAuthorizeClient {
                 "Value": instanceId,
             });
 
-        body.Request.Resource[0].Attribute.push(
-            {
-                "AttributeId": "urn:altinn:task",
-                "Value": task,
-            });
+        if (task) {
+            body.Request.Resource[0].Attribute.push(
+                {
+                    "AttributeId": "urn:altinn:task",
+                    "Value": task,
+                });
+        }
         return body;
     }
 

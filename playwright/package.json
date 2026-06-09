@@ -16,7 +16,8 @@
         "native:sso:infoportal": "playwright test tests/native/test-cases/sso/infoportal-innlogging.spec.ts --project=native",
         "native:sso": "playwright test tests/native/test-cases/sso/*.spec.ts --project=native",
         "native:tilgangsstyring": "playwright test tests/native/test-cases/tilgangsstyring/*.spec.ts --project=native",
-        "native": "playwright test --project=native"
+        "native": "playwright test --project=native",
+        "example": "playwright test playwright/tests/native/test-cases/example/example.spec.ts"
     },
     "keywords": [],
     "author": "",
