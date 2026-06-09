@@ -49,7 +49,7 @@ export function handleSummary(data) {
     }
 
     return {
-    // If you dont append on the initial lines when using stdout, it wont print the last check??
-        stdout: lines.join("\n") + "\n\n=== END SUMMARY === \n\n",
+        // If you dont append on the initial lines when using stdout, it wont print the last check??
+        stdout: lines.join("\n") + "\n\n \n\n",
     };
 }
