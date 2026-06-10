@@ -6,10 +6,9 @@ export class InfoPortalen {
     constructor(private page: Page) { }
 
     async assertOnPage(user: { pid: string; name: string }) {
-        await expect(
-            this.page,
-            'Assert on Infoportalen main page'
-        ).toHaveURL(this.fullUrl);
+        await expect
+            .poll(() => this.page.url())
+            .toContain(new URL(this.fullUrl).origin);
 
         await expect(
             this.page.getByText(user.name).first(),

@@ -1,8 +1,7 @@
 import { test } from '../../../../fixtures/app.fixture';
 
 const user = {
-    pid: '13822649208',
-    name: 'Oransje Tyr',
+    pid: '31851449372', name: "Ordinær Æresdoktor",
 };
 
 const areas = [
