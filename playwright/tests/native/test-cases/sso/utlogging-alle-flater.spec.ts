@@ -1,8 +1,7 @@
 import { test } from '../../../../fixtures/app.fixture';
 
 const user = {
-    pid: '13822649208',
-    name: 'Oransje Tyr',
+    pid: '31851449372', name: "Ordinær Æresdoktor",
 };
 
 const areas = [
@@ -30,7 +29,7 @@ for (const area of areas) {
             });
 
             await test.step('Bruker logger ut', async () => {
-                await app.ssoFlow.logout(area.startarea);
+                await app.ssoFlow.logout(area.startarea, user);
             });
 
             await test.step('Bruker skal være utlogget på infoportalen', async () => {

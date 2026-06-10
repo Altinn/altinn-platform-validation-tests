@@ -6,17 +6,16 @@ export class InfoPortalen {
     constructor(private page: Page) { }
 
     async assertOnPage(user: { pid: string; name: string }) {
-        await expect(this.page, 'Assert on Infoportalen main page').toHaveURL(this.fullUrl);
-        const matches = this.page.getByText(user.name);
+        await expect
+            .poll(() => this.page.url())
+            .toContain(new URL(this.fullUrl).origin);
 
-        for (let i = 0; i < await matches.count(); i++) {
-            const match = matches.nth(i);
-
-            if (await match.isVisible()) {
-                await expect(match, "Verify that user is logged in on Infoportalen").toBeVisible();
-                break;
-            }
-        }
+        await expect(
+            this.page.getByText(user.name).first(),
+            'Verify that user is logged in on Infoportalen'
+        ).toBeVisible({
+            timeout: 10_000,
+        });
     }
 
     async assertLoggedOut() {

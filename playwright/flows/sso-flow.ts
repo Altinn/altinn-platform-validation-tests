@@ -27,10 +27,11 @@ export class SsoFlow {
         await this.loginPage.loginWithTestUser(user);
     }
 
-    async logout(area: string) {
+    async logout(area: string, user: { pid: string; name: string }) {
         if (area === 'infoportalen') {
             // sikre at vi er på infoportalen
             await this.infoPortalen.navigateTo();
+            await this.infoPortalen.assertOnPage(user);
         }
         await this.menuPage.clickMenuButton();
         await this.menuPage.clickLogoutButton();
@@ -109,5 +110,19 @@ export class SsoFlow {
             default:
                 throw new Error(`Ukjent område: ${area}`);
         }
+    }
+
+    async checkSectionsAreVisible(area: string, sections: string[]) {
+        switch (area) {
+            case 'tilgangsstyring':
+                await this.tilgangsStyring.checkSectionsAreVisible(sections);
+                break;
+            default:
+                throw new Error(`Ukjent område: ${area}`);
+        }
+    }
+
+    async setLanguage(language: string) {
+        await this.menuPage.setLanguage(language);
     }
 }
