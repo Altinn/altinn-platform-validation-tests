@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner .
+docker push altinnplatformvalidationtests.azurecr.io/custom-playwright-runner
+
 NAMESPACE="platform"
 
 kubectl --context k6tests-cluster delete -f pod.yaml || true
