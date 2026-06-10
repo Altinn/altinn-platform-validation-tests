@@ -30,7 +30,7 @@ export default defineConfig({
     ],
 
     use: {
-        headless: false,
+        headless: true,
         trace: 'on',
         video: 'retain-on-failure',
     },
