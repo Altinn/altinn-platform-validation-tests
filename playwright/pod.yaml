@@ -5,8 +5,10 @@ metadata:
   namespace: platform
   labels:
     testrunner: playwright
+    azure.workload.identity/use: "true"
 spec:
   restartPolicy: Never
+  serviceAccountName: playwright-reporter-sa
   containers:
     - name: playwright
       image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:latest
@@ -35,6 +37,15 @@ spec:
             secretKeyRef:
               name: swa-app-token
               key: REPORT_URL
+
+        - name: PLAYWRIGHT_HTML_OPEN
+          value: "never"
+
+        - name: PLAYWRIGHT_HTML_ATTACHMENTS_BASE_URL
+          value: "https://jolly-plant-033965703.7.azurestaticapps.net/api/getreport/"
+
+        - name: PLAYWRIGHT_JUNIT_OUTPUT_NAME
+          value: "test-results.xml"
   volumes:
     - name: swa-config
       secret:
