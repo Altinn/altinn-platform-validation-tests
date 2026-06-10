@@ -6,7 +6,8 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-const orgNo = "713431400"; // digdir orgno
+
+const orgNo = __ENV.API_ENVIRONMENT == "yt01" ? "713431400" : "991825827";
 
 const label = { action: "create-dialog" };
 
@@ -28,7 +29,7 @@ export const options = getOptions([label]);
 let serviceOwnerApiClient = undefined;
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/dialogporten/K6/testdata/diaslogporten/${__ENV.ENVIRONMENT}/endusers.csv`);
     return parseCsvData(res.body);
 }
 
