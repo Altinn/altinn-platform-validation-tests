@@ -9,16 +9,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
-
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
-
   - test-scope: dialogporten-serviceowner
     test_file: create-dialog.js
     contexts:

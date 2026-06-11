@@ -6,7 +6,7 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: false
+          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -18,7 +18,7 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: false
+          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -30,7 +30,7 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: false
+          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -42,7 +42,7 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: false
+          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
