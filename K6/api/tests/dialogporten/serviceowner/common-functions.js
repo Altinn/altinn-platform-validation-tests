@@ -48,6 +48,6 @@ export function getClients() {
  * @returns data parsed from the CSV file containing end user information
  */
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/performance/dialogporten/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
     return parseCsvData(res.body);
 }
