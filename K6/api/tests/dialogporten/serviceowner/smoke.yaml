@@ -6,7 +6,7 @@ test_definitions:
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
 
   - test-scope: dialogporten-serviceowner
@@ -14,15 +14,17 @@ test_definitions:
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
 
   - test-scope: dialogporten-serviceowner
@@ -30,15 +32,17 @@ test_definitions:
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
 
   - test-scope: dialogporten-serviceowner
@@ -46,13 +50,15 @@ test_definitions:
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
