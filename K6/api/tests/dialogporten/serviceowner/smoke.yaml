@@ -5,61 +5,73 @@ test_definitions:
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
+          config_file: conf.json
 
   - test-scope: dialogporten-serviceowner
     test_file: K6/api/tests/dialogporten/serviceowner/create-dialog.js
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
+          config_file: conf.json
 
   - test-scope: dialogporten-serviceowner
     test_file: K6/api/tests/dialogporten/serviceowner/create-dialog-transmission-activity.js
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
+          config_file: conf.json
 
   - test-scope: dialogporten-serviceowner
     test_file: K6/api/tests/dialogporten/serviceowner/get-dialogs.js
     contexts:
       - environment: yt01
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: tt02
         test_type:
-          type: functional
+          type: smoke
           enabled: false
+          config_file: conf.json
       - environment: at23
         test_type:
-          type: functional
+          type: smoke
           enabled: true
+          config_file: conf.json

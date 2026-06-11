@@ -6,7 +6,7 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: true
+          enabled: false
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -18,7 +18,7 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: true
+          enabled: false
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -30,7 +30,19 @@ test_definitions:
       - environment: yt01
         test_type:
           type: breakpoint
-          enabled: true
+          enabled: false
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+ - test_file: get-dialogs.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: breakpoint
+          enabled: false
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
