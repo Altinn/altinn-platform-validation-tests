@@ -190,11 +190,11 @@ class ServiceOwnerApiClient {
 
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearch_Dialog
-     * @param  partyId 
-     * @param {*} serviceResource 
-     * @param {*} serviceOwner 
-     * @param {*} labels 
-     * @returns http.RefinedResponse 
+     * @param  partyId
+     * @param {*} serviceResource
+     * @param {*} serviceOwner
+     * @param {*} labels
+     * @returns http.RefinedResponse
      */
 
     GetDialogs(
@@ -208,7 +208,7 @@ class ServiceOwnerApiClient {
             if (value) url.searchParams.append(key, value);
         }
 
-        let tags = { endpoint: url.toString() };
+        let tags = { endpoint: this.FULL_PATH + "/dialogs" };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
