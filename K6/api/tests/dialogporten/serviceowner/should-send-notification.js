@@ -23,7 +23,7 @@ let serviceOwnerApiClient = undefined;
 /**
  * Function to set up and return clients to interact with the Service Owner Dialog API
  *
- * @returns {Array} An array containing the AuthorizedPartiesClient instance
+ * @returns {Array} An array containing the ServiceOwnerApiClient instance
  */
 export function getClients() {
     if (serviceOwnerApiClient == undefined) {

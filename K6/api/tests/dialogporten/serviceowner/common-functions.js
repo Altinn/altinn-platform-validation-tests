@@ -26,7 +26,7 @@ export const serviceResources =
 /**
 * Function to set up and return clients to interact with the Service Owner Dialog API
 *
-* @returns {Array} An array containing the AuthorizedPartiesClient instance
+* @returns {Array} An array containing the ServiceOwnerApiClient instance
 */
 let serviceOwnerApiClient = undefined;
 export function getClients() {

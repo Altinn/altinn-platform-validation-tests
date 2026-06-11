@@ -1,7 +1,8 @@
 namespace: dialogporten
+base_dir: K6/api/tests/dialogporten/serviceowner/
 test_definitions:
   - test-scope: dialogporten-serviceowner
-    test_file: K6/api/tests/dialogporten/serviceowner/should-send-notification.js
+    test_file: should-send-notification.js
     contexts:
       - environment: yt01
         test_type:
@@ -17,7 +18,7 @@ test_definitions:
           enabled: true
 
   - test-scope: dialogporten-serviceowner
-    test_file: K6/api/tests/dialogporten/serviceowner/create-dialog.js
+    test_file: create-dialog.js
     contexts:
       - environment: yt01
         test_type:
@@ -33,7 +34,7 @@ test_definitions:
           enabled: true
 
   - test-scope: dialogporten-serviceowner
-    test_file: K6/api/tests/dialogporten/serviceowner/create-dialog-transmission-activity.js
+    test_file: create-dialog-transmission-activity.js
     contexts:
       - environment: yt01
         test_type:
@@ -49,7 +50,7 @@ test_definitions:
           enabled: true
 
   - test-scope: dialogporten-serviceowner
-    test_file: K6/api/tests/dialogporten/serviceowner/get-dialogs.js
+    test_file: get-dialogs.js
     contexts:
       - environment: yt01
         test_type:

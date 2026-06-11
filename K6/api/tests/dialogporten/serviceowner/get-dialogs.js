@@ -19,7 +19,7 @@ export default function (data) {
     const queryParams = {
         endsuserid: `urn:altinn:person:identifier-no:${ssn}`,
         serviceResources: `urn:altinn:resource:${resource}`
-    }
+    };
     GetDialogs(
         serviceOwnerApiClient,
         queryParams,
