@@ -8,14 +8,6 @@ test_definitions:
         test_type:
           type: functional
           enabled: false
-      - environment: tt02
-        test_type:
-          type: functional
-          enabled: false
-      - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
   - test-scope: dialogporten-serviceowner
     test_file: create-dialog.js
