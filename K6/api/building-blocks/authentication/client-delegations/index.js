@@ -1,5 +1,5 @@
 export { GetMyClients } from "./get-client-delegations.js";
-export { GetAgents, PostAgents, DeleteAgents, GetClients } from "./agents.js";
+export { GetAgents, PostAgents, DeleteAgents, GetClients, DelegationExport } from "./agents.js";
 export { GetAccessPackages, PostAccessPackages, DeleteAccessPackages, } from "./agents-access-packages.js";
 export { PostSingleRight, GetDelegationCheck, RevokeSingleRight } from "./single-rights.js";
 export {

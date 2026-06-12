@@ -1,0 +1,86 @@
+import exec from "k6/execution";
+import http from "k6/http";
+import { group } from "k6";
+
+import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
+import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { DelegationExport } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { getTokenOpts } from "./commons.js";
+
+// Labels for different actions
+const label = { step: "Export delegations" };
+
+const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
+
+// get k6 options
+export const options = getOptions(
+    [label],
+);
+
+
+let tokenGenerator = undefined;
+let clientDelegationsApiClient = undefined;
+
+// get k6 options
+
+function getClients() {
+    if (tokenGenerator == undefined) {
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+    }
+    if (clientDelegationsApiClient == undefined) {
+        clientDelegationsApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+    }
+    return [clientDelegationsApiClient, tokenGenerator];
+}
+
+/**
+ * Setup function to segment data for VUs.
+ */
+export function setup() {
+    const numberOfVUs = getNumberOfVUs();
+
+    const baseUrl =
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}`;
+
+    const files = [
+        "fullmakt-org-org.csv",
+        "fullmakt-user-user.csv",
+        "instance-delegation-org-user.csv",
+        "instance-delegation-user-user.csv",
+        "single-service-org-org.csv",
+        "single-service-user-user.csv",
+    ];
+
+    const allData = files.flatMap(file => {
+        const res = http.get(`${baseUrl}/${file}`);
+
+        if (res.status !== 200) {
+            throw new Error(
+                `Could not load ${file}. Status: ${res.status}`
+            );
+        }
+
+        return parseCsvData(res.body);
+    });
+
+    return segmentData(allData, numberOfVUs);
+}
+
+/**
+ * Main function executed by each VU.
+ */
+export default function (segmentedData) {
+    const [clientDelegationsApiClient, tokenGenerator] = getClients();
+    const user = getItemFromList(segmentedData[exec.vu.idInTest - 1], randomize);
+    tokenGenerator.setTokenGeneratorOptions(getTokenOpts(user.userId, user.partyUuid));
+    const queryParams = {
+        partyUuid: user.orgUuid,
+        includeSubunits: true,
+    };
+    DelegationExport(clientDelegationsApiClient, queryParams, label);
+}
