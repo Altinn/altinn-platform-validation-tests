@@ -208,7 +208,10 @@ class ServiceOwnerApiClient {
             if (value) url.searchParams.append(key, value);
         }
 
-        let tags = { endpoint: this.FULL_PATH + "/dialogs" };
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs",
+            name: this.FULL_PATH + "/dialogs"
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
