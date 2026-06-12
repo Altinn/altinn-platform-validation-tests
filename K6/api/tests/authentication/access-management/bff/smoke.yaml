@@ -84,7 +84,7 @@ test_definitions:
           enabled: true
           config_file: conf.json
 
-- test_scope: access-management-bff
+  - test_scope: access-management-bff
     test_file: delegation-export.js
     contexts:
       - environment: yt01
