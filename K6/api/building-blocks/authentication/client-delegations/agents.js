@@ -50,6 +50,19 @@ export function GetClients(clientDelegationsApiClient, queryParams, labels = nul
 }
 
 /**
+ * Delegation Export
+ * @param {BffAccessManagementApiClient} accessManagementApiClient A client to interact with the client delegations API
+ * @param {} queryParams - queryParams for the request
+ * @param {*} labels - labels for the request
+ * @return {Object} response body
+ */
+export function DelegationExport(accessManagementApiClient, queryParams, labels = null) {
+    const res = accessManagementApiClient.DelegationExport(queryParams, labels);
+    checker(res, "Export delegations");
+    return res.body;
+}
+
+/**
  * Function to check common response properties
  * @param {} res - response object
  * @param {*} method - method name for logging

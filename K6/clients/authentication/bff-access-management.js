@@ -510,6 +510,33 @@ class BffAccessManagementApiClient {
         };
         return http.get(url.toString(), params);
     }
+
+    /**
+    * Delegation Export
+    * Docs: TODO: add docs link
+    * @param {Object} queryParams
+    * @param {string|null} label - label for the request
+    * @return http.RefinedResponse
+    */
+    DelegationExport(queryParams, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/delegationexport`);
+        let tags = { endpoint: url.toString(), name: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        console.log(url.toString());
+        return http.get(url.toString(), params);
+
+    }
 }
 
 export { BffAccessManagementApiClient };
