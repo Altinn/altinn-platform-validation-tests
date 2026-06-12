@@ -48,12 +48,12 @@ export function setup() {
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}`;
 
     const files = [
-        'fullmakt-org-org.csv',
-        'fullmakt-user-user.csv',
-        'instance-delegation-org-user.csv',
-        'instance-delegation-user-user.csv',
-        'single-service-org-org.csv',
-        'single-service-user-user.csv',
+        "fullmakt-org-org.csv",
+        "fullmakt-user-user.csv",
+        "instance-delegation-org-user.csv",
+        "instance-delegation-user-user.csv",
+        "single-service-org-org.csv",
+        "single-service-user-user.csv",
     ];
 
     const allData = files.flatMap(file => {
@@ -81,6 +81,6 @@ export default function (segmentedData) {
     const queryParams = {
         partyUuid: user.orgUuid,
         includeSubunits: true,
-    }
+    };
     DelegationExport(clientDelegationsApiClient, queryParams, label);
 }
