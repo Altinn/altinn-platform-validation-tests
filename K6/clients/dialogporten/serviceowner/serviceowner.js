@@ -345,7 +345,7 @@ class ServiceOwnerApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/serviceowners/${serviceOwner}/dialogs/${dialogId}/context/labels`);
+        const url = new URL(this.FULL_PATH + `/serviceowners/dialogs/${dialogId}/context/labels`);
 
         let tags = {
             endpoint: this.FULL_PATH + "/serviceowners/serviceOwner/dialogs/dialogId/context/labels",
