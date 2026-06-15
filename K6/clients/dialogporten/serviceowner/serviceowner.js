@@ -345,11 +345,11 @@ class ServiceOwnerApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/serviceowners/dialogs/${dialogId}/context/labels`);
+        const url = new URL(this.FULL_PATH + `dialogs/${dialogId}/context/labels`);
 
         let tags = {
-            endpoint: this.FULL_PATH + "/serviceowners/serviceOwner/dialogs/dialogId/context/labels",
-            name: this.FULL_PATH + "/serviceowners/serviceOwner/dialogs/dialogId/context/labels"
+            endpoint: this.FULL_PATH + "dialogs/dialogId/context/labels",
+            name: this.FULL_PATH + "dialogs/dialogId/context/labels"
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -523,15 +523,15 @@ class ServiceOwnerApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/endusercontext");
+        const url = new URL(this.FULL_PATH + "dialogs/endusercontext");
 
         for (const [key, value] of Object.entries(queryParams)) {
             if (value) url.searchParams.append(key, value);
         }
 
         let tags = {
-            endpoint: this.FULL_PATH + "/endusercontext",
-            name: this.FULL_PATH + "/endusercontext"
+            endpoint: this.FULL_PATH + "dialogs/endusercontext",
+            name: this.FULL_PATH + "dialogs/endusercontext"
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
