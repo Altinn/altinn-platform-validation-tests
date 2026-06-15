@@ -375,7 +375,7 @@ class ServiceOwnerApiClient {
      * @param { string } labels
      * @return http.RefinedResponse
      */
-    GetDialogSeenLog(
+    GetDialogSeenLogs(
         dialogId,
         labels = null,
     ) {
@@ -411,7 +411,7 @@ class ServiceOwnerApiClient {
      * @param { string } labels
      * @return http.RefinedResponse
      */
-    GetDialogSeenLogEntry(
+    GetDialogSeenLog(
         dialogId,
         seenLogId,
         labels = null,

@@ -8,10 +8,10 @@ import {
     GetDialogActivity,
     GetDialogTransmissions,
     GetDialogTransmission,
+    GetDialogSeenLogs,
     GetDialogSeenLog,
-    GetDialogSeenLogEntry,
     GetDialogLookup,
-} from "../../../building-blocks/dialogporten/serviceowner/get-dialogs.js";
+} from "../../../building-blocks/dialogporten/serviceowner/index.js";
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -112,14 +112,14 @@ function getTransmissions(serviceOwnerApiClient, dialogId) {
 }
 
 function getSeenLogs(serviceOwnerApiClient, dialogId) {
-    const res = GetDialogSeenLog(
+    const res = GetDialogSeenLogs(
         serviceOwnerApiClient,
         dialogId,
         getDialogSeenLogsLabel,
     );
     const seenLogs = JSON.parse(res);
     if (seenLogs.length > 0) {
-        GetDialogSeenLogEntry(
+        GetDialogSeenLog(
             serviceOwnerApiClient,
             dialogId,
             getItemFromList(seenLogs, randomize).id,
