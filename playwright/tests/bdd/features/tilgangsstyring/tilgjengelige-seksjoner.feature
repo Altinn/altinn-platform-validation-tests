@@ -1,15 +1,15 @@
 #language: no
 
 Egenskap: Tilgjengelige seksjoner i tilgangsstyring
-  
+
   Scenario: Bruker ser oversikt over navigasjonsvalg bokmål
     Gitt at en innlogget bruker har åpnet siden for tilgangsstyring
     Når siden vises
     Og språket er satt til norsk bokmål
     Så skal følgende seksjoner vises:
      | Forespørsler                 |
-     | Brukere                      |                    
-     | Fullmakter                   |                
+     | Brukere                      |
+     | Fullmakter                   |
      | Fullmakter hos andre         |
      | Samtykke- og fullmaktsavtaler|
 
@@ -19,8 +19,8 @@ Egenskap: Tilgjengelige seksjoner i tilgangsstyring
     Og språket er satt til norsk nynorsk
     Så skal følgende seksjoner vises:
      | Førespurnader                |
-     | Brukarar                     |                    
-     | Fullmakter                   |                
+     | Brukarar                     |
+     | Fullmakter                   |
      | Fullmakter hos andre         |
      | Samtykke- og fullmaktsavtaler|
 
@@ -30,10 +30,9 @@ Egenskap: Tilgjengelige seksjoner i tilgangsstyring
     Og språket er satt til engelsk
     Så skal følgende seksjoner vises:
      | Requests                                 |
-     | Users                                    |                    
-     | Powers of attorney                       |                
+     | Users                                    |
+     | Powers of attorney                       |
      | Powers of attorney from others           |
      | Consent and power of attorney agreements |
 
 
-  

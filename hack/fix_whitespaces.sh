@@ -45,7 +45,7 @@ done
 # Add file selection
 FIND_CMD+=( -type f -print )
 
-"${FIND_CMD[@]}" | while read -r file; do
+while read -r file; do
     # Skip binary files
     if ! grep -Iq . "$file"; then
         continue
@@ -62,7 +62,7 @@ FIND_CMD+=( -type f -print )
         fi
         found=1
     fi
-done
+done < <("${FIND_CMD[@]}")
 
 if [ "$FIX" = false ] && [ "$found" -eq 1 ]; then
     exit 1
