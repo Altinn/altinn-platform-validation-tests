@@ -190,10 +190,7 @@ class ServiceOwnerApiClient {
 
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearch_Dialog
-     * @param  partyId
-     * @param {*} serviceResource
-     * @param {*} serviceOwner
-     * @param {*} labels
+     * @param  queryParams - object containing query parameters for the request
      * @returns http.RefinedResponse
      */
 
@@ -211,6 +208,330 @@ class ServiceOwnerApiClient {
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs",
             name: this.FULL_PATH + "/dialogs"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGet_Dialog
+     * @param { string } dialogId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialog(
+        dialogId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId",
+            name: this.FULL_PATH + "/dialogs/dialogId"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchActivities_DialogActivity
+     * @param { string } dialogId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogActivities(
+        dialogId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
+            name: this.FULL_PATH + "/dialogs/dialogId/activities"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGetActivity_DialogActivity
+     * @param { string } dialogId
+     * @param { string } activityId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogActivity(
+        dialogId,
+        activityId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities/${activityId}`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
+            name: this.FULL_PATH + "/dialogs/dialogId/activities/activityId"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabel_ServiceOwnerLabel
+    * @param { string } dialogId
+    * @param { string } labels
+    * @return http.RefinedResponse
+    */
+    GetServiceOwnerLabels(
+        dialogId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/serviceowners/${serviceOwner}/dialogs/${dialogId}/context/labels`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/serviceowners/serviceOwner/dialogs/dialogId/context/labels",
+            name: this.FULL_PATH + "/serviceowners/serviceOwner/dialogs/dialogId/context/labels"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchSeenLogs_DialogSeenLog
+     * @param { string } dialogId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogSeenLog(
+        dialogId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/seenlog`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog",
+            name: this.FULL_PATH + "/dialogs/dialogId/seenlog"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGetSeenLog_DialogSeenLog
+     * @param { string } dialogId
+     * @param { string } seenLogId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogSeenLogEntry(
+        dialogId,
+        seenLogId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/seenlog/${seenLogId}`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
+            name: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogTransmission
+     * @param { string } dialogId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogTransmissions(
+        dialogId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+            name: this.FULL_PATH + "/dialogs/dialogId/transmissions"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGetTransmission_DialogTransmission
+     * @param { string } dialogId
+     * @param { string } transmissionId
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogTransmission(
+        dialogId,
+        transmissionId,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`);
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
+            name: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+        return http.get(url.toString(), params);
+    }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContext
+     * @param  queryParams - object containing query parameters for the request
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetEndUserContext(
+        queryParams,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + "/endusercontext");
+
+        for (const [key, value] of Object.entries(queryParams)) {
+            if (value) url.searchParams.append(key, value);
+        }
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/endusercontext",
+            name: this.FULL_PATH + "/endusercontext"
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
