@@ -4,9 +4,6 @@ test_definitions:
   - test_file: for-email-addr.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -17,9 +14,6 @@ test_definitions:
   - test_file: for-mobile-number.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -30,9 +24,6 @@ test_definitions:
   - test_file: for-orgs.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -45,9 +36,6 @@ test_definitions:
   - test_file: for-persons.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
