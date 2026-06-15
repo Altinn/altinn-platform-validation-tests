@@ -11,4 +11,5 @@ export {
     GetDialogTransmissions,
     GetDialogTransmission,
     GetEndUserContext,
+    GetDialogLookup,
 } from "./get-dialogs.js";

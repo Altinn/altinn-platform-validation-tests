@@ -7,18 +7,24 @@ import {
     GetDialogActivities,
     GetDialogActivity,
     GetDialogTransmissions,
-    GetDialogTransmission
+    GetDialogTransmission,
+    GetDialogSeenLog,
+    GetDialogSeenLogEntry,
+    GetDialogLookup,
 } from "../../../building-blocks/dialogporten/serviceowner/get-dialogs.js";
 export { setup } from "./common-functions.js";
 
-const randomize = (__ENV.RANDOMIZE ?? "true") === "false";
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const getDialogslabel = { action: "1. get-dialogs" };
 const getDialogLabel = { action: "2. get-dialog" };
 const getDialogActivitiesLabel = { action: "3. get-dialog-activities" };
 const getDialogActivityLabel = { action: "4. get-dialog-activity" };
-const GetDialogTransmissionsLabel = { action: "5. get-dialog-transmissions" };
-const GetDialogTransmissionLabel = { action: "6. get-dialog-transmission" };
+const getDialogTransmissionsLabel = { action: "5. get-dialog-transmissions" };
+const getDialogTransmissionLabel = { action: "6. get-dialog-transmission" };
+const getDialogSeenLogsLabel = { action: "7. get-dialog-seen-logs" };
+const getDialogSeenLogLabel = { action: "8. get-dialog-seen-log" };
+const getDialogLookupLabel = { action: "9. get-dialog-lookup" };
 
 
 export const options = getOptions([
@@ -26,8 +32,11 @@ export const options = getOptions([
     getDialogLabel,
     getDialogActivitiesLabel,
     getDialogActivityLabel,
-    GetDialogTransmissionsLabel,
-    GetDialogTransmissionLabel
+    getDialogTransmissionsLabel,
+    getDialogTransmissionLabel,
+    getDialogSeenLogsLabel,
+    getDialogSeenLogLabel,
+    getDialogLookupLabel,
 ]);
 
 export default function (data) {
@@ -61,6 +70,11 @@ function drilldown(serviceOwnerApiClient, dialogs) {
 
     getActivities(serviceOwnerApiClient, dialogId);
     getTransmissions(serviceOwnerApiClient, dialogId);
+    getSeenLogs(serviceOwnerApiClient, dialogId);
+    const queryParams = {
+        instanceRef: `urn:altinn:dialog-id:${dialogId}`,
+    };
+    GetDialogLookup(serviceOwnerApiClient, queryParams, getDialogLookupLabel);
 }
 
 function getActivities(serviceOwnerApiClient, dialogId) {
@@ -84,7 +98,7 @@ function getTransmissions(serviceOwnerApiClient, dialogId) {
     const res = GetDialogTransmissions(
         serviceOwnerApiClient,
         dialogId,
-        GetDialogTransmissionsLabel,
+        getDialogTransmissionsLabel,
     );
     const transmissions = JSON.parse(res);
     if (transmissions.length > 0) {
@@ -92,7 +106,24 @@ function getTransmissions(serviceOwnerApiClient, dialogId) {
             serviceOwnerApiClient,
             dialogId,
             getItemFromList(transmissions, randomize).id,
-            GetDialogTransmissionLabel,
+            getDialogTransmissionLabel,
+        );
+    };
+}
+
+function getSeenLogs(serviceOwnerApiClient, dialogId) {
+    const res = GetDialogSeenLog(
+        serviceOwnerApiClient,
+        dialogId,
+        getDialogSeenLogsLabel,
+    );
+    const seenLogs = JSON.parse(res);
+    if (seenLogs.length > 0) {
+        GetDialogSeenLogEntry(
+            serviceOwnerApiClient,
+            dialogId,
+            getItemFromList(seenLogs, randomize).id,
+            getDialogSeenLogLabel,
         );
     };
 }

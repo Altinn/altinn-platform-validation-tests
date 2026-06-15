@@ -550,6 +550,45 @@ class ServiceOwnerApiClient {
 
         return http.get(url.toString(), params);
     }
+
+    /**
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogLookupQueriesGet_DialogLookup
+     * @param  queryParams - object containing query parameters for the request
+     * @param { string } labels
+     * @return http.RefinedResponse
+     */
+    GetDialogLookup(
+        queryParams,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + "/dialoglookup");
+
+        for (const [key, value] of Object.entries(queryParams)) {
+            if (value) url.searchParams.append(key, value);
+        }
+
+        let tags = {
+            endpoint: this.FULL_PATH + "/dialoglookup",
+            name: this.FULL_PATH + "/dialoglookup"
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Accept": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.get(url.toString(), params);
+    }
 }
 
 export { ServiceOwnerApiClient };
