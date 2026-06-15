@@ -37,7 +37,7 @@ test_definitions:
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-  - test_file: get-dialogs.js
+  - test_file: get-dialogs-and-extract-details.js
     contexts:
       - environment: yt01
         test_type:
