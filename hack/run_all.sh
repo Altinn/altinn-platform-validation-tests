@@ -8,7 +8,7 @@ for file in $(find ./K6 -type f -name "smoke.yaml" -o -name "functional.yaml" -o
             -v .:/workspace \
             --rm \
             -e INPUT_CONFIG_FILE="$file" \
-            ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.36
+            ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.39
 
     TESTS_FOLDER=$(ls .dist/ | sort)
 
