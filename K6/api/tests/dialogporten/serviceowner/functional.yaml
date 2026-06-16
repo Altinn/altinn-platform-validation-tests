@@ -42,7 +42,7 @@ test_definitions:
           enabled: true
 
   - test-scope: dialogporten-serviceowner
-    test_file: get-dialogs.js
+    test_file: get-dialogs-and-extract-details.js
     contexts:
       - environment: yt01
         test_type:

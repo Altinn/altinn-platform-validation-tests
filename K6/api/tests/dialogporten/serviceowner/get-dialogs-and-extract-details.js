@@ -1,0 +1,130 @@
+import { serviceResources, getClients } from "./common-functions.js";
+
+import { getItemFromList, getOptions } from "../../../../helpers.js";
+import {
+    GetDialogs,
+    GetDialog,
+    GetDialogActivities,
+    GetDialogActivity,
+    GetDialogTransmissions,
+    GetDialogTransmission,
+    GetDialogSeenLogs,
+    GetDialogSeenLog,
+    GetDialogLookup,
+} from "../../../building-blocks/dialogporten/serviceowner/index.js";
+export { setup } from "./common-functions.js";
+
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
+const getDialogslabel = { action: "1. get-dialogs" };
+const getDialogLabel = { action: "2. get-dialog" };
+const getDialogActivitiesLabel = { action: "3. get-dialog-activities" };
+const getDialogActivityLabel = { action: "4. get-dialog-activity" };
+const getDialogTransmissionsLabel = { action: "5. get-dialog-transmissions" };
+const getDialogTransmissionLabel = { action: "6. get-dialog-transmission" };
+const getDialogSeenLogsLabel = { action: "7. get-dialog-seen-logs" };
+const getDialogSeenLogLabel = { action: "8. get-dialog-seen-log" };
+const getDialogLookupLabel = { action: "9. get-dialog-lookup" };
+
+
+export const options = getOptions([
+    getDialogslabel,
+    getDialogLabel,
+    getDialogActivitiesLabel,
+    getDialogActivityLabel,
+    getDialogTransmissionsLabel,
+    getDialogTransmissionLabel,
+    getDialogSeenLogsLabel,
+    getDialogSeenLogLabel,
+    getDialogLookupLabel,
+]);
+
+export default function (data) {
+    const [serviceOwnerApiClient] = getClients();
+    const ssn = getItemFromList(data, randomize).ssn;
+    const resource = getItemFromList(serviceResources, randomize);
+    const queryParams = {
+        endsuserid: `urn:altinn:person:identifier-no:${ssn}`,
+        serviceResources: `urn:altinn:resource:${resource}`
+    };
+    const res = GetDialogs(
+        serviceOwnerApiClient,
+        queryParams,
+        getDialogslabel,
+    );
+    drilldown(serviceOwnerApiClient, JSON.parse(res));
+
+}
+
+function drilldown(serviceOwnerApiClient, dialogs) {
+    if (dialogs.items.length === 0) {
+        console.log("No dialogs found, skipping GetDialog");
+        return;
+    }
+    const dialogId = getItemFromList(dialogs.items, randomize).id;
+    GetDialog(
+        serviceOwnerApiClient,
+        dialogId,
+        getDialogLabel,
+    );
+
+    getActivities(serviceOwnerApiClient, dialogId);
+    getTransmissions(serviceOwnerApiClient, dialogId);
+    getSeenLogs(serviceOwnerApiClient, dialogId);
+    const queryParams = {
+        instanceRef: `urn:altinn:dialog-id:${dialogId}`,
+    };
+    GetDialogLookup(serviceOwnerApiClient, queryParams, getDialogLookupLabel);
+}
+
+function getActivities(serviceOwnerApiClient, dialogId) {
+    const res = GetDialogActivities(
+        serviceOwnerApiClient,
+        dialogId,
+        getDialogActivitiesLabel,
+    );
+    const activities = JSON.parse(res);
+    if (activities.length > 0) {
+        GetDialogActivity(
+            serviceOwnerApiClient,
+            dialogId,
+            getItemFromList(activities, randomize).id,
+            getDialogActivityLabel,
+        );
+    };
+}
+
+function getTransmissions(serviceOwnerApiClient, dialogId) {
+    const res = GetDialogTransmissions(
+        serviceOwnerApiClient,
+        dialogId,
+        getDialogTransmissionsLabel,
+    );
+    const transmissions = JSON.parse(res);
+    if (transmissions.length > 0) {
+        GetDialogTransmission(
+            serviceOwnerApiClient,
+            dialogId,
+            getItemFromList(transmissions, randomize).id,
+            getDialogTransmissionLabel,
+        );
+    };
+}
+
+function getSeenLogs(serviceOwnerApiClient, dialogId) {
+    const res = GetDialogSeenLogs(
+        serviceOwnerApiClient,
+        dialogId,
+        getDialogSeenLogsLabel,
+    );
+    const seenLogs = JSON.parse(res);
+    if (seenLogs.length > 0) {
+        GetDialogSeenLog(
+            serviceOwnerApiClient,
+            dialogId,
+            getItemFromList(seenLogs, randomize).id,
+            getDialogSeenLogLabel,
+        );
+    };
+}
+
