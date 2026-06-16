@@ -181,11 +181,12 @@ func main() {
 		// LeaderElectionReleaseOnCancel: true,
 		Cache: cache.Options{
 			DefaultNamespaces: map[string]cache.Config{
-				"platform":       {},
-				"portaler":       {},
-				"dialogporten":   {},
 				"authentication": {},
 				"core":           {},
+				"correspondence": {},
+				"dialogporten":   {},
+				"platform":       {},
+				"portaler":       {},
 			},
 		},
 	})
