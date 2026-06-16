@@ -25,13 +25,10 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 // JobReconciler reconciles a Job object
@@ -88,31 +85,6 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 func (r *JobReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&batchv1.Job{}).
-		Watches(
-			&batchv1.Job{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
-				if val, ok := obj.GetLabels()["app"]; ok && val == "k6" {
-					return []reconcile.Request{
-						{
-							NamespacedName: types.NamespacedName{
-								Name:      "job",
-								Namespace: obj.GetNamespace(),
-							},
-						},
-					}
-				}
-				if val, ok := obj.GetLabels()["generated-by"]; ok && val == "k6-action-image" {
-					return []reconcile.Request{
-						{
-							NamespacedName: types.NamespacedName{
-								Name:      "job",
-								Namespace: obj.GetNamespace(),
-							},
-						},
-					}
-				}
-				return []reconcile.Request{}
-			}),
-		).
+		WithEventFilter(CleanupPredicate()).
 		Complete(r)
 }

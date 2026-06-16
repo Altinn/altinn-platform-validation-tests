@@ -24,12 +24,9 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 // PodReconciler reconciles a Pod object
@@ -87,31 +84,6 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Pod{}).
-		Watches(
-			&corev1.Pod{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
-				if val, ok := obj.GetLabels()["app"]; ok && val == "k6" {
-					return []reconcile.Request{
-						{
-							NamespacedName: types.NamespacedName{
-								Name:      "pod",
-								Namespace: obj.GetNamespace(),
-							},
-						},
-					}
-				}
-				if val, ok := obj.GetLabels()["generated-by"]; ok && val == "k6-action-image" {
-					return []reconcile.Request{
-						{
-							NamespacedName: types.NamespacedName{
-								Name:      "pod",
-								Namespace: obj.GetNamespace(),
-							},
-						},
-					}
-				}
-				return []reconcile.Request{}
-			}),
-		).
+		WithEventFilter(CleanupPredicate()).
 		Complete(r)
 }
