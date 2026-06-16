@@ -6,7 +6,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * Function to get dialog seen log
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} dialogId - id of the dialog to get seen log for
- * @param {string} label - label for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return response body of the request
  */
 export function GetDialogSeenLogs(
@@ -36,7 +36,7 @@ export function GetDialogSeenLogs(
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} dialogId - id of the dialog the seen log entry belongs to
  * param {string} seenLogEntryId - id of the seen log entry to get
- * @param {string} label - label for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetDialogSeenLog(
     serviceOwnerApiClient,

@@ -5,7 +5,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * Function to get dialog tranmissions
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} dialogId - id of the dialog to get transmissions for
- * @param {string} label - label for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return response body of the request
  */
 export function GetDialogTransmissions(
@@ -35,7 +35,7 @@ export function GetDialogTransmissions(
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} dialogId - id of the dialog the transmission belongs to
  * param {string} transmissionId - id of the transmission to get
- * @param {string} label - label for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return response body of the request
  */
 export function GetDialogTransmission(

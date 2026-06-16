@@ -320,7 +320,7 @@ class BffAccessManagementApiClient {
     /**
      * Get delegated instances for a resource
      * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {string} label - label for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      */
     GetDelegatedInstancesForResource(queryParams, labels = null) {
@@ -343,7 +343,7 @@ class BffAccessManagementApiClient {
     /**
      * Check if user has delegated rights for a resource
      * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {string} label - label for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      * */
     CheckDelegationForResource(queryParams, labels = null) {
@@ -367,7 +367,7 @@ class BffAccessManagementApiClient {
      * Delegate rights for a resource to a user
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {string} body - object with the body of the request
-     * @param {string} label - label for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      */
     DelegateRightsForResource(queryParams, body, labels = null) {
@@ -392,7 +392,7 @@ class BffAccessManagementApiClient {
     /**
      * Check if user has delegated rights for a resource
      * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {string} label - label for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      * */
     CheckInstanceDelegationForResource(queryParams, labels = null) {
@@ -415,7 +415,7 @@ class BffAccessManagementApiClient {
     /**
     * Get active consents for a user
     * @param {object} uuid - uuid for the user to get active consents for
-    * @param {string} label - label for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
     * returns http.RefinedResponse
     */
     GetActiveConsentsForUser(uuid, labels = null) {
@@ -440,7 +440,7 @@ class BffAccessManagementApiClient {
     /**
     * Get consent log for a user
     * @param {object} uuid - uuid for the user to get consent log for
-    * @param {string} label - label for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
     * returns http.RefinedResponse
     */
     GetConsentLogForUser(uuid, labels = null) {
@@ -466,7 +466,7 @@ class BffAccessManagementApiClient {
     /**
     * Get resource by id
     * @param {object} queryParams - object with query parameters to be appended to the url
-    * @param {string} label - label for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
     * returns http.RefinedResponse
     */
     GetResourceById(queryParams, labels = null) {
@@ -489,7 +489,7 @@ class BffAccessManagementApiClient {
     /**
     * Get pending delegations for a user
     * @param {object} queryParams - object with query parameters to be appended to the url
-    * @param {string} label - label for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
     * returns http.RefinedResponse
     */
     GetPendingDelegationsForUser(uuid, labels = null) {
