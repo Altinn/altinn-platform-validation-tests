@@ -7,6 +7,9 @@ on:
       - "operators/cleaner/**"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   REGISTRY: altinnplatformvalidationtests.azurecr.io
   IMAGE_NAME: cleanup-controller
