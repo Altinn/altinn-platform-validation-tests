@@ -63,164 +63,164 @@ test_definitions:
           type: smoke
           enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-party.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-party.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-party-createdbefore.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-party-createdbefore.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-party-createdafter.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-party-createdafter.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-enduser-serviceresource.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-enduser-serviceresource.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-enduser-serviceresource-search.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-enduser-serviceresource-search.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-enduser-serviceresource-search-nohit.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-enduser-serviceresource-search-nohit.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-enduser-serviceresource-search-createdafter.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-enduser-serviceresource-search-createdafter.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-enduser-serviceresource-createdbefore.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-enduser-serviceresource-createdbefore.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
 
-- test-scope: dialogporten-serviceowner
-    test_file: get-dialogs-enduser-serviceresource-createdafter.js
-    contexts:
-      - environment: yt01
-        test_type:
-          type: smoke
-          enabled: false
+  - test-scope: dialogporten-serviceowner
+      test_file: get-dialogs-enduser-serviceresource-createdafter.js
+      contexts:
+        - environment: yt01
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: tt02
-        test_type:
-          type: smoke
-          enabled: false
+        - environment: tt02
+          test_type:
+            type: smoke
+            enabled: false
 
-      - environment: at23
-        test_type:
-          type: smoke
-          enabled: true
+        - environment: at23
+          test_type:
+            type: smoke
+            enabled: true
