@@ -16,7 +16,17 @@ on:
           # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
           - yt01-create-dialog-break
           - yt01-create-dialog-transmission-activity-break
-          - yt01-get-dialogs-break
+          - yt01-get-dialogs-and-extract-details-break
+          - yt01-get-dialogs-enduser-serviceresource-break
+          - yt01-get-dialogs-enduser-serviceresource-createdafter-break
+          - yt01-get-dialogs-enduser-serviceresource-createdbefore-break
+          - yt01-get-dialogs-enduser-serviceresource-search-break
+          - yt01-get-dialogs-enduser-serviceresource-search-createdafter-break
+          - yt01-get-dialogs-enduser-serviceresource-search-nohit-break
+          - yt01-get-dialogs-party-break
+          - yt01-get-dialogs-party-createdafter-break
+          - yt01-get-dialogs-party-createdbefore-break
+          - yt01-get-dialogs-random-query-params-break
           - yt01-should-send-notification-break
 
       target_vus:
