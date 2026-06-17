@@ -62,3 +62,21 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+
+- test-scope: dialogporten-serviceowner
+    test_file: get-dialogs-random-query-params.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: tt02
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
