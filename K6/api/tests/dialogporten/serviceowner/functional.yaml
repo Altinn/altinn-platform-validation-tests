@@ -21,9 +21,6 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
   - test-scope: dialogporten-serviceowner
     test_file: create-dialog-transmission-activity.js
@@ -37,9 +34,6 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-and-extract-details.js
@@ -53,9 +47,6 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-party.js
@@ -69,9 +60,6 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-party-createdbefore.js
@@ -85,9 +73,6 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-party-createdafter.js
@@ -101,10 +86,7 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
-  
+
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource.js
     contexts:
@@ -117,10 +99,7 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
-  
+
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource-search.js
     contexts:
@@ -133,9 +112,7 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
+
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource-search-nohit.js
     contexts:
@@ -148,11 +125,8 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
-- test-scope: dialogporten-serviceowner
+  - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource-search-createdafter.js
     contexts:
       - environment: yt01
@@ -164,11 +138,8 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
-- test-scope: dialogporten-serviceowner
+  - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource-createdbefore.js
     contexts:
       - environment: yt01
@@ -180,11 +151,8 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true
 
-- test-scope: dialogporten-serviceowner
+  - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource-createdafter.js
     contexts:
       - environment: yt01
@@ -196,6 +164,3 @@ test_definitions:
           type: functional
           enabled: false
       - environment: at23
-        test_type:
-          type: functional
-          enabled: true

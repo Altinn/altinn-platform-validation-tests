@@ -31,9 +31,6 @@ test_definitions:
   - test_file: get-dialogs-and-extract-details.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -43,9 +40,6 @@ test_definitions:
   - test_file: get-dialogs-random-query-params.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -55,9 +49,6 @@ test_definitions:
   - test_file: get-dialogs-party.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -67,45 +58,36 @@ test_definitions:
   - test_file: get-dialogs-party-createdbefore.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
+
   - test_file: get-dialogs-party-createdafter.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
+
   - test_file: get-dialogs-enduser-serviceresource.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
+
   - test_file: get-dialogs-enduser-serviceresource-search.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
@@ -115,45 +97,36 @@ test_definitions:
   - test_file: get-dialogs-enduser-serviceresource-search-nohit.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
+
   - test_file: get-dialogs-enduser-serviceresource-search-createdafter.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
+
   - test_file: get-dialogs-enduser-serviceresource-createdbefore.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-- test_file: get-dialogs-enduser-serviceresource-createdafter.js
+
+  - test_file: get-dialogs-enduser-serviceresource-createdafter.js
     contexts:
       - environment: yt01
-        test_type:
-          type: breakpoint
-          enabled: true
         test_run:
           env:
             - name: BREAKPOINT_STAGE_DURATION
