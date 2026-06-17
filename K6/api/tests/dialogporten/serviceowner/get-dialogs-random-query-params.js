@@ -54,12 +54,12 @@ const filterValueBuilders = {
     endUserId: ({ data }) => urns.person(getItemFromList(data, randomize).ssn),
     serviceResource: () => urns.resource(getItemFromList(serviceResources, randomize)),
     party: ({ data }) => urns.organization(getItemFromList(data, randomize).orgno),
-    status: () => 'NotApplicable',
-    deleted: () => 'Exclude',
+    status: () => "NotApplicable",
+    deleted: () => "Exclude",
     createdAfter: () => sevenDaysAgoIso(),
     createdBefore: () => inOneDayIso(),
     Search: ({ label }) =>
-        label.action.includes('nohit')
+        label.action.includes("nohit")
             ? getItemFromList(texts_no_hit, true)
             : getItemFromList(texts, true),
 };
