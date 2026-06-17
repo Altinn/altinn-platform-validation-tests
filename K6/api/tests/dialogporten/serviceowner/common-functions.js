@@ -51,3 +51,14 @@ export function setup() {
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
     return parseCsvData(res.body);
 }
+
+export const sevenDaysAgoIso = () =>
+    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+export const inOneDayIso = () =>
+    new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString();
+
+// Noen ord som går igjen i testgenererte dialoger, for å øke sjansen for treff i søkefiltrene
+export const texts = ["påkrevd", "rapportering", "sammendrag", "Maks 200 tegn"];
+// Noen stedsnavn som ikke er så vanlige, for å øke sjansen for ingen treff i søkefiltrene
+export const texts_no_hit = ["sjøvegan", "lavik", "kvalsund", "jøssheim", "sørli"];
