@@ -44,8 +44,8 @@ export default function (data) {
     const ssn = getItemFromList(data, randomize).ssn;
     const resource = getItemFromList(serviceResources, randomize);
     const queryParams = {
-        endsuserid: `urn:altinn:person:identifier-no:${ssn}`,
-        serviceResources: `urn:altinn:resource:${resource}`
+        endUserId: `urn:altinn:person:identifier-no:${ssn}`,
+        serviceResource: `urn:altinn:resource:${resource}`
     };
     const res = GetDialogs(
         serviceOwnerApiClient,
@@ -53,11 +53,10 @@ export default function (data) {
         getDialogslabel,
     );
     drilldown(serviceOwnerApiClient, JSON.parse(res));
-
 }
 
 function drilldown(serviceOwnerApiClient, dialogs) {
-    if (dialogs.items.length === 0) {
+    if (!dialogs.items?.length) {
         console.log("No dialogs found, skipping GetDialog");
         return;
     }
