@@ -1,14 +1,21 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -eu
 
-TESTS_FOLDER=$(ls .dist/)
+for test in .dist/*; do
+    [ -d "$test" ] || continue
 
-for test in ${TESTS_FOLDER[@]}; do
-    UNIQ_NAME=$(jq -r '.metadata.labels.uniq_name' .dist/"${test}"/testrun.json)
-    NAMESPACE=$(jq -r '.metadata.namespace' .dist/"${test}"/testrun.json)
+    UNIQ_NAME=$(jq -r '.metadata.labels.uniq_name' "$test/testrun.json")
+    NAMESPACE=$(jq -r '.metadata.namespace' "$test/testrun.json")
 
-    kubectl apply --server-side -f ".dist/$test"
+    kubectl apply --server-side -f "$test"
 
-    kubectl -n "$NAMESPACE" wait --for=jsonpath='{.status.stage}'=started testrun -l "uniq_name=${UNIQ_NAME}" --timeout=60s
-    kubectl -n "$NAMESPACE" logs -f --tail=-1 -l "uniq_name=${UNIQ_NAME},runner=true"
+    kubectl -n "$NAMESPACE" wait \
+        --for=jsonpath='{.status.stage}'=started \
+        testrun \
+        -l "uniq_name=$UNIQ_NAME" \
+        --timeout=60s
+
+    kubectl -n "$NAMESPACE" logs \
+        -f --tail=-1 \
+        -l "uniq_name=$UNIQ_NAME,runner=true"
 done
