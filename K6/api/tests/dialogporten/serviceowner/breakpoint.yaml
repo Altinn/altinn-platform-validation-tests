@@ -10,7 +10,16 @@ test_definitions:
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-  - test_file: create-dialog.js
+  - test_file: create-dialog-enduser.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+  - test_file: create-dialog-org.js
     contexts:
       - environment: yt01
         test_run:
@@ -117,6 +126,16 @@ test_definitions:
               value: 100
 
   - test_file: get-dialogs-enduser-serviceresource-createdafter.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-endusercontext.js
     contexts:
       - environment: yt01
         test_run:
