@@ -10,7 +10,22 @@ test_definitions:
           enabled: false
 
   - test-scope: dialogporten-serviceowner
-    test_file: create-dialog.js
+    test_file: create-dialog-enduser.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: tt02
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: at23
+
+  - test-scope: dialogporten-serviceowner
+    test_file: create-dialog-org.js
     contexts:
       - environment: yt01
         test_type:
@@ -176,6 +191,21 @@ test_definitions:
 
   - test-scope: dialogporten-serviceowner
     test_file: get-dialogs-enduser-serviceresource-createdafter.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: tt02
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: at23
+
+  - test-scope: dialogporten-serviceowner
+    test_file: get-endusercontext.js
     contexts:
       - environment: yt01
         test_type:

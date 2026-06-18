@@ -14,7 +14,8 @@ on:
         description: "The test to run"
         options:
           # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
-          - yt01-create-dialog-break
+          - yt01-create-dialog-enduser-break
+          - yt01-create-dialog-org-break
           - yt01-create-dialog-transmission-activity-break
           - yt01-get-dialogs-and-extract-details-break
           - yt01-get-dialogs-enduser-serviceresource-break
@@ -26,7 +27,7 @@ on:
           - yt01-get-dialogs-party-break
           - yt01-get-dialogs-party-createdafter-break
           - yt01-get-dialogs-party-createdbefore-break
-          - yt01-get-dialogs-random-query-params-break
+          - yt01-get-endusercontext-break
           - yt01-should-send-notification-break
 
       target_vus:

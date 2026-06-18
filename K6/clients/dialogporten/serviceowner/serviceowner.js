@@ -523,15 +523,15 @@ class ServiceOwnerApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "dialogs/endusercontext");
+        const url = new URL(this.FULL_PATH + "/dialogs/endusercontext");
 
         for (const [key, value] of Object.entries(queryParams)) {
             if (value) url.searchParams.append(key, value);
         }
 
         let tags = {
-            endpoint: this.FULL_PATH + "dialogs/endusercontext",
-            name: this.FULL_PATH + "dialogs/endusercontext"
+            endpoint: this.FULL_PATH + "/dialogs/endusercontext",
+            name: this.FULL_PATH + "/dialogs/endusercontext"
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
