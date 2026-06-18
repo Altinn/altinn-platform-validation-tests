@@ -27,7 +27,7 @@ on:
           - yt01-get-dialogs-party-break
           - yt01-get-dialogs-party-createdafter-break
           - yt01-get-dialogs-party-createdbefore-break
-          - yt01-get-dialogs-random-query-params-break
+          - yt01-get-endusercontext-break
           - yt01-should-send-notification-break
 
       target_vus:
