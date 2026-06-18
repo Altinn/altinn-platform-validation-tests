@@ -3,7 +3,7 @@ import { parseCsvData } from "../../../../helpers.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
-export const orgNo = __ENV.API_ENVIRONMENT == "yt01" ? "713431400" : "991825827";
+export const orgNo = __ENV.ENVIRONMENT == "yt01" ? "713431400" : "991825827";
 
 const performanceResources = [
     "ttd-dialogporten-performance-test-01",
