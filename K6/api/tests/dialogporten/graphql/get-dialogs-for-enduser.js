@@ -1,0 +1,27 @@
+import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
+import { getClient, getDialogportenOpts } from "./common-functions.js";
+export { setup } from "./common-functions.js";
+
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
+const getDialogslabel = { action: "1. get-dialogs-for-enduser" };
+
+export const options = getOptions([
+    getDialogslabel,
+]);
+
+export default function (data) {
+    const [graphqlClient, tokenGenerator] = getClient();
+    const endUser = getItemFromList(data, randomize).ssn;
+    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser));
+    const res = GetAllDialogsForParty(
+        graphqlClient,
+        endUser,
+        getDialogslabel,
+    );
+    const json = JSON.parse(res);
+    console.log(`Got ${json.data.searchDialogs?.items?.length} dialogs for end user ${endUser}`);
+}
+
+
