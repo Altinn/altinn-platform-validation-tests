@@ -1,5 +1,6 @@
 import http from "k6/http";
-import { getAllDialogsForParty, getDialogById } from "./graphql-queries.js";
+import { getAllDialogsForParties, getDialogById } from "./graphql-queries.js";
+import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
 
 class GraphqlClient {
     /**
@@ -46,7 +47,10 @@ class GraphqlClient {
                 "Content-Type": "application/json",
             },
         };
-        const query = getAllDialogsForParty(partyId);
+        const variables = new DialogSearchVariablesBuilder()
+            .withParties([partyId])
+            .build();
+        const query = getAllDialogsForParties(partyId, variables);
         return http.post(url.toString(), JSON.stringify(query), params);
     }
 
