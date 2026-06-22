@@ -1,3 +1,7 @@
+/**
+ * This test gets all dialogs for a given end user. The end user is randomly picked from the provided data.
+ */
+
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { getClient, getDialogportenOpts } from "./common-functions.js";
@@ -27,5 +31,3 @@ export default function (data) {
     const json = JSON.parse(res);
     console.log(`Got ${json.data.searchDialogs?.items?.length} dialogs for end user ${endUser}`);
 }
-
-

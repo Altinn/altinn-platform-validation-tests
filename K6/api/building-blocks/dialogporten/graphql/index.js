@@ -4,5 +4,4 @@ export {
     GetDialogById,
     GetAndVerifyDialogById,
     GetParties
-}
-    from "./graphql.js";
+} from "./graphql.js";

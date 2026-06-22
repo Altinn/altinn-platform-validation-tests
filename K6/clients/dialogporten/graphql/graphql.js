@@ -53,43 +53,12 @@ class GraphqlClient {
     }
 
     /**
-     * Get all dialogs for party with a search term
-     * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
-     * @param {string} searchTerm - a search term to filter the dialogs by
-     * @param {string} label - a label to add to the request in k6
-     * @returns response from the API
-     */
-    GetAllDialogsForPartyWithFTS(partyId, searchTerm, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-
-        const params = {
-            tags: tags,
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-Type": "application/json",
-            },
-        };
-        const variables = new DialogSearchVariablesBuilder()
-            .withParties([partyId])
-            .withSearch(searchTerm)
-            .build();
-        const query = getAllDialogsForParties(partyId, variables);
-        return http.post(url.toString(), JSON.stringify(query), params);
-    }
-
-
-    /**
      * Get dialog by id
      * @param {uuidv7} dialogId - the id of the dialog to get
      * @param {string} label - a label to add to the request in k6
      * @return response from the API
      */
-    GetDialogById(dialogId, labels = null) {
+    GetDialogById(variables, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let tags = { endpoint: url.toString() };
@@ -103,7 +72,7 @@ class GraphqlClient {
                 "Content-Type": "application/json",
             },
         };
-        const query = getDialogById(dialogId);
+        const query = getDialogById(variables);
         return http.post(url.toString(), JSON.stringify(query), params);
     }
 

@@ -58,7 +58,7 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * Add parties to the search variables. The party ids can be either pid/ssn (11 digits) or org number (9 digits), and the builder will convert them to the expected party URI format.
+     * Add parties to the search variables. The party URIs must be in the format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}.
      * @param {string []} parties. Parties already on the URI format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}
      * @returns 
      */

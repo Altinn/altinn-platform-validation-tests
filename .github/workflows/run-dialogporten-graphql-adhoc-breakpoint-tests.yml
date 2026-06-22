@@ -1,4 +1,4 @@
-name: "dialogporten - run k6 serviceowner adhoc breakpoint tests"
+name: "dialogporten - run k6 graphql adhoc breakpoint tests"
 on:
   workflow_dispatch:
     inputs:

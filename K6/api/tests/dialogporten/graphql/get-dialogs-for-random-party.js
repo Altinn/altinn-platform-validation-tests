@@ -35,4 +35,3 @@ export default function (data) {
         getDialogslabel,
     );
 }
-
