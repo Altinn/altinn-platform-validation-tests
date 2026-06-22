@@ -18,13 +18,28 @@ spec:
         spec:
           restartPolicy: Never
           serviceAccountName: playwright-reporter-sa
+          nodeSelector:
+            kubernetes.azure.com/scalesetpriority: spot
+            spot8cpu28gbmem: "true"
+          resources:
+            requests:
+              cpu: 2
+              memory: 2000Mi
+          tolerations:
+            - effect: NoSchedule
+              key: kubernetes.azure.com/scalesetpriority
+              operator: Equal
+              value: spot
           containers:
             - name: playwright
-              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:stable
+              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:altinn-access-management-frontend-v3
               volumeMounts:
                 - name: swa-config
                   mountPath: /etc/swa-config
                   readOnly: true
+              envFrom:
+                - secretRef:
+                    name: am-ui-playwright-env
               env:
                 - name: APP_TOKEN
                   valueFrom:

@@ -35,7 +35,7 @@ RUN curl -L -o azcopy.tar.gz https://aka.ms/downloadazcopy-v10-linux && \
     chmod +x /usr/local/bin/azcopy
 
 RUN npm install -g \
-    playwright \
+    playwright@latest \
     @azure/static-web-apps-cli
 
 RUN useradd -m playwright
