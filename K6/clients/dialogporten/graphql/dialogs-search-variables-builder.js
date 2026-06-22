@@ -36,8 +36,8 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Add parties to the search variables. The party ids can be either pid/ssn (11 digits) or org number (9 digits), and the builder will convert them to the expected party URI format.
-     * @param {string []} parties 
-     * @returns 
+     * @param {string []} parties
+     * @returns
      */
     withParties(parties) {
         const partyUris = [];
@@ -60,7 +60,7 @@ export class DialogSearchVariablesBuilder {
     /**
      * Add parties to the search variables. The party URIs must be in the format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}.
      * @param {string []} parties. Parties already on the URI format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}
-     * @returns 
+     * @returns
      */
     withPartyURIs(partyURIs) {
         this.variables.partyURIs = Array.isArray(partyURIs) ? partyURIs : [partyURIs];
@@ -69,8 +69,8 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a search string to the search variables. The search string can be used to search for dialogs that contain the specified string in the title or content of the dialog.
-     * @param {searchterm} search 
-     * @returns 
+     * @param {searchterm} search
+     * @returns
      */
     withSearch(search) {
         this.variables.search = search;
@@ -78,10 +78,10 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * Adds an organization filter to the search variables. The organization filter can be used to search for dialogs that are associated with the specified organization(s). 
+     * Adds an organization filter to the search variables. The organization filter can be used to search for dialogs that are associated with the specified organization(s).
      * The organizations will be the short abbreviation of the organization, e.g. "nav" for the Norwegian Labour and Welfare Administration, "skd" for the Norwegian Tax Administration, etc.
      * @param {string []} orgs. The short abbreviation of the organization(s) to filter by, e.g. "nav" for the Norwegian Labour and Welfare Administration, "skd" for the Norwegian Tax Administration, etc.
-     * @returns 
+     * @returns
      */
     withOrg(org) {
         this.variables.org = Array.isArray(org) ? org : [org];
@@ -90,8 +90,8 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a status filter to the search variables. The status filter can be used to search for dialogs that have the specified status(es). Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED.
-     * @param {string | string []} status The status or statuses to filter by. Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED. 
-     * @returns 
+     * @param {string | string []} status The status or statuses to filter by. Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED.
+     * @returns
      */
     withStatus(status) {
         this.variables.status = Array.isArray(status) ? status : [status];
@@ -100,8 +100,8 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a continuation token to the search variables. The continuation token can be used to paginate through search results. When a search query returns more results than the specified limit, a continuation token is included in the response. This token can be used in a subsequent search query to retrieve the next page of results.
-     * @param {*} token 
-     * @returns 
+     * @param {*} token
+     * @returns
      */
     withContinuationToken(token) {
         this.variables.continuationToken = token;
@@ -110,8 +110,8 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a limit to the search variables. The limit can be used to specify the maximum number of results to return in a search query. If the number of results exceeds the limit, a continuation token will be included in the response that can be used to retrieve the next page of results.
-     * @param { number } limit must be between 1 and 1000. 
-     * @returns 
+     * @param { number } limit must be between 1 and 1000.
+     * @returns
      */
     withLimit(limit) {
         this.variables.limit = limit;
