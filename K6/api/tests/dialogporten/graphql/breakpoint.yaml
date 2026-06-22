@@ -1,0 +1,39 @@
+namespace: dialogporten
+base_dir: K6/api/tests/dialogporten/graphql
+test_definitions:
+  - test_file: get-dialogs-for-enduser.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+  - test_file: get-dialogs-for-parties.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+  - test_file: get-dialogs-for-random-party.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+  - test_file: get-parties.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
