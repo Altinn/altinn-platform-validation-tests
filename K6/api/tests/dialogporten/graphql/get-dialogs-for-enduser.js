@@ -1,5 +1,5 @@
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { GetAllDialogsForPartyWithVariables } from "../../../building-blocks/dialogporten/graphql/index.js";
+import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { getClient, getDialogportenOpts } from "./common-functions.js";
 import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 export { setup } from "./common-functions.js";
@@ -19,7 +19,7 @@ export default function (data) {
     const variables = new DialogSearchVariablesBuilder()
         .withParties([endUser])
         .build();
-    const res = GetAllDialogsForPartyWithVariables(
+    const res = GetAllDialogsForParty(
         graphqlClient,
         variables,
         getDialogslabel,

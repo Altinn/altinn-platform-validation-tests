@@ -1,6 +1,5 @@
 export {
     GetAllDialogsForParty,
-    GetAllDialogsForPartyWithVariables,
     GetAllDialogsForPartyCheckForDialogId,
     GetDialogById,
     GetAndVerifyDialogById,
