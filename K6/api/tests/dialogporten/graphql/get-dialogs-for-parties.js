@@ -1,6 +1,6 @@
 /**
  * @description This test retrieves all dialogs for multiple parties associated with the end user. Max number of parties can be set with the MAX_NUMBER_OF_PARTIES environment variable, default is 100.
- * The test first fetches the parties linked to the end user and then retrieves dialogs for all those parties. 
+ * The test first fetches the parties linked to the end user and then retrieves dialogs for all those parties.
  * The test uses GraphQL queries to interact with the Dialogporten API and includes options for randomization and labeling for better organization and reporting.
  */
 import { getItemFromList, getOptions } from "../../../../helpers.js";

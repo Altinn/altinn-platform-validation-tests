@@ -1,5 +1,5 @@
-/** 
- * @description This test retrieves all dialogs for a random party associated with the end user. 
+/**
+ * @description This test retrieves all dialogs for a random party associated with the end user.
  * It first fetches the parties linked to the end user and then selects one party at random to retrieve its dialogs.
  * The test uses GraphQL queries to interact with the Dialogporten API and includes options for randomization and labeling for better organization and reporting.
  */

@@ -78,7 +78,7 @@ class GraphqlClient {
 
     /**
     * Get parties for a user
-    * 
+    *
     * @param {string} label - a label to add to the request in k6
     * @return response from the API
     * */

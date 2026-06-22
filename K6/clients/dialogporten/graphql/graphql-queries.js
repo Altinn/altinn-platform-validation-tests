@@ -293,8 +293,7 @@ export function getParties() {
                     ...subPartyFields
                     }
                 }
-            }
-                
+            }   
             fragment partyFields on AuthorizedParty {
                 party
                 hasOnlyAccessToSubParties
@@ -309,7 +308,6 @@ export function getParties() {
                 isDeleted
                 partyUuid
             }
-                
             fragment subPartyFields on AuthorizedSubParty {
                 party
                 partyType

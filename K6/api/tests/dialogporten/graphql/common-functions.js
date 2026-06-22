@@ -8,8 +8,8 @@ let graphqlClient = undefined;
 let tokenGenerator = undefined;
 
 /**
- * @description The setup function fetches the end user data from a CSV file hosted on GitHub. 
- * The CSV file is expected to contain the social security numbers (SSNs) of the end users for the specified environment. 
+ * @description The setup function fetches the end user data from a CSV file hosted on GitHub.
+ * The CSV file is expected to contain the social security numbers (SSNs) of the end users for the specified environment.
  * The function uses an HTTP GET request to retrieve the CSV data and then parses it into a usable format for the tests.
  */
 export function setup() {
@@ -19,8 +19,8 @@ export function setup() {
 
 /**
  * @description This function initializes and returns the GraphQL client and token generator for Dialogporten.
- * @returns an array containing the GraphQL client and the token generator. The function checks if the GraphQL client is already initialized; if not, 
- * it creates a new instance using the base URL from the environment variables and the token generator options. 
+ * @returns an array containing the GraphQL client and the token generator. The function checks if the GraphQL client is already initialized; if not,
+ * it creates a new instance using the base URL from the environment variables and the token generator options.
  * The token generator is set up to generate personal tokens for authentication with Dialogporten.
  */
 export function getClient() {
@@ -35,8 +35,8 @@ export function getClient() {
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.
- * @param {*} ssn 
- * @returns 
+ * @param {*} ssn
+ * @returns
  */
 export function getDialogportenOpts(ssn = null) {
     const tokenOpts = new Map();
@@ -53,10 +53,10 @@ export function getDialogportenOpts(ssn = null) {
  * Function to retrieve the parties associated with an end user. It uses the GetParties GraphQL query to fetch the parties and their details.
  * The function processes the response to extract the party URIs for the organizations linked to the end user, including sub-parties.
  * The number of parties returned can be limited by the max_number_of_parties parameter, which defaults to 100 if not specified.
- * @param {*} graphqlClient 
- * @param {*} label 
- * @param {*} max_number_of_parties 
- * @returns 
+ * @param {*} graphqlClient
+ * @param {*} label
+ * @param {*} max_number_of_parties
+ * @returns
  */
 export function getParties(graphqlClient, label, max_number_of_parties = 100) {
     const resp = GetParties(
