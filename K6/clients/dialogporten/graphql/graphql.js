@@ -1,6 +1,7 @@
 import http from "k6/http";
 import { getAllDialogsForParties, getDialogById, getParties } from "./graphql-queries.js";
 import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
+import { DialogByIdVariablesBuilder } from "./dialog-by-id-variables-builder.js";
 
 class GraphqlClient {
     /**
@@ -28,7 +29,7 @@ class GraphqlClient {
 
     /**
      * Get all dialogs based on variables
-     * @param {string} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
+     * @param {DialogSearchVariablesBuilder} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
      * @param {string} label - a label to add to the request in k6
      * @returns response from the API
      */
@@ -54,7 +55,7 @@ class GraphqlClient {
 
     /**
      * Get dialog by id
-     * @param {uuidv7} dialogId - the id of the dialog to get
+     * @param {DialogByIdVariablesBuilder} variables - the id of the dialog to get
      * @param {string} label - a label to add to the request in k6
      * @return response from the API
      */
