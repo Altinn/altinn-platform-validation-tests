@@ -1,6 +1,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
+import { DialogSearchVariablesBuilder, DialogByIdVariablesBuilder } from "../../../../../clients/dialogporten/graphql/index.js";
 import { CreateDialog } from "../../../../building-blocks/dialogporten/serviceowner/index.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../../building-blocks/dialogporten/graphql/index.js";
 import {
@@ -195,7 +196,13 @@ export default function (data) {
     // and that the delegated user can see the dialog in their list of dialogs and access it.
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
-        GetAllDialogsForPartyCheckForDialogId(graphqlClient, from.ssn, dialogId, getAllDialogsForPartyLabel);
-        GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdLabel);
+        const variables = new DialogSearchVariablesBuilder()
+            .withParties([from.ssn])
+            .build();
+        GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, getAllDialogsForPartyLabel);
+        const getDialogByIdVariables = new DialogByIdVariablesBuilder()
+            .withId(dialogId)
+            .build();
+        GetAndVerifyDialogById(graphqlClient, getDialogByIdVariables, getDialogByIdLabel);
     });
 }

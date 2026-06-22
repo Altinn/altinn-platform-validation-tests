@@ -1,5 +1,6 @@
 import { check } from "k6";
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
+import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 
 /**
  * Function to get all dialogs for a party
@@ -8,8 +9,8 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
  * @param {*} label
  * @returns
  */
-export function GetAllDialogsForParty(graphqlClient, partyId, labels = null) {
-    const res = graphqlClient.GetAllDialogsForParty(partyId, labels);
+export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
+    const res = graphqlClient.GetAllDialogsForParty(variables, labels);
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
         "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
@@ -30,13 +31,13 @@ export function GetAllDialogsForParty(graphqlClient, partyId, labels = null) {
 /**
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
  * @param {GraphqlClient} graphqlClient
- * @param {string} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
+ * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
  * @param {uuidv7} dialogId
  * @param {string} label
  * @returns
  */
-export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, partyId, dialogId, labels = null) {
-    const res = graphqlClient.GetAllDialogsForParty(partyId, labels);
+export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
+    const res = graphqlClient.GetAllDialogsForParty(variables, labels);
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
         "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
@@ -111,12 +112,37 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
             if (res_body === null || res_body === undefined) {
                 return false;
             }
-            if (!res_body.data.dialogById.dialog || res_body.data.dialogById.dialog.id !== dialogId) {
+            if (!res_body.data || res_body.data?.dialogById?.dialog?.id !== dialogId) {
                 // TODO: Is this needed? or just noise?
                 // console.log(`DialogId ${dialogId} not found in dialogById-response`);
                 return true;
             }
             return true;
+        }
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.status_text);
+        console.log(res.body);
+    }
+    return res.body;
+}
+
+/**
+ * Function to get parties for a user
+ * @param {GraphqlClient} graphqlClient
+ * @param {string} label
+ * @return
+ */
+export function GetParties(graphqlClient, labels = null) {
+    const res = graphqlClient.GetParties(labels);
+    const succeed = check(res, {
+        "GetParties - status code is 200": (r) => r.status === 200,
+        "GetParties - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "GetParties - body is not empty": (r) => {
+            const res_body = JSON.parse(r.body);
+            return res_body !== null && res_body !== undefined;
         }
     });
 
