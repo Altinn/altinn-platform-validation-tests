@@ -29,7 +29,6 @@ on:
           - yt01-get-dialogs-party-createdbefore-break
           - yt01-get-endusercontext-break
           - yt01-should-send-notification-break
-          - yt01
 
       target_vus:
         description: "The target VUs to reach"

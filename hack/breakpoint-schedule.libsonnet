@@ -59,6 +59,9 @@
     'K6/api/tests/dialogporten/serviceowner/breakpoint.yaml': {
 
     },
+    'K6/api/tests/dialogporten/graphql/breakpoint.yaml': {
+
+    },
   },
   portaler: {
     'K6/api/tests/portaler/breakpoint.yaml': {

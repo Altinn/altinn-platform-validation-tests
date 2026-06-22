@@ -14,7 +14,7 @@ on:
         description: "The test to run"
         options:
           - yt01-get-dialogs-for-enduser-break
-          - yt01-get-dialogs-for-party-break
+          - yt01-get-dialogs-for-parties-break
           - yt01-get-dialogs-for-random-party-break
           - yt01-get-parties-break
 

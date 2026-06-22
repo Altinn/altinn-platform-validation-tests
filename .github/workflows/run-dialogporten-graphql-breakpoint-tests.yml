@@ -1,0 +1,24 @@
+name: "dialogporten - run k6 graphql breakpoint tests"
+on:
+  workflow_dispatch: {}
+run-name: "run breakpoint"
+permissions:
+  contents: "read"
+  id-token: "write"
+jobs:
+  k6-breakpoint:
+    environment: "test"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+      - name: "Generate k8s manifests"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@33d2a9e88ee7db46a222e543b66df1f74edaadf5"
+        with:
+          config_file: "K6/api/tests/dialogporten/graphql/breakpoint.yaml"
