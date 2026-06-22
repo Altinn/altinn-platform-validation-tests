@@ -1,7 +1,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
-import { DialogSearchVariablesBuilder } from "../../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
+import { DialogSearchVariablesBuilder, DialogByIdVariablesBuilder } from "../../../../../clients/dialogporten/graphql/index.js";
 import { CreateDialog } from "../../../../building-blocks/dialogporten/serviceowner/index.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../../building-blocks/dialogporten/graphql/index.js";
 import {
@@ -200,6 +200,9 @@ export default function (data) {
             .withParties([from.ssn])
             .build();
         GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, getAllDialogsForPartyLabel);
-        GetAndVerifyDialogById(graphqlClient, dialogId, getDialogByIdLabel);
+        const getDialogByIdVariables = new DialogByIdVariablesBuilder()
+            .withId(dialogId)
+            .build();
+        GetAndVerifyDialogById(graphqlClient, getDialogByIdVariables, getDialogByIdLabel);
     });
 }

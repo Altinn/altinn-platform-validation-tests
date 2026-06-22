@@ -8,7 +8,7 @@
  * @param {uuidv7} id
  * @returns graphql query to get dialog by id
  */
-export function getDialogById(id) {
+export function getDialogById(variables) {
     const q = {
         query: `query getDialogById($id: UUID!) {
             dialogById(dialogId: $id) {
@@ -198,9 +198,7 @@ export function getDialogById(id) {
             }
           }`,
         operationName: "getDialogById",
-        variables: {
-            id: id,
-        }
+        variables: variables
     };
     return q;
 }
