@@ -293,7 +293,7 @@ export function getParties() {
                     ...subPartyFields
                     }
                 }
-            }   
+            }
             fragment partyFields on AuthorizedParty {
                 party
                 hasOnlyAccessToSubParties
