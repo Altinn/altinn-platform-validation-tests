@@ -207,17 +207,10 @@ export function getDialogById(id) {
 
 /**
  * Get all dialogs for party
- * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
+ * @param {DialogSearchVariablesBuilder} variables - variables for the search query, built using the DialogSearchVariablesBuilder class
  * returns graphql query to get all dialogs for party
  */
-export function getAllDialogsForParties(partyId, variables) {
-    // The API expects a party URI in the format urn:altinn:person:identifier-no:{pid} for individuals and urn:altinn:organization:identifier-no:{orgnr} for organizations
-    // We can determine the type of party based on the length of the id, as pids are 11 digits and org numbers are 9 digits
-    // TODO: This is a bit brittle, as it relies on the format of the ids, but it is a simple way to determine the party type without making an additional API call
-    let partyUri = `urn:altinn:person:identifier-no:${partyId}`;
-    if (partyId.length == 9) {
-        partyUri = `urn:altinn:organization:identifier-no:${partyId}`;
-    }
+export function getAllDialogsForParties(variables) {
     const q = {
         query: `query getAllDialogsForParties($partyURIs: [String!], $search: String, $org: [String!], $status: [DialogStatus!], $continuationToken: String, $limit: Int, $label: [SystemLabel!], $updatedAfter: DateTime, $updatedBefore: DateTime, $searchLanguageCode: String, $serviceResources: [String!]) {
             searchDialogs(
@@ -289,5 +282,46 @@ export function getAllDialogsForParties(partyId, variables) {
         operationName: "getAllDialogsForParties",
         variables: variables,
     };
+    return q;
+}
+
+export function getParties() {
+    const q = {
+        query: `
+            query parties {
+                parties {
+                ...partyFields
+                    subParties {
+                    ...subPartyFields
+                    }
+                }
+            }
+                
+            fragment partyFields on AuthorizedParty {
+                party
+                hasOnlyAccessToSubParties
+                partyType
+                subParties {
+                    ...subPartyFields
+                    }
+                isAccessManager
+                isMainAdministrator
+                name
+                isCurrentEndUser
+                isDeleted
+                partyUuid
+            }
+                
+            fragment subPartyFields on AuthorizedSubParty {
+                party
+                partyType
+                isAccessManager
+                isMainAdministrator
+                name
+                isCurrentEndUser
+                isDeleted
+                partyUuid
+            }`,
+    }
     return q;
 }

@@ -28,6 +28,32 @@ export function GetAllDialogsForParty(graphqlClient, partyId, labels = null) {
 }
 
 /**
+ * Function to get all dialogs for a party
+ * @param {GraphqlClient} graphqlClient
+ * @param {*} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
+ * @param {*} label
+ * @returns
+ */
+export function GetAllDialogsForPartyWithVariables(graphqlClient, variables, labels = null) {
+    const res = graphqlClient.GetAllDialogsForPartyWithVariables(variables, labels);
+    const succeed = check(res, {
+        "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
+        "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "GetAllDialogsForParty - body is not empty": (r) => {
+            const res_body = JSON.parse(r.body);
+            return res_body !== null && res_body !== undefined;
+        }
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.status_text);
+        console.log(res.body);
+    }
+    return res.body;
+}
+
+/**
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
  * @param {GraphqlClient} graphqlClient
  * @param {string} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
@@ -117,6 +143,31 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
                 return true;
             }
             return true;
+        }
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.status_text);
+        console.log(res.body);
+    }
+    return res.body;
+}
+
+/**
+ * Function to get parties for a user
+ * @param {GraphqlClient} graphqlClient
+ * @param {string} label
+ * @return
+ */
+export function GetParties(graphqlClient, labels = null) {
+    const res = graphqlClient.GetParties(labels);
+    const succeed = check(res, {
+        "GetParties - status code is 200": (r) => r.status === 200,
+        "GetParties - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "GetParties - body is not empty": (r) => {
+            const res_body = JSON.parse(r.body);
+            return res_body !== null && res_body !== undefined;
         }
     });
 

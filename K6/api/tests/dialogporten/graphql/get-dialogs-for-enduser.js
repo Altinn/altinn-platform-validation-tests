@@ -1,6 +1,7 @@
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
+import { GetAllDialogsForPartyWithVariables } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { getClient, getDialogportenOpts } from "./common-functions.js";
+import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -15,9 +16,12 @@ export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
     const endUser = getItemFromList(data, randomize).ssn;
     tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser));
-    const res = GetAllDialogsForParty(
+    const variables = new DialogSearchVariablesBuilder()
+        .withParties([endUser])
+        .build();
+    const res = GetAllDialogsForPartyWithVariables(
         graphqlClient,
-        endUser,
+        variables,
         getDialogslabel,
     );
     const json = JSON.parse(res);
