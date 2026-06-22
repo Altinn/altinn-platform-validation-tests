@@ -95,5 +95,5 @@ export function getParties(graphqlClient, label, max_number_of_parties = 100) {
  */
 function isOrganizationParty(party) {
     return !party.isDeleted &&
-        party.party?.includes('organization');
+        party.party?.includes("organization");
 }

@@ -320,6 +320,6 @@ export function getParties() {
                 isDeleted
                 partyUuid
             }`,
-    }
+    };
     return q;
 }

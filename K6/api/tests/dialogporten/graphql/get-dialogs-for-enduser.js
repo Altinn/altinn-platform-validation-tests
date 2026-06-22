@@ -23,11 +23,9 @@ export default function (data) {
     const variables = new DialogSearchVariablesBuilder()
         .withParties([endUser])
         .build();
-    const res = GetAllDialogsForParty(
+    GetAllDialogsForParty(
         graphqlClient,
         variables,
         getDialogslabel,
     );
-    const json = JSON.parse(res);
-    console.log(`Got ${json.data.searchDialogs?.items?.length} dialogs for end user ${endUser}`);
 }

@@ -21,16 +21,16 @@ export class DialogSearchVariablesBuilder {
         this.variables = {
             partyURIs: [],
             status: [
-                'NOT_APPLICABLE',
-                'IN_PROGRESS',
-                'AWAITING',
-                'REQUIRES_ATTENTION',
-                'COMPLETED',
+                "NOT_APPLICABLE",
+                "IN_PROGRESS",
+                "AWAITING",
+                "REQUIRES_ATTENTION",
+                "COMPLETED",
             ],
             serviceResources: [],
-            label: ['DEFAULT'],
+            label: ["DEFAULT"],
             limit: 100,
-            searchLanguageCode: 'nb',
+            searchLanguageCode: "nb",
         };
     }
 
@@ -42,7 +42,7 @@ export class DialogSearchVariablesBuilder {
     withParties(parties) {
         const partyUris = [];
         for (const party of parties) {
-            let partyUri = ""
+            let partyUri = "";
             if (party.length === 11) {
                 partyUri = `urn:altinn:person:identifier-no:${party}`;
             }
