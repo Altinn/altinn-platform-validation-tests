@@ -1,8 +1,7 @@
 namespace: dialogporten
 base_dir: K6/api/tests/dialogporten/graphql/
 test_definitions:
-  - test-scope: dialogporten-graphql
-    test_file: get-dialogs-for-enduser.js
+  - test_file: get-dialogs-for-enduser.js
     contexts:
       - environment: yt01
         test_type:
@@ -11,8 +10,7 @@ test_definitions:
       - environment: tt02
       - environment: at23
 
-  - test-scope: dialogporten-graphql
-    test_file: get-dialogs-for-parties.js
+  - test_file: get-dialogs-for-parties.js
     contexts:
       - environment: yt01
         test_type:
@@ -21,8 +19,7 @@ test_definitions:
       - environment: tt02
       - environment: at23
 
-  - test-scope: dialogporten-graphql
-    test_file: get-dialogs-for-random-party.js
+  - test_file: get-dialogs-for-random-party.js
     contexts:
       - environment: yt01
         test_type:
