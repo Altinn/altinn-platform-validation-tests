@@ -1,3 +1,13 @@
+/**
+ * Load test for the enterprise consent request events endpoint.
+ *
+ * Fetches the first page of consent request events for the
+ * organization that holds all the generated consents (see consent-data-single-org.js).
+ *
+ * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
+ * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
+ * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
+ */
 import { group } from "k6";
 
 import { getOptions } from "../../../../helpers.js";
