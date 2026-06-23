@@ -34,7 +34,7 @@ class ConsentApiClient {
 
     /**
    * Request Consent
-   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
    * @param {string} id
    * @param {string} from
    * @param {string} to
@@ -72,7 +72,8 @@ class ConsentApiClient {
 
     /**
    * Approve Consent
-   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
+   * Must be approved by en user with scope `altinn:portal/enduser`.
    * @param {string } id
    * @returns http.RefinedResponse
    */
@@ -100,7 +101,10 @@ class ConsentApiClient {
     /**
    * Lookup Maskinporten consent token for a consent request.
    *
+   * The endpoint we're using is the endpoint Maskinporten uses to lookup a consent request before returning the token.
+   * 
    * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/retrieve-token/}
    *
    * @param {string} id
    * @param {string} from
@@ -134,17 +138,22 @@ class ConsentApiClient {
     }
 
     /**
-   * Get the first page of consent request events for an organization.
+   * Get a page of consent request events for the authenticated organization.
    *
-   * Endpoint: /accessmanagement/api/v1/enterprise/consentrequests/events
+   * Returns events ordered by event id (oldest first), max 100 per page.
+   * Follow the `links.next` cursor (passed back as `ContinuationToken`) to page.
    *
-   * @param {Object} queryParams - Query parameters for the request.
-   * @example { ContinuationToken: string }
-   * @example { createdAfter: Datetimeoffset}
-   * @example { createdBefore: Datetimeoffset}
-   * @example { EventType: string[]: Filtrerer etter hendelsestype. Kan gjentas: eventType=accepted&eventType=revoked.}
-   * @example { ConsentRequestID: Guid - Filtrerer hendelser som tilhører en bestemt samtykkeforespørsel.}
-    * @param {string|null} labels - Optional label for the request tag.
+   * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
+   * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
+   *
+   * @param {Object} [queryParams] - Optional query parameters. All are optional.
+   * @param {string} [queryParams.ContinuationToken] - Opaque cursor from the `links.next` of a previous response.
+   * @param {string} [queryParams.createdAfter] - DateTimeOffset; only events created at or after this timestamp.
+   * @param {string} [queryParams.createdBefore] - DateTimeOffset; only events created before this timestamp. Must be strictly greater than `createdAfter` when both are set.
+   * @param {string[]} [queryParams.EventType] - Filter by event type (accepted/rejected/revoked/deleted/used). Repeatable.
+   * @param {string} [queryParams.ConsentRequestID] - Guid; only events belonging to this consent request.
+   * @param {Object.<string, string>|null} [labels] - Optional request tags.
    * @returns http.RefinedResponse
    */
     GetConsentRequestEvents(queryParams = {}, labels = null) {

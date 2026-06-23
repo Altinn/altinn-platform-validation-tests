@@ -10,7 +10,12 @@ import { GetConsentRequestEvents } from "../../../building-blocks/authentication
 const env = __ENV.ENVIRONMENT ?? "yt01";
 
 // The organization that holds all the generated consents, only added scenarios for YT01, 
-const ORG_NO = "730077254";
+const ORGANIZATION_PER_ENVIRONMENT = {
+    "at23": "314084993",
+    "yt01": "730077254",
+    "tt02": "314084993"
+};
+const ORG_NO = ORGANIZATION_PER_ENVIRONMENT[env];
 
 const getConsentRequestEventsLabel = { action: "Get Consent Request Events" };
 

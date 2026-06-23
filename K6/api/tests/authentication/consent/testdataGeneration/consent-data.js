@@ -20,7 +20,6 @@ import {
 const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 2;
 
 export const options = {
-    //Should take less than a second really
     setupTimeout: "10s",
     scenarios: {
         default: {

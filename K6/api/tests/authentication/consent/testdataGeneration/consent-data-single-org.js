@@ -17,18 +17,22 @@ import {
 } from "../../../../building-blocks/authentication/consent/index.js";
 
 //How many consent requests you want to generate (all for ONE organization)
-const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 10000;
+const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 100;
 
-// The single organization that receives (is the consentee for) all generated consents.
-// Todo - fix testdata for AT23 and TT02
-const ORG_NO = "730077254";
+const ORGANIZATION_PER_ENVIRONMENT = {
+    "at23": "314084993",
+    "tt02": "314084993",
+    "yt01": "730077254",
+};
+
+const ORG_NO = ORGANIZATION_PER_ENVIRONMENT[__ENV.ENVIRONMENT];
 
 export const options = {
     setupTimeout: "60s",
     scenarios: {
         default: {
             executor: "shared-iterations",
-            vus: 50,
+            vus: 10,
             iterations: LOOKUPS,
             maxDuration: "10m",
         },
@@ -133,19 +137,4 @@ export default function (rows) {
 
         ApproveConsent(consenter, row.consentId);
     });
-}
-
-export function teardown(rows) {
-    let csv = "";
-
-    try {
-        csv += "Pid,Org,ConsentId\n";
-        rows.forEach((r) => {
-            csv += `${r.pid},${r.orgNo},${r.consentId}\n`;
-        });
-        console.log(csv);
-    } catch (e) {
-        console.log(`\nCSV_PRINT_FAILED: ${String(e)}\n`);
-        console.log("\nWhat you have so far:" + csv + "\n");
-    }
 }
