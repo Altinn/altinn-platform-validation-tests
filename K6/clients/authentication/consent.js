@@ -4,6 +4,7 @@ const TAGS = {
     RequestConsent: { action: "RequestConsent" },
     ApproveConsent: { action: "ApproveConsent" },
     LookupConsent: { action: "LookupConsent" },
+    GetConsentRequestEvents: { action: "GetConsentRequestEvents" },
 };
 
 class ConsentApiClient {
@@ -130,6 +131,42 @@ class ConsentApiClient {
         };
 
         return http.post(url, JSON.stringify(body), params);
+    }
+
+    /**
+   * Get the first page of consent request events for an organization.
+   *
+   * Endpoint: /accessmanagement/api/v1/enterprise/consentrequests/events
+   *
+   * @param {Object} queryParams - Query parameters for the request.
+   * @example { ContinuationToken: string }
+   * @example { createdAfter: Datetimeoffset}
+   * @example { createdBefore: Datetimeoffset}
+   * @example { EventType: string[]: Filtrerer etter hendelsestype. Kan gjentas: eventType=accepted&eventType=revoked.}
+   * @example { ConsentRequestID: Guid - Filtrerer hendelser som tilhører en bestemt samtykkeforespørsel.}
+    * @param {string|null} labels - Optional label for the request tag.
+   * @returns http.RefinedResponse
+   */
+    GetConsentRequestEvents(queryParams = {}, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/enterprise/consentrequests/events`);
+        Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
+        let tags = { endpoint: url.toString() };
+
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
+        console.log(url.toString());
+
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        return http.get(url.toString(), params);
     }
 }
 
