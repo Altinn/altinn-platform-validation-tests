@@ -26,7 +26,7 @@ for file in $(find ./K6/api -type f -name "functional.yaml" -o -name "healthchec
   rm -rf .build/ .conf/ .dist/ && \
   docker run -u $(id -u ${USER}):$(id -g ${USER}) -v .:/workspace --rm \
   -e INPUT_CONFIG_FILE="$file" \
-  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.39
+  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.41
 done
 
 for file in $(find ./K6/browser -type f -name "browser.yaml"); do
@@ -34,5 +34,5 @@ for file in $(find ./K6/browser -type f -name "browser.yaml"); do
   rm -rf .build/ .conf/ .dist/ && \
   docker run -u $(id -u ${USER}):$(id -g ${USER}) -v .:/workspace --rm \
   -e INPUT_CONFIG_FILE="$file" \
-  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.39
+  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.41
 done

@@ -19,6 +19,6 @@ jobs:
           azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
       - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@33d2a9e88ee7db46a222e543b66df1f74edaadf5"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@ec383f5b2cafb06b2d760d14ae2d06f711d8e3e7"
         with:
           config_file: "K6/api/tests/dialogporten/serviceowner/breakpoint.yaml"
