@@ -91,3 +91,27 @@ function getSessionId(token) {
     const sessionId = resp.json().cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
     return sessionId;
 }
+
+/**
+ * Async function to wait for the page to load.
+ * @param {object} page - The page object to interact with.
+ * @param {number} empties - Number of empty checks to perform (default is 1).
+ * @return {Promise<void>} - A promise that resolves when the page is loaded.
+ */
+export async function waitForPageLoaded(page, empties = 1) {
+    const button = page.getByRole("button", {
+        name: /Legg til filter|Add filter/
+    });
+
+    await button.waitFor({ state: "visible" });
+
+    let busyItems = await page.$$("li [aria-busy=\"true\"]");
+    let noEmptys = 0;
+    while (busyItems.length > 0 || noEmptys < empties) {
+        await page.waitForTimeout(10); // Wait for 10 ms before checking again
+        busyItems = await page.$$("li [aria-busy=\"true\"]");
+        if (busyItems.length === 0) {
+            noEmptys++;
+        }
+    }
+}

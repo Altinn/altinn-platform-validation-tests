@@ -7,7 +7,9 @@
 import { browser } from "k6/browser";
 import { check } from "k6";
 import { Trend } from "k6/metrics";
-import { getCookie, afUrl, environment } from "./arbeidsflate-utils.js";
+import { getCookie, afUrl, environment, waitForPageLoaded } from "./arbeidsflate-utils.js";
+
+
 
 const pageLoadingTime = new Trend("page_loading_time", true);
 
@@ -121,23 +123,5 @@ export default async function (data) {
     finally {
         await page.close();
         await context.close();
-    }
-}
-
-/**
- * Async function to wait for the page to load.
- * @param {object} page - The page object to interact with.
- * @param {number} empties - Number of empty checks to perform (default is 1).
- * @return {Promise<void>} - A promise that resolves when the page is loaded.
- */
-export async function waitForPageLoaded(page, empties = 1) {
-    let busyItems = await page.$$("li [aria-busy=\"true\"]");
-    let noEmptys = 0;
-    while (busyItems.length > 0 || noEmptys < empties) {
-        await page.waitForTimeout(10); // Wait for 10 ms before checking again
-        busyItems = await page.$$("li [aria-busy=\"true\"]");
-        if (busyItems.length === 0) {
-            noEmptys++;
-        }
     }
 }
