@@ -1,8 +1,14 @@
 import { GetUpdatedResources } from "../../../building-blocks/authentication/resource-registry/index.js";
 import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 import { check } from "k6";
+import { requireEnv } from "../../../../helpers.js";
 
 let resourceRegistryApiClient = undefined;
+
+export function setup() {
+    requireEnv(["BASE_URL"]);
+    return;
+}
 
 export default function () {
     if (resourceRegistryApiClient == undefined) {

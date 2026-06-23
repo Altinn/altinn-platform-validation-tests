@@ -1,4 +1,5 @@
 import { Page } from "k6/browser";
+import { requireEnv } from "../../helpers.js";
 
 export class logoutWithUser {
     /**
@@ -6,6 +7,7 @@ export class logoutWithUser {
     * @param {Page} page
     */
     constructor(page) {
+        requireEnv(["ALTINN2_BASE_URL"]);
         this.page = page;
     }
 

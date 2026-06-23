@@ -1,4 +1,5 @@
 import http from "k6/http";
+import { requireEnv } from "../../helpers.js";
 
 class AltinnCdnClient {
     /**
@@ -8,6 +9,7 @@ class AltinnCdnClient {
     constructor(
         baseUrl = __ENV.ALTINN_CDN_BASE_URL
     ) {
+        requireEnv(["ALTINN_CDN_BASE_URL"]);
         this.BASE_URL = baseUrl;
     }
 

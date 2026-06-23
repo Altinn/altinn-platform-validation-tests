@@ -28,6 +28,8 @@ class RegisterApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/register/api/v1";
+
+        this.baseUrl = baseUrl;
     }
 
     static get TAGS() {
@@ -42,7 +44,7 @@ class RegisterApiClient {
      * @returns http.RefinedResponse
      */
     RemoveRevisorRoleFromEr(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
+        const registerUrl = `${this.baseUrl}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
 
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapReqBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -79,7 +81,7 @@ class RegisterApiClient {
 
 
     AddRevisorRoleToErForOrg(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.BASE_URL}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
+        const registerUrl = `${this.baseUrl}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
 
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">

@@ -1,5 +1,6 @@
 import { Page } from "k6/browser";
 import { expect } from "../../common-imports.js";
+import { requireEnv } from "../../helpers.js";
 
 export class LoginPage {
     /**
@@ -7,6 +8,7 @@ export class LoginPage {
     * @param {Page} page
     */
     constructor(page) {
+        requireEnv(["ALTINN2_BASE_URL"]);
         this.page = page;
         this.searchBox = this.page.getByRole("searchbox", { name: "Søk etter aktør" });
         this.pidInput = this.page.locator("input[name='pid']");

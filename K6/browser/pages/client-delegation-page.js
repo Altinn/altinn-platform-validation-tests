@@ -1,5 +1,6 @@
 import { Locator, Page } from "k6/browser";
 import { expect } from "../../common-imports.js";
+import { requireEnv } from "../../helpers.js";
 
 export class ClientDelegationPage {
     /**
@@ -7,6 +8,7 @@ export class ClientDelegationPage {
     * @param {Page} page
     */
     constructor(page) {
+        requireEnv(["AM_UI_BASE_URL"]);
         this.page = page;
         this.confirmButton = page.getByRole("button", { name: "Godkjenn systemtilgang" });
         this.addCustomersButton = page.getByRole("button", { name: "Legg til kunder" });

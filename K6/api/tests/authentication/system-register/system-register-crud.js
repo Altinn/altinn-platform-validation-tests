@@ -10,6 +10,12 @@ import {
     GetDeletedSystemByID
 } from "../../../building-blocks/authentication/system-register/index.js";
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
+import { requireEnv } from "../../../../helpers.js";
+
+export function setup() {
+    requireEnv(["BASE_URL"]);
+    return;
+}
 
 function defaultObject() {
     const name = `NoeVisuelt${uuidv4()}`;

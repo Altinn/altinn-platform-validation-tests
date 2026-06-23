@@ -3,7 +3,7 @@ import { check, group } from "k6";
 import { PlatformTokenGenerator } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
-import { getItemFromList, getOptions, parseCsvData } from "../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { action: "test-lookup-on-username" };
@@ -59,6 +59,7 @@ function assertLookupResponse(response, expectedUsername) {
 }
 
 export function setup() {
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
     );

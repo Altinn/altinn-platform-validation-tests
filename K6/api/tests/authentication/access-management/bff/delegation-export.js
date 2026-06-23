@@ -2,7 +2,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
 
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
+import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { DelegationExport } from "../../../../building-blocks/authentication/client-delegations/index.js";
@@ -42,6 +42,7 @@ function getClients() {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
 
     const baseUrl =

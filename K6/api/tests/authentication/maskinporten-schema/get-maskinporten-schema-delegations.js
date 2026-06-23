@@ -4,6 +4,7 @@ import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs 
 import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
 
 // Labels for different actions
 const getMaskinportenSchemaLabel1 = { step: "1. Get maskinportenSchema supplierOrg as query param" };
@@ -65,6 +66,7 @@ export const options = getOptions(
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

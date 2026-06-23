@@ -1,7 +1,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
-
+import { requireEnv } from "../../../../../helpers.js";
 import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import { PostDelegations, DeleteDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
@@ -58,6 +58,7 @@ function getClients() {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
