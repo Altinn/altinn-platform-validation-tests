@@ -99,11 +99,11 @@ function getSessionId(token) {
  * @return {Promise<void>} - A promise that resolves when the page is loaded.
  */
 export async function waitForPageLoaded(page, empties = 1) {
-    const button = page.getByRole('button', {
+    const button = page.getByRole("button", {
         name: /Legg til filter|Add filter/
     });
 
-    await button.waitFor({ state: 'visible' });
+    await button.waitFor({ state: "visible" });
 
     let busyItems = await page.$$("li [aria-busy=\"true\"]");
     let noEmptys = 0;
