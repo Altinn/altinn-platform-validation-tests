@@ -5,7 +5,12 @@ import { LoginPage, ClientDelegationPage } from "../pages/index.js";
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/authentication/index.js";
 import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";
 import { CreateAgentSystemUserRequest } from "../../api/building-blocks/authentication/system-user-request/index.js";
+import { requireEnv } from "../../helpers.js";
 
+export function setup() {
+    requireEnv(["AM_UI_BASE_URL", "BASE_URL", "ENVIRONMENT"]);
+    return;
+}
 
 export const options = {
     scenarios: {

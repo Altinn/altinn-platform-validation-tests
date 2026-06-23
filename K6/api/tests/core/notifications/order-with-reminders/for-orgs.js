@@ -2,8 +2,19 @@ import { check } from "k6";
 import { EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
 import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
+import { requireEnv } from "../../../../../helpers.js";
 
 const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-organizations.json"));
+
+export function setup() {
+    requireEnv(
+        ["ENVIRONMENT", "BASE_URL",
+            "orgNoRecipient", "resourceId",
+            "tokenGeneratorUserName", "tokenGeneratorUserPwd"
+        ]
+    );
+    return;
+}
 
 export default function () {
     const options = new Map();

@@ -7,6 +7,7 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
+import { requireEnv } from "../../../../helpers.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
@@ -18,6 +19,7 @@ const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

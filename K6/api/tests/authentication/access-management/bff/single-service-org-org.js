@@ -18,7 +18,7 @@ import {
     GetRoleMeta,
     GetRightsMeta,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
+import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
@@ -147,6 +147,7 @@ function getClients() {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/single-service-org-org.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

@@ -7,6 +7,12 @@ import {
     followNextUrlPagination,
 } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
+
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    return;
+}
 
 /**
  * Test: System Users By SystemId (vendor) + pagination.

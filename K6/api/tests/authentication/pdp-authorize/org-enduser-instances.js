@@ -2,7 +2,7 @@
  * Test for PDP Authorize - Organization to Enduser instance delegations
 */
 import { PdpAuthorizeOrgInstance } from "../../../building-blocks/authentication/pdp-authorize/index.js";
-import { getItemFromList, getOptions, getNumberOfVUs, segmentData, parseCsvData } from "../../../../helpers.js";
+import { getItemFromList, getOptions, getNumberOfVUs, segmentData, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { randomIntBetween } from "../../../../common-imports.js";
 import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
@@ -18,6 +18,7 @@ const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/org-user-instance-delegations.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

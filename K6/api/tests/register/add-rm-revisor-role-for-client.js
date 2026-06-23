@@ -7,7 +7,7 @@ import {
     GetRevisorCustomerIdentifiersForParty,
     RemoveRevisorRoleFromEr,
 } from "../../building-blocks/register/index.js";
-import { retry, parseCsvData, getItemFromList } from "../../../helpers.js";
+import { retry, parseCsvData, getItemFromList, requireEnv } from "../../../helpers.js";
 
 /**
  * @file add-rm-revisor-role-for-client.js
@@ -27,6 +27,12 @@ import { retry, parseCsvData, getItemFromList } from "../../../helpers.js";
  */
 
 export function setup() {
+    requireEnv(
+        [
+            "BASE_URL", "ENVIRONMENT",
+            "REGISTER_SUBSCRIPTION_KEY", "SOAP_ER_PASSWORD", "SOAP_ER_USERNAME"
+        ]
+    );
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
     );

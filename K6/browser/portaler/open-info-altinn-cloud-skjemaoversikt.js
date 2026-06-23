@@ -4,8 +4,14 @@ import { check } from "k6";
 import { Trend } from "k6/metrics";
 import { expect } from "../../common-imports.js";
 import { getOptions } from "./common.js";
+import { requireEnv } from "../../helpers.js";
 
 export const options = getOptions();
+
+export function setup() {
+    requireEnv(["INFO_CLOUD_URL"]);
+    return;
+}
 
 export default async function () {
     const url = `${__ENV.INFO_CLOUD_URL}/skjemaoversikt`;

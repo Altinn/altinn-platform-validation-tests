@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { parseCsvData, segmentData, getNumberOfVUs } from "../../../../../helpers.js";
+import { parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../../helpers.js";
 
 /*
 * The users in this list have been selected based on the number of consent requests they have.
@@ -87,6 +87,7 @@ export function getTokenOpts(userId, partyuuid) {
 * The CSV file is expected to have the same format as the worst_case_users array, with columns for userId, partyUuid, and label.
 */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

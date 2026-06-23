@@ -1,4 +1,5 @@
 import http from "k6/http";
+import { requireEnv } from "../../helpers.js";
 
 export class RegisterLookupClient {
     /**
@@ -7,6 +8,8 @@ export class RegisterLookupClient {
    * @param {*} tokenGenerator
    */
     constructor(baseUrl, tokenGenerator) {
+        requireEnv(["REGISTER_SUBSCRIPTION_KEY"]);
+
         /**
          * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
          */

@@ -2,7 +2,6 @@
 // The labels include the approximate number of authorized parties for each user.
 // The labels are prefixed with a letter to ensure consistent ordering in test reports.
 
-const environment = __ENV.ENVIRONMENT || "yt01";
 const endUsersByEnvironment = {
     yt01: [
         { pid: "14022216091", label: "a_14022216091_80k" },
@@ -27,7 +26,7 @@ const endUsersByEnvironment = {
     ],
 };
 
-export const endUsers = endUsersByEnvironment[environment] || [];
+export const endUsers = endUsersByEnvironment[__ENV.ENVIRONMENT] || [];
 export const endUserLabels = endUsers.map(user => { return { unique_id: user.label }; });
 
 // Some more if needed:
