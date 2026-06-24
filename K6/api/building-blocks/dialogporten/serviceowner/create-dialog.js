@@ -42,7 +42,7 @@ export function CreateDialog(
  * Create a transmission for a dialog
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
- * @param {string} label
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @returns response body of the request
  */
 export function CreateTransmission(
