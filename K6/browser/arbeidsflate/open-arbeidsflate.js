@@ -15,7 +15,6 @@ const pageLoadingTime = new Trend("page_loading_time", true);
 
 const endUsersByEnvironment = {
     yt01: [
-        //ssn: 20041065185 yt01 95817 avgivere, partyuuid: df2f94e7-1220-4561-ba1f-d340f2657510, FirstName3150244 LastName3150244, partyid 53277829, userid 1282457
         { pid: "20041065185", label: "a_20041065185_95k", userId: "1282457", partyId: "53277829", partyUuid: "df2f94e7-1220-4561-ba1f-d340f2657510" },
         { pid: "14022216091", label: "b_14022216091_80k", userId: "8897961", partyId: "56850289", partyUuid: "ef7242a0-eaf1-45bb-b898-4a5c17747340" },
         { pid: "21070450361", label: "c_21070450361_47K", userId: "634565", partyId: "51540106", partyUuid: "1251a17d-9dfb-4a1e-b6d9-0c592854fd12" },
