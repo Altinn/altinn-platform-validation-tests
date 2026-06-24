@@ -30,7 +30,7 @@ test_definitions:
 
       - environment: tt02
       - environment: at23
-  
+
   - test_file: get-filter-service-resources.js
     contexts:
       - environment: yt01

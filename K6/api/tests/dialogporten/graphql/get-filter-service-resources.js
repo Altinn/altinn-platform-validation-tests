@@ -1,5 +1,5 @@
 /**
- * This test is used to get the filter service resources from Dialogporten GraphQL API. 
+ * This test is used to get the filter service resources from Dialogporten GraphQL API.
  * It uses the GetFilterServiceResources function from the building-blocks/dialogporten/graphql/index.js file.
  */
 import { getItemFromList, getOptions } from "../../../../helpers.js";
