@@ -27,4 +27,8 @@ resources:
   kind: Pod
   path: k8s.io/api/core/v1
   version: v1
+- controller: true
+  domain: k6.dis.altinn.cloud
+  kind: ConfigMap
+  version: v1
 version: "3"
