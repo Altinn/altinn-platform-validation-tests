@@ -3,7 +3,7 @@ import exec from "k6/execution";
 import { group } from "k6";
 
 import { uuidv4 } from "../../../../../common-imports.js";
-import { parseCsvData } from "../../../../../helpers.js";
+import { parseCsvData, requireEnv } from "../../../../../helpers.js";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
 import {
@@ -81,7 +81,7 @@ function consentRights() {
 }
 
 export function setup() {
-    if (!__ENV.ENVIRONMENT) throw new Error("Missing ENVIRONMENT");
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`
