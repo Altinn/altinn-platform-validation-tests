@@ -36,7 +36,7 @@ class AuthorizedPartiesClient {
    * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
    * @param {string} type
    * @param {string} value
-   * @param {string} label
+   * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
    * @returns http.RefinedResponse
    */
     GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {

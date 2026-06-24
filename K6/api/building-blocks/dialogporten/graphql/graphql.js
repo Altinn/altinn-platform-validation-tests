@@ -33,7 +33,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * @param {GraphqlClient} graphqlClient
  * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
  * @param {uuidv7} dialogId
- * @param {string} label
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @returns
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
@@ -71,7 +71,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  * Function to get a dialog by id
  * @param {GraphqlClient} graphqlClient
  * @param {uuidv7} dialogId - id of the dialog to get
- * @param {string} label
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return
  *
  */
@@ -98,7 +98,7 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  * Function to get a dialog by id and verify that the response contains the correct dialogId
  * @param {GraphqlClient} graphqlClient
  * @param {uuidv7} dialogId - id of the dialog to get
- * @param {string} label
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return
  *
  */
@@ -132,7 +132,7 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
 /**
  * Function to get parties for a user
  * @param {GraphqlClient} graphqlClient
- * @param {string} label
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return
  */
 export function GetParties(graphqlClient, labels = null) {
@@ -157,7 +157,7 @@ export function GetParties(graphqlClient, labels = null) {
 /**
  * Function to get filtered service resources for a user
  * @param {GraphqlClient} graphqlClient
- * @param {string} label
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {
