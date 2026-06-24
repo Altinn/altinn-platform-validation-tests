@@ -57,6 +57,29 @@ rules:
   - patch
   - update
 - apiGroups:
+  - k6.dis.altinn.cloud
+  resources:
+  - configmaps
+  verbs:
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - k6.dis.altinn.cloud
+  resources:
+  - configmaps/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - k6.dis.altinn.cloud
+  resources:
+  - configmaps/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
   - k6.io
   resources:
   - testruns

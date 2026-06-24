@@ -18,7 +18,12 @@ package controller
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"time"
 
+	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -31,23 +36,57 @@ type ConfigMapReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps,verbs=get;list;watch;create;update;patch;delete
+func getGenerationTime(cm corev1.ConfigMap) (time.Time, bool) {
+	val, ok := cm.Labels["generation_timestamp"]
+	if !ok || val == "" {
+		return time.Time{}, false
+	}
+
+	ms, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return time.Time{}, false
+	}
+
+	t := time.Unix(0, ms*int64(time.Millisecond))
+	return t, true
+}
+
+// +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps,verbs=get;list;watch;delete
 // +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps/finalizers,verbs=update
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the ConfigMap object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.23.3/pkg/reconcile
 func (r *ConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = logf.FromContext(ctx)
+	log := logf.FromContext(ctx)
 
-	// TODO(user): your logic here
+	var cm corev1.ConfigMap
+	if err := r.Get(ctx, req.NamespacedName, &cm); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		log.Error(err, "Unable to fetch ConfigMap", "namespace", req.Namespace, "name", req.Name)
+		return ctrl.Result{}, err
+	} else {
+		ts, succ := getGenerationTime(cm)
+		if !succ {
+			// Does not have the label so skip it.
+			return ctrl.Result{}, nil
+		}
+
+		if ts.Before(time.Now().AddDate(0, -1, 0)) { // // 1 month ago
+			log.Info(fmt.Sprintf("ConfigMap %s should be deleted", cm.Name))
+			if err := r.Delete(ctx, &cm); err != nil {
+				if apierrors.IsNotFound(err) {
+					return ctrl.Result{}, nil
+				}
+				log.Error(err, "Unable to delete old ConfigMap", "ConfigMap", cm)
+				return ctrl.Result{}, err
+			}
+		} else {
+			return ctrl.Result{
+				RequeueAfter: 30 * 24 * time.Hour, // every 30 days should be fine.. but I doubt the pod will stay up that long hehe
+			}, nil
+		}
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -55,8 +94,7 @@ func (r *ConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // SetupWithManager sets up the controller with the Manager.
 func (r *ConfigMapReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		// Uncomment the following line adding a pointer to an instance of the controlled resource as an argument
-		// For().
-		Named("configmap").
+		For(&corev1.ConfigMap{}).
+		WithEventFilter(CleanupPredicate()).
 		Complete(r)
 }
