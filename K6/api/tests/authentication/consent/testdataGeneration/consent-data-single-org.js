@@ -15,24 +15,21 @@ import {
 } from "../../../../building-blocks/authentication/consent/index.js";
 
 import {
-    ConsentScope,
-    ENDUSER_SCOPE,
-    getBaseTokenOpts,
     getConsenteeOrgs,
     getConsenterPersons,
-    getEnterpriseTokenOpts,
-    getPersonalTokenOpts,
+    getConsenteeTokenOpts,
+    getConsenterTokenOpts,
 } from "../request-events-commons.js";
 
 // How many consent requests to generate, spread across all consentee organizations.
-const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 10;
+const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 100;
 
 export const options = {
     setupTimeout: "60s",
     scenarios: {
         default: {
             executor: "shared-iterations",
-            vus: 1,
+            vus: 10,
             iterations: LOOKUPS,
             maxDuration: "10m",
         },
@@ -51,15 +48,19 @@ let consenterTokenGenerator;
  */
 function getClients() {
     if (consenteeClient == undefined) {
-        consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
-        );
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:consentrequests.write");
+        consenteeTokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
     }
     if (consenterClient == undefined) {
-        consenterTokenGenerator = new PersonalTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ENDUSER_SCOPE)
-        );
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:portal/enduser");
+        consenterTokenGenerator = new PersonalTokenGenerator(tokenOpts);
         consenterClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
     }
     return [consenteeClient, consenterClient];
@@ -97,10 +98,10 @@ export default function (data) {
         const consentId = uuidv4();
 
         consenteeTokenGenerator.setTokenGeneratorOptions(
-            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.WRITE)
+            getConsenteeTokenOpts(org.orgNo, "altinn:consentrequests.write")
         );
         consenterTokenGenerator.setTokenGeneratorOptions(
-            getPersonalTokenOpts(__ENV.ENVIRONMENT, person.userId, person.partyUuid)
+            getConsenterTokenOpts(person.userId, person.partyUuid)
         );
 
         const pidUrn = `urn:altinn:person:identifier-no:${person.ssn}`;

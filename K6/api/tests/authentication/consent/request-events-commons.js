@@ -14,15 +14,10 @@ import { parseCsvData } from "../../../../helpers.js";
  *   - consenter-persons/<env>.csv    (header: ssn,userId,partyUuid)
  */
 
+// TODO: switch the ref back to "refs/heads/main" before merging. It currently
+// points at the feature branch so the new test data resolves before the merge.
 const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/request-events";
-
-export const ConsentScope = {
-    READ: "altinn:consentrequests.read",
-    WRITE: "altinn:consentrequests.write",
-};
-
-export const ENDUSER_SCOPE = "altinn:portal/enduser";
+    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/events-improvement/K6/testdata/authentication/consent/request-events";
 
 /**
  * The organizations that receive (and therefore hold) consents.
@@ -46,45 +41,31 @@ export function getConsenterPersons(env) {
 
 /**
  * Token options for a consentee organization (enterprise token).
- * orgNo is optional so the generator can be built once and have its org set
- * per iteration via setTokenGeneratorOptions.
- * @param {string} env
- * @param {string} [orgNo]
- * @param {string} scopes One of {@link ConsentScope}.
+ * @param {string} orgNo
+ * @param {string} scopes e.g. "altinn:consentrequests.read".
  * @returns {Map<string, string|number>}
  */
-export function getEnterpriseTokenOpts(env, orgNo, scopes) {
-    const opts = getBaseTokenOpts(env, scopes);
+export function getConsenteeTokenOpts(orgNo, scopes) {
+    const opts = new Map();
+    opts.set("env", __ENV.ENVIRONMENT);
+    opts.set("ttl", 3600);
+    opts.set("scopes", scopes);
     opts.set("orgNo", orgNo);
     return opts;
 }
 
 /**
  * Token options for a consenter person (personal token).
- * @param {string} env
  * @param {string} userId
  * @param {string} partyUuid
  * @returns {Map<string, string|number>}
  */
-export function getPersonalTokenOpts(env, userId, partyUuid) {
-    const opts = getBaseTokenOpts(env, ENDUSER_SCOPE);
+export function getConsenterTokenOpts(userId, partyUuid) {
+    const opts = new Map();
+    opts.set("env", __ENV.ENVIRONMENT);
+    opts.set("ttl", 3600);
+    opts.set("scopes", "altinn:portal/enduser");
     opts.set("userId", userId);
     opts.set("partyuuid", partyUuid);
     return opts;
-}
-
-/**
- * Static token options shared by every token: env, ttl and scopes. The
- * per-request identity (orgNo / userId+partyuuid) is set per iteration via
- * setTokenGeneratorOptions, so the generator can be built once.
- * @param {string} env
- * @param {string} scopes
- * @returns {Map<string, string|number>}
- */
-export function getBaseTokenOpts(env, scopes) {
-    return new Map([
-        ["env", env],
-        ["ttl", 3600],
-        ["scopes", scopes],
-    ]);
 }

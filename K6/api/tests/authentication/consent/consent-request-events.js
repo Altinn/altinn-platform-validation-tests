@@ -24,10 +24,8 @@ import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 
 import {
-    ConsentScope,
-    getBaseTokenOpts,
     getConsenteeOrgs,
-    getEnterpriseTokenOpts,
+    getConsenteeTokenOpts,
 } from "./request-events-commons.js";
 
 const getConsentRequestEventsLabel = { action: "Get Consent Request Events" };
@@ -43,9 +41,11 @@ let tokenGenerator;
  */
 function getClients() {
     if (consentApiClient == undefined) {
-        tokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
-        );
+        const tokenOpts = new Map();
+        tokenOpts.set("env", __ENV.ENVIRONMENT);
+        tokenOpts.set("ttl", 3600);
+        tokenOpts.set("scopes", "altinn:consentrequests.read");
+        tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }
     return [consentApiClient];
@@ -62,7 +62,7 @@ export default function (orgs) {
     // Pick a random organization from the list that holds the generated consents.
     const org = randomItem(orgs);
     tokenGenerator.setTokenGeneratorOptions(
-        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.READ)
+        getConsenteeTokenOpts(org.orgNo, "altinn:consentrequests.read")
     );
 
     // No query parameters for now.
