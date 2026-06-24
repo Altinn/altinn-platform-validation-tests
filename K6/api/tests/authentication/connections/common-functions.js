@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
-import { parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.js";
+import { parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../helpers.js";
 
 let connectionsApiClient = undefined;
 let tokenGenerator = undefined;
@@ -11,7 +11,7 @@ let tokenGenerator = undefined;
  *
  * @returns {Array} An array containing the ConnectionsApiClient and PersonalTokenGenerator instances
  */
-export function getClients(bff=false) {
+export function getClients(bff = false) {
     if (tokenGenerator == undefined) {
         const tokenOpts = new Map();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
@@ -43,6 +43,7 @@ export function getTokenOpts(userId) {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

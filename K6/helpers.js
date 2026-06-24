@@ -140,3 +140,32 @@ export function checkIp(ip) {
 
     return ipv4.test(ip) || ipv6.test(ip);
 }
+
+/**
+ * Ensures required environment variables exist.
+ * @param {string[]} vars - Array of environment variable names
+ * @returns {Object} key-value map of env vars
+ */
+export function requireEnv(vars) {
+    const missing = [];
+    const result = {};
+
+    for (const name of vars) {
+        const value = __ENV[name];
+
+        if (value === undefined || value === "") {
+            missing.push(name);
+        } else {
+            result[name] = value;
+        }
+    }
+
+    if (missing.length > 0) {
+        // Fail the test immediately with a clear message
+        throw new Error(
+            `Missing required environment variables: ${missing.join(", ")}`
+        );
+    }
+
+    return result;
+}

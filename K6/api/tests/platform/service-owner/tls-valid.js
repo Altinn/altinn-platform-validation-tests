@@ -1,11 +1,12 @@
 import tls from "k6/x/tls";
 import { check } from "k6";
-
+import { requireEnv } from "../../../../helpers.js";
 import { sleep } from "k6";
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 
 
 export function setup() {
+    requireEnv(["DEPLOY_ENV"]);
     const client = new AltinnCdnClient();
     const orgs = client.GetOrgs(__ENV.DEPLOY_ENV);
     let domains = [];

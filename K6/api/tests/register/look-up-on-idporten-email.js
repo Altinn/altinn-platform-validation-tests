@@ -2,6 +2,7 @@ import { check, group, fail } from "k6";
 import { PlatformTokenGenerator } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
+import { requireEnv } from "../../../helpers.js";
 
 const label = "test-lookup-on-idporten-email";
 
@@ -15,6 +16,11 @@ function tryParseJson(str) {
     } catch {
         return null;
     }
+}
+
+export function setup() {
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
+    return;
 }
 
 export default function () {

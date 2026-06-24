@@ -5,9 +5,10 @@ import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
-import { parseCsvData } from "../../../../helpers.js";
+import { parseCsvData, requireEnv } from "../../../../helpers.js";
 
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
     return parseCsvData(res.body);
 }

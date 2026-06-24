@@ -2,6 +2,7 @@ import http from "k6/http";
 import { parseCsvData } from "../../../../helpers.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { requireEnv } from "../../../../helpers.js";
 
 export const orgNo = __ENV.ENVIRONMENT == "yt01" ? "713431400" : "991825827";
 
@@ -48,6 +49,7 @@ export function getClients() {
  * @returns data parsed from the CSV file containing end user information
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
     return parseCsvData(res.body);
 }

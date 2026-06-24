@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
-import { segmentData, parseCsvData, getNumberOfVUs } from "../../../../helpers.js";
+import { segmentData, parseCsvData, getNumberOfVUs, requireEnv } from "../../../../helpers.js";
 
 
 let pdpAuthorizeClient = undefined;
@@ -64,6 +64,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

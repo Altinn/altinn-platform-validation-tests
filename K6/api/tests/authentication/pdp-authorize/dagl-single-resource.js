@@ -4,6 +4,7 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
+import { requireEnv } from "../../../../helpers.js";
 
 // Labels for different actions
 const pdpAuthorizeLabel = { action: "PDP Authorize" };
@@ -14,6 +15,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 // Setup function to fetch test data and segment it for each VU. The CSV file should have columns: ssn, orgno, resourceid
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}-v2.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

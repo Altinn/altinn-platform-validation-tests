@@ -17,6 +17,7 @@ import {
     DeleteAgents
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { accessPackagesForOrgs as accessPackages, getTokenOpts } from "./commons.js";
+import { requireEnv } from "../../../../../helpers.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };
@@ -108,6 +109,7 @@ function getClients() {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-org-org.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

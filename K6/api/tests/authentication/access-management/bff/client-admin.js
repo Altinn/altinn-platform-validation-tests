@@ -11,7 +11,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 import { group } from "k6";
 
-import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs } from "../../../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../../helpers.js";
 import { BffConnectionsApiClient, BffClientDelegationsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
 import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
@@ -43,6 +43,7 @@ export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClien
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

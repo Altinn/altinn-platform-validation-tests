@@ -20,7 +20,7 @@ import { GetOrganizationData, CheckDelegationForResource, GetRoleMeta, GetPendin
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/index.js";
 import { getTokenOpts, getFromTo, getClients, getDialogportenOpts, getInstanceDelegationBody } from "./commons.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
+import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions, requireEnv } from "../../../../../helpers.js";
 // serviceowner which will create a dialog.
 // The yt serviceOwner is different from the other environments.
 let serviceOwnerOrgNo = "991825827";
@@ -120,6 +120,7 @@ export const options = getOptions([
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/instance-delegation-org-user.csv`);
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);

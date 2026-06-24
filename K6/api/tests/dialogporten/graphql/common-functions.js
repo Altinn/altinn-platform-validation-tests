@@ -3,6 +3,7 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { GetParties } from "../../../building-blocks/dialogporten/graphql/index.js";
+import { requireEnv } from "../../../../helpers.js";
 
 let graphqlClient = undefined;
 let tokenGenerator = undefined;
@@ -13,6 +14,7 @@ let tokenGenerator = undefined;
  * The function uses an HTTP GET request to retrieve the CSV data and then parses it into a usable format for the tests.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
     return parseCsvData(res.body);
 }

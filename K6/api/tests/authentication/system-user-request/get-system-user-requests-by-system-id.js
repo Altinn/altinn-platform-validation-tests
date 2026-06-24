@@ -7,6 +7,12 @@ import {
     followNextUrlPagination,
 } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
+
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    return;
+}
 
 /**
  * Test: System User Requests By SystemId (vendor) + pagination.
@@ -80,7 +86,7 @@ export default function () {
                     const pages = 1 + additionalPages;
                     check(pages, {
                         "System user requests by system id: More than one page is returned.":
-              (p) => p > 1,
+                            (p) => p > 1,
                     });
                 },
             );

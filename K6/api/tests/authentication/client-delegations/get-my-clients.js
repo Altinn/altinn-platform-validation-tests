@@ -1,10 +1,10 @@
 import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authentication/client-delegations.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 
 // Labels for different actions
-const tokenGeneratorLabel = {tokenGenerator: "Personal Token Generator"};
+const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 const environment = __ENV.ENVIRONMENT || "yt01";
 
@@ -33,6 +33,11 @@ let clientDelegationsApiClient = undefined;
 
 // get k6 options
 export const options = getOptions(endUserLabels);
+
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    return;
+}
 
 /**
  * Main function executed by each VU.

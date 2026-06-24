@@ -1,8 +1,7 @@
 import { getClients } from "./common-functions.js";
-import { getOptions } from "../../../../helpers.js";
+import { getOptions, requireEnv } from "../../../../helpers.js";
 import { GetEndUserContext } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
-const environment = __ENV.ENVIRONMENT || "yt01";
 const endUsersByEnvironment = {
     yt01: [
         { pid: "06917699338", label: "a_06917699338_73k" },
@@ -16,10 +15,15 @@ const endUsersByEnvironment = {
     ],
 };
 
-export const endUsers = endUsersByEnvironment[environment] || [];
+export const endUsers = endUsersByEnvironment[__ENV.ENVIRONMENT] || [];
 export const endUserLabels = endUsers.map(user => { return { unique_id: user.label }; });
 
 export const options = getOptions(endUserLabels);
+
+export function setup() {
+    requireEnv(["ENVIRONMENT"]);
+    return;
+}
 
 export default function () {
     const [serviceOwnerApiClient] = getClients();

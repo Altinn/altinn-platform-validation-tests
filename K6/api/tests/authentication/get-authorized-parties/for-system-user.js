@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
 
@@ -11,6 +11,7 @@ const label = { action: "getAuthorizedPartiesForSystemUser" };
 export const options = getOptions([label]);
 
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/systemusers-${__ENV.ENVIRONMENT}.csv`);
     return parseCsvData(res.body);
 }
