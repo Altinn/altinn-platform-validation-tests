@@ -8,10 +8,10 @@ import { parseCsvData } from "../../../../helpers.js";
  *   - the test data generator can spread consents across many organizations, and
  *   - consent-request-events.js can pick a random organization from that same list.
  *
- * Test data folder:
+ * Test data folder (one folder per use case, one file per environment):
  * K6/testdata/authentication/consent/request-events/
- *   - consentee-orgs-<env>.csv   (header: orgNo)
- *   - consenter-users-<env>.csv  (header: ssn,userId,partyUuid)
+ *   - consentee-orgs/<env>.csv       (header: orgNo)
+ *   - consenter-persons/<env>.csv    (header: ssn,userId,partyUuid)
  */
 
 const TESTDATA_BASE_URL =
@@ -22,23 +22,25 @@ export const ConsentScope = {
     WRITE: "altinn:consentrequests.write",
 };
 
+export const ENDUSER_SCOPE = "altinn:portal/enduser";
+
 /**
  * The organizations that receive (and therefore hold) consents.
  * @param {string} env Environment, e.g. "yt01".
  * @returns {Array<{orgNo: string}>}
  */
 export function getConsenteeOrgs(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs-${env}.csv`);
+    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs/${env}.csv`);
     return parseCsvData(res.body);
 }
 
 /**
- * The people that approve consents.
+ * The persons that approve consents.
  * @param {string} env Environment, e.g. "yt01".
  * @returns {Array<{ssn: string, userId: string, partyUuid: string}>}
  */
-export function getConsenterUsers(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consenter-users-${env}.csv`);
+export function getConsenterPersons(env) {
+    const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`);
     return parseCsvData(res.body);
 }
 
@@ -52,35 +54,37 @@ export function getConsenterUsers(env) {
  * @returns {Map<string, string|number>}
  */
 export function getEnterpriseTokenOpts(env, orgNo, scopes) {
-    const opts = new Map([
-        ["env", env],
-        ["ttl", 3600],
-        ["scopes", scopes],
-    ]);
-    if (orgNo !== undefined) {
-        opts.set("orgNo", orgNo);
-    }
+    const opts = getBaseTokenOpts(env, scopes);
+    opts.set("orgNo", orgNo);
     return opts;
 }
 
 /**
- * Token options for a consenter user (personal token).
+ * Token options for a consenter person (personal token).
  * @param {string} env
- * @param {string} [userId]
- * @param {string} [partyUuid]
+ * @param {string} userId
+ * @param {string} partyUuid
  * @returns {Map<string, string|number>}
  */
 export function getPersonalTokenOpts(env, userId, partyUuid) {
-    const opts = new Map([
+    const opts = getBaseTokenOpts(env, ENDUSER_SCOPE);
+    opts.set("userId", userId);
+    opts.set("partyuuid", partyUuid);
+    return opts;
+}
+
+/**
+ * Static token options shared by every token: env, ttl and scopes. The
+ * per-request identity (orgNo / userId+partyuuid) is set per iteration via
+ * setTokenGeneratorOptions, so the generator can be built once.
+ * @param {string} env
+ * @param {string} scopes
+ * @returns {Map<string, string|number>}
+ */
+export function getBaseTokenOpts(env, scopes) {
+    return new Map([
         ["env", env],
         ["ttl", 3600],
-        ["scopes", "altinn:portal/enduser"],
+        ["scopes", scopes],
     ]);
-    if (userId !== undefined) {
-        opts.set("userId", userId);
-    }
-    if (partyUuid !== undefined) {
-        opts.set("partyuuid", partyUuid);
-    }
-    return opts;
 }

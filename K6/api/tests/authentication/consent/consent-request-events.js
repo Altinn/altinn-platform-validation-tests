@@ -25,6 +25,7 @@ import { GetConsentRequestEvents } from "../../../building-blocks/authentication
 
 import {
     ConsentScope,
+    getBaseTokenOpts,
     getConsenteeOrgs,
     getEnterpriseTokenOpts,
 } from "./request-events-commons.js";
@@ -33,21 +34,21 @@ const getConsentRequestEventsLabel = { action: "Get Consent Request Events" };
 
 export const options = getOptions([getConsentRequestEventsLabel]);
 
-let consentApiClient = undefined;
-let tokenGenerator = undefined;
+let consentApiClient;
+let tokenGenerator;
 
 /*
- * Build the client and token generator once and return the token generator so
- * the caller can set the orgNo per iteration via setTokenGeneratorOptions.
+ * Build the client once. The token generator is a module-level singleton whose
+ * orgNo is set per iteration via setTokenGeneratorOptions.
  */
 function getClients() {
-    if (tokenGenerator == undefined) {
+    if (consentApiClient == undefined) {
         tokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, undefined, ConsentScope.READ)
+            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
         );
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }
-    return [consentApiClient, tokenGenerator];
+    return [consentApiClient];
 }
 
 export function setup() {
@@ -56,7 +57,7 @@ export function setup() {
 }
 
 export default function (orgs) {
-    const [eventsClient, tokenGenerator] = getClients();
+    const [eventsClient] = getClients();
 
     // Pick a random organization from the list that holds the generated consents.
     const org = randomItem(orgs);
@@ -67,8 +68,6 @@ export default function (orgs) {
     // No query parameters for now.
     const queryString =
         new ConsentRequestEventsQueryBuilder()
-            //.withConsentRequestId("e1775061-491a-4857-9703-5841e74d8564")
-            // .withEventType(["accepted", "rejected", "created"])
             .build();
 
     GetConsentRequestEvents(eventsClient, queryString, getConsentRequestEventsLabel);

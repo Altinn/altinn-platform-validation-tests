@@ -1,7 +1,6 @@
-import exec from "k6/execution";
 import { group } from "k6";
 
-import { uuidv4 } from "../../../../../common-imports.js";
+import { randomItem, uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
@@ -17,56 +16,53 @@ import {
 
 import {
     ConsentScope,
+    ENDUSER_SCOPE,
+    getBaseTokenOpts,
     getConsenteeOrgs,
-    getConsenterUsers,
+    getConsenterPersons,
     getEnterpriseTokenOpts,
     getPersonalTokenOpts,
 } from "../request-events-commons.js";
 
 // How many consent requests to generate, spread across all consentee organizations.
-const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 100;
+const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 10;
 
 export const options = {
     setupTimeout: "60s",
     scenarios: {
         default: {
             executor: "shared-iterations",
-            vus: 10,
+            vus: 1,
             iterations: LOOKUPS,
             maxDuration: "10m",
         },
     },
 };
 
-let consenteeClient = undefined;
-let consenterClient = undefined;
-let consenteeTokenGenerator = undefined;
-let consenterTokenGenerator = undefined;
+let consenteeClient;
+let consenterClient;
+let consenteeTokenGenerator;
+let consenterTokenGenerator;
 
 /*
- * Build the consentee (enterprise) and consenter (personal) clients once and
- * return their token generators so the caller can set the orgNo / user per
- * iteration via setTokenGeneratorOptions.
+ * Build the consentee (enterprise) and consenter (personal) clients once.
+ * The token generators are module-level singletons whose identity (orgNo /
+ * user) is set per iteration via setTokenGeneratorOptions.
  */
 function getClients() {
-    if (consenteeTokenGenerator == undefined) {
+    if (consenteeClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, undefined, ConsentScope.WRITE)
+            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
         );
         consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
     }
-    if (consenterTokenGenerator == undefined) {
+    if (consenterClient == undefined) {
         consenterTokenGenerator = new PersonalTokenGenerator(
-            getPersonalTokenOpts(__ENV.ENVIRONMENT, undefined, undefined)
+            getBaseTokenOpts(__ENV.ENVIRONMENT, ENDUSER_SCOPE)
         );
         consenterClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
     }
-    return [
-        consenteeClient,
-        consenterClient,
-        consenteeTokenGenerator,
-        consenterTokenGenerator,
-    ];
+    return [consenteeClient, consenterClient];
 }
 
 function consentRights() {
@@ -85,56 +81,34 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const env = __ENV.ENVIRONMENT;
-    const orgs = getConsenteeOrgs(env);
-    const users = getConsenterUsers(env);
-
-    const rows = [];
-    for (let i = 0; i < LOOKUPS; i++) {
-        // Spread consents across all consentee organizations, cycling through
-        // both lists so every organization receives consents.
-        const toOrg = orgs[i % orgs.length];
-        const from = users[i % users.length];
-
-        rows.push({
-            consentId: uuidv4(),
-            pid: String(from.ssn),
-            orgNo: String(toOrg.orgNo),
-            fromUserId: from.userId,
-            fromPartyUuid: from.partyUuid,
-        });
-    }
-    console.log(
-        `Setup complete: Planned ${rows.length} consent(s) across ${orgs.length} organization(s)`
-    );
-    return rows;
+    return {
+        orgs: getConsenteeOrgs(env),
+        persons: getConsenterPersons(env),
+    };
 }
 
-export default function (rows) {
+export default function (data) {
     group("Request + approve consent and generate .csv data", () => {
-        const i = exec.scenario.iterationInTest;
-        const row = rows[i];
+        const [consenteeClient, consenterClient] = getClients();
 
-        const [
-            consenteeClient,
-            consenterClient,
-            consenteeTokenGenerator,
-            consenterTokenGenerator,
-        ] = getClients();
+        // Pick a random consentee org and consenter person for this iteration.
+        const org = randomItem(data.orgs);
+        const person = randomItem(data.persons);
+        const consentId = uuidv4();
 
-        // Set the consentee org and consenter user for this iteration.
         consenteeTokenGenerator.setTokenGeneratorOptions(
-            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, row.orgNo, ConsentScope.WRITE)
+            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.WRITE)
         );
         consenterTokenGenerator.setTokenGeneratorOptions(
-            getPersonalTokenOpts(__ENV.ENVIRONMENT, row.fromUserId, row.fromPartyUuid)
+            getPersonalTokenOpts(__ENV.ENVIRONMENT, person.userId, person.partyUuid)
         );
 
-        const pidUrn = `urn:altinn:person:identifier-no:${row.pid}`;
-        const orgUrn = `urn:altinn:organization:identifier-no:${row.orgNo}`;
+        const pidUrn = `urn:altinn:person:identifier-no:${person.ssn}`;
+        const orgUrn = `urn:altinn:organization:identifier-no:${org.orgNo}`;
 
         RequestConsent(
             consenteeClient,
-            row.consentId,
+            consentId,
             pidUrn,
             orgUrn,
             new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString(), // Consent shouldn't expire in 100 years
@@ -142,6 +116,6 @@ export default function (rows) {
             "https://altinn.no"
         );
 
-        ApproveConsent(consenterClient, row.consentId);
+        ApproveConsent(consenterClient, consentId);
     });
 }
