@@ -2,15 +2,15 @@ import { check } from "k6";
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 
 /**
- * Get the first page of consent request events for an organization.
+ * Get a page of consent request events for an organization.
  *
  * @param {ConsentApiClient} consentApiClient A client to interact with the Consent API
- * @param {*} queryParams - query parameters for the request
+ * @param {string} queryString - URL-encoded query string built with ConsentRequestEventsQueryBuilder
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @returns {import("k6/http").RefinedResponse}
  */
-export function GetConsentRequestEvents(consentApiClient, queryParams = {}, labels = null) {
-    const res = consentApiClient.GetConsentRequestEvents(queryParams, labels);
+export function GetConsentRequestEvents(consentApiClient, queryString = "", labels = null) {
+    const res = consentApiClient.GetConsentRequestEvents(queryString, labels);
 
     const success = check(res, {
         "GetConsentRequestEvents - status code should be 200": (r) => r.status === 200,

@@ -11,7 +11,10 @@
 
 import { getOptions } from "../../../../helpers.js";
 
-import { ConsentApiClient } from "../../../../clients/authentication/index.js";
+import {
+    ConsentApiClient,
+    ConsentRequestEventsQueryBuilder,
+} from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
@@ -47,5 +50,8 @@ function getEventsClient() {
 export default function () {
     const eventsClient = getEventsClient();
 
-    GetConsentRequestEvents(eventsClient, {}, getConsentRequestEventsLabel);
+    // No query parameters for now.
+    const queryString = new ConsentRequestEventsQueryBuilder().build();
+
+    GetConsentRequestEvents(eventsClient, queryString, getConsentRequestEventsLabel);
 }

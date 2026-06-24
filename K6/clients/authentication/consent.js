@@ -141,27 +141,22 @@ class ConsentApiClient {
    * Get a page of consent request events for the authenticated organization.
    *
    * Returns events ordered by event id (oldest first), max 100 per page.
-   * Follow the `links.next` cursor (passed back as `ContinuationToken`) to page.
    *
    * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
    * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
    * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
    *
-   * @param {Object} [queryParams] - Optional query parameters. All are optional.
-   * @param {string} [queryParams.ContinuationToken] - Opaque cursor from the `links.next` of a previous response.
-   * @param {string} [queryParams.createdAfter] - DateTimeOffset; only events created at or after this timestamp.
-   * @param {string} [queryParams.createdBefore] - DateTimeOffset; only events created before this timestamp. Must be strictly greater than `createdAfter` when both are set.
-   * @param {string[]} [queryParams.EventType] - Filter by event type (accepted/rejected/revoked/deleted/used). Repeatable.
-   * @param {string} [queryParams.ConsentRequestID] - Guid; only events belonging to this consent request.
+   * @param {string} [queryString] - URL-encoded query string (without leading "?"), as produced by {@link ConsentRequestEventsQueryBuilder#build}.
    * @param {Object.<string, string>|null} [labels] - Optional request tags.
    * @returns http.RefinedResponse
    */
-    GetConsentRequestEvents(queryParams = {}, labels = null) {
+    GetConsentRequestEvents(queryString = "", labels = null) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}/enterprise/consentrequests/events`);
-        Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
-        let tags = { endpoint: url.toString() };
+        const path = `${this.FULL_PATH}/enterprise/consentrequests/events`;
+        const url = queryString ? `${path}?${queryString}` : path;
 
+        // Tag with the static path so query params don't fan out the metrics.
+        let tags = { endpoint: path };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -173,7 +168,7 @@ class ConsentApiClient {
             },
         };
 
-        return http.get(url.toString(), params);
+        return http.get(url, params);
     }
 }
 
