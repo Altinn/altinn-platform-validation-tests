@@ -204,7 +204,7 @@ function getFromTo(list) {
     if (randomize) {
         from = getItemFromList(list, randomize);
     } else {
-        from = list[__ITER % list.length];
+        from = getItemFromList(list);
     }
     let to = getItemFromList(list, true);
     while (to.ssn === from.ssn) {

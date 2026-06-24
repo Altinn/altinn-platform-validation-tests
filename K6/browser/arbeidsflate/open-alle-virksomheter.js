@@ -9,6 +9,7 @@ import { browser } from "k6/browser";
 import { check } from "k6";
 import { Trend } from "k6/metrics";
 import { getCookie, afUrl, environment, waitForPageLoaded } from "./arbeidsflate-utils.js";
+import { getItemFromList } from "../../helpers.js";
 
 const pageLoadingTime = new Trend("page_loading_time", true);
 const allOrganizationsTime = new Trend("all_organizations_time", true);
@@ -107,7 +108,7 @@ function getOptions() {
  * @param {} data
  */
 export default async function (data) {
-    const testData = data[__ITER % data.length];
+    const testData = getItemFromList(data);
     const label = endUsersByEnvironment[environment].find(user => user.pid === testData.pid)?.label;
     const context = await browser.newContext();
     const page = await context.newPage();
