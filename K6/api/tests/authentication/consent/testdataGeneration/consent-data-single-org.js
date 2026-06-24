@@ -1,9 +1,8 @@
-import http from "k6/http";
 import exec from "k6/execution";
 import { group } from "k6";
 
 import { uuidv4 } from "../../../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../../../helpers.js";
+import { requireEnv } from "../../../../../helpers.js";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
 import {
@@ -16,16 +15,16 @@ import {
     ApproveConsent,
 } from "../../../../building-blocks/authentication/consent/index.js";
 
-//How many consent requests you want to generate (all for ONE organization)
+import {
+    ConsentScope,
+    getConsenteeOrgs,
+    getConsenterUsers,
+    getEnterpriseTokenOpts,
+    getPersonalTokenOpts,
+} from "../request-events-commons.js";
+
+// How many consent requests to generate, spread across all consentee organizations.
 const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 100;
-
-const ORGANIZATION_PER_ENVIRONMENT = {
-    "at23": "314084993",
-    "tt02": "314084993",
-    "yt01": "730077254",
-};
-
-const ORG_NO = ORGANIZATION_PER_ENVIRONMENT[__ENV.ENVIRONMENT];
 
 export const options = {
     setupTimeout: "60s",
@@ -39,33 +38,35 @@ export const options = {
     },
 };
 
-function getClients(orgNo, userId, partyUuid) {
-    const consentee = new ConsentApiClient(
-        __ENV.BASE_URL,
-        new EnterpriseTokenGenerator(
-            new Map([
-                ["env", __ENV.ENVIRONMENT],
-                ["ttl", 3600],
-                ["scopes", "altinn:consentrequests.write"],
-                ["orgNo", orgNo],
-            ])
-        )
-    );
+let consenteeClient = undefined;
+let consenterClient = undefined;
+let consenteeTokenGenerator = undefined;
+let consenterTokenGenerator = undefined;
 
-    const consenter = new ConsentApiClient(
-        __ENV.BASE_URL,
-        new PersonalTokenGenerator(
-            new Map([
-                ["env", __ENV.ENVIRONMENT],
-                ["ttl", 3600],
-                ["scopes", "altinn:portal/enduser"],
-                ["userId", userId],
-                ["partyuuid", partyUuid],
-            ])
-        )
-    );
-
-    return [consentee, consenter];
+/*
+ * Build the consentee (enterprise) and consenter (personal) clients once and
+ * return their token generators so the caller can set the orgNo / user per
+ * iteration via setTokenGeneratorOptions.
+ */
+function getClients() {
+    if (consenteeTokenGenerator == undefined) {
+        consenteeTokenGenerator = new EnterpriseTokenGenerator(
+            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, undefined, ConsentScope.WRITE)
+        );
+        consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
+    }
+    if (consenterTokenGenerator == undefined) {
+        consenterTokenGenerator = new PersonalTokenGenerator(
+            getPersonalTokenOpts(__ENV.ENVIRONMENT, undefined, undefined)
+        );
+        consenterClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
+    }
+    return [
+        consenteeClient,
+        consenterClient,
+        consenteeTokenGenerator,
+        consenterTokenGenerator,
+    ];
 }
 
 function consentRights() {
@@ -83,30 +84,27 @@ function consentRights() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`
-    );
-
-    const orgs = parseCsvData(res.body);
+    const env = __ENV.ENVIRONMENT;
+    const orgs = getConsenteeOrgs(env);
+    const users = getConsenterUsers(env);
 
     const rows = [];
-
     for (let i = 0; i < LOOKUPS; i++) {
-        // Cycle through the people in the CSV as consenters,
-        // but every consent goes to the SAME organization (ORG_NO).
-        const from = orgs[i % orgs.length];
+        // Spread consents across all consentee organizations, cycling through
+        // both lists so every organization receives consents.
+        const toOrg = orgs[i % orgs.length];
+        const from = users[i % users.length];
 
         rows.push({
             consentId: uuidv4(),
             pid: String(from.ssn),
-            orgNo: ORG_NO,
+            orgNo: String(toOrg.orgNo),
             fromUserId: from.userId,
             fromPartyUuid: from.partyUuid,
-            toOrgNo: ORG_NO,
         });
     }
     console.log(
-        `Setup complete: Planned ${rows.length} consent(s) for org ${ORG_NO}`
+        `Setup complete: Planned ${rows.length} consent(s) across ${orgs.length} organization(s)`
     );
     return rows;
 }
@@ -116,17 +114,26 @@ export default function (rows) {
         const i = exec.scenario.iterationInTest;
         const row = rows[i];
 
-        const [consentee, consenter] = getClients(
-            row.toOrgNo,
-            row.fromUserId,
-            row.fromPartyUuid
+        const [
+            consenteeClient,
+            consenterClient,
+            consenteeTokenGenerator,
+            consenterTokenGenerator,
+        ] = getClients();
+
+        // Set the consentee org and consenter user for this iteration.
+        consenteeTokenGenerator.setTokenGeneratorOptions(
+            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, row.orgNo, ConsentScope.WRITE)
+        );
+        consenterTokenGenerator.setTokenGeneratorOptions(
+            getPersonalTokenOpts(__ENV.ENVIRONMENT, row.fromUserId, row.fromPartyUuid)
         );
 
         const pidUrn = `urn:altinn:person:identifier-no:${row.pid}`;
         const orgUrn = `urn:altinn:organization:identifier-no:${row.orgNo}`;
 
         RequestConsent(
-            consentee,
+            consenteeClient,
             row.consentId,
             pidUrn,
             orgUrn,
@@ -135,6 +142,6 @@ export default function (rows) {
             "https://altinn.no"
         );
 
-        ApproveConsent(consenter, row.consentId);
+        ApproveConsent(consenterClient, row.consentId);
     });
 }

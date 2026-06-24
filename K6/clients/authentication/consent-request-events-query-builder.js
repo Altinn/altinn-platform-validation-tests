@@ -5,6 +5,7 @@ export const ConsentEventType = {
     ACCEPTED: "accepted",
     REVOKED: "revoked",
     REJECTED: "rejected",
+    CREATED: "created",
 };
 
 /**

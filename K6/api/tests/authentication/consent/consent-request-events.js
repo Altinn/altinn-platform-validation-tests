@@ -1,8 +1,11 @@
 /**
- * Load test for the enterprise consent request events endpoint.
+ * Load/smoke test for the enterprise consent request events endpoint.
  *
- * Fetches the first page of consent request events for the
- * organization that holds all the generated consents (see consent-data-single-org.js).
+ * Picks a random organization from the list of consentee organizations that
+ * hold the generated consents (see testdataGeneration/consent-data-single-org.js)
+ * and fetches the first page of consent request events for it. Because the
+ * organization is chosen per iteration, the same script works both as a
+ * smoke test (a few iterations) and as a functional test.
  *
  * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
  * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
@@ -10,6 +13,7 @@
  */
 
 import { getOptions, requireEnv } from "../../../../helpers.js";
+import { randomItem } from "../../../../common-imports.js";
 
 import {
     ConsentApiClient,
@@ -19,53 +23,52 @@ import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 
-// The organization that holds all the generated consents
-const ORGANIZATION_PER_ENVIRONMENT = {
-    "at23": "314084993",
-    "tt02": "314084993",
-    "yt01": "730077254",
-};
+import {
+    ConsentScope,
+    getConsenteeOrgs,
+    getEnterpriseTokenOpts,
+} from "./request-events-commons.js";
 
 const getConsentRequestEventsLabel = { action: "Get Consent Request Events" };
 
 export const options = getOptions([getConsentRequestEventsLabel]);
 
 let consentApiClient = undefined;
+let tokenGenerator = undefined;
 
-function getEventsClient() {
-    if (consentApiClient == undefined) {
-
-        const env = __ENV.ENVIRONMENT;
-        const ORG_NO = ORGANIZATION_PER_ENVIRONMENT[env];
-
-        if (ORG_NO === undefined) {
-            throw new Error(`Unknown environment: ${env}`);
-        }
-
-        const tokenOpts = new Map([
-            ["env", env],
-            ["ttl", 3600],
-            ["scopes", "altinn:consentrequests.read"],
-            ["orgNo", ORG_NO],
-        ]);
-
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+/*
+ * Build the client and token generator once and return the token generator so
+ * the caller can set the orgNo per iteration via setTokenGeneratorOptions.
+ */
+function getClients() {
+    if (tokenGenerator == undefined) {
+        tokenGenerator = new EnterpriseTokenGenerator(
+            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, undefined, ConsentScope.READ)
+        );
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }
-    return [consentApiClient];
+    return [consentApiClient, tokenGenerator];
 }
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return;
+    return getConsenteeOrgs(__ENV.ENVIRONMENT);
 }
 
-export default function () {
-    const [eventsClient] = getEventsClient();
+export default function (orgs) {
+    const [eventsClient, tokenGenerator] = getClients();
+
+    // Pick a random organization from the list that holds the generated consents.
+    const org = randomItem(orgs);
+    tokenGenerator.setTokenGeneratorOptions(
+        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.READ)
+    );
 
     // No query parameters for now.
     const queryString =
         new ConsentRequestEventsQueryBuilder()
+            //.withConsentRequestId("e1775061-491a-4857-9703-5841e74d8564")
+            // .withEventType(["accepted", "rejected", "created"])
             .build();
 
     GetConsentRequestEvents(eventsClient, queryString, getConsentRequestEventsLabel);
