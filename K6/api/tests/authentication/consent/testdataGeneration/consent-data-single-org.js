@@ -16,16 +16,25 @@ import {
     ApproveConsent,
 } from "../../../../building-blocks/authentication/consent/index.js";
 
-//How many rows you want to generate for the consent data
-const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 2;
+//How many consent requests you want to generate (all for ONE organization)
+const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 100;
+
+const ORGANIZATION_PER_ENVIRONMENT = {
+    "at23": "314084993",
+    "tt02": "314084993",
+    "yt01": "730077254",
+};
+
+const ORG_NO = ORGANIZATION_PER_ENVIRONMENT[__ENV.ENVIRONMENT];
 
 export const options = {
-    setupTimeout: "10s",
+    setupTimeout: "60s",
     scenarios: {
         default: {
             executor: "shared-iterations",
             vus: 10,
             iterations: LOOKUPS,
+            maxDuration: "10m",
         },
     },
 };
@@ -59,12 +68,6 @@ function getClients(orgNo, userId, partyUuid) {
     return [consentee, consenter];
 }
 
-function selectFromToByIndex(data, i) {
-    const from = data[i % data.length];
-    const to = data[(i + 1) % data.length];
-    return [from, to];
-}
-
 function consentRights() {
     return [
         {
@@ -85,23 +88,26 @@ export function setup() {
     );
 
     const orgs = parseCsvData(res.body);
+
     const rows = [];
 
     for (let i = 0; i < LOOKUPS; i++) {
-        const [from, to] = selectFromToByIndex(orgs, i);
-
-        const consentId = uuidv4();
+        // Cycle through the people in the CSV as consenters,
+        // but every consent goes to the SAME organization (ORG_NO).
+        const from = orgs[i % orgs.length];
 
         rows.push({
-            consentId,
+            consentId: uuidv4(),
             pid: String(from.ssn),
-            orgNo: String(to.orgNo),
+            orgNo: ORG_NO,
             fromUserId: from.userId,
             fromPartyUuid: from.partyUuid,
-            toOrgNo: to.orgNo,
+            toOrgNo: ORG_NO,
         });
     }
-    console.log(`Setup complete: Planned ${rows.length} consent(s)`);
+    console.log(
+        `Setup complete: Planned ${rows.length} consent(s) for org ${ORG_NO}`
+    );
     return rows;
 }
 
@@ -131,19 +137,4 @@ export default function (rows) {
 
         ApproveConsent(consenter, row.consentId);
     });
-}
-
-export function teardown(rows) {
-    let csv = "";
-
-    try {
-        csv += "Pid,Org,ConsentId\n";
-        rows.forEach((r) => {
-            csv += `${r.pid},${r.orgNo},${r.consentId}\n`;
-        });
-        console.log(csv);
-    } catch (e) {
-        console.log(`\nCSV_PRINT_FAILED: ${String(e)}\n`);
-        console.log("\nWhat you have so far:" + csv + "\n");
-    }
 }

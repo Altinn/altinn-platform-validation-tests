@@ -3,6 +3,7 @@ export { SystemUserApiClient } from "./system-user.js";
 export { SystemUserRequestApiClient } from "./system-user-request.js";
 export { RegisterApiClient } from "./register.js";
 export { ConsentApiClient } from "./consent.js";
+export { ConsentRequestEventsQueryBuilder, ConsentEventType } from "./consent-request-events-query-builder.js";
 export { AuthorizedPartiesClient } from "./authorized-parties.js";
 export { PdpAuthorizeClient } from "./pdp-authorize.js";
 export { ConnectionsApiClient } from "./connections.js";

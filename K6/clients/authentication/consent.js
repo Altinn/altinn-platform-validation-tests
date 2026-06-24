@@ -4,6 +4,7 @@ const TAGS = {
     RequestConsent: { action: "RequestConsent" },
     ApproveConsent: { action: "ApproveConsent" },
     LookupConsent: { action: "LookupConsent" },
+    GetConsentRequestEvents: { action: "GetConsentRequestEvents" },
 };
 
 class ConsentApiClient {
@@ -33,7 +34,7 @@ class ConsentApiClient {
 
     /**
    * Request Consent
-   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
    * @param {string} id
    * @param {string} from
    * @param {string} to
@@ -71,7 +72,8 @@ class ConsentApiClient {
 
     /**
    * Approve Consent
-   * Docs {@link https://docs.altinn.studio/authorization/guides/system-vendor/consent/#12-api-endpoint}
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
+   * Must be approved by en user with scope `altinn:portal/enduser`.
    * @param {string } id
    * @returns http.RefinedResponse
    */
@@ -99,7 +101,10 @@ class ConsentApiClient {
     /**
    * Lookup Maskinporten consent token for a consent request.
    *
+   * The endpoint we're using is the endpoint Maskinporten uses to lookup a consent request before returning the token.
+   *
    * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/retrieve-token/}
    *
    * @param {string} id
    * @param {string} from
@@ -130,6 +135,40 @@ class ConsentApiClient {
         };
 
         return http.post(url, JSON.stringify(body), params);
+    }
+
+    /**
+   * Get a page of consent request events for the authenticated organization.
+   *
+   * Returns events ordered by event id (oldest first), max 100 per page.
+   *
+   * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
+   * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
+   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
+   *
+   * @param {string} [queryString] - URL-encoded query string (without leading "?"), as produced by {@link ConsentRequestEventsQueryBuilder#build}.
+   * @param {Object.<string, string>|null} [labels] - Optional request tags.
+   * @returns http.RefinedResponse
+   */
+    GetConsentRequestEvents(queryString = "", labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const path = `${this.FULL_PATH}/enterprise/consentrequests/events`;
+        const url = queryString ? `${path}?${queryString}` : path;
+
+        // Tag with the static path so query params don't fan out the metrics.
+        let tags = { endpoint: path };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        return http.get(url, params);
     }
 }
 
