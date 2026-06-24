@@ -321,3 +321,27 @@ export function getParties() {
     };
     return q;
 }
+
+export function getFilterServiceResources() {
+    const q =
+        {
+            query: `
+            query DPServiceResources {
+                serviceResources {
+                    items {
+                        serviceResource {
+                            id
+                            name {
+                                languageCode
+                                value
+                            }
+                        }
+                        serviceOwner {
+                            code
+                        }
+                    }
+                }
+            }`,
+        };
+    return q;
+}

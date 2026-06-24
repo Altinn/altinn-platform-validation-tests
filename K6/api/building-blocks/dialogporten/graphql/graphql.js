@@ -153,3 +153,28 @@ export function GetParties(graphqlClient, labels = null) {
     }
     return res.body;
 }
+
+/**
+ * Function to get filtered service resources for a user
+ * @param {GraphqlClient} graphqlClient
+ * @param {string} label
+ * @return
+ */
+export function GetFilterServiceResources(graphqlClient, labels = null) {
+    const res = graphqlClient.GetFilterServiceResources(labels);
+    const succeed = check(res, {
+        "GetFilteredServiceResources - status code is 200": (r) => r.status === 200,
+        "GetFilteredServiceResources - status text is 200 OK": (r) => r.status_text == "200 OK",
+        "GetFilteredServiceResources - body is not empty": (r) => {
+            const res_body = JSON.parse(r.body);
+            return res_body !== null && res_body !== undefined;
+        }
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.status_text);
+        console.log(res.body);
+    }
+    return res.body;
+}

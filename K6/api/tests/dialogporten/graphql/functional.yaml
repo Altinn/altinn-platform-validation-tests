@@ -26,4 +26,12 @@ test_definitions:
           type: functional
           enabled: false
       - environment: tt02
+      - environment: at23  
+  - test_file: get-filter-service-resources.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
       - environment: at23

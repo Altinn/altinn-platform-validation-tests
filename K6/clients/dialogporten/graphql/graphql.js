@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { getAllDialogsForParties, getDialogById, getParties } from "./graphql-queries.js";
+import { getAllDialogsForParties, getDialogById, getParties, getFilterServiceResources } from "./graphql-queries.js";
 import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
 import { DialogByIdVariablesBuilder } from "./dialog-by-id-variables-builder.js";
 
@@ -98,6 +98,31 @@ class GraphqlClient {
             },
         };
         const query = getParties();
+        return http.post(url.toString(), JSON.stringify(query), params);
+    }
+
+    /**
+     * Get filtered service resources for a user
+     * 
+     * @param {string} label - a label to add to the request in k6
+     * @return response from the API
+     */
+    GetFilterServiceResources(labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let tags = { endpoint: url.toString() };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-Type": "application/json",
+                "Accept-Language": "nb-NO",
+            },
+        };
+        const query = getFilterServiceResources();
         return http.post(url.toString(), JSON.stringify(query), params);
     }
 }

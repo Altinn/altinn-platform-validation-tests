@@ -3,5 +3,6 @@ export {
     GetAllDialogsForPartyCheckForDialogId,
     GetDialogById,
     GetAndVerifyDialogById,
-    GetParties
+    GetParties,
+    GetFilterServiceResources,
 } from "./graphql.js";
