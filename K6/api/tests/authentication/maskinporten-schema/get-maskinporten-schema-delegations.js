@@ -153,7 +153,7 @@ function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "
         from = getItemFromList(list, randomize);
     }
     if (!randomize) {
-        from = list[__ITER % list.length];
+        from = getItemFromList(list);
     }
     return from;
 }
