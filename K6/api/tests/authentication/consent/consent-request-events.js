@@ -8,7 +8,6 @@
  * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
  * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
  */
-import { group } from "k6";
 
 import { getOptions } from "../../../../helpers.js";
 
@@ -19,11 +18,11 @@ import { GetConsentRequestEvents } from "../../../building-blocks/authentication
 
 const env = __ENV.ENVIRONMENT ?? "yt01";
 
-// The organization that holds all the generated consents, only added scenarios for YT01, 
+// The organization that holds all the generated consents
 const ORGANIZATION_PER_ENVIRONMENT = {
     "at23": "314084993",
+    "tt02": "314084993",
     "yt01": "730077254",
-    "tt02": "314084993"
 };
 const ORG_NO = ORGANIZATION_PER_ENVIRONMENT[env];
 
@@ -45,8 +44,8 @@ function getEventsClient() {
     );
 }
 
-const eventsClient = getEventsClient();
-
 export default function () {
+    const eventsClient = getEventsClient();
+
     GetConsentRequestEvents(eventsClient, {}, getConsentRequestEventsLabel);
 }

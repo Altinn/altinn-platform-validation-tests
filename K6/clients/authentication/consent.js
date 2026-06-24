@@ -102,7 +102,7 @@ class ConsentApiClient {
    * Lookup Maskinporten consent token for a consent request.
    *
    * The endpoint we're using is the endpoint Maskinporten uses to lookup a consent request before returning the token.
-   * 
+   *
    * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
    * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/retrieve-token/}
    *
@@ -165,8 +165,6 @@ class ConsentApiClient {
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
-
-        console.log(url.toString());
 
         const params = {
             tags: tags,
