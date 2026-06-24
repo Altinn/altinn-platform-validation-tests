@@ -169,3 +169,35 @@ export function requireEnv(vars) {
 
     return result;
 }
+
+
+/**
+ * Picks a specified number of unique random items from a list.
+ * Each selected item is removed from the pool before the next pick,
+ * ensuring no duplicates are returned.
+ *
+ * @param {Array<any>} list - The source array to pick items from.
+ * @param {number} count - The number of unique items to select.
+ * @returns {Array<any>} An array containing the randomly selected unique items.
+ *
+ * @throws {Error} If `count` is greater than the size of the list.
+ *
+ * @example
+ * const [from, to, user] = pickUnique(users, 3);
+ */
+export function pickUnique(list, count) {
+    if (count > list.length) {
+        throw new Error("Cannot pick more unique items than exist in the list");
+    }
+
+    const copy = [...list];
+    const result = [];
+
+    for (let i = 0; i < count; i++) {
+        const item = getItemFromList(copy, true);
+        result.push(item);
+        copy.splice(copy.indexOf(item), 1);
+    }
+
+    return result;
+}
