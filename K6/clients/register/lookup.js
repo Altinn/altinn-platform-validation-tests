@@ -1,6 +1,10 @@
 import http from "k6/http";
 import { requireEnv } from "../../helpers.js";
 
+const TAGS = {
+    LookupParties: { action: "LookupParties" },
+};
+
 export class RegisterLookupClient {
     /**
    *
@@ -22,6 +26,10 @@ export class RegisterLookupClient {
      * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
      */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
@@ -71,7 +79,8 @@ export class RegisterLookupClient {
         const url = new URL(urlString);
 
         let tags = {
-            endpoint: this.FULL_PATH
+            endpoint: this.FULL_PATH,
+            action: TAGS.LookupParties.action
         };
         if (labels != null) {
             tags = {

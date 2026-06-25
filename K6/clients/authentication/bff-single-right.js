@@ -48,7 +48,11 @@ class BffSingleRightApiClient {
     PostDelegate(queryParams, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegate`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.PostDelegate.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -72,7 +76,11 @@ class BffSingleRightApiClient {
     DeleteDelegate(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/revoke`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DeleteDelegate.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -95,7 +103,11 @@ class BffSingleRightApiClient {
     GetDelegationCheck(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetDelegationCheck.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

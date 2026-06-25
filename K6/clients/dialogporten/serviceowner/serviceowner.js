@@ -2,6 +2,24 @@ import http from "k6/http";
 import { uuidv4 } from "../../../common-imports.js";
 import { getDialogBody, getTransmissionBody, getActivityBody, getDialogBodyWithoutTransmissionsAndActivities } from "./request-body-templates.js";
 
+const TAGS = {
+    GetDialogsQueriesNotificationCondition: { action: "GetDialogsQueriesNotificationCondition" },
+    PostDialog: { action: "PostDialog" },
+    PostTransmission: { action: "PostTransmission" },
+    PostActivity: { action: "PostActivity" },
+    GetDialogs: { action: "GetDialogs" },
+    GetDialog: { action: "GetDialog" },
+    GetDialogActivities: { action: "GetDialogActivities" },
+    GetDialogActivity: { action: "GetDialogActivity" },
+    GetServiceOwnerLabels: { action: "GetServiceOwnerLabels" },
+    GetDialogSeenLogs: { action: "GetDialogSeenLogs" },
+    GetDialogSeenLog: { action: "GetDialogSeenLog" },
+    GetDialogTransmissions: { action: "GetDialogTransmissions" },
+    GetDialogTransmission: { action: "GetDialogTransmission" },
+    GetEndUserContext: { action: "GetEndUserContext" },
+    GetDialogLookup: { action: "GetDialogLookup" },
+};
+
 class ServiceOwnerApiClient {
     /**
      *
@@ -24,6 +42,10 @@ class ServiceOwnerApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/dialogporten/api/v1/serviceowner";
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
@@ -50,7 +72,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
-            name: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification"
+            name: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
+            action: TAGS.GetDialogsQueriesNotificationCondition.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -87,7 +110,10 @@ class ServiceOwnerApiClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
 
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.PostDialog.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -127,7 +153,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
-            name: this.FULL_PATH + "/dialogs/dialogId/transmissions"
+            name: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+            action: TAGS.PostTransmission.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -165,7 +192,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
-            name: this.FULL_PATH + "/dialogs/dialogId/activities"
+            name: this.FULL_PATH + "/dialogs/dialogId/activities",
+            action: TAGS.PostActivity.action
         };
 
         if (labels != null) {
@@ -207,7 +235,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs",
-            name: this.FULL_PATH + "/dialogs"
+            name: this.FULL_PATH + "/dialogs",
+            action: TAGS.GetDialogs.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -242,7 +271,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId",
-            name: this.FULL_PATH + "/dialogs/dialogId"
+            name: this.FULL_PATH + "/dialogs/dialogId",
+            action: TAGS.GetDialog.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -277,7 +307,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
-            name: this.FULL_PATH + "/dialogs/dialogId/activities"
+            name: this.FULL_PATH + "/dialogs/dialogId/activities",
+            action: TAGS.GetDialogActivities.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -314,7 +345,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
-            name: this.FULL_PATH + "/dialogs/dialogId/activities/activityId"
+            name: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
+            action: TAGS.GetDialogActivity.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -349,7 +381,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "dialogs/dialogId/context/labels",
-            name: this.FULL_PATH + "dialogs/dialogId/context/labels"
+            name: this.FULL_PATH + "dialogs/dialogId/context/labels",
+            action: TAGS.GetServiceOwnerLabels.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -384,7 +417,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog",
-            name: this.FULL_PATH + "/dialogs/dialogId/seenlog"
+            name: this.FULL_PATH + "/dialogs/dialogId/seenlog",
+            action: TAGS.GetDialogSeenLogs.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -421,7 +455,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
-            name: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId"
+            name: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
+            action: TAGS.GetDialogSeenLog.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -456,7 +491,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
-            name: this.FULL_PATH + "/dialogs/dialogId/transmissions"
+            name: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+            action: TAGS.GetDialogTransmissions.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -493,7 +529,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
-            name: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId"
+            name: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
+            action: TAGS.GetDialogTransmission.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -531,7 +568,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialogs/endusercontext",
-            name: this.FULL_PATH + "/dialogs/endusercontext"
+            name: this.FULL_PATH + "/dialogs/endusercontext",
+            action: TAGS.GetEndUserContext.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -570,7 +608,8 @@ class ServiceOwnerApiClient {
 
         let tags = {
             endpoint: this.FULL_PATH + "/dialoglookup",
-            name: this.FULL_PATH + "/dialoglookup"
+            name: this.FULL_PATH + "/dialoglookup",
+            action: TAGS.GetDialogLookup.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };

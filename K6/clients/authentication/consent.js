@@ -55,7 +55,10 @@ class ConsentApiClient {
             redirectUrl: redirectUrl,
         };
 
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.RequestConsent.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -82,7 +85,8 @@ class ConsentApiClient {
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
         let tags = {
             endpoint: `${this.FULL_PATH}/bff/consentrequests/id/accept`,
-            name: `${this.FULL_PATH}/bff/consentrequests/id/accept`
+            name: `${this.FULL_PATH}/bff/consentrequests/id/accept`,
+            action: TAGS.ApproveConsent.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -121,7 +125,10 @@ class ConsentApiClient {
             to,
         };
 
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.LookupConsent.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -156,7 +163,11 @@ class ConsentApiClient {
         const url = queryString ? `${path}?${queryString}` : path;
 
         // Tag with the static path so query params don't fan out the metrics.
-        let tags = { endpoint: path };
+        let tags = {
+            endpoint: path,
+            name: path,
+            action: TAGS.GetConsentRequestEvents.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

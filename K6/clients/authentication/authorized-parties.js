@@ -44,7 +44,8 @@ class AuthorizedPartiesClient {
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let tags = {
             endpoint: url.toString(),
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetAuthorizedParties.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };

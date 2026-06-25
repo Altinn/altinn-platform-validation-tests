@@ -25,7 +25,10 @@ class AltinnCdnClient {
         const orgs = [];
 
         const params = {
-            tags: { "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json" },
+            tags: {
+                "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json",
+                "action": "GetOrgs"
+            },
         };
 
         const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params);
