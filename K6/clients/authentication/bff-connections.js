@@ -51,7 +51,8 @@ class BffConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/rightholders`);
         let tags = {
             endpoint: url.toString(),
-            action: "Get connections/rightholders", name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetConnections.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -82,7 +83,8 @@ class BffConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`); // TODO: Is this correct?
         let tags = {
             endpoint: `${this.FULL_PATH}/reportee/from/rightholder`,
-            name: `${this.FULL_PATH}/reportee/from/rightholder`
+            name: `${this.FULL_PATH}/reportee/from/rightholder`,
+            action: TAGS.PostRightholder.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -115,7 +117,8 @@ class BffConnectionsApiClient {
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
         let tags = {
             endpoint: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`,
-            name: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`
+            name: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`,
+            action: TAGS.PostRightholderOrg.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -139,7 +142,11 @@ class BffConnectionsApiClient {
     DeleteRightholder(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DeleteRightholder.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
