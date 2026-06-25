@@ -43,7 +43,8 @@ class SystemUserApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId`,
-                name: `${this.FULL_PATH}/vendor/bysystem/systemId`
+                name: `${this.FULL_PATH}/vendor/bysystem/systemId`,
+                action: TAGS.GetSystemUsersBySystemIdForVendor.action
             },
             headers: {
                 Authorization: "Bearer " + token,

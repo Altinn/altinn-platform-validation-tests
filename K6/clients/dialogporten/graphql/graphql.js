@@ -3,6 +3,13 @@ import { getAllDialogsForParties, getDialogById, getParties, getFilterServiceRes
 import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
 import { DialogByIdVariablesBuilder } from "./dialog-by-id-variables-builder.js";
 
+const TAGS = {
+    GetAllDialogsForParty: { action: "GetAllDialogsForParty" },
+    GetDialogById: { action: "GetDialogById" },
+    GetParties: { action: "GetParties" },
+    GetFilterServiceResources: { action: "GetFilterServiceResources" },
+};
+
 class GraphqlClient {
     /**
      *
@@ -27,6 +34,10 @@ class GraphqlClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Get all dialogs based on variables
      * @param {DialogSearchVariablesBuilder} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
@@ -36,7 +47,10 @@ class GraphqlClient {
     GetAllDialogsForParty(variables, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetAllDialogsForParty.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -62,7 +76,10 @@ class GraphqlClient {
     GetDialogById(variables, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetDialogById.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -86,7 +103,10 @@ class GraphqlClient {
     GetParties(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetParties.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -109,7 +129,10 @@ class GraphqlClient {
     GetFilterServiceResources(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetFilterServiceResources.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
