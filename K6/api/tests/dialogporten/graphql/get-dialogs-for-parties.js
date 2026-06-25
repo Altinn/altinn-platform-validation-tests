@@ -22,8 +22,8 @@ export const options = getOptions([
 
 export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
-    const endUser = getItemFromList(data, randomize).ssn;
-    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser));
+    const endUser = getItemFromList(data, randomize);
+    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
     const parties = getParties(graphqlClient, getPartiesLabel, max_number_of_parties);
     const variables = new DialogSearchVariablesBuilder()
         .withPartyURIs(parties)
