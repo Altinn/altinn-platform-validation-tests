@@ -5,7 +5,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getDialogslabel = { action: "1. get-dialogs-for-party-createdafter" };
+const getDialogslabel = { step: "1. get-dialogs-for-party-createdafter" };
 
 export const options = getOptions([
     getDialogslabel,

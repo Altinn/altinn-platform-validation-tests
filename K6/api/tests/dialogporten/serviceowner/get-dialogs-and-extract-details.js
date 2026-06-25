@@ -16,15 +16,15 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getDialogslabel = { action: "1. get-dialogs" };
-const getDialogLabel = { action: "2. get-dialog" };
-const getDialogActivitiesLabel = { action: "3. get-dialog-activities" };
-const getDialogActivityLabel = { action: "4. get-dialog-activity" };
-const getDialogTransmissionsLabel = { action: "5. get-dialog-transmissions" };
-const getDialogTransmissionLabel = { action: "6. get-dialog-transmission" };
-const getDialogSeenLogsLabel = { action: "7. get-dialog-seen-logs" };
-const getDialogSeenLogLabel = { action: "8. get-dialog-seen-log" };
-const getDialogLookupLabel = { action: "9. get-dialog-lookup" };
+const getDialogslabel = { step: "1. get-dialogs" };
+const getDialogLabel = { step: "2. get-dialog" };
+const getDialogActivitiesLabel = { step: "3. get-dialog-activities" };
+const getDialogActivityLabel = { step: "4. get-dialog-activity" };
+const getDialogTransmissionsLabel = { step: "5. get-dialog-transmissions" };
+const getDialogTransmissionLabel = { step: "6. get-dialog-transmission" };
+const getDialogSeenLogsLabel = { step: "7. get-dialog-seen-logs" };
+const getDialogSeenLogLabel = { step: "8. get-dialog-seen-log" };
+const getDialogLookupLabel = { step: "9. get-dialog-lookup" };
 
 
 export const options = getOptions([
@@ -126,4 +126,3 @@ function getSeenLogs(serviceOwnerApiClient, dialogId) {
         );
     };
 }
-
