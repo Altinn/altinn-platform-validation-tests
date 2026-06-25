@@ -9,7 +9,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getFilterServiceResourcesLabel = { action: "1. get-filter-service-resources" };
+const getFilterServiceResourcesLabel = { step: "1. get-filter-service-resources" };
 
 export const options = getOptions([
     getFilterServiceResourcesLabel,
@@ -17,8 +17,8 @@ export const options = getOptions([
 
 export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
-    const endUser = getItemFromList(data, randomize).ssn;
-    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser));
+    const endUser = getItemFromList(data, randomize);
+    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
     GetFilterServiceResources(
         graphqlClient,
         getFilterServiceResourcesLabel,
