@@ -45,7 +45,7 @@ test_definitions:
           enabled: false
       - environment: tt02
       - environment: at23
-      
+
   - test_file: get-dialogs-for-parties-serviceowner.js
     contexts:
       - environment: yt01
