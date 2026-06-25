@@ -41,7 +41,10 @@ class ClientDelegationsApiClient {
     GetMyClients(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/my/clients`);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetMyClients.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
