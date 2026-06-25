@@ -12,8 +12,8 @@ export { setup } from "./common-functions.js";
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const max_number_of_parties = __ENV.MAX_NUMBER_OF_PARTIES ? parseInt(__ENV.MAX_NUMBER_OF_PARTIES) : 100;
 
-const getPartiesLabel = { action: "1. get-parties-for-enduser" };
-const getDialogslabel = { action: "2. get-dialogs-parties" };
+const getPartiesLabel = { step: "1. get-parties-for-enduser" };
+const getDialogslabel = { step: "2. get-dialogs-parties" };
 
 export const options = getOptions([
     getPartiesLabel,

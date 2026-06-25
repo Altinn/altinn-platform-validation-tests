@@ -12,8 +12,8 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getPartiesLabel = { action: "1. get-parties-for-enduser" };
-const getDialogslabel = { action: "2. get-dialogs-party" };
+const getPartiesLabel = { step: "1. get-parties-for-enduser" };
+const getDialogslabel = { step: "2. get-dialogs-party" };
 
 export const options = getOptions([
     getPartiesLabel,

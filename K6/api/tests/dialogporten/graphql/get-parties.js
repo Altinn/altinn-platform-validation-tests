@@ -11,7 +11,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getPartiesLabel = { action: "1. get-parties-for-enduser" };
+const getPartiesLabel = { step: "1. get-parties-for-enduser" };
 
 export const options = getOptions([
     getPartiesLabel,

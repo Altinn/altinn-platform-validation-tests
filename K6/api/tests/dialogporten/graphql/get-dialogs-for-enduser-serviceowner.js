@@ -11,7 +11,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getDialogslabel = { action: "1. get-dialogs-for-enduser-serviceowners" };
+const getDialogslabel = { step: "1. get-dialogs-for-enduser-serviceowners" };
 
 export const options = getOptions([
     getDialogslabel,

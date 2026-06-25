@@ -9,7 +9,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getFilterServiceResourcesLabel = { action: "1. get-filter-service-resources" };
+const getFilterServiceResourcesLabel = { step: "1. get-filter-service-resources" };
 
 export const options = getOptions([
     getFilterServiceResourcesLabel,
