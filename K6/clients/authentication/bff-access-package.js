@@ -1,11 +1,11 @@
 import http from "k6/http";
 
 const TAGS = {
-    PostDelegations: { action: "PostDelegations" },
-    DeleteDelegations: { action: "DeleteDelegations" },
-    GetDelegations: { action: "GetDelegations" },
-    GetDelegationCheck: { action: "Get delegation check" },
-    GetPermission: { action: "GetPermission" },
+    PostDelegations: { action: "post-delegations" },
+    DeleteDelegations: { action: "delete-delegations" },
+    GetDelegations: { action: "get-delegations" },
+    GetDelegationCheck: { action: "get-delegation-check" },
+    GetPermission: { action: "get-permission" },
 };
 
 class BffAccessPackageApiClient {

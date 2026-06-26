@@ -4,10 +4,10 @@ import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder
 import { DialogByIdVariablesBuilder } from "./dialog-by-id-variables-builder.js";
 
 const TAGS = {
-    GetAllDialogsForParty: { action: "GetAllDialogsForParty" },
-    GetDialogById: { action: "GetDialogById" },
-    GetParties: { action: "GetParties" },
-    GetFilterServiceResources: { action: "GetFilterServiceResources" },
+    GetAllDialogsForParty: { action: "get-all-dialogs-for-party" },
+    GetDialogById: { action: "get-dialog-by-id" },
+    GetParties: { action: "get-parties" },
+    GetFilterServiceResources: { action: "get-filter-service-resources" },
 };
 
 class GraphqlClient {

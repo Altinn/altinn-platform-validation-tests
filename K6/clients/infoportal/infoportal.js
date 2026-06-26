@@ -1,9 +1,9 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetAuthorizedParties: { action: "GetAuthorizedParties" },
-    GetFavorites: { action: "GetFavorites" },
-    GetCurrent: { action: "GetCurrent" },
+    GetAuthorizedParties: { action: "get-authorized-parties" },
+    GetFavorites: { action: "get-favorites" },
+    GetCurrent: { action: "get-current" },
 };
 
 class InfoPortalApiClient {

@@ -3,21 +3,21 @@ import { uuidv4 } from "../../../common-imports.js";
 import { getDialogBody, getTransmissionBody, getActivityBody, getDialogBodyWithoutTransmissionsAndActivities } from "./request-body-templates.js";
 
 const TAGS = {
-    GetDialogsQueriesNotificationCondition: { action: "GetDialogsQueriesNotificationCondition" },
-    PostDialog: { action: "PostDialog" },
-    PostTransmission: { action: "PostTransmission" },
-    PostActivity: { action: "PostActivity" },
-    GetDialogs: { action: "GetDialogs" },
-    GetDialog: { action: "GetDialog" },
-    GetDialogActivities: { action: "GetDialogActivities" },
-    GetDialogActivity: { action: "GetDialogActivity" },
-    GetServiceOwnerLabels: { action: "GetServiceOwnerLabels" },
-    GetDialogSeenLogs: { action: "GetDialogSeenLogs" },
-    GetDialogSeenLog: { action: "GetDialogSeenLog" },
-    GetDialogTransmissions: { action: "GetDialogTransmissions" },
-    GetDialogTransmission: { action: "GetDialogTransmission" },
-    GetEndUserContext: { action: "GetEndUserContext" },
-    GetDialogLookup: { action: "GetDialogLookup" },
+    GetDialogsQueriesNotificationCondition: { action: "get-dialogs-queries-notification-condition" },
+    PostDialog: { action: "post-dialog" },
+    PostTransmission: { action: "post-transmission" },
+    PostActivity: { action: "post-activity" },
+    GetDialogs: { action: "get-dialogs" },
+    GetDialog: { action: "get-dialog" },
+    GetDialogActivities: { action: "get-dialog-activities" },
+    GetDialogActivity: { action: "get-dialog-activity" },
+    GetServiceOwnerLabels: { action: "get-service-owner-labels" },
+    GetDialogSeenLogs: { action: "get-dialog-seen-logs" },
+    GetDialogSeenLog: { action: "get-dialog-seen-log" },
+    GetDialogTransmissions: { action: "get-dialog-transmissions" },
+    GetDialogTransmission: { action: "get-dialog-transmission" },
+    GetEndUserContext: { action: "get-end-user-context" },
+    GetDialogLookup: { action: "get-dialog-lookup" },
 };
 
 class ServiceOwnerApiClient {

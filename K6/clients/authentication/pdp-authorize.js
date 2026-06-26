@@ -1,10 +1,10 @@
 import http from "k6/http";
 
 const TAGS = {
-    AuthorizeEnduser: { action: "AuthorizeEnduser" },
-    AuthorizeDagl: { action: "AuthorizeDagl" },
-    AuthorizeEnduserInstance: { action: "AuthorizeEnduserInstance" },
-    AuthorizeOrganizationInstance: { action: "AuthorizeOrganizationInstance" },
+    AuthorizeEnduser: { action: "authorize-enduser" },
+    AuthorizeDagl: { action: "authorize-dagl" },
+    AuthorizeEnduserInstance: { action: "authorize-enduser-instance" },
+    AuthorizeOrganizationInstance: { action: "authorize-organization-instance" },
 };
 
 class PdpAuthorizeClient {

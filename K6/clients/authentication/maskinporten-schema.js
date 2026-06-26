@@ -1,8 +1,8 @@
 import http from "k6/http";
 
 const TAGS = {
-    PostOffered: { action: "PostOffered" },
-    GetDelegations: { action: "GetDelegations" },
+    PostOffered: { action: "post-offered" },
+    GetDelegations: { action: "get-delegations" },
 };
 
 class MaskinportenSchemaApiClient {

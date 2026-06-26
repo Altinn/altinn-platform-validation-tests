@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetRoles: { action: "GetRoles" },
+    GetRoles: { action: "get-roles" },
 };
 
 class RolesApiClient {

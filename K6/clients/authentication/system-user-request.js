@@ -1,11 +1,11 @@
 import http from "k6/http";
 
 const TAGS = {
-    CreateSystemUserRequest: { action: "CreateSystemUserRequest" },
-    ApproveSystemUserRequest: { action: "ApproveSystemUserRequest" },
-    CreateAgentSystemUserRequest: { action: "CreateAgentSystemUserRequest" },
-    GetSystemUserRequestsBySystemIdForVendor: { action: "GetSystemUserRequestsBySystemIdForVendor" },
-    GetAgentSystemUserRequestsBySystemIdForVendor: { action: "GetAgentSystemUserRequestsBySystemIdForVendor" },
+    CreateSystemUserRequest: { action: "create-system-user-request" },
+    ApproveSystemUserRequest: { action: "approve-system-user-request" },
+    CreateAgentSystemUserRequest: { action: "create-agent-system-user-request" },
+    GetSystemUserRequestsBySystemIdForVendor: { action: "get-system-user-requests-by-system-id-for-vendor" },
+    GetAgentSystemUserRequestsBySystemIdForVendor: { action: "get-agent-system-user-requests-by-system-id-for-vendor" },
 };
 
 class SystemUserRequestApiClient {

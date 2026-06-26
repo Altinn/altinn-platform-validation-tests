@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetMyClients: { action: "GetMyClients" },
+    GetMyClients: { action: "get-my-clients" },
 };
 
 class ClientDelegationsApiClient {
