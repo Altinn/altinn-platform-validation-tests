@@ -36,7 +36,7 @@ type TestRunReconciler struct {
 }
 
 var (
-	DeletionThreshold = 5
+	DeletionThreshold = 60
 )
 
 // +kubebuilder:rbac:groups=k6.io,resources=testruns,verbs=get;list;watch;create;update;patch;delete

@@ -7,6 +7,31 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - configmaps
+  verbs:
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/finalizers
+  - pods/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/status
+  - pods/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
   - pods
   verbs:
   - create
@@ -16,20 +41,6 @@ rules:
   - patch
   - update
   - watch
-- apiGroups:
-  - ""
-  resources:
-  - pods/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - pods/status
-  verbs:
-  - get
-  - patch
-  - update
 - apiGroups:
   - batch
   resources:
@@ -52,29 +63,6 @@ rules:
   - batch
   resources:
   - jobs/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - k6.dis.altinn.cloud
-  resources:
-  - configmaps
-  verbs:
-  - delete
-  - get
-  - list
-  - watch
-- apiGroups:
-  - k6.dis.altinn.cloud
-  resources:
-  - configmaps/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - k6.dis.altinn.cloud
-  resources:
-  - configmaps/status
   verbs:
   - get
   - patch

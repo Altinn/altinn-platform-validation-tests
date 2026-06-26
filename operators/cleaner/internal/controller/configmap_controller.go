@@ -51,9 +51,9 @@ func getGenerationTime(cm corev1.ConfigMap) (time.Time, bool) {
 	return t, true
 }
 
-// +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps,verbs=get;list;watch;delete
-// +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=k6.dis.altinn.cloud,resources=configmaps/finalizers,verbs=update
+// +kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;watch;delete
+// +kubebuilder:rbac:groups="",resources=configmaps/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups="",resources=configmaps/finalizers,verbs=update
 
 func (r *ConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := logf.FromContext(ctx)
