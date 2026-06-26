@@ -16,11 +16,11 @@ import { BffConnectionsApiClient, BffClientDelegationsApiClient, BffAccessPackag
 import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 const groupLabelValue = "Open client administration";
 
 const getConnectionsLabel = { step: `1. ${BffConnectionsApiClient.TAGS.GetConnections.action}` };
@@ -31,6 +31,7 @@ const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.Get
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
 // clients to use
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
 let clientDelegationsApiClient = undefined;
 let connectionsApiClient = undefined;
@@ -54,7 +55,7 @@ export function setup() {
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");

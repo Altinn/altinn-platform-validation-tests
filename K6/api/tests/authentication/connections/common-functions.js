@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../helpers.js";
 
 let connectionsApiClient = undefined;
@@ -13,7 +13,7 @@ let tokenGenerator = undefined;
  */
 export function getClients(bff = false) {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
@@ -31,7 +31,7 @@ export function getClients(bff = false) {
  * @returns map of token options
  */
 export function getTokenOpts(userId) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PersonalTokenGeneratorOptions();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "altinn:portal/enduser");

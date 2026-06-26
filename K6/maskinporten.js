@@ -205,7 +205,7 @@ export class MaskinportenAccessTokenGenerator {
  * Validates Maskinporten token generator options.
  * Only `'scopes'` is permitted.
  */
-class MaskinportenTokenGeneratorOptions extends Map {
+export class MaskinportenTokenGeneratorOptions extends Map {
     /**
      * @param {Iterable<[string, any]>} [options] – Key/value pairs, must include `scopes`.
      */

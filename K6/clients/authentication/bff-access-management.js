@@ -20,6 +20,7 @@ const TAGS = {
     GetConsentLogForUser: { action: "get-consent-log-for-user" },
     GetResourceById: { action: "get-resource-by-id" },
     GetPendingDelegationsForUser: { action: "get-pending-delegations-for-user" },
+    DelegationExport: { action: "delegation-export" },
 };
 
 

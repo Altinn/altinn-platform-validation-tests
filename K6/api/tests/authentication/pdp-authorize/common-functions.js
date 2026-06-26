@@ -1,20 +1,33 @@
 import http from "k6/http";
 import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
 import { segmentData, parseCsvData, getNumberOfVUs, requireEnv } from "../../../../helpers.js";
 
 
+/**
+ * Client used to interact with the PDP Authorize API.
+ *
+ * @type {PdpAuthorizeClient | undefined}
+ */
+
 let pdpAuthorizeClient = undefined;
+
+/**
+ * Generates personal access tokens for authenticated requests.
+ *
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
 
 /**
- * Function to set up and return clients to interact with the Pdp Authorize API
+ * Initializes the clients required to interact with the PDP Authorize API.
  *
- * @returns {Array} An array containing the PdpAuthorizeClient and PersonalTokenGenerator instances
+ * @returns {[PdpAuthorizeClient, PersonalTokenGenerator]} A tuple containing the
+ * PDP Authorize client and the personal token generator.
  */
 export function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
 
@@ -26,6 +39,7 @@ export function getClients() {
     if (pdpAuthorizeClient == undefined) {
         pdpAuthorizeClient = new PdpAuthorizeClient(__ENV.BASE_URL, tokenGenerator);
     }
+
     return [pdpAuthorizeClient, tokenGenerator];
 }
 
