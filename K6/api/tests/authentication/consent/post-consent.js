@@ -5,7 +5,15 @@ import {
     randomItem,
 } from "../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../helpers.js";
-import { BffAccessManagementApiClient, ConsentApiClient } from "../../../../clients/authentication/index.js";
+import {
+    BffAccessManagementApiClient,
+    ConsentApiClient,
+} from "../../../../clients/authentication/index.js";
+import {
+    ConsentScope,
+    MaskinportenConsentScope,
+    ENDUSER_SCOPE,
+} from "../../../../scopes.js";
 import {
     RequestConsent,
     ApproveConsent,
@@ -14,8 +22,6 @@ import {
 import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
 
 import {
-    ConsentScope,
-    ENDUSER_SCOPE,
     consentValidTo,
     getBaseTokenOpts,
     getConsenteeOrgs,
@@ -68,7 +74,7 @@ function getClients() {
 
         // Maskinporten uses this endpoint to look up consent before fetching the token.
         const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.LOOKUP)
+            getBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
         );
         consentLookupApiClient = new ConsentApiClient(__ENV.BASE_URL, consentLookupTokenGenerator);
 

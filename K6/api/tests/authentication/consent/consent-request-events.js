@@ -20,11 +20,11 @@ import {
     ConsentRequestEventsQueryBuilder,
 } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { ConsentScope } from "../../../../scopes.js";
 
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 
 import {
-    ConsentScope,
     getBaseTokenOpts,
     getConsenteeOrgs,
     getEnterpriseTokenOpts,

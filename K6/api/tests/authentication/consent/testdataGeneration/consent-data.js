@@ -9,6 +9,7 @@ import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
 } from "../../../../../common-imports.js";
+import { ConsentScope, ENDUSER_SCOPE } from "../../../../../scopes.js";
 
 import {
     RequestConsent,
@@ -16,8 +17,6 @@ import {
 } from "../../../../building-blocks/authentication/consent/index.js";
 
 import {
-    ConsentScope,
-    ENDUSER_SCOPE,
     consentValidTo,
     getBaseTokenOpts,
     getConsenteeOrgs,

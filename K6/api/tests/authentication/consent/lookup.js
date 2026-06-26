@@ -4,11 +4,11 @@ import { randomItem } from "../../../../common-imports.js";
 
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { MaskinportenConsentScope } from "../../../../scopes.js";
 
 import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
 
 import {
-    ConsentScope,
     getBaseTokenOpts,
     getLookupConsents,
 } from "./consent-commons.js";
@@ -26,7 +26,7 @@ let consentApiClient;
 function getClients() {
     if (consentApiClient == undefined) {
         const tokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.LOOKUP)
+            getBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
         );
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }
