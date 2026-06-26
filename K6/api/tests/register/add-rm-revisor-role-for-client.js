@@ -35,6 +35,7 @@ export function setup() {
     );
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/revisor-facilitator-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } }
     );
     return parseCsvData(res.body);
 }

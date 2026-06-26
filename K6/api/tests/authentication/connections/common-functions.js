@@ -45,7 +45,8 @@ export function getTokenOpts(userId) {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }

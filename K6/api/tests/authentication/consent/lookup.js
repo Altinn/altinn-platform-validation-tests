@@ -13,7 +13,8 @@ const env = __ENV.ENVIRONMENT ?? "yt01";
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/consentdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/consentdata-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } }
     );
     return parseCsvData(res.body);
 }

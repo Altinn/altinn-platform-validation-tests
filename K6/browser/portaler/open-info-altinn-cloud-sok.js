@@ -10,7 +10,8 @@ export const options = getOptions();
 export function setup() {
     requireEnv(["INFO_CLOUD_URL"]);
     const response = http.get(
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt"
+        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt",
+        { tags: { action: "fetch-test-data" } }
     );
 
     return response.body

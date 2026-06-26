@@ -121,7 +121,8 @@ export const options = getOptions([
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/instance-delegation-user-user.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/instance-delegation-user-user.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }

@@ -19,7 +19,8 @@ import { getOptions } from "../../../../helpers.js";
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`,
+        { tags: { action: "fetch-test-data" } }
     );
     return parseCsvData(res.body);
 }

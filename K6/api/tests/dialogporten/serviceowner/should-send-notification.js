@@ -8,7 +8,8 @@ import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } });
     return parseCsvData(res.body);
 }
 
