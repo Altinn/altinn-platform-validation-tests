@@ -2,7 +2,7 @@
  * Load/smoke test for the enterprise consent request events endpoint.
  *
  * Picks a random organization from the list of consentee organizations that
- * hold the generated consents (see testdataGeneration/consent-data-single-org.js)
+ * hold the generated consents (see post-consent.js, which generates them)
  * and fetches the first page of consent request events for it. Because the
  * organization is chosen per iteration, the same script works both as a
  * smoke test (a few iterations) and as a functional test.
@@ -24,9 +24,11 @@ import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 
 import {
+    ConsentScope,
+    getBaseTokenOpts,
     getConsenteeOrgs,
-    getConsenteeTokenOpts,
-} from "./request-events-commons.js";
+    getEnterpriseTokenOpts,
+} from "./consent-commons.js";
 
 const getConsentRequestEventsLabel = { action: "Get Consent Request Events" };
 
@@ -41,11 +43,9 @@ let tokenGenerator;
  */
 function getClients() {
     if (consentApiClient == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:consentrequests.read");
-        tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+        tokenGenerator = new EnterpriseTokenGenerator(
+            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
+        );
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }
     return [consentApiClient];
@@ -62,7 +62,7 @@ export default function (orgs) {
     // Pick a random organization from the list that holds the generated consents.
     const org = randomItem(orgs);
     tokenGenerator.setTokenGeneratorOptions(
-        getConsenteeTokenOpts(org.orgNo, "altinn:consentrequests.read")
+        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.READ)
     );
 
     // No query parameters for now.

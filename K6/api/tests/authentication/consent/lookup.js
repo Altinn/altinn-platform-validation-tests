@@ -12,8 +12,10 @@ const env = __ENV.ENVIRONMENT ?? "yt01";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    // TODO: switch the ref back to "refs/heads/main" before merging. It currently
+    // points at the feature branch so the moved test data resolves before the merge.
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/consentdata-${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/events-improvement/K6/testdata/authentication/consent/lookup/${__ENV.ENVIRONMENT}.csv`
     );
     return parseCsvData(res.body);
 }
