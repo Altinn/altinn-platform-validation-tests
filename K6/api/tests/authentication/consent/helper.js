@@ -16,6 +16,5 @@ export function selectRandomFromToPair(data, from, to) {
             to = randomItem(data);
         } while (to === from);
     }
-    console.log("from", from?.ssn, "to", to?.orgNo);
     return [from, to];
 }

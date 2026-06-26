@@ -1,47 +1,51 @@
 import { group } from "k6";
-import exec from "k6/execution";
-import { parseCsvData, requireEnv } from "../../../../helpers.js";
-import http from "k6/http";
+import { getOptions, requireEnv } from "../../../../helpers.js";
+import { randomItem } from "../../../../common-imports.js";
 
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { MaskinportenConsentScope } from "../../../../scopes.js";
 
 import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
 
-const env = __ENV.ENVIRONMENT ?? "yt01";
+import {
+    getEnterpriseBaseTokenOpts,
+    getLookupConsents,
+} from "./consent-commons.js";
+
+const lookupConsentLabel = { action: "Lookup Consent" };
+
+export const options = getOptions([lookupConsentLabel]);
+
+let consentApiClient;
+
+/*
+ * Build the client once. The lookup uses an enterprise token with the
+ * Maskinporten consent.read scope (no per-iteration identity).
+ */
+function getClients() {
+    if (consentApiClient == undefined) {
+        const tokenGenerator = new EnterpriseTokenGenerator(
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
+        );
+        consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
+    }
+    return [consentApiClient];
+}
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent/consentdata-${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } }
-    );
-    return parseCsvData(res.body);
-}
-
-function getLookupClient() {
-    return new ConsentApiClient(
-        __ENV.BASE_URL,
-        new EnterpriseTokenGenerator(
-            new EnterpriseTokenGeneratorOptions([
-                ["env", env],
-                ["ttl", 3600],
-                ["scopes", "altinn:maskinporten/consent.read"],
-            ])
-        )
-    );
+    return getLookupConsents(__ENV.ENVIRONMENT);
 }
 
 export default function (rows) {
-    const lookupClient = getLookupClient();
-
-    const i = exec.scenario.iterationInTest;
-    const row = rows[i % rows.length];
+    const [lookupClient] = getClients();
+    const row = randomItem(rows);
 
     group("LookupConsent", () => {
         const pidUrn = `urn:altinn:person:identifier-no:${row.Pid}`;
         const orgUrn = `urn:altinn:organization:identifier-no:${row.Org}`;
 
-        LookupConsent(lookupClient, row.ConsentId, pidUrn, orgUrn);
+        LookupConsent(lookupClient, row.ConsentId, pidUrn, orgUrn, lookupConsentLabel);
     });
 }

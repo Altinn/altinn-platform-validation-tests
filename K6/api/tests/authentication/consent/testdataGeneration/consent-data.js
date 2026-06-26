@@ -1,68 +1,69 @@
-import http from "k6/http";
 import exec from "k6/execution";
 import { group } from "k6";
 
-import { EnterpriseTokenGeneratorOptions, PersonalTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../../../helpers.js";
+import { uuidv4, randomItem } from "../../../../../common-imports.js";
+import { requireEnv } from "../../../../../helpers.js";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
 import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
 } from "../../../../../common-imports.js";
+import { ConsentScope } from "../../../../../scopes.js";
 
 import {
     RequestConsent,
     ApproveConsent,
 } from "../../../../building-blocks/authentication/consent/index.js";
 
+import {
+    consentValidTo,
+    getConsenteeOrgs,
+    getConsenterPersons,
+    getEnterpriseBaseTokenOpts,
+    getEnterpriseTokenOpts,
+    getPersonalBaseTokenOpts,
+    getPersonalTokenOpts,
+} from "../consent-commons.js";
+
 //How many rows you want to generate for the consent data
-const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 2;
+const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 20;
 
 export const options = {
-    setupTimeout: "10s",
+    setupTimeout: "60s",
     scenarios: {
         default: {
             executor: "shared-iterations",
-            vus: 10,
+            vus: 2,
             iterations: LOOKUPS,
         },
     },
 };
 
-function getClients(orgNo, userId, partyUuid) {
-    const consentee = new ConsentApiClient(
-        __ENV.BASE_URL,
-        new EnterpriseTokenGenerator(
-            new EnterpriseTokenGeneratorOptions([
-                ["env", __ENV.ENVIRONMENT],
-                ["ttl", 3600],
-                ["scopes", "altinn:consentrequests.write"],
-                ["orgNo", orgNo],
-            ])
-        )
-    );
+let consenteeClient;
+let consenterClient;
+let consenteeTokenGenerator;
+let consenterTokenGenerator;
 
-    const consenter = new ConsentApiClient(
-        __ENV.BASE_URL,
-        new PersonalTokenGenerator(
-            new PersonalTokenGeneratorOptions([
-                ["env", __ENV.ENVIRONMENT],
-                ["ttl", 3600],
-                ["scopes", "altinn:portal/enduser"],
-                ["userId", userId],
-                ["partyuuid", partyUuid],
-            ])
-        )
-    );
-
-    return [consentee, consenter];
-}
-
-function selectFromToByIndex(data, i) {
-    const from = data[i % data.length];
-    const to = data[(i + 1) % data.length];
-    return [from, to];
+/*
+ * Build the consentee (enterprise) and consenter (personal) clients once.
+ * The token generators are module-level singletons whose identity (orgNo /
+ * partyuuid) is set per iteration via setTokenGeneratorOptions.
+ */
+function getClients() {
+    if (consenteeClient == undefined) {
+        consenteeTokenGenerator = new EnterpriseTokenGenerator(
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
+        );
+        consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
+    }
+    if (consenterClient == undefined) {
+        consenterTokenGenerator = new PersonalTokenGenerator(
+            getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
+        );
+        consenterClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
+    }
+    return [consenteeClient, consenterClient];
 }
 
 function consentRights() {
@@ -80,26 +81,21 @@ function consentRights() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`,
-        { tags: { action: "fetch-test-data" } }
-    );
+    const env = __ENV.ENVIRONMENT;
+    const orgs = getConsenteeOrgs(env);
+    const persons = getConsenterPersons(env);
 
-    const orgs = parseCsvData(res.body);
     const rows = [];
-
     for (let i = 0; i < LOOKUPS; i++) {
-        const [from, to] = selectFromToByIndex(orgs, i);
-
-        const consentId = uuidv4();
+        // Random consentee org + consenter person per row, so consents spread.
+        const org = randomItem(orgs);
+        const person = randomItem(persons);
 
         rows.push({
-            consentId,
-            pid: String(from.ssn),
-            orgNo: String(to.orgNo),
-            fromUserId: from.userId,
-            fromPartyUuid: from.partyUuid,
-            toOrgNo: to.orgNo,
+            consentId: uuidv4(),
+            pid: String(person.ssn),
+            orgNo: String(org.orgNo),
+            partyUuid: person.partyUuid,
         });
     }
     console.log(`Setup complete: Planned ${rows.length} consent(s)`);
@@ -111,26 +107,29 @@ export default function (rows) {
         const i = exec.scenario.iterationInTest;
         const row = rows[i];
 
-        const [consentee, consenter] = getClients(
-            row.toOrgNo,
-            row.fromUserId,
-            row.fromPartyUuid
+        const [consenteeClient, consenterClient] = getClients();
+
+        consenteeTokenGenerator.setTokenGeneratorOptions(
+            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, row.orgNo, ConsentScope.WRITE)
+        );
+        consenterTokenGenerator.setTokenGeneratorOptions(
+            getPersonalTokenOpts(__ENV.ENVIRONMENT, row.partyUuid)
         );
 
         const pidUrn = `urn:altinn:person:identifier-no:${row.pid}`;
         const orgUrn = `urn:altinn:organization:identifier-no:${row.orgNo}`;
 
         RequestConsent(
-            consentee,
+            consenteeClient,
             row.consentId,
             pidUrn,
             orgUrn,
-            new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString(), // Consent shouldn't expire in 100 years
+            consentValidTo(),
             consentRights(),
             "https://altinn.no"
         );
 
-        ApproveConsent(consenter, row.consentId);
+        ApproveConsent(consenterClient, row.consentId);
     });
 }
 
