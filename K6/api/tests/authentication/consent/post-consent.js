@@ -54,12 +54,6 @@ let accessManagementApiClient;
 let consenteeTokenGenerator;
 let consenterTokenGenerator;
 
-/*
- * Build the clients once. The consentee (org) and consenter (person) token
- * generators are module-level singletons whose identity is set per iteration
- * via setTokenGeneratorOptions. The consent-lookup token (Maskinporten) has no
- * per-person identity, so it is built once.
- */
 function getClients() {
     if (consenteeApiClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
