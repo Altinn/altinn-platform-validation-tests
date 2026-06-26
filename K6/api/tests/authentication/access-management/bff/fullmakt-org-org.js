@@ -6,7 +6,7 @@ import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
 import { PostDelegations, DeleteDelegations, GetPermission } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { BffConnectionsApiClient, BffAccessPackageApiClient, BffClientDelegationsApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import {
     GetAgents,
     PostAgents,
@@ -77,7 +77,7 @@ export const options = getOptions(
     ],
 );
 
-
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
 let connectionsApiClient = undefined;
 let accessPackageApiClient = undefined;
@@ -87,7 +87,7 @@ let clientDelegationsApiClient = undefined;
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");

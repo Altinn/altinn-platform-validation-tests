@@ -306,7 +306,7 @@ export function getFromTo(list) {
 */
 import http from "k6/http";
 import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { EnterpriseTokenGeneratorOptions, EnterpriseTokenGenerator, PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
 import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, requireEnv, pickUnique } from "../../../../../helpers.js";
@@ -317,12 +317,12 @@ let accessManagementApiClient = undefined;
 let bffConnectionsApiClient = undefined;
 let bffAccessPackageApiClient = undefined;
 let graphqlClient = undefined;
-// personal tokengenerator.
+/** @type {PersonalTokenGenerator | undefined} */
 let personalTokenGenerator = undefined;
 
 export function getClients(serviceOwnerOrgNo) {
     if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider");
@@ -332,7 +332,7 @@ export function getClients(serviceOwnerOrgNo) {
         serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
     }
     if (userApiClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");

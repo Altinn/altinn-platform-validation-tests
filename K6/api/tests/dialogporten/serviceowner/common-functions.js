@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { parseCsvData } from "../../../../helpers.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 import { requireEnv } from "../../../../helpers.js";
 
@@ -24,15 +24,16 @@ export const serviceResources =
         ? performanceResources
         : ["k6-instancedelegation-test"];
 
+let serviceOwnerApiClient = undefined;
+
 /**
 * Function to set up and return clients to interact with the Service Owner Dialog API
 *
 * @returns {Array} An array containing the ServiceOwnerApiClient instance
 */
-let serviceOwnerApiClient = undefined;
 export function getClients() {
     if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search");

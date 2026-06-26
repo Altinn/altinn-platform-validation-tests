@@ -6,7 +6,7 @@ import {
     extractNextUrl,
     followNextUrlPagination,
 } from "../../../building-blocks/common/follow-next-url-pagination.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 
 export function setup() {
@@ -26,7 +26,7 @@ export default function () {
             const systemOwnerOrgNo = "312605031";
             const systemId = "312605031_Virksomhetsbruker";
 
-            const vendorTokenOptions = new Map();
+            const vendorTokenOptions = new EnterpriseTokenGeneratorOptions();
             vendorTokenOptions.set("env", __ENV.ENVIRONMENT);
             vendorTokenOptions.set("ttl", 3600);
             vendorTokenOptions.set(

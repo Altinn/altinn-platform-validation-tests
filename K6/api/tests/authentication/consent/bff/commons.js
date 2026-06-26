@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
 import { parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../../helpers.js";
 
 /*
@@ -55,7 +55,7 @@ let personalTokenGenerator;
 */
 export function getClients() {
     if (accessManagementApiClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");

@@ -3,7 +3,7 @@ import http from "k6/http";
 import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.js";
 import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 
 // Labels for different actions
@@ -87,7 +87,7 @@ export default function (data) {
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:maskinporten/delegations.admin");

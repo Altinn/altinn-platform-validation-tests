@@ -4,6 +4,8 @@ import {
     EnterpriseTokenGenerator,
     uuidv4,
     randomItem,
+    EnterpriseTokenGeneratorOptions,
+    PersonalTokenGeneratorOptions,
 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { BffAccessManagementApiClient, ConsentApiClient } from "../../../../clients/authentication/index.js";
@@ -53,7 +55,7 @@ function getClients(orgNo, userId, partyUuid) {
         console.log("Configuring Clients");
         console.log(`orgNo: ${orgNo} -- userId: ${userId}`);
         // consentee
-        const optionsConsentee = new Map();
+        const optionsConsentee = new EnterpriseTokenGeneratorOptions();
         optionsConsentee.set("env", __ENV.ENVIRONMENT);
         optionsConsentee.set("ttl", 3600);
         optionsConsentee.set("scopes", "altinn:consentrequests.write");
@@ -68,7 +70,7 @@ function getClients(orgNo, userId, partyUuid) {
         );
 
         // consenter
-        const optionsConsenter = new Map();
+        const optionsConsenter = new PersonalTokenGeneratorOptions();
         optionsConsenter.set("env", __ENV.ENVIRONMENT);
         optionsConsenter.set("ttl", 3600);
         optionsConsenter.set("scopes", "altinn:portal/enduser");
@@ -85,7 +87,7 @@ function getClients(orgNo, userId, partyUuid) {
 
         // consent lookup (Maskinporten uses this endpoint to lookup consent before fetching the token)
         // Requires an org token with scope: altinn:maskinporten/consent.read
-        const optionsConsentLookup = new Map();
+        const optionsConsentLookup = new EnterpriseTokenGeneratorOptions();
         optionsConsentLookup.set("env", __ENV.ENVIRONMENT);
         optionsConsentLookup.set("ttl", 3600);
         optionsConsentLookup.set("scopes", "altinn:maskinporten/consent.read");

@@ -2,7 +2,7 @@ import http from "k6/http";
 import exec from "k6/execution";
 import { group } from "k6";
 
-import { uuidv4 } from "../../../../../common-imports.js";
+import { EnterpriseTokenGeneratorOptions, PersonalTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../../helpers.js";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
@@ -34,7 +34,7 @@ function getClients(orgNo, userId, partyUuid) {
     const consentee = new ConsentApiClient(
         __ENV.BASE_URL,
         new EnterpriseTokenGenerator(
-            new Map([
+            new EnterpriseTokenGeneratorOptions([
                 ["env", __ENV.ENVIRONMENT],
                 ["ttl", 3600],
                 ["scopes", "altinn:consentrequests.write"],
@@ -46,7 +46,7 @@ function getClients(orgNo, userId, partyUuid) {
     const consenter = new ConsentApiClient(
         __ENV.BASE_URL,
         new PersonalTokenGenerator(
-            new Map([
+            new PersonalTokenGeneratorOptions([
                 ["env", __ENV.ENVIRONMENT],
                 ["ttl", 3600],
                 ["scopes", "altinn:portal/enduser"],

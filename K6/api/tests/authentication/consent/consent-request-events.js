@@ -15,7 +15,7 @@ import {
     ConsentApiClient,
     ConsentRequestEventsQueryBuilder,
 } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 
@@ -42,7 +42,7 @@ function getEventsClient() {
             throw new Error(`Unknown environment: ${env}`);
         }
 
-        const tokenOpts = new Map([
+        const tokenOpts = new EnterpriseTokenGeneratorOptions([
             ["env", env],
             ["ttl", 3600],
             ["scopes", "altinn:consentrequests.read"],

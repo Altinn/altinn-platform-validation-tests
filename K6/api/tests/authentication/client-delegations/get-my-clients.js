@@ -1,6 +1,6 @@
 import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authentication/client-delegations.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 
 // Labels for different actions
@@ -44,7 +44,7 @@ export function setup() {
  */
 export default function () {
     if (tokenGenerator === undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", environment);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:portal/enduser");
@@ -62,7 +62,7 @@ export default function () {
 }
 
 function getTokenOpts(uuid) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PersonalTokenGeneratorOptions();
     tokenOpts.set("env", environment);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "altinn:portal/enduser");

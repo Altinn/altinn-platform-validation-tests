@@ -4,7 +4,7 @@ import { group } from "k6";
 
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { DelegationExport } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { getTokenOpts } from "./commons.js";
 
@@ -18,7 +18,7 @@ export const options = getOptions(
     [label],
 );
 
-
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
 let clientDelegationsApiClient = undefined;
 
@@ -26,7 +26,7 @@ let clientDelegationsApiClient = undefined;
 
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
