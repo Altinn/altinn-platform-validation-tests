@@ -60,7 +60,8 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }

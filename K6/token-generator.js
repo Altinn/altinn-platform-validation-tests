@@ -13,6 +13,28 @@ const config = {
         "https://altinn-testtools-token-generator.azurewebsites.net/api/GetPlatformAccessToken",
 };
 
+const PERSONAL_TOKEN_TAGS = {
+    getToken: {
+        token_generator: "personal-token-generator",
+        name: config.getPersonalTokenUrl,
+        action: "get-token"
+    }
+};
+
+const ENTERPRISE_TOKEN_TAGS = {
+    getToken: {
+        token_generator: "enterprise-token-generator",
+        name: config.getEnterpriseTokenUrl,
+        action: "get-token"
+    }
+};
+const PLATFORM_TOKEN_TAGS = {
+    getToken: {
+        token_generator: "platform-token-generator",
+        name: config.getPlatformAccessTokenUrl,
+        action: "get-token"
+    }
+};
 
 /**
  * Generates personal tokens by calling the configured token endpoint.
@@ -52,14 +74,19 @@ export class PersonalTokenGenerator {
                 Authorization: `Basic ${this.#encodedCredentials}`,
             },
             tags: {
-                tokenGenerator: "Personal Token Generator",
+                token_generator: "personal-token-generator",
                 name: config.getPersonalTokenUrl,
+                action: "get-token"
             },
         };
 
         this.tokenGeneratorOptions = new PersonalTokenGeneratorOptions(
             tokenGeneratorOptions,
         );
+    }
+
+    static get TAGS() {
+        return PERSONAL_TOKEN_TAGS;
     }
 
     /**
@@ -210,14 +237,19 @@ export class EnterpriseTokenGenerator {
                 Authorization: `Basic ${this.#encodedCredentials}`,
             },
             tags: {
-                tokenGenerator: "Enterprise Token Generator",
+                token_generator: "enterprise-token-generator",
                 name: config.getEnterpriseTokenUrl,
+                action: "get-token"
             },
         };
 
         this.tokenGeneratorOptions = new EnterpriseTokenGeneratorOptions(
             tokenGeneratorOptions,
         );
+    }
+
+    static get TAGS() {
+        return ENTERPRISE_TOKEN_TAGS;
     }
 
     /**
@@ -350,8 +382,9 @@ export class PlatformTokenGenerator {
                 Authorization: `Basic ${this.#encodedCredentials}`,
             },
             tags: {
-                tokenGenerator: "Platform Token Generator",
+                token_generator: "platform-token-generator",
                 name: config.getPlatformAccessTokenUrl,
+                action: "get-token"
             },
         };
 
@@ -360,6 +393,10 @@ export class PlatformTokenGenerator {
         );
 
         this.#applyDefaultOptions();
+    }
+
+    static get TAGS() {
+        return PLATFORM_TOKEN_TAGS;
     }
 
     /**

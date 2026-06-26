@@ -9,6 +9,14 @@ const config = {
     tokenUrl: "https://test.maskinporten.no/token",
 };
 
+const TAGS = {
+    getToken: {
+        token_generator: "maskinporten-token-generator",
+        name: config.tokenUrl,
+        action: "get-token"
+    },
+};
+
 /**
  * Generates Maskinporten access tokens using a JWT Bearer Assertion.
  */
@@ -52,6 +60,10 @@ export class MaskinportenAccessTokenGenerator {
         );
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Build and POST a JWT Bearer grant to the token endpoint to get a Maskinporten access token.
      * @private
@@ -70,8 +82,9 @@ export class MaskinportenAccessTokenGenerator {
 
         const params = {
             tags: {
-                tokenGenerator: "Maskinporten Token Generator",
+                token_generator: "maskinporten-token-generator",
                 name: config.tokenUrl,
+                action: "get-token"
             },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
