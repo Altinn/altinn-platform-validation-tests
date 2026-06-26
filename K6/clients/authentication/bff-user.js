@@ -1,15 +1,15 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetLookupPartUser: { action: "GetLookupPartUser" },
-    GetIsCompanyProfileAdmin: { action: "GetIsCompanyProfileAdmin" },
-    GetReportee: { action: "GetReportee" },
-    GetProfile: { action: "GetProfile" },
-    GetIsAdmin: { action: "GetIsAdmin" },
-    GetIsClientAdmin: { action: "GetIsClientAdmin" },
-    GetActorListOld: { action: "GetActorListOld" },
-    GetActorListFavorites: { action: "GetActorListFavorites" },
-    GetIsInstanceAdmin: { action: "GetIsInstanceAdmin" },
+    GetLookupPartUser: { action: "get-lookup-part-user" },
+    GetIsCompanyProfileAdmin: { action: "get-is-company-profile-admin" },
+    GetReportee: { action: "get-reportee" },
+    GetProfile: { action: "get-profile" },
+    GetIsAdmin: { action: "get-is-admin" },
+    GetIsClientAdmin: { action: "get-is-client-admin" },
+    GetActorListOld: { action: "get-actor-list-old" },
+    GetActorListFavorites: { action: "get-actor-list-favorites" },
+    GetIsInstanceAdmin: { action: "get-is-instance-admin" },
 };
 
 class BffUserApiClient {
@@ -51,7 +51,10 @@ class BffUserApiClient {
     GetLookupPartUser(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/lookup/party/user`);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetLookupPartUser.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -73,7 +76,11 @@ class BffUserApiClient {
     GetIsCompanyProfileAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isCompanyProfileAdmin`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetIsCompanyProfileAdmin.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -98,7 +105,8 @@ class BffUserApiClient {
         const url = new URL(`${this.FULL_PATH}/user/reportee/${userId}`);
         let tags = {
             endpoint: `${this.FULL_PATH}/user/reportee/userId`,
-            name: `${this.FULL_PATH}/user/reportee/userId`
+            name: `${this.FULL_PATH}/user/reportee/userId`,
+            action: TAGS.GetReportee.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -120,7 +128,10 @@ class BffUserApiClient {
     GetProfile(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/profile`);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetProfile.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -142,7 +153,11 @@ class BffUserApiClient {
     GetIsAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isAdmin`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetIsAdmin.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -165,7 +180,11 @@ class BffUserApiClient {
     GetIsClientAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isClientAdmin`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetIsClientAdmin.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -187,7 +206,10 @@ class BffUserApiClient {
     GetActorListOld(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/actorlist/old`);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetActorListOld.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -208,7 +230,10 @@ class BffUserApiClient {
     GetActorListFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/actorlist/favorites`);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetActorListFavorites.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -230,7 +255,11 @@ class BffUserApiClient {
     GetIsInstanceAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isInstanceAdmin`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetIsInstanceAdmin.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

@@ -34,7 +34,9 @@ export const ENDUSER_SCOPE = "altinn:portal/enduser";
  * @returns {Array<{orgNo: string}>}
  */
 export function getConsenteeOrgs(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs/${env}.csv`);
+    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs/${env}.csv`, {
+        tags: { action: "fetch-test-data" },
+    });
     return parseCsvData(res.body);
 }
 
@@ -44,7 +46,9 @@ export function getConsenteeOrgs(env) {
  * @returns {Array<{ssn: string, partyUuid: string}>}
  */
 export function getConsenterPersons(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`);
+    const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`, {
+        tags: { action: "fetch-test-data" },
+    });
     return parseCsvData(res.body);
 }
 

@@ -2,7 +2,7 @@
  * This test is designed to simulate a worst-case scenario for the consent log retrieval process.
  */
 import { GetConsentLog } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { getOptions } from "../../../../../helpers.js";
+import { getOptions, getItemFromList } from "../../../../../helpers.js";
 import { worst_case_users as users, getClients, getTokenOpts } from "./commons.js";
 
 export const options = getOptions(users.map(user => { return { unique_id: user.label }; }));
@@ -14,7 +14,7 @@ export const options = getOptions(users.map(user => { return { unique_id: user.l
  */
 export default function () {
     const [accessManagementApiClient, tokenGenerator] = getClients();
-    const from = users[__ITER % users.length];
+    const from = getItemFromList(users);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
     GetConsentLog(accessManagementApiClient, from.partyUuid, { unique_id: from.label });
 }

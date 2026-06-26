@@ -1,25 +1,25 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetIsHovedAdmin: { action: "Get IsHovedAdmin" },
-    GetRolePermissions: { action: "Get RolePermissions" },
-    GetDelegatedResources: { action: "Get DelegatedResources" },
-    GetDelegatedRightsForResource: { action: "Get DelegatedRightsForResource" },
-    SearchAccessPackages: { action: "SearchAccessPackages" },
-    SearchResources: { action: "SearchResources" },
-    GetResourceOwners: { action: "Get ResourceOwners" },
-    GetOrganizationData: { action: "Get OrganizationData" },
-    GetOrganizationDataFromLookup: { action: "Get OrganizationDataFromLookup" },
-    GetRoleMeta: { action: "Get RoleMeta" },
-    GetRightsMeta: { action: "Get RightsMeta" },
-    GetDelegatedInstancesForResource: { action: "Get DelegatedInstancesForResource" },
-    CheckDelegationForResource: { action: "CheckDelegationForResource" },
-    DelegateRightsForResource: { action: "DelegateRightsForResource" },
-    CheckInstanceDelegationForResource: { action: "CheckInstanceDelegationForResource" },
-    GetActiveConsentsForUser: { action: "Get ActiveConsentsForUser" },
-    GetConsentLogForUser: { action: "Get ConsentLogForUser" },
-    GetResourceById: { action: "Get ResourceById" },
-    GetPendingDelegationsForUser: { action: "Get PendingDelegationsForUser" },
+    GetIsHovedAdmin: { action: "get-is-hoved-admin" },
+    GetRolePermissions: { action: "get-role-permissions" },
+    GetDelegatedResources: { action: "get-delegated-resources" },
+    GetDelegatedRightsForResource: { action: "get-delegated-rights-for-resource" },
+    SearchAccessPackages: { action: "search-access-packages" },
+    SearchResources: { action: "search-resources" },
+    GetResourceOwners: { action: "get-resource-owners" },
+    GetOrganizationData: { action: "get-organization-data" },
+    GetOrganizationDataFromLookup: { action: "get-organization-data-from-lookup" },
+    GetRoleMeta: { action: "get-role-meta" },
+    GetRightsMeta: { action: "get-rights-meta" },
+    GetDelegatedInstancesForResource: { action: "get-delegated-instances-for-resource" },
+    CheckDelegationForResource: { action: "check-delegation-for-resource" },
+    DelegateRightsForResource: { action: "delegate-rights-for-resource" },
+    CheckInstanceDelegationForResource: { action: "check-instance-delegation-for-resource" },
+    GetActiveConsentsForUser: { action: "get-active-consents-for-user" },
+    GetConsentLogForUser: { action: "get-consent-log-for-user" },
+    GetResourceById: { action: "get-resource-by-id" },
+    GetPendingDelegationsForUser: { action: "get-pending-delegations-for-user" },
 };
 
 
@@ -63,7 +63,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/user/ishovedadmin`);
         let tags = {
             endpoint: url.toString(),
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetIsHovedAdmin.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -88,7 +89,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/role/permissions`);
         let tags = {
             endpoint: url.toString(),
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetRolePermissions.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -114,7 +116,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources`);
         let tags = {
             endpoint: url.toString(),
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetDelegatedResources.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -138,7 +141,11 @@ class BffAccessManagementApiClient {
     GetDelegatedRightsForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/delegation/resources/rights`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetDelegatedRightsForResource.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -161,7 +168,11 @@ class BffAccessManagementApiClient {
     SearchAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackage/search`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.SearchAccessPackages.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -184,7 +195,11 @@ class BffAccessManagementApiClient {
     SearchResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources/search`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.SearchResources.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -207,7 +222,11 @@ class BffAccessManagementApiClient {
     GetResourceOwners(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources/resourceowners`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetResourceOwners.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -230,7 +249,11 @@ class BffAccessManagementApiClient {
     GetOrganizationData(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/cdn/orgdata`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetOrganizationData.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -255,7 +278,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/lookup/org/${orgNo}`);
         let tags = {
             endpoint: `${this.FULL_PATH}/lookup/org/orgNo`,
-            name: `${this.FULL_PATH}/lookup/org/orgNo`
+            name: `${this.FULL_PATH}/lookup/org/orgNo`,
+            action: TAGS.GetOrganizationDataFromLookup.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -280,7 +304,11 @@ class BffAccessManagementApiClient {
     GetRoleMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/meta`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetRoleMeta.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -303,7 +331,11 @@ class BffAccessManagementApiClient {
     GetRightsMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/singleright/rightsmeta`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetRightsMeta.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -326,7 +358,11 @@ class BffAccessManagementApiClient {
     GetDelegatedInstancesForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetDelegatedInstancesForResource.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -349,7 +385,11 @@ class BffAccessManagementApiClient {
     CheckDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.CheckDelegationForResource.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -373,7 +413,11 @@ class BffAccessManagementApiClient {
     DelegateRightsForResource(queryParams, body, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegation/instances/rights`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DelegateRightsForResource.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -398,7 +442,11 @@ class BffAccessManagementApiClient {
     CheckInstanceDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/instances/delegationcheck`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.CheckInstanceDelegationForResource.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -423,7 +471,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/consent/active/${uuid}`);
         let tags = {
             endpoint: `${this.FULL_PATH}/consent/active/uuid`,
-            name: `${this.FULL_PATH}/consent/active/uuid`
+            name: `${this.FULL_PATH}/consent/active/uuid`,
+            action: TAGS.GetActiveConsentsForUser.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -448,7 +497,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/consent/log/${uuid}`);
         let tags = {
             endpoint: `${this.FULL_PATH}/consent/log/uuid`,
-            name: `${this.FULL_PATH}/consent/log/uuid`
+            name: `${this.FULL_PATH}/consent/log/uuid`,
+            action: TAGS.GetConsentLogForUser.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -472,7 +522,11 @@ class BffAccessManagementApiClient {
     GetResourceById(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetResourceById.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -497,7 +551,8 @@ class BffAccessManagementApiClient {
         const url = new URL(`${this.FULL_PATH}/systemuser/${uuid}/pending`);
         let tags = {
             endpoint: `${this.FULL_PATH}/systemuser/uuid/pending`,
-            name: `${this.FULL_PATH}/systemuser/uuid/pending`
+            name: `${this.FULL_PATH}/systemuser/uuid/pending`,
+            action: TAGS.GetPendingDelegationsForUser.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -521,7 +576,11 @@ class BffAccessManagementApiClient {
     DelegationExport(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationexport`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DelegationExport.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

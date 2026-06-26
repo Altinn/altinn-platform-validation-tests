@@ -58,7 +58,8 @@ export function setup() {
     ];
 
     const allData = files.flatMap(file => {
-        const res = http.get(`${baseUrl}/${file}`);
+        const res = http.get(`${baseUrl}/${file}`,
+            { tags: { action: "fetch-test-data" } });
 
         if (res.status !== 200) {
             throw new Error(

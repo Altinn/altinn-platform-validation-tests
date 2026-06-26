@@ -68,7 +68,8 @@ export const options = getOptions(
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -153,7 +154,7 @@ function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "
         from = getItemFromList(list, randomize);
     }
     if (!randomize) {
-        from = list[__ITER % list.length];
+        from = getItemFromList(list);
     }
     return from;
 }

@@ -40,3 +40,36 @@ test_definitions:
 
       - environment: tt02
       - environment: at23
+
+  - test_file: get-parties-worst-case.js
+    config_file: "get-parties-worst-case.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-dialogs-for-enduser-serviceowner.js
+    config_file: "get-parties-worst-case.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-dialogs-for-parties-serviceowner.js
+    config_file: "get-parties-worst-case.json"
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: false
+
+      - environment: tt02
+      - environment: at23

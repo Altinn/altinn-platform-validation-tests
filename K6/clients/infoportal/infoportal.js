@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetAuthorizedParties: { action: "get-authorized-parties" },
+    GetFavorites: { action: "get-favorites" },
+    GetCurrent: { action: "get-current" },
+};
+
 class InfoPortalApiClient {
     /**
      * ApiClient for the infoportal api endpoints
@@ -24,14 +30,22 @@ class InfoPortalApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Get authorized parties for the user
      * @param {Object} labels - k6 check tags
      * @returns http.RefinedResponse
     */
     GetAuthorizedParties(labels = null) {
+
         const url = this.FULL_PATH + "/authorized-parties";
-        return this.#getEndpoint(url, labels);
+        return this.#getEndpoint(url, {
+            action: TAGS.GetAuthorizedParties.action,
+            ...labels
+        });
     }
 
     /**
@@ -41,7 +55,10 @@ class InfoPortalApiClient {
     */
     GetFavorites(labels = null) {
         const url = this.FULL_PATH + "/favorites";
-        return this.#getEndpoint(url, labels);
+        return this.#getEndpoint(url, {
+            action: TAGS.GetFavorites.action,
+            ...labels
+        });
     }
 
     /**
@@ -51,7 +68,10 @@ class InfoPortalApiClient {
     */
     GetCurrent(labels = null) {
         const url = this.FULL_PATH + "/current";
-        return this.#getEndpoint(url, labels);
+        return this.#getEndpoint(url, {
+            action: TAGS.GetCurrent.action,
+            ...labels
+        });
     }
 
     /**

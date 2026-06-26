@@ -17,6 +17,8 @@ on:
           - yt01-get-dialogs-for-parties-break
           - yt01-get-dialogs-for-random-party-break
           - yt01-get-parties-break
+          - yt01-get-dialogs-for-enduser-serviceowner-break
+          - yt01-get-dialogs-for-parties-serviceowner-break
 
       target_vus:
         description: "The target VUs to reach"

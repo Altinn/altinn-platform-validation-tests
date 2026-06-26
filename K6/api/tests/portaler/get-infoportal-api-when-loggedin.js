@@ -48,7 +48,8 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "INFO_CLOUD_URL"]);
     const numberOfVUs = getNumberOfVUs();
     // Using the same CSV as one of the delegation tests, since we only do reads in this test, it should be safe to use the same users.
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/${__ENV.ENVIRONMENT}/userids.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/${__ENV.ENVIRONMENT}/userids.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }

@@ -1,8 +1,8 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetConnections: { action: "GetConnections" },
-    GetAccessPackages: { action: "GetAccessPackages" },
+    GetConnections: { action: "get-connections" },
+    GetAccessPackages: { action: "get-access-packages" },
 };
 
 class ConnectionsApiClient {
@@ -51,7 +51,11 @@ class ConnectionsApiClient {
     GetConnections(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetConnections.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -76,7 +80,11 @@ class ConnectionsApiClient {
     GetAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackages`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetAccessPackages.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

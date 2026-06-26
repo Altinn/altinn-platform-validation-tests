@@ -1,5 +1,5 @@
 import { getClients } from "./common-functions.js";
-import { getOptions, requireEnv } from "../../../../helpers.js";
+import { getOptions, requireEnv, getItemFromList } from "../../../../helpers.js";
 import { GetEndUserContext } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
 const endUsersByEnvironment = {
@@ -27,8 +27,9 @@ export function setup() {
 
 export default function () {
     const [serviceOwnerApiClient] = getClients();
-    const party = endUsers[__ITER % endUsers.length].pid;
-    const getDialogslabel = { unique_id: endUsers[__ITER % endUsers.length].label };
+    const endUser = getItemFromList(endUsers);
+    const party = endUser.pid;
+    const getDialogslabel = { unique_id: endUser.label };
     const queryParams = {
         party: `urn:altinn:person:identifier-no:${party}`,
     };

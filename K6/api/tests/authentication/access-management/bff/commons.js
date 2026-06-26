@@ -295,16 +295,7 @@ export function getTokenOpts(userId, partyuuid) {
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {
-    let from = undefined;
-    if (randomize) {
-        from = getItemFromList(list, randomize);
-    } else {
-        from = list[__ITER % list.length];
-    }
-    let to = getItemFromList(list, true);
-    while (to.ssn === from.ssn) {
-        to = getItemFromList(list, true);
-    }
+    const [from, to] = pickUnique(list, 2);
     return { from, to };
 }
 
@@ -318,7 +309,7 @@ import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient
 import { EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../../helpers.js";
+import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, requireEnv, pickUnique } from "../../../../../helpers.js";
 // All apiclient used in this test
 let serviceOwnerApiClient = undefined;
 let userApiClient = undefined;
@@ -362,7 +353,8 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
 
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }

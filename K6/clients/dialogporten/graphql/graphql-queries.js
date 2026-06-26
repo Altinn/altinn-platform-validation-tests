@@ -323,9 +323,8 @@ export function getParties() {
 }
 
 export function getFilterServiceResources() {
-    const q =
-        {
-            query: `
+    const q = {
+        query: `
             query DPServiceResources {
                 serviceResources {
                     items {
@@ -342,6 +341,6 @@ export function getFilterServiceResources() {
                     }
                 }
             }`,
-        };
+    };
     return q;
 }

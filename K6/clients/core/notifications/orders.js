@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    PostEmailNotificationOrder: { action: "post-email-notification-order" },
+};
+
 class OrdersApiClient {
     /**
      *
@@ -24,6 +28,10 @@ class OrdersApiClient {
         this.BASE_PATH = "/notifications/api/v1/orders/";
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
     * @param {string } sendersReference
@@ -42,7 +50,10 @@ class OrdersApiClient {
         };
 
         const params = {
-            tags: { endpoint: url },
+            tags: {
+                endpoint: url,
+                action: TAGS.PostEmailNotificationOrder.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

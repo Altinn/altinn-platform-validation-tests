@@ -15,7 +15,8 @@ export function setup() {
     // TODO: switch the ref back to "refs/heads/main" before merging. It currently
     // points at the feature branch so the moved test data resolves before the merge.
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/events-improvement/K6/testdata/authentication/consent/lookup/${__ENV.ENVIRONMENT}.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/events-improvement/K6/testdata/authentication/consent/lookup/${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } }
     );
     return parseCsvData(res.body);
 }

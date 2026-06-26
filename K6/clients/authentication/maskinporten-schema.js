@@ -1,8 +1,8 @@
 import http from "k6/http";
 
 const TAGS = {
-    PostOffered: { action: "PostOffered" },
-    GetDelegations: { action: "GetDelegations" },
+    PostOffered: { action: "post-offered" },
+    GetDelegations: { action: "get-delegations" },
 };
 
 class MaskinportenSchemaApiClient {
@@ -46,7 +46,8 @@ class MaskinportenSchemaApiClient {
         const url = new URL(`${this.FULL_PATH}/${from}/maskinportenschema/offered`);
         let tags = {
             endpoint: `${this.FULL_PATH}/from/maskinportenschema/offered`,
-            name: `${this.FULL_PATH}/from/maskinportenschema/offered`
+            name: `${this.FULL_PATH}/from/maskinportenschema/offered`,
+            action: TAGS.PostOffered.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -92,7 +93,8 @@ class MaskinportenSchemaApiClient {
         Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
         let tags = {
             endpoint: `${this.FULL_PATH}maskinporten/delegations`,
-            name: `${this.FULL_PATH}maskinporten/delegations`
+            name: `${this.FULL_PATH}maskinporten/delegations`,
+            action: TAGS.GetDelegations.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };

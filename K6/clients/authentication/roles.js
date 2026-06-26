@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetRoles: { action: "GetRoles" },
+    GetRoles: { action: "get-roles" },
 };
 
 class RolesApiClient {
@@ -37,7 +37,10 @@ class RolesApiClient {
     */
     GetRoles(labels) {
         const url = new URL(`${this.FULL_PATH}`);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetRoles.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

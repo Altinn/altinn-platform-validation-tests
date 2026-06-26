@@ -1,15 +1,15 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetAllSystemsFromRegister: { action: "GetAllSystemsFromRegister" },
-    GetSystemRegisterById: { action: "GetSystemRegisterById" },
-    GetVendorSystemRegisterById: { action: "GetVendorSystemRegisterById" },
-    UpdateVendorSystemRegister: { action: "UpdateVendorSystemRegister" },
-    UpdateVendorAccessPackages: { action: "UpdateVendorAccessPackages" },
-    UpdateRightsVendorSystemRegister: { action: "UpdateRightsVendorSystemRegister" },
-    DeleteSystemSystemRegister: { action: "DeleteSystemSystemRegister" },
-    GetSystemRegisterRights: { action: "GetSystemRegisterRights" },
-    CreateSystemRegister: { action: "CreateSystemRegister" },
+    GetAllSystemsFromRegister: { action: "get-all-systems-from-register" },
+    GetSystemRegisterById: { action: "get-system-register-by-id" },
+    GetVendorSystemRegisterById: { action: "get-vendor-system-register-by-id" },
+    UpdateVendorSystemRegister: { action: "update-vendor-system-register" },
+    UpdateVendorAccessPackages: { action: "update-vendor-access-packages" },
+    UpdateRightsVendorSystemRegister: { action: "update-rights-vendor-system-register" },
+    DeleteSystemSystemRegister: { action: "delete-system-system-register" },
+    GetSystemRegisterRights: { action: "get-system-register-rights" },
+    CreateSystemRegister: { action: "create-system-register" },
 };
 
 class SystemRegisterApiClient {
@@ -50,7 +50,10 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = this.FULL_PATH;
         const params = {
-            tags: { endpoint: url.toString() },
+            tags: {
+                endpoint: url.toString(),
+                action: TAGS.GetAllSystemsFromRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -70,7 +73,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/systemId`,
-                name: `${this.FULL_PATH}/systemId`
+                name: `${this.FULL_PATH}/systemId`,
+                action: TAGS.GetSystemRegisterById.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -92,7 +96,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/systemId`,
-                name: `${this.FULL_PATH}/vendor/systemId`
+                name: `${this.FULL_PATH}/vendor/systemId`,
+                action: TAGS.GetVendorSystemRegisterById.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -128,7 +133,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/systemId`,
-                name: `${this.FULL_PATH}/vendor/systemId`
+                name: `${this.FULL_PATH}/vendor/systemId`,
+                action: TAGS.UpdateVendorSystemRegister.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -165,7 +171,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/systemId/accesspackages`,
-                name: `${this.FULL_PATH}/vendor/systemId/accesspackages`
+                name: `${this.FULL_PATH}/vendor/systemId/accesspackages`,
+                action: TAGS.UpdateVendorAccessPackages.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -188,7 +195,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/systemId/rights`,
-                name: `${this.FULL_PATH}/vendor/systemId/rights`
+                name: `${this.FULL_PATH}/vendor/systemId/rights`,
+                action: TAGS.UpdateRightsVendorSystemRegister.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -210,7 +218,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/systemId`,
-                name: `${this.FULL_PATH}/vendor/systemId`
+                name: `${this.FULL_PATH}/vendor/systemId`,
+                action: TAGS.DeleteSystemSystemRegister.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -232,7 +241,8 @@ class SystemRegisterApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/systemId/rights`,
-                name: `${this.FULL_PATH}/systemId/rights`
+                name: `${this.FULL_PATH}/systemId/rights`,
+                action: TAGS.GetSystemRegisterRights.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -282,7 +292,10 @@ class SystemRegisterApiClient {
             "ClientId": [`${clientId}`]
         };
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor`,
+                action: TAGS.CreateSystemRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

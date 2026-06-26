@@ -2,7 +2,7 @@ import http from "k6/http";
 import { URL } from "../../common-imports.js";
 
 const TAGS = {
-    GetUpdatedResources: { action: "GetUpdatedResources" },
+    GetUpdatedResources: { action: "get-updated-resources" },
 };
 
 class ResourceRegistryApiClient {
@@ -44,7 +44,11 @@ class ResourceRegistryApiClient {
         url.searchParams.append("since", since);
         url.searchParams.append("limit", limit);
 
-        let tags = { endpoint: `${this.FULL_PATH}`, name: `${this.FULL_PATH}` };
+        let tags = {
+            endpoint: `${this.FULL_PATH}`,
+            name: `${this.FULL_PATH}`,
+            action: TAGS.GetUpdatedResources.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

@@ -1,13 +1,13 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetAgents: { action: "Get agents" },
-    PostAgents: { action: "Post Agents" },
-    DeleteAgents: { action: "Delete Agents" },
-    GetAgentsAccessPackages: { action: "Get AgentsAccessPackages" },
-    PostAgentsAccessPackages: { action: "Post AgentsAccessPackages" },
-    DeleteAgentsAccessPackages: { action: "Delete AgentsAccessPackages" },
-    GetClients: { action: "Get clients" },
+    GetAgents: { action: "get-agents" },
+    PostAgents: { action: "post-agents" },
+    DeleteAgents: { action: "delete-agents" },
+    GetAgentsAccessPackages: { action: "get-agents-access-packages" },
+    PostAgentsAccessPackages: { action: "post-agents-access-packages" },
+    DeleteAgentsAccessPackages: { action: "delete-agents-access-packages" },
+    GetClients: { action: "get-clients" },
 };
 
 class BffClientDelegationsApiClient {
@@ -50,8 +50,8 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/agents`);
         let tags = {
             endpoint: url.toString(),
-            action: "Get agents",
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetAgents.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -79,7 +79,11 @@ class BffClientDelegationsApiClient {
     PostAgents(queryParams, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.PostAgents.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -109,7 +113,11 @@ class BffClientDelegationsApiClient {
     DeleteAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DeleteAgents.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -134,7 +142,11 @@ class BffClientDelegationsApiClient {
     GetAgentsAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetAgentsAccessPackages.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -159,7 +171,11 @@ class BffClientDelegationsApiClient {
     PostAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.PostAgentsAccessPackages.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -192,7 +208,11 @@ class BffClientDelegationsApiClient {
     DeleteAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DeleteAgentsAccessPackages.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -228,8 +248,8 @@ class BffClientDelegationsApiClient {
         const url = new URL(`${this.FULL_PATH}/clients`);
         let tags = {
             endpoint: url.toString(),
-            action: "Get clients",
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetClients.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };

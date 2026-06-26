@@ -17,7 +17,7 @@ import {
     DeleteAgents
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { accessPackagesForOrgs as accessPackages, getTokenOpts } from "./commons.js";
-import { requireEnv } from "../../../../../helpers.js";
+import { requireEnv, pickUnique } from "../../../../../helpers.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };
@@ -111,7 +111,8 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-org-org.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-org-org.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
@@ -125,7 +126,7 @@ export default function (segmentedData) {
     const [connectionsApiClient, accessPackageApiClient, clientDelegationsApiClient, tokenGenerator] = getClients();
 
     // Get from org, to org and userto be agent for current VU iteration. Ensure that from and to are not the same, and that user is different from from and to.
-    const { from, to, user } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
+    const { from, to, user } = getFromToUser(segmentedData[exec.vu.idInTest - 1]);
     const accessPackage = getItemFromList(accessPackages, true);
 
     // Set token generator options for current iteration
@@ -199,21 +200,7 @@ function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
     return respBody;
 }
 
-function getFromTo(list) {
-    let from = undefined;
-    if (randomize) {
-        from = getItemFromList(list, randomize);
-    } else {
-        from = list[__ITER % list.length];
-    }
-    let to = getItemFromList(list, true);
-    while (to.ssn === from.ssn) {
-        to = getItemFromList(list, true);
-    }
-    let user = getItemFromList(list, true);
-    while (user.ssn === from.ssn || user.ssn === to.ssn) {
-        user = getItemFromList(list, true);
-    }
+function getFromToUser(list) {
+    const [from, to, user] = pickUnique(list, 3);
     return { from, to, user };
-
 }

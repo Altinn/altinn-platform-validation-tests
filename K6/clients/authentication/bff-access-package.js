@@ -1,11 +1,11 @@
 import http from "k6/http";
 
 const TAGS = {
-    PostDelegations: { action: "PostDelegations" },
-    DeleteDelegations: { action: "DeleteDelegations" },
-    GetDelegations: { action: "GetDelegations" },
-    GetDelegationCheck: { action: "Get delegation check" },
-    GetPermission: { action: "GetPermission" },
+    PostDelegations: { action: "post-delegations" },
+    DeleteDelegations: { action: "delete-delegations" },
+    GetDelegations: { action: "get-delegations" },
+    GetDelegationCheck: { action: "get-delegation-check" },
+    GetPermission: { action: "get-permission" },
 };
 
 class BffAccessPackageApiClient {
@@ -45,7 +45,11 @@ class BffAccessPackageApiClient {
     PostDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.PostDelegations.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -69,7 +73,11 @@ class BffAccessPackageApiClient {
     DeleteDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DeleteDelegations.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -93,7 +101,11 @@ class BffAccessPackageApiClient {
     GetDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegations`);
-        let tags = { endpoint: url.toString(), name: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetDelegations.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -119,8 +131,8 @@ class BffAccessPackageApiClient {
         const url = new URL(`${this.FULL_PATH}/delegationcheck`);
         let tags = {
             endpoint: url.toString(),
-            action: "Get delegation check",
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetDelegationCheck.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };
@@ -148,7 +160,8 @@ class BffAccessPackageApiClient {
         const url = new URL(`${this.FULL_PATH}/permission/${accessPackageId}`);
         let tags = {
             endpoint: `${this.FULL_PATH}/permission/accessPackageId`,
-            name: `${this.FULL_PATH}/permission/accessPackageId`
+            name: `${this.FULL_PATH}/permission/accessPackageId`,
+            action: TAGS.GetPermission.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };

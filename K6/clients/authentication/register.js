@@ -1,9 +1,9 @@
 import http from "k6/http";
 
 const TAGS = {
-    RemoveRevisorRoleFromEr: { action: "RemoveRevisorRoleFromEr" },
-    AddRevisorRoleToErForOrg: { action: "AddRevisorRoleToErForOrg" },
-    GetRevisorCustomerIdentifiersForParty: { action: "GetRevisorCustomerIdentifiersForParty" },
+    RemoveRevisorRoleFromEr: { action: "remove-revisor-role-from-er" },
+    AddRevisorRoleToErForOrg: { action: "add-revisor-role-to-er-for-org" },
+    GetRevisorCustomerIdentifiersForParty: { action: "get-revisor-customer-identifiers-for-party" },
 };
 
 class RegisterApiClient {

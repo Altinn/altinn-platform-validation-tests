@@ -81,7 +81,8 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`,
+        { tags: { action: "fetch-test-data" } }
     );
 
     const orgs = parseCsvData(res.body);

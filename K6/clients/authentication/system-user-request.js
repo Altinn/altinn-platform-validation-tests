@@ -1,11 +1,11 @@
 import http from "k6/http";
 
 const TAGS = {
-    CreateSystemUserRequest: { action: "CreateSystemUserRequest" },
-    ApproveSystemUserRequest: { action: "ApproveSystemUserRequest" },
-    CreateAgentSystemUserRequest: { action: "CreateAgentSystemUserRequest" },
-    GetSystemUserRequestsBySystemIdForVendor: { action: "GetSystemUserRequestsBySystemIdForVendor" },
-    GetAgentSystemUserRequestsBySystemIdForVendor: { action: "GetAgentSystemUserRequestsBySystemIdForVendor" },
+    CreateSystemUserRequest: { action: "create-system-user-request" },
+    ApproveSystemUserRequest: { action: "approve-system-user-request" },
+    CreateAgentSystemUserRequest: { action: "create-agent-system-user-request" },
+    GetSystemUserRequestsBySystemIdForVendor: { action: "get-system-user-requests-by-system-id-for-vendor" },
+    GetAgentSystemUserRequestsBySystemIdForVendor: { action: "get-agent-system-user-requests-by-system-id-for-vendor" },
 };
 
 class SystemUserRequestApiClient {
@@ -60,7 +60,10 @@ class SystemUserRequestApiClient {
             redirectUrl: redirectUrl,
         };
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor`,
+                action: TAGS.CreateAgentSystemUserRequest.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -83,7 +86,8 @@ class SystemUserRequestApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/partyId/requestId/approve`,
-                name: `${this.FULL_PATH}/partyId/requestId/approve`
+                name: `${this.FULL_PATH}/partyId/requestId/approve`,
+                action: TAGS.ApproveSystemUserRequest.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -120,7 +124,10 @@ class SystemUserRequestApiClient {
             redirectUrl: redirectUrl,
         };
         const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor/agent` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/agent`,
+                action: TAGS.CreateAgentSystemUserRequest.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -141,7 +148,8 @@ class SystemUserRequestApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId`,
-                name: `${this.FULL_PATH}/vendor/bysystem/systemId`
+                name: `${this.FULL_PATH}/vendor/bysystem/systemId`,
+                action: TAGS.GetSystemUserRequestsBySystemIdForVendor.action
             },
             headers: {
                 Authorization: "Bearer " + token,
@@ -162,7 +170,8 @@ class SystemUserRequestApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/agent/bysystem/systemId`,
-                name: `${this.FULL_PATH}/vendor/agent/bysystem/systemId`
+                name: `${this.FULL_PATH}/vendor/agent/bysystem/systemId`,
+                action: TAGS.GetAgentSystemUserRequestsBySystemIdForVendor.action
             },
             headers: {
                 Authorization: "Bearer " + token,

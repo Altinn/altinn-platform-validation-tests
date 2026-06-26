@@ -1,10 +1,10 @@
 import http from "k6/http";
 
 const TAGS = {
-    AuthorizeEnduser: { action: "AuthorizeEnduser" },
-    AuthorizeDagl: { action: "AuthorizeDagl" },
-    AuthorizeEnduserInstance: { action: "AuthorizeEnduserInstance" },
-    AuthorizeOrganizationInstance: { action: "AuthorizeOrganizationInstance" },
+    AuthorizeEnduser: { action: "authorize-enduser" },
+    AuthorizeDagl: { action: "authorize-dagl" },
+    AuthorizeEnduserInstance: { action: "authorize-enduser-instance" },
+    AuthorizeOrganizationInstance: { action: "authorize-organization-instance" },
 };
 
 class PdpAuthorizeClient {
@@ -50,7 +50,10 @@ class PdpAuthorizeClient {
     AuthorizeEnduser(ssn, resourceId, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeEnduser.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -83,7 +86,10 @@ class PdpAuthorizeClient {
     AuthorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeDagl.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -119,7 +125,10 @@ class PdpAuthorizeClient {
     AuthorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeEnduserInstance.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -155,7 +164,10 @@ class PdpAuthorizeClient {
     AuthorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
-        let tags = { endpoint: url.toString() };
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeOrganizationInstance.action
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

@@ -3,7 +3,7 @@ import http from "k6/http";
 const lengthPartyFilter = __ENV.LENGTH_PARTY_FILTER ?? "25";
 
 const TAGS = {
-    GetAuthorizedParties: { action: "Get AuthorizedParties" },
+    GetAuthorizedParties: { action: "get-authorized-parties" },
 };
 
 class AuthorizedPartiesClient {
@@ -44,7 +44,8 @@ class AuthorizedPartiesClient {
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
         let tags = {
             endpoint: url.toString(),
-            name: url.toString()
+            name: url.toString(),
+            action: TAGS.GetAuthorizedParties.action
         };
         if (labels != null) {
             tags = { ...labels, ...tags };

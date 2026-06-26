@@ -1,9 +1,8 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetSystemUsersBySystemIdForVendor: { action: "GetSystemUsersBySystemIdForVendor" },
+    GetSystemUsersBySystemIdForVendor: { action: "get-system-users-by-system-id-for-vendor" },
 };
-
 class SystemUserApiClient {
     /**
    *
@@ -43,7 +42,8 @@ class SystemUserApiClient {
         const params = {
             tags: {
                 endpoint: `${this.FULL_PATH}/vendor/bysystem/systemId`,
-                name: `${this.FULL_PATH}/vendor/bysystem/systemId`
+                name: `${this.FULL_PATH}/vendor/bysystem/systemId`,
+                action: TAGS.GetSystemUsersBySystemIdForVendor.action
             },
             headers: {
                 Authorization: "Bearer " + token,

@@ -12,8 +12,8 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getPartiesLabel = { action: "1. get-parties-for-enduser" };
-const getDialogslabel = { action: "2. get-dialogs-party" };
+const getPartiesLabel = { step: "1. get-parties-for-enduser" };
+const getDialogslabel = { step: "2. get-dialogs-party" };
 
 export const options = getOptions([
     getPartiesLabel,
@@ -22,8 +22,8 @@ export const options = getOptions([
 
 export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
-    const endUser = getItemFromList(data, randomize).ssn;
-    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser));
+    const endUser = getItemFromList(data, randomize);
+    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
     const party = getItemFromList(getParties(graphqlClient, getPartiesLabel), true);
     const variables = new DialogSearchVariablesBuilder()
         .withPartyURIs([party])
