@@ -27,14 +27,14 @@ const ENTERPRISE_TOKEN_TAGS = {
         name: config.getEnterpriseTokenUrl,
         action: "get-token"
     }
-}
+};
 const PLATFORM_TOKEN_TAGS = {
     getToken: {
         token_generator: "platform-token-generator",
         name: config.getPlatformAccessTokenUrl,
         action: "get-token"
     }
-}
+};
 
 /**
  * Generates personal tokens by calling the configured token endpoint.
