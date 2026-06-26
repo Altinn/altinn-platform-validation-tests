@@ -18,6 +18,7 @@ import {
 import {
     ConsentScope,
     ENDUSER_SCOPE,
+    consentValidTo,
     getBaseTokenOpts,
     getConsenteeOrgs,
     getConsenterPersons,
@@ -123,7 +124,7 @@ export default function (rows) {
             row.consentId,
             pidUrn,
             orgUrn,
-            new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString(), // Consent shouldn't expire in 100 years
+            consentValidTo(),
             consentRights(),
             "https://altinn.no"
         );

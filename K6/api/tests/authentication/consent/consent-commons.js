@@ -12,6 +12,7 @@ import { parseCsvData } from "../../../../helpers.js";
  * K6/testdata/authentication/consent/
  *   - consentee-orgs/<env>.csv       (header: orgNo)
  *   - consenter-persons/<env>.csv    (header: ssn,partyUuid)
+ *   - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
 
 const TESTDATA_BASE_URL =
@@ -45,6 +46,18 @@ export function getConsenteeOrgs(env) {
  */
 export function getConsenterPersons(env) {
     const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`, {
+        tags: { action: "fetch-test-data" },
+    });
+    return parseCsvData(res.body);
+}
+
+/**
+ * Previously generated consents (by consent-data.js) to look up.
+ * @param {string} env Environment, e.g. "yt01".
+ * @returns {Array<{Pid: string, Org: string, ConsentId: string}>}
+ */
+export function getLookupConsents(env) {
+    const res = http.get(`${TESTDATA_BASE_URL}/lookup/${env}.csv`, {
         tags: { action: "fetch-test-data" },
     });
     return parseCsvData(res.body);
@@ -97,4 +110,13 @@ export function getBaseTokenOpts(env, scopes) {
         ["ttl", 3600],
         ["scopes", scopes],
     ]);
+}
+
+/**
+ * `validTo` for generated consents. Far in the future so the consents (and the
+ * events/lookup data derived from them) don't go stale between test runs.
+ * @returns {string} ISO timestamp ~100 years from now.
+ */
+export function consentValidTo() {
+    return new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString();
 }

@@ -16,6 +16,7 @@ import { GetConsentLog } from "../../../building-blocks/authentication/client-de
 import {
     ConsentScope,
     ENDUSER_SCOPE,
+    consentValidTo,
     getBaseTokenOpts,
     getConsenteeOrgs,
     getConsenterPersons,
@@ -120,7 +121,7 @@ export default function (data) {
         id,
         personIdentifierNo,
         orgIdentifierNo,
-        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        consentValidTo(),
         consentRights(),
         "https://altinn.no",
         requestConsentLabel
