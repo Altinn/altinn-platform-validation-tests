@@ -108,7 +108,7 @@ export default function (data) {
         getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.WRITE)
     );
     consenterTokenGenerator.setTokenGeneratorOptions(
-        getPersonalTokenOpts(__ENV.ENVIRONMENT, person.partyUuid)
+        getPersonalTokenOpts(__ENV.ENVIRONMENT, person.userId, person.partyUuid)
     );
 
     const id = uuidv4();

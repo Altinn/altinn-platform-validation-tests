@@ -11,7 +11,7 @@ import { parseCsvData } from "../../../../helpers.js";
  * Test data folder (one folder per use case, one file per environment):
  * K6/testdata/authentication/consent/
  *   - consentee-orgs/<env>.csv       (header: orgNo)
- *   - consenter-persons/<env>.csv    (header: ssn,partyUuid)
+ *   - consenter-persons/<env>.csv    (header: ssn,userId,partyUuid)
  */
 
 // TODO: switch the ref back to "refs/heads/main" before merging. It currently
@@ -41,7 +41,7 @@ export function getConsenteeOrgs(env) {
 /**
  * The persons that approve consents.
  * @param {string} env Environment, e.g. "yt01".
- * @returns {Array<{ssn: string, partyUuid: string}>}
+ * @returns {Array<{ssn: string, userId: string, partyUuid: string}>}
  */
 export function getConsenterPersons(env) {
     const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`);
@@ -67,14 +67,18 @@ export function getEnterpriseTokenOpts(env, orgNo, scopes) {
 
 /**
  * Token options for a consenter person (personal token).
- * partyUuid is optional so the generator can be built once and have its
- * identity set per iteration via setTokenGeneratorOptions.
+ * userId/partyUuid are optional so the generator can be built once and have
+ * its identity set per iteration via setTokenGeneratorOptions.
  * @param {string} env
+ * @param {string} [userId]
  * @param {string} [partyUuid]
  * @returns {Map<string, string|number>}
  */
-export function getPersonalTokenOpts(env, partyUuid) {
+export function getPersonalTokenOpts(env, userId, partyUuid) {
     const opts = getBaseTokenOpts(env, ENDUSER_SCOPE);
+    if (userId !== undefined) {
+        opts.set("userId", userId);
+    }
     if (partyUuid !== undefined) {
         opts.set("partyuuid", partyUuid);
     }
