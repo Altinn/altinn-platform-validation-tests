@@ -22,7 +22,5 @@ export function GetConsentRequestEvents(consentApiClient, queryString = "", labe
         console.error(res.body);
     }
 
-    console.log(res.body);
-
     return res;
 }

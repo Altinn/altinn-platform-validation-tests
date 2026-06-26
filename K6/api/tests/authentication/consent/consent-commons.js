@@ -14,10 +14,8 @@ import { parseCsvData } from "../../../../helpers.js";
  *   - consenter-persons/<env>.csv    (header: ssn,partyUuid)
  */
 
-// TODO: switch the ref back to "refs/heads/main" before merging. It currently
-// points at the feature branch so the new test data resolves before the merge.
 const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/consent/events-improvement/K6/testdata/authentication/consent";
+    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent";
 
 export const ConsentScope = {
     READ: "altinn:consentrequests.read",
