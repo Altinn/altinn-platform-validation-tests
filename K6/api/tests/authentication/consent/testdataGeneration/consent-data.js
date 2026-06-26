@@ -9,7 +9,7 @@ import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
 } from "../../../../../common-imports.js";
-import { ConsentScope, ENDUSER_SCOPE } from "../../../../../scopes.js";
+import { ConsentScope } from "../../../../../scopes.js";
 
 import {
     RequestConsent,
@@ -18,10 +18,11 @@ import {
 
 import {
     consentValidTo,
-    getBaseTokenOpts,
     getConsenteeOrgs,
     getConsenterPersons,
+    getEnterpriseBaseTokenOpts,
     getEnterpriseTokenOpts,
+    getPersonalBaseTokenOpts,
     getPersonalTokenOpts,
 } from "../consent-commons.js";
 
@@ -52,13 +53,13 @@ let consenterTokenGenerator;
 function getClients() {
     if (consenteeClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
         );
         consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
     }
     if (consenterClient == undefined) {
         consenterTokenGenerator = new PersonalTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ENDUSER_SCOPE)
+            getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
         );
         consenterClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
     }

@@ -23,7 +23,7 @@ import http from "k6/http";
 import exec from "k6/execution";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
-import { PersonalTokenGenerator } from "../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
 import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../helpers.js";
 import { getInfoCloud } from "./commons.js";
 import { requireEnv } from "../../../helpers.js";
@@ -78,7 +78,7 @@ let personalTokenGenerator = undefined;
  */
 function getClients() {
     if (infoPortalApiClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
@@ -94,7 +94,7 @@ function getClients() {
  * @return Map containing the token options
  */
 function getTokenOpts(userId) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PersonalTokenGeneratorOptions();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read");

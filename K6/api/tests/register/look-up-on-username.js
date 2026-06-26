@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { check, group } from "k6";
-import { PlatformTokenGenerator } from "../../../common-imports.js";
+import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
@@ -68,7 +68,7 @@ export function setup() {
 }
 
 export default function (usernames) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PlatformTokenGeneratorOptions();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
 

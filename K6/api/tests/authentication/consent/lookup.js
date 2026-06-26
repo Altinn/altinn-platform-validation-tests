@@ -9,7 +9,7 @@ import { MaskinportenConsentScope } from "../../../../scopes.js";
 import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
 
 import {
-    getBaseTokenOpts,
+    getEnterpriseBaseTokenOpts,
     getLookupConsents,
 } from "./consent-commons.js";
 
@@ -26,7 +26,7 @@ let consentApiClient;
 function getClients() {
     if (consentApiClient == undefined) {
         const tokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
         );
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }

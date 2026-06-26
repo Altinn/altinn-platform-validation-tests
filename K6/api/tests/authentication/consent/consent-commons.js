@@ -1,4 +1,8 @@
 import http from "k6/http";
+import {
+    EnterpriseTokenGeneratorOptions,
+    PersonalTokenGeneratorOptions,
+} from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { ENDUSER_SCOPE } from "../../../../scopes.js";
 
@@ -56,46 +60,59 @@ export function getLookupConsents(env) {
 }
 
 /**
- * Token options for a consentee organization (enterprise token), for a given
- * org and scope. Set per iteration via setTokenGeneratorOptions.
+ * Base enterprise (org) token options: env, ttl and scopes, no identity. Used
+ * to build the generator once; orgNo is set per iteration.
+ * @param {string} env
+ * @param {string} scopes
+ * @returns {EnterpriseTokenGeneratorOptions}
+ */
+export function getEnterpriseBaseTokenOpts(env, scopes) {
+    return new EnterpriseTokenGeneratorOptions([
+        ["env", env],
+        ["ttl", 3600],
+        ["scopes", scopes],
+    ]);
+}
+
+/**
+ * Enterprise (org) token options for a given org and scope. Set per iteration
+ * via setTokenGeneratorOptions.
  * @param {string} env
  * @param {string} orgNo
  * @param {string} scopes
- * @returns {Map<string, string|number>}
+ * @returns {EnterpriseTokenGeneratorOptions}
  */
 export function getEnterpriseTokenOpts(env, orgNo, scopes) {
-    const opts = getBaseTokenOpts(env, scopes);
+    const opts = getEnterpriseBaseTokenOpts(env, scopes);
     opts.set("orgNo", orgNo);
     return opts;
 }
 
 /**
- * Token options for a consenter person (personal token), for a given person.
- * Set per iteration via setTokenGeneratorOptions.
+ * Base personal (end user) token options: env, ttl and the enduser scope, no
+ * identity. Used to build the generator once; partyuuid is set per iteration.
  * @param {string} env
- * @param {string} partyUuid
- * @returns {Map<string, string|number>}
+ * @returns {PersonalTokenGeneratorOptions}
  */
-export function getPersonalTokenOpts(env, partyUuid) {
-    const opts = getBaseTokenOpts(env, ENDUSER_SCOPE);
-    opts.set("partyuuid", partyUuid);
-    return opts;
+export function getPersonalBaseTokenOpts(env) {
+    return new PersonalTokenGeneratorOptions([
+        ["env", env],
+        ["ttl", 3600],
+        ["scopes", ENDUSER_SCOPE],
+    ]);
 }
 
 /**
- * Static token options shared by every token: env, ttl and scopes. The
- * per-request identity (orgNo / partyuuid) is set per iteration via
- * setTokenGeneratorOptions, so the generator can be built once.
+ * Personal (end user) token options for a given person. Set per iteration via
+ * setTokenGeneratorOptions.
  * @param {string} env
- * @param {string} scopes
- * @returns {Map<string, string|number>}
+ * @param {string} partyUuid
+ * @returns {PersonalTokenGeneratorOptions}
  */
-export function getBaseTokenOpts(env, scopes) {
-    return new Map([
-        ["env", env],
-        ["ttl", 3600],
-        ["scopes", scopes],
-    ]);
+export function getPersonalTokenOpts(env, partyUuid) {
+    const opts = getPersonalBaseTokenOpts(env);
+    opts.set("partyuuid", partyUuid);
+    return opts;
 }
 
 /**

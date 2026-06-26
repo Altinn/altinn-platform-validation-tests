@@ -1,6 +1,6 @@
 import { check, group } from "k6";
 import http from "k6/http";
-import { PersonalTokenGenerator } from "../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import {
     AddRevisorRoleToErForOrg,
@@ -43,7 +43,7 @@ export function setup() {
 export default function (facilitatorList) {
     const facilitator = getItemFromList(facilitatorList);
     group("Remove org from ER and make sure it's reflected in Register", () => {
-        const options = new Map();
+        const options = new PersonalTokenGeneratorOptions();
         options.set("env", __ENV.ENVIRONMENT);
         options.set("ttl", 3600);
         options.set("scopes", "altinn:register/partylookup.admin");

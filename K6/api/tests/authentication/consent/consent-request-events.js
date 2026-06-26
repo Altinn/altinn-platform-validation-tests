@@ -8,7 +8,7 @@
  * smoke test (a few iterations) and as a functional test.
  *
  * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
- * Requires a Maskinporten token with scope `altinn:consentrequests.read`.
+ * Requires an org token with scope ConsentScope.READ.
  * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
  */
 
@@ -25,8 +25,8 @@ import { ConsentScope } from "../../../../scopes.js";
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 
 import {
-    getBaseTokenOpts,
     getConsenteeOrgs,
+    getEnterpriseBaseTokenOpts,
     getEnterpriseTokenOpts,
 } from "./consent-commons.js";
 
@@ -44,7 +44,7 @@ let tokenGenerator;
 function getClients() {
     if (consentApiClient == undefined) {
         tokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
         );
         consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
     }

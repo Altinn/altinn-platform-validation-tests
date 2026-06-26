@@ -12,7 +12,6 @@ import {
 import {
     ConsentScope,
     MaskinportenConsentScope,
-    ENDUSER_SCOPE,
 } from "../../../../scopes.js";
 import {
     RequestConsent,
@@ -23,10 +22,11 @@ import { GetConsentLog } from "../../../building-blocks/authentication/client-de
 
 import {
     consentValidTo,
-    getBaseTokenOpts,
     getConsenteeOrgs,
     getConsenterPersons,
+    getEnterpriseBaseTokenOpts,
     getEnterpriseTokenOpts,
+    getPersonalBaseTokenOpts,
     getPersonalTokenOpts,
 } from "./consent-commons.js";
 
@@ -63,18 +63,18 @@ let consenterTokenGenerator;
 function getClients() {
     if (consenteeApiClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
         );
         consenteeApiClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
 
         consenterTokenGenerator = new PersonalTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, ENDUSER_SCOPE)
+            getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
         );
         consenterApiClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
 
         // Maskinporten uses this endpoint to look up consent before fetching the token.
         const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
-            getBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
         );
         consentLookupApiClient = new ConsentApiClient(__ENV.BASE_URL, consentLookupTokenGenerator);
 

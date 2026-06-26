@@ -1,7 +1,7 @@
 
 import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { endUsers, endUserLabels } from "./end-users.js";
 
@@ -38,7 +38,7 @@ export function setup() {
  */
 function getClients() {
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");

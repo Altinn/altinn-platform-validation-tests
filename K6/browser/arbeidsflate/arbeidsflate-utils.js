@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { PersonalTokenGenerator } from "../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
@@ -48,7 +48,7 @@ export function getCookie(user) {
 * @return {string} - The generated personal token.
 **/
 function getToken(pid, userId, partyId, partyUuid) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PersonalTokenGeneratorOptions();
     tokenOpts.set("env", environment);
     tokenOpts.set("ttl", 3600);
     tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser");
