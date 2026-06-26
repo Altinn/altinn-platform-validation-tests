@@ -2,7 +2,7 @@ import http from "k6/http";
 import { requireEnv } from "../../helpers.js";
 
 const TAGS = {
-    LookupParties: { action: "LookupParties" },
+    LookupParties: { action: "lookup-parties" },
 };
 
 export class RegisterLookupClient {

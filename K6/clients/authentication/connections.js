@@ -1,8 +1,8 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetConnections: { action: "GetConnections" },
-    GetAccessPackages: { action: "GetAccessPackages" },
+    GetConnections: { action: "get-connections" },
+    GetAccessPackages: { action: "get-access-packages" },
 };
 
 class ConnectionsApiClient {

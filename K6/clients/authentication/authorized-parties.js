@@ -3,7 +3,7 @@ import http from "k6/http";
 const lengthPartyFilter = __ENV.LENGTH_PARTY_FILTER ?? "25";
 
 const TAGS = {
-    GetAuthorizedParties: { action: "Get AuthorizedParties" },
+    GetAuthorizedParties: { action: "get-authorized-parties" },
 };
 
 class AuthorizedPartiesClient {

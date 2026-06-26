@@ -1,10 +1,10 @@
 import http from "k6/http";
 
 const TAGS = {
-    RequestConsent: { action: "RequestConsent" },
-    ApproveConsent: { action: "ApproveConsent" },
-    LookupConsent: { action: "LookupConsent" },
-    GetConsentRequestEvents: { action: "GetConsentRequestEvents" },
+    RequestConsent: { action: "request-consent" },
+    ApproveConsent: { action: "approve-consent" },
+    LookupConsent: { action: "lookup-consent" },
+    GetConsentRequestEvents: { action: "get-consent-request-events" },
 };
 
 class ConsentApiClient {

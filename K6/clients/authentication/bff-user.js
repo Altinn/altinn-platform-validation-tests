@@ -1,15 +1,15 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetLookupPartUser: { action: "GetLookupPartUser" },
-    GetIsCompanyProfileAdmin: { action: "GetIsCompanyProfileAdmin" },
-    GetReportee: { action: "GetReportee" },
-    GetProfile: { action: "GetProfile" },
-    GetIsAdmin: { action: "GetIsAdmin" },
-    GetIsClientAdmin: { action: "GetIsClientAdmin" },
-    GetActorListOld: { action: "GetActorListOld" },
-    GetActorListFavorites: { action: "GetActorListFavorites" },
-    GetIsInstanceAdmin: { action: "GetIsInstanceAdmin" },
+    GetLookupPartUser: { action: "get-lookup-part-user" },
+    GetIsCompanyProfileAdmin: { action: "get-is-company-profile-admin" },
+    GetReportee: { action: "get-reportee" },
+    GetProfile: { action: "get-profile" },
+    GetIsAdmin: { action: "get-is-admin" },
+    GetIsClientAdmin: { action: "get-is-client-admin" },
+    GetActorListOld: { action: "get-actor-list-old" },
+    GetActorListFavorites: { action: "get-actor-list-favorites" },
+    GetIsInstanceAdmin: { action: "get-is-instance-admin" },
 };
 
 class BffUserApiClient {

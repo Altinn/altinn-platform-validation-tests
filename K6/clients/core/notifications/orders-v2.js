@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 const TAGS = {
-    PostNotificationOrderV2: { action: "PostNotificationOrderV2" },
+    PostNotificationOrderV2: { action: "post-notification-order-v2" },
 };
 
 class OrdersV2ApiClient {

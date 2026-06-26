@@ -2,9 +2,9 @@ import http from "k6/http";
 import crypto from "k6/crypto";
 
 const TAGS = {
-    PostDelegate: { action: "PostDelegate" },
-    DeleteDelegate: { action: "DeleteDelegate" },
-    GetDelegationCheck: { action: "GetDelegationCheck" },
+    PostDelegate: { action: "post-delegate" },
+    DeleteDelegate: { action: "delete-delegate" },
+    GetDelegationCheck: { action: "get-delegation-check" },
 };
 
 class BffSingleRightApiClient {

@@ -1,15 +1,15 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetAllSystemsFromRegister: { action: "GetAllSystemsFromRegister" },
-    GetSystemRegisterById: { action: "GetSystemRegisterById" },
-    GetVendorSystemRegisterById: { action: "GetVendorSystemRegisterById" },
-    UpdateVendorSystemRegister: { action: "UpdateVendorSystemRegister" },
-    UpdateVendorAccessPackages: { action: "UpdateVendorAccessPackages" },
-    UpdateRightsVendorSystemRegister: { action: "UpdateRightsVendorSystemRegister" },
-    DeleteSystemSystemRegister: { action: "DeleteSystemSystemRegister" },
-    GetSystemRegisterRights: { action: "GetSystemRegisterRights" },
-    CreateSystemRegister: { action: "CreateSystemRegister" },
+    GetAllSystemsFromRegister: { action: "get-all-systems-from-register" },
+    GetSystemRegisterById: { action: "get-system-register-by-id" },
+    GetVendorSystemRegisterById: { action: "get-vendor-system-register-by-id" },
+    UpdateVendorSystemRegister: { action: "update-vendor-system-register" },
+    UpdateVendorAccessPackages: { action: "update-vendor-access-packages" },
+    UpdateRightsVendorSystemRegister: { action: "update-rights-vendor-system-register" },
+    DeleteSystemSystemRegister: { action: "delete-system-system-register" },
+    GetSystemRegisterRights: { action: "get-system-register-rights" },
+    CreateSystemRegister: { action: "create-system-register" },
 };
 
 class SystemRegisterApiClient {

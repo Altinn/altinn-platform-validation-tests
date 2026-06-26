@@ -1,9 +1,8 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetSystemUsersBySystemIdForVendor: { action: "GetSystemUsersBySystemIdForVendor" },
+    GetSystemUsersBySystemIdForVendor: { action: "get-system-users-by-system-id-for-vendor" },
 };
-
 class SystemUserApiClient {
     /**
    *

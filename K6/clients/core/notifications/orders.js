@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 const TAGS = {
-    PostEmailNotificationOrder: { action: "PostEmailNotificationOrder" },
+    PostEmailNotificationOrder: { action: "post-email-notification-order" },
 };
 
 class OrdersApiClient {
