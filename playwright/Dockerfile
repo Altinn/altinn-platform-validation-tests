@@ -1,6 +1,6 @@
 FROM altinnplatformvalidationtests.azurecr.io/generate-metrics-from-junit-report AS builder
 
-FROM node:20-trixie@sha256:26dbaa01b7b1e98d004d4b5bdc9502dedd0c8051dc7ae25dfc9fdfa5ee5c5065
+FROM node:24-trixie@sha256:5ac1f09047e215d1e4df7fbdf95ff86ca14a35632380b6672d6c9c62d5ac3800
 
 RUN apt update && \
     apt upgrade -y && \
