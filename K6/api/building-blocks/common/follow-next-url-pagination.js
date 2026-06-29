@@ -32,9 +32,14 @@ export function extractNextUrl(parsedBody) {
  * @param {string} token
  * @param {string|null} nextUrl Fully qualified URL from `links.next`
  * @param {number} [maxPages=10] Maximum number of pages to fetch
+ * @param {Object.<string, string>|null} [labels=null] Extra request tags (e.g. an
+ *   `action` label) merged into each page request so the paged calls roll up
+ *   under the same metric/threshold as the first page. The helper's own
+ *   `name: "next-url"` tag always wins, so continuation-token URLs don't fan out
+ *   the metrics by name.
  * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
  */
-export function followNextUrlPagination(token, nextUrl, maxPages = 10) {
+export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = null) {
     const seenUrls = new Set();
     let pages = 0;
     let previousBody = null;
@@ -46,8 +51,13 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10) {
         });
         seenUrls.add(currentUrl);
 
+        let tags = { name: "next-url" };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
         const res = http.get(currentUrl, {
-            tags: { name: "next-url" },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
