@@ -3,7 +3,7 @@ import http from "k6/http";
 
 import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs,getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getClients } from "./common-functions.js";

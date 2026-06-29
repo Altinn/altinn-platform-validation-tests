@@ -24,7 +24,7 @@ import http from "k6/http";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions,parseCsvData, segmentData } from "../../../helpers.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
 import { getInfoCloud } from "./commons.js";

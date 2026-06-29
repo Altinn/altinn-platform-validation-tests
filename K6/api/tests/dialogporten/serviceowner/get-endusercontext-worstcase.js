@@ -1,4 +1,4 @@
-import { getItemFromList,getOptions, requireEnv } from "../../../../helpers.js";
+import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 import { GetEndUserContext } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getClients } from "./common-functions.js";
 

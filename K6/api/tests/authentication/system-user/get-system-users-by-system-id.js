@@ -1,4 +1,4 @@
-import { check, fail,group } from "k6";
+import { check, fail, group } from "k6";
 
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";

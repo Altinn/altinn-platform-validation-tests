@@ -2,7 +2,7 @@
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "../common-functions.js";
-import { endUserLabels,endUsers } from "./end-users.js";
+import { endUserLabels, endUsers } from "./end-users.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 

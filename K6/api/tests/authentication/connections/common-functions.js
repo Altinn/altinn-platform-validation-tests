@@ -2,7 +2,7 @@ import http from "k6/http";
 
 import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv,segmentData } from "../../../../helpers.js";
+import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
 
 /**
  * @type {ConnectionsApiClient | undefined}

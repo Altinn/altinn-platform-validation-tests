@@ -3,7 +3,7 @@ import http from "k6/http";
 
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs,getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
 

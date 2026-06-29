@@ -1,7 +1,7 @@
 import { check, group } from "k6";
 
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions,uuidv4 } from "../../../../common-imports.js";
+import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { CreateNewSystem, DeleteSystem, GetSystemRegisterRights } from "../../../building-blocks/authentication/system-register/index.js";
 

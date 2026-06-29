@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { BffConnectionsApiClient,ConnectionsApiClient } from "../../../../clients/authentication/index.js";
+import { BffConnectionsApiClient, ConnectionsApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  *

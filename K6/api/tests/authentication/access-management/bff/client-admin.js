@@ -11,9 +11,9 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessPackageApiClient,BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator,PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv,segmentData } from "../../../../../helpers.js";
+import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";

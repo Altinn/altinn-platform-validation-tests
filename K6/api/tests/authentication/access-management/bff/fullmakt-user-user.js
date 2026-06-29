@@ -2,13 +2,13 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessPackageApiClient,BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
+import { BffAccessPackageApiClient, BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
-import { getItemFromList, getNumberOfVUs, getOptions,parseCsvData, segmentData } from "../../../../../helpers.js";
-import { DeleteDelegations,PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
-import { DeleteRightholder,GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { accessPackagesForUsers as accessPackages, getFromTo,getTokenOpts } from "./commons.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
+import { DeleteDelegations, PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
+import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { accessPackagesForUsers as accessPackages, getFromTo, getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const postRightholderLabel = { step: "1. Connecting users with PostRightholder" };

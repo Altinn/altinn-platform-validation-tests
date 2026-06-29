@@ -2,11 +2,11 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessPackageApiClient, BffClientDelegationsApiClient,BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator,PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions,parseCsvData, segmentData } from "../../../../../helpers.js";
-import { pickUnique,requireEnv } from "../../../../../helpers.js";
-import { DeleteDelegations, GetPermission,PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
+import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
+import { pickUnique, requireEnv } from "../../../../../helpers.js";
+import { DeleteDelegations, GetPermission, PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import {
     DeleteAccessPackages,
     DeleteAgents,
@@ -15,7 +15,7 @@ import {
     GetClients,
     PostAccessPackages,
     PostAgents} from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { DeleteRightholder,GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import { accessPackagesForOrgs as accessPackages, getTokenOpts } from "./commons.js";
 
 // Labels for different actions

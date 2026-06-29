@@ -306,11 +306,11 @@ export function getFromTo(list) {
 */
 import http from "k6/http";
 
-import { BffAccessManagementApiClient, BffAccessPackageApiClient,BffConnectionsApiClient, BffUserApiClient } from "../../../../../clients/authentication/index.js";
+import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffUserApiClient } from "../../../../../clients/authentication/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGenerator,PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, parseCsvData, pickUnique,requireEnv, segmentData } from "../../../../../helpers.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
 // All apiclient used in this test
 /** @type {ServiceOwnerApiClient | undefined} */
 let serviceOwnerApiClient = undefined;

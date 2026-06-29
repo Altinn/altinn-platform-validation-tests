@@ -4,7 +4,7 @@ import http from "k6/http";
 
 import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv,segmentData } from "../../../../../helpers.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import {
     GetDelegatedResources,
@@ -21,8 +21,8 @@ import {
     SearchAccessPackages,
     SearchResources,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { DeleteRightholder,GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { getFromTo,getTokenOpts, resourcesForOrg as resources } from "./commons.js";
+import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { getFromTo, getTokenOpts, resourcesForOrg as resources } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = { step: "1a. Get rightholders from org" };

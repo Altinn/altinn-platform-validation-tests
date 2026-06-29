@@ -3,7 +3,7 @@ import http from "k6/http";
 
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
-import { getItemFromList, parseCsvData, requireEnv,retry } from "../../../helpers.js";
+import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
 import {
     AddRevisorRoleToErForOrg,
     GetRevisorCustomerIdentifiersForParty,

@@ -9,7 +9,7 @@ export { BffUserApiClient } from "./bff-user.js";
 export { ClientDelegationsApiClient } from "./client-delegations.js";
 export { ConnectionsApiClient } from "./connections.js";
 export { ConsentApiClient } from "./consent.js";
-export { ConsentEventType,ConsentRequestEventsQueryBuilder } from "./consent-request-events-query-builder.js";
+export { ConsentEventType, ConsentRequestEventsQueryBuilder } from "./consent-request-events-query-builder.js";
 export { MaskinportenSchemaApiClient } from "./maskinporten-schema.js";
 export { PdpAuthorizeClient } from "./pdp-authorize.js";
 export { RegisterApiClient } from "./register.js";

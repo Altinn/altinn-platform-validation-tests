@@ -3,8 +3,8 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator,PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv,segmentData } from "../../../../../helpers.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { DelegationExport } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { getTokenOpts } from "./commons.js";
 

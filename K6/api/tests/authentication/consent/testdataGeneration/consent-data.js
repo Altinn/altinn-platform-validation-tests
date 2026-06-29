@@ -2,7 +2,7 @@ import { group } from "k6";
 import exec from "k6/execution";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
-import { randomItem,uuidv4 } from "../../../../../common-imports.js";
+import { randomItem, uuidv4 } from "../../../../../common-imports.js";
 import {
     EnterpriseTokenGenerator,
     PersonalTokenGenerator,

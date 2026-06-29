@@ -33,6 +33,7 @@ export default defineConfig([
 
       "@stylistic/eol-last": ["error", "always"],
       "@stylistic/indent": ["error", 4],
+      "@stylistic/comma-spacing": ["error", { before: false, after: true }],
     },
   },
 ]);

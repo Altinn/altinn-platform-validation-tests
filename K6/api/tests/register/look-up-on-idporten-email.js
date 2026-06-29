@@ -1,4 +1,4 @@
-import { check, fail,group } from "k6";
+import { check, fail, group } from "k6";
 
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";

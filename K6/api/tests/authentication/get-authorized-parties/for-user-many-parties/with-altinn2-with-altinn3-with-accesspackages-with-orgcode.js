@@ -3,7 +3,7 @@ import { AuthorizedPartiesClient } from "../../../../../clients/authentication/i
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
-import { endUserLabels,endUsers } from "./end-users.js";
+import { endUserLabels, endUsers } from "./end-users.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 
