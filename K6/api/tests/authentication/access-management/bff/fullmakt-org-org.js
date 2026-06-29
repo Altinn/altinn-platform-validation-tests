@@ -42,7 +42,7 @@ const deleteAgentsLabel = { step: "4b. Delete agent delegation" };
 const deleteAccessPackageLabel = { step: "4c. Delete access package for client delegation" };
 const deleteRightholderConnectionLabel = { step: "4d. Delete rightholder connection between orgs" };
 
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 
 const fullmaktGroup = "1. Delegate accesspackage from organization to organization";

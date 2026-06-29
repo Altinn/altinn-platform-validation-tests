@@ -5,7 +5,7 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authenticatio
  * Get agents for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetAgents(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetAgents(queryParams, labels);
@@ -17,7 +17,7 @@ export function GetAgents(clientDelegationsApiClient, queryParams, labels = null
  * Post agents for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, labels = null) {
     const res = clientDelegationsApiClient.PostAgents(queryParams, to, lastName, labels);
@@ -29,7 +29,7 @@ export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName
  * Delete agents for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.DeleteAgents(queryParams, labels);
@@ -41,7 +41,7 @@ export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = n
  * Get clients for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetClients(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetClients(queryParams, labels);

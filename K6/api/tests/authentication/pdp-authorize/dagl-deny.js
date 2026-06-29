@@ -4,10 +4,11 @@ import { getClients, getTokenOpts } from "./common-functions.js";
 import { randomIntBetween } from "../../../../common-imports.js";
 export { setup } from "./common-functions.js";
 import exec from "k6/execution";
+import { PersonalTokenGenerator } from "../../../../common-imports.js";
 
 // Labels for different actions
 const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 export const options = getOptions([pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 

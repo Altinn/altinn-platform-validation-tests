@@ -5,11 +5,12 @@ import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
 import { requireEnv } from "../../../../helpers.js";
+import { PersonalTokenGenerator } from "../../../../common-imports.js";
 
 // Labels for different actions
 const pdpAuthorizeLabel = { step: "PDP Authorize" };
 const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 

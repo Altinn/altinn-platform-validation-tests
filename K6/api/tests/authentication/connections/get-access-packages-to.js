@@ -3,10 +3,11 @@ import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { getClients, getTokenOpts } from "./common-functions.js";
 import exec from "k6/execution";
 export { setup } from "./common-functions.js";
+import { PersonalTokenGenerator } from "../../../../token-generator.js";
 
 // Labels for different actions
 const getAccessPackagesToLabel = { step: "Get accesspackages to" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 // get k6 options
 export const options = getOptions([getAccessPackagesToLabel, tokenGeneratorLabel]);

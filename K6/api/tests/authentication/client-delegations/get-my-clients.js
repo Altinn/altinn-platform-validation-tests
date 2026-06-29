@@ -4,7 +4,7 @@ import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 
 // Labels for different actions
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 const environment = __ENV.ENVIRONMENT || "yt01";
 

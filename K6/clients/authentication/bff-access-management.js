@@ -56,7 +56,7 @@ class BffAccessManagementApiClient {
     /**
     * Get is hoved admin
     * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} labels - labels for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
     * @returns http.RefinedResponse
     */
     GetIsHovedAdmin(queryParams, labels = null) {
@@ -83,7 +83,7 @@ class BffAccessManagementApiClient {
     /**
      * Get permissions for a user
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      */
     GetRolePermissions(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -109,7 +109,7 @@ class BffAccessManagementApiClient {
     /**
      * Get delegated resources for a user
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetDelegatedResources(queryParams, labels = null) {
@@ -136,7 +136,7 @@ class BffAccessManagementApiClient {
     /**
      * Get delegated rights for a resource
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetDelegatedRightsForResource(queryParams, labels = null) {
@@ -163,7 +163,7 @@ class BffAccessManagementApiClient {
     /**
     * Search for access packages
     * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} labels - labels for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
     * returns http.RefinedResponse
     */
     SearchAccessPackages(queryParams, labels = null) {
@@ -190,7 +190,7 @@ class BffAccessManagementApiClient {
     /**
      * Search for resources
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      */
     SearchResources(queryParams, labels = null) {
@@ -217,7 +217,7 @@ class BffAccessManagementApiClient {
     /**
      * Get resource owners
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetResourceOwners(queryParams, labels = null) {
@@ -244,7 +244,7 @@ class BffAccessManagementApiClient {
     /**
     * Get organization data from cdn
     * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {*} labels - labels for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
     * returns http.RefinedResponse
     */
     GetOrganizationData(queryParams, labels = null) {
@@ -271,7 +271,7 @@ class BffAccessManagementApiClient {
     /**
     * Get organization data from lookup
     * @param {*} orgNo - organization number to get data for
-    * @param {*} labels - labels for the request, if null the url will be used as label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
     * returns http.RefinedResponse
     */
     GetOrganizationDataFromLookup(orgNo, labels = null) {
@@ -298,7 +298,7 @@ class BffAccessManagementApiClient {
     /**
      * Get role metadata
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      *
     */
@@ -326,7 +326,7 @@ class BffAccessManagementApiClient {
     /**
      * Get rights metadata for a resource
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      */
     GetRightsMeta(queryParams, labels = null) {

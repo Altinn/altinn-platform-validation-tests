@@ -4,7 +4,7 @@ import { BffUserApiClient } from "../../../../clients/authentication/bff-user.js
 /**
  * Get user id by lookup
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  */
 export function GetLookupPartyUser(bffUserApiClient, labels = null) {
@@ -17,7 +17,7 @@ export function GetLookupPartyUser(bffUserApiClient, labels = null) {
  * Post single right for the specified query parameters
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels = null) {
     const res = bffUserApiClient.GetIsCompanyProfileAdmin(queryParams, labels);
@@ -29,7 +29,7 @@ export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels =
  * Get reportee for the specified user id
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {*} userId - id of the user to get reportees for
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  */
 export function GetReportee(bffUserApiClient, userId, labels = null) {
@@ -41,7 +41,7 @@ export function GetReportee(bffUserApiClient, userId, labels = null) {
 /**
  * Get profile
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @returns http.RefinedResponse
  */
 export function GetProfile(bffUserApiClient, labels = null) {
@@ -54,7 +54,7 @@ export function GetProfile(bffUserApiClient, labels = null) {
  * Get is admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  * */
 export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
@@ -67,7 +67,7 @@ export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
  * Get is client admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  * */
 export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
@@ -79,7 +79,7 @@ export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
 /**
  * Get actor list old
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  * */
 export function GetActorListOld(bffUserApiClient, labels = null) {
@@ -91,7 +91,7 @@ export function GetActorListOld(bffUserApiClient, labels = null) {
 /**
  * Get actor list favorites
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  * */
 export function GetActorListFavorites(bffUserApiClient, labels = null) {
@@ -104,7 +104,7 @@ export function GetActorListFavorites(bffUserApiClient, labels = null) {
  * Get is instance admin
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * returns http.RefinedResponse
  */
 export function GetIsInstanceAdmin(bffUserApiClient, queryParams, labels = null) {

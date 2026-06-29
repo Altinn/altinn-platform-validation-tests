@@ -7,13 +7,14 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
+import { PersonalTokenGenerator } from "../../../../common-imports.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
 // Labels for different actions
 const pdpAuthorizeLabel = { step: "PDP Authorize" };
 const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 

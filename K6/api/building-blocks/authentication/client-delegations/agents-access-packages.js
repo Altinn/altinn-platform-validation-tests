@@ -5,7 +5,7 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authenticatio
  * Get access packages for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetAccessPackages(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetAgentsAccessPackages(queryParams, labels);
@@ -17,7 +17,7 @@ export function GetAccessPackages(clientDelegationsApiClient, queryParams, label
  * Post access packages for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function PostAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
     const res = clientDelegationsApiClient.PostAgentsAccessPackages(queryParams, accessPackage, labels);
@@ -29,7 +29,7 @@ export function PostAccessPackages(clientDelegationsApiClient, queryParams, acce
  * Delete access packages for the specified query parameters
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
     const res = clientDelegationsApiClient.DeleteAgentsAccessPackages(queryParams, accessPackage, labels);

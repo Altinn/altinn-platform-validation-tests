@@ -15,7 +15,7 @@ const getMaskinportenSchemaLabel5 = { step: "5. Get maskinportenSchema consumerO
 const getMaskinportenSchemaLabel6 = { step: "6. Get maskinportenSchema consumerOrg as query param" };
 const getMaskinportenSchemaLabel7 = { step: "7. Get maskinportenSchema scope as query param" };
 
-const tokenGeneratorLabel = { tokenGenerator: "Enterprise Token Generator" };
+const tokenGeneratorLabel = { token_generator: EnterpriseTokenGenerator.TAGS.getToken.token_generator };
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
