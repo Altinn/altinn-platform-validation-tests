@@ -106,9 +106,9 @@ export function getNumberOfVUs() {
 
 /**
  * Function to get k6 options based on labels.
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns
+ * @returns {Object}
  */
 export function getOptions(labels, groups = []) {
     const options = {
