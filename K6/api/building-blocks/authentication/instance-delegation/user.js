@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { BffUserApiClient } from "../../../../clients/authentication/bff-user.js";
 
 /**

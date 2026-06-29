@@ -19,14 +19,15 @@
  * * @see https://k6.io/docs/ for more information on k6 testing.
  */
 
-import http from "k6/http";
 import exec from "k6/execution";
-import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
+import http from "k6/http";
+
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../helpers.js";
-import { getInfoCloud } from "./commons.js";
+import { getItemFromList, getNumberOfVUs, getOptions,parseCsvData, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
+import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
+import { getInfoCloud } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const rootLabel = { step: "get infocloud root" };

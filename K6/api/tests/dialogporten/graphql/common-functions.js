@@ -1,9 +1,10 @@
 import http from "k6/http";
+
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
-import { GetParties } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { requireEnv } from "../../../../helpers.js";
+import { GetParties } from "../../../building-blocks/dialogporten/graphql/index.js";
 
 /**
  * @type {GraphqlClient | undefined}

@@ -1,7 +1,7 @@
-import { GetRoles } from "../../../building-blocks/authentication/roles/index.js";
 import { RolesApiClient } from "../../../../clients/authentication/index.js";
 import { getOptions } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { GetRoles } from "../../../building-blocks/authentication/roles/index.js";
 
 const labels = { step: "getRoles" };
 

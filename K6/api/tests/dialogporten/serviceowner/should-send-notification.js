@@ -1,8 +1,9 @@
 import http from "k6/http";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
-import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
+import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);

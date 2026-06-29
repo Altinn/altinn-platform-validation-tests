@@ -1,4 +1,5 @@
 import http from "k6/http";
+
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";

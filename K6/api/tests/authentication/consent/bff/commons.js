@@ -1,7 +1,8 @@
 import http from "k6/http";
+
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../../helpers.js";
+import { getNumberOfVUs, parseCsvData, requireEnv,segmentData } from "../../../../../helpers.js";
 
 /*
 * The users in this list have been selected based on the number of consent requests they have.

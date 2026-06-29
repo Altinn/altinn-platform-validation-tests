@@ -1,9 +1,10 @@
-import http from "k6/http";
 import { check, group } from "k6";
-import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
+import http from "k6/http";
+
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
-import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
+import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
+import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { step: "test-lookup-on-username" };

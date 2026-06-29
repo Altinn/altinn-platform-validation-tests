@@ -1,13 +1,13 @@
-import { check, group, fail } from "k6";
+import { check, fail,group } from "k6";
 
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
 import { GetSystemUserRequestsBySystemId } from "../../../building-blocks/authentication/system-user-request/index.js";
 import {
     extractNextUrl,
     followNextUrlPagination,
 } from "../../../building-blocks/common/follow-next-url-pagination.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

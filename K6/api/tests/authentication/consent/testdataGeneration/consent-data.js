@@ -1,21 +1,18 @@
-import exec from "k6/execution";
 import { group } from "k6";
-
-import { uuidv4, randomItem } from "../../../../../common-imports.js";
-import { requireEnv } from "../../../../../helpers.js";
+import exec from "k6/execution";
 
 import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
+import { randomItem,uuidv4 } from "../../../../../common-imports.js";
 import {
-    PersonalTokenGenerator,
     EnterpriseTokenGenerator,
+    PersonalTokenGenerator,
 } from "../../../../../common-imports.js";
+import { requireEnv } from "../../../../../helpers.js";
 import { ConsentScope } from "../../../../../scopes.js";
-
 import {
-    RequestConsent,
     ApproveConsent,
+    RequestConsent,
 } from "../../../../building-blocks/authentication/consent/index.js";
-
 import {
     consentValidTo,
     getConsenteeOrgs,

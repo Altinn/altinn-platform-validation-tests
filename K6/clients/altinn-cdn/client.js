@@ -1,4 +1,5 @@
 import http from "k6/http";
+
 import { requireEnv } from "../../helpers.js";
 
 class AltinnCdnClient {

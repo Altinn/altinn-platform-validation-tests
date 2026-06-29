@@ -305,11 +305,12 @@ export function getFromTo(list) {
 * @returns {Array} An array containing the AuthorizedPartiesClient instance
 */
 import http from "k6/http";
-import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGeneratorOptions, EnterpriseTokenGenerator, PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+
+import { BffAccessManagementApiClient, BffAccessPackageApiClient,BffConnectionsApiClient, BffUserApiClient } from "../../../../../clients/authentication/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, requireEnv, pickUnique } from "../../../../../helpers.js";
+import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGenerator,PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, parseCsvData, pickUnique,requireEnv, segmentData } from "../../../../../helpers.js";
 // All apiclient used in this test
 /** @type {ServiceOwnerApiClient | undefined} */
 let serviceOwnerApiClient = undefined;

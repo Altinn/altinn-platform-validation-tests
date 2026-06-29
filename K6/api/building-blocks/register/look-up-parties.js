@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 
 /**

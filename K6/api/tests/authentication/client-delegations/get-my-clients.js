@@ -1,7 +1,7 @@
-import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authentication/client-delegations.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
+import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };

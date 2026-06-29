@@ -1,7 +1,7 @@
-import http from "k6/http";
-import encoding from "k6/encoding";
 import { uuidv4 } from "https://jslib.k6.io/k6-utils/1.4.0/index.js";
 import KJUR from "https://unpkg.com/jsrsasign@10.8.6/lib/jsrsasign.js";
+import encoding from "k6/encoding";
+import http from "k6/http";
 
 const config = {
     maskinportenBaseUrl: "https://test.maskinporten.no",

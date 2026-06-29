@@ -1,7 +1,8 @@
 import http from "k6/http";
-import { getAllDialogsForParties, getDialogById, getParties, getFilterServiceResources } from "./graphql-queries.js";
-import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
+
 import { DialogByIdVariablesBuilder } from "./dialog-by-id-variables-builder.js";
+import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
+import { getAllDialogsForParties, getDialogById, getFilterServiceResources,getParties } from "./graphql-queries.js";
 
 const TAGS = {
     GetAllDialogsForParty: { action: "get-all-dialogs-for-party" },

@@ -4,11 +4,12 @@
  * The five worst performing users in the AT23, YT01 and TT02 environments are tested.
  */
 
-import { browser } from "k6/browser";
 import { check } from "k6";
+import { browser } from "k6/browser";
 import { Trend } from "k6/metrics";
-import { getCookie, afUrl, environment, waitForPageLoaded } from "./arbeidsflate-utils.js";
+
 import { getItemFromList } from "../../helpers.js";
+import { afUrl, environment, getCookie, waitForPageLoaded } from "./arbeidsflate-utils.js";
 
 
 const pageLoadingTime = new Trend("page_loading_time", true);

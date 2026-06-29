@@ -1,23 +1,22 @@
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
 
-import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../../../helpers.js";
-import { PostDelegations, DeleteDelegations, GetPermission } from "../../../../building-blocks/authentication/access-package/delegate.js";
-import { BffConnectionsApiClient, BffAccessPackageApiClient, BffClientDelegationsApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { BffAccessPackageApiClient, BffClientDelegationsApiClient,BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator,PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions,parseCsvData, segmentData } from "../../../../../helpers.js";
+import { pickUnique,requireEnv } from "../../../../../helpers.js";
+import { DeleteDelegations, GetPermission,PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import {
-    GetAgents,
-    PostAgents,
+    DeleteAccessPackages,
+    DeleteAgents,
     GetAccessPackages,
+    GetAgents,
     GetClients,
     PostAccessPackages,
-    DeleteAccessPackages,
-    DeleteAgents
-} from "../../../../building-blocks/authentication/client-delegations/index.js";
+    PostAgents} from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { DeleteRightholder,GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
 import { accessPackagesForOrgs as accessPackages, getTokenOpts } from "./commons.js";
-import { requireEnv, pickUnique } from "../../../../../helpers.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };

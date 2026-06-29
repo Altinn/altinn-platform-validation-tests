@@ -1,6 +1,6 @@
-import http from "k6/http";
 import { URL } from "https://jslib.k6.io/url/1.0.0/index.js";
 import encoding from "k6/encoding";
+import http from "k6/http";
 
 const config = {
     altinnTestToolsBaseUrl:

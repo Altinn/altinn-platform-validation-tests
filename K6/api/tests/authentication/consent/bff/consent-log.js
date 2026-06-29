@@ -2,9 +2,10 @@
  * This test is designed to retrieve the consent log for a user in a more realistic scenario, where the users are randomly selected from a larger pool of users.
  */
 import exec from "k6/execution";
-import { GetConsentLog } from "../../../../building-blocks/authentication/client-delegations/index.js";
+
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
+import { GetConsentLog } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { getClients, getTokenOpts } from "./commons.js";
 export { setup } from "./commons.js";
 

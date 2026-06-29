@@ -1,7 +1,8 @@
+import http from "k6/http";
+
 import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
-import http from "k6/http";
 import { requireEnv } from "../../../../helpers.js";
 
 /**

@@ -1,5 +1,6 @@
-import http from "k6/http";
 import { check } from "k6";
+import http from "k6/http";
+
 import { requireEnv } from "../../../helpers.js";
 
 export function getInfoCloud(path, labels) {

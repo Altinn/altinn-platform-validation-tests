@@ -1,4 +1,5 @@
 import { Page } from "k6/browser";
+
 import { expect } from "../../common-imports.js";
 import { requireEnv } from "../../helpers.js";
 

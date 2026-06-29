@@ -1,8 +1,9 @@
 import { check } from "k6";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
+
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
-import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
+import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
 const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-mobile-number.json"));
 

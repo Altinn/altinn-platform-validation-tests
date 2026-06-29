@@ -1,10 +1,10 @@
 /**
  * Worst case scenario for consent requests: all users have an active consent request, and we fetch the active consent for each of them.
  */
+import { getItemFromList,getOptions } from "../../../../../helpers.js";
 import { GetActiveConsent } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { getOptions, getItemFromList } from "../../../../../helpers.js";
 import { getTokenOpts } from "../../access-management/bff/commons.js";
-import { worst_case_users as users, getClients } from "./commons.js";
+import { getClients,worst_case_users as users } from "./commons.js";
 
 export const options = getOptions(users.map(user => { return { unique_id: user.label }; }));
 

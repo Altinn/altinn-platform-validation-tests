@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
 /**

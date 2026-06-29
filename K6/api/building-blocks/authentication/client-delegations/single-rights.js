@@ -1,5 +1,6 @@
-import { BffSingleRightApiClient } from "../../../../clients/authentication/index.js";
 import { check } from "k6";
+
+import { BffSingleRightApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  * Post single right for the specified query parameters

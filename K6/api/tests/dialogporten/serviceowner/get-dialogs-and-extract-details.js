@@ -1,17 +1,16 @@
-import { serviceResources, getClients } from "./common-functions.js";
-
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import {
-    GetDialogs,
     GetDialog,
     GetDialogActivities,
     GetDialogActivity,
-    GetDialogTransmissions,
-    GetDialogTransmission,
-    GetDialogSeenLogs,
-    GetDialogSeenLog,
     GetDialogLookup,
+    GetDialogs,
+    GetDialogSeenLog,
+    GetDialogSeenLogs,
+    GetDialogTransmission,
+    GetDialogTransmissions,
 } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients,serviceResources } from "./common-functions.js";
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

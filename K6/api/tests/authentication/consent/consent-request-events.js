@@ -12,18 +12,15 @@
  * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
  */
 
-import { getOptions, requireEnv } from "../../../../helpers.js";
-import { randomItem } from "../../../../common-imports.js";
-
 import {
     ConsentApiClient,
     ConsentRequestEventsQueryBuilder,
 } from "../../../../clients/authentication/index.js";
+import { randomItem } from "../../../../common-imports.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { getOptions, requireEnv } from "../../../../helpers.js";
 import { ConsentScope } from "../../../../scopes.js";
-
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
-
 import {
     getConsenteeOrgs,
     getEnterpriseBaseTokenOpts,

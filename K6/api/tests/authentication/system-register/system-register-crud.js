@@ -1,16 +1,16 @@
 import { check, group } from "k6";
-import { uuidv4, MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions } from "../../../../common-imports.js";
+
+import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
+import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions,uuidv4 } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
 import {
     CreateNewSystem,
-    GetSystems,
-    GetSystemById,
-    UpdateVendorSystemRegister,
-    UpdateRightsVendorSystemRegister,
     DeleteSystem,
-    GetDeletedSystemByID
-} from "../../../building-blocks/authentication/system-register/index.js";
-import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
-import { requireEnv } from "../../../../helpers.js";
+    GetDeletedSystemByID,
+    GetSystemById,
+    GetSystems,
+    UpdateRightsVendorSystemRegister,
+    UpdateVendorSystemRegister} from "../../../building-blocks/authentication/system-register/index.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);

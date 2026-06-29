@@ -1,10 +1,11 @@
 import exec from "k6/execution";
 import http from "k6/http";
-import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs } from "../../../../helpers.js";
-import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
+
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs,getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
 
 // Labels for different actions
 const getMaskinportenSchemaLabel1 = { step: "1. Get maskinportenSchema supplierOrg as query param" };

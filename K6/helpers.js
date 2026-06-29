@@ -1,5 +1,6 @@
-import { sleep, check } from "k6";
+import { check,sleep } from "k6";
 import exec from "k6/execution";
+
 import { papaparse, randomItem } from "./common-imports.js";
 
 /**

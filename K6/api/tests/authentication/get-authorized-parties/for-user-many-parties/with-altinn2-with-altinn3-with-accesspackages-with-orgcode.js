@@ -1,9 +1,9 @@
 
-import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
-import { endUsers, endUserLabels } from "./end-users.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
+import { endUserLabels,endUsers } from "./end-users.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 

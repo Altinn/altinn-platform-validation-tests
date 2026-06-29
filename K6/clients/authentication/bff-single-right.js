@@ -1,5 +1,5 @@
-import http from "k6/http";
 import crypto from "k6/crypto";
+import http from "k6/http";
 
 const TAGS = {
     PostDelegate: { action: "post-delegate" },

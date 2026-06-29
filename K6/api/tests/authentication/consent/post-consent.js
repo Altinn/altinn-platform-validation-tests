@@ -1,25 +1,24 @@
 import {
-    PersonalTokenGenerator,
-    EnterpriseTokenGenerator,
-    uuidv4,
-    randomItem,
-} from "../../../../common-imports.js";
-import { getOptions, requireEnv } from "../../../../helpers.js";
-import {
     BffAccessManagementApiClient,
     ConsentApiClient,
 } from "../../../../clients/authentication/index.js";
 import {
+    EnterpriseTokenGenerator,
+    PersonalTokenGenerator,
+    randomItem,
+    uuidv4,
+} from "../../../../common-imports.js";
+import { getOptions, requireEnv } from "../../../../helpers.js";
+import {
     ConsentScope,
     MaskinportenConsentScope,
 } from "../../../../scopes.js";
+import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
 import {
-    RequestConsent,
     ApproveConsent,
     LookupConsent,
+    RequestConsent,
 } from "../../../building-blocks/authentication/consent/index.js";
-import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
-
 import {
     consentValidTo,
     getConsenteeOrgs,

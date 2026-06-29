@@ -1,28 +1,28 @@
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
 
-import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv,segmentData } from "../../../../../helpers.js";
+import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import {
-    GetIsHovedAdmin,
-    GetRolePermissions,
     GetDelegatedResources,
+    GetDelegatedRightsForResource,
+    GetDelegationCheck,
+    GetIsHovedAdmin,
+    GetOrganizationData,
+    GetResourceOwners,
+    GetRightsMeta,
+    GetRoleMeta,
+    GetRolePermissions,
+    PostSingleRight,
+    RevokeSingleRight,
     SearchAccessPackages,
     SearchResources,
-    GetResourceOwners,
-    GetOrganizationData,
-    GetDelegationCheck,
-    PostSingleRight,
-    GetDelegatedRightsForResource,
-    RevokeSingleRight,
-    GetRoleMeta,
-    GetRightsMeta,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
-import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
-import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getTokenOpts, resourcesForOrg as resources, getFromTo } from "./commons.js";
+import { DeleteRightholder,GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { getFromTo,getTokenOpts, resourcesForOrg as resources } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = { step: "1a. Get rightholders from org" };

@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { BffAccessPackageApiClient } from "../../../../clients/authentication/index.js";
 
 /**

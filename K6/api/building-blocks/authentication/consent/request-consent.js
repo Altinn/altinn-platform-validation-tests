@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 
 /**

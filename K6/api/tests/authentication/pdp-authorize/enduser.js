@@ -1,8 +1,9 @@
-import { PdpAuthorizeUser } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { getClients, getTokenOpts, getActionLabelAndExpectedResponse } from "./common-functions.js";
+import { PdpAuthorizeUser } from "../../../building-blocks/authentication/pdp-authorize/index.js";
+import { getActionLabelAndExpectedResponse,getClients, getTokenOpts } from "./common-functions.js";
 export { setup } from "./common-functions.js";
 import exec from "k6/execution";
+
 import { PersonalTokenGenerator } from "../../../../token-generator.js";
 
 // Labels for different actions

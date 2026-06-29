@@ -1,7 +1,8 @@
 import http from "k6/http";
-import { parseCsvData } from "../../../../helpers.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
 export const orgNo = __ENV.ENVIRONMENT == "yt01" ? "713431400" : "991825827";

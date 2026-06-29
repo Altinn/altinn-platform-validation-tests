@@ -1,4 +1,5 @@
 import http from "k6/http";
+
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";

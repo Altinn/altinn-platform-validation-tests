@@ -1,9 +1,10 @@
 
-import { browser } from "k6/browser";
 import { check } from "k6";
-import { getOptions } from "./common.js";
+import { browser } from "k6/browser";
 import http from "k6/http";
+
 import { requireEnv } from "../../helpers.js";
+import { getOptions } from "./common.js";
 
 export const options = getOptions();
 
