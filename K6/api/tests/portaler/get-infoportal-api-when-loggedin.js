@@ -68,23 +68,43 @@ export default function (data) {
     GetCurrent(infoPortalApiClient, currentLabel);
 }
 
-// Using global variables to store clients so they are not re-created for each iteration, but only once per VU.
+/**
+ * @type {InfoPortalApiClient | undefined}
+ */
 let infoPortalApiClient = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let personalTokenGenerator = undefined;
 
 /**
- * Internal function to get clients, creates them if they don't exist. This is done to avoid creating new clients for each iteration, which would be inefficient.
- * @returns Array containing the infoPortalApiClient and personalTokenGenerator
+ * Creates and caches the clients used by the Info Portal tests.
+ *
+ * Clients are initialized once per VU to avoid unnecessary re-creation
+ * on each iteration. The same {@link InfoPortalApiClient} and
+ * {@link PersonalTokenGenerator} instances are reused throughout the test.
+ *
+ * @returns {[
+ *   InfoPortalApiClient,
+ *   PersonalTokenGenerator
+ * ]} Tuple containing the Info Portal API client and token generator.
  */
 function getClients() {
-    if (infoPortalApiClient == undefined) {
+    if (infoPortalApiClient === undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
-        infoPortalApiClient = new InfoPortalApiClient(__ENV.INFO_CLOUD_URL, personalTokenGenerator);
+
+        infoPortalApiClient = new InfoPortalApiClient(
+            __ENV.INFO_CLOUD_URL,
+            personalTokenGenerator
+        );
     }
+
     return [infoPortalApiClient, personalTokenGenerator];
 }
 

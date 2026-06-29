@@ -2,9 +2,7 @@ import http from "k6/http";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
-
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
-
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
@@ -16,32 +14,46 @@ export function setup() {
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNos = ["713431400"];
 
-const label = { action: "should-send-notifications" };
+const label = { step: "should-send-notifications" };
 
 export const options = getOptions([label]);
 
+/**
+ * @type {ServiceOwnerApiClient | undefined}
+ */
 let serviceOwnerApiClient = undefined;
 
 /**
- * Function to set up and return clients to interact with the Service Owner Dialog API
+ * Creates and caches the client used to interact with the Service Owner Dialog API.
  *
- * @returns {Array} An array containing the ServiceOwnerApiClient instance
+ * The client uses an enterprise token with the
+ * `altinn:system/notifications.condition.check` scope and is configured for
+ * the `test` organization. The organization number is selected dynamically
+ * from the provided list.
+ *
+ * The same {@link ServiceOwnerApiClient} instance is reused across iterations.
+ *
+ * @returns {[ServiceOwnerApiClient]} Tuple containing the Service Owner API client.
  */
 export function getClients() {
-    if (serviceOwnerApiClient == undefined) {
+    if (serviceOwnerApiClient === undefined) {
         const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:system/notifications.condition.check");
         tokenOpts.set("org", "test");
         tokenOpts.set("orgNo", getItemFromList(orgNos));
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
+
+        serviceOwnerApiClient = new ServiceOwnerApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [serviceOwnerApiClient];
 }
-
-
 
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
