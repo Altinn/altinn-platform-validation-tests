@@ -15,11 +15,11 @@ const getDialogslabel = { step: "1. get-dialogs-for-enduser" };
 export const options = getOptions([getDialogslabel]);
 
 export default function (data) {
-  const [enduserApiClient, tokenGenerator] = getClient();
-  const endUser = getItemFromList(data, randomize);
-  tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
-  const variables = new DialogSearchParamsBuilder()
-    .withParties([endUser.ssn])
-    .build();
-  GetDialogs(enduserApiClient, variables, getDialogslabel);
+    const [enduserApiClient, tokenGenerator] = getClient();
+    const endUser = getItemFromList(data, randomize);
+    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
+    const variables = new DialogSearchParamsBuilder()
+        .withParties([endUser.ssn])
+        .build();
+    GetDialogs(enduserApiClient, variables, getDialogslabel);
 }

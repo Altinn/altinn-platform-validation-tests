@@ -9,16 +9,16 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
  * @return response body of the request
  */
 export function GetDialogs(enduserApiClient, queryParams, labels = null) {
-  const res = enduserApiClient.GetDialogs(queryParams, labels);
+    const res = enduserApiClient.GetDialogs(queryParams, labels);
 
-  const success = check(res, {
-    "GetDialogs - status code MUST be 200": (res) => res.status == 200,
-  });
+    const success = check(res, {
+        "GetDialogs - status code MUST be 200": (res) => res.status == 200,
+    });
 
-  if (!success) {
-    console.log(res.status);
-    console.log(res.body);
-  }
+    if (!success) {
+        console.log(res.status);
+        console.log(res.body);
+    }
 
-  return res.body;
+    return res.body;
 }

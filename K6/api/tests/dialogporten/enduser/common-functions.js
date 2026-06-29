@@ -13,12 +13,12 @@ let tokenGenerator = undefined;
  * The function uses an HTTP GET request to retrieve the CSV data and then parses it into a usable format for the tests.
  */
 export function setup() {
-  requireEnv(["ENVIRONMENT", "BASE_URL"]);
-  const res = http.get(
-    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`,
-    { tags: { action: "fetch-test-data" } },
-  );
-  return parseCsvData(res.body);
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`,
+        { tags: { action: "fetch-test-data" } },
+    );
+    return parseCsvData(res.body);
 }
 
 /**
@@ -28,13 +28,13 @@ export function setup() {
  * The token generator is set up to generate personal tokens for authentication with Dialogporten.
  */
 export function getClient() {
-  if (enduserApiClient === undefined) {
-    const baseUrl = __ENV.BASE_URL;
-    const tokenOpts = getDialogportenOpts();
-    tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    enduserApiClient = new EnduserApiClient(baseUrl, tokenGenerator);
-  }
-  return [enduserApiClient, tokenGenerator];
+    if (enduserApiClient === undefined) {
+        const baseUrl = __ENV.BASE_URL;
+        const tokenOpts = getDialogportenOpts();
+        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+        enduserApiClient = new EnduserApiClient(baseUrl, tokenGenerator);
+    }
+    return [enduserApiClient, tokenGenerator];
 }
 
 /**
@@ -43,12 +43,12 @@ export function getClient() {
  * @returns
  */
 export function getDialogportenOpts(ssn = null) {
-  const tokenOpts = new Map();
-  tokenOpts.set("env", __ENV.ENVIRONMENT);
-  tokenOpts.set("ttl", 3600);
-  tokenOpts.set("scopes", "digdir:dialogporten");
-  if (ssn !== null) {
-    tokenOpts.set("pid", ssn);
-  }
-  return tokenOpts;
+    const tokenOpts = new Map();
+    tokenOpts.set("env", __ENV.ENVIRONMENT);
+    tokenOpts.set("ttl", 3600);
+    tokenOpts.set("scopes", "digdir:dialogporten");
+    if (ssn !== null) {
+        tokenOpts.set("pid", ssn);
+    }
+    return tokenOpts;
 }
