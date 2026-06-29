@@ -7,7 +7,7 @@ import { requireEnv } from "../../../../helpers.js";
 const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { action: "getAuthorizedPartiesForSystemUser" };
+const label = { step: "getAuthorizedPartiesForSystemUser" };
 
 export const options = getOptions([label]);
 

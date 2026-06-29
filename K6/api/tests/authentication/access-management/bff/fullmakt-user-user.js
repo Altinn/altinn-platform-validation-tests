@@ -19,10 +19,20 @@ const accessPackageDeleteLabel = { step: "5. Access Package Delete Delegation" }
 const deleteRightholderConnectionLabel = { step: "6. Delete rightholder connection" };
 const groupLabel = "0. Delegate accesspackage from user to user";
 
+/**
+ * Whether test data should be randomized.
+ *
+ * Defaults to `true` when the `RANDOMIZE` environment variable is not provided.
+ *
+ * @type {boolean}
+ */
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
+/** @type {BffConnectionsApiClient | undefined} */
 let connectionsApiClient = undefined;
+/** @type {BffAccessPackageApiClient | undefined} */
 let accessPackageApiClient = undefined;
 
 // get k6 options
@@ -36,7 +46,18 @@ export const options = getOptions([
     tokenGeneratorLabel
 ]);
 
-
+/**
+ * Creates and caches API clients used by the scenario.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffConnectionsApiClient,
+ *   BffAccessPackageApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();

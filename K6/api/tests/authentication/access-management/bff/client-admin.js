@@ -28,13 +28,24 @@ const getAgentsLabel = { step: `2. ${BffClientDelegationsApiClient.TAGS.GetAgent
 const getClientsLabel = { step: `3. ${BffClientDelegationsApiClient.TAGS.GetClients.action}` };
 const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.GetDelegationCheck.action}` };
 
+
+/**
+ * Whether test data should be randomized.
+ *
+ * Defaults to `true` when the `RANDOMIZE` environment variable is not provided.
+ *
+ * @type {boolean}
+ */
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
 // clients to use
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
+/** @type {BffClientDelegationsApiClient | undefined} */
 let clientDelegationsApiClient = undefined;
+/** @type {BffConnectionsApiClient | undefined} */
 let connectionsApiClient = undefined;
+/** @type {BffAccessPackageApiClient | undefined} */
 let accessPackageApiClient = undefined;
 
 // get k6 options
@@ -53,6 +64,20 @@ export function setup() {
     return segmentedData;
 }
 
+
+/**
+ * Creates and caches API clients used by the scenario.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffConnectionsApiClient,
+ *   BffClientDelegationsApiClient,
+ *   BffAccessPackageApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();

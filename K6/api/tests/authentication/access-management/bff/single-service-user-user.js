@@ -101,14 +101,45 @@ export const options = getOptions(
     ],
 );
 
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
+
+/**
+ * @type {BffConnectionsApiClient | undefined}
+ */
 let connectionsApiClient = undefined;
+
+/**
+ * @type {BffAccessPackageApiClient | undefined}
+ */
 let accessPackageApiClient = undefined;
+
+/**
+ * @type {BffSingleRightApiClient | undefined}
+ */
 let singleRightsApiClient = undefined;
+
+/**
+ * @type {BffAccessManagementApiClient | undefined}
+ */
 let userApiClient = undefined;
 
-// get k6 options
-
+/**
+ * Creates and caches the API clients used by the test.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffConnectionsApiClient,
+ *   BffAccessPackageApiClient,
+ *   BffSingleRightApiClient,
+ *   BffAccessManagementApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();
@@ -117,19 +148,30 @@ function getClients() {
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
+
     if (connectionsApiClient == undefined) {
         connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
+
     if (accessPackageApiClient == undefined) {
         accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
+
     if (singleRightsApiClient == undefined) {
         singleRightsApiClient = new BffSingleRightApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
+
     if (userApiClient == undefined) {
         userApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
-    return [connectionsApiClient, accessPackageApiClient, singleRightsApiClient, userApiClient, tokenGenerator];
+
+    return [
+        connectionsApiClient,
+        accessPackageApiClient,
+        singleRightsApiClient,
+        userApiClient,
+        tokenGenerator,
+    ];
 }
 
 /**

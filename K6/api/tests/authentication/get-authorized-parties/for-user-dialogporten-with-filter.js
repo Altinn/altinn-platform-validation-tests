@@ -6,7 +6,7 @@ import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { action: "getAuthorizedPartiesForUserDPWithFilter" };
+const label = { step: "getAuthorizedPartiesForUserDPWithFilter" };
 
 export const options = getOptions([label]);
 

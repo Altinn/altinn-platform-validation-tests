@@ -5,25 +5,28 @@ import { segmentData, parseCsvData, getNumberOfVUs, requireEnv } from "../../../
 
 
 /**
- * Client used to interact with the PDP Authorize API.
- *
  * @type {PdpAuthorizeClient | undefined}
  */
-
 let pdpAuthorizeClient = undefined;
 
 /**
- * Generates personal access tokens for authenticated requests.
- *
  * @type {PersonalTokenGenerator | undefined}
  */
 let tokenGenerator = undefined;
 
 /**
- * Initializes the clients required to interact with the PDP Authorize API.
+ * Creates and caches the clients required to interact with the
+ * PDP Authorize API.
  *
- * @returns {[PdpAuthorizeClient, PersonalTokenGenerator]} A tuple containing the
- * PDP Authorize client and the personal token generator.
+ * The same {@link PdpAuthorizeClient} and {@link PersonalTokenGenerator}
+ * instances are reused across iterations. The token is configured with
+ * the `altinn:authorization/authorize.admin` scope, allowing reuse across
+ * all users in the test without regenerating per-user tokens.
+ *
+ * @returns {[
+ *   PdpAuthorizeClient,
+ *   PersonalTokenGenerator
+ * ]} Tuple containing the PDP Authorize client and token generator.
  */
 export function getClients() {
     if (tokenGenerator == undefined) {
@@ -31,13 +34,18 @@ export function getClients() {
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
 
-        // this scope means that the token can be used for all users,
-        // no need to generate a token for each user in the test data
+        // This scope allows the token to be used for all users,
+        // so there is no need to generate a token per test user.
         tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
+
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
+
     if (pdpAuthorizeClient == undefined) {
-        pdpAuthorizeClient = new PdpAuthorizeClient(__ENV.BASE_URL, tokenGenerator);
+        pdpAuthorizeClient = new PdpAuthorizeClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
 
     return [pdpAuthorizeClient, tokenGenerator];

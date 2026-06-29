@@ -5,34 +5,59 @@ import { parseCsvData } from "../../../../helpers.js";
 import { GetParties } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { requireEnv } from "../../../../helpers.js";
 
+/**
+ * @type {GraphqlClient | undefined}
+ */
 let graphqlClient = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
 
 /**
- * @description The setup function fetches the end user data from a CSV file hosted on GitHub.
- * The CSV file is expected to contain the social security numbers (SSNs) of the end users for the specified environment.
- * The function uses an HTTP GET request to retrieve the CSV data and then parses it into a usable format for the tests.
+ * k6 setup function.
+ *
+ * Fetches end user test data from a CSV file hosted on GitHub and parses it
+ * into a usable format for the test.
+ *
+ * The CSV contains SSNs for the target environment.
+ *
+ * @returns {Array} Parsed CSV data used as test input.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`,
-        { tags: { action: "fetch-test-data" } });
+
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`,
+        { tags: { action: "fetch-test-data" } }
+    );
+
     return parseCsvData(res.body);
 }
 
 /**
- * @description This function initializes and returns the GraphQL client and token generator for Dialogporten.
- * @returns an array containing the GraphQL client and the token generator. The function checks if the GraphQL client is already initialized; if not,
- * it creates a new instance using the base URL from the environment variables and the token generator options.
- * The token generator is set up to generate personal tokens for authentication with Dialogporten.
+ * Creates and caches the GraphQL client and token generator.
+ *
+ * The same {@link GraphqlClient} and {@link PersonalTokenGenerator}
+ * instances are reused across iterations. The token generator is configured
+ * using Dialogporten-specific options for authentication.
+ *
+ * @returns {[
+ *   GraphqlClient,
+ *   PersonalTokenGenerator
+ * ]} Tuple containing the GraphQL client and token generator.
  */
 export function getClient() {
     if (graphqlClient === undefined) {
         const baseUrl = __ENV.BASE_URL;
         const tokenOpts = getDialogportenOpts();
+
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+
         graphqlClient = new GraphqlClient(baseUrl, tokenGenerator);
     }
+
     return [graphqlClient, tokenGenerator];
 }
 

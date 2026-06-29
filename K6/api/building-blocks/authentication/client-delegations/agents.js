@@ -53,7 +53,7 @@ export function GetClients(clientDelegationsApiClient, queryParams, labels = nul
  * Delegation Export
  * @param {BffAccessManagementApiClient} accessManagementApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return {Object} response body
  */
 export function DelegationExport(accessManagementApiClient, queryParams, labels = null) {

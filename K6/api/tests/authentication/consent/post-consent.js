@@ -31,10 +31,10 @@ import {
 } from "./consent-commons.js";
 
 // Labels for the different steps in the consent process, used for tagging requests in K6.
-const requestConsentLabel = { action: "Request Consent" };
-const approveConsentLabel = { action: "Approve Consent" };
-const getConsentLogLabel = { action: "Get Consent Log" };
-const lookupConsentLabel = { action: "Lookup Consent" };
+const requestConsentLabel = { step: "Request Consent" };
+const approveConsentLabel = { step: "Approve Consent" };
+const getConsentLogLabel = { step: "Get Consent Log" };
+const lookupConsentLabel = { step: "Lookup Consent" };
 
 export const options = getOptions([requestConsentLabel, approveConsentLabel, getConsentLogLabel, lookupConsentLabel]);
 
@@ -47,37 +47,109 @@ export function setup() {
     };
 }
 
-let consenteeApiClient;
-let consenterApiClient;
-let consentLookupApiClient;
-let accessManagementApiClient;
-let consenteeTokenGenerator;
-let consenterTokenGenerator;
+/**
+ * @type {ConsentApiClient | undefined}
+ */
+let consenteeApiClient = undefined;
 
+/**
+ * @type {ConsentApiClient | undefined}
+ */
+let consenterApiClient = undefined;
+
+/**
+ * Used for Maskinporten consent lookup operations and lazily initialized on
+ * first use.
+ *
+ * @type {ConsentApiClient | undefined}
+ */
+let consentLookupApiClient = undefined;
+
+/**
+ * @type {BffAccessManagementApiClient | undefined}
+ */
+let accessManagementApiClient = undefined;
+
+/**
+ * Shared enterprise token generator for the consentee.
+ *
+ * Lazily initialized on first use.
+ *
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let consenteeTokenGenerator = undefined;
+
+/**
+ * Shared personal token generator for the consenter.
+ *
+ * Lazily initialized on first use.
+ *
+ * @type {PersonalTokenGenerator | undefined}
+ */
+let consenterTokenGenerator = undefined;
+
+/**
+ * Creates and caches the API clients used by the test.
+ *
+ * The consentee client uses an enterprise token with the consent write scope,
+ * the consenter client and access management client share a personal token,
+ * and the consent lookup client uses a dedicated enterprise token for
+ * Maskinporten consent lookup operations.
+ *
+ * Existing client instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   ConsentApiClient,
+ *   ConsentApiClient,
+ *   ConsentApiClient,
+ *   BffAccessManagementApiClient
+ * ]} The initialized API clients.
+ */
 function getClients() {
     if (consenteeApiClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
             getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
         );
-        consenteeApiClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
+
+        consenteeApiClient = new ConsentApiClient(
+            __ENV.BASE_URL,
+            consenteeTokenGenerator
+        );
 
         consenterTokenGenerator = new PersonalTokenGenerator(
             getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
         );
-        consenterApiClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
+
+        consenterApiClient = new ConsentApiClient(
+            __ENV.BASE_URL,
+            consenterTokenGenerator
+        );
 
         // Maskinporten uses this endpoint to look up consent before fetching the token.
         const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
+            getEnterpriseBaseTokenOpts(
+                __ENV.ENVIRONMENT,
+                MaskinportenConsentScope.LOOKUP
+            )
         );
-        consentLookupApiClient = new ConsentApiClient(__ENV.BASE_URL, consentLookupTokenGenerator);
+
+        consentLookupApiClient = new ConsentApiClient(
+            __ENV.BASE_URL,
+            consentLookupTokenGenerator
+        );
 
         accessManagementApiClient = new BffAccessManagementApiClient(
             __ENV.AM_UI_BASE_URL,
             consenterTokenGenerator
         );
     }
-    return [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient];
+
+    return [
+        consenteeApiClient,
+        consenterApiClient,
+        consentLookupApiClient,
+        accessManagementApiClient,
+    ];
 }
 
 function consentRights() {

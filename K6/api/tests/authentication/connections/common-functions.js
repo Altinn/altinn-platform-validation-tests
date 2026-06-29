@@ -3,13 +3,28 @@ import { ConnectionsApiClient } from "../../../../clients/authentication/index.j
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../helpers.js";
 
+/**
+ * @type {ConnectionsApiClient | undefined}
+ */
 let connectionsApiClient = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
 
 /**
- * Function to set up and return clients to interact with the /enduser/connections API
+ * Creates and caches the clients used to interact with the
+ * `/enduser/connections` API.
  *
- * @returns {Array} An array containing the ConnectionsApiClient and PersonalTokenGenerator instances
+ * The same {@link PersonalTokenGenerator} and
+ * {@link ConnectionsApiClient} instances are reused on subsequent calls.
+ *
+ * @param {boolean} [bff=false] - Whether to configure the client for BFF endpoints.
+ * @returns {[
+ *   ConnectionsApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API client and token generator.
  */
 export function getClients(bff = false) {
     if (tokenGenerator == undefined) {
@@ -19,9 +34,15 @@ export function getClients(bff = false) {
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
+
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator, bff);
+        connectionsApiClient = new ConnectionsApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator,
+            bff
+        );
     }
+
     return [connectionsApiClient, tokenGenerator];
 }
 

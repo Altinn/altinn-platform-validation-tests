@@ -19,7 +19,14 @@ const tokenGeneratorLabel = { tokenGenerator: "Enterprise Token Generator" };
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
+
+/**
+ * @type {MaskinportenSchemaApiClient | undefined}
+ */
 let maskinportenSchemaApiClient = undefined;
 
 const scopes = [
@@ -85,17 +92,33 @@ export default function (data) {
     GetDelegations(maskinportenSchemaApiClient, queryParams, label);
 }
 
+/**
+ * Creates and caches the client used to interact with the
+ * Maskinporten Schema API.
+ *
+ * The client uses an enterprise token with the
+ * `altinn:maskinporten/delegations.admin` scope. The same
+ * {@link MaskinportenSchemaApiClient} instance is reused on subsequent calls.
+ *
+ * @returns {MaskinportenSchemaApiClient} The initialized API client.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:maskinporten/delegations.admin");
+
         tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
     }
+
     if (maskinportenSchemaApiClient == undefined) {
-        maskinportenSchemaApiClient = new MaskinportenSchemaApiClient(__ENV.BASE_URL, tokenGenerator);
+        maskinportenSchemaApiClient = new MaskinportenSchemaApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return maskinportenSchemaApiClient;
 }
 

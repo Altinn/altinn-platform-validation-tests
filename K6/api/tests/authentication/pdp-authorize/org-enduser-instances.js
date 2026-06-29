@@ -11,8 +11,8 @@ import http from "k6/http";
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
 // Labels for different actions
-const pdpAuthorizeLabel = { action: "PDP Authorize" };
-const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
+const pdpAuthorizeLabel = { step: "PDP Authorize" };
+const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
 const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);

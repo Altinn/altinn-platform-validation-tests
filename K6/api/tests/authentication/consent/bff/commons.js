@@ -46,22 +46,45 @@ export const worst_case_users = [
     }
 ];
 
-let accessManagementApiClient;
-let personalTokenGenerator;
+/**
+  * @type {BffAccessManagementApiClient | undefined}
+ */
+let accessManagementApiClient = undefined;
 
-/*
-* Since the token generator and the API client are used in every test, we initialize them once and reuse them.
-* The token generator will be updated with the correct user and party for each iteration, but the client can be reused since it doesn't hold any state related to the user.
-*/
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
+let personalTokenGenerator = undefined;
+
+/**
+ * Creates and caches the clients used by the test.
+ *
+ * The same {@link PersonalTokenGenerator} and
+ * {@link BffAccessManagementApiClient} instances are reused on subsequent
+ * calls. The token generator is updated with the correct user and party for
+ * each iteration, while the API client remains stateless and can safely be
+ * reused.
+ *
+ * @returns {[
+ *   BffAccessManagementApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API client and token generator.
+ */
 export function getClients() {
     if (accessManagementApiClient == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
-        accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+
+        accessManagementApiClient = new BffAccessManagementApiClient(
+            __ENV.AM_UI_BASE_URL,
+            personalTokenGenerator
+        );
     }
+
     return [accessManagementApiClient, personalTokenGenerator];
 }
 

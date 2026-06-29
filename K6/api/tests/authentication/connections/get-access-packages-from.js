@@ -5,7 +5,7 @@ import exec from "k6/execution";
 export { setup } from "./common-functions.js";
 
 // Labels for different actions
-const getAccessPackagesFromLabel = { action: "Get accesspackages from" };
+const getAccessPackagesFromLabel = { step: "Get accesspackages from" };
 const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
 
 // get k6 options
@@ -23,6 +23,7 @@ export default function (testData) {
         party: party.orgUuid,
         from: party.orgUuid
     };
+
     GetAccessPackages(
         connectionsApiClient,
         queryParamsFrom,

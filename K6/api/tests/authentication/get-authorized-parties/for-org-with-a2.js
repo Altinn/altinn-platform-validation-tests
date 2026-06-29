@@ -6,7 +6,7 @@ import { getItemFromList, getOptions } from "../../../../helpers.js";
 const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { action: "getAuthorizedPartiesForOrg" };
+const label = { step: "getAuthorizedPartiesForOrg" };
 
 export const options = getOptions([label]);
 

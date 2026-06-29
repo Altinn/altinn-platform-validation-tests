@@ -27,7 +27,9 @@ const endUsersByEnvironment = {
 
 const endUsers = endUsersByEnvironment[environment] || [];
 const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel];
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
+/** @type {ClientDelegationsApiClient | undefined} */
 let clientDelegationsApiClient = undefined;
 
 
@@ -55,10 +57,11 @@ export default function () {
     }
     const party = getItemFromList(endUsers, false);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.uuid));
-    GetMyClients(
-        clientDelegationsApiClient,
-        { unique_id: party.label },
-    );
+    clientDelegationsApiClient.
+        GetMyClients(
+            clientDelegationsApiClient,
+            { unique_id: party.label },
+        );
 }
 
 function getTokenOpts(uuid) {
