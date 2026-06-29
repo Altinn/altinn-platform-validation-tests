@@ -11,6 +11,7 @@ import {
     GetDialogTransmissions,
 } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getClients, serviceResources } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

@@ -34,6 +34,12 @@ export default defineConfig([
       "@stylistic/eol-last": ["error", "always"],
       "@stylistic/indent": ["error", 4],
       "@stylistic/comma-spacing": ["error", { before: false, after: true }],
+
+      "padding-line-between-statements": [
+        "error",
+        { "blankLine": "always", "prev": "import", "next": "*" },
+        { "blankLine": "any", "prev": "import", "next": "import" }
+      ]
     },
   },
 ]);

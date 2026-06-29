@@ -8,6 +8,7 @@ import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/g
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { getClient, getDialogportenOpts, getParties } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

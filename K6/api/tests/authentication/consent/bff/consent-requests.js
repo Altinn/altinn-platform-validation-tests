@@ -8,6 +8,7 @@ import { getOptions } from "../../../../../helpers.js";
 import { GetActiveConsent } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { getTokenOpts } from "../../access-management/bff/commons.js";
 import { getClients } from "./commons.js";
+
 export { setup } from "./commons.js";
 
 const getActiveConsentLabel = { step: "Get active consent for user" };

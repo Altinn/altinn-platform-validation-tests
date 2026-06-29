@@ -1,10 +1,12 @@
 import exec from "k6/execution";
 
 import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { PersonalTokenGenerator } from "../../../../token-generator.js";
 import { GetConnections } from "../../../building-blocks/authentication/connections/index.js";
 import { getClients, getTokenOpts } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
-import { PersonalTokenGenerator } from "../../../../token-generator.js";
+
 
 // Labels for different actions
 const getConnectionsToLabel = { step: "Get connections to" };

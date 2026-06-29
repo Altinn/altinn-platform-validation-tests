@@ -1,8 +1,11 @@
+import exec from "k6/execution";
+
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
 import { getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
-import exec from "k6/execution";
+
 
 import { PersonalTokenGenerator } from "../../../../token-generator.js";
 
