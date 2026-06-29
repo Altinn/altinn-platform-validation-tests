@@ -2,7 +2,6 @@ import { check } from "k6";
 
 import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js";
 
-
 /**
  *
  * @param {PdpAuthorizeClient} pdpAuthorizeClient A client to interact with the Pdp Authorize API

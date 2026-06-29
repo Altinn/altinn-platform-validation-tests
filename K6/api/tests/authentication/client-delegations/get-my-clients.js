@@ -32,7 +32,6 @@ let tokenGenerator = undefined;
 /** @type {ClientDelegationsApiClient | undefined} */
 let clientDelegationsApiClient = undefined;
 
-
 // get k6 options
 export const options = getOptions(endUserLabels);
 

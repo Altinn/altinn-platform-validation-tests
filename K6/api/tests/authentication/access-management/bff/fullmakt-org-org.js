@@ -43,7 +43,6 @@ const deleteRightholderConnectionLabel = { step: "4d. Delete rightholder connect
 
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
-
 const fullmaktGroup = "1. Delegate accesspackage from organization to organization";
 const addUserGroup = "2. Add user as rightholder to organization";
 const clientDelegationGroup = "3. Client delegation from organization to user";
@@ -92,7 +91,6 @@ let accessPackageApiClient = undefined;
 /** @type {BffClientDelegationsApiClient | undefined} */
 let clientDelegationsApiClient = undefined;
 
-
 /**
  * Creates and caches API clients used by the scenario.
  *
@@ -137,7 +135,6 @@ export function setup() {
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
-
 
 /**
  * Main function executed by each VU.

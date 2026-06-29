@@ -31,8 +31,6 @@ export default function () {
     const ordersApiClient
         = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator);
 
-
-
     const uniqueIdentifier = uuidv4().substring(0, 8);
     testData.requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
     testData.sendersReference = `k6-order-${uniqueIdentifier}`;
@@ -76,6 +74,5 @@ export default function () {
         "Reminder count matches request": () => response.notification.reminders.length === expectedReminderCount,
         "All reminders have shipment IDs": () => response.notification.reminders.length === 0 || response.notification.reminders.every(e => typeof e.shipmentId === "string" && e.shipmentId.length > 0)
     });
-
 
 }

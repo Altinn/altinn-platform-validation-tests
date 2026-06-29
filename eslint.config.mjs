@@ -35,6 +35,7 @@ export default defineConfig([
       "@stylistic/indent": ["error", 4],
       "@stylistic/comma-spacing": ["error", { before: false, after: true }],
 
+      "no-multiple-empty-lines": ["error", { "max": 1 }],
       "padding-line-between-statements": [
         "error",
         { "blankLine": "always", "prev": "import", "next": "*" },

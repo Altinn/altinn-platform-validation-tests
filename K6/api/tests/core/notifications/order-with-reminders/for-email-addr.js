@@ -71,5 +71,4 @@ export default function () {
         "All reminders have shipment IDs": () => response.notification.reminders.length === 0 || response.notification.reminders.every(e => typeof e.shipmentId === "string" && e.shipmentId.length > 0)
     });
 
-
 }

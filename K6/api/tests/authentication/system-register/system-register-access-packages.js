@@ -38,7 +38,6 @@ export default function () {
 
     const [name, allowedRedirectUrls, clientId, vendorId, systemId, description, rights, accessPackages] = defaultObject();
 
-
     group("System Register Access Packages Workflow", function () {
         console.log("CreateNewSystem");
         let res = CreateNewSystem(systemRegisterClient, vendorId, name, clientId, description, rights, allowedRedirectUrls, accessPackages);

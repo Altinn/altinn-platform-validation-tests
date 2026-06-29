@@ -5,7 +5,6 @@ import tls from "k6/x/tls";
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 import { requireEnv } from "../../../../helpers.js";
 
-
 export function setup() {
     requireEnv(["DEPLOY_ENV"]);
     const client = new AltinnCdnClient();

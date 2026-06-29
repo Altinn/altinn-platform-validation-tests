@@ -7,7 +7,6 @@ import { getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
-
 // Labels for different actions
 const getConnectionsFromLabel = { step: "Get Connections from" };
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };

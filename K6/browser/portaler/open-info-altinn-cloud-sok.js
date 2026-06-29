@@ -21,7 +21,6 @@ export function setup() {
         .filter(Boolean);
 }
 
-
 export default async function (words) {
     const randomWord = words[Math.floor(Math.random() * words.length)];
     const encodedWord = encodeURIComponent(randomWord);

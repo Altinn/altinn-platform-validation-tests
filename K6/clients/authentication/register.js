@@ -79,7 +79,6 @@ class RegisterApiClient {
         );
     }
 
-
     AddRevisorRoleToErForOrg(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
         const registerUrl = `${this.baseUrl}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
 

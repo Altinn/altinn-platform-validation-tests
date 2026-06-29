@@ -4,7 +4,6 @@ import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js"
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
 
-
 /**
  * @type {PdpAuthorizeClient | undefined}
  */

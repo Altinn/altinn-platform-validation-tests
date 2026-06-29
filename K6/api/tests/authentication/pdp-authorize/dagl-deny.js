@@ -7,7 +7,6 @@ import { getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
-
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 
 // Labels for different actions

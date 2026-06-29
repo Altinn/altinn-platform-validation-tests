@@ -23,7 +23,6 @@ let tokenGenerator = undefined;
 /** @type {BffAccessManagementApiClient | undefined} */
 let accessManagementApiClient = undefined;
 
-
 /**
  * Creates and caches API clients used by the scenario.
  *

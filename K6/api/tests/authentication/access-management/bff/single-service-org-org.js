@@ -254,7 +254,6 @@ export default function (segmentedData) {
         GetOrganizationData(userApiClient, {}, getOrganizationDataLabel);
     });
 
-
     // Part 2.
     // Delegate a single resource to the added organization and verify delegation
     group(resourceDelegationGroup.group, function () {

@@ -49,7 +49,6 @@ export default function (testData) {
     );
 }
 
-
 /**
  * Function to randomly select action, label, and expected response.
  * 90% sign with Permit, 10% read with NotApplicable.

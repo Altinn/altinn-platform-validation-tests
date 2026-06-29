@@ -31,8 +31,6 @@ class BffConnectionsApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
-
-
     static get TAGS() {
         return TAGS;
     }
@@ -67,7 +65,6 @@ class BffConnectionsApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
     }
-
 
     /**
     * Post rightholder for an user

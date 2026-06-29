@@ -11,7 +11,6 @@ import { Trend } from "k6/metrics";
 import { getItemFromList } from "../../helpers.js";
 import { afUrl, environment, getCookie, waitForPageLoaded } from "./arbeidsflate-utils.js";
 
-
 const pageLoadingTime = new Trend("page_loading_time", true);
 
 const endUsersByEnvironment = {

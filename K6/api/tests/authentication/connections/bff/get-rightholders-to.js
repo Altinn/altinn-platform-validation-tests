@@ -7,8 +7,6 @@ import { getClients, getTokenOpts } from "../common-functions.js";
 
 export { setup } from "../common-functions.js";
 
-
-
 // Labels for different actions
 const getRightholdersToLabel = { step: "Get rightholders to" };
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };

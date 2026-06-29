@@ -12,7 +12,6 @@ export function setup() {
     return;
 }
 
-
 export default function () {
     const options = new EnterpriseTokenGeneratorOptions();
     options.set("env", __ENV.ENVIRONMENT);
@@ -60,6 +59,5 @@ export default function () {
         "Reminder count matches request": () => response.notification.reminders.length === expectedReminderCount,
         "All reminders have shipment IDs": () => response.notification.reminders.length === 0 || response.notification.reminders.every(e => typeof e.shipmentId === "string" && e.shipmentId.length > 0)
     });
-
 
 }

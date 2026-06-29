@@ -2,7 +2,6 @@ import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
-
 /**
  * Function to get serviceowner labels
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient

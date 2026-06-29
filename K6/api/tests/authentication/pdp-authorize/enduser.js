@@ -7,9 +7,6 @@ import { getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./c
 
 export { setup } from "./common-functions.js";
 
-
-
-
 // Labels for different actions
 const pdpAuthorizeLabel = { step: "PDP Authorize" };
 const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };

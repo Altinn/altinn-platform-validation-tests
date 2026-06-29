@@ -19,7 +19,6 @@ export const afUrl = (() => {
     }
 })();
 
-
 /**
  * Function to get a cookie object for the given PID.
  * @param {string} pid - The personal identification number (PID) of the user.

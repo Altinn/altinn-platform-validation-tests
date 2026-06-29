@@ -328,7 +328,6 @@ let graphqlClient = undefined;
 /** @type {PersonalTokenGenerator | undefined} */
 let personalTokenGenerator = undefined;
 
-
 /**
  * Creates and caches the API clients used by the test.
  *

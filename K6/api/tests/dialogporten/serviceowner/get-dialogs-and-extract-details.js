@@ -26,7 +26,6 @@ const getDialogSeenLogsLabel = { step: "7. get-dialog-seen-logs" };
 const getDialogSeenLogLabel = { step: "8. get-dialog-seen-log" };
 const getDialogLookupLabel = { step: "9. get-dialog-lookup" };
 
-
 export const options = getOptions([
     getDialogslabel,
     getDialogLabel,

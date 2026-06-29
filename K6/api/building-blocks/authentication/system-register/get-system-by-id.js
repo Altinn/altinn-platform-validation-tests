@@ -2,7 +2,6 @@ import { check } from "k6";
 
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 
-
 /**
  * Retrieves a Registered System frontend DTO for the systemId.
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API

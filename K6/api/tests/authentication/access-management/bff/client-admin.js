@@ -28,7 +28,6 @@ const getAgentsLabel = { step: `2. ${BffClientDelegationsApiClient.TAGS.GetAgent
 const getClientsLabel = { step: `3. ${BffClientDelegationsApiClient.TAGS.GetClients.action}` };
 const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.GetDelegationCheck.action}` };
 
-
 /**
  * Whether test data should be randomized.
  *
@@ -63,7 +62,6 @@ export function setup() {
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }
-
 
 /**
  * Creates and caches API clients used by the scenario.

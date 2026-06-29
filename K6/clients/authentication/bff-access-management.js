@@ -23,7 +23,6 @@ const TAGS = {
     DelegationExport: { action: "delegation-export" },
 };
 
-
 class BffAccessManagementApiClient {
     /**
      *
@@ -433,7 +432,6 @@ class BffAccessManagementApiClient {
         return http.post(url.toString(), JSON.stringify(body), params);
     }
 
-
     /**
      * Check if user has delegated rights for a resource
      * @param {object} queryParams - object with query parameters to be appended to the url
@@ -512,7 +510,6 @@ class BffAccessManagementApiClient {
         };
         return http.get(url.toString(), params);
     }
-
 
     /**
     * Get resource by id

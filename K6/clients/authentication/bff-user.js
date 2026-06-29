@@ -38,7 +38,6 @@ class BffUserApiClient {
 
     }
 
-
     static get TAGS() {
         return TAGS;
     }

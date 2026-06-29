@@ -6,7 +6,6 @@ import { getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./c
 
 export { setup } from "./common-functions.js";
 
-
 import { PersonalTokenGenerator } from "../../../../token-generator.js";
 
 // Labels for different actions

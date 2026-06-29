@@ -127,7 +127,6 @@ export function getOptions(labels, groups = []) {
         }
     }
 
-
     for (const group of groups) {
         options.thresholds[`http_req_duration{group:::${group}}`] = [];
     }
@@ -171,7 +170,6 @@ export function requireEnv(vars) {
 
     return result;
 }
-
 
 /**
  * Picks a specified number of unique random items from a list.
