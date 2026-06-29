@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { uuidv4 } from "../../../common-imports";
+import { uuidv4 } from "../../../common-imports.js";
 
 const TAGS = {
     GetDialogs: { action: "get-dialogs" },
