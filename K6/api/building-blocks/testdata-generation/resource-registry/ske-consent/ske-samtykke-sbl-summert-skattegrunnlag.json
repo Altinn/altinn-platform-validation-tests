@@ -1,0 +1,59 @@
+{
+  "identifier": "ske-samtykke-sbl-summert-skattegrunnlag",
+  "version": "1",
+  "title": {
+    "en": "Summarized tax basis from the Tax Administration",
+    "nb": "Summert skattegrunnlag fra Skatteetaten",
+    "nn": "Summert skattegrunnlag frå Skatteetaten"
+  },
+  "description": {
+    "en": "By consenting you grant the The Norwegian Tax Administration the right to disclose information about you directly to the bank. The bank receives the information to process your application for financing",
+    "nb": "Ved å samtykke, gir du Skatteetaten rett til å utlevere opplysninger om deg direkte til Banken. Banken får opplysningene for å behandle søknaden din om finansiering",
+    "nn": "Ved å samtykke, gir du Skatteetaten rett til å utlevere opplysninger om deg direkte til banken. Banken får opplysningene for å behandle søknaden din om finansiering"
+  },
+  "rightDescription": {
+    "en": "By delegating this service, you grant the others the authority to consent on your behalf",
+    "nb": "Ved å delegere, gir du andre rett til å samtykke på vegne av deg",
+    "nn": "Ved å delegere, gir du andre rett til å samtykke på vegne av deg"
+  },
+  "status": "Completed",
+  "contactPoints": [
+    {
+      "category": "Brukerstøtte",
+      "email": "",
+      "telephone": "",
+      "contactPage": "https://www.skatteetaten.no/skjema/kontaktskjema-person/"
+    }
+  ],
+  "delegable": true,
+  "visible": true,
+  "hasCompetentAuthority": {
+    "name": {
+      "en": "Norwegian Tax Administration",
+      "nb": "Skatteetaten",
+      "nn": "Skatteetaten"
+    },
+    "organization": "974761076",
+    "orgcode": "skd"
+  },
+  "accessListMode": "Disabled",
+  "selfIdentifiedUserEnabled": false,
+  "enterpriseUserEnabled": false,
+  "resourceType": "Consent",
+  "availableForType": [
+    "PrivatePerson"
+  ],
+  "consentTemplate": "sblanesoknad",
+  "consentText": {
+    "en": "Information reported in connection with the {inntektsaar} tax return:\n- Income\n- Tax deduction\n- Wealth (including housing, car and other assets)\n- Debt",
+    "nb": "Opplysninger rapportert i forbindelse med skattemeldingen (selvangivelsen) {inntektsaar}:\n- Inntekt \n- Skattefradrag\n- Formue (inkl. bolig, bil og andre verdier)\n- Gjeld",
+    "nn": "Opplysningar rapporterte i samband med skattemeldinga (sjølvmeldinga) {inntektsaar}:\n- Inntekt \n- Skattefrådrag\n- Formue (inkl. bustad, bil og andre verdiar)\n- Gjeld"
+  },
+  "consentMetadata": {
+    "inntektsaar": {
+      "optional": false
+    }
+  },
+  "isOneTimeConsent": false,
+  "versionId": 339
+}

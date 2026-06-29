@@ -20,16 +20,27 @@ import { ENDUSER_SCOPE } from "../../../../scopes.js";
  *   - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
 
+// Which git ref the test data is fetched from. Defaults to main; override with
+// TESTDATA_REF to read CSVs from a feature branch before they're merged, e.g.
+//   TESTDATA_REF=feature/publish-ske-consent-resources
+const TESTDATA_REF = __ENV.TESTDATA_REF || "main";
 const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent";
+    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/testdata/authentication/consent`;
+
+/** Builds a test data CSV URL, optionally under a subfolder (e.g. "two-resources"). */
+function testdataUrl(category, env, subfolder = "") {
+    const seg = subfolder ? `${subfolder}/` : "";
+    return `${TESTDATA_BASE_URL}/${seg}${category}/${env}.csv`;
+}
 
 /**
  * The organizations that receive (and therefore hold) consents.
  * @param {string} env Environment, e.g. "yt01".
+ * @param {string} subfolder Optional subfolder, e.g. "two-resources".
  * @returns {Array<{orgNo: string}>}
  */
-export function getConsenteeOrgs(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs/${env}.csv`, {
+export function getConsenteeOrgs(env, subfolder = "") {
+    const res = http.get(testdataUrl("consentee-orgs", env, subfolder), {
         tags: { action: "fetch-test-data" },
     });
     return parseCsvData(res.body);
@@ -38,10 +49,11 @@ export function getConsenteeOrgs(env) {
 /**
  * The persons that approve consents.
  * @param {string} env Environment, e.g. "yt01".
+ * @param {string} subfolder Optional subfolder, e.g. "two-resources".
  * @returns {Array<{ssn: string, partyUuid: string}>}
  */
-export function getConsenterPersons(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`, {
+export function getConsenterPersons(env, subfolder = "") {
+    const res = http.get(testdataUrl("consenter-persons", env, subfolder), {
         tags: { action: "fetch-test-data" },
     });
     return parseCsvData(res.body);

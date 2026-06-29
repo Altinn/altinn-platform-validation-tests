@@ -5,6 +5,12 @@ test_definitions:
       - environment: yt01
       - environment: at23
       - environment: tt02
+  # Mirrors the production scenario: one consent request covering the two SKE
+  # income resources, each with its own required metadata.
+  - test_file: K6/api/tests/authentication/consent/post-consent-two-resources.js
+    contexts:
+      - environment: yt01
+      - environment: tt02
   - test_file: K6/api/tests/authentication/consent/lookup.js
     contexts:
       - environment: yt01

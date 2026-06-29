@@ -1,0 +1,63 @@
+{
+  "identifier": "ske-samtykke-sbl-inntekt",
+  "version": "1",
+  "title": {
+    "en": "Consent - Income information",
+    "nb": "Samtykke - Inntektsopplysninger",
+    "nn": "Samtykke - Inntektsopplysningar"
+  },
+  "description": {
+    "en": "By providing your consent, you grant the Norwegian Tax Administration the authority to disclose personal information about you directly to the bank. The bank will use this information solely for the purpose of assessing your application for financing.",
+    "nb": "Ved å samtykke, gir du Skatteetaten rett til å utlevere opplysninger om deg direkte til Banken. Banken får opplysningene for å behandle søknaden din om finansiering",
+    "nn": "Ved å samtykke, gir du Skatteetaten rett til å utlevere opplysninger om deg direkte til Banken. Banken får opplysningene for å behandle søknaden din om finansiering"
+  },
+  "rightDescription": {
+    "en": "By delegating this service, you grant the others the authority to consent on your behalf",
+    "nb": "Ved å delegere, gir du andre rett til å samtykke på vegne av deg",
+    "nn": "Ved å delegere, gir du andre rett til å samtykke på vegne av deg"
+  },
+  "homepage": "http://skatteetaten.no/no/Skjemaer/mine-inntekter-og-arbeidsforhold",
+  "status": "Completed",
+  "contactPoints": [
+    {
+      "category": "Brukerstøtte",
+      "email": "",
+      "telephone": "",
+      "contactPage": "https://www.skatteetaten.no/skjema/kontaktskjema-person/"
+    }
+  ],
+  "delegable": true,
+  "visible": true,
+  "hasCompetentAuthority": {
+    "name": {
+      "en": "Norwegian Tax Administration",
+      "nb": "Skatteetaten",
+      "nn": "Skatteetaten"
+    },
+    "organization": "974761076",
+    "orgcode": "skd"
+  },
+  "accessListMode": "Disabled",
+  "selfIdentifiedUserEnabled": false,
+  "enterpriseUserEnabled": false,
+  "resourceType": "Consent",
+  "availableForType": [
+    "PrivatePerson"
+  ],
+  "consentTemplate": "sblanesoknad",
+  "consentText": {
+    "en": "Information reported by employers or others who have paid salary or benefits during the period {fraogmed} to {tilogmed}:\n\n- Paid salary, business Income\n- Pension\n- National Insurance or benefits\n- Tax deduction and withholding tax\n\nHere, you can see the income information that the Norwegian Tax Administration has about you: [My income and employment.](http://skatteetaten.no/no/Skjemaer/mine-inntekter-og-arbeidsforhold)",
+    "nb": "Opplysninger rapportert av arbeidsgiver eller andre som har utbetalt lønn eller ytelser, i perioden {fraogmed} til {tilogmed}:\n\n- Utbetalt lønn, næringsinntekt\n- Pensjon\n- Trygd eller ytelser\n- Skattefradrag og forskuddstrekk\n\nHer kan du se inntektsopplysningene Skatteetaten har om deg: [Mine inntekter og arbeidsforhold](http://skatteetaten.no/no/Skjemaer/mine-inntekter-og-arbeidsforhold)",
+    "nn": "Opplysningar rapporterte av arbeidsgivar eller andre som har utbetalt lønn eller ytingar, i perioden {fraogmed} til {tilogmed}:\n\n- Utbetalt lønn, næringsinntekt\n- Pensjon\n- Trygd eller ytingar\n- Skattefrådrag og forskuddstrekk\n\nHer kan du sjå inntektsopplysningane Skatteetaten har om deg: [Mine inntekter og arbeidsforhold](http://skatteetaten.no/no/Skjemaer/mine-inntekter-og-arbeidsforhold)"
+  },
+  "consentMetadata": {
+    "fraogmed": {
+      "optional": false
+    },
+    "tilogmed": {
+      "optional": false
+    }
+  },
+  "isOneTimeConsent": false,
+  "versionId": 1554
+}
