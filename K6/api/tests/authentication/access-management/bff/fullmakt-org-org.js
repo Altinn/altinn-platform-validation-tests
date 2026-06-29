@@ -14,9 +14,11 @@ import {
     GetAgents,
     GetClients,
     PostAccessPackages,
-    PostAgents} from "../../../../building-blocks/authentication/client-delegations/index.js";
+    PostAgents
+} from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { accessPackagesForOrgs as accessPackages, getTokenOpts } from "./commons.js";
+import { getTokenOpts } from "./commons.js";
+import { accessPackagesForOrgs as accessPackages } from "./custom-data.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };
