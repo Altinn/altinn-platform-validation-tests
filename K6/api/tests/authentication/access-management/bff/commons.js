@@ -305,21 +305,49 @@ export function getFromTo(list) {
 * @returns {Array} An array containing the AuthorizedPartiesClient instance
 */
 import http from "k6/http";
-import { BffUserApiClient, BffAccessManagementApiClient, BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
-import { EnterpriseTokenGeneratorOptions, EnterpriseTokenGenerator, PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+
+import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffUserApiClient } from "../../../../../clients/authentication/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, requireEnv, pickUnique } from "../../../../../helpers.js";
+import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
+
 // All apiclient used in this test
+/** @type {ServiceOwnerApiClient | undefined} */
 let serviceOwnerApiClient = undefined;
+/** @type {BffUserApiClient | undefined} */
 let userApiClient = undefined;
+/** @type {BffAccessManagementApiClient | undefined} */
 let accessManagementApiClient = undefined;
+/** @type {BffConnectionsApiClient | undefined} */
 let bffConnectionsApiClient = undefined;
+/** @type {BffAccessPackageApiClient | undefined} */
 let bffAccessPackageApiClient = undefined;
+/** @type {GraphqlClient | undefined} */
 let graphqlClient = undefined;
 /** @type {PersonalTokenGenerator | undefined} */
 let personalTokenGenerator = undefined;
 
+/**
+ * Creates and caches the API clients used by the test.
+ *
+ * The service owner client uses an enterprise token scoped to the provided
+ * organization number, while the remaining clients share a single personal
+ * token generator.
+ *
+ * Existing client instances are reused on subsequent calls.
+ *
+ * @param {string} serviceOwnerOrgNo - Organization number used when generating the enterprise token.
+ * @returns {[
+ *   ServiceOwnerApiClient,
+ *   BffUserApiClient,
+ *   BffAccessManagementApiClient,
+ *   BffConnectionsApiClient,
+ *   BffAccessPackageApiClient,
+ *   GraphqlClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and shared personal token generator.
+ */
 export function getClients(serviceOwnerOrgNo) {
     if (serviceOwnerApiClient == undefined) {
         const tokenOpts = new EnterpriseTokenGeneratorOptions();
@@ -343,7 +371,15 @@ export function getClients(serviceOwnerOrgNo) {
         bffAccessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         graphqlClient = new GraphqlClient(__ENV.BASE_URL, personalTokenGenerator);
     }
-    return [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, personalTokenGenerator];
+    return [
+        serviceOwnerApiClient,
+        userApiClient,
+        accessManagementApiClient,
+        bffConnectionsApiClient,
+        bffAccessPackageApiClient,
+        graphqlClient,
+        personalTokenGenerator
+    ];
 }
 
 /**

@@ -1,5 +1,6 @@
-import http from "k6/http";
 import { check } from "k6";
+import http from "k6/http";
+
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 import { requireEnv } from "../../../../helpers.js";
 

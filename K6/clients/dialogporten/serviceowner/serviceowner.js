@@ -1,6 +1,7 @@
 import http from "k6/http";
+
 import { uuidv4 } from "../../../common-imports.js";
-import { getDialogBody, getTransmissionBody, getActivityBody, getDialogBodyWithoutTransmissionsAndActivities } from "./request-body-templates.js";
+import { getActivityBody, getDialogBody, getDialogBodyWithoutTransmissionsAndActivities, getTransmissionBody } from "./request-body-templates.js";
 
 const TAGS = {
     GetDialogsQueriesNotificationCondition: { action: "get-dialogs-queries-notification-condition" },

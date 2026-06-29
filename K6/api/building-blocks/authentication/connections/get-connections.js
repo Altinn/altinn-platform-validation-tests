@@ -1,12 +1,13 @@
 import { check } from "k6";
-import { ConnectionsApiClient, BffConnectionsApiClient } from "../../../../clients/authentication/index.js";
+
+import { BffConnectionsApiClient, ConnectionsApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  *
  * @param {ConnectionsApiClient | BffConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
  * @param {uuid} partyId - party id of the end user
  * @param {string} direction - from or to
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetConnections(connectionsApiClient, queryParams, labels = null) {
     const res = connectionsApiClient.GetConnections(queryParams, labels);
@@ -19,7 +20,7 @@ export function GetConnections(connectionsApiClient, queryParams, labels = null)
  * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the /enduser/connections API
  * @param {uuid} partyId - party id of the end user
  * @param {string} direction - from or to
- * @param {*} labels - labels for the request
+ * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function GetAccessPackages(connectionsApiClient, queryParams, labels = null) {
     const res = connectionsApiClient.GetAccessPackages(queryParams, labels);

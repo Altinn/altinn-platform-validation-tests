@@ -1,9 +1,10 @@
 import { check, fail } from "k6";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+
 import { OrdersApiClient } from "../../../../clients/core/notifications/index.js";
-import { PostEmailNotificationOrder } from "../../../building-blocks/core/notifications/orders/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
+import { PostEmailNotificationOrder } from "../../../building-blocks/core/notifications/orders/index.js";
 
 export function setup() {
     requireEnv(

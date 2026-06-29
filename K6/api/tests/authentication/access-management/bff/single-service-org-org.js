@@ -1,28 +1,28 @@
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
 
-import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import {
-    GetIsHovedAdmin,
-    GetRolePermissions,
     GetDelegatedResources,
+    GetDelegatedRightsForResource,
+    GetDelegationCheck,
+    GetIsHovedAdmin,
+    GetOrganizationData,
+    GetResourceOwners,
+    GetRightsMeta,
+    GetRoleMeta,
+    GetRolePermissions,
+    PostSingleRight,
+    RevokeSingleRight,
     SearchAccessPackages,
     SearchResources,
-    GetResourceOwners,
-    GetOrganizationData,
-    GetDelegationCheck,
-    PostSingleRight,
-    GetDelegatedRightsForResource,
-    RevokeSingleRight,
-    GetRoleMeta,
-    GetRightsMeta,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
-import { GetDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
-import { BffConnectionsApiClient, BffAccessPackageApiClient, BffAccessManagementApiClient, BffSingleRightApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { getTokenOpts, resourcesForOrg as resources, getFromTo } from "./commons.js";
+import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { getFromTo, getTokenOpts, resourcesForOrg as resources } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = { step: "1a. Get rightholders from org" };
@@ -112,14 +112,45 @@ export const options = getOptions(
     ],
 );
 
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
+
+/**
+ * @type {BffConnectionsApiClient | undefined}
+ */
 let connectionsApiClient = undefined;
+
+/**
+ * @type {BffAccessPackageApiClient | undefined}
+ */
 let accessPackageApiClient = undefined;
+
+/**
+ * @type {BffSingleRightApiClient | undefined}
+ */
 let singleRightsApiClient = undefined;
+
+/**
+ * @type {BffAccessManagementApiClient | undefined}
+ */
 let userApiClient = undefined;
 
-// get k6 options
-
+/**
+ * Creates and caches the API clients used by the test.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffConnectionsApiClient,
+ *   BffAccessPackageApiClient,
+ *   BffSingleRightApiClient,
+ *   BffAccessManagementApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();
@@ -128,19 +159,30 @@ function getClients() {
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
+
     if (connectionsApiClient == undefined) {
         connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
+
     if (accessPackageApiClient == undefined) {
         accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
+
     if (singleRightsApiClient == undefined) {
         singleRightsApiClient = new BffSingleRightApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
+
     if (userApiClient == undefined) {
         userApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
-    return [connectionsApiClient, accessPackageApiClient, singleRightsApiClient, userApiClient, tokenGenerator];
+
+    return [
+        connectionsApiClient,
+        accessPackageApiClient,
+        singleRightsApiClient,
+        userApiClient,
+        tokenGenerator,
+    ];
 }
 
 /**
@@ -211,7 +253,6 @@ export default function (segmentedData) {
         GetResourceOwners(userApiClient, { undefined }, getResourceOwnersLabel);
         GetOrganizationData(userApiClient, {}, getOrganizationDataLabel);
     });
-
 
     // Part 2.
     // Delegate a single resource to the added organization and verify delegation

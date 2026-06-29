@@ -1,8 +1,9 @@
-import { check, group, fail } from "k6";
-import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
+import { check, fail, group } from "k6";
+
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
-import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
+import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
 import { requireEnv } from "../../../helpers.js";
+import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
 
 const label = "test-lookup-on-idporten-email";
 

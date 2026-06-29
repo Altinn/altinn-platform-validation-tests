@@ -24,7 +24,6 @@ class RolesApiClient {
 
     }
 
-
     static get TAGS() {
         return TAGS;
     }

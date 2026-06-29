@@ -1,7 +1,8 @@
 import http from "k6/http";
-import { parseCsvData } from "../../../../helpers.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
 export const orgNo = __ENV.ENVIRONMENT == "yt01" ? "713431400" : "991825827";
@@ -24,24 +25,43 @@ export const serviceResources =
         ? performanceResources
         : ["k6-instancedelegation-test"];
 
+/**
+ * @type {ServiceOwnerApiClient | undefined}
+ */
 let serviceOwnerApiClient = undefined;
 
 /**
-* Function to set up and return clients to interact with the Service Owner Dialog API
-*
-* @returns {Array} An array containing the ServiceOwnerApiClient instance
-*/
+ * Creates and caches the client used to interact with the
+ * Service Owner Dialog API.
+ *
+ * The client uses an enterprise token with the following scopes:
+ * - `digdir:dialogporten.serviceprovider`
+ * - `digdir:dialogporten.serviceprovider.search`
+ *
+ * The same {@link ServiceOwnerApiClient} instance is reused across iterations.
+ *
+ * @returns {[ServiceOwnerApiClient]} Tuple containing the Service Owner API client.
+ */
 export function getClients() {
-    if (serviceOwnerApiClient == undefined) {
+    if (serviceOwnerApiClient === undefined) {
         const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search");
+        tokenOpts.set(
+            "scopes",
+            "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search"
+        );
         tokenOpts.set("org", "ttd");
         tokenOpts.set("orgNo", orgNo);
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
+
+        serviceOwnerApiClient = new ServiceOwnerApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [serviceOwnerApiClient];
 }
 

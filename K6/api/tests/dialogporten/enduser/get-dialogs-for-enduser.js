@@ -2,10 +2,11 @@
  * This test gets all dialogs for a given end user. The end user is randomly picked from the provided data.
  */
 
+import { DialogSearchParamsBuilder } from "../../../../clients/dialogporten/enduser/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetDialogs } from "../../../building-blocks/dialogporten/enduser/index.js";
 import { getClient, getDialogportenOpts } from "./common-functions.js";
-import { DialogSearchParamsBuilder } from "../../../../clients/dialogporten/enduser/index.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

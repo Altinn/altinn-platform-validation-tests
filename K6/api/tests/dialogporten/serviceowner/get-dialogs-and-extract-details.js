@@ -1,17 +1,17 @@
-import { serviceResources, getClients } from "./common-functions.js";
-
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import {
-    GetDialogs,
     GetDialog,
     GetDialogActivities,
     GetDialogActivity,
-    GetDialogTransmissions,
-    GetDialogTransmission,
-    GetDialogSeenLogs,
-    GetDialogSeenLog,
     GetDialogLookup,
+    GetDialogs,
+    GetDialogSeenLog,
+    GetDialogSeenLogs,
+    GetDialogTransmission,
+    GetDialogTransmissions,
 } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients, serviceResources } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -25,7 +25,6 @@ const getDialogTransmissionLabel = { step: "6. get-dialog-transmission" };
 const getDialogSeenLogsLabel = { step: "7. get-dialog-seen-logs" };
 const getDialogSeenLogLabel = { step: "8. get-dialog-seen-log" };
 const getDialogLookupLabel = { step: "9. get-dialog-lookup" };
-
 
 export const options = getOptions([
     getDialogslabel,

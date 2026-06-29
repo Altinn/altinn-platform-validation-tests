@@ -1,10 +1,11 @@
 
-import { browser } from "k6/browser";
 import { check } from "k6";
+import { browser } from "k6/browser";
 import { Trend } from "k6/metrics";
+
 import { expect } from "../../common-imports.js";
-import { getOptions } from "./common.js";
 import { requireEnv } from "../../helpers.js";
+import { getOptions } from "./common.js";
 
 export const options = getOptions();
 

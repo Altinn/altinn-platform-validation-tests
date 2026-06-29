@@ -1,8 +1,9 @@
 import { check } from "k6";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
+
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
-import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
+import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
 const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-email-address.json"));
 
@@ -69,6 +70,5 @@ export default function () {
         "Reminder count matches request": () => response.notification.reminders.length === expectedReminderCount,
         "All reminders have shipment IDs": () => response.notification.reminders.length === 0 || response.notification.reminders.every(e => typeof e.shipmentId === "string" && e.shipmentId.length > 0)
     });
-
 
 }

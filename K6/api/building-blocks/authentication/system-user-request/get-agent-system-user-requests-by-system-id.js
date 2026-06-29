@@ -1,5 +1,6 @@
-import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { check } from "k6";
+
+import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  * Get agent SystemUserRequests for a given systemId (vendor endpoint).
