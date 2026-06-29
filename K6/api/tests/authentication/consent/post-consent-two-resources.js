@@ -42,14 +42,22 @@ export const options = getOptions([requestConsentLabel]);
 // Dedicated, fresh test-data pool for this scenario (no prior consent history),
 // separate from the shared consent pool.
 const TESTDATA_SUBFOLDER = "two-resources";
+// The two-resources CSVs aren't on main yet, so pin the branch that has them.
+// TODO: drop this (fall back to main) once the branch is merged.
+const TESTDATA_REF = "feature/publish-ske-consent-resources";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const env = __ENV.ENVIRONMENT;
-    return {
-        orgs: getConsenteeOrgs(env, TESTDATA_SUBFOLDER),
-        persons: getConsenterPersons(env, TESTDATA_SUBFOLDER),
-    };
+    const orgs = getConsenteeOrgs(env, TESTDATA_SUBFOLDER, TESTDATA_REF);
+    const persons = getConsenterPersons(env, TESTDATA_SUBFOLDER, TESTDATA_REF);
+    if (orgs.length === 0 || persons.length === 0) {
+        throw new Error(
+            `No test data for '${TESTDATA_SUBFOLDER}/${env}' on ref '${TESTDATA_REF}' ` +
+            `(orgs=${orgs.length}, persons=${persons.length}).`
+        );
+    }
+    return { orgs, persons };
 }
 
 let consenteeApiClient;

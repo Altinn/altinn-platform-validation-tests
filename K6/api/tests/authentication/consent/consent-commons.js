@@ -20,27 +20,27 @@ import { ENDUSER_SCOPE } from "../../../../scopes.js";
  *   - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
 
-// Which git ref the test data is fetched from. Defaults to main; override with
-// TESTDATA_REF to read CSVs from a feature branch before they're merged, e.g.
-//   TESTDATA_REF=feature/publish-ske-consent-resources
-const TESTDATA_REF = __ENV.TESTDATA_REF || "main";
-const TESTDATA_BASE_URL =
-    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/testdata/authentication/consent`;
+// Git ref the test data is fetched from. Defaults to main; callers can pass an
+// explicit ref (e.g. a feature branch whose CSVs aren't merged yet), or set
+// TESTDATA_REF to override the default globally.
+const DEFAULT_TESTDATA_REF = __ENV.TESTDATA_REF || "main";
 
-/** Builds a test data CSV URL, optionally under a subfolder (e.g. "two-resources"). */
-function testdataUrl(category, env, subfolder = "") {
+/** Builds a test data CSV URL for a given ref, optionally under a subfolder. */
+function testdataUrl(category, env, subfolder = "", ref = DEFAULT_TESTDATA_REF) {
+    const base = `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${ref}/K6/testdata/authentication/consent`;
     const seg = subfolder ? `${subfolder}/` : "";
-    return `${TESTDATA_BASE_URL}/${seg}${category}/${env}.csv`;
+    return `${base}/${seg}${category}/${env}.csv`;
 }
 
 /**
  * The organizations that receive (and therefore hold) consents.
  * @param {string} env Environment, e.g. "yt01".
  * @param {string} subfolder Optional subfolder, e.g. "two-resources".
+ * @param {string} ref Optional git ref to fetch from (default: main / TESTDATA_REF).
  * @returns {Array<{orgNo: string}>}
  */
-export function getConsenteeOrgs(env, subfolder = "") {
-    const res = http.get(testdataUrl("consentee-orgs", env, subfolder), {
+export function getConsenteeOrgs(env, subfolder = "", ref = DEFAULT_TESTDATA_REF) {
+    const res = http.get(testdataUrl("consentee-orgs", env, subfolder, ref), {
         tags: { action: "fetch-test-data" },
     });
     return parseCsvData(res.body);
@@ -50,10 +50,11 @@ export function getConsenteeOrgs(env, subfolder = "") {
  * The persons that approve consents.
  * @param {string} env Environment, e.g. "yt01".
  * @param {string} subfolder Optional subfolder, e.g. "two-resources".
+ * @param {string} ref Optional git ref to fetch from (default: main / TESTDATA_REF).
  * @returns {Array<{ssn: string, partyUuid: string}>}
  */
-export function getConsenterPersons(env, subfolder = "") {
-    const res = http.get(testdataUrl("consenter-persons", env, subfolder), {
+export function getConsenterPersons(env, subfolder = "", ref = DEFAULT_TESTDATA_REF) {
+    const res = http.get(testdataUrl("consenter-persons", env, subfolder, ref), {
         tags: { action: "fetch-test-data" },
     });
     return parseCsvData(res.body);
@@ -65,7 +66,7 @@ export function getConsenterPersons(env, subfolder = "") {
  * @returns {Array<{Pid: string, Org: string, ConsentId: string}>}
  */
 export function getLookupConsents(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/lookup/${env}.csv`, {
+    const res = http.get(testdataUrl("lookup", env), {
         tags: { action: "fetch-test-data" },
     });
     return parseCsvData(res.body);
