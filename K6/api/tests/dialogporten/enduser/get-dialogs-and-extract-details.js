@@ -6,21 +6,23 @@
  *
  */
 
-import { getClient, getDialogportenOpts } from "./common-functions.js";
-
+import { DialogSearchParamsBuilder } from "../../../../clients/dialogporten/enduser/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
+
 import {
-    GetDialogs,
     GetDialog,
     GetDialogActivities,
     GetDialogActivity,
-    GetDialogTransmissions,
-    GetDialogTransmission,
-    GetDialogSeenLogs,
-    GetDialogSeenLog,
+    GetDialogs,
     GetDialogLookup,
+    GetDialogSeenLog,
+    GetDialogSeenLogs,
+    GetDialogTransmission,
+    GetDialogTransmissions,
 } from "../../../building-blocks/dialogporten/enduser/index.js";
-import { DialogSearchParamsBuilder } from "../../../../clients/dialogporten/enduser/index.js";
+
+import { getClient, getDialogportenOpts } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -34,7 +36,6 @@ const getDialogTransmissionLabel = { step: "6. get-dialog-transmission" };
 const getDialogSeenLogsLabel = { step: "7. get-dialog-seen-logs" };
 const getDialogSeenLogLabel = { step: "8. get-dialog-seen-log" };
 const getDialogLookupLabel = { step: "9. get-dialog-lookup" };
-
 
 export const options = getOptions([
     getDialogslabel,

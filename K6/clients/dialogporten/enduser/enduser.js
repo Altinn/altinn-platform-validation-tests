@@ -493,8 +493,5 @@ class EnduserApiClient {
 
         return http.get(url.toString(), params);
     }
-
-
-
 }
 export { EnduserApiClient };
