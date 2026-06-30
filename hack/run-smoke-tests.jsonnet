@@ -5,17 +5,12 @@ local input_config_files = std.extVar('config_files');
 
 local config_files = std.split(input_config_files, '\n');
 
-local generate_manifests = [
-  basic_workflow.generate_manifests_job(c)
-  for c in config_files
-];
-
-local apply_manifests = basic_workflow.generate_apply_manifests();
-
 local interleaved_tasks = [
-  item
-  for task in generate_manifests
-  for item in [task, apply_manifests]
+  [
+    basic_workflow.generate_manifests_job(c),
+    basic_workflow.generate_apply_manifests(one_by_one=false),
+  ]
+  for c in config_files
 ];
 
 
@@ -33,7 +28,7 @@ local workflow = basic_workflow.generate_basic_workflow(
   },
   jobs+: {
     [job_name]+: {
-      steps+: interleaved_tasks,
+      steps+: std.flattenArrays(interleaved_tasks),
     },
 
   },

@@ -1,15 +1,15 @@
 import { check } from "k6";
-import { ConnectionsApiClient } from "../../../../clients/authentication/index.js";
+import { ConnectionsApiClient, BffConnectionsApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  *
- * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
+ * @param {ConnectionsApiClient | BffConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
  * @param {uuid} partyId - party id of the end user
  * @param {string} direction - from or to
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetConnections(connectionsApiClient, queryParams, label = null) {
-    const res = connectionsApiClient.GetConnections(queryParams, label);
+export function GetConnections(connectionsApiClient, queryParams, labels = null) {
+    const res = connectionsApiClient.GetConnections(queryParams, labels);
     checker(res, "GetConnections");
     return res.body;
 }
@@ -19,10 +19,10 @@ export function GetConnections(connectionsApiClient, queryParams, label = null) 
  * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the /enduser/connections API
  * @param {uuid} partyId - party id of the end user
  * @param {string} direction - from or to
- * @param {*} label - label for the request
+ * @param {*} labels - labels for the request
  */
-export function GetAccessPackages(connectionsApiClient, queryParams, label = null) {
-    const res = connectionsApiClient.GetAccessPackages(queryParams, label);
+export function GetAccessPackages(connectionsApiClient, queryParams, labels = null) {
+    const res = connectionsApiClient.GetAccessPackages(queryParams, labels);
     checker(res, "GetAccessPackages");
     return res.body;
 }

@@ -1,24 +1,74 @@
 import http from "k6/http";
 import { check, group } from "k6";
-import { PlatformTokenGenerator } from "../../../common-imports.js";
+import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
-import { getItemFromList, getOptions, parseCsvData } from "../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-const label = "test-lookup-on-username";
+const label = { action: "test-lookup-on-username" };
 
 export const options = getOptions([label]);
 
+function tryParseJson(str) {
+    try {
+        return JSON.parse(str);
+    } catch {
+        return null;
+    }
+}
+
+function assertLookupResponse(response, expectedUsername) {
+    const body = tryParseJson(response.body);
+
+    let isValidJson = check(response, {
+        "Register lookup response is valid JSON": () => body !== null,
+    });
+    if (!isValidJson) {
+        console.log(response.body);
+        throw new Error("Register lookup response is not valid JSON");
+    }
+
+    const data = body.data;
+    const okShape = check(data, {
+        "Register lookup response has data array with 1 item": (d) =>
+            Array.isArray(d) && d.length === 1,
+    });
+    if (!okShape) {
+        console.log(response.body);
+        throw new Error("Register lookup response shape was unexpected");
+    }
+
+    const party = data[0];
+
+    const okHard = check(party, {
+        "partyType is self-identified-user": (p) =>
+            p.partyType === "self-identified-user",
+        "displayName matches testdata username": (p) =>
+            p.displayName === expectedUsername,
+    });
+
+    const okUserHard = check(party.user, {
+        "user.username matches testdata username": (u) =>
+            u?.username === expectedUsername,
+    });
+
+    if (!(okHard && okUserHard)) {
+        console.log(response.body);
+    }
+}
+
 export function setup() {
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } }
     );
     return parseCsvData(res.body);
 }
 
 export default function (usernames) {
-    const tokenOpts = new Map();
+    const tokenOpts = new PlatformTokenGeneratorOptions();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
     tokenOpts.set("ttl", 3600);
 
@@ -32,7 +82,7 @@ export default function (usernames) {
    *
    * If a valid username is not available, create a new self identified user at:
    *   https://tt02.altinn.no/ui/Authentication/SelfIdentified
-   * Repeat this process for all relevant test environments: TT02, AT22, AT23 and AT24.
+   * Repeat this process for all relevant test environments: TT02, AT22 and AT23.
    * Note: YT01 does not currently have a frontend for user creation.
    * Username should be case insensitive.
    */
@@ -54,12 +104,7 @@ export default function (usernames) {
             label,
         );
 
-        check(response, {
-            "Username is included in the response 'Vegard'": (r) =>
-                r.body.toLowerCase().includes(username.toLowerCase()),
-            "User is of type self-identified-user": (r) =>
-                r.body.includes("self-identified-user"),
-        });
+        assertLookupResponse(response, username);
 
         group("Look up username in Register - case insensitivity", () => {
             // Uppercase the username if not already, to test case insensitivity
@@ -76,10 +121,7 @@ export default function (usernames) {
                 label,
             );
 
-            check(response, {
-                "Username with case variant was found in the response": (r) =>
-                    r.body.includes(username),
-            });
+            assertLookupResponse(response, username);
         });
     });
 }

@@ -1,0 +1,17 @@
+namespace: dialogporten
+test_definitions:
+  - test_file: K6/browser/arbeidsflate/open-arbeidsflate.js
+    contexts:
+      - environment: tt02
+        node_type: spot8cpu28gbmem
+
+      - environment: at23
+        node_type: spot8cpu28gbmem
+
+  - test_file: K6/browser/arbeidsflate/open-alle-virksomheter.js
+    contexts:
+      - environment: tt02
+        node_type: spot8cpu28gbmem
+
+      - environment: at23
+        node_type: spot8cpu28gbmem

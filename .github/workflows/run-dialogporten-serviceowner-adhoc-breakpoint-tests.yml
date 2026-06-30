@@ -14,9 +14,22 @@ on:
         description: "The test to run"
         options:
           # - K6/api/tests/dialogporten/serviceowner/breakpoint.yaml
-          - yt01-should-send-notification-break
-          - yt01-create-dialog-break
+          - yt01-create-dialog-enduser-break
+          - yt01-create-dialog-org-break
           - yt01-create-dialog-transmission-activity-break
+          - yt01-get-dialogs-and-extract-details-break
+          - yt01-get-dialogs-enduser-serviceresource-break
+          - yt01-get-dialogs-enduser-serviceresource-createdafter-break
+          - yt01-get-dialogs-enduser-serviceresource-createdbefore-break
+          - yt01-get-dialogs-enduser-serviceresource-search-break
+          - yt01-get-dialogs-enduser-serviceresource-search-createdafter-break
+          - yt01-get-dialogs-enduser-serviceresource-search-nohit-break
+          - yt01-get-dialogs-party-break
+          - yt01-get-dialogs-party-createdafter-break
+          - yt01-get-dialogs-party-createdbefore-break
+          - yt01-get-endusercontext-break
+          - yt01-should-send-notification-break
+
       target_vus:
         description: "The target VUs to reach"
         required: false
@@ -49,7 +62,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98"
+        uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
       - name: "Setup k8s client"
         uses: "./.github/actions/setup-k8s"
         with:
@@ -95,7 +108,7 @@ jobs:
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: "Generate k8s manifests"
-        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@bfff0d4e624bcc96321727367c865e5ed6dcffc8"
+        uses: "Altinn/altinn-platform/actions/generate-k6-manifests@ec383f5b2cafb06b2d760d14ae2d06f711d8e3e7"
         with:
           config_file: "${{ inputs.configFilePath }}"
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}

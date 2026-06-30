@@ -9,8 +9,8 @@ import { ResourceRegistryApiClient } from "../../../../clients/authentication/in
  * @param {string|null} label Label for the request
  * @returns {Object} Parsed JSON response
  */
-export function GetUpdatedResources(resourceRegistryClient, since, limit, label = null) {
-    const res = resourceRegistryClient.GetUpdatedResources(since, limit, label);
+export function GetUpdatedResources(resourceRegistryClient, since, limit, labels = null) {
+    const res = resourceRegistryClient.GetUpdatedResources(since, limit, labels);
 
     let resBody = null;
 

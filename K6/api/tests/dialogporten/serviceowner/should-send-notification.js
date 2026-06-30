@@ -1,20 +1,22 @@
 import http from "k6/http";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
-import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
 
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } });
     return parseCsvData(res.body);
 }
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNos = ["713431400"];
 
-const label = "should-send-notifications";
+const label = { action: "should-send-notifications" };
 
 export const options = getOptions([label]);
 
@@ -23,11 +25,11 @@ let serviceOwnerApiClient = undefined;
 /**
  * Function to set up and return clients to interact with the Service Owner Dialog API
  *
- * @returns {Array} An array containing the AuthorizedPartiesClient instance
+ * @returns {Array} An array containing the ServiceOwnerApiClient instance
  */
 export function getClients() {
     if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:system/notifications.condition.check");

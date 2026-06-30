@@ -1,5 +1,11 @@
 import http from "k6/http";
 
+const TAGS = {
+    RemoveRevisorRoleFromEr: { action: "remove-revisor-role-from-er" },
+    AddRevisorRoleToErForOrg: { action: "add-revisor-role-to-er-for-org" },
+    GetRevisorCustomerIdentifiersForParty: { action: "get-revisor-customer-identifiers-for-party" },
+};
+
 class RegisterApiClient {
     /**
      *
@@ -10,9 +16,9 @@ class RegisterApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -22,9 +28,13 @@ class RegisterApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/register/api/v1";
+
+        this.baseUrl = baseUrl;
     }
 
-
+    static get TAGS() {
+        return TAGS;
+    }
     /**
      *
      * @param {string} soapErUsername
@@ -34,7 +44,7 @@ class RegisterApiClient {
      * @returns http.RefinedResponse
      */
     RemoveRevisorRoleFromEr(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`;
+        const registerUrl = `${this.baseUrl}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
 
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapReqBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -59,10 +69,11 @@ class RegisterApiClient {
 
         return http.post(registerUrl, soapReqBody,
             {
-                tags: { name: registerUrl },
+                tags: { name: registerUrl, endpoint: registerUrl },
                 headers: {
                     "Content-Type": "text/xml",
                     SOAPAction: submitERDataBasic,
+                    "X-Altinn-Register-Ccr": "Apply-In-A3",
                 },
             }
         );
@@ -70,7 +81,7 @@ class RegisterApiClient {
 
 
     AddRevisorRoleToErForOrg(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {
-        const registerUrl = `${__ENV.ALTINN2_BASE_URL}/RegisterExternal/RegisterERExternalBasic.svc`;
+        const registerUrl = `${this.baseUrl}/enhets-registeret/api/v1/update.svc?record=false&federate=false`;
 
         const submitERDataBasic = "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"";
         const soapBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -95,10 +106,11 @@ class RegisterApiClient {
 
         return http.post(registerUrl, soapBody,
             {
-                tags: { name: registerUrl },
+                tags: { name: registerUrl, endpoint: registerUrl },
                 headers: {
                     "Content-Type": "text/xml",
                     SOAPAction: submitERDataBasic,
+                    "X-Altinn-Register-Ccr": "Apply-In-A3",
                 },
             }
         );
@@ -107,10 +119,12 @@ class RegisterApiClient {
     GetRevisorCustomerIdentifiersForParty(facilitatorPartyUuid, subscriptionKey) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/internal/parties/${facilitatorPartyUuid}/customers/ccr/revisor`;
-
         return http.get(url,
             {
-                tags: { name: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor` },
+                tags: {
+                    endpoint: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor`,
+                    name: `${this.FULL_PATH}/internal/parties/facilitatorPartyUuid/customers/ccr/revisor`
+                },
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Ocp-Apim-Subscription-Key": subscriptionKey,

@@ -52,6 +52,7 @@ function buildPayload(data, report) {
     );
 
     sectionBlocks.blocks[0].text.text = sectionBlocks.blocks[0].text.text + ` for <https://github.com/Altinn/altinn-platform-validation-tests/blob/main/${__ENV.TESTFILENAME}|${__ENV.TESTFILENAME}> \n`;
+    sectionBlocks.blocks[0].text.text = sectionBlocks.blocks[0].text.text + `Environment: ${__ENV.ENVIRONMENT} \n`;
     sectionBlocks.blocks[1].text.text = report;
 
     const grafanaBaseUrl = "https://grafana.altinn.cloud/d/cf5uw0ahcsj5sf/k6-logs-test-playground?orgId=1";

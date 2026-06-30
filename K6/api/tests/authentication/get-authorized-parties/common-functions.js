@@ -1,7 +1,8 @@
 import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import http from "k6/http";
+import { requireEnv } from "../../../../helpers.js";
 
 let authorizedPartiesClient = undefined;
 
@@ -12,7 +13,7 @@ let authorizedPartiesClient = undefined;
  */
 export function getClients() {
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new EnterpriseTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
@@ -23,6 +24,8 @@ export function getClients() {
 }
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } });
     return parseCsvData(res.body);
 }

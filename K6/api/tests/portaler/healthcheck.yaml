@@ -1,9 +1,22 @@
 namespace: portaler
+base_dir: K6/api/tests/portaler/
 test_definitions:
-  - test_file: K6/api/tests/portaler/get-info-dot-altinn-dot-cloud.js
+  - test_file: get-info-dot-altinn-dot-cloud.js
     contexts:
       - environment: at23
-        test_run:
-          env:
-            - name: INFO_CLOUD_URL
-              value: "https://info.at23.altinn.cloud/"
+
+  - test_file: get-info-dot-altinn-dot-cloud-sok.js
+    contexts:
+      - environment: at23
+
+  - test_file: get-info-dot-altinn-dot-cloud-skjemaoversikt.js
+    contexts:
+      - environment: at23
+
+  - test_file: get-info-dot-altinn-dot-cloud-starte-og-drive.js
+    contexts:
+      - environment: at23
+
+  - test_file: get-infoportal-api-when-loggedin.js
+    contexts:
+      - environment: at23

@@ -1,16 +1,20 @@
 import runAddRemoveRevisorRoleForClient from "./add-rm-revisor-role-for-client.js";
+import runLookUpOnIdportenEmail from "./look-up-on-idporten-email.js";
 import runLookUpOnUsername from "./look-up-on-username.js";
 import { setup as runLookUpOnUsernameSetup } from "./look-up-on-username.js";
+import { setup as addRmRevisorRoleForClientSetup } from "./add-rm-revisor-role-for-client.js";
 
 export function setup() {
     return {
         "runLookUpOnUsername": runLookUpOnUsernameSetup(),
+        "addRmRevisorRoleForClient": addRmRevisorRoleForClientSetup(),
     };
 }
 
 export default function (data) {
     runLookUpOnUsername(data.runLookUpOnUsername);
-    runAddRemoveRevisorRoleForClient();
+    runLookUpOnIdportenEmail();
+    runAddRemoveRevisorRoleForClient(data.addRmRevisorRoleForClient);
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

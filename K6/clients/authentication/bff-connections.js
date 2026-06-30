@@ -1,0 +1,163 @@
+import http from "k6/http";
+
+const TAGS = {
+    GetConnections: { action: "get-connections" },
+    PostRightholder: { action: "post-rightholder" },
+    PostRightholderOrg: { action: "post-rightholder-org" },
+    DeleteRightholder: { action: "delete-rightholder" },
+};
+
+class BffConnectionsApiClient {
+    /**
+     *
+     * @param {string} baseUrl e.g. https://am.ui.at22.altinn.cloud
+     * @param {*} tokenGenerator
+     */
+    constructor(
+        baseUrl,
+        tokenGenerator,
+    ) {
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
+        this.tokenGenerator = tokenGenerator;
+        /**
+         * @property {string} BASE_PATH The path to the api without host information
+         */
+        this.BASE_PATH = "/accessmanagement/api/v1/connection";
+        /**
+         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         */
+        this.FULL_PATH = baseUrl + this.BASE_PATH;
+    }
+
+
+
+    static get TAGS() {
+        return TAGS;
+    }
+
+    /**
+    * Get connections
+    * Docs
+    * @param {string} partyId
+    * @param {Object} queryParams
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    GetConnections(queryParams, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/rightholders`);
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetConnections.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.get(url.toString(), params);
+    }
+
+
+    /**
+    * Post rightholder for an user
+    * @param {string} from
+    * @param {Object} to - person identifier for the rightholder
+    * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    PostRightholder(from, to, lastName, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`); // TODO: Is this correct?
+        let tags = {
+            endpoint: `${this.FULL_PATH}/reportee/from/rightholder`,
+            name: `${this.FULL_PATH}/reportee/from/rightholder`,
+            action: TAGS.PostRightholder.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        const body = {
+            personIdentifier: to,
+            lastName: lastName
+        };
+        return http.post(url.toString(), JSON.stringify(body), params);
+    }
+
+    /**
+    * Post rightholder for an organization
+    * @param {Object} from - party uuid for the reportee organization
+    * @param {Object} to - organization number for the rightholder organization
+    * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
+    * @param {Object} queryParams
+    * @param {string|null} label - label for the request
+    * @returns http.RefinedResponse
+    */
+    PostRightholderOrg(from, to, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
+        let tags = {
+            endpoint: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`,
+            name: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`,
+            action: TAGS.PostRightholderOrg.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        return http.post(url.toString(), null, params);
+    }
+
+    /**
+     * Delete rightholder connection for a reportee
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {*} labels - labels for the request, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
+    DeleteRightholder(queryParams, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/reportee`);
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.DeleteRightholder.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.del(url.toString(), null, params);
+    }
+}
+
+export { BffConnectionsApiClient };

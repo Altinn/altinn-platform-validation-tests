@@ -1,0 +1,33 @@
+name: "Apply CronJobs"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "hack/create_cronjobs.sh"
+      - "hack/cronjob.jsonnet"
+run-name: "cronjobs"
+permissions:
+  contents: "read"
+jobs:
+  cronjobs:
+    runs-on: "ubuntu-latest"
+    environment: "test"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
+
+      - name: "Generate Cronjobs"
+        run: "hack/create_cronjobs.sh"
+        shell: "bash"
+
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+
+      - name: "Apply CronJobs"
+        run: "kubectl apply -f .dist/ -R || true"
+        shell: "bash"

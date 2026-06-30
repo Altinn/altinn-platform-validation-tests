@@ -12,6 +12,7 @@
 
 
     'K6/api/tests/authentication/pdp-authorize/breakpoint.yaml': {
+      '40 3 * * 2': 'yt01-dagl-single-resource-break',  //  “At 03:40 on Tuesday.”
       '0 4 * * 2': 'yt01-enduser-break',  //  “At 04:00 on Tuesday.”
       '20 4 * * 2': 'yt01-dagl-break',  //  “At 04:20 on Tuesday.”
       '40 4 * * 2': 'yt01-dagl-direct-delegation-break',  //  “At 04:40 on Tuesday.”
@@ -40,10 +41,25 @@
       '0 6 * * 3': 'yt01-for-user-include-parties-via-key-role-break',  // “At 06:00 on Wednesday.”
     },
 
+    'K6/api/tests/authentication/access-management/bff/breakpoint.yaml': {
 
+    },
+
+    'K6/api/tests/authentication/maskinporten-schema/breakpoint.yaml': {
+
+    },
+
+  },
+  core: {
+    'K6/api/tests/core/notifications/order-with-reminders/breakpoint.yaml': {
+
+    },
   },
   dialogporten: {
     'K6/api/tests/dialogporten/serviceowner/breakpoint.yaml': {
+
+    },
+    'K6/api/tests/dialogporten/graphql/breakpoint.yaml': {
 
     },
   },

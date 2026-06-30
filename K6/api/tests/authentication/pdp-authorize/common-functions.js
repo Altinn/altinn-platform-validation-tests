@@ -1,28 +1,45 @@
 import http from "k6/http";
 import { PdpAuthorizeClient } from "../../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
-import { segmentData, parseCsvData, getNumberOfVUs } from "../../../../helpers.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
+import { segmentData, parseCsvData, getNumberOfVUs, requireEnv } from "../../../../helpers.js";
 
+
+/**
+ * Client used to interact with the PDP Authorize API.
+ *
+ * @type {PdpAuthorizeClient | undefined}
+ */
 
 let pdpAuthorizeClient = undefined;
+
+/**
+ * Generates personal access tokens for authenticated requests.
+ *
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let tokenGenerator = undefined;
 
 /**
- * Function to set up and return clients to interact with the Pdp Authorize API
+ * Initializes the clients required to interact with the PDP Authorize API.
  *
- * @returns {Array} An array containing the PdpAuthorizeClient and PersonalTokenGenerator instances
+ * @returns {[PdpAuthorizeClient, PersonalTokenGenerator]} A tuple containing the
+ * PDP Authorize client and the personal token generator.
  */
 export function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new Map();
+        const tokenOpts = new PersonalTokenGeneratorOptions();
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+
+        // this scope means that the token can be used for all users,
+        // no need to generate a token for each user in the test data
+        tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (pdpAuthorizeClient == undefined) {
         pdpAuthorizeClient = new PdpAuthorizeClient(__ENV.BASE_URL, tokenGenerator);
     }
+
     return [pdpAuthorizeClient, tokenGenerator];
 }
 
@@ -61,8 +78,10 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
  * Setup function to segment data for VUs.
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
 }

@@ -1,8 +1,13 @@
 import { check, group } from "k6";
-import { uuidv4, MaskinportenAccessTokenGenerator } from "../../../../common-imports.js";
+import { uuidv4, MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions } from "../../../../common-imports.js";
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { CreateNewSystem, DeleteSystem, UpdateVendorAccessPackages } from "../../../building-blocks/authentication/system-register/index.js";
+import { requireEnv } from "../../../../helpers.js";
 
+export function setup() {
+    requireEnv(["BASE_URL"]);
+    return;
+}
 
 function defaultObject() {
     const name = `NoeVisuelt${uuidv4()}`;
@@ -21,7 +26,7 @@ function defaultObject() {
 }
 
 export default function () {
-    const options = new Map();
+    const options = new MaskinportenTokenGeneratorOptions();
     options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemregister.write altinn:authentication/systemuser.request.read altinn:authentication/systemregister.admin");
 
     const tokenGenerator

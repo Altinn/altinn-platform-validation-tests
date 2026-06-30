@@ -1,5 +1,177 @@
 namespace: dialogporten
+base_dir: K6/api/tests/dialogporten/serviceowner/
 test_definitions:
-  - test_file: K6/api/tests/dialogporten/serviceowner/should-send-notification.js
+  - test_file: should-send-notification.js
     contexts:
       - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+
+  - test_file: create-dialog-enduser.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: create-dialog-org.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: create-dialog-transmission-activity.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-and-extract-details.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-party.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-party-createdbefore.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-party-createdafter.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-enduser-serviceresource.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-enduser-serviceresource-search.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-enduser-serviceresource-search-nohit.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-enduser-serviceresource-search-createdafter.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-enduser-serviceresource-createdbefore.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-dialogs-enduser-serviceresource-createdafter.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23
+
+  - test_file: get-endusercontext.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false
+      - environment: at23

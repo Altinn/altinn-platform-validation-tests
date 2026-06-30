@@ -1,14 +1,16 @@
 import { check, group } from "k6";
 import http from "k6/http";
 import { vu } from "k6/execution";
-import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
 import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
-import { parseCsvData } from "../../../../helpers.js";
+import { parseCsvData, requireEnv } from "../../../../helpers.js";
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
+        { tags: { action: "fetch-test-data" } });
     return parseCsvData(res.body);
 }
 
@@ -16,7 +18,7 @@ export default function (data) {
 
     const systemOwner = "713431400";
 
-    const options = new Map();
+    const options = new EnterpriseTokenGeneratorOptions();
     options.set("env", __ENV.ENVIRONMENT);
     options.set("ttl", 3600);
     options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize");
@@ -94,7 +96,7 @@ export default function (data) {
 
         const requestId = JSON.parse(res).id;
 
-        const options = new Map();
+        const options = new PersonalTokenGeneratorOptions();
         options.set("env", __ENV.ENVIRONMENT);
         options.set("ttl", 3600);
         options.set("scopes", "altinn:portal/enduser");

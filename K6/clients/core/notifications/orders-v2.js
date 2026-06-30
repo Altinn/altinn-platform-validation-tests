@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    PostNotificationOrderV2: { action: "post-notification-order-v2" },
+};
+
 class OrdersV2ApiClient {
     /**
      *
@@ -10,9 +14,9 @@ class OrdersV2ApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -22,6 +26,10 @@ class OrdersV2ApiClient {
          * @property {string} BASE_PATH The path to the api without host information
          */
         this.BASE_PATH = "/notifications/api/v1/future/orders";
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
@@ -56,7 +64,10 @@ class OrdersV2ApiClient {
         }
 
         const params = {
-            tags: { name: url },
+            tags: {
+                endpoint: url,
+                action: TAGS.PostNotificationOrderV2.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

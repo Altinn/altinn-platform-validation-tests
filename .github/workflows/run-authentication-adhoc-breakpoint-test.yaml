@@ -13,6 +13,7 @@ on:
           - K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml
           - K6/api/tests/authentication/roles/breakpoint.yaml
           - K6/api/tests/authentication/consent/breakpoint.yaml
+          - K6/api/tests/authentication/access-management/bff/breakpoint.yaml
 
       testId:
         type: choice
@@ -27,7 +28,10 @@ on:
           - yt01-dagl-break
           - yt01-dagl-deny-break
           - yt01-dagl-direct-delegation-break
+          - yt01-dagl-single-resource-break
           - yt01-enduser-break
+          - yt01-enduser-enduser-instances-break
+          - yt01-org-enduser-instances-break
           #- K6/api/tests/authentication/get-authorized-parties/breakpoint.yaml
           - yt01-for-org-with-a2-break
           - yt01-for-system-user-break
@@ -43,6 +47,15 @@ on:
           - yt01-get-roles-break
           # - K6/api/tests/authentication/consent/breakpoint.yaml
           - yt01-post-consent-break
+          - yt01-lookup-break
+          # K6/api/tests/authentication/access-management/bff/breakpoint.yaml
+          - yt01-client-admin-break
+          - yt01-fullmakt-org-org-break
+          - yt01-fullmakt-user-user-break
+          - yt01-single-service-user-user-break
+          - yt01-single-service-org-org-break
+          # K6/api/tests/authentication/maskinporten-schema/breakpoint.yaml
+          - yt01-get-maskinporten-schema-delegations-break
 
       target_vus:
         description: "The target VUs to reach"
@@ -77,7 +90,7 @@ jobs:
     environment: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
@@ -124,7 +137,7 @@ jobs:
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@dfcaed7b1320a7c6775893dd4e6ec7ce9b0c2953
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@ec383f5b2cafb06b2d760d14ae2d06f711d8e3e7
         with:
           config_file: "${{ inputs.configFilePath }}"
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}

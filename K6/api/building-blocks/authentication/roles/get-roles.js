@@ -7,8 +7,8 @@ import { RolesApiClient } from "../../../../clients/authentication/index.js";
  * @param {*} label
  */
 
-export function GetRoles(rolesApiClient, label = null) {
-    const res = rolesApiClient.GetRoles(label);
+export function GetRoles(rolesApiClient, labels = null) {
+    const res = rolesApiClient.GetRoles(labels);
 
     const succeed = check(res, {
         "GetRoles - status code is 200": (r) => r.status === 200,

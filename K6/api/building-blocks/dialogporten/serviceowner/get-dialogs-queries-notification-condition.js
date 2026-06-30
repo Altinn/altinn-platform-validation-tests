@@ -15,14 +15,14 @@ export function GetDialogsQueriesNotificationCondition(
     conditionType,
     activityType,
     transmissionId,
-    label = null
+    labels = null
 ) {
     const res = serviceOwnerApiClient.GetDialogsQueriesNotificationCondition(
         dialogId,
         conditionType,
         activityType,
         transmissionId,
-        label
+        labels
     );
 
     const success = check(res, {

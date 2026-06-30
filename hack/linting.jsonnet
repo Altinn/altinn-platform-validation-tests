@@ -22,11 +22,11 @@ local utils = import './utils.libsonnet';
       steps: [
         {
           name: 'Checkout code',
-          uses: 'actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98',
+          uses: utils.checkoutAction,
         },
         {
           name: 'Use Node.js',
-          uses: 'actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238',
+          uses: utils.setupNode,
           with: {
             'node-version': '24.x',
           },
@@ -40,33 +40,14 @@ local utils = import './utils.libsonnet';
           run: 'npm run lint',
         },
         {
-          name: 'Ensure javascript files are Kebab Case',
+          name: 'Ensure javascript files are Kebab Case and that generation of manifests works',
           shell: 'bash',
-          run: './validate.sh',
-        },
-      ],
-    },
-    validate_generation: {
-      'runs-on': 'ubuntu-latest',
-      strategy: {
-        matrix: {
-          config_file: [c for c in config_files],
-        },
-      },
-      steps: [
-        {
-          uses: 'actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98',
+          run: './hack/validate.sh',
         },
         {
-          uses: utils.generateK6ManifetsAction,
-          with: {
-            config_file: '${{ matrix.config_file }}',
-          },
-        },
-        {
-          name: 'Tree',
+          name: 'Ensure there are no trailing white spaces',
           shell: 'bash',
-          run: 'tree .dist/',
+          run: './hack/fix_whitespaces.sh',
         },
       ],
     },

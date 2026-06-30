@@ -2,11 +2,11 @@
 import http from "k6/http";
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
-import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = "getAuthorizedPartiesForUserDPWithFilter";
+const label = { action: "getAuthorizedPartiesForUserDPWithFilter" };
 
 export const options = getOptions([label]);
 
@@ -28,12 +28,15 @@ export default function (data) {
         "urn:altinn:person:identifier-no",
         userParty.ssn,
         queryParams,
-        label,
-        parties
+        parties,
+        label
+
     );
 }
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/party-avgivere-${__ENV.ENVIRONMENT}.csv`);
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/party-avgivere-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } });
     return parseCsvData(res.body);
 }

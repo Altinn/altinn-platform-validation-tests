@@ -1,0 +1,13 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/consent/
+test_definitions:
+  - test_file: post-consent.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02
+  - test_file: consent-request-events.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02

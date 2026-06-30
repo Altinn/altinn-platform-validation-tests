@@ -1,6 +1,10 @@
 import http from "k6/http";
 import { URL } from "../../common-imports.js";
 
+const TAGS = {
+    GetUpdatedResources: { action: "get-updated-resources" },
+};
+
 class ResourceRegistryApiClient {
     /**
      *
@@ -28,6 +32,10 @@ class ResourceRegistryApiClient {
         this.baseUrl = baseUrl;
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * Get Updated Resources
     * @param {string} since ISO 8601 timestamp, e.g. 2000-01-01T01:00:00.000Z
@@ -35,14 +43,21 @@ class ResourceRegistryApiClient {
     * @param {string|null} label Label for the request
     * @returns http.RefinedResponse
     */
-    GetUpdatedResources(since, limit, label = null) {
-        const url = new URL(`${this.FULL_PATH}/updated`);
+    GetUpdatedResources(since, limit, labels = null) {
+        const url = new URL(`${this.FULL_PATH}`);
         url.searchParams.append("since", since);
         url.searchParams.append("limit", limit);
 
-        let nameTag = label ? label : url.pathname;
+        let tags = {
+            endpoint: `${this.FULL_PATH}`,
+            name: `${this.FULL_PATH}`,
+            action: TAGS.GetUpdatedResources.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag },
+            tags: tags,
             headers: {
                 "Content-type": "application/json",
             },
@@ -74,7 +89,7 @@ class ResourceRegistryApiClient {
      * @returns http.RefinedResponse
      */
     PutResource(id, resourceBody, label = null) {
-        const token = this.tokenGenerator ? this.tokenGenerator.getToken() : "no token"; 
+        const token = this.tokenGenerator ? this.tokenGenerator.getToken() : "no token";
         const url = new URL(`${this.FULL_PATH}${id}`);
         let nameTag = label ? label : url.pathname;
         const params = {
@@ -94,7 +109,7 @@ class ResourceRegistryApiClient {
      * @returns http.RefinedResponse
      */
     PostResource(resourceBody) {
-        const token = this.tokenGenerator ? this.tokenGenerator.getToken() : "no token"; 
+        const token = this.tokenGenerator ? this.tokenGenerator.getToken() : "no token";
         const url = new URL(`${this.FULL_PATH}`);
 
         const params = {
@@ -114,7 +129,7 @@ class ResourceRegistryApiClient {
      * @returns http.RefinedResponse
      */
     PostPolicy(resourceId, xml) {
-        const token = this.tokenGenerator ? this.tokenGenerator.getToken() : "no token"; 
+        const token = this.tokenGenerator ? this.tokenGenerator.getToken() : "no token";
         const url = new URL(`${this.FULL_PATH}${resourceId}/policy`);
 
         const payload = {

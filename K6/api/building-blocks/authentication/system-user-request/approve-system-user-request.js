@@ -20,7 +20,7 @@ export function ApproveSystemUserRequest(
         partyId,
         requestId
     );
-    check(res, {
+    const succeed = check(res, {
         "ApproveSystemUserRequest - status code is 200": (r) => r.status === 200,
         "ApproveSystemUserRequest - status text is 200 OK": (r) => r.status_text == "200 OK",
         "ApproveSystemUserRequest - body is not empty": (r) => {
@@ -28,5 +28,11 @@ export function ApproveSystemUserRequest(
             return res_body !== null && res_body !== undefined;
         }
     });
+
+    if (!succeed) {
+        console.error(res.status);
+        console.error(res.body);
+    }
+
     return res.body;
 }

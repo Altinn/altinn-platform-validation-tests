@@ -99,8 +99,8 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
 export function getNumberOfVUs() {
     return (
         exec.test.options.scenarios.default.vus ??
-    __ENV.BREAKPOINT_STAGE_TARGET ??
-    1
+        __ENV.BREAKPOINT_STAGE_TARGET ??
+        1
     );
 }
 
@@ -109,7 +109,7 @@ export function getNumberOfVUs() {
  * @param {} labels
  * @returns
  */
-export function getOptions(labels) {
+export function getOptions(labels, groups = []) {
     const options = {
         summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
@@ -117,12 +117,18 @@ export function getOptions(labels) {
     };
 
     // Set labels with empty arrays to collect stats.
-    for (const label of labels) {
-        options.thresholds[`http_req_duration{name:${label}}`] = [];
-        options.thresholds[`http_req_failed{name:${label}}`] = [];
-        options.thresholds[`http_reqs{name:${label}}`] = [];
+    for (let label of labels) {
+        for (let [key, value] of Object.entries(label)) {
+            options.thresholds[`http_req_duration{${key}:${value}}`] = [];
+            options.thresholds[`http_req_failed{${key}:${value}}`] = [];
+            options.thresholds[`http_reqs{${key}:${value}}`] = [];
+        }
     }
 
+
+    for (const group of groups) {
+        options.thresholds[`http_req_duration{group:::${group}}`] = [];
+    }
     return options;
 }
 
@@ -133,4 +139,65 @@ export function checkIp(ip) {
         /^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})$|^([0-9a-fA-F]{1,4}:){1,7}:$|^([0-9a-fA-F]{1,4}:){1,6}(:[0-9a-fA-F]{1,4}){1,2}$|^([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,3}$|^([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,4}$|^([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,5}$|^([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,6}$|^[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,7}|:)$/;
 
     return ipv4.test(ip) || ipv6.test(ip);
+}
+
+/**
+ * Ensures required environment variables exist.
+ * @param {string[]} vars - Array of environment variable names
+ * @returns {Object} key-value map of env vars
+ */
+export function requireEnv(vars) {
+    const missing = [];
+    const result = {};
+
+    for (const name of vars) {
+        const value = __ENV[name];
+
+        if (value === undefined || value === "") {
+            missing.push(name);
+        } else {
+            result[name] = value;
+        }
+    }
+
+    if (missing.length > 0) {
+        // Fail the test immediately with a clear message
+        throw new Error(
+            `Missing required environment variables: ${missing.join(", ")}`
+        );
+    }
+
+    return result;
+}
+
+
+/**
+ * Picks a specified number of unique random items from a list.
+ * Each selected item is removed from the pool before the next pick,
+ * ensuring no duplicates are returned.
+ *
+ * @param {Array<any>} list - The source array to pick items from.
+ * @param {number} count - The number of unique items to select.
+ * @returns {Array<any>} An array containing the randomly selected unique items.
+ *
+ * @throws {Error} If `count` is greater than the size of the list.
+ *
+ * @example
+ * const [from, to, user] = pickUnique(users, 3);
+ */
+export function pickUnique(list, count) {
+    if (count > list.length) {
+        throw new Error("Cannot pick more unique items than exist in the list");
+    }
+
+    const copy = [...list];
+    const result = [];
+
+    for (let i = 0; i < count; i++) {
+        const item = getItemFromList(copy, true);
+        result.push(item);
+        copy.splice(copy.indexOf(item), 1);
+    }
+
+    return result;
 }

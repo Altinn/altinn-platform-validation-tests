@@ -1,16 +1,21 @@
-import http from "k6/http";
-import { check } from "k6";
+import { getInfoCloud } from "./commons.js";
+import { getOptions } from "../../../helpers.js";
+
+const rootLabel = { step: "get infocloud" };
+const authorizedPartiesLabel = { step: "authorizedParties" };
+const favoritesLabel = { step: "favorites" };
+const currentLabel = { step: "current" };
+
+export const options = getOptions([
+    rootLabel,
+    authorizedPartiesLabel,
+    favoritesLabel,
+    currentLabel,
+]);
 
 export default function () {
-    const res = http.get(__ENV.INFO_CLOUD_URL);
-    // console.log(res);
-
-    const succeed = check(res, {
-        "status code is 200": (r) => r.status === 200,
-        "status text is 200 OK": (r) => r.status_text == "200 OK",
-    });
-    if (!succeed) {
-        console.log(res.status);
-        console.log(res.body);
-    }
-}
+    getInfoCloud("/", rootLabel);
+    getInfoCloud("/api/users/authorized-parties", authorizedPartiesLabel);
+    getInfoCloud("/api/users/favorites", favoritesLabel);
+    getInfoCloud("/api/users/current", currentLabel);
+};

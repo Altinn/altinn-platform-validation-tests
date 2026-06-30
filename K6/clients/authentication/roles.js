@@ -1,5 +1,9 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetRoles: { action: "get-roles" },
+};
+
 class RolesApiClient {
     /**
      *
@@ -20,17 +24,28 @@ class RolesApiClient {
 
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * Get Roles
     * Docs TODO: This link does not work, nothing yet {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Roles}
-    * @param {string} label
+    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
     * @returns http.RefinedResponse
     */
-    GetRoles(label) {
+    GetRoles(labels) {
         const url = new URL(`${this.FULL_PATH}`);
-        let nameTag = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.GetRoles.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: nameTag },
+            tags: tags,
             headers: {
                 "Content-type": "application/json",
             },

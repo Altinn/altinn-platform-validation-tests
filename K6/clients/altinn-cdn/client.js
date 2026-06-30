@@ -1,4 +1,5 @@
 import http from "k6/http";
+import { requireEnv } from "../../helpers.js";
 
 class AltinnCdnClient {
     /**
@@ -8,6 +9,7 @@ class AltinnCdnClient {
     constructor(
         baseUrl = __ENV.ALTINN_CDN_BASE_URL
     ) {
+        requireEnv(["ALTINN_CDN_BASE_URL"]);
         this.BASE_URL = baseUrl;
     }
 
@@ -21,7 +23,15 @@ class AltinnCdnClient {
             environment = "production";
         }
         const orgs = [];
-        const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json");
+
+        const params = {
+            tags: {
+                "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json",
+                "action": "GetOrgs"
+            },
+        };
+
+        const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params);
         console.log(this.BASE_URL + "/orgs/altinn-orgs.json");
         if (res.status == 200) {
             const res_body = JSON.parse(res.body);

@@ -10,11 +10,21 @@ export { URL } from "https://jslib.k6.io/url/1.0.0/index.js";
 export { default as papaparse } from "https://jslib.k6.io/papaparse/5.1.1/index.js";
 
 export {
+    PersonalTokenGeneratorOptions,
     PersonalTokenGenerator,
+
+    EnterpriseTokenGeneratorOptions,
     EnterpriseTokenGenerator,
-    MaskinportenAccessTokenGenerator,
+
+    PlatformTokenGeneratorOptions,
     PlatformTokenGenerator,
-} from "https://github.com/Altinn/altinn-platform/releases/download/altinn-k6-lib-0.0.8/index.js";
+} from "./token-generator.js";
+
+export {
+    MaskinportenAccessTokenGenerator,
+    MaskinportenTokenGeneratorOptions
+
+} from "./maskinporten.js";
 
 import { expect } from "https://jslib.k6.io/k6-testing/0.5.0/index.js";
 

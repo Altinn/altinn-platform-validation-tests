@@ -1,5 +1,10 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetConnections: { action: "get-connections" },
+    GetAccessPackages: { action: "get-access-packages" },
+};
+
 class ConnectionsApiClient {
     /**
      *
@@ -9,11 +14,11 @@ class ConnectionsApiClient {
     constructor(
         baseUrl,
         tokenGenerator,
-        bff=false,
+        bff = false,
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -30,6 +35,11 @@ class ConnectionsApiClient {
         }
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
     * Get connections
     * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections}
@@ -38,12 +48,19 @@ class ConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetConnections(queryParams, label = null) {
+    GetConnections(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetConnections.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -60,12 +77,19 @@ class ConnectionsApiClient {
     * @param {string|null} label - label for the request
     * @returns http.RefinedResponse
     */
-    GetAccessPackages(queryParams, label = null) {
+    GetAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackages`);
-        const tags = label ? label : url.toString();
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.GetAccessPackages.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
         const params = {
-            tags: { name: tags },
+            tags: tags,
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

@@ -1,105 +1,141 @@
-import http from "k6/http";
 import {
     PersonalTokenGenerator,
     EnterpriseTokenGenerator,
     uuidv4,
-    randomItem
+    randomItem,
 } from "../../../../common-imports.js";
-import { parseCsvData } from "../../../../helpers.js";
-import { ConsentApiClient } from "../../../../clients/authentication/index.js";
-import { RequestConsent, ApproveConsent } from "../../../building-blocks/authentication/consent/index.js";
+import { getOptions, requireEnv } from "../../../../helpers.js";
+import {
+    BffAccessManagementApiClient,
+    ConsentApiClient,
+} from "../../../../clients/authentication/index.js";
+import {
+    ConsentScope,
+    MaskinportenConsentScope,
+} from "../../../../scopes.js";
+import {
+    RequestConsent,
+    ApproveConsent,
+    LookupConsent,
+} from "../../../building-blocks/authentication/consent/index.js";
+import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
+
+import {
+    consentValidTo,
+    getConsenteeOrgs,
+    getConsenterPersons,
+    getEnterpriseBaseTokenOpts,
+    getEnterpriseTokenOpts,
+    getPersonalBaseTokenOpts,
+    getPersonalTokenOpts,
+} from "./consent-commons.js";
+
+// Labels for the different steps in the consent process, used for tagging requests in K6.
+const requestConsentLabel = { action: "Request Consent" };
+const approveConsentLabel = { action: "Approve Consent" };
+const getConsentLogLabel = { action: "Get Consent Log" };
+const lookupConsentLabel = { action: "Lookup Consent" };
+
+export const options = getOptions([requestConsentLabel, approveConsentLabel, getConsentLogLabel, lookupConsentLabel]);
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
-    return parseCsvData(res.body);
+    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
+    const env = __ENV.ENVIRONMENT;
+    return {
+        orgs: getConsenteeOrgs(env),
+        persons: getConsenterPersons(env),
+    };
 }
 
-let from = undefined;
-let to = undefined;
+let consenteeApiClient;
+let consenterApiClient;
+let consentLookupApiClient;
+let accessManagementApiClient;
+let consenteeTokenGenerator;
+let consenterTokenGenerator;
 
-function selectRandomFromToPair(data) {
-    console.log(from, to);
-    if (!from || !to) {
-        from = randomItem(data);
-        // Make sure to and from are not the same
-        do {
-            to = randomItem(data);
-        } while (to === from);
+function getClients() {
+    if (consenteeApiClient == undefined) {
+        consenteeTokenGenerator = new EnterpriseTokenGenerator(
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
+        );
+        consenteeApiClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
+
+        consenterTokenGenerator = new PersonalTokenGenerator(
+            getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
+        );
+        consenterApiClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
+
+        // Maskinporten uses this endpoint to look up consent before fetching the token.
+        const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, MaskinportenConsentScope.LOOKUP)
+        );
+        consentLookupApiClient = new ConsentApiClient(__ENV.BASE_URL, consentLookupTokenGenerator);
+
+        accessManagementApiClient = new BffAccessManagementApiClient(
+            __ENV.AM_UI_BASE_URL,
+            consenterTokenGenerator
+        );
     }
-    return [from, to];
+    return [consenteeApiClient, consenterApiClient, consentLookupApiClient, accessManagementApiClient];
 }
 
-
-let consenterApiClient = undefined;
-let consenteeApiClient = undefined;
-
-function getClients(orgNo, userId, partyUuid) {
-    if (consenterApiClient == undefined || consenteeApiClient == undefined) {
-        console.log("Configuring Clients");
-        console.log(`orgNo: ${orgNo} -- userId: ${userId}`);
-        // consentee
-        const optionsConsentee = new Map();
-        optionsConsentee.set("env", __ENV.ENVIRONMENT);
-        optionsConsentee.set("ttl", 3600);
-        optionsConsentee.set("scopes", "altinn:consentrequests.write");
-        //optionsConsentee.set("org", "ttd");
-        optionsConsentee.set("orgNo", orgNo);
-
-        const tokenGeneratorConsentee
-            = new EnterpriseTokenGenerator(optionsConsentee);
-        consenteeApiClient
-            = new ConsentApiClient(__ENV.BASE_URL, tokenGeneratorConsentee);
-
-        // consenter
-        const optionsConsenter = new Map();
-        optionsConsenter.set("env", __ENV.ENVIRONMENT);
-        optionsConsenter.set("ttl", 3600);
-        optionsConsenter.set("scopes", "altinn:portal/enduser");
-        optionsConsenter.set("userId", userId);
-        optionsConsenter.set("partyuuid", partyUuid);
-
-        const tokenGeneratorConsenter
-            = new PersonalTokenGenerator(optionsConsenter);
-        consenterApiClient
-            = new ConsentApiClient(__ENV.BASE_URL, tokenGeneratorConsenter);
-    }
-    return [consenteeApiClient, consenterApiClient];
+function consentRights() {
+    return [
+        {
+            action: ["consent"],
+            resource: [
+                { type: "urn:altinn:resource", value: "samtykke-performance-test" },
+            ],
+            metaData: { inntektsaar: "2026" },
+        },
+    ];
 }
-
 
 export default function (data) {
-    if (!from || !to) {
-        [from, to] = selectRandomFromToPair(data);
-    }
+    const [
+        consenteeApiClient,
+        consenterApiClient,
+        consentLookupApiClient,
+        accessManagementApiClient,
+    ] = getClients();
 
-    let [consenteeApiClient, consenterApiClient] = getClients(to.orgNo, from.userId, from.partyUuid);
+    // Pick a random consentee org and consenter person for this iteration so
+    // consents spread across all organizations and persons.
+    const org = randomItem(data.orgs);
+    const person = randomItem(data.persons);
+
+    consenteeTokenGenerator.setTokenGeneratorOptions(
+        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.WRITE)
+    );
+    consenterTokenGenerator.setTokenGeneratorOptions(
+        getPersonalTokenOpts(__ENV.ENVIRONMENT, person.partyUuid)
+    );
 
     const id = uuidv4();
-    const personIdentifierNo = `urn:altinn:person:identifier-no:${from.ssn}`;
-    const orgIdentifierNo = `urn:altinn:organization:identifier-no:${to.orgNo}`;
-    const resource = "samtykke-performance-test";
-    const consentRights = [{
-        "action": ["consent"],
-        "resource": [
-            {
-                "type": "urn:altinn:resource",
-                "value": resource
-            } // Vil alltid være bare en
-        ],
-        "metaData": {
-            "inntektsaar": "2026"
-        }
-    }
-    ];
-    let response = RequestConsent(
+    const personIdentifierNo = `urn:altinn:person:identifier-no:${person.ssn}`;
+    const orgIdentifierNo = `urn:altinn:organization:identifier-no:${org.orgNo}`;
+
+    RequestConsent(
         consenteeApiClient,
         id,
         personIdentifierNo,
         orgIdentifierNo,
-        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        consentRights,
-        "https://altinn.no"
+        consentValidTo(),
+        consentRights(),
+        "https://altinn.no",
+        requestConsentLabel
     );
 
-    response = ApproveConsent(consenterApiClient, id);
+    ApproveConsent(consenterApiClient, id, approveConsentLabel);
+
+    GetConsentLog(accessManagementApiClient, person.partyUuid, getConsentLogLabel);
+
+    LookupConsent(
+        consentLookupApiClient,
+        id,
+        personIdentifierNo,
+        orgIdentifierNo,
+        lookupConsentLabel
+    );
 }

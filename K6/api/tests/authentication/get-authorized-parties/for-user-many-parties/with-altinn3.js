@@ -14,12 +14,13 @@ export default function () {
     const queryParams = {
         includeAltinn3: "true",
     };
-    
+
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",
         userParty.pid,
         queryParams,
-        userParty.label,
+        null,
+        { unique_id: userParty.label },
     );
 }

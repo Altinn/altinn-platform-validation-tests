@@ -1,5 +1,17 @@
 import http from "k6/http";
 
+const TAGS = {
+    GetAllSystemsFromRegister: { action: "get-all-systems-from-register" },
+    GetSystemRegisterById: { action: "get-system-register-by-id" },
+    GetVendorSystemRegisterById: { action: "get-vendor-system-register-by-id" },
+    UpdateVendorSystemRegister: { action: "update-vendor-system-register" },
+    UpdateVendorAccessPackages: { action: "update-vendor-access-packages" },
+    UpdateRightsVendorSystemRegister: { action: "update-rights-vendor-system-register" },
+    DeleteSystemSystemRegister: { action: "delete-system-system-register" },
+    GetSystemRegisterRights: { action: "get-system-register-rights" },
+    CreateSystemRegister: { action: "create-system-register" },
+};
+
 class SystemRegisterApiClient {
     /**
      *
@@ -10,9 +22,9 @@ class SystemRegisterApiClient {
         baseUrl,
         tokenGenerator
     ) {
-    /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+        /**
+            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+            */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -24,16 +36,24 @@ class SystemRegisterApiClient {
         this.BASE_PATH = "/authentication/api/v1/systemregister";
     }
 
+
+    static get TAGS() {
+        return TAGS;
+    }
+
     /**
      * Retrieves the List of all the Registered Systems, except those marked as deleted.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister|/systemregister}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister}
      * @returns http.RefinedResponse
      */
     GetAllSystemsFromRegister() {
         const token = this.tokenGenerator.getToken();
         const url = this.FULL_PATH;
         const params = {
-            tags: { name: url },
+            tags: {
+                endpoint: url.toString(),
+                action: TAGS.GetAllSystemsFromRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -44,7 +64,6 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a Registered System frontend DTO for the systemId.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister__systemId_|/systemregister/systemId}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -52,7 +71,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/systemId`,
+                name: `${this.FULL_PATH}/systemId`,
+                action: TAGS.GetSystemRegisterById.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -63,7 +86,7 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a Registered System for the systemId.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister_vendor__systemId_|/systemregister/vendor/systemId}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId_}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -71,7 +94,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/systemId`,
+                name: `${this.FULL_PATH}/vendor/systemId`,
+                action: TAGS.GetVendorSystemRegisterById.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -82,7 +109,7 @@ class SystemRegisterApiClient {
 
     /**
      * Replaces the entire registered system
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_|/systemregister/vendor/systemId}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_}
      * @param {string } systemId The Id of the Registered System
      * @param {string } vendorId
      * @param {string } name
@@ -104,7 +131,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/systemId`,
+                name: `${this.FULL_PATH}/vendor/systemId`,
+                action: TAGS.UpdateVendorSystemRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -138,7 +169,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId/accesspackages` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/systemId/accesspackages`,
+                name: `${this.FULL_PATH}/vendor/systemId/accesspackages`,
+                action: TAGS.UpdateVendorAccessPackages.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -149,7 +184,7 @@ class SystemRegisterApiClient {
 
     /**
      * Updates the rights on a registered system
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId__rights|/systemregister/vendor/systemId/rights}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
     *  @param {string } systemId The Id of the Registered System
     *  @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body
      * @returns http.RefinedResponse
@@ -158,7 +193,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId/rights` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/systemId/rights`,
+                name: `${this.FULL_PATH}/vendor/systemId/rights`,
+                action: TAGS.UpdateRightsVendorSystemRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -169,7 +208,7 @@ class SystemRegisterApiClient {
 
     /**
      * Set the registered system to be deleted.
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/delete_systemregister_vendor__systemId_|/systemregister/vendor/systemId}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/delete_systemregister_vendor__systemId_}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -177,7 +216,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor/systemId` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor/systemId`,
+                name: `${this.FULL_PATH}/vendor/systemId`,
+                action: TAGS.DeleteSystemSystemRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -188,7 +231,7 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a list of the predfined default rights for the Product type, if any
-     * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights|/systemregister/systemId/rights}
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -196,7 +239,11 @@ class SystemRegisterApiClient {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/${systemId}/rights`;
         const params = {
-            tags: { name: `${this.FULL_PATH}/systemId/rights` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/systemId/rights`,
+                name: `${this.FULL_PATH}/systemId/rights`,
+                action: TAGS.GetSystemRegisterRights.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
@@ -207,7 +254,7 @@ class SystemRegisterApiClient {
 
     /**
     * Create a new System
-    * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/SystemRegister/post_systemregister_vendor|/systemregister/vendor}
+    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/post_systemregister_vendor}
     * @param {string } vendorId
     * @param {string } name
     * @param {string[] } clientId
@@ -245,7 +292,10 @@ class SystemRegisterApiClient {
             "ClientId": [`${clientId}`]
         };
         const params = {
-            tags: { name: `${this.FULL_PATH}/vendor` },
+            tags: {
+                endpoint: `${this.FULL_PATH}/vendor`,
+                action: TAGS.CreateSystemRegister.action
+            },
             headers: {
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",

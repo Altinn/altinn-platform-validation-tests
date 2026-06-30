@@ -1,4 +1,9 @@
 import http from "k6/http";
+import { requireEnv } from "../../helpers.js";
+
+const TAGS = {
+    LookupParties: { action: "lookup-parties" },
+};
 
 export class RegisterLookupClient {
     /**
@@ -7,6 +12,8 @@ export class RegisterLookupClient {
    * @param {*} tokenGenerator
    */
     constructor(baseUrl, tokenGenerator) {
+        requireEnv(["REGISTER_SUBSCRIPTION_KEY"]);
+
         /**
          * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
          */
@@ -19,6 +26,10 @@ export class RegisterLookupClient {
      * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
      */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
+    }
+
+    static get TAGS() {
+        return TAGS;
     }
 
     /**
@@ -49,7 +60,7 @@ export class RegisterLookupClient {
    * @param {string|null} label - Optional label for the request tag.
    * @returns http.RefinedResponse
    */
-    LookupParties(fields, query, label = null) {
+    LookupParties(fields, query, labels = null) {
         if (query === null || query === undefined) {
             throw new Error("LookupParties: query is required but was not provided");
         }
@@ -67,9 +78,19 @@ export class RegisterLookupClient {
         }
         const url = new URL(urlString);
 
+        let tags = {
+            endpoint: this.FULL_PATH,
+            action: TAGS.LookupParties.action
+        };
+        if (labels != null) {
+            tags = {
+                ...labels, ...tags
+            };
+        }
+
         const body = JSON.stringify(query);
         const params = {
-            tags: { name: label || url.toString() },
+            tags: tags,
             headers: {
                 PlatformAccessToken: `${token}`,
                 "Content-Type": "application/json",
