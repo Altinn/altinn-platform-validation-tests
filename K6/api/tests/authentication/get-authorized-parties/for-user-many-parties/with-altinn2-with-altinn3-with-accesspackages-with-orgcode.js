@@ -1,9 +1,9 @@
 
-import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
-import { endUsers, endUserLabels } from "./end-users.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/authentication/authorized-parties/index.js";
+import { endUserLabels, endUsers } from "./end-users.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
 
@@ -24,17 +24,34 @@ const orgCodes = [
 ];
 
 export const options = getOptions(endUserLabels);
+
+/**
+ * @type {AuthorizedPartiesClient | undefined}
+ */
 let authorizedPartiesClient = undefined;
 
+/**
+ * k6 setup function.
+ *
+ * Validates required environment variables before the test runs.
+ *
+ * @returns {void}
+ */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     return;
 }
 
 /**
- * Function to set up and return clients to interact with the Authorized Parties API
+ * Creates and caches the client used to interact with the
+ * Authorized Parties API.
  *
- * @returns {Array} An array containing the AuthorizedPartiesClient instance
+ * The client uses an enterprise token with the
+ * `altinn:accessmanagement/authorizedparties.admin` scope.
+ * The same {@link AuthorizedPartiesClient} instance is reused on
+ * subsequent calls.
+ *
+ * @returns {[AuthorizedPartiesClient]} The initialized API client.
  */
 function getClients() {
     if (authorizedPartiesClient == undefined) {
@@ -42,9 +59,15 @@ function getClients() {
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        authorizedPartiesClient = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
+
+        authorizedPartiesClient = new AuthorizedPartiesClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [authorizedPartiesClient];
 }
 

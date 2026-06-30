@@ -1,6 +1,7 @@
-import { getInfoCloud, searchInfoCloud } from "./commons.js";
-import { getOptions } from "../../../helpers.js";
 import http from "k6/http";
+
+import { getOptions } from "../../../helpers.js";
+import { getInfoCloud, searchInfoCloud } from "./commons.js";
 
 export function setup() {
     const response = http.get(

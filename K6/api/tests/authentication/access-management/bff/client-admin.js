@@ -7,16 +7,16 @@
  * The test uses a personal token generator to authenticate requests and interacts with the BFF API clients for connections, client delegations, and access packages.
  */
 
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
 
-import { getItemFromList, getOptions, parseCsvData, segmentData, getNumberOfVUs, requireEnv } from "../../../../../helpers.js";
-import { BffConnectionsApiClient, BffClientDelegationsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
-import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/delegate.js";
+import { GetAgents, GetClients } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
-import { PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
@@ -28,13 +28,23 @@ const getAgentsLabel = { step: `2. ${BffClientDelegationsApiClient.TAGS.GetAgent
 const getClientsLabel = { step: `3. ${BffClientDelegationsApiClient.TAGS.GetClients.action}` };
 const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.GetDelegationCheck.action}` };
 
+/**
+ * Whether test data should be randomized.
+ *
+ * Defaults to `true` when the `RANDOMIZE` environment variable is not provided.
+ *
+ * @type {boolean}
+ */
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
 // clients to use
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
+/** @type {BffClientDelegationsApiClient | undefined} */
 let clientDelegationsApiClient = undefined;
+/** @type {BffConnectionsApiClient | undefined} */
 let connectionsApiClient = undefined;
+/** @type {BffAccessPackageApiClient | undefined} */
 let accessPackageApiClient = undefined;
 
 // get k6 options
@@ -53,6 +63,19 @@ export function setup() {
     return segmentedData;
 }
 
+/**
+ * Creates and caches API clients used by the scenario.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffConnectionsApiClient,
+ *   BffClientDelegationsApiClient,
+ *   BffAccessPackageApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();

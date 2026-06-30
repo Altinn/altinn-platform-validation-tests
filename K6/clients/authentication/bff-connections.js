@@ -31,8 +31,6 @@ class BffConnectionsApiClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
-
-
     static get TAGS() {
         return TAGS;
     }
@@ -67,7 +65,6 @@ class BffConnectionsApiClient {
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
     }
-
 
     /**
     * Post rightholder for an user
@@ -135,7 +132,7 @@ class BffConnectionsApiClient {
     /**
      * Delete rightholder connection for a reportee
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {*} labels - labels for the request, if null the url will be used as label
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
      */
     DeleteRightholder(queryParams, labels = null) {

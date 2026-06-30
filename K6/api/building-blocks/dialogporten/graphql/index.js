@@ -1,8 +1,8 @@
 export {
     GetAllDialogsForParty,
     GetAllDialogsForPartyCheckForDialogId,
-    GetDialogById,
     GetAndVerifyDialogById,
-    GetParties,
+    GetDialogById,
     GetFilterServiceResources,
+    GetParties,
 } from "./graphql.js";

@@ -1,6 +1,6 @@
 import { check } from "k6";
-import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 
+import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  * Retrieves a Registered System frontend DTO for the systemId.

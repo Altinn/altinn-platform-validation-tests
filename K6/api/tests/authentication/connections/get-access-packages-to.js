@@ -1,12 +1,15 @@
-import { GetAccessPackages } from "../../../building-blocks/authentication/connections/index.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { getClients, getTokenOpts } from "./common-functions.js";
 import exec from "k6/execution";
+
+import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { PersonalTokenGenerator } from "../../../../token-generator.js";
+import { GetAccessPackages } from "../../../building-blocks/authentication/connections/index.js";
+import { getClients, getTokenOpts } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 // Labels for different actions
-const getAccessPackagesToLabel = { action: "Get accesspackages to" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const getAccessPackagesToLabel = { step: "Get accesspackages to" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 // get k6 options
 export const options = getOptions([getAccessPackagesToLabel, tokenGeneratorLabel]);

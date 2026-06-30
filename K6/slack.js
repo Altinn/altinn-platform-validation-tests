@@ -44,7 +44,6 @@ export function createDefaultPayload() {
     };
 }
 
-
 function buildPayload(data, report) {
     var payload = createDefaultPayload();
     let sectionBlocks = payload.attachments.find(

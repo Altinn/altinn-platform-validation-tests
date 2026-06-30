@@ -1,7 +1,8 @@
-import { GetUpdatedResources } from "../../../building-blocks/authentication/resource-registry/index.js";
-import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 import { check } from "k6";
+
+import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 import { requireEnv } from "../../../../helpers.js";
+import { GetUpdatedResources } from "../../../building-blocks/authentication/resource-registry/index.js";
 
 let resourceRegistryApiClient = undefined;
 

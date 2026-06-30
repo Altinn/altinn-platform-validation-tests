@@ -1,15 +1,17 @@
-import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
-import { getItemFromList, getOptions, segmentData, parseCsvData, getNumberOfVUs } from "../../../../helpers.js";
-import { randomIntBetween } from "../../../../common-imports.js";
-import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
+
+import { randomIntBetween } from "../../../../common-imports.js";
+import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
+import { getClients } from "./common-functions.js";
 
 // Labels for different actions
-const pdpAuthorizeLabel = { action: "PDP Authorize" };
-const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const pdpAuthorizeLabel = { step: "PDP Authorize" };
+const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 

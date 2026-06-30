@@ -12,42 +12,57 @@
  * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
  */
 
-import { getOptions, requireEnv } from "../../../../helpers.js";
-import { randomItem } from "../../../../common-imports.js";
-
 import {
     ConsentApiClient,
     ConsentRequestEventsQueryBuilder,
 } from "../../../../clients/authentication/index.js";
+import { randomItem } from "../../../../common-imports.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { getOptions, requireEnv } from "../../../../helpers.js";
 import { ConsentScope } from "../../../../scopes.js";
-
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
-
 import {
     getConsenteeOrgs,
     getEnterpriseBaseTokenOpts,
     getEnterpriseTokenOpts,
 } from "./consent-commons.js";
 
-const getConsentRequestEventsLabel = { action: "Get Consent Request Events" };
+const getConsentRequestEventsLabel = { step: "Get Consent Request Events" };
 
 export const options = getOptions([getConsentRequestEventsLabel]);
 
-let consentApiClient;
-let tokenGenerator;
+/**
+ * @type {ConsentApiClient | undefined}
+ */
+let consentApiClient = undefined;
 
-/*
- * Build the client once. The token generator is a module-level singleton whose
- * orgNo is set per iteration via setTokenGeneratorOptions.
+/**
+  * @type {EnterpriseTokenGenerator | undefined}
+ */
+let tokenGenerator = undefined;
+
+/**
+ * Creates and caches the client used to interact with the consent API.
+ *
+ * The same {@link EnterpriseTokenGenerator} and
+ * {@link ConsentApiClient} instances are reused on subsequent calls.
+ * The token generator's organization number is updated per iteration via
+ * `setTokenGeneratorOptions`.
+ *
+ * @returns {[ConsentApiClient]} The initialized consent API client.
  */
 function getClients() {
     if (consentApiClient == undefined) {
         tokenGenerator = new EnterpriseTokenGenerator(
             getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
         );
-        consentApiClient = new ConsentApiClient(__ENV.BASE_URL, tokenGenerator);
+
+        consentApiClient = new ConsentApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [consentApiClient];
 }
 
@@ -57,7 +72,7 @@ export function setup() {
 }
 
 export default function (orgs) {
-    const [eventsClient] = getClients();
+    const [consentApiClient] = getClients();
 
     // Pick a random organization from the list that holds the generated consents.
     const org = randomItem(orgs);
@@ -70,5 +85,5 @@ export default function (orgs) {
         new ConsentRequestEventsQueryBuilder()
             .build();
 
-    GetConsentRequestEvents(eventsClient, queryString, getConsentRequestEventsLabel);
+    GetConsentRequestEvents(consentApiClient, queryString, getConsentRequestEventsLabel);
 }

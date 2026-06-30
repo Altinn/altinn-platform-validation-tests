@@ -1,10 +1,10 @@
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
 
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { BffAccessManagementApiClient } from "../../../../../clients/authentication/index.js";
-import { PersonalTokenGeneratorOptions, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { DelegationExport } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { getTokenOpts } from "./commons.js";
 
@@ -20,10 +20,20 @@ export const options = getOptions(
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-let clientDelegationsApiClient = undefined;
+/** @type {BffAccessManagementApiClient | undefined} */
+let accessManagementApiClient = undefined;
 
-// get k6 options
-
+/**
+ * Creates and caches API clients used by the scenario.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffAccessManagementApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();
@@ -32,10 +42,10 @@ function getClients() {
         tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
-    if (clientDelegationsApiClient == undefined) {
-        clientDelegationsApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+    if (accessManagementApiClient == undefined) {
+        accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
-    return [clientDelegationsApiClient, tokenGenerator];
+    return [accessManagementApiClient, tokenGenerator];
 }
 
 /**
@@ -77,12 +87,12 @@ export function setup() {
  * Main function executed by each VU.
  */
 export default function (segmentedData) {
-    const [clientDelegationsApiClient, tokenGenerator] = getClients();
+    const [accessManagementApiClient, tokenGenerator] = getClients();
     const user = getItemFromList(segmentedData[exec.vu.idInTest - 1], randomize);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(user.userId, user.partyUuid));
     const queryParams = {
         partyUuid: user.orgUuid,
         includeSubunits: true,
     };
-    DelegationExport(clientDelegationsApiClient, queryParams, label);
+    DelegationExport(accessManagementApiClient, queryParams, label);
 }

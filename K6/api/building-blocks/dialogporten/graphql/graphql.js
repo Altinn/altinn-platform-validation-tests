@@ -1,6 +1,7 @@
 import { check } from "k6";
-import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
+
 import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
+import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
 
 /**
  * Function to get all dialogs for a party

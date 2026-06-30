@@ -1,13 +1,17 @@
-import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { getClients, getTokenOpts } from "./common-functions.js";
-import { randomIntBetween } from "../../../../common-imports.js";
-export { setup } from "./common-functions.js";
 import exec from "k6/execution";
 
+import { randomIntBetween } from "../../../../common-imports.js";
+import { getItemFromList, getOptions, pickUnique } from "../../../../helpers.js";
+import { PdpAuthorizeDagl } from "../../../building-blocks/authentication/pdp-authorize/index.js";
+import { getClients, getTokenOpts } from "./common-functions.js";
+
+export { setup } from "./common-functions.js";
+
+import { PersonalTokenGenerator } from "../../../../common-imports.js";
+
 // Labels for different actions
-const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 export const options = getOptions([pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
@@ -19,12 +23,7 @@ const resource = "ttd-dialogporten-performance-test-02";
  */
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
-    let org = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
-    while (party.orgno === org.orgno) {
-        // ensure org is different from party's org
-        org = getItemFromList(testData[exec.vu.idInTest - 1], true);
-    }
+    const [party, org] = pickUnique(testData[exec.vu.idInTest - 1], 2);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
     const action = randomIntBetween(0, 1) === 0 ? "read" : "write";
     const expectedResponse = "NotApplicable";

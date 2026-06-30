@@ -35,7 +35,6 @@ class ConnectionsApiClient {
         }
     }
 
-
     static get TAGS() {
         return TAGS;
     }

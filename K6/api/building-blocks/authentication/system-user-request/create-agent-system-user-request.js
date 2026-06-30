@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 
 /**

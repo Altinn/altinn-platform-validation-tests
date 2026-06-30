@@ -1,8 +1,9 @@
 import { check, group } from "k6";
-import { uuidv4, MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions } from "../../../../common-imports.js";
+
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
-import { CreateNewSystem, DeleteSystem, UpdateVendorAccessPackages } from "../../../building-blocks/authentication/system-register/index.js";
+import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
+import { CreateNewSystem, DeleteSystem, UpdateVendorAccessPackages } from "../../../building-blocks/authentication/system-register/index.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -36,7 +37,6 @@ export default function () {
         = new SystemRegisterApiClient(__ENV.BASE_URL, tokenGenerator);
 
     const [name, allowedRedirectUrls, clientId, vendorId, systemId, description, rights, accessPackages] = defaultObject();
-
 
     group("System Register Access Packages Workflow", function () {
         console.log("CreateNewSystem");

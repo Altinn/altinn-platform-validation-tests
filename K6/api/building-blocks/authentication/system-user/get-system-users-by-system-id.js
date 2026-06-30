@@ -1,5 +1,6 @@
-import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
 import { check } from "k6";
+
+import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  * Get SystemUsers for a given systemId (vendor endpoint).

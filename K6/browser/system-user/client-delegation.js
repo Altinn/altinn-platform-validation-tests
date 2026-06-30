@@ -1,11 +1,12 @@
-import { browser } from "k6/browser";
 import { check, fail } from "k6";
-import { expect, EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../common-imports.js";
-import { LoginPage, ClientDelegationPage } from "../pages/index.js";
-import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/authentication/index.js";
+import { browser } from "k6/browser";
+
 import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";
 import { CreateAgentSystemUserRequest } from "../../api/building-blocks/authentication/system-user-request/index.js";
+import { SystemRegisterApiClient, SystemUserRequestApiClient } from "../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, expect } from "../../common-imports.js";
 import { requireEnv } from "../../helpers.js";
+import { ClientDelegationPage, LoginPage } from "../pages/index.js";
 
 export function setup() {
     requireEnv(["AM_UI_BASE_URL", "BASE_URL", "ENVIRONMENT"]);
