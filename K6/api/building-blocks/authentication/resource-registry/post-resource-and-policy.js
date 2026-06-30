@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 
 /**
@@ -79,6 +80,4 @@ export function PostPolicy(resourceRegistryClient, resourceId, policyDefinition 
 
     return res;
 }
-
-
 

@@ -1,2 +1,2 @@
 export { GetUpdatedResources } from "./get-updated-resources.js";
-export { PostPolicy, PostResourceAndPolicy, PostResource } from "./post-resource-and-policy.js";
+export { PostPolicy, PostResource, PostResourceAndPolicy } from "./post-resource-and-policy.js";

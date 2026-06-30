@@ -1,7 +1,5 @@
 export { RegisterLookupClient } from "../register/lookup.js";
 export { AccessPackagesApiClient } from "./access-packages.js";
-export { ClientDelegationsApiClient } from "./client-delegations.js";
-export { BffClientDelegationsApiClient } from "./bff-client-delegations.js";
 export { AuthorizedPartiesClient } from "./authorized-parties.js";
 export { BffAccessManagementApiClient } from "./bff-access-management.js";
 export { BffAccessPackageApiClient } from "./bff-access-package.js";

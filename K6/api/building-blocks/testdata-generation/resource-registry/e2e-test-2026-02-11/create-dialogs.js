@@ -10,11 +10,11 @@
 * TOKEN_GENERATOR_USERNAME and TOKEN_GENERATOR_PASSWORD must also be set in the environment for token generation
 */
 import http from "k6/http";
-import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { CreateDialog } from "../../../dialogporten/serviceowner/index.js";
-import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 
+import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData } from "../../../../../helpers.js";
+import { CreateDialog } from "../../../dialogporten/serviceowner/index.js";
 
 const resources = [
     "k6-test-innbygger-stotte-tilskudd",

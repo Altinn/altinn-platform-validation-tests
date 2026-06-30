@@ -8,10 +8,10 @@
 *   ENVIRONMENT=yt01 BASE_URL=https://platform.yt01.altinn.cloud k6 run create-access-package-priv-resource.js
 *  TOKEN_GENERATOR_USERNAME and TOKEN_GENERATOR_PASSWORD must also be set in the environment for token generation
 */
-import { ResourceRegistryApiClient, AccessPackagesApiClient } from "../../../../../clients/authentication/index.js";
+import { AccessPackagesApiClient, ResourceRegistryApiClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { getResourceBody } from "../templates/resource-templates.js";
 import { getAccessPackageWithPrivPolicyXml } from "../templates/policy-builder.js";
+import { getResourceBody } from "../templates/resource-templates.js";
 
 let resourceRegistryApiClient = undefined;
 let accessPackagesApiClient = undefined;

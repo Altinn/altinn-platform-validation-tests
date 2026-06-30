@@ -54,7 +54,7 @@ export function getAccessPackagePolicyXml(id, accessPackage) {
                 attributeId: "urn:altinn:obligation1-assignment1",
                 category: "urn:altinn:minimum-authenticationlevel",
                 value: 3,
-            },{
+            }, {
                 obligationId: "urn:altinn:obligation:authenticationLevel2",
                 fulfillOn: "Permit",
                 attributeId: "urn:altinn:obligation2-assignment2",
@@ -99,7 +99,6 @@ export function getAccessPackageWithPrivPolicyXml(id, accessPackage) {
     };
     return buildPolicy(policyDefinition, id);
 }
-
 
 export function buildPolicy(definition, id) {
     let policyXml = `<?xml version="1.0" encoding="utf-8"?>

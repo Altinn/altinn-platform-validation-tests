@@ -11,8 +11,8 @@
 
 import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { getResourceBody } from "./templates/resource-templates.js";
 import { getDefaultPolicyXml } from "./templates/policy-builder.js";
+import { getResourceBody } from "./templates/resource-templates.js";
 
 let resourceRegistryApiClient = undefined;
 
