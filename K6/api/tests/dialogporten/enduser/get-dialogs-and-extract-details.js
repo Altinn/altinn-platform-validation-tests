@@ -11,9 +11,9 @@ import { getItemFromList, getOptions } from "../../../../helpers.js";
 
 import {
     GetDialog,
+    GetDialogs,
     GetDialogActivities,
     GetDialogActivity,
-    GetDialogs,
     GetDialogLookup,
     GetDialogSeenLog,
     GetDialogSeenLogs,
