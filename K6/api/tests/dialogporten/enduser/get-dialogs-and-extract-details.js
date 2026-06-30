@@ -77,8 +77,7 @@ function drilldown(enduserApiClient, dialogs) {
     getActivities(enduserApiClient, dialogId);
     getTransmissions(enduserApiClient, dialogId);
     getSeenLogs(enduserApiClient, dialogId);
-    const instanceRef = `urn:altinn:dialog-id:${dialogId}`;
-    GetDialogLookup(enduserApiClient, instanceRef, getDialogLookupLabel);
+    GetDialogLookup(enduserApiClient, dialogId, getDialogLookupLabel);
 }
 
 function getActivities(enduserApiClient, dialogId) {
