@@ -5,17 +5,17 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 /**
  * Function to get dialogLookup
  * @param {EnduserApiClient} enduserApiClient
- * @param {string} queryParams - query parameters for the request
+ * @param {string}  dialogId
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @return response body of the request
  */
 export function GetDialogLookup(
     enduserApiClient,
-    queryParams,
+    dialogId,
     labels = null,
 ) {
     const res = enduserApiClient.GetDialogLookup(
-        queryParams,
+        dialogId,
         labels,
     );
 

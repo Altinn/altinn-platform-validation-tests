@@ -459,17 +459,17 @@ class EnduserApiClient {
     /**
      * Get dialog lookup
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogLookup
-     * @param  instanceRef - instanceRef query parameter for the request
+     * @param {string}  dialogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * @return http.RefinedResponse
      */
     GetDialogLookup(
-        instanceRef,
+        dialogId,
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialoglookup");
-
+        const instanceRef = `urn:altinn:dialog-id:${dialogId}`;
         url.searchParams.append("instanceRef", instanceRef);
 
         let tags = {
