@@ -8,19 +8,17 @@
 
 import { DialogSearchParamsBuilder } from "../../../../clients/dialogporten/enduser/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-
 import {
     GetDialog,
-    GetDialogs,
     GetDialogActivities,
     GetDialogActivity,
     GetDialogLookup,
+    GetDialogs,
     GetDialogSeenLog,
     GetDialogSeenLogs,
     GetDialogTransmission,
     GetDialogTransmissions,
 } from "../../../building-blocks/dialogporten/enduser/index.js";
-
 import { getClient, getDialogportenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
