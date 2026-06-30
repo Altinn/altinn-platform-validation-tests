@@ -24,7 +24,7 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/test/be-om-tilgang/K6/testdata/authentication/beomtilgang/beomtilgang-${__ENV.ENVIRONMENT}.csv`,
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/test/be-om-tilgang/K6/testdata/authentication/beomtilgang/${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } },
     );
 
