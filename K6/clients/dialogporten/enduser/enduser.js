@@ -99,8 +99,8 @@ class EnduserApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
 
         let tags = {
-            endpoint: this.FULL_PATH + `/dialogs/dialogId`,
-            name: this.FULL_PATH + `/dialogs/dialogId`,
+            endpoint: this.FULL_PATH + "/dialogs/dialogId",
+            name: this.FULL_PATH + "/dialogs/dialogId",
             action: TAGS.GetDialog.action,
         };
         if (labels != null) {
@@ -395,7 +395,7 @@ class EnduserApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/parties`);
+        const url = new URL(this.FULL_PATH + "/parties");
 
         let tags = {
             endpoint: this.FULL_PATH + "/parties",
@@ -430,7 +430,7 @@ class EnduserApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/serviceresources`);
+        const url = new URL(this.FULL_PATH + "/serviceresources");
 
         let tags = {
             endpoint: this.FULL_PATH + "/serviceresources",
