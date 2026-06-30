@@ -8,7 +8,8 @@ import { requireEnv } from "../../../../../helpers.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
 import { DeleteDelegations, PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
 import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { accessPackagesForUsers as accessPackages, getFromTo, getTokenOpts } from "./commons.js";
+import { getFromTo, getTokenOpts } from "./commons.js";
+import { accessPackagesForUsers as accessPackages } from "./custom-data.js";
 
 // Labels for different actions
 const postRightholderLabel = { step: "1. Connecting users with PostRightholder" };

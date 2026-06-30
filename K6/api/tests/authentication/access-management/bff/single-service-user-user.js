@@ -21,7 +21,8 @@ import {
     SearchResources,
 } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { getFromTo, getTokenOpts, resourcesForUsers as resources } from "./commons.js";
+import { getFromTo, getTokenOpts, } from "./commons.js";
+import { resourcesForUsers as resources } from "./custom-data.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = { step: "1a. Get rightholders from user" };
