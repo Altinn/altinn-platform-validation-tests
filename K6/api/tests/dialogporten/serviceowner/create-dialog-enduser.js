@@ -5,7 +5,7 @@ export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "false";
 
-const label = { action: "create-dialog-for-enduser" };
+const label = { step: "create-dialog-for-enduser" };
 
 export const options = getOptions([label]);
 
