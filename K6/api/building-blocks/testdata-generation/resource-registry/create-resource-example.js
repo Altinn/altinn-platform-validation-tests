@@ -32,11 +32,11 @@ export default function () {
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         resourceRegistryApiClient = new ResourceRegistryApiClient(__ENV.BASE_URL, tokenGenerator);
     }
-  
+
     const resourceId = "k6-resource-example";
     const resourceBody = getResourceBody("default", resourceId, orgNo, orgCode);
 
-    const resourceResp = resourceRegistryApiClient.PostResource(resourceBody); 
+    const resourceResp = resourceRegistryApiClient.PostResource(resourceBody);
     if (resourceResp.status === 201) {
         console.log(`Resource created: ${resourceId}`);
         const policyXml = getDefaultPolicyXml(resourceId);
