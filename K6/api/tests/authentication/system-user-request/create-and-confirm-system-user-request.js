@@ -1,11 +1,12 @@
 import { check, group } from "k6";
-import http from "k6/http";
 import { vu } from "k6/execution";
-import { uuidv4, EnterpriseTokenGenerator, PersonalTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
-import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
-import { CreateSystemUserRequest, ApproveSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
-import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
+import http from "k6/http";
+
+import { SystemRegisterApiClient, SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
+import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGenerator, PersonalTokenGeneratorOptions, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
+import { ApproveSystemUserRequest, CreateSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -75,7 +76,7 @@ export default function (data) {
         let res = CreateSystemUserRequest(
             vendorSystemUserRequestApiClient,
             systemId,
-            data[vu.idInTest - 1].orgNo,//partyOrgNo,
+            data[vu.idInTest - 1].orgNo, //partyOrgNo,
             rights,
             allowedRedirectUrls[vu.idInTest - 1],
             []

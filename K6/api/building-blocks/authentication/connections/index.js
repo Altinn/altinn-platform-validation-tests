@@ -1,2 +1,2 @@
-export { GetConnections, GetAccessPackages } from "./get-connections.js";
-export { PostRightholder, DeleteRightholder } from "./bff-rightholder.js";
+export { DeleteRightholder, PostRightholder } from "./bff-rightholder.js";
+export { GetAccessPackages, GetConnections } from "./get-connections.js";

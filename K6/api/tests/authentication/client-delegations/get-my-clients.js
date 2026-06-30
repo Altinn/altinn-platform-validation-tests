@@ -1,10 +1,10 @@
-import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authentication/client-delegations.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
+import { GetMyClients } from "../../../building-blocks/authentication/client-delegations/index.js";
 
 // Labels for different actions
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 const environment = __ENV.ENVIRONMENT || "yt01";
 
@@ -26,10 +26,11 @@ const endUsersByEnvironment = {
 };
 
 const endUsers = endUsersByEnvironment[environment] || [];
-const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel];
+const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel]; // TODO: This should be an object, not an array
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
+/** @type {ClientDelegationsApiClient | undefined} */
 let clientDelegationsApiClient = undefined;
-
 
 // get k6 options
 export const options = getOptions(endUserLabels);

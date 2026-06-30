@@ -1,6 +1,7 @@
-import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
-import { serviceResources, getClients, orgNo } from "./common-functions.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients, orgNo, serviceResources } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "false";

@@ -1,15 +1,25 @@
+import http from "k6/http";
+
 import { AuthorizedPartiesClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
-import http from "k6/http";
 import { requireEnv } from "../../../../helpers.js";
 
+/**
+ * @type {AuthorizedPartiesClient | undefined}
+ */
 let authorizedPartiesClient = undefined;
 
 /**
- * Function to set up and return clients to interact with the Authorized Parties API
+ * Creates and caches the client used to interact with the
+ * Authorized Parties API.
  *
- * @returns {Array} An array containing the AuthorizedPartiesClient instance
+ * The client uses an enterprise token with the
+ * `altinn:accessmanagement/authorizedparties.resourceowner` scope.
+ * The same {@link AuthorizedPartiesClient} instance is reused on
+ * subsequent calls.
+ *
+ * @returns {[AuthorizedPartiesClient]} The initialized API client.
  */
 export function getClients() {
     if (authorizedPartiesClient == undefined) {
@@ -17,9 +27,15 @@ export function getClients() {
         tokenOpts.set("env", __ENV.ENVIRONMENT);
         tokenOpts.set("ttl", 3600);
         tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        authorizedPartiesClient = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
+
+        authorizedPartiesClient = new AuthorizedPartiesClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [authorizedPartiesClient];
 }
 

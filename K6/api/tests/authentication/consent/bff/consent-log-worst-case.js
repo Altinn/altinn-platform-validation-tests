@@ -1,9 +1,9 @@
 /*
  * This test is designed to simulate a worst-case scenario for the consent log retrieval process.
  */
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { GetConsentLog } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { getOptions, getItemFromList } from "../../../../../helpers.js";
-import { worst_case_users as users, getClients, getTokenOpts } from "./commons.js";
+import { getClients, getTokenOpts, worst_case_users as users } from "./commons.js";
 
 export const options = getOptions(users.map(user => { return { unique_id: user.label }; }));
 

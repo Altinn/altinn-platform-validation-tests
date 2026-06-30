@@ -1,6 +1,7 @@
-import { serviceResources, getClients, sevenDaysAgoIso } from "./common-functions.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetDialogs } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients, serviceResources, sevenDaysAgoIso } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

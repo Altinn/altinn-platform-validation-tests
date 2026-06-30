@@ -1,9 +1,10 @@
 
-import { browser } from "k6/browser";
 import { check } from "k6";
-import { getOptions } from "./common.js";
+import { browser } from "k6/browser";
 import http from "k6/http";
+
 import { requireEnv } from "../../helpers.js";
+import { getOptions } from "./common.js";
 
 export const options = getOptions();
 
@@ -19,7 +20,6 @@ export function setup() {
         .map(w => w.trim())
         .filter(Boolean);
 }
-
 
 export default async function (words) {
     const randomWord = words[Math.floor(Math.random() * words.length)];

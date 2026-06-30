@@ -1,11 +1,11 @@
 export {
-    GetLookupPartyUser,
-    GetIsCompanyProfileAdmin,
-    GetReportee,
-    GetProfile,
+    GetActorListFavorites,
+    GetActorListOld,
     GetIsAdmin,
     GetIsClientAdmin,
-    GetActorListOld,
-    GetActorListFavorites,
+    GetIsCompanyProfileAdmin,
     GetIsInstanceAdmin,
+    GetLookupPartyUser,
+    GetProfile,
+    GetReportee,
 } from "./user.js";

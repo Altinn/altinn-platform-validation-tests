@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 
 /**

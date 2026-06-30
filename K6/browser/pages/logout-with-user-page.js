@@ -1,4 +1,5 @@
 import { Page } from "k6/browser";
+
 import { requireEnv } from "../../helpers.js";
 
 export class logoutWithUser {

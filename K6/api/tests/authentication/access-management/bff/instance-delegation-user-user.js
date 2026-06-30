@@ -1,26 +1,27 @@
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
-import { DialogSearchVariablesBuilder, DialogByIdVariablesBuilder } from "../../../../../clients/dialogporten/graphql/index.js";
-import { CreateDialog } from "../../../../building-blocks/dialogporten/serviceowner/index.js";
-import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../../building-blocks/dialogporten/graphql/index.js";
+
+import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../../../../clients/dialogporten/graphql/index.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/index.js";
+import { DelegateRightsForResource, GetActiveConsent, GetDelegatedInstancesForResource, GetResourceById, GetRightsMeta } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { CheckDelegationForResource, GetOrganizationData, GetRoleMeta } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
 import {
-    GetLookupPartyUser,
-    GetIsCompanyProfileAdmin,
-    GetReportee,
-    GetProfile,
+    GetActorListFavorites,
+    GetActorListOld,
     GetIsAdmin,
     GetIsClientAdmin,
-    GetActorListOld,
-    GetActorListFavorites,
+    GetIsCompanyProfileAdmin,
     GetIsInstanceAdmin,
+    GetLookupPartyUser,
+    GetProfile,
+    GetReportee,
 } from "../../../../building-blocks/authentication/instance-delegation/index.js";
-import { GetDelegatedInstancesForResource, GetActiveConsent, GetResourceById, GetRightsMeta, DelegateRightsForResource } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { GetOrganizationData, CheckDelegationForResource, GetRoleMeta } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { GetConnections } from "../../../../building-blocks/authentication/connections/index.js";
-import { GetDelegationCheck } from "../../../../building-blocks/authentication/access-package/index.js";
-import { getTokenOpts, getFromTo, getClients, getDialogportenOpts, getInstanceDelegationBody } from "./commons.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions, requireEnv } from "../../../../../helpers.js";
+import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../../building-blocks/dialogporten/graphql/index.js";
+import { CreateDialog } from "../../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "./commons.js";
 
 // serviceowner which will create a dialog.
 // The yt serviceOwner is different from the other environments.

@@ -1,4 +1,5 @@
 import http from "k6/http";
+
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
@@ -17,7 +18,6 @@ export const afUrl = (() => {
             return "https://af.yt01.altinn.cloud/";
     }
 })();
-
 
 /**
  * Function to get a cookie object for the given PID.

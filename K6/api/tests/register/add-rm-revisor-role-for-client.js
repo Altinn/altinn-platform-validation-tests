@@ -1,13 +1,14 @@
 import { check, group } from "k6";
 import http from "k6/http";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
+import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
 import {
     AddRevisorRoleToErForOrg,
     GetRevisorCustomerIdentifiersForParty,
     RemoveRevisorRoleFromEr,
 } from "../../building-blocks/register/index.js";
-import { retry, parseCsvData, getItemFromList, requireEnv } from "../../../helpers.js";
 
 /**
  * @file add-rm-revisor-role-for-client.js

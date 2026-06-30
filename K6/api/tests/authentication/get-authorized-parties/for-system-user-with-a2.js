@@ -1,13 +1,14 @@
 import http from "k6/http";
+
 import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
+import { requireEnv } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
-import { requireEnv } from "../../../../helpers.js";
 
 const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { action: "getAuthorizedPartiesForSystemUser" };
+const label = { step: "getAuthorizedPartiesForSystemUser" };
 
 export const options = getOptions([label]);
 

@@ -36,7 +36,6 @@ class SystemRegisterApiClient {
         this.BASE_PATH = "/authentication/api/v1/systemregister";
     }
 
-
     static get TAGS() {
         return TAGS;
     }

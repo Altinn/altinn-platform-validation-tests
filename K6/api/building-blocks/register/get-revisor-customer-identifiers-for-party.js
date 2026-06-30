@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 
 /**
