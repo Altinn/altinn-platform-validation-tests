@@ -12,6 +12,9 @@ import { ConnectionsApiClient } from "../../../../clients/authentication/index.j
  */
 export function PostConnection(connectionsApiClient, queryParams, body = null, labels = null) {
     const res = connectionsApiClient.PostConnection(queryParams, body, labels);
+    console.log(res.status);
+    console.log(res.status_text);
+    console.log(res.body);
     const succeed = check(res, {
         "PostConnection - status code is 200 or 201": (r) => r.status === 200 || r.status === 201,
     });

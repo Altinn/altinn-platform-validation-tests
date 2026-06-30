@@ -6,10 +6,12 @@
  *   - Bruker B: processes (approves) the request.
  *
  * Steps:
- *   1. (Prerequisite) Bruker B adds Virksomhet A as an assignment, so B can act
- *      on behalf of the organization the request is directed to.
+ *   1. (Prerequisite) Virksomhet A grants Bruker B an assignment, so B can act
+ *      on behalf of the organization the request is directed to. This is issued
+ *      with Bruker A's token, since A is daglig leder of (represents) Virksomhet A.
  *   2. Bruker A requests the Jordbruk access package, directed to Virksomhet A.
- *   3. Bruker B fetches the received request and approves it.
+ *   3. Bruker B fetches the received request and approves it on behalf of
+ *      Virksomhet A (the same user both lists and approves).
  *
  * All calls use enduser personal (Altinn) tokens; the active user's token is
  * switched between steps via the shared token generator.
@@ -28,7 +30,7 @@ export { setup } from "./common-functions.js";
 const JORDBRUK_PACKAGE = "urn:altinn:accesspackage:jordbruk";
 
 const groupLabel = "0. Be om tilgang til jordbrukspakke";
-const addAssignmentLabel = { step: "1. Bruker B adds Virksomhet A (assignment)" };
+const addAssignmentLabel = { step: "1. Virksomhet A grants Bruker B (assignment)" };
 const requestPackageLabel = { step: "2. Bruker A requests jordbruk package" };
 const getReceivedLabel = { step: "3. Bruker B gets received request" };
 const approveLabel = { step: "4. Bruker B approves request" };
@@ -47,17 +49,18 @@ export default function (data) {
     const [a, b] = pickUnique(data, 2);
 
     group(groupLabel, function () {
-        // Step 1: Bruker B adds Virksomhet A as an assignment (B's token).
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
+        // Step 1: Virksomhet A grants Bruker B an assignment, so B can act for the
+        // organization. Issued with A's token (A is daglig leder of Virksomhet A).
+        // A person is added via the body (personidentifier + lastName), not the `to` query.
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
         PostConnection(
             connectionsApiClient,
-            { party: b.partyUuid, from: b.partyUuid, to: a.orgUuid },
-            null,
+            { party: a.orgUuid, from: a.orgUuid },
+            { personidentifier: b.pid, lastName: b.lastName },
             addAssignmentLabel,
         );
 
         // Step 2: Bruker A requests the jordbruk package, directed to Virksomhet A (A's token).
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
         const request = PostPackage(
             requestApiClient,
             a.partyUuid,
