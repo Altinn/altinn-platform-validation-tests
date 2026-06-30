@@ -32,16 +32,6 @@
 export class DialogSearchParamsBuilder {
     constructor() {
         this.params = {
-            status: [
-                "NotApplicable",
-                "InProgress",
-                "Awaiting",
-                "RequiresAttention",
-                "Completed",
-            ],
-            systemLabel: ["Default"],
-            limit: 100,
-            searchLanguageCode: "nb",
         };
     }
 
