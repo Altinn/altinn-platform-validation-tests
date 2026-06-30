@@ -3,8 +3,7 @@ import http from "k6/http";
 
 import { MaskinportenSchemaApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
-import { requireEnv } from "../../../../helpers.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
 import { GetDelegations } from "../../../building-blocks/authentication/maskinporten-schema/index.js";
 
 // Labels for different actions
@@ -173,12 +172,17 @@ function getQueryParams(list) {
 }
 
 function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "" }) {
-    let from = undefined;
-    while (randomize && (from === undefined || (from.ssn === avoidItem.ssn && from.orgNo === avoidItem.orgNo))) {
-        from = getItemFromList(list, randomize);
-    }
     if (!randomize) {
-        from = getItemFromList(list);
+        return getItemFromList(list);
     }
-    return from;
+
+    const filteredList = list.filter(
+        item => !(item.ssn === avoidItem.ssn && item.orgNo === avoidItem.orgNo)
+    );
+
+    if (filteredList.length === 0) {
+        throw new Error("No valid organizations available after applying avoidItem filter");
+    }
+
+    return pickUnique(filteredList, 1)[0]; // To avoid having to do const [org] = <...>
 }
