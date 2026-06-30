@@ -1,6 +1,6 @@
 import { check } from "k6";
-import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 
+import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 
 /**
  * Function to get dialog seen log

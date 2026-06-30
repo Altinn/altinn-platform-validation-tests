@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 
 /**
