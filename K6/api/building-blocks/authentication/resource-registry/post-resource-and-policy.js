@@ -3,7 +3,7 @@ import { check } from "k6";
 import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 
 /**
- * 
+ *
  * @param {ResourceRegistryApiClient} resourceRegistryClient A client to interact with the Resource Registry API
   * @param {string} resourceId - resource id
   * @param {string} org - organization number
@@ -36,7 +36,7 @@ export function PostResourceAndPolicy(resourceRegistryClient, resourceId, org, o
 }
 
 /**
- * 
+ *
  * @param {ResourceRegistryApiClient} resourceRegistryClient A client to interact with the Resource Registry API
   * @param {string} resourceId - resource id
   * @param {string} org - organization number
@@ -59,7 +59,7 @@ export function PostResource(resourceRegistryClient, resourceId, org, orgCode) {
 }
 
 /**
- * 
+ *
  * @param {ResourceRegistryApiClient} resourceRegistryClient A client to interact with the Resource Registry API
   * @param {string} resourceId - resource id
   * @param {string} org - organization number

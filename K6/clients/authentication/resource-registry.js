@@ -105,7 +105,7 @@ class ResourceRegistryApiClient {
 
     /**
      * Post Resource
-     * @param {string} id The id of the resource, e.g. "super-simple-service" 
+     * @param {string} id The id of the resource, e.g. "super-simple-service"
      * @param {string} resourceBody The body of the resource to be created
      * @returns http.RefinedResponse
      */

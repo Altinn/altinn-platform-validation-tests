@@ -12,7 +12,6 @@
 import { AccessPackagesApiClient, ResourceRegistryApiClient } from "../../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getAccessPackagePolicyXml, getDefaultPolicyXml } from "../templates/policy-builder.js";
-import { getResourceBody } from "../templates/resource-templates.js";
 
 let resourceRegistryApiClient = undefined;
 let accessPackagesApiClient = undefined;
@@ -46,7 +45,7 @@ export default function () {
         const policyResp1 = resourceRegistryApiClient.PostPolicy(resourceId, policy);
         if (policyResp1.status === 201) {
             console.log(`Wrong policy created for resource: ${resourceId}`);
-        } 
+        }
         const policyXml = getAccessPackagePolicyXml(resourceId, accessPackage);
         const policyResp2 = resourceRegistryApiClient.PostPolicy(resourceId, policyXml);
         if (policyResp2.status === 201) {

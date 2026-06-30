@@ -44,7 +44,7 @@ export default function () {
         const resourceId = `k6-test-${accessPackage}`;
         const resourceBody = getResourceBody("access-package", resourceId, orgNo, orgCode, accessPackage);
 
-        const resourceResp = resourceRegistryApiClient.PostResource(resourceBody); 
+        const resourceResp = resourceRegistryApiClient.PostResource(resourceBody);
         if (resourceResp.status === 201) {
             console.log(`Resource created: ${resourceId}`);
             const policyXml = getAccessPackagePolicyXml(resourceId, accessPackage);

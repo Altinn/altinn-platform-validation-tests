@@ -37,9 +37,9 @@ export default function () {
         const accessPackage = item.object.urn.split(":").pop();
         const resourceId = `k6-test-${accessPackage}`;
 
-        const resourceResp = resourceRegistryApiClient.GetResource(resourceId); 
+        const resourceResp = resourceRegistryApiClient.GetResource(resourceId);
         const resource = JSON.parse(resourceResp.body);
-        
+
         const patch = {
             set: {
                 title: {
@@ -63,5 +63,5 @@ export default function () {
 
         const updateResp = resourceRegistryApiClient.PutResource(resourceId, updatedResource);
         console.log(`Patched resource: ${resourceId}, Status: ${updateResp.status}`);
-    } 
+    }
 }

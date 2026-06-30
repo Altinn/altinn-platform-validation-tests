@@ -13,7 +13,7 @@
 */
 import { ResourceRegistryApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { buildPolicy, getDefaultPolicyXml } from "./templates/policy-builder.js";
+import { getDefaultPolicyXml } from "./templates/policy-builder.js";
 
 let resourceRegistryApiClient = undefined;
 

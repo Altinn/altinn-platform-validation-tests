@@ -144,7 +144,7 @@ export function buildPolicy(definition, id) {
                           </xacml:Match>
                       </xacml:AllOf>`;
         }
-        policyXml += `            
+        policyXml += `
                 </xacml:AnyOf>
             </xacml:Target>
         </xacml:Rule>`;

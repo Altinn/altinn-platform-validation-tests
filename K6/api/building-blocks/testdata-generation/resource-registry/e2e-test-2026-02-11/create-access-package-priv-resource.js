@@ -1,7 +1,7 @@
 /*
 * Script to create access package resources with PRIV in policy file in addition to access package
 * Run: k6 run create-access-package-priv-resource.js
-* Set environment variables: 
+* Set environment variables:
 *   ENVIRONMENT - the target environment (e.g., "yt01", "at23", "tt02")
 *   BASE_URL - the base URL of the resource registry API
 *  Example:
@@ -45,7 +45,7 @@ export default function () {
         const resourceId = `k6-test-${accessPackage}-with-priv`;
         const resourceBody = getResourceBody("access-package-with-priv", resourceId, orgNo, orgCode, accessPackage);
 
-        const resourceResp = resourceRegistryApiClient.PostResource(resourceBody); 
+        const resourceResp = resourceRegistryApiClient.PostResource(resourceBody);
         if (resourceResp.status === 201) {
             console.log(`Resource created: ${resourceId}`);
             const policyXml = getAccessPackageWithPrivPolicyXml(resourceId, accessPackage);

@@ -27,9 +27,9 @@ export default function () {
     const orgCode = "ttd";
     const resourceId = "k6-resource-example";
 
-    const resourceResp = resourceRegistryApiClient.GetResource(resourceId); 
+    const resourceResp = resourceRegistryApiClient.GetResource(resourceId);
     const resource = JSON.parse(resourceResp.body);
-    
+
     const patch = {
         set: {
             title: {
@@ -41,7 +41,7 @@ export default function () {
                 en: `Generic test resource for ${orgCode} (patched)`,
                 nb: `Generisk testressurs for ${orgCode} (patched)`,
                 nn: `Generisk testressurs for ${orgCode} (patched)`,
-            },       
+            },
         }
     };
     const updatedResource = applyPatch(resource, patch);

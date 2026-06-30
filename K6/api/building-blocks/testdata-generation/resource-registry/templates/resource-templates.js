@@ -3,7 +3,7 @@
 * Used for creating resources in the Resource Registry for testing purposes.
 * Create other templates as needed by modifying or adding to the definitions below.
 */
-export function getResourceBody(templateId, id, org, orgCode, accessPackage=null) {
+export function getResourceBody(templateId, id, org, orgCode, accessPackage = null) {
     switch (templateId) {
         case "access-package":
             return accessPackageTemplate(id, org, orgCode, accessPackage);
@@ -61,10 +61,10 @@ function getDefaultResourceBody(id, org, orgCode) {
         ],
         "isOneTimeConsent": false,
         "versionId": 58
-    }; 
+    };
 }
 
-function accessPackageTemplate(id, org, orgCode, accessPackage, withPriv=false) {
+function accessPackageTemplate(id, org, orgCode, accessPackage, withPriv = false) {
     let withPrivText = withPriv ? " + PRIV" : "";
     return {
         "identifier": id,
