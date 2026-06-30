@@ -1,17 +1,22 @@
 /**
  * Be om tilgang (request access) flow.
  *
+ * The Jordbruk access package can only be assigned in an organization context
+ * (not to/from a person), so the request is directed to Bruker B's organization,
+ * which B approves on behalf of as its daglig leder.
+ *
  * Two unique users are picked per iteration:
- *   - Bruker A: requests an access package. Represents Virksomhet A
- *   - Bruker B: processes (approves) the request.
+ *   - Bruker A: requests an access package.
+ *   - Bruker B: daglig leder of Virksomhet B; receives and approves the request.
  *
  * Steps:
- *   1. (Prerequisite) Virksomhet A grants Bruker B an assignment, so B can act
- *      on behalf of the organization the request is directed to. This is issued
- *      with Bruker A's token, since A is daglig leder of (represents) Virksomhet A.
- *   2. Bruker A requests the Jordbruk access package, directed to Virksomhet A.
- *   3. Bruker B fetches the received request and approves it on behalf of
- *      Virksomhet A (the same user both lists and approves).
+ *   1. (Prerequisite) Virksomhet B adds Bruker A as a connection (assignment), so
+ *      a relationship exists before A can request access. Issued with B's token
+ *      (B is daglig leder of Virksomhet B).
+ *   2. Bruker A requests the Jordbruk access package, directed to Virksomhet B.
+ *   3. Bruker B lists the received request and approves it on behalf of
+ *      Virksomhet B (party = b.orgUuid). B is daglig leder, so this is a plain
+ *      enduser request — no extra authorization needed.
  *
  * All calls use enduser personal (Altinn) tokens; the active user's token is
  * switched between steps via the shared token generator.
@@ -30,7 +35,7 @@ export { setup } from "./common-functions.js";
 const JORDBRUK_PACKAGE = "urn:altinn:accesspackage:jordbruk";
 
 const groupLabel = "0. Be om tilgang til jordbrukspakke";
-const addAssignmentLabel = { step: "1. Virksomhet A grants Bruker B (assignment)" };
+const addAssignmentLabel = { step: "1. Virksomhet B adds Bruker A (assignment)" };
 const requestPackageLabel = { step: "2. Bruker A requests jordbruk package" };
 const getReceivedLabel = { step: "3. Bruker B gets received request" };
 const approveLabel = { step: "4. Bruker B approves request" };
@@ -45,36 +50,39 @@ export const options = getOptions([
 export default function (data) {
     const [connectionsApiClient, requestApiClient, tokenGenerator] = getClients();
 
-    // Bruker A (requester, owns Virksomhet A) and Bruker B (approver).
+    // Bruker A (requester) and Bruker B (daglig leder of Virksomhet B, the approver).
     const [a, b] = pickUnique(data, 2);
 
     group(groupLabel, function () {
-        // Step 1: Virksomhet A grants Bruker B an assignment, so B can act for the
-        // organization. Issued with A's token (A is daglig leder of Virksomhet A).
-        // A person is added via the body (personidentifier + lastName), not the `to` query.
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
+        // Step 1: Virksomhet B adds Bruker A as a connection, so a relationship
+        // exists before A requests access. Issued with B's token (B is daglig leder
+        // of Virksomhet B). A person is added via the body (personidentifier +
+        // lastName), not the `to` query.
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         PostConnection(
             connectionsApiClient,
-            { party: a.orgUuid, from: a.orgUuid },
-            { personidentifier: b.pid, lastName: b.lastName },
+            { party: b.orgUuid, from: b.orgUuid },
+            { personidentifier: a.pid, lastName: a.lastName },
             addAssignmentLabel,
         );
 
-        // Step 2: Bruker A requests the jordbruk package, directed to Virksomhet A (A's token).
+        // Step 2: Bruker A requests the jordbruk package, directed to Virksomhet B (A's token).
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
         const request = PostPackage(
             requestApiClient,
             a.partyUuid,
-            a.orgUuid,
+            b.orgUuid,
             JORDBRUK_PACKAGE,
             requestPackageLabel,
         );
 
-        // Step 3: Bruker B fetches the received request for Virksomhet A and approves it (B's token).
+        // Step 3: Bruker B lists the received request and approves it on behalf of
+        // Virksomhet B (party = b.orgUuid). B is daglig leder (B's token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         const received = GetReceived(
             requestApiClient,
             new ReceivedRequestsParamsBuilder()
-                .withParty(a.orgUuid)
+                .withParty(b.orgUuid)
                 .withStatus(RequestStatus.Pending)
                 .build(),
             getReceivedLabel,
@@ -84,7 +92,7 @@ export default function (data) {
 
         Approve(
             requestApiClient,
-            { party: a.orgUuid, id: requestId },
+            { party: b.orgUuid, id: requestId },
             [],
             approveLabel,
         );
