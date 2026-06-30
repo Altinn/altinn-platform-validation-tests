@@ -4,9 +4,7 @@
  */
 import { getClients } from "./common-functions.js";
 import { getOptions, requireEnv, getItemFromList } from "../../../../helpers.js";
-
 import { GetEndUserContext } from "../../../building-blocks/dialogporten/serviceowner/index.js";
-import { getClients } from "./common-functions.js";
 
 const endUsersByEnvironment = {
     yt01: [
