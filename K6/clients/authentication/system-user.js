@@ -24,11 +24,9 @@ class SystemUserApiClient {
         this.BASE_PATH = "/authentication/api/v1/systemuser";
     }
 
-
     static get TAGS() {
         return TAGS;
     }
-
 
     /**
    * Retrieves system users for a given systemId for a vendor.

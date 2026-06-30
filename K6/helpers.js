@@ -1,5 +1,6 @@
-import { sleep, check } from "k6";
+import { check, sleep } from "k6";
 import exec from "k6/execution";
+
 import { papaparse, randomItem } from "./common-imports.js";
 
 /**
@@ -106,8 +107,9 @@ export function getNumberOfVUs() {
 
 /**
  * Function to get k6 options based on labels.
- * @param {} labels
- * @returns
+ * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
+ * @param {string[]} groups - list of strings
+ * @returns {Object}
  */
 export function getOptions(labels, groups = []) {
     const options = {
@@ -124,7 +126,6 @@ export function getOptions(labels, groups = []) {
             options.thresholds[`http_reqs{${key}:${value}}`] = [];
         }
     }
-
 
     for (const group of groups) {
         options.thresholds[`http_req_duration{group:::${group}}`] = [];
@@ -169,7 +170,6 @@ export function requireEnv(vars) {
 
     return result;
 }
-
 
 /**
  * Picks a specified number of unique random items from a list.

@@ -32,7 +32,6 @@ class PdpAuthorizeClient {
 
     }
 
-
     static get TAGS() {
         return TAGS;
     }
@@ -65,7 +64,6 @@ class PdpAuthorizeClient {
                 "Ocp-Apim-Subscription-Key": subscriptionKey
             },
         };
-
 
         const body = this.#getEnduserBody(ssn, resourceId, action);
         const res = http.post(url.toString(), JSON.stringify(body), params);
@@ -101,7 +99,6 @@ class PdpAuthorizeClient {
                 "Ocp-Apim-Subscription-Key": subscriptionKey
             },
         };
-
 
         const body = this.#getDaglBody(ssn, resourceId, orgno, action);
         const res = http.post(url.toString(), JSON.stringify(body), params);
@@ -140,7 +137,6 @@ class PdpAuthorizeClient {
                 "Ocp-Apim-Subscription-Key": subscriptionKey
             },
         };
-
 
         const body = this.#getBodyWithInstance(tossn, fromssn, null, resourceId, instanceId, task, action);
         const res = http.post(url.toString(), JSON.stringify(body), params);

@@ -1,12 +1,13 @@
 
+import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authentication/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const label = { action: "getAuthorizedPartiesForUserAvgiverListe" };
+const label = { step: "getAuthorizedPartiesForUserAvgiverListe" };
 
 export const options = getOptions([label]);
 

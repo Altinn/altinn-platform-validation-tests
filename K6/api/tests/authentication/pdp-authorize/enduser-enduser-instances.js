@@ -1,20 +1,22 @@
 /*
  * Test for PDP Authorize - Enduser to Enduser instance delegations
 */
-import { PdpAuthorizeUserInstance } from "../../../building-blocks/authentication/pdp-authorize/index.js";
-import { getItemFromList, getOptions, getNumberOfVUs, segmentData, parseCsvData } from "../../../../helpers.js";
-import { randomIntBetween } from "../../../../common-imports.js";
-import { getClients } from "./common-functions.js";
 import exec from "k6/execution";
 import http from "k6/http";
+
+import { randomIntBetween } from "../../../../common-imports.js";
+import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { PdpAuthorizeUserInstance } from "../../../building-blocks/authentication/pdp-authorize/index.js";
+import { getClients } from "./common-functions.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
 // Labels for different actions
-const pdpAuthorizeLabel = { action: "PDP Authorize" };
-const pdpAuthorizeLabelDenyPermit = { action: "PDP Authorize Deny" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+const pdpAuthorizeLabel = { step: "PDP Authorize" };
+const pdpAuthorizeLabelDenyPermit = { step: "PDP Authorize Deny" };
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
@@ -47,7 +49,6 @@ export default function (testData) {
         label
     );
 }
-
 
 /**
  * Function to randomly select action, label, and expected response.

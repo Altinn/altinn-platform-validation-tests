@@ -2,14 +2,16 @@
  * This test is designed to retrieve the active consent for a user in a more realistic scenario, where the users are randomly selected from a larger pool of users.
  */
 import exec from "k6/execution";
-import { GetActiveConsent } from "../../../../building-blocks/authentication/client-delegations/index.js";
+
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
+import { GetActiveConsent } from "../../../../building-blocks/authentication/client-delegations/index.js";
 import { getTokenOpts } from "../../access-management/bff/commons.js";
 import { getClients } from "./commons.js";
+
 export { setup } from "./commons.js";
 
-const getActiveConsentLabel = { action: "Get active consent for user" };
+const getActiveConsentLabel = { step: "Get active consent for user" };
 
 export const options = getOptions([getActiveConsentLabel],);
 

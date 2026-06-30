@@ -2,11 +2,12 @@
  * This test gets all dialogs for a set of parties for a end user from a random service owner.
  */
 
+import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { getClient, getDialogportenOpts, getParties } from "./common-functions.js";
-import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 import { serviceOwners } from "./service-owners.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

@@ -1,28 +1,42 @@
+import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
-import { group } from "k6";
-import { requireEnv } from "../../../../../helpers.js";
-import { GetConnections, PostRightholder, DeleteRightholder } from "../../../../building-blocks/authentication/connections/index.js";
-import { PostDelegations, DeleteDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
+
+import { BffAccessPackageApiClient, BffConnectionsApiClient } from "../../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
-import { BffConnectionsApiClient, BffAccessPackageApiClient } from "../../../../../clients/authentication/index.js";
-import { getItemFromList, parseCsvData, segmentData, getNumberOfVUs, getOptions } from "../../../../../helpers.js";
-import { accessPackagesForUsers as accessPackages, getTokenOpts, getFromTo } from "./commons.js";
+import { requireEnv } from "../../../../../helpers.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
+import { DeleteDelegations, PostDelegations } from "../../../../building-blocks/authentication/access-package/delegate.js";
+import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authentication/connections/index.js";
+import { getFromTo, getTokenOpts } from "./commons.js";
+import { accessPackagesForUsers as accessPackages } from "./custom-data.js";
 
 // Labels for different actions
 const postRightholderLabel = { step: "1. Connecting users with PostRightholder" };
 const getRightholdersToLabel = { step: "2. Get rightholders" };
 const getRightholdersWithoutToLabel = { step: "3. Get rightholders" };
-const tokenGeneratorLabel = { tokenGenerator: "Personal Token Generator" };
+
 const accessPackageLabel = { step: "4. Access Package Delegation" };
 const accessPackageDeleteLabel = { step: "5. Access Package Delete Delegation" };
 const deleteRightholderConnectionLabel = { step: "6. Delete rightholder connection" };
 const groupLabel = "0. Delegate accesspackage from user to user";
 
+const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
+
+/**
+ * Whether test data should be randomized.
+ *
+ * Defaults to `true` when the `RANDOMIZE` environment variable is not provided.
+ *
+ * @type {boolean}
+ */
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
+/** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
+/** @type {BffConnectionsApiClient | undefined} */
 let connectionsApiClient = undefined;
+/** @type {BffAccessPackageApiClient | undefined} */
 let accessPackageApiClient = undefined;
 
 // get k6 options
@@ -36,7 +50,18 @@ export const options = getOptions([
     tokenGeneratorLabel
 ]);
 
-
+/**
+ * Creates and caches API clients used by the scenario.
+ *
+ * All clients share the same {@link PersonalTokenGenerator} instance.
+ * Existing instances are reused on subsequent calls.
+ *
+ * @returns {[
+ *   BffConnectionsApiClient,
+ *   BffAccessPackageApiClient,
+ *   PersonalTokenGenerator
+ * ]} The initialized API clients and token generator.
+ */
 function getClients() {
     if (tokenGenerator == undefined) {
         const tokenOpts = new PersonalTokenGeneratorOptions();

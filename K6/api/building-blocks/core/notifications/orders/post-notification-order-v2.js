@@ -1,4 +1,5 @@
 import { check } from "k6";
+
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
 
 /**

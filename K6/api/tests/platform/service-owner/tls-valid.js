@@ -1,9 +1,9 @@
-import tls from "k6/x/tls";
 import { check } from "k6";
-import { requireEnv } from "../../../../helpers.js";
 import { sleep } from "k6";
-import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
+import tls from "k6/x/tls";
 
+import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
+import { requireEnv } from "../../../../helpers.js";
 
 export function setup() {
     requireEnv(["DEPLOY_ENV"]);

@@ -1,13 +1,14 @@
-import { CreateDialog, CreateTransmission, CreateActivity } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { serviceResources, getClients, orgNo } from "./common-functions.js";
+import { CreateActivity, CreateDialog, CreateTransmission } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients, orgNo, serviceResources } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const create_dialog_label = { action: "create-dialog" };
-const create_transmission_label = { action: "create-transmission" };
-const create_activity_label = { action: "create-activity" };
+const create_dialog_label = { step: "create-dialog" };
+const create_transmission_label = { step: "create-transmission" };
+const create_activity_label = { step: "create-activity" };
 
 export const options = getOptions([create_dialog_label, create_transmission_label, create_activity_label]);
 

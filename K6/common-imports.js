@@ -1,30 +1,23 @@
 // Keep versioned libs in a single file to simplify updates
 export {
-    uuidv4,
-    randomItem,
-    randomIntBetween,
-} from "https://jslib.k6.io/k6-utils/1.4.0/index.js";
-
-export { URL } from "https://jslib.k6.io/url/1.0.0/index.js";
-
-export { default as papaparse } from "https://jslib.k6.io/papaparse/5.1.1/index.js";
-
-export {
-    PersonalTokenGeneratorOptions,
-    PersonalTokenGenerator,
-
-    EnterpriseTokenGeneratorOptions,
-    EnterpriseTokenGenerator,
-
-    PlatformTokenGeneratorOptions,
-    PlatformTokenGenerator,
-} from "./token-generator.js";
-
-export {
     MaskinportenAccessTokenGenerator,
     MaskinportenTokenGeneratorOptions
-
 } from "./maskinporten.js";
+export {
+    EnterpriseTokenGenerator,
+    EnterpriseTokenGeneratorOptions,
+    PersonalTokenGenerator,
+    PersonalTokenGeneratorOptions,
+    PlatformTokenGenerator,
+    PlatformTokenGeneratorOptions,
+} from "./token-generator.js";
+export {
+    randomIntBetween,
+    randomItem,
+    uuidv4,
+} from "https://jslib.k6.io/k6-utils/1.4.0/index.js";
+export { default as papaparse } from "https://jslib.k6.io/papaparse/5.1.1/index.js";
+export { URL } from "https://jslib.k6.io/url/1.0.0/index.js";
 
 import { expect } from "https://jslib.k6.io/k6-testing/0.5.0/index.js";
 
