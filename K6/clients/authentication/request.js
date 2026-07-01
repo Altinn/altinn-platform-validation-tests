@@ -111,12 +111,13 @@ class RequestApiClient {
     /**
      * Approve a received request (Bruker B grants access).
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/put_enduser_request_received_approve}
-     * @param {Object} queryParams - required: party, id
+     * @param {string} party - the party whose received request is being approved (party uuid)
+     * @param {string} id - the id of the request to approve
      * @param {string[]} body - list of references to approve (empty list approves the request as is)
      * @param {Object.<string, string>} labels - request labels for metrics
      * @returns http.RefinedResponse
      */
-    Approve(queryParams, body = [], labels = null) {
+    Approve(party, id, body = [], labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/received/approve`);
         let tags = {
@@ -134,18 +135,20 @@ class RequestApiClient {
                 "Content-type": "application/json",
             },
         };
-        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        url.searchParams.append("party", party);
+        url.searchParams.append("id", id);
         return http.put(url.toString(), JSON.stringify(body), params);
     }
 
     /**
      * Reject a received request (Bruker B declines access).
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/put_enduser_request_received_reject}
-     * @param {Object} queryParams - required: party, id
+     * @param {string} party - the party whose received request is being rejected (party uuid)
+     * @param {string} id - the id of the request to reject
      * @param {Object.<string, string>} labels - request labels for metrics
      * @returns http.RefinedResponse
      */
-    Reject(queryParams, labels = null) {
+    Reject(party, id, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/received/reject`);
         let tags = {
@@ -163,7 +166,8 @@ class RequestApiClient {
                 "Content-type": "application/json",
             },
         };
-        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        url.searchParams.append("party", party);
+        url.searchParams.append("id", id);
         return http.put(url.toString(), null, params);
     }
 }

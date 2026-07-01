@@ -55,13 +55,14 @@ export function GetReceived(requestApiClient, queryParams, labels = null) {
 /**
  * Approve - Bruker approves a received request.
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
- * @param {*} queryParams - query parameters for the request (party, id)
+ * @param {string} party - the party whose received request is being approved (party uuid)
+ * @param {string} id - the id of the request to approve
  * @param {string[]} body - references to approve (empty list approves the request as is)
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @returns parsed RequestDto for the approved request
  */
-export function Approve(requestApiClient, queryParams, body = [], labels = null) {
-    const res = requestApiClient.Approve(queryParams, body, labels);
+export function Approve(requestApiClient, party, id, body = [], labels = null) {
+    const res = requestApiClient.Approve(party, id, body, labels);
     const succeed = check(res, {
         "Approve - status code is 200": (r) => r.status === 200,
         "Approve - request status is Approved": (r) => {
@@ -80,12 +81,13 @@ export function Approve(requestApiClient, queryParams, body = [], labels = null)
 /**
  * Reject - Bruker B rejects a received request.
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
- * @param {*} queryParams - query parameters for the request (party, id)
+ * @param {string} party - the party whose received request is being rejected (party uuid)
+ * @param {string} id - the id of the request to reject
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  * @returns parsed RequestDto for the rejected request
  */
-export function Reject(requestApiClient, queryParams, labels = null) {
-    const res = requestApiClient.Reject(queryParams, labels);
+export function Reject(requestApiClient, party, id, labels = null) {
+    const res = requestApiClient.Reject(party, id, labels);
     const succeed = check(res, {
         "Reject - status code is 200": (r) => r.status === 200,
         "Reject - request status is Rejected": (r) => {

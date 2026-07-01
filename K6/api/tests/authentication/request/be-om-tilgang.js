@@ -82,7 +82,7 @@ export default function (data) {
 
         // Verifiser at forespørselen fra steg 2 faktisk er blant de mottatte.
         const receivedRequest = received.data.find((r) => r.id === request.id);
-        const found = check(receivedRequest, {
+        check(receivedRequest, {
             "Received contains the created request": (r) => r !== undefined,
         });
 
@@ -90,7 +90,8 @@ export default function (data) {
         // Tom body ([]) godkjenner hele pakkeforespørselen; body-en brukes bare til godkjenning av enkeltrettigheter
         Approve(
             requestApiClient,
-            { party: b.orgUuid, id: receivedRequest.id },
+            b.orgUuid,
+            receivedRequest.id,
             [],
             approveLabel,
         );
