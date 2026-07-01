@@ -1,23 +1,21 @@
 /**
  * Be om tilgang (request access) flow.
  *
- * A random organization access package (Organisasjon, delegable and assignable)
- * is requested. Such packages can only be assigned in an organization context
- * (not to/from a person), so the request is directed to Bruker B's organization,
- * which B approves on behalf of as its daglig leder.
- *
- * Two unique users are picked per iteration:
- *   - Bruker A: requests an access package.
+ * Per iteration two unique users and one random access package are picked:
+ *   - Bruker A: requests the access package.
  *   - Bruker B: daglig leder of Virksomhet B; receives and approves the request.
+ *   - The access package is a random one picked from metadata API
  *
  * Steps:
  *   1. (Prerequisite) Virksomhet B adds Bruker A as a connection (assignment), so
- *      a relationship exists before A can request access. Issued with B's token
- *      (B is daglig leder of Virksomhet B).
- *   2. Bruker A requests the Jordbruk access package, directed to Virksomhet B.
- *   3. Bruker B lists the received request and approves it on behalf of
- *      Virksomhet B (party = b.orgUuid). B is daglig leder, so this is a plain
- *      enduser request — no extra authorization needed.
+ *      a relationship exists before A can request access. A is added via the body
+ *      (personidentifier + lastName). Issued with B's token.
+ *   2. Bruker A requests the access package, directed to Virksomhet B. A's token.
+ *   3. Bruker B lists its received requests (party = b.orgUuid, status Pending)
+ *      and finds the one just created. B's token.
+ *   4. Bruker B approves the request on behalf of Virksomhet B (party = b.orgUuid).
+ *      B is daglig leder, so steps 3-4 are plain enduser requests needing no
+ *      extra authorization. B's token.
  *
  * All calls use enduser personal (Altinn) tokens; the active user's token is
  * switched between steps via the shared token generator.
@@ -54,10 +52,7 @@ export default function (data) {
     const accessPackage = getItemFromList(data.packages, true);
 
     group(groupLabel, function () {
-        // Step 1: Virksomhet B adds Bruker A as a connection, so a relationship
-        // exists before A requests access. Issued with B's token (B is daglig leder
-        // of Virksomhet B). A person is added via the body (personidentifier +
-        // lastName), not the `to` query.
+        // Step 1: Virksomhet B adds Bruker A as a connection (B's token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         PostConnection(
             connectionsApiClient,
@@ -66,7 +61,7 @@ export default function (data) {
             addAssignmentLabel,
         );
 
-        // Step 2: Bruker A requests the access package, directed to Virksomhet B (A's token).
+        // Step 2: Bruker A requests the access package for Virksomhet B (A's token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
         const request = PostPackage(
             requestApiClient,
@@ -76,8 +71,7 @@ export default function (data) {
             requestPackageLabel,
         );
 
-        // Step 3: Bruker B lists the received request and approves it on behalf of
-        // Virksomhet B (party = b.orgUuid). B is daglig leder (B's token).
+        // Steps 3-4: Bruker B lists received requests and approves the new one (B's token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         const received = GetReceived(
             requestApiClient,
