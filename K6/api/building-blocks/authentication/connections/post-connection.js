@@ -19,7 +19,6 @@ export function PostConnection(connectionsApiClient, queryParams, body = null, l
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.body;
 }

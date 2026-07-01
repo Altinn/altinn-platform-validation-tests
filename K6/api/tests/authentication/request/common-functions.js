@@ -29,7 +29,7 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/test/be-om-tilgang/K6/testdata/authentication/beomtilgang/${__ENV.ENVIRONMENT}.csv`,
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/beomtilgang/${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } },
     );
 
@@ -41,8 +41,9 @@ export function setup() {
  * be requested in this flow, so they are excluded from the random selection.
  */
 const EXCLUDED_PACKAGES = [
-    // Kun støttet av spesifikke roller (bobestyrer), så den kan ikke bes om i denne flyten.
+    // Krever bobestyrer-rolle, så den kan ikke bes om i denne flyten.
     "urn:altinn:accesspackage:konkursbo-lesetilgang",
+    "urn:altinn:accesspackage:konkursbo-skrivetilgang",
     // Kun relevant for NUF (norskregistrert utenlandsk foretak), så den kan ikke bes om her.
     "urn:altinn:accesspackage:tjenester-nuf",
 ];

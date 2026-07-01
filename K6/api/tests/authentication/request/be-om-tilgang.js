@@ -49,11 +49,6 @@ export default function (data) {
     const [a, b] = pickUnique(data.users, 2);
     const accessPackage = getItemFromList(data.packages, true);
 
-    // Logg brukere/pakke slik at en feilende iterasjon kan feilsøkes manuelt.
-    console.log(
-        `A(pid=${a.pid}) -> B(pid=${b.pid}, orgNo=${b.orgNo}), pakke=${accessPackage}`,
-    );
-
     group(groupLabel, function () {
         // Steg 1: Virksomhet B legger til Bruker A som connection (Bs token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));

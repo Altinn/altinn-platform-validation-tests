@@ -24,7 +24,6 @@ export function PostPackage(requestApiClient, from, to, accessPackage, labels = 
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
@@ -49,7 +48,6 @@ export function GetReceived(requestApiClient, queryParams, labels = null) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
@@ -76,7 +74,6 @@ export function Approve(requestApiClient, party, id, body = [], labels = null) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
@@ -102,7 +99,6 @@ export function Reject(requestApiClient, party, id, labels = null) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
