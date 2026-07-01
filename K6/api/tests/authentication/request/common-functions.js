@@ -1,8 +1,9 @@
 import http from "k6/http";
 
-import { ConnectionsApiClient, RequestApiClient } from "../../../../clients/authentication/index.js";
+import { ConnectionsApiClient, MetaApiClient, RequestApiClient } from "../../../../clients/authentication/index.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { GetAccessPackagesExport } from "../../../building-blocks/authentication/meta/index.js";
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
@@ -14,11 +15,15 @@ let requestApiClient = undefined;
 /**
  * k6 setup function.
  *
- * Fetches the "be om tilgang" test data from the branch on GitHub and parses it.
- * Each row holds an organization (Virksomhet) and its daglig leder:
- *   pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo.
+ * Fetches the "be om tilgang" test data from the branch on GitHub, and the list
+ * of assignable organization access packages from the meta API.
  *
- * @returns {Array} Parsed CSV rows used as test input.
+ * Each CSV row holds an organization (Virksomhet) and its daglig leder:
+ *   pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
+ *
+ * @returns {{ users: Array, packages: string[] }} Test input: parsed CSV rows
+ *   and the URNs of packages that can be requested (Organisasjon, delegable and
+ *   assignable).
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -28,7 +33,31 @@ export function setup() {
         { tags: { action: "fetch-test-data" } },
     );
 
-    return parseCsvData(res.body);
+    return { users: parseCsvData(res.body), packages: fetchAssignablePackages() };
+}
+
+/**
+ * Fetches the access package catalogue from the meta API and returns the URNs of
+ * packages that can be requested: those in an "Organisasjon" group that are both
+ * delegable and assignable.
+ * @returns {string[]} valid access package URNs
+ */
+function fetchAssignablePackages() {
+    const metaApiClient = new MetaApiClient(__ENV.BASE_URL);
+    const groups = GetAccessPackagesExport(metaApiClient, { action: "fetch-access-packages" });
+
+    const urns = [];
+    for (const group of groups) {
+        if (group.type !== "Organisasjon") continue;
+        for (const area of group.areas ?? []) {
+            for (const pkg of area.packages ?? []) {
+                if (pkg.isDelegable && pkg.isAssignable && pkg.urn) {
+                    urns.push(pkg.urn);
+                }
+            }
+        }
+    }
+    return urns;
 }
 
 /**

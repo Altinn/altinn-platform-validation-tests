@@ -1,7 +1,8 @@
 /**
  * Be om tilgang (request access) flow.
  *
- * The Jordbruk access package can only be assigned in an organization context
+ * A random organization access package (Organisasjon, delegable and assignable)
+ * is requested. Such packages can only be assigned in an organization context
  * (not to/from a person), so the request is directed to Bruker B's organization,
  * which B approves on behalf of as its daglig leder.
  *
@@ -25,18 +26,16 @@
 import { group } from "k6";
 
 import { ReceivedRequestsParamsBuilder, RequestStatus } from "../../../../clients/authentication/index.js";
-import { getOptions, pickUnique } from "../../../../helpers.js";
+import { getItemFromList, getOptions, pickUnique } from "../../../../helpers.js";
 import { PostConnection } from "../../../building-blocks/authentication/connections/index.js";
 import { Approve, GetReceived, PostPackage } from "../../../building-blocks/authentication/request/index.js";
 import { getClients, getEnduserOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
-const JORDBRUK_PACKAGE = "urn:altinn:accesspackage:jordbruk";
-
-const groupLabel = "0. Be om tilgang til jordbrukspakke";
+const groupLabel = "0. Be om tilgang til tilgangspakke";
 const addAssignmentLabel = { step: "1. Virksomhet B adds Bruker A (assignment)" };
-const requestPackageLabel = { step: "2. Bruker A requests jordbruk package" };
+const requestPackageLabel = { step: "2. Bruker A requests access package" };
 const getReceivedLabel = { step: "3. Bruker B gets received request" };
 const approveLabel = { step: "4. Bruker B approves request" };
 
@@ -51,7 +50,8 @@ export default function (data) {
     const [connectionsApiClient, requestApiClient, tokenGenerator] = getClients();
 
     // Bruker A (requester) and Bruker B (daglig leder of Virksomhet B, the approver).
-    const [a, b] = pickUnique(data, 2);
+    const [a, b] = pickUnique(data.users, 2);
+    const accessPackage = getItemFromList(data.packages, true);
 
     group(groupLabel, function () {
         // Step 1: Virksomhet B adds Bruker A as a connection, so a relationship
@@ -66,13 +66,13 @@ export default function (data) {
             addAssignmentLabel,
         );
 
-        // Step 2: Bruker A requests the jordbruk package, directed to Virksomhet B (A's token).
+        // Step 2: Bruker A requests the access package, directed to Virksomhet B (A's token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
         const request = PostPackage(
             requestApiClient,
             a.partyUuid,
             b.orgUuid,
-            JORDBRUK_PACKAGE,
+            accessPackage,
             requestPackageLabel,
         );
 
