@@ -37,9 +37,20 @@ export function setup() {
 }
 
 /**
+ * Access packages that pass the delegable/assignable filter but cannot actually
+ * be requested in this flow, so they are excluded from the random selection.
+ */
+const EXCLUDED_PACKAGES = [
+    // Kun støttet av spesifikke roller (bobestyrer), så den kan ikke bes om i denne flyten.
+    "urn:altinn:accesspackage:konkursbo-lesetilgang",
+    // Kun relevant for NUF (norskregistrert utenlandsk foretak), så den kan ikke bes om her.
+    "urn:altinn:accesspackage:tjenester-nuf",
+];
+
+/**
  * Fetches the access package catalogue from the meta API and returns the URNs of
  * packages that can be requested: those in an "Organisasjon" group that are both
- * delegable and assignable.
+ * delegable and assignable, minus {@link EXCLUDED_PACKAGES}.
  * @returns {string[]} valid access package URNs
  */
 function fetchAssignablePackages() {
@@ -51,7 +62,7 @@ function fetchAssignablePackages() {
         if (group.type !== "Organisasjon") continue;
         for (const area of group.areas ?? []) {
             for (const pkg of area.packages ?? []) {
-                if (pkg.isDelegable && pkg.isAssignable && pkg.urn) {
+                if (pkg.isDelegable && pkg.isAssignable && pkg.urn && !EXCLUDED_PACKAGES.includes(pkg.urn)) {
                     urns.push(pkg.urn);
                 }
             }
