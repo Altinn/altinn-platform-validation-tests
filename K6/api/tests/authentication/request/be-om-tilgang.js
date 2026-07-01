@@ -15,7 +15,7 @@
  *
  * Alle kall bruker personlige enduser-tokens (Altinn); den aktive brukerens token
  * byttes mellom stegene via den delte token-generatoren.
- * 
+ *
  * Testdata er tilfeldige utvalgte brukere i Tenor med tilhørende tilgangsstyrer
  */
 
@@ -87,7 +87,7 @@ export default function (data) {
         });
 
         // Steg 4: Bruker B godkjenner forespørselen på vegne av Virksomhet B.
-        // Tom body ([]) godkjenner hele pakkeforespørselen; body-en brukes bare til godkjenning av enkeltrettigheter 
+        // Tom body ([]) godkjenner hele pakkeforespørselen; body-en brukes bare til godkjenning av enkeltrettigheter
         Approve(
             requestApiClient,
             { party: b.orgUuid, id: receivedRequest.id },
