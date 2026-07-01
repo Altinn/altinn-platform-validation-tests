@@ -1,0 +1,8 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/request
+test_definitions:
+  - test_file: be-om-tilgang.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02
