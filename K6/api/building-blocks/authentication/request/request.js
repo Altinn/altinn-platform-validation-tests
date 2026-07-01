@@ -24,7 +24,6 @@ export function PostPackage(requestApiClient, from, to, accessPackage, labels = 
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
@@ -38,8 +37,6 @@ export function PostPackage(requestApiClient, from, to, accessPackage, labels = 
  */
 export function GetReceived(requestApiClient, queryParams, labels = null) {
     const res = requestApiClient.GetReceived(queryParams, labels);
-    console.log(res.body);
-    console.log(res.status);
     const succeed = check(res, {
         "GetReceived - status code is 200": (r) => r.status === 200,
         "GetReceived - body has data array": (r) => {
@@ -51,7 +48,6 @@ export function GetReceived(requestApiClient, queryParams, labels = null) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
@@ -77,7 +73,6 @@ export function Approve(requestApiClient, queryParams, body = [], labels = null)
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
@@ -102,7 +97,6 @@ export function Reject(requestApiClient, queryParams, labels = null) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }

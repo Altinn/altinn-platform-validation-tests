@@ -1,27 +1,25 @@
 /**
- * Be om tilgang (request access) flow.
+ * Be om tilgang-flyt.
  *
- * Per iteration two unique users and one random access package are picked:
- *   - Bruker A: requests the access package.
- *   - Bruker B: daglig leder of Virksomhet B; receives and approves the request.
- *   - The access package is a random one picked from metadata API
+ * Per iterasjon plukkes to unike brukere og én tilfeldig tilgangspakke:
+ *   - Bruker A: ber om tilgangspakken.
+ *   - Bruker B: daglig leder av Virksomhet B; mottar og godkjenner forespørselen.
+ *   - Tilgangspakken plukkes tilfeldig fra metadata-API-et (se common-functions.js).
  *
- * Steps:
- *   1. (Prerequisite) Virksomhet B adds Bruker A as a connection (assignment), so
- *      a relationship exists before A can request access. A is added via the body
- *      (personidentifier + lastName). Issued with B's token.
- *   2. Bruker A requests the access package, directed to Virksomhet B. A's token.
- *   3. Bruker B lists its received requests (party = b.orgUuid, status Pending)
- *      and finds the one just created. B's token.
- *   4. Bruker B approves the request on behalf of Virksomhet B (party = b.orgUuid).
- *      B is daglig leder, so steps 3-4 are plain enduser requests needing no
- *      extra authorization. B's token.
+ * Steg:
+ *   1. (Forutsetning) Virksomhet B legger til Bruker A som connection (assignment),
+ *      slik at det finnes en relasjon før A kan be om tilgang. Krever: pid + etternavn
+ *   2. Bruker A ber om tilgangspakken, rettet til Virksomhet B
+ *   3. Bruker B lister sine mottatte forespørsler og finner den siste opprettede
+ *   4. Bruker B godkjenner forespørselen på vegne av Virksomhet B
  *
- * All calls use enduser personal (Altinn) tokens; the active user's token is
- * switched between steps via the shared token generator.
+ * Alle kall bruker personlige enduser-tokens (Altinn); den aktive brukerens token
+ * byttes mellom stegene via den delte token-generatoren.
+ * 
+ * Testdata er tilfeldige utvalgte brukere i Tenor med tilhørende tilgangsstyrer
  */
 
-import { group } from "k6";
+import { check, group } from "k6";
 
 import { ReceivedRequestsParamsBuilder, RequestStatus } from "../../../../clients/authentication/index.js";
 import { getItemFromList, getOptions, pickUnique } from "../../../../helpers.js";
@@ -47,12 +45,12 @@ export const options = getOptions([
 export default function (data) {
     const [connectionsApiClient, requestApiClient, tokenGenerator] = getClients();
 
-    // Bruker A (requester) and Bruker B (daglig leder of Virksomhet B, the approver).
+    // Bruker A (ber om tilgang) og Bruker B (daglig leder av Virksomhet B, godkjenner).
     const [a, b] = pickUnique(data.users, 2);
     const accessPackage = getItemFromList(data.packages, true);
 
     group(groupLabel, function () {
-        // Step 1: Virksomhet B adds Bruker A as a connection (B's token).
+        // Steg 1: Virksomhet B legger til Bruker A som connection (Bs token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         PostConnection(
             connectionsApiClient,
@@ -61,7 +59,7 @@ export default function (data) {
             addAssignmentLabel,
         );
 
-        // Step 2: Bruker A requests the access package for Virksomhet B (A's token).
+        // Steg 2: Bruker A ber om tilgangspakken for Virksomhet B (As token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
         const request = PostPackage(
             requestApiClient,
@@ -71,7 +69,7 @@ export default function (data) {
             requestPackageLabel,
         );
 
-        // Steps 3-4: Bruker B lists received requests and approves the new one (B's token).
+        // Steg 3: Bruker B lister mottatte forespørsler og godkjenner den nye
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         const received = GetReceived(
             requestApiClient,
@@ -82,11 +80,17 @@ export default function (data) {
             getReceivedLabel,
         );
 
-        const requestId = received.data.find((r) => r.id === request.id)?.id ?? request.id;
+        // Verifiser at forespørselen fra steg 2 faktisk er blant de mottatte.
+        const receivedRequest = received.data.find((r) => r.id === request.id);
+        const found = check(receivedRequest, {
+            "Received contains the created request": (r) => r !== undefined,
+        });
 
+        // Steg 4: Bruker B godkjenner forespørselen på vegne av Virksomhet B.
+        // Tom body ([]) godkjenner hele pakkeforespørselen; body-en brukes bare til godkjenning av enkeltrettigheter 
         Approve(
             requestApiClient,
-            { party: b.orgUuid, id: requestId },
+            { party: b.orgUuid, id: receivedRequest.id },
             [],
             approveLabel,
         );

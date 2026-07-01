@@ -21,7 +21,6 @@ export function GetAccessPackagesExport(metaApiClient, labels = null) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.status_text);
-        console.log(res.body);
     }
     return res.json();
 }
