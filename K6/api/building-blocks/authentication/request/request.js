@@ -5,7 +5,7 @@ import { RequestApiClient } from "../../../../clients/authentication/index.js";
 /**
  * Post Package - Bruker A requests an access package from another party.
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
- * @param {string} from - the party making the request (party uuid). 
+ * @param {string} from - the party making the request (party uuid).
  * @param {string} to - the party the request is directed to (party uuid).
  * @param {string} accessPackage - urn of the access package, e.g. "urn:altinn:accesspackage:motorvognavgift".
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
