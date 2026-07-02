@@ -166,7 +166,7 @@ export default function (data) {
     group(group1Label, function () {
         GetLookupPartyUser(userApiClient, getLookupPartyUserLabel);
         GetIsCompanyProfileAdmin(userApiClient, { party: from.orgUuid }, getIsCompanyProfileAdminLabel);
-        GetReportee(userApiClient, from.partyId, getReporteeLabel);
+        GetReportee(userApiClient, from.partyUuid, getReporteeLabel);
         GetProfile(userApiClient, getProfileLabel);
         GetIsAdmin(userApiClient, { party: from.orgUuid }, getIsAdminLabel);
         GetIsClientAdmin(userApiClient, { party: from.orgUuid }, getIsClientAdminLabel);
