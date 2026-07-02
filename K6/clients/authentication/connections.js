@@ -3,6 +3,7 @@ import http from "k6/http";
 const TAGS = {
     GetConnections: { action: "get-connections" },
     GetAccessPackages: { action: "get-access-packages" },
+    PostConnection: { action: "post-connection" },
 };
 
 class ConnectionsApiClient {
@@ -96,6 +97,37 @@ class ConnectionsApiClient {
         };
         Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
         return http.get(url.toString(), params);
+    }
+
+    /**
+    * Create a connection (assignment) between two parties.
+    * For an organization `to` no body is needed; the assignment is fully described by the query parameters.
+    * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Connections/post_enduser_connections}
+    * @param {Object} queryParams - required: party, from, to
+    * @param {string|null} body - optional request body (e.g. { personidentifier, lastName } when adding a person)
+    * @param {Object.<string, string>} labels - request labels for metrics
+    * @returns http.RefinedResponse
+    */
+    PostConnection(queryParams, body = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}`);
+        let tags = {
+            endpoint: url.toString(),
+            name: url.toString(),
+            action: TAGS.PostConnection.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+        Object.entries(queryParams).forEach(([key, value]) => url.searchParams.append(key, value));
+        return http.post(url.toString(), body === null ? null : JSON.stringify(body), params);
     }
 
 }
