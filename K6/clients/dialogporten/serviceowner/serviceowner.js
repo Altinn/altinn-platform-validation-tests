@@ -107,6 +107,8 @@ class ServiceOwnerApiClient {
         serviceOwner,
         labels = null,
         noTransmissionsActivities = false,
+        title = null,
+        otherResource = null,
     ) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
