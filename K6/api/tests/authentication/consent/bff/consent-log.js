@@ -5,7 +5,7 @@ import exec from "k6/execution";
 
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
-import { GetConsentLog } from "../../../../building-blocks/authentication/client-delegations/index.js";
+import { GetConsentLog } from "../../../../building-blocks/authorization/client-delegations/index.js";
 import { getClients, getTokenOpts } from "./commons.js";
 
 export { setup } from "./commons.js";

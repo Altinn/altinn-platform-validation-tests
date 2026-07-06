@@ -1,0 +1,22 @@
+namespace: authorization
+base_dir: K6/api/tests/authorization/connections/
+test_definitions:
+  - test_file: get-connections-to.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+
+  - test_file: get-connections-from.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+
+  - test_file: get-access-packages-to.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+
+  - test_file: get-access-packages-from.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
