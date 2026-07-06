@@ -11,7 +11,7 @@ class BffSingleRightApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,

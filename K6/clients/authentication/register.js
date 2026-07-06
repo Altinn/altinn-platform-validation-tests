@@ -10,7 +10,7 @@ class RegisterApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -37,10 +37,10 @@ class RegisterApiClient {
     }
     /**
      *
-     * @param {string} soapErUsername
-     * @param {string} soapErPassword
-     * @param {string} clientOrg
-     * @param {string} facilitatorOrg
+     * @param {string} soapErUsername TODO: description
+     * @param {string} soapErPassword TODO: description
+     * @param {string} clientOrg TODO: description
+     * @param {string} facilitatorOrg TODO: description
      * @returns http.RefinedResponse
      */
     RemoveRevisorRoleFromEr(soapErUsername, soapErPassword, clientOrg, facilitatorOrg) {

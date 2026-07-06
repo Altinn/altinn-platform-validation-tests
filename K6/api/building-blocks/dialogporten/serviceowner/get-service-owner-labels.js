@@ -5,7 +5,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 /**
  * Function to get serviceowner labels
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get labels for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request

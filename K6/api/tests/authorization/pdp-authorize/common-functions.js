@@ -24,8 +24,8 @@ let tokenGenerator = undefined;
  * all users in the test without regenerating per-user tokens.
  *
  * @returns {[
- *   PdpAuthorizeClient,
- *   PersonalTokenGenerator
+ * PdpAuthorizeClient,
+ * PersonalTokenGenerator
  * ]} Tuple containing the PDP Authorize client and token generator.
  */
 export function getClients() {
@@ -70,8 +70,8 @@ export function getTokenOpts(ssn) {
  * Function to randomly select action, label, and expected response.
  * 90% read and write with Permit, 10% sign with NotApplicable.
  *
- * @param denyLabel
- * @param permitLabel
+ * @param denyLabel TODO: description
+ * @param permitLabel TODO: description
  * @returns {Array} [action, label, expectedResponse]
  */
 export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
@@ -88,6 +88,8 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);

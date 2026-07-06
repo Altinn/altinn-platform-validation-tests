@@ -30,8 +30,8 @@ let accessManagementApiClient = undefined;
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- *   BffAccessManagementApiClient,
- *   PersonalTokenGenerator
+ * BffAccessManagementApiClient,
+ * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
 function getClients() {
@@ -50,6 +50,8 @@ function getClients() {
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -86,7 +88,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param segmentedData
+ * @param segmentedData TODO: description
  */
 export default function (segmentedData) {
     const [accessManagementApiClient, tokenGenerator] = getClients();

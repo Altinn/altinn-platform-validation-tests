@@ -12,7 +12,7 @@ class BffAccessPackageApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://am.ui.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -40,8 +40,7 @@ class BffAccessPackageApiClient {
      * Post delegation.
      *
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
-     * @param {*} label - optional label for the request, if not provided the url will be used as label
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http response object
      */
     PostDelegations(queryParams, labels = null) {
@@ -70,8 +69,7 @@ class BffAccessPackageApiClient {
      * Delete delegations.
      *
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
-     * @param {*} label - optional label for the request, if not provided the url will be used as label
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http response object
      */
     DeleteDelegations(queryParams, labels = null) {
@@ -100,8 +98,7 @@ class BffAccessPackageApiClient {
      * Get delegations.
      *
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
-     * @param {*} label - optional label for the request, if not provided the url will be used as label
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http response object
      */
     GetDelegations(queryParams, labels = null) {
@@ -130,8 +127,7 @@ class BffAccessPackageApiClient {
      * Get delegation check.
      *
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
-     * @param {*} label - optional label for the request, if not provided the url will be used as label
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http response object
      */
     GetDelegationCheck(queryParams, labels = null) {
@@ -161,8 +157,7 @@ class BffAccessPackageApiClient {
      *
      * @param {string} accessPackageId - id of the access package to get permissions for
      * @param {*} queryParams - object with key value pairs to be added as query parameters to the request
-     * @param {*} label - optional label for the request, if not provided the url will be used as label
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http response object
      */
     GetPermission(accessPackageId, queryParams, labels = null) {

@@ -47,8 +47,8 @@ export function GetCurrent(infoPortalApiClient, labels = null) {
  *
  * @param {} res - response object
  * @param {*} method - method name for logging
- * @param status_code
- * @param status_text
+ * @param status_code TODO: description
+ * @param status_text TODO: description
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

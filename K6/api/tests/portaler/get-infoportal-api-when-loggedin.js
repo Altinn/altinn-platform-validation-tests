@@ -44,6 +44,8 @@ export const options = getOptions([
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "INFO_CLOUD_URL"]);
@@ -58,7 +60,7 @@ export function setup() {
 /**
  * Main test function that runs for each VU, will run for each iteration. Calls the tree info portal api endpoints, same as a logged in user would do via the browser.
  *
- * @param data
+ * @param data TODO: description
  */
 export default function (data) {
     const user = getItemFromList(data[exec.vu.idInTest - 1], randomize);
@@ -89,8 +91,8 @@ let personalTokenGenerator = undefined;
  * {@link PersonalTokenGenerator} instances are reused throughout the test.
  *
  * @returns {[
- *   InfoPortalApiClient,
- *   PersonalTokenGenerator
+ * InfoPortalApiClient,
+ * PersonalTokenGenerator
  * ]} Tuple containing the Info Portal API client and token generator.
  */
 function getClients() {

@@ -98,10 +98,10 @@ let consenterTokenGenerator = undefined;
  * Existing client instances are reused on subsequent calls.
  *
  * @returns {[
- *   ConsentApiClient,
- *   ConsentApiClient,
- *   ConsentApiClient,
- *   BffAccessManagementApiClient
+ * ConsentApiClient,
+ * ConsentApiClient,
+ * ConsentApiClient,
+ * BffAccessManagementApiClient
  * ]} The initialized API clients.
  */
 function getClients() {

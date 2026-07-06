@@ -22,8 +22,7 @@ export const afUrl = (() => {
 /**
  * Function to get a cookie object for the given PID.
  *
- * @param {string} pid - The personal identification number (PID) of the user.
- * @param user
+ * @param user TODO: description
  * @returns {object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
  * *
  */
@@ -49,9 +48,9 @@ export function getCookie(user) {
  * Function to get a personal token for a given PID.
  *
  * @param {string} pid - The personal identification number (PID) of the user.
- * @param userId
- * @param partyId
- * @param partyUuid
+ * @param userId TODO: description
+ * @param partyId TODO: description
+ * @param partyUuid TODO: description
  * @returns {string} - The generated personal token.
  **/
 function getToken(pid, userId, partyId, partyUuid) {

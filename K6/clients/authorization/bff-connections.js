@@ -11,7 +11,7 @@ class BffConnectionsApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://am.ui.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -39,10 +39,8 @@ class BffConnectionsApiClient {
      * Get connections
      * Docs
      *
-     * @param {string} partyId
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetConnections(queryParams, labels = null) {
@@ -71,11 +69,10 @@ class BffConnectionsApiClient {
     /**
      * Post rightholder for an user
      *
-     * @param {string} from
+     * @param {string} from TODO: description
      * @param {object} to - person identifier for the rightholder
      * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     PostRightholder(from, to, lastName, labels = null) {
@@ -108,10 +105,7 @@ class BffConnectionsApiClient {
      *
      * @param {object} from - party uuid for the reportee organization
      * @param {object} to - organization number for the rightholder organization
-     * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     PostRightholderOrg(from, to, labels = null) {
@@ -140,7 +134,7 @@ class BffConnectionsApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     DeleteRightholder(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();

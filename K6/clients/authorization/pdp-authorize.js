@@ -11,7 +11,7 @@ class PdpAuthorizeClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -42,10 +42,9 @@ class PdpAuthorizeClient {
      *
      * @param {string} ssn - social security number
      * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {string} action - e.g. read, write, sign*
      * @param {string} subscriptionKey - subscription key for the API
-     * @param {string} action - e.g. read, write, sign
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     AuthorizeEnduser(ssn, resourceId, action, subscriptionKey, labels = null) {
@@ -79,10 +78,9 @@ class PdpAuthorizeClient {
      * @param {string} ssn - social security number
      * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
      * @param {string} orgno - organization number
+     * @param {string} action - e.g. read, write, sign*
      * @param {string} subscriptionKey - subscription key for the API
-     * @param {string} action - e.g. read, write, sign
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     AuthorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, labels = null) {
@@ -120,7 +118,6 @@ class PdpAuthorizeClient {
      * @param {string} task - e.g. SigningTask_Founders
      * @param {string} action - e.g. read, write, sign
      * @param {string} subscriptionKey - subscription key for the API
-     * @param {string|null} label - label for the request
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */

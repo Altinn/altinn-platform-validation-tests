@@ -30,7 +30,7 @@ class MetaApiClient {
      * Export the full access package catalogue (groups -> areas -> packages).
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/metadata/#/Meta/get_meta_info_accesspackages_export}
      *
-     * @param {Object.<string, string>} labels - request labels for metrics
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetAccessPackagesExport(labels = null) {

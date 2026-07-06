@@ -8,7 +8,7 @@ class ClientDelegationsApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -36,8 +36,7 @@ class ClientDelegationsApiClient {
      * Get clients where the user is agent
      * Docs: TODO: add link to docs
      *
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetMyClients(labels = null) {

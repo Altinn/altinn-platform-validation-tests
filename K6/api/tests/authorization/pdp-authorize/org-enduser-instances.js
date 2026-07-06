@@ -31,7 +31,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param testData
+ * @param testData TODO: description
  */
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
@@ -55,8 +55,8 @@ export default function (testData) {
  * Function to randomly select action, label, and expected response.
  * 90% sign with Permit, 10% read with NotApplicable.
  *
- * @param denyLabel
- * @param permitLabel
+ * @param denyLabel TODO: description
+ * @param permitLabel TODO: description
  * @returns {Array} [action, label, expectedResponse]
  */
 function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {

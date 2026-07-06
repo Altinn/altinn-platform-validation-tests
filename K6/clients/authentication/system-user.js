@@ -7,7 +7,7 @@ class SystemUserApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(baseUrl, tokenGenerator) {
         /**
@@ -32,7 +32,7 @@ class SystemUserApiClient {
      * Retrieves system users for a given systemId for a vendor.
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemUser/vendor}
      *
-     * @param {string} systemId
+     * @param {string} systemId TODO: description
      * @returns http.RefinedResponse
      */
     GetSystemUsersBySystemIdForVendor(systemId) {

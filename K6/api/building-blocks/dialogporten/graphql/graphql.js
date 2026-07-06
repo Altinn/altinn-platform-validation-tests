@@ -6,12 +6,10 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
 /**
  * Function to get all dialogs for a party
  *
- * @param {GraphqlClient} graphqlClient
- * @param {*} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
- * @param {*} label
- * @param variables
- * @param labels
- * @returns
+ * @param {GraphqlClient} graphqlClient TODO: description
+ * @param variables TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
     const res = graphqlClient.GetAllDialogsForParty(variables, labels);
@@ -35,11 +33,11 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
 /**
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
  *
- * @param {GraphqlClient} graphqlClient
+ * @param {GraphqlClient} graphqlClient TODO: description
  * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
- * @param {uuidv7} dialogId
+ * @param {uuidv7} dialogId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns
+ * @returns TODO: description
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
     const res = graphqlClient.GetAllDialogsForParty(variables, labels);
@@ -75,10 +73,10 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
 /**
  * Function to get a dialog by id
  *
- * @param {GraphqlClient} graphqlClient
+ * @param {GraphqlClient} graphqlClient TODO: description
  * @param {uuidv7} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns
+ * @returns TODO: description
  */
 export function GetDialogById(graphqlClient, dialogId, labels = null) {
     const res = graphqlClient.GetDialogById(dialogId, labels);
@@ -102,10 +100,10 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
 /**
  * Function to get a dialog by id and verify that the response contains the correct dialogId
  *
- * @param {GraphqlClient} graphqlClient
+ * @param {GraphqlClient} graphqlClient TODO: description
  * @param {uuidv7} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns
+ * @returns TODO: description
  */
 export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
     const res = graphqlClient.GetDialogById(dialogId, labels);
@@ -137,9 +135,9 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
 /**
  * Function to get parties for a user
  *
- * @param {GraphqlClient} graphqlClient
+ * @param {GraphqlClient} graphqlClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns
+ * @returns TODO: description
  */
 export function GetParties(graphqlClient, labels = null) {
     const res = graphqlClient.GetParties(labels);
@@ -163,9 +161,9 @@ export function GetParties(graphqlClient, labels = null) {
 /**
  * Function to get filtered service resources for a user
  *
- * @param {GraphqlClient} graphqlClient
+ * @param {GraphqlClient} graphqlClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns
+ * @returns TODO: description
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {
     const res = graphqlClient.GetFilterServiceResources(labels);

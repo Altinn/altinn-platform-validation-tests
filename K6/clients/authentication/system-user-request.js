@@ -12,7 +12,7 @@ class SystemUserRequestApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(baseUrl, tokenGenerator) {
         /**
@@ -37,11 +37,11 @@ class SystemUserRequestApiClient {
      * Creates a new Request based on a SystemId for a SystemUser.
      * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/RequestSystemUser/post_systemuser_request_vendor}
      *
-     * @param {string } systemId
-     * @param {string } partyOrgNo
-     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-     * @param {string } redirectUrl
-     * @param {Array<{ urn: string }> } accessPackages
+     * @param {string } systemId TODO: description
+     * @param {string } partyOrgNo TODO: description
+     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights TODO: description
+     * @param {string } redirectUrl TODO: description
+     * @param {Array<{ urn: string }> } accessPackages TODO: description
      * @returns http.RefinedResponse
      */
     CreateSystemUserRequest(
@@ -77,8 +77,8 @@ class SystemUserRequestApiClient {
      * Approves the systemuser requet and creates a system user
      * OpenAPI for {@link https://docs.altinn.studio/api/authentication/spec/#/RequestSystemUser/post_systemuser_request__party___requestId__approve|/systemuser/request/party/requestId/approve}
      *
-     * @param {string } partyId
-     * @param {string } requestId
+     * @param {string } partyId TODO: description
+     * @param {string } requestId TODO: description
      * @returns http.RefinedResponse
      */
     ApproveSystemUserRequest(partyId, requestId) {
@@ -103,11 +103,11 @@ class SystemUserRequestApiClient {
      * Creates a system user request of type agent
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/RequestSystemUser/post_systemuser_request_vendor_agent}
      *
-     * @param {string } externalRef
-     * @param {string } systemId
-     * @param {string} partyOrgNo
-     * @param {Array<{ urn: string }> } accessPackages
-     * @param {string } redirectUrl
+     * @param {string } externalRef TODO: description
+     * @param {string } systemId TODO: description
+     * @param {string} partyOrgNo TODO: description
+     * @param {Array<{ urn: string }> } accessPackages TODO: description
+     * @param {string } redirectUrl TODO: description
      * @returns http.RefinedResponse
      */
     CreateAgentSystemUserRequest(
@@ -143,7 +143,7 @@ class SystemUserRequestApiClient {
      * Retrieves system user requests for a given systemId for a vendor.
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/}
      *
-     * @param {string} systemId
+     * @param {string} systemId TODO: description
      * @returns http.RefinedResponse
      */
     GetSystemUserRequestsBySystemIdForVendor(systemId) {
@@ -166,7 +166,7 @@ class SystemUserRequestApiClient {
     /**
      * Retrieves agent system user requests for a given systemId for a vendor.
      *
-     * @param {string} systemId
+     * @param {string} systemId TODO: description
      * @returns http.RefinedResponse
      */
     GetAgentSystemUserRequestsBySystemIdForVendor(systemId) {

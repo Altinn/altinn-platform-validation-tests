@@ -27,7 +27,7 @@ class BffAccessManagementApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://am.ui.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -85,6 +85,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
+     * @returns http.RefinedResponse
      */
     GetRolePermissions(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -112,7 +113,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDelegatedResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -140,7 +141,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDelegatedRightsForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -168,7 +169,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     SearchAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -196,7 +197,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     SearchResources(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -224,7 +225,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetResourceOwners(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -252,7 +253,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetOrganizationData(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -280,7 +281,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} orgNo - organization number to get data for
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetOrganizationDataFromLookup(orgNo, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -308,7 +309,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetRoleMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -336,7 +337,7 @@ class BffAccessManagementApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetRightsMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -364,7 +365,7 @@ class BffAccessManagementApiClient {
      *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDelegatedInstancesForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -392,7 +393,7 @@ class BffAccessManagementApiClient {
      *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      * */
     CheckDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -421,7 +422,7 @@ class BffAccessManagementApiClient {
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {string} body - object with the body of the request
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     DelegateRightsForResource(queryParams, body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -450,7 +451,7 @@ class BffAccessManagementApiClient {
      *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      * */
     CheckInstanceDelegationForResource(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -478,7 +479,7 @@ class BffAccessManagementApiClient {
      *
      * @param {object} uuid - uuid for the user to get active consents for
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetActiveConsentsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -505,7 +506,7 @@ class BffAccessManagementApiClient {
      *
      * @param {object} uuid - uuid for the user to get consent log for
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetConsentLogForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -532,7 +533,7 @@ class BffAccessManagementApiClient {
      *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetResourceById(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -558,10 +559,9 @@ class BffAccessManagementApiClient {
     /**
      * Get pending delegations for a user
      *
-     * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param uuid
+     * @param uuid TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * returns http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetPendingDelegationsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -587,9 +587,8 @@ class BffAccessManagementApiClient {
      * Delegation Export
      * Docs: TODO: add docs link
      *
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     DelegationExport(queryParams, labels = null) {

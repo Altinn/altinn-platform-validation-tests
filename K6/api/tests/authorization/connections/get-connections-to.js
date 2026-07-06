@@ -17,7 +17,7 @@ export const options = getOptions([getConnectionsToLabel, tokenGeneratorLabel]);
 /**
  * Main function executed by each VU.
  *
- * @param testData
+ * @param testData TODO: description
  */
 export default function (testData) {
     const [connectionsApiClient, tokenGenerator] = getClients();

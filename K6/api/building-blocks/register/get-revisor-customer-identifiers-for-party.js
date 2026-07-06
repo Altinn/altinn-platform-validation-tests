@@ -4,10 +4,10 @@ import { RegisterApiClient } from "../../../clients/authentication/index.js";
 
 /**
  *
- * @param {RegisterApiClient} registerClient
- * @param {string } facilitatorPartyUuid
- * @param {string } subscriptionKey
- * @returns {[]}
+ * @param {RegisterApiClient} registerClient TODO: description
+ * @param {string } facilitatorPartyUuid TODO: description
+ * @param {string } subscriptionKey TODO: description
+ * @returns {[]} TODO: description
  */
 export function GetRevisorCustomerIdentifiersForParty(
     registerClient,

@@ -38,8 +38,7 @@ class ResourceRegistryApiClient {
      *
      * @param {string} since ISO 8601 timestamp, e.g. 2000-01-01T01:00:00.000Z
      * @param {number} limit Number of resources to return per page
-     * @param {string|null} label Label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetUpdatedResources(since, limit, labels = null) {

@@ -3,12 +3,12 @@ import { check } from "k6";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 
 /**
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
- * @param { string } dialogId
- * @param { string } conditionType
- * @param { string } activityType
- * @param { string } transmissionId
- * @param labels
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
+ * @param { string } dialogId TODO: description
+ * @param { string } conditionType TODO: description
+ * @param { string } activityType TODO: description
+ * @param { string } transmissionId TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDialogsQueriesNotificationCondition(

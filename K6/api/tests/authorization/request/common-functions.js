@@ -19,7 +19,7 @@ let requestApiClient = undefined;
  * of assignable organization access packages from the meta API.
  *
  * Each CSV row holds an organization (Virksomhet) and its daglig leder:
- *   pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
+ * pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
  *
  * @returns {{ users: Array, packages: string[] }} Test input: parsed CSV rows
  * and the URNs of packages that can be requested (Organisasjon, delegable and
@@ -78,7 +78,7 @@ function fetchAssignablePackages() {
  * {@link PersonalTokenGenerator} instance is reused and reconfigured per user
  * via {@link setEnduserOpts}, so all clients pick up the active user's token.
  *
- * @returns {[ConnectionsApiClient, RequestApiClient, PersonalTokenGenerator]}
+ * @returns {[ConnectionsApiClient, RequestApiClient, PersonalTokenGenerator]} TODO: description
  */
 export function getClients() {
     if (tokenGenerator === undefined) {
@@ -98,7 +98,7 @@ export function getClients() {
  *
  * @param {string=} pid - the user's national identity number
  * @param {string=} partyUuid - the user's party uuid
- * @returns {Map}
+ * @returns {Map} TODO: description
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {
     const tokenOpts = new Map();

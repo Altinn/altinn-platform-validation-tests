@@ -10,8 +10,8 @@ class ConnectionsApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
-     * @param bff
+     * @param {*} tokenGenerator TODO: description
+     * @param bff TODO: description
      */
     constructor(
         baseUrl,
@@ -45,10 +45,8 @@ class ConnectionsApiClient {
      * Get connections
      * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections}
      *
-     * @param {string} partyId
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetConnections(queryParams, labels = null) {
@@ -77,9 +75,8 @@ class ConnectionsApiClient {
      * Get access packages
      * Docs {@link https://app.swaggerhub.com/apis/jon.kjetil.oye/accessmanagement-api-enduser/1.0.0#/Connections/get_accessmanagement_api_v1_enduser_connections_accesspackages}
      *
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetAccessPackages(queryParams, labels = null) {
@@ -111,7 +108,7 @@ class ConnectionsApiClient {
      *
      * @param {object} queryParams - required: party, from, to
      * @param {string|null} body - optional request body (e.g. { personidentifier, lastName } when adding a person)
-     * @param {Object.<string, string>} labels - request labels for metrics
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     PostConnection(queryParams, body = null, labels = null) {

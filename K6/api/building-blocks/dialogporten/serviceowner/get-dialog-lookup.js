@@ -5,7 +5,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 /**
  * Function to get dialogLookup
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request

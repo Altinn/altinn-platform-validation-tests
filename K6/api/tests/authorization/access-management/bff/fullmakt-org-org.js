@@ -100,10 +100,10 @@ let clientDelegationsApiClient = undefined;
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- *   BffConnectionsApiClient,
- *   BffAccessPackageApiClient,
- *   BffClientDelegationsApiClient,
- *   PersonalTokenGenerator
+ * BffConnectionsApiClient,
+ * BffAccessPackageApiClient,
+ * BffClientDelegationsApiClient,
+ * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
 function getClients() {
@@ -128,6 +128,8 @@ function getClients() {
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -141,7 +143,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param segmentedData
+ * @param segmentedData TODO: description
  */
 export default function (segmentedData) {
     // testdata. [0] contains segmented user data for each VU, [1] contains access packages

@@ -16,7 +16,7 @@ class SystemRegisterApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -114,12 +114,12 @@ class SystemRegisterApiClient {
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_}
      *
      * @param {string } systemId The Id of the Registered System
-     * @param {string } vendorId
-     * @param {string } name
-     * @param {string[] } clientId
-     * @param {{ en: string, nn: string, nb: string } } description
-     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-     * @param {string[] } allowedRedirectUrls
+     * @param {string } vendorId TODO: description
+     * @param {string } name TODO: description
+     * @param {string[] } clientId TODO: description
+     * @param {{ en: string, nn: string, nb: string } } description TODO: description
+     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights TODO: description
+     * @param {string[] } allowedRedirectUrls TODO: description
      * @returns http.RefinedResponse
      */
     UpdateVendorSystemRegister(
@@ -165,7 +165,7 @@ class SystemRegisterApiClient {
 
     /**
      * @param {string } systemId The Id of the Registered System
-     * @param {Array<{ urn: string }> } body
+     * @param {Array<{ urn: string }> } body TODO: description
      * @returns http.RefinedResponse
      */
     UpdateVendorAccessPackages(systemId, body) {
@@ -190,7 +190,7 @@ class SystemRegisterApiClient {
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
      *
      * @param {string } systemId The Id of the Registered System
-     * @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body
+     * @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body TODO: description
      * @returns http.RefinedResponse
      */
     UpdateRightsVendorSystemRegister(systemId, body) {
@@ -262,13 +262,13 @@ class SystemRegisterApiClient {
      * Create a new System
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/post_systemregister_vendor}
      *
-     * @param {string } vendorId
-     * @param {string } name
-     * @param {string[] } clientId
-     * @param {{ en: string, nn: string, nb: string } } description
-     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-     * @param {string[] } allowedRedirectUrls
-     * @param accessPackages
+     * @param {string } vendorId TODO: description
+     * @param {string } name TODO: description
+     * @param {string[] } clientId TODO: description
+     * @param {{ en: string, nn: string, nb: string } } description TODO: description
+     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights TODO: description
+     * @param {string[] } allowedRedirectUrls TODO: description
+     * @param accessPackages TODO: description
      * @returns http.RefinedResponse
      */
     CreateSystemRegister(

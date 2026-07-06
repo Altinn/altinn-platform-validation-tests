@@ -120,6 +120,8 @@ export const options = getOptions([
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -139,7 +141,7 @@ export function setup() {
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
  *
- * @param data
+ * @param data TODO: description
  */
 export default function (data) {
     const [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, tokenGenerator] = getClients(serviceOwnerOrgNo);

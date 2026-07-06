@@ -5,7 +5,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 /**
  * Function to get dialogs
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
@@ -35,7 +35,7 @@ export function GetDialogs(
 /**
  * Function to get a dialog by id
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
@@ -65,7 +65,7 @@ export function GetDialog(
 /**
  * Function to get enduser context
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request

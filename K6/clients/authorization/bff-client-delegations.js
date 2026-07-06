@@ -14,7 +14,7 @@ class BffClientDelegationsApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://am.ui.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -42,9 +42,8 @@ class BffClientDelegationsApiClient {
      * Get agents
      * Docs: TODO: add docs link
      *
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetAgents(queryParams, labels = null) {
@@ -74,12 +73,10 @@ class BffClientDelegationsApiClient {
      * Post agents
      * Docs: TODO: add docs link
      *
-     * @param {string} partyId
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param to
-     * @param lastName
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param to TODO: description
+     * @param lastName TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     PostAgents(queryParams, to, lastName, labels = null) {
@@ -112,10 +109,8 @@ class BffClientDelegationsApiClient {
      * Delete agents
      * Docs: TODO: add docs link
      *
-     * @param {string} partyId
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     DeleteAgents(queryParams, labels = null) {
@@ -144,9 +139,8 @@ class BffClientDelegationsApiClient {
      * Get access packages
      * Docs: TODO: add docs link
      *
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetAgentsAccessPackages(queryParams, labels = null) {
@@ -175,10 +169,9 @@ class BffClientDelegationsApiClient {
      * Post access packages
      * Docs Docs: TODO: add docs link
      *
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param accessPackage
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param accessPackage TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     PostAgentsAccessPackages(queryParams, accessPackage, labels = null) {
@@ -215,10 +208,9 @@ class BffClientDelegationsApiClient {
      * Delete access packages
      * Docs: TODO: add docs link
      *
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param accessPackage
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param accessPackage TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     DeleteAgentsAccessPackages(queryParams, accessPackage, labels = null) {
@@ -255,10 +247,8 @@ class BffClientDelegationsApiClient {
      * Get clients
      * Docs: TODO: add docs link
      *
-     * @param {string} partyId
-     * @param {object} queryParams
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetClients(queryParams, labels = null) {

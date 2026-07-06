@@ -17,7 +17,7 @@ class AltinnCdnClient {
     /**
      * GetOrgs
      *
-     * @param {string} environment
+     * @param {string} environment TODO: description
      * @returns A three digit list of orgs
      */
     GetOrgs(environment = "all") {
@@ -58,8 +58,8 @@ class AltinnCdnClient {
     /**
      * GetBaseUrlForOrgInEnvironment
      *
-     * @param {string} org
-     * @param {string} environment
+     * @param {string} org TODO: description
+     * @param {string} environment TODO: description
      * @returns The base URL for the particular org and environment
      */
     GetBaseUrlForOrgInEnvironment(org, environment = "tt02") {
@@ -74,8 +74,8 @@ class AltinnCdnClient {
     /**
      * GetBaseUrlForOrgInEnvironment
      *
-     * @param {string} org
-     * @param {string} environment
+     * @param {string} org TODO: description
+     * @param {string} environment TODO: description
      * @returns The domain for the particular org and environment
      */
     GetDomainForOrgAndEnvironment(org, environment = "tt02") {

@@ -5,12 +5,12 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 /**
  * Function to create a dialog for a party
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
  * @param {string} serviceResource - the service resource for the dialog
  * @param {string} serviceOwner - the service owner for the dialog. an organization nunber (9 digits)
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @param noTransmissionsActivities
+ * @param noTransmissionsActivities TODO: description
  * @returns response body of the request
  */
 export function CreateDialog(
@@ -44,7 +44,7 @@ export function CreateDialog(
 /**
  * Create a transmission for a dialog
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
@@ -74,10 +74,10 @@ export function CreateTransmission(
 /**
  * Create an activity for a dialog
  *
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {uuidv7} dialogId - the id of the dialog to create the activity for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns
+ * @returns TODO: description
  */
 export function CreateActivity(
     serviceOwnerApiClient,

@@ -10,7 +10,7 @@ class AuthorizedPartiesClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(baseUrl, tokenGenerator) {
         /**
@@ -35,10 +35,10 @@ class AuthorizedPartiesClient {
      * Get Authorized Parties
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
      *
-     * @param {string} type
-     * @param {string} value
-     * @param queryParams
-     * @param parties
+     * @param {string} type TODO: description
+     * @param {string} value TODO: description
+     * @param queryParams TODO: description
+     * @param parties TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
