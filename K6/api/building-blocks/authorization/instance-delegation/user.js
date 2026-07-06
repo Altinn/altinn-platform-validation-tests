@@ -5,10 +5,9 @@ import { BffUserApiClient } from "../../../../clients/authorization/bff-user.js"
 /**
  * Get user id by lookup
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  */
 export function GetLookupPartyUser(bffUserApiClient, labels = null) {
     const res = bffUserApiClient.GetLookupPartUser(labels);
@@ -19,10 +18,10 @@ export function GetLookupPartyUser(bffUserApiClient, labels = null) {
 /**
  * Post single right for the specified query parameters
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels = null) {
     const res = bffUserApiClient.GetIsCompanyProfileAdmin(queryParams, labels);
@@ -33,11 +32,10 @@ export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels =
 /**
  * Get reportee for the specified user id
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {*} userId - id of the user to get reportees for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  */
 export function GetReportee(bffUserApiClient, userId, labels = null) {
     const res = bffUserApiClient.GetReportee(userId, labels);
@@ -48,8 +46,7 @@ export function GetReportee(bffUserApiClient, userId, labels = null) {
 /**
  * Get profile
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns http.RefinedResponse
  */
@@ -62,11 +59,10 @@ export function GetProfile(bffUserApiClient, labels = null) {
 /**
  * Get is admin
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  * */
 export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
     const res = bffUserApiClient.GetIsAdmin(queryParams, labels);
@@ -77,11 +73,10 @@ export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
 /**
  * Get is client admin
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  * */
 export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
     const res = bffUserApiClient.GetIsClientAdmin(queryParams, labels);
@@ -92,10 +87,9 @@ export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
 /**
  * Get actor list old
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  * */
 export function GetActorListOld(bffUserApiClient, labels = null) {
     const res = bffUserApiClient.GetActorListOld(labels);
@@ -106,10 +100,9 @@ export function GetActorListOld(bffUserApiClient, labels = null) {
 /**
  * Get actor list favorites
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  * */
 export function GetActorListFavorites(bffUserApiClient, labels = null) {
     const res = bffUserApiClient.GetActorListFavorites(labels);
@@ -120,11 +113,10 @@ export function GetActorListFavorites(bffUserApiClient, labels = null) {
 /**
  * Get is instance admin
  *
- * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
- * @param bffUserApiClient
+ * @param {BffUserApiClient} bffUserApiClient A client to interact with the user API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * returns http.RefinedResponse
+ * @returns http.RefinedResponse
  */
 export function GetIsInstanceAdmin(bffUserApiClient, queryParams, labels = null) {
     const res = bffUserApiClient.GetIsInstanceAdmin(queryParams, labels);
@@ -137,8 +129,8 @@ export function GetIsInstanceAdmin(bffUserApiClient, queryParams, labels = null)
  *
  * @param {} res - response object
  * @param {*} method - method name for logging
- * @param status_code
- * @param status_text
+ * @param status_code TODO: description
+ * @param status_text TODO: description
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

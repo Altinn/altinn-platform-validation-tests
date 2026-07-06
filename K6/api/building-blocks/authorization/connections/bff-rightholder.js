@@ -33,10 +33,10 @@ export function PostRightholder(bffConnectionsApiClient, from, to, lastName = nu
 /**
  * Delete rightholder connection for a reportee
  *
- * @param {BffConnectionsApiClient} BffConnectionsApiClient A client to interact with the bff connections API
- * @param bffConnectionsApiClient
+ * @param {BffConnectionsApiClient} bffConnectionsApiClient A client to interact with the bff connections API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function DeleteRightholder(bffConnectionsApiClient, queryParams, labels = null) {
     const res = bffConnectionsApiClient.DeleteRightholder(queryParams, labels);

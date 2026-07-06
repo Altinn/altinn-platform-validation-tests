@@ -8,6 +8,7 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authorization
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetAgents(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetAgents(queryParams, labels);
@@ -20,9 +21,10 @@ export function GetAgents(clientDelegationsApiClient, queryParams, labels = null
  *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param to
- * @param lastName
+ * @param to TODO: description
+ * @param lastName TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, labels = null) {
     const res = clientDelegationsApiClient.PostAgents(queryParams, to, lastName, labels);
@@ -36,6 +38,7 @@ export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.DeleteAgents(queryParams, labels);
@@ -49,6 +52,7 @@ export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = n
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetClients(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetClients(queryParams, labels);
@@ -75,8 +79,8 @@ export function DelegationExport(accessManagementApiClient, queryParams, labels 
  *
  * @param {} res - response object
  * @param {*} method - method name for logging
- * @param status_code
- * @param status_text
+ * @param status_code TODO: description
+ * @param status_text TODO: description
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

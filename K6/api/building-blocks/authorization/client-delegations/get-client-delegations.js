@@ -6,8 +6,8 @@ import { ClientDelegationsApiClient } from "../../../../clients/authorization/in
  * Get clients for the specified query parameters
  *
  * @param {ClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
- * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetMyClients(clientDelegationsApiClient, labels = null) {
     const res = clientDelegationsApiClient.GetMyClients(labels);
@@ -20,8 +20,8 @@ export function GetMyClients(clientDelegationsApiClient, labels = null) {
  *
  * @param {} res - response object
  * @param {*} method - method name for logging
- * @param status_code
- * @param status_text
+ * @param status_code TODO: description
+ * @param status_text TODO: description
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

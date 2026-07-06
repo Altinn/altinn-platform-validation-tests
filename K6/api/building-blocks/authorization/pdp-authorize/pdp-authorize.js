@@ -82,7 +82,7 @@ export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, actio
  *
  * @param {} res - response object
  * @param {*} method - method name for logging
- * @param expectedResponse
+ * @param expectedResponse TODO: description
  */
 function checker(res, method, expectedResponse) {
     const succeed = check(res, {

@@ -5,7 +5,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 /**
  * Function to get dialogs
  *
- * @param {EnduserApiClient} enduserApiClient
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
@@ -28,7 +28,7 @@ export function GetDialogs(enduserApiClient, queryParams, labels = null) {
 /**
  * Function to get a dialog by id
  *
- * @param {EnduserApiClient} enduserApiClient
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request

@@ -5,7 +5,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 /**
  * Function to get parties
  *
- * @param {EnduserApiClient} enduserApiClient
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
  */

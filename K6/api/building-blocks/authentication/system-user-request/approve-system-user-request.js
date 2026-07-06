@@ -6,13 +6,8 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
  * Create a new System
  *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
- * @param {string } systemId
- * @param {string } partyOrgNo
- * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
- * @param {string } redirectUrl
- * @param {Array<{ urn: string }> } accessPackages
- * @param partyId
- * @param requestId
+ * @param partyId TODO: description
+ * @param requestId TODO: description
  * @returns (string | ArrayBuffer | null)
  */
 export function ApproveSystemUserRequest(

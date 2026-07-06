@@ -6,7 +6,7 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
  * Get agent SystemUserRequests for a given systemId (vendor endpoint).
  *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
- * @param {string} systemId
+ * @param {string} systemId TODO: description
  * @returns {object} Parsed JSON response
  */
 export function GetAgentSystemUserRequestsBySystemId(

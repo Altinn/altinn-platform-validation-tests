@@ -5,7 +5,7 @@ import { SystemRegisterApiClient } from "../../../../clients/authentication/inde
 /**
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API
  * @param {string } systemId The Id of the Registered System
- * @param {Array<{ urn: string }> } body
+ * @param {Array<{ urn: string }> } body TODO: description
  * @returns (string | ArrayBuffer | null)
  */
 export function UpdateVendorAccessPackages(systemRegisterClient, systemId, body) {

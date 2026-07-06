@@ -6,11 +6,11 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
  * Create a new Agent System User Request
  *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
- * @param {string } externalRef
- * @param {string } systemId
- * @param {string} partyOrgNo
- * @param {Array<{ urn: string }> } accessPackages
- * @param {string } redirectUrl
+ * @param {string } externalRef TODO: description
+ * @param {string } systemId TODO: description
+ * @param {string} partyOrgNo TODO: description
+ * @param {Array<{ urn: string }> } accessPackages TODO: description
+ * @param {string } redirectUrl TODO: description
  * @returns (string | ArrayBuffer | null)
  */
 export function CreateAgentSystemUserRequest(

@@ -8,6 +8,7 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authorization
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetAccessPackages(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetAgentsAccessPackages(queryParams, labels);
@@ -20,8 +21,9 @@ export function GetAccessPackages(clientDelegationsApiClient, queryParams, label
  *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param accessPackage
+ * @param accessPackage TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function PostAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
     const res = clientDelegationsApiClient.PostAgentsAccessPackages(queryParams, accessPackage, labels);
@@ -34,8 +36,9 @@ export function PostAccessPackages(clientDelegationsApiClient, queryParams, acce
  *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param accessPackage
+ * @param accessPackage TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
     const res = clientDelegationsApiClient.DeleteAgentsAccessPackages(queryParams, accessPackage, labels);
@@ -48,8 +51,8 @@ export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, ac
  *
  * @param {} res - response object
  * @param {*} method - method name for logging
- * @param status_code
- * @param status_text
+ * @param status_code TODO: description
+ * @param status_text TODO: description
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

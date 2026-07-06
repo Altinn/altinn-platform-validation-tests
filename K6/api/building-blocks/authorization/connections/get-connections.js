@@ -5,10 +5,9 @@ import { BffConnectionsApiClient, ConnectionsApiClient } from "../../../../clien
 /**
  *
  * @param {ConnectionsApiClient | BffConnectionsApiClient} connectionsApiClient A client to interact with the enduser/connections API
- * @param {uuid} partyId - party id of the end user
- * @param {string} direction - from or to
- * @param queryParams
+ * @param queryParams TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetConnections(connectionsApiClient, queryParams, labels = null) {
     const res = connectionsApiClient.GetConnections(queryParams, labels);
@@ -19,10 +18,9 @@ export function GetConnections(connectionsApiClient, queryParams, labels = null)
 /**
  *
  * @param {ConnectionsApiClient} connectionsApiClient A client to interact with the /enduser/connections API
- * @param {uuid} partyId - party id of the end user
- * @param {string} direction - from or to
- * @param queryParams
+ * @param queryParams TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetAccessPackages(connectionsApiClient, queryParams, labels = null) {
     const res = connectionsApiClient.GetAccessPackages(queryParams, labels);

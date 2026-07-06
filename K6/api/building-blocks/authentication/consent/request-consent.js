@@ -6,13 +6,13 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
  * Request Consent
  *
  * @param {ConsentApiClient} consentApiClient A client to interact with the Consent API
- * @param {string} id
- * @param {string} from
- * @param {string} to
- * @param {string} validTo
- * @param {Array<{action: string[], resource: [{type: string, value: string}], metaData: object}>} consentRights
- * @param {string} redirectUrl
- * @param labels
+ * @param {string} id TODO: description
+ * @param {string} from TODO: description
+ * @param {string} to TODO: description
+ * @param {string} validTo TODO: description
+ * @param {Array<{action: string[], resource: [{type: string, value: string}], metaData: object}>} consentRights TODO: description
+ * @param {string} redirectUrl TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function RequestConsent(consentApiClient, id, from, to, validTo, consentRights, redirectUrl, labels = null) {
