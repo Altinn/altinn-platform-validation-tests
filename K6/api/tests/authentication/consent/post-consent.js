@@ -1,7 +1,7 @@
+import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import {
     BffAccessManagementApiClient,
-    ConsentApiClient,
-} from "../../../../clients/authentication/index.js";
+} from "../../../../clients/authorization/index.js";
 import {
     EnterpriseTokenGenerator,
     PersonalTokenGenerator,
@@ -13,12 +13,12 @@ import {
     ConsentScope,
     MaskinportenConsentScope,
 } from "../../../../scopes.js";
-import { GetConsentLog } from "../../../building-blocks/authentication/client-delegations/access-management.js";
 import {
     ApproveConsent,
     LookupConsent,
     RequestConsent,
 } from "../../../building-blocks/authentication/consent/index.js";
+import { GetConsentLog } from "../../../building-blocks/authorization/client-delegations/access-management.js";
 import {
     consentValidTo,
     getConsenteeOrgs,

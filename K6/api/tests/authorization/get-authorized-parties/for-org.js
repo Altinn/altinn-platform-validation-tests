@@ -1,0 +1,25 @@
+import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
+import { getClients } from "./common-functions.js";
+
+export { setup } from "./common-functions.js";
+
+const includeAltinn2 = false;
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
+const label = { step: "getAuthorizedPartiesForOrg" };
+
+export const options = getOptions([label]);
+
+export default function (data) {
+    const [authorizedPartiesClient] = getClients();
+    const party = getItemFromList(data, randomize);
+    GetAuthorizedParties(
+        authorizedPartiesClient,
+        "urn:altinn:organization:identifier-no",
+        party.orgno,
+        includeAltinn2,
+        null,
+        label
+    );
+}

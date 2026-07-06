@@ -1,0 +1,7 @@
+namespace: authorization
+base_dir: K6/api/tests/authorization/client-delegations
+test_definitions:
+  - test_file: get-my-clients.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01

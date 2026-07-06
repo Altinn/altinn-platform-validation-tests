@@ -5,8 +5,8 @@ import exec from "k6/execution";
 
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
-import { GetActiveConsent } from "../../../../building-blocks/authentication/client-delegations/index.js";
-import { getTokenOpts } from "../../access-management/bff/commons.js";
+import { GetActiveConsent } from "../../../../building-blocks/authorization/client-delegations/index.js";
+import { getTokenOpts } from "../../../authorization/access-management/bff/commons.js";
 import { getClients } from "./commons.js";
 
 export { setup } from "./commons.js";

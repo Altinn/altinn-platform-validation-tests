@@ -1,0 +1,52 @@
+namespace: authorization
+base_dir: K6/api/tests/authorization/get-authorized-parties/
+test_definitions:
+  - test_file: for-org.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-system-user.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-user.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-user-include-parties-via-key-role.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-user-avgiver-liste.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+
+  - test_file: for-user-dialogporten.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+
+  - test_file: for-user-dialogporten-with-filter.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
