@@ -1,3 +1,7 @@
+/**
+ * @fileoverview This test is used to get the end user context for a service owner. It will use the worst case scenario where the end user has the most dialogs.
+ * Currently only supports the yt01 environment, but can be extended to support other environments by adding the end users to the endUsersByEnvironment object.
+ */
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 import { GetEndUserContext } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getClients } from "./common-functions.js";

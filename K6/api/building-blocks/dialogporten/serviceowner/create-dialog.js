@@ -18,6 +18,8 @@ export function CreateDialog(
     serviceOwner,
     labels = null,
     noTransmissionsActivities = false,
+    title = null,
+    otherResource = null,
 ) {
     const res = serviceOwnerApiClient.PostDialog(
         partyId,
@@ -25,6 +27,8 @@ export function CreateDialog(
         serviceOwner,
         labels,
         noTransmissionsActivities,
+        title,
+        otherResource,
     );
 
     const success = check(res, {

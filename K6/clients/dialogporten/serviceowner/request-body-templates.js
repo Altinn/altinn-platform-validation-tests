@@ -55,7 +55,7 @@ function uuidv7() {
  * @param {string} serviceOwner - the org number of the service owner
  * @returns json object to be used as body when creating a dialog via the API.
  */
-export function getDialogBody(partyId, serviceResource, serviceOwner) {
+export function getDialogBody(partyId, serviceResource, serviceOwner, title = null, otherResource = null) {
     // The partyId can be either a pid/ssn (11 digits) or an org number (9 digits). We determine which one it is based on the length of the string, and construct the party urn accordingly.
     // For a pid/ssn, the urn should be in the format urn:altinn:person:identifier-no:{pid}, and for an org number, it should be urn:altinn:organization:identifier-no:{orgnr}
     let party = null;
@@ -64,7 +64,24 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
     } else {
         party = `urn:altinn:organization:identifier-no:${partyId}`;
     }
+    if (!title) {
+        title = `Dialog for ${serviceOwner} - ${new Date().toISOString()}`;
+    }
+    let summary = undefined;
+    let guiActionTitleExtra = "";
+    let authorizationAttribute = "";
+    let transmissionTitleExtra = "";
+    if (otherResource) {
+        summary = `Dialog på tjeneste '${serviceResource}' som har en transmission på '${otherResource}'.`;
+        authorizationAttribute = `urn:altinn:resource:${otherResource}`;
+        transmissionTitleExtra = ` (${otherResource})`;
+        guiActionTitleExtra = ` for ressurs ${otherResource}`;
+    } else {
+        authorizationAttribute = `urn:altinn:resource:${serviceResource}`;
+        summary = `Dialog på tjeneste '${serviceResource}'. Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste.`;
+    }
     return {
+        //"id": uuidv7(),
         "serviceResource": `urn:altinn:resource:${serviceResource}`, // urn starting with urn:altinn:resource:
         "party": party,
         "status": "notApplicable", // valid values: notApplicable, inprogress, draft, awaiting, equiresAttention, completed
@@ -84,13 +101,13 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
         ],
         "content": {
             "Title": {
-                "value": [{ "languageCode": "nb", "value": "Skjema for rapportering av et eller annet" }]
+                "value": [{ "languageCode": "nb", "value": title }]
             },
             "SenderName": {
-                "value": [{ "languageCode": "nb", "value": "Avsendernavn" }]
+                "value": [{ "languageCode": "nb", "value": serviceOwner }]
             },
             "Summary": {
-                "value": [{ "languageCode": "nb", "value": "Et sammendrag her. Maks 200 tegn, ingen HTML-støtte. Påkrevd. Vises i liste." }]
+                "value": [{ "languageCode": "nb", "value": summary }]
             },
             "AdditionalInfo": {
                 "mediaType": "text/plain",
@@ -103,7 +120,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
         "transmissions": [
             {
                 "type": "Information",
-                "authorizationAttribute": "element1",
+                "authorizationAttribute": authorizationAttribute,
                 "sender": {
                     "actorType": "serviceOwner",
                 },
@@ -121,22 +138,31 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                         ],
                         "urls": [
                             {
-                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "url": "https://digdir.no",
                                 "consumerType": "Gui"
                             }
                         ]
                     }
                 ],
                 "content": {
+                    "contentReference": {
+                        "value": [
+                            {
+                                "value": "https://dialogporten-serviceprovider-ahb4fkchhgceevej.norwayeast-01.azurewebsites.net/fce/019c4c6b-1de4-7ff4-a59a-abd448e27b38",
+                                "languageCode": "nb"
+                            }
+                        ],
+                        "mediaType": "application/vnd.dialogporten.frontchannelembed+json;type=markdown"
+                    },
                     "title": {
                         "value": [
                             {
                                 "languageCode": "nb",
-                                "value": "Forsendelsestittel"
+                                "value": "Forsendelsestittel" + transmissionTitleExtra
                             },
                             {
                                 "languageCode": "en",
-                                "value": "Transmission title"
+                                "value": "Transmission title" + transmissionTitleExtra
                             }
                         ]
                     },
@@ -173,8 +199,9 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                         ],
                         "urls": [
                             {
-                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
-                                "consumerType": "Gui"
+                                "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
+                                "consumerType": "gui",
+                                "mediaType": "application/pdf"
                             }
                         ]
                     }
@@ -184,7 +211,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                         "value": [
                             {
                                 "languageCode": "nb",
-                                "value": "Forsendelsesstittel"
+                                "value": "Forsendelsestittel"
                             },
                             {
                                 "languageCode": "en",
@@ -208,7 +235,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
             },
             {
                 "type": "Information",
-                "authorizationAttribute": "elementius",
+                //"authorizationAttribute": "elementius",
                 "sender": {
                     "actorType": "serviceOwner"
                 },
@@ -226,7 +253,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                         ],
                         "urls": [
                             {
-                                "url": "https://digdir.apps.tt02.altinn.no/some-other-url",
+                                "url": "https://digdir.no",
                                 "consumerType": "Gui"
                             }
                         ]
@@ -263,14 +290,15 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
         "guiActions": [
             {
                 "action": "read",
+                "authorizationAttribute": authorizationAttribute,
                 "url": "https://digdir.no",
                 "priority": "Primary",
                 "title": [
                     {
-                        "value": "Gå til dialog",
+                        "value": `Gui action${guiActionTitleExtra}`,
                         "languageCode": "nb"
                     }
-                ]
+                ],
             },
             {
                 "action": "read",
@@ -314,7 +342,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "https://foo.com/foo.pdf",
+                        "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
                         "mediaType": "application/pdf"
                     }
                 ]
@@ -329,7 +357,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "https://foo.com/foo.pdf",
+                        "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
                         "mediaType": "application/pdf"
                     }
                 ]
@@ -344,7 +372,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
                 "urls": [
                     {
                         "consumerType": "gui",
-                        "url": "https://foo.com/foo.pdf",
+                        "url": "https://ksdigital.no/wp-content/uploads/2021/11/20211115-Syntetiske-tverretatlige-testdata.pdf",
                         "mediaType": "application/pdf"
                     }
                 ]
@@ -391,13 +419,12 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
  * @param {string} serviceResource - the service resource
  * @returns json object to be used as body when creating a dialog via the API, without transmissions and activities.
  */
-export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource) {
-    let body = getDialogBody(partyId, serviceResource);
+export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource, title = null) {
+    let body = getDialogBody(partyId, serviceResource, title);
     body.transmissions = [];
     body.activities = [];
     return body;
 }
-
 /**
  * Get a transmission body, used for testing creation of transmissions. By default, the transmission will not be related to any other transmission, but you can provide an id of a transmission to relate it to.
  * @param {uuidv7} relatedTransmissionId - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
