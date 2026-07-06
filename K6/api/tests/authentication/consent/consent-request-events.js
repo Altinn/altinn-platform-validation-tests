@@ -111,9 +111,16 @@ export default function (orgs) {
 
     let firstPage;
     try {
-        firstPage = JSON.parse(res.body);
+        check(null, {
+            "First page body is valid JSON": () => {
+                firstPage = JSON.parse(res.body);
+                return true;
+            }
+        });
+
     } catch (e) {
-        check(null, { "First page body is valid JSON": () => false });
+        console.log("Unable to parse the response body as JSON");
+        console.log(res.body);
         return;
     }
 
