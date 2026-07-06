@@ -9,7 +9,7 @@ import { BffConnectionsApiClient } from "../../../../clients/authorization/index
  * @param {*} from - party id for the from user
  * @param {*} to - party id for the to user
  * @param {*} lastName - last name of the to user, needed for creating a rightholder connection
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 
 export function PostRightholder(bffConnectionsApiClient, from, to, lastName = null, labels = null) {
@@ -36,7 +36,7 @@ export function PostRightholder(bffConnectionsApiClient, from, to, lastName = nu
  * @param {BffConnectionsApiClient} BffConnectionsApiClient A client to interact with the bff connections API
  * @param bffConnectionsApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function DeleteRightholder(bffConnectionsApiClient, queryParams, labels = null) {
     const res = bffConnectionsApiClient.DeleteRightholder(queryParams, labels);

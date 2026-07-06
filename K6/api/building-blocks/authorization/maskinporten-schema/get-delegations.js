@@ -5,7 +5,7 @@ import { MaskinportenSchemaApiClient } from "../../../../clients/authorization/i
 /**
  * @param {MaskinportenSchemaApiClient} maskinportenSchemaApiClient
  * @param {*} queryParams - An object containing key-value pairs to be used as query parameters in the API call
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {object|Array|undefined} The parsed JSON response, or `undefined` if the response body could not be parsed.
  */
 export function GetDelegations(maskinportenSchemaApiClient, queryParams, labels = null) {

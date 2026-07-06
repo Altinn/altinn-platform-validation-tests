@@ -8,7 +8,7 @@ class OrdersApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -33,9 +33,9 @@ class OrdersApiClient {
     }
 
     /**
-     * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
-     * @param {string } sendersReference
-     * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients
+     * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate TODO: description
+     * @param {string } sendersReference TODO: description
+     * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients TODO: description
      * @returns http.RefinedResponse
      */
     PostEmailNotificationOrder(emailTemplate, sendersReference, recipients) {

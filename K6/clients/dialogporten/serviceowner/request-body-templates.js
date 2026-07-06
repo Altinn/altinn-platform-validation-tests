@@ -6,6 +6,8 @@ function hex2(b) {
 
 /**
  * uuidv7 implmentation copied from the altinn/dialogporten repo
+ *
+ * @returns uuidv7 TODO: description
  */
 function uuidv7() {
     // Date.now() is < 2^53, so integer math via division is safe/precise here.
@@ -388,8 +390,7 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
 /**
  * Get a dialog body without transmissions and activities, used for testing creation of dialogs without these.
  *
- * @param {string} endUser - either a pid/ssn (11 digits) or an org number (9 digits)
- * @param partyId
+ * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
  * @param {string} serviceResource - the service resource
  * @returns json object to be used as body when creating a dialog via the API, without transmissions and activities.
  */

@@ -32,7 +32,7 @@ class RolesApiClient {
      * Get Roles
      * Docs TODO: This link does not work, nothing yet {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Roles}
      *
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetRoles(labels) {

@@ -229,8 +229,8 @@ export class MaskinportenTokenGeneratorOptions extends Map {
     /**
      * Only `scopes` is valid.
      *
-     * @param {string} key
-     * @returns {boolean}
+     * @param {string} key TODO: description
+     * @returns {boolean} TODO: description
      */
     static isValidConfigOption(key) {
         return key == "scopes";

@@ -6,7 +6,7 @@ import { MetaApiClient } from "../../../../clients/authorization/index.js";
  * Get Access Packages Export - fetch the full access package catalogue.
  *
  * @param {MetaApiClient} metaApiClient A client to interact with the /meta API
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns parsed catalogue (array of groups, each with areas -> packages)
  */
 export function GetAccessPackagesExport(metaApiClient, labels = null) {

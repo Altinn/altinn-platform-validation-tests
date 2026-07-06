@@ -7,7 +7,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
  */
 export function GetDialogs(
@@ -37,7 +37,7 @@ export function GetDialogs(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} dialogId - id of the dialog to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
  */
 export function GetDialog(
@@ -67,7 +67,7 @@ export function GetDialog(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient
  * @param {string} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
  */
 export function GetEndUserContext(

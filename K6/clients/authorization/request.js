@@ -11,7 +11,7 @@ class RequestApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -43,7 +43,7 @@ class RequestApiClient {
      * @param {string} from - the party making the request (the `party` query parameter), as a party uuid, e.g. "a3...-...-...-...-...". Bruker A.
      * @param {string} to - the party the request is directed to, as a party uuid. Bruker B.
      * @param {string} accessPackage - urn of the access package being requested, e.g. "urn:altinn:accesspackage:motorvognavgift".
-     * @param {Object.<string, string>} labels - request labels for metrics
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     PostPackage(from, to, accessPackage, labels = null) {
@@ -76,7 +76,7 @@ class RequestApiClient {
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/get_enduser_request_received}
      *
      * @param {import("./received-requests-params-builder.js").ReceivedRequestsParams} queryParams - required: party. optional: from, status, type
-     * @param {Object.<string, string>} labels - request labels for metrics
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetReceived(queryParams, labels = null) {
@@ -117,7 +117,7 @@ class RequestApiClient {
      * @param {string} party - the party whose received request is being approved (party uuid)
      * @param {string} id - the id of the request to approve
      * @param {string[]} body - list of references to approve (empty list approves the request as is)
-     * @param {Object.<string, string>} labels - request labels for metrics
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     Approve(party, id, body = [], labels = null) {
@@ -149,7 +149,7 @@ class RequestApiClient {
      *
      * @param {string} party - the party whose received request is being rejected (party uuid)
      * @param {string} id - the id of the request to reject
-     * @param {Object.<string, string>} labels - request labels for metrics
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     Reject(party, id, labels = null) {

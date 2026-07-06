@@ -7,7 +7,7 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
  *
  * @param {ConsentApiClient} consentApiClient A client to interact with the Consent API
  * @param {string} queryString - URL-encoded query string built with ConsentRequestEventsQueryBuilder
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {import("k6/http").RefinedResponse}
  */
 export function GetConsentRequestEvents(consentApiClient, queryString = "", labels = null) {

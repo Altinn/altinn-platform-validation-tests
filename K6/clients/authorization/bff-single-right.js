@@ -42,7 +42,7 @@ class BffSingleRightApiClient {
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {*} resource - the resource for which the right is delegated, e.g. "ttd/altinn-app-frontend/tilgangstest/resource1"
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
      * @returns http.RefinedResponse
      */
 
@@ -72,7 +72,7 @@ class BffSingleRightApiClient {
      * Delete single right delegation
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
      * @returns http.RefinedResponse
      */
     DeleteDelegate(queryParams, labels = null) {
@@ -100,7 +100,7 @@ class BffSingleRightApiClient {
      * Get delegation check for a resource
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
      * @returns http.RefinedResponse
      */
     GetDelegationCheck(queryParams, labels = null) {

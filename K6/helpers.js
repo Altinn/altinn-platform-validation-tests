@@ -62,8 +62,8 @@ export function readCsv(filename) {
 }
 /**
  *
- * @param listOfItems
- * @param randomize
+ * @param listOfItems TODO: description
+ * @param randomize TODO: description
  * @returns A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
@@ -79,8 +79,8 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  *
- * @param listOfItems
- * @param numberOfSublists
+ * @param listOfItems TODO: description
+ * @param numberOfSublists TODO: description
  * @returns A list with numberOfSublists lists.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
@@ -116,7 +116,7 @@ export function getNumberOfVUs() {
  *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {object}
+ * @returns {object} TODO: description
  */
 export function getOptions(labels, groups = []) {
     const options = {

@@ -15,7 +15,7 @@ class GraphqlClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -43,7 +43,7 @@ class GraphqlClient {
      * Get all dialogs based on variables
      *
      * @param {DialogSearchVariablesBuilder} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetAllDialogsForParty(variables, labels = null) {
@@ -73,7 +73,7 @@ class GraphqlClient {
      * Get dialog by id
      *
      * @param {DialogByIdVariablesBuilder} variables - the id of the dialog to get
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetDialogById(variables, labels = null) {
@@ -100,7 +100,7 @@ class GraphqlClient {
     /**
      * Get parties for a user
      *
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns response from the API
      * */
     GetParties(labels = null) {
@@ -127,7 +127,7 @@ class GraphqlClient {
     /**
      * Get filtered service resources for a user
      *
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetFilterServiceResources(labels = null) {

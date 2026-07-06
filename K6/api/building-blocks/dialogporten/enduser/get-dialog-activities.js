@@ -7,7 +7,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
  *
  * @param {EnduserApiClient} enduserApiClient
  * @param {string} dialogId - id of the dialog to get activities for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
  */
 export function GetDialogActivities(
@@ -39,7 +39,7 @@ export function GetDialogActivities(
  * @param {string} dialogId - id of the dialog the activity belongs to
  * param {string} activityId - id of the activity to get
  * @param activityId
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns response body of the request
  */
 export function GetDialogActivity(

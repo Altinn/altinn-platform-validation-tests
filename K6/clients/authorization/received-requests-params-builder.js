@@ -41,7 +41,7 @@ export class ReceivedRequestsParamsBuilder {
      * Required. The party whose received requests are listed
      *
      * @param {string} party - party uuid, e.g. "a3a3...-...-...-..."
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withParty(party) {
         this.params.party = party;
@@ -52,7 +52,7 @@ export class ReceivedRequestsParamsBuilder {
      * Optional. Only return requests originating from this party
      *
      * @param {string} from - party uuid, e.g. "b4b4...-...-...-..."
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withFrom(from) {
         this.params.from = from;
@@ -63,7 +63,7 @@ export class ReceivedRequestsParamsBuilder {
      * Optional. Filter on one or more request statuses.
      *
      * @param {string|string[]} status - one or more {@link RequestStatus} values, e.g. RequestStatus.Pending
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withStatus(status) {
         this.params.status = Array.isArray(status) ? status : [status];
@@ -73,8 +73,8 @@ export class ReceivedRequestsParamsBuilder {
     /**
      * Optional. Filter on request type.
      *
-     * @param {string} type
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @param {string} type TODO: description
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withType(type) {
         this.params.type = type;
@@ -82,7 +82,7 @@ export class ReceivedRequestsParamsBuilder {
     }
 
     /**
-     * @returns {ReceivedRequestsParams}
+     * @returns {ReceivedRequestsParams} TODO: description
      */
     build() {
         if (this.params.party === undefined) {

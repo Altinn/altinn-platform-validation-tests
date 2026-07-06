@@ -139,7 +139,7 @@ class BffConnectionsApiClient {
      * Delete rightholder connection for a reportee
      *
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
      * returns http.RefinedResponse
      */
     DeleteRightholder(queryParams, labels = null) {

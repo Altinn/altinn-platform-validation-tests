@@ -40,8 +40,8 @@ export class DialogSearchParamsBuilder {
      * Add parties by raw identifier (11-digit SSN or 9-digit org number).
      * Converts to the expected URI format automatically.
      *
-     * @param {string[]} parties
-     * @returns {DialogSearchParamsBuilder}
+     * @param {string[]} parties TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withParties(parties) {
         this.params.party = parties.map((party) => {
@@ -59,8 +59,8 @@ export class DialogSearchParamsBuilder {
     /**
      * Add parties already in URI format (urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}).
      *
-     * @param {string|string[]} partyURIs
-     * @returns {DialogSearchParamsBuilder}
+     * @param {string|string[]} partyURIs TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withPartyURIs(partyURIs) {
         this.params.party = Array.isArray(partyURIs) ? partyURIs : [partyURIs];
@@ -69,7 +69,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string|string[]} org Short service owner codes, e.g. "nav", "skd"
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withOrg(org) {
         this.params.org = Array.isArray(org) ? org : [org];
@@ -77,8 +77,8 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @param {string|string[]} serviceResource
-     * @returns {DialogSearchParamsBuilder}
+     * @param {string|string[]} serviceResource TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withServiceResource(serviceResource) {
         this.params.serviceResource = Array.isArray(serviceResource)
@@ -88,8 +88,8 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @param {string|string[]} extendedStatus
-     * @returns {DialogSearchParamsBuilder}
+     * @param {string|string[]} extendedStatus TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withExtendedStatus(extendedStatus) {
         this.params.extendedStatus = Array.isArray(extendedStatus)
@@ -99,8 +99,8 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @param {string} externalReference
-     * @returns {DialogSearchParamsBuilder}
+     * @param {string} externalReference TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withExternalReference(externalReference) {
         this.params.externalReference = externalReference;
@@ -109,7 +109,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string|string[]} status Valid values: "NotApplicable", "InProgress", "Awaiting", "RequiresAttention", "Completed", "Draft"
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withStatus(status) {
         this.params.status = Array.isArray(status) ? status : [status];
@@ -118,7 +118,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} createdAfter ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withCreatedAfter(createdAfter) {
         this.params.createdAfter = createdAfter;
@@ -127,7 +127,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} createdBefore ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withCreatedBefore(createdBefore) {
         this.params.createdBefore = createdBefore;
@@ -136,7 +136,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} updatedAfter ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withUpdatedAfter(updatedAfter) {
         this.params.updatedAfter = updatedAfter;
@@ -145,7 +145,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} updatedBefore ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withUpdatedBefore(updatedBefore) {
         this.params.updatedBefore = updatedBefore;
@@ -154,7 +154,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} contentUpdatedAfter ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withContentUpdatedAfter(contentUpdatedAfter) {
         this.params.contentUpdatedAfter = contentUpdatedAfter;
@@ -163,7 +163,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} contentUpdatedBefore ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withContentUpdatedBefore(contentUpdatedBefore) {
         this.params.contentUpdatedBefore = contentUpdatedBefore;
@@ -171,8 +171,8 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @param {boolean} isContentSeen
-     * @returns {DialogSearchParamsBuilder}
+     * @param {boolean} isContentSeen TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withIsContentSeen(isContentSeen) {
         this.params.isContentSeen = isContentSeen;
@@ -181,7 +181,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} dueAfter ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withDueAfter(dueAfter) {
         this.params.dueAfter = dueAfter;
@@ -190,7 +190,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} dueBefore ISO 8601 date-time
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withDueBefore(dueBefore) {
         this.params.dueBefore = dueBefore;
@@ -198,8 +198,8 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @param {string} process
-     * @returns {DialogSearchParamsBuilder}
+     * @param {string} process TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withProcess(process) {
         this.params.process = process;
@@ -208,7 +208,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string|string[]} systemLabel Valid values: "Default", "Bin", "Archive", "MarkedAsUnopened", "Sent"
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withSystemLabel(systemLabel) {
         this.params.systemLabel = Array.isArray(systemLabel)
@@ -218,8 +218,8 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @param {boolean} excludeApiOnly
-     * @returns {DialogSearchParamsBuilder}
+     * @param {boolean} excludeApiOnly TODO: description
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withExcludeApiOnly(excludeApiOnly) {
         this.params.excludeApiOnly = excludeApiOnly;
@@ -228,7 +228,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} search Fuzzy-matched against all free-text fields
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withSearch(search) {
         this.params.search = search;
@@ -237,7 +237,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} searchLanguageCode BCP 47 language code, e.g. "nb", "en"
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withSearchLanguageCode(searchLanguageCode) {
         this.params.searchLanguageCode = searchLanguageCode;
@@ -246,7 +246,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} orderBy Defaults to "contentUpdatedAt desc" when omitted
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withOrderBy(orderBy) {
         this.params.orderBy = orderBy;
@@ -255,7 +255,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {string} continuationToken Returned by a previous search when more pages are available
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withContinuationToken(continuationToken) {
         this.params.continuationToken = continuationToken;
@@ -264,7 +264,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * @param {number} limit Results per page, 1–1000. Default: 100.
-     * @returns {DialogSearchParamsBuilder}
+     * @returns {DialogSearchParamsBuilder} TODO: description
      */
     withLimit(limit) {
         this.params.limit = limit;
@@ -272,7 +272,7 @@ export class DialogSearchParamsBuilder {
     }
 
     /**
-     * @returns {DialogSearchParams}
+     * @returns {DialogSearchParams} TODO: description
      */
     build() {
         return { ...this.params };

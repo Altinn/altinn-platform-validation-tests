@@ -11,7 +11,7 @@ class InfoPortalApiClient {
      * ApiClient for the infoportal api endpoints
      *
      * @param {string} baseUrl e.g. https://info.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -82,9 +82,9 @@ class InfoPortalApiClient {
     /**
      * Method to do the actuel http call to the api, used by all the public methods in this class
      *
-     * @param {url} url
-     * @param {*} labels
-     * @returns
+     * @param {url} url TODO: Description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns TODO: description
      */
     #getEndpoint(url, labels) {
         const token = this.tokenGenerator.getToken();

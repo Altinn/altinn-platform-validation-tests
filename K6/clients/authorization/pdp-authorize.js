@@ -120,9 +120,8 @@ class PdpAuthorizeClient {
      * @param {string} task - e.g. SigningTask_Founders
      * @param {string} action - e.g. read, write, sign
      * @param {string} subscriptionKey - subscription key for the API
-     * @param {string} action - e.g. read, write, sign
      * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     AuthorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
@@ -160,9 +159,7 @@ class PdpAuthorizeClient {
      * @param {string} task - e.g. SigningTask_Founders
      * @param {string} action - e.g. read, write, sign
      * @param {string} subscriptionKey - subscription key for the API
-     * @param {string} action - e.g. read, write, sign
-     * @param {string|null} label - label for the request
-     * @param labels
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     AuthorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels = null) {

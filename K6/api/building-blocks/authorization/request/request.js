@@ -9,7 +9,7 @@ import { RequestApiClient } from "../../../../clients/authorization/index.js";
  * @param {string} from - the party making the request (party uuid).
  * @param {string} to - the party the request is directed to (party uuid).
  * @param {string} accessPackage - urn of the access package, e.g. "urn:altinn:accesspackage:motorvognavgift".
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns parsed RequestDto for the created request
  */
 export function PostPackage(requestApiClient, from, to, accessPackage, labels = null) {
@@ -34,7 +34,7 @@ export function PostPackage(requestApiClient, from, to, accessPackage, labels = 
  *
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
  * @param {*} queryParams - query parameters for the request (party, optionally from, status, type)
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns parsed RequestDtoPaginatedResult
  */
 export function GetReceived(requestApiClient, queryParams, labels = null) {
@@ -61,7 +61,7 @@ export function GetReceived(requestApiClient, queryParams, labels = null) {
  * @param {string} party - the party whose received request is being approved (party uuid)
  * @param {string} id - the id of the request to approve
  * @param {string[]} body - references to approve (empty list approves the request as is)
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns parsed RequestDto for the approved request
  */
 export function Approve(requestApiClient, party, id, body = [], labels = null) {
@@ -87,7 +87,7 @@ export function Approve(requestApiClient, party, id, body = [], labels = null) {
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
  * @param {string} party - the party whose received request is being rejected (party uuid)
  * @param {string} id - the id of the request to reject
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns parsed RequestDto for the rejected request
  */
 export function Reject(requestApiClient, party, id, labels = null) {

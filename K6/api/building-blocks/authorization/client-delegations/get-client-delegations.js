@@ -7,7 +7,7 @@ import { ClientDelegationsApiClient } from "../../../../clients/authorization/in
  *
  * @param {ClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function GetMyClients(clientDelegationsApiClient, labels = null) {
     const res = clientDelegationsApiClient.GetMyClients(labels);

@@ -7,7 +7,7 @@ import { BffUserApiClient } from "../../../../clients/authorization/bff-user.js"
  *
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  */
 export function GetLookupPartyUser(bffUserApiClient, labels = null) {
@@ -22,7 +22,7 @@ export function GetLookupPartyUser(bffUserApiClient, labels = null) {
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels = null) {
     const res = bffUserApiClient.GetIsCompanyProfileAdmin(queryParams, labels);
@@ -36,7 +36,7 @@ export function GetIsCompanyProfileAdmin(bffUserApiClient, queryParams, labels =
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
  * @param {*} userId - id of the user to get reportees for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  */
 export function GetReportee(bffUserApiClient, userId, labels = null) {
@@ -50,7 +50,7 @@ export function GetReportee(bffUserApiClient, userId, labels = null) {
  *
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns http.RefinedResponse
  */
 export function GetProfile(bffUserApiClient, labels = null) {
@@ -65,7 +65,7 @@ export function GetProfile(bffUserApiClient, labels = null) {
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  * */
 export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
@@ -80,7 +80,7 @@ export function GetIsAdmin(bffUserApiClient, queryParams, labels = null) {
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  * */
 export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
@@ -94,7 +94,7 @@ export function GetIsClientAdmin(bffUserApiClient, queryParams, labels = null) {
  *
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  * */
 export function GetActorListOld(bffUserApiClient, labels = null) {
@@ -108,7 +108,7 @@ export function GetActorListOld(bffUserApiClient, labels = null) {
  *
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  * */
 export function GetActorListFavorites(bffUserApiClient, labels = null) {
@@ -123,7 +123,7 @@ export function GetActorListFavorites(bffUserApiClient, labels = null) {
  * @param {BffUserApiClient} BffUserApiClient A client to interact with the user API
  * @param bffUserApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * returns http.RefinedResponse
  */
 export function GetIsInstanceAdmin(bffUserApiClient, queryParams, labels = null) {

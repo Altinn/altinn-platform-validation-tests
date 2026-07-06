@@ -200,8 +200,8 @@ export class PersonalTokenGeneratorOptions extends Map {
     /**
      * Check if key exists in the allowed set.
      *
-     * @param {string} key
-     * @returns {boolean}
+     * @param {string} key TODO: description
+     * @returns {boolean} Whether the key is valid or not
      */
     static isValidTokenOption(key) {
         return PersonalTokenGeneratorOptions.getPersonalTokenValidOptions.includes(
@@ -221,9 +221,9 @@ export class EnterpriseTokenGenerator {
     #encodedCredentials;
 
     /**
-     * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions
-     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME]
-     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD]
+     * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions TODO: description
+     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME] TODO: description
+     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD] TODO: description
      */
     constructor(
         tokenGeneratorOptions,
@@ -262,7 +262,7 @@ export class EnterpriseTokenGenerator {
     /**
      * Reset enterprise token query parameters.
      *
-     * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions
+     * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions TODO: description
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = new EnterpriseTokenGeneratorOptions(
@@ -273,7 +273,7 @@ export class EnterpriseTokenGenerator {
     /**
      * Internal call to the enterprise token endpoint.
      *
-     * @returns {string}
+     * @returns {string} TODO: description
      * @private
      */
     #getEnterpriseToken() {
@@ -370,9 +370,9 @@ export class PlatformTokenGenerator {
     static #defaultTtl = 60000;
 
     /**
-     * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions
-     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME]
-     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD]
+     * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions TODO: description
+     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME] TODO: description
+     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD] TODO: description
      */
     constructor(
         tokenGeneratorOptions,
@@ -412,7 +412,7 @@ export class PlatformTokenGenerator {
     /**
      * Reset platform token query params and apply defaults.
      *
-     * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions
+     * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions TODO: description
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = new PlatformTokenGeneratorOptions(
@@ -441,7 +441,7 @@ export class PlatformTokenGenerator {
     /**
      * Internal call to get a platform access token.
      *
-     * @returns {string}
+     * @returns {string} TODO: description
      * @private
      */
     #getPlatformAccessToken() {

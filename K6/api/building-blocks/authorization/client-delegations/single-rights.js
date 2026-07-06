@@ -9,7 +9,7 @@ import { BffSingleRightApiClient } from "../../../../clients/authorization/index
  * @param bffSingleRightApiClient
  * @param {} queryParams - queryParams for the request
  * @param rights
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, labels = null) {
     const res = bffSingleRightApiClient.PostDelegate(queryParams, rights, labels);
@@ -23,7 +23,7 @@ export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, la
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param bffSingleRightApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  * */
 export function RevokeSingleRight(bffSingleRightApiClient, queryParams, labels = null) {
@@ -38,7 +38,7 @@ export function RevokeSingleRight(bffSingleRightApiClient, queryParams, labels =
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param bffSingleRightApiClient
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegationCheck(bffSingleRightApiClient, queryParams, labels = null) {

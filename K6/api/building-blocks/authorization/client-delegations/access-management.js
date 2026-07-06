@@ -8,7 +8,7 @@ import { BffAccessManagementApiClient } from "../../../../clients/authorization/
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function GetIsHovedAdmin(bffAccessManagementApiClient, queryParams, labels = null) {
     const res = bffAccessManagementApiClient.GetIsHovedAdmin(queryParams, labels);
@@ -22,7 +22,7 @@ export function GetIsHovedAdmin(bffAccessManagementApiClient, queryParams, label
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function GetRolePermissions(bffAccessManagementApiClient, queryParams, labels = null) {
     const res = bffAccessManagementApiClient.GetRolePermissions(queryParams, labels);
@@ -36,7 +36,7 @@ export function GetRolePermissions(bffAccessManagementApiClient, queryParams, la
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function GetDelegatedResources(bffAccessManagementApiClient, queryParams, labels = null) {
     const res = bffAccessManagementApiClient.GetDelegatedResources(queryParams, labels);
@@ -50,7 +50,7 @@ export function GetDelegatedResources(bffAccessManagementApiClient, queryParams,
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegatedRightsForResource(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -65,7 +65,7 @@ export function GetDelegatedRightsForResource(bffAccessManagementApiClient, quer
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function SearchAccessPackages(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -80,7 +80,7 @@ export function SearchAccessPackages(bffAccessManagementApiClient, queryParams, 
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 export function SearchResources(bffAccessManagementApiClient, queryParams, labels = null) {
     const res = bffAccessManagementApiClient.SearchResources(queryParams, labels);
@@ -94,7 +94,7 @@ export function SearchResources(bffAccessManagementApiClient, queryParams, label
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetResourceOwners(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -109,7 +109,7 @@ export function GetResourceOwners(bffAccessManagementApiClient, queryParams, lab
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetOrganizationData(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -124,7 +124,7 @@ export function GetOrganizationData(bffAccessManagementApiClient, queryParams, l
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {*} orgNo - organization number to lookup
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgNo, labels = null) {
@@ -139,7 +139,7 @@ export function GetOrganizationDataFromLookup(bffAccessManagementApiClient, orgN
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetRoleMeta(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -154,7 +154,7 @@ export function GetRoleMeta(bffAccessManagementApiClient, queryParams, labels = 
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetRightsMeta(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -169,7 +169,7 @@ export function GetRightsMeta(bffAccessManagementApiClient, queryParams, labels 
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -184,7 +184,7 @@ export function GetDelegatedInstancesForResource(bffAccessManagementApiClient, q
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  * */
 export function CheckDelegationForResource(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -200,7 +200,7 @@ export function CheckDelegationForResource(bffAccessManagementApiClient, queryPa
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
  * @param {*} body - body for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function DelegateRightsForResource(bffAccessManagementApiClient, queryParams, body, labels = null) {
@@ -215,7 +215,7 @@ export function DelegateRightsForResource(bffAccessManagementApiClient, queryPar
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} uuid - uuid for the user
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetActiveConsent(bffAccessManagementApiClient, uuid, labels = null) {
@@ -230,7 +230,7 @@ export function GetActiveConsent(bffAccessManagementApiClient, uuid, labels = nu
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} uuid - uuid for the user
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetConsentLog(bffAccessManagementApiClient, uuid, labels = null) {
@@ -245,7 +245,7 @@ export function GetConsentLog(bffAccessManagementApiClient, uuid, labels = null)
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetResourceById(bffAccessManagementApiClient, queryParams, labels = null) {
@@ -260,7 +260,7 @@ export function GetResourceById(bffAccessManagementApiClient, queryParams, label
  * @param {BffAccessManagementApiClient} BffAccessManagementApiClient A client to interact with the user API
  * @param bffAccessManagementApiClient
  * @param {} uuid - uuid for the user
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * return (string | ArrayBuffer | null)
  */
 export function GetPendingDelegationsForUser(bffAccessManagementApiClient, uuid, labels = null) {

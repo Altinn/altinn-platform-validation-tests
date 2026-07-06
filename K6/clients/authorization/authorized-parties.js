@@ -39,7 +39,7 @@ class AuthorizedPartiesClient {
      * @param {string} value
      * @param queryParams
      * @param parties
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {

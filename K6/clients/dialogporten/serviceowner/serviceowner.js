@@ -25,7 +25,7 @@ class ServiceOwnerApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -52,11 +52,11 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesNotificationCondition_NotificationCondition
      *
-     * @param { string } dialogId
-     * @param { string } conditionType
-     * @param { string } activityType
-     * @param { string } transmissionId
-     * @param labels
+     * @param { string } dialogId TODO: description
+     * @param { string } conditionType TODO: description
+     * @param { string } activityType TODO: description
+     * @param { string } transmissionId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogsQueriesNotificationCondition(
@@ -265,8 +265,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGet_Dialog
      *
-     * @param { string } dialogId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialog(
@@ -302,8 +302,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchActivities_DialogActivity
      *
-     * @param { string } dialogId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogActivities(
@@ -339,9 +339,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGetActivity_DialogActivity
      *
-     * @param { string } dialogId
-     * @param { string } activityId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param { string } activityId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogActivity(
@@ -378,8 +378,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabel_ServiceOwnerLabel
      *
-     * @param { string } dialogId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetServiceOwnerLabels(
@@ -415,8 +415,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchSeenLogs_DialogSeenLog
      *
-     * @param { string } dialogId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogSeenLogs(
@@ -452,9 +452,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGetSeenLog_DialogSeenLog
      *
-     * @param { string } dialogId
-     * @param { string } seenLogId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param { string } seenLogId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogSeenLog(
@@ -491,8 +491,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogTransmission
      *
-     * @param { string } dialogId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogTransmissions(
@@ -528,9 +528,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGetTransmission_DialogTransmission
      *
-     * @param { string } dialogId
-     * @param { string } transmissionId
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param { string } dialogId TODO: description
+     * @param { string } transmissionId TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogTransmission(
@@ -567,7 +567,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContext
      *
      * @param queryParams - object containing query parameters for the request
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetEndUserContext(
@@ -608,7 +608,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogLookupQueriesGet_DialogLookup
      *
      * @param queryParams - object containing query parameters for the request
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetDialogLookup(

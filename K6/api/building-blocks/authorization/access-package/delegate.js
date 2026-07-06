@@ -7,7 +7,7 @@ import { BffAccessPackageApiClient } from "../../../../clients/authorization/ind
  *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function PostDelegations(accessPackageApiClient, queryParams, labels = null) {
@@ -34,7 +34,7 @@ export function PostDelegations(accessPackageApiClient, queryParams, labels = nu
  *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function DeleteDelegations(accessPackageApiClient, queryParams, labels = null) {
@@ -61,7 +61,7 @@ export function DeleteDelegations(accessPackageApiClient, queryParams, labels = 
  *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegations(accessPackageApiClient, queryParams, labels = null) {
@@ -88,7 +88,7 @@ export function GetDelegations(accessPackageApiClient, queryParams, labels = nul
  *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegationCheck(accessPackageApiClient, queryParams, labels = null) {
@@ -116,7 +116,7 @@ export function GetDelegationCheck(accessPackageApiClient, queryParams, labels =
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} accessPackageId - id of the access package
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetPermission(accessPackageApiClient, accessPackageId, queryParams, labels = null) {

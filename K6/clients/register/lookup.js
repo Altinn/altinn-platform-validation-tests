@@ -10,7 +10,7 @@ export class RegisterLookupClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator - TODO: description
      */
     constructor(baseUrl, tokenGenerator) {
         requireEnv(["REGISTER_SUBSCRIPTION_KEY"]);
@@ -56,10 +56,9 @@ export class RegisterLookupClient {
      * <code>register/api/v1/access-management/parties/query?fields=person,party,user</code>
      * @param {{ data: string[] }} query - Request body for lookup.
      * Examples:
-     *   - <code>{ data: ["urn:altinn:party:username:Vegard"] }</code>
-     *   - <code>{ data: ["urn:altinn:user:id:2051839"] }</code>
-     * @param {string|null} label - Optional label for the request tag.
-     * @param labels
+     * - <code>{ data: ["urn:altinn:party:username:Vegard"] }</code>
+     * - <code>{ data: ["urn:altinn:user:id:2051839"] }</code>
+     * @param labels TODO: description
      * @returns http.RefinedResponse
      */
     LookupParties(fields, query, labels = null) {

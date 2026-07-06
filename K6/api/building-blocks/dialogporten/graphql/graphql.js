@@ -38,7 +38,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * @param {GraphqlClient} graphqlClient
  * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
  * @param {uuidv7} dialogId
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
@@ -77,7 +77,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  *
  * @param {GraphqlClient} graphqlClient
  * @param {uuidv7} dialogId - id of the dialog to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns
  */
 export function GetDialogById(graphqlClient, dialogId, labels = null) {
@@ -104,7 +104,7 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient
  * @param {uuidv7} dialogId - id of the dialog to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns
  */
 export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
@@ -138,7 +138,7 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
  * Function to get parties for a user
  *
  * @param {GraphqlClient} graphqlClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns
  */
 export function GetParties(graphqlClient, labels = null) {
@@ -164,7 +164,7 @@ export function GetParties(graphqlClient, labels = null) {
  * Function to get filtered service resources for a user
  *
  * @param {GraphqlClient} graphqlClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {

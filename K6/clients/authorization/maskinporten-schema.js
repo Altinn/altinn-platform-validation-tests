@@ -39,7 +39,7 @@ class MaskinportenSchemaApiClient {
      * @param {} from - The identifier of the delegating party (e.g., an organization number)
      * @param {*} to - The identifier of the receiving party (e.g., a person identifier or organization number)
      * @param {*} resource - The identifier of the resource for which the delegation is being offered
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns A k6 HTTP response object from the POST request to the Maskinporten Schema API
      */
     PostOffered(from, to, resource, labels = null) {
@@ -86,7 +86,7 @@ class MaskinportenSchemaApiClient {
      * Get delegations in Maskinporten Schema API. This will retrieve delegations based on the provided query parameters.
      *
      * @param {*} queryParams - An object containing key-value pairs to be used as query parameters in the API call
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns A k6 HTTP response object from the GET request to the Maskinporten Schema API
      */
     GetDelegations(queryParams, labels = null) {

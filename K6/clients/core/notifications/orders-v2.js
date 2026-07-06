@@ -8,7 +8,7 @@ class OrdersV2ApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
@@ -33,13 +33,13 @@ class OrdersV2ApiClient {
     }
 
     /**
-     * @param {string } idempotencyId
-     * @param {string } sendersReference
-     * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
-     * @param {string } requestedSendTime
-     * @param {object} recipient
-     * @param {Array<object>} reminders
-     * @returns http.RefinedResponse
+     * @param {string } idempotencyId TODO: description
+     * @param {string } sendersReference TODO: description
+     * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation TODO: description
+     * @param {string } requestedSendTime TODO: description
+     * @param {object} recipient TODO: description
+     * @param {Array<object>} reminders TODO: description
+     * @returns http.RefinedResponse TODO: description
      */
     PostNotificationOrderV2(
         idempotencyId,
