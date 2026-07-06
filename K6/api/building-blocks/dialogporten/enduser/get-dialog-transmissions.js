@@ -4,10 +4,11 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 
 /**
  * Function to get dialog tranmissions
+ *
  * @param {EnduserApiClient} enduserApiClient
  * @param {string} dialogId - id of the dialog to get transmissions for
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @returns response body of the request
  */
 export function GetDialogTransmissions(
     enduserApiClient,
@@ -33,11 +34,13 @@ export function GetDialogTransmissions(
 
 /**
  * Function to get a dialog transmission by id
+ *
  * @param {EnduserApiClient} enduserApiClient
  * @param {string} dialogId - id of the dialog the transmission belongs to
  * param {string} transmissionId - id of the transmission to get
+ * @param transmissionId
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @returns response body of the request
  */
 export function GetDialogTransmission(
     enduserApiClient,

@@ -79,8 +79,10 @@ export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, actio
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param expectedResponse
  */
 function checker(res, method, expectedResponse) {
     const succeed = check(res, {

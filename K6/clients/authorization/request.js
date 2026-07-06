@@ -39,6 +39,7 @@ class RequestApiClient {
      * Request an access package (Bruker A asks Bruker B for access).
      * All three parameters are required.
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/post_enduser_request_package}
+     *
      * @param {string} from - the party making the request (the `party` query parameter), as a party uuid, e.g. "a3...-...-...-...-...". Bruker A.
      * @param {string} to - the party the request is directed to, as a party uuid. Bruker B.
      * @param {string} accessPackage - urn of the access package being requested, e.g. "urn:altinn:accesspackage:motorvognavgift".
@@ -73,6 +74,7 @@ class RequestApiClient {
      * Get requests received by a party (Bruker B sees incoming requests).
      * Build `queryParams` with {@link ReceivedRequestsParamsBuilder}.
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/get_enduser_request_received}
+     *
      * @param {import("./received-requests-params-builder.js").ReceivedRequestsParams} queryParams - required: party. optional: from, status, type
      * @param {Object.<string, string>} labels - request labels for metrics
      * @returns http.RefinedResponse
@@ -111,6 +113,7 @@ class RequestApiClient {
     /**
      * Approve a received request (Bruker B grants access).
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/put_enduser_request_received_approve}
+     *
      * @param {string} party - the party whose received request is being approved (party uuid)
      * @param {string} id - the id of the request to approve
      * @param {string[]} body - list of references to approve (empty list approves the request as is)
@@ -143,6 +146,7 @@ class RequestApiClient {
     /**
      * Reject a received request (Bruker B declines access).
      * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/put_enduser_request_received_reject}
+     *
      * @param {string} party - the party whose received request is being rejected (party uuid)
      * @param {string} id - the id of the request to reject
      * @param {Object.<string, string>} labels - request labels for metrics

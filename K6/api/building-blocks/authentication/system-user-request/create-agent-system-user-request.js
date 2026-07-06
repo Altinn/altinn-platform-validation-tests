@@ -4,6 +4,7 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
 
 /**
  * Create a new Agent System User Request
+ *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
  * @param {string } externalRef
  * @param {string } systemId

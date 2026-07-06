@@ -5,7 +5,10 @@ import { MaskinportenSchemaApiClient } from "../../../../clients/authorization/i
 /**
  *
  * @param {MaskinportenSchemaApiClient} maskinportenSchemaApiClient A client to interact with the /accesspackage API
- *
+ * @param from
+ * @param to
+ * @param resource
+ * @param labels
  * @returns (string | ArrayBuffer | null)
  */
 export function PostOffered(maskinportenSchemaApiClient, from, to, resource, labels = null) {

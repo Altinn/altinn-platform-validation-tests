@@ -8,10 +8,10 @@ const TAGS = {
 
 export class RegisterLookupClient {
     /**
-   *
-   * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-   * @param {*} tokenGenerator
-   */
+     *
+     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
+     * @param {*} tokenGenerator
+     */
     constructor(baseUrl, tokenGenerator) {
         requireEnv(["REGISTER_SUBSCRIPTION_KEY"]);
 
@@ -20,12 +20,12 @@ export class RegisterLookupClient {
          */
         this.tokenGenerator = tokenGenerator;
         /**
-     * @property {string} BASE_PATH The path to the api without host information
-     */
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/register/api/v1/access-management/parties/query?fields=";
         /**
-     * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
-     */
+         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
@@ -34,33 +34,34 @@ export class RegisterLookupClient {
     }
 
     /**
-   *
-   * @param {string} fields
-   * @returns http.RefinedResponse
-   */
+     *
+     * @param {string} fields
+     * @returns http.RefinedResponse
+     */
     /**
-   /**
-    * Lookup parties in register.
-    *
-    * @param {string} fields - Comma separated list of fields used to query which fields to include in the result.
-    *   Example usage: fields="person,party,user" results in endpoint
-    *   <code>register/api/v1/access-management/parties/query?fields=person,party,user</code>
-    * @param {string|null} label - Optional label for the request tag.
-    * @returns http.RefinedResponse
-    */
+     * /**
+     * Lookup parties in register.
+     *
+     * @param {string} fields - Comma separated list of fields used to query which fields to include in the result.
+     * Example usage: fields="person,party,user" results in endpoint
+     * <code>register/api/v1/access-management/parties/query?fields=person,party,user</code>
+     * @param {string|null} label - Optional label for the request tag.
+     * @returns http.RefinedResponse
+     */
     /**
-   * Lookup parties in register.
-   *
-   * @param {string} fields - Comma separated list of fields used to query which fields to include in the result.
-   *   Example usage: fields="person,party,user" results in endpoint
-   *   <code>register/api/v1/access-management/parties/query?fields=person,party,user</code>
-   * @param {{ data: string[] }} query - Request body for lookup.
-   *   Examples:
-   *   - <code>{ data: ["urn:altinn:party:username:Vegard"] }</code>
-   *   - <code>{ data: ["urn:altinn:user:id:2051839"] }</code>
-   * @param {string|null} label - Optional label for the request tag.
-   * @returns http.RefinedResponse
-   */
+     * Lookup parties in register.
+     *
+     * @param {string} fields - Comma separated list of fields used to query which fields to include in the result.
+     * Example usage: fields="person,party,user" results in endpoint
+     * <code>register/api/v1/access-management/parties/query?fields=person,party,user</code>
+     * @param {{ data: string[] }} query - Request body for lookup.
+     * Examples:
+     *   - <code>{ data: ["urn:altinn:party:username:Vegard"] }</code>
+     *   - <code>{ data: ["urn:altinn:user:id:2051839"] }</code>
+     * @param {string|null} label - Optional label for the request tag.
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     LookupParties(fields, query, labels = null) {
         if (query === null || query === undefined) {
             throw new Error("LookupParties: query is required but was not provided");

@@ -63,6 +63,7 @@ export function getClient() {
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.
+ *
  * @param {*} ssn
  * @returns
  */

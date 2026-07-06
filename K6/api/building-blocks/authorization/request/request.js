@@ -4,6 +4,7 @@ import { RequestApiClient } from "../../../../clients/authorization/index.js";
 
 /**
  * Post Package - Bruker A requests an access package from another party.
+ *
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
  * @param {string} from - the party making the request (party uuid).
  * @param {string} to - the party the request is directed to (party uuid).
@@ -30,6 +31,7 @@ export function PostPackage(requestApiClient, from, to, accessPackage, labels = 
 
 /**
  * Get Received - Bruker lists requests received by a party.
+ *
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
  * @param {*} queryParams - query parameters for the request (party, optionally from, status, type)
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
@@ -54,6 +56,7 @@ export function GetReceived(requestApiClient, queryParams, labels = null) {
 
 /**
  * Approve - Bruker approves a received request.
+ *
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
  * @param {string} party - the party whose received request is being approved (party uuid)
  * @param {string} id - the id of the request to approve
@@ -80,6 +83,7 @@ export function Approve(requestApiClient, party, id, body = [], labels = null) {
 
 /**
  * Reject - Bruker B rejects a received request.
+ *
  * @param {RequestApiClient} requestApiClient A client to interact with the /enduser/request API
  * @param {string} party - the party whose received request is being rejected (party uuid)
  * @param {string} id - the id of the request to reject

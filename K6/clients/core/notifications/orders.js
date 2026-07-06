@@ -15,8 +15,8 @@ class OrdersApiClient {
         tokenGenerator
     ) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -33,11 +33,11 @@ class OrdersApiClient {
     }
 
     /**
-    * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
-    * @param {string } sendersReference
-    * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients
-    * @returns http.RefinedResponse
-    */
+     * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
+     * @param {string } sendersReference
+     * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients
+     * @returns http.RefinedResponse
+     */
     PostEmailNotificationOrder(emailTemplate, sendersReference, recipients) {
         const token = this.tokenGenerator.getToken();
         const url = this.FULL_PATH;

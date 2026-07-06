@@ -7,7 +7,7 @@ export class DialogByIdVariablesBuilder {
 
     /**
      * @param {uuidv7} id - the id of the dialog to get
-     * @return {DialogSearchVariablesBuilder}
+     * @returns {DialogSearchVariablesBuilder}
      * */
     withId(id) {
         this.variables.id = id;

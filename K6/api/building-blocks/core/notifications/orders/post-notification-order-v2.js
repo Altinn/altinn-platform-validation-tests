@@ -8,8 +8,8 @@ import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/ind
  * @param {string } sendersReference
  * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
  * @param {string } requestedSendTime
- * @param {Object } recipient
- * @param {Array<Object> } reminders
+ * @param {object} recipient
+ * @param {Array<object>} reminders
  * @returns (string | ArrayBuffer | null)
  */
 export function PostNotificationOrderV2(

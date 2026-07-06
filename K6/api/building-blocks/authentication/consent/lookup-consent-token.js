@@ -10,6 +10,7 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
  * @param {string} from
  * @param {string} to
  * @param {string | null} label - Optional label for the request tag.
+ * @param labels
  * @returns {import("k6/http").RefinedResponse}
  */
 export function LookupConsent(consentApiClient, id, from, to, labels = null) {

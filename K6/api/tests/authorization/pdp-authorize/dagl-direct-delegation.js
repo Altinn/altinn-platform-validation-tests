@@ -20,6 +20,8 @@ const resource = "perf_direct_access_resource";
 
 /**
  * Main function executed by each VU.
+ *
+ * @param testData
  */
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();

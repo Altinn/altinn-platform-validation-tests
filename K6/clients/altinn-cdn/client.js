@@ -15,10 +15,11 @@ class AltinnCdnClient {
     }
 
     /**
-    * GetOrgs
-    * @param {string} environment
-    * @returns A three digit list of orgs
-    */
+     * GetOrgs
+     *
+     * @param {string} environment
+     * @returns A three digit list of orgs
+     */
     GetOrgs(environment = "all") {
         if (environment == "prod") {
             environment = "production";
@@ -56,6 +57,7 @@ class AltinnCdnClient {
 
     /**
      * GetBaseUrlForOrgInEnvironment
+     *
      * @param {string} org
      * @param {string} environment
      * @returns The base URL for the particular org and environment
@@ -71,6 +73,7 @@ class AltinnCdnClient {
     }
     /**
      * GetBaseUrlForOrgInEnvironment
+     *
      * @param {string} org
      * @param {string} environment
      * @returns The domain for the particular org and environment

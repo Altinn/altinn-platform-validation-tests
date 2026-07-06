@@ -189,6 +189,8 @@ export function setup() {
 
 /**
  * Main function executed by each VU.
+ *
+ * @param segmentedData
  */
 export default function (segmentedData) {
     const [connectionsApiClient, accessPackageApiClient, singleRightsApiClient, userApiClient, tokenGenerator] = getClients();
@@ -273,6 +275,8 @@ export default function (segmentedData) {
 
 /**
  * Helper function to extract rights from rights metadata response
+ *
+ * @param rightsMeta
  * @returns list of rights
  */
 function getRights(rightsMeta) {

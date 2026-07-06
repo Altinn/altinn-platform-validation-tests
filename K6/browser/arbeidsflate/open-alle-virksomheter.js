@@ -106,6 +106,7 @@ function getOptions() {
 
 /**
  * The default function is the main entry point for the test and is called for each iteration.
+ *
  * @param {} data
  */
 export default async function (data) {
@@ -144,6 +145,7 @@ export default async function (data) {
 
 /**
  * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
+ *
  * @param {} page
  * @param {*} trend
  * @param {*} labels

@@ -4,6 +4,7 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authorization
 
 /**
  * Get agents for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
@@ -16,8 +17,11 @@ export function GetAgents(clientDelegationsApiClient, queryParams, labels = null
 
 /**
  * Post agents for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
+ * @param to
+ * @param lastName
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, labels = null) {
@@ -28,6 +32,7 @@ export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName
 
 /**
  * Delete agents for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
@@ -40,6 +45,7 @@ export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = n
 
 /**
  * Get clients for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
@@ -52,10 +58,11 @@ export function GetClients(clientDelegationsApiClient, queryParams, labels = nul
 
 /**
  * Delegation Export
+ *
  * @param {BffAccessManagementApiClient} accessManagementApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return {Object} response body
+ * @returns {object} response body
  */
 export function DelegationExport(accessManagementApiClient, queryParams, labels = null) {
     const res = accessManagementApiClient.DelegationExport(queryParams, labels);
@@ -65,8 +72,11 @@ export function DelegationExport(accessManagementApiClient, queryParams, labels 
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param status_code
+ * @param status_text
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

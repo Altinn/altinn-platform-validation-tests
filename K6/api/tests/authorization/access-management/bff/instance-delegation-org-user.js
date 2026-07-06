@@ -138,6 +138,8 @@ export function setup() {
  * Finally, check that the delegated dialog is visible for the delegated user
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
+ *
+ * @param data
  */
 export default function (data) {
     const [serviceOwnerApiClient, userApiClient, accessManagementApiClient, bffConnectionsApiClient, bffAccessPackageApiClient, graphqlClient, tokenGenerator] = getClients(serviceOwnerOrgNo);

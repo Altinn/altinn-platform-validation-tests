@@ -91,6 +91,8 @@ export function getTokenOpts(userId, partyuuid) {
 
 /**
  * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
+ *
+ * @param list
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {
@@ -123,6 +125,7 @@ export function getDialogportenOpts(ssn) {
 /**
  * Helper function to create the body for delegating rights for a resource and instance to another user,
  * based on the rights meta for the resource and the "to" user.
+ *
  * @param { JSON } rightsMeta
  * @param {*} to
  * @returns

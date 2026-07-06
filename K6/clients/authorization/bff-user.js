@@ -23,8 +23,8 @@ class BffUserApiClient {
         tokenGenerator,
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -44,6 +44,7 @@ class BffUserApiClient {
 
     /**
      * Get lookup party user
+     *
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      */
@@ -67,11 +68,12 @@ class BffUserApiClient {
     }
 
     /**
-    * Is company profile admin
-    * @param {object} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * @returns http.RefinedResponse
-    */
+     * Is company profile admin
+     *
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @returns http.RefinedResponse
+     */
     GetIsCompanyProfileAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isCompanyProfileAdmin`);
@@ -95,6 +97,7 @@ class BffUserApiClient {
 
     /**
      * Get reportees for a user
+     *
      * @param {string} userId - id of the user to get reportees for
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
@@ -121,6 +124,7 @@ class BffUserApiClient {
 
     /**
      * Get profile
+     *
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * @returns http.RefinedResponse
      */
@@ -145,6 +149,7 @@ class BffUserApiClient {
 
     /**
      * Get is admin
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
@@ -172,6 +177,7 @@ class BffUserApiClient {
 
     /**
      * Get is client admin
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
@@ -199,6 +205,7 @@ class BffUserApiClient {
 
     /**
      * Get actor list old
+     *
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      */
@@ -223,6 +230,7 @@ class BffUserApiClient {
 
     /**
      * Get actor list favorites
+     *
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
      * */
@@ -247,6 +255,7 @@ class BffUserApiClient {
 
     /**
      * Get is instance admin
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse

@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} DialogSearchVariables
+ * @typedef {object} DialogSearchVariables
  * @property {string[]} partyURIs
  * @property {string=} search
  * @property {string[]=} org
@@ -36,6 +36,7 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Add parties to the search variables. The party ids can be either pid/ssn (11 digits) or org number (9 digits), and the builder will convert them to the expected party URI format.
+     *
      * @param {string []} parties
      * @returns
      */
@@ -59,7 +60,9 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Add parties to the search variables. The party URIs must be in the format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}.
+     *
      * @param {string []} parties. Parties already on the URI format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}
+     * @param partyURIs
      * @returns
      */
     withPartyURIs(partyURIs) {
@@ -69,6 +72,7 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a search string to the search variables. The search string can be used to search for dialogs that contain the specified string in the title or content of the dialog.
+     *
      * @param {searchterm} search
      * @returns
      */
@@ -80,7 +84,9 @@ export class DialogSearchVariablesBuilder {
     /**
      * Adds an organization filter to the search variables. The organization filter can be used to search for dialogs that are associated with the specified organization(s).
      * The organizations will be the short abbreviation of the organization, e.g. "nav" for the Norwegian Labour and Welfare Administration, "skd" for the Norwegian Tax Administration, etc.
+     *
      * @param {string []} orgs. The short abbreviation of the organization(s) to filter by, e.g. "nav" for the Norwegian Labour and Welfare Administration, "skd" for the Norwegian Tax Administration, etc.
+     * @param org
      * @returns
      */
     withOrg(org) {
@@ -90,6 +96,7 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a status filter to the search variables. The status filter can be used to search for dialogs that have the specified status(es). Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED.
+     *
      * @param {string | string []} status The status or statuses to filter by. Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED.
      * @returns
      */
@@ -100,6 +107,7 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a continuation token to the search variables. The continuation token can be used to paginate through search results. When a search query returns more results than the specified limit, a continuation token is included in the response. This token can be used in a subsequent search query to retrieve the next page of results.
+     *
      * @param {*} token
      * @returns
      */
@@ -110,6 +118,7 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a limit to the search variables. The limit can be used to specify the maximum number of results to return in a search query. If the number of results exceeds the limit, a continuation token will be included in the response that can be used to retrieve the next page of results.
+     *
      * @param { number } limit must be between 1 and 1000.
      * @returns
      */

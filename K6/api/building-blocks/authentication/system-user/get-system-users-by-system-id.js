@@ -4,6 +4,7 @@ import { SystemUserApiClient } from "../../../../clients/authentication/index.js
 
 /**
  * Get SystemUsers for a given systemId (vendor endpoint).
+ *
  * @param {SystemUserApiClient} systemUserApiClient A client to interact with the System User API
  * @param {string} systemId
  * @returns {string | null} Raw JSON response body

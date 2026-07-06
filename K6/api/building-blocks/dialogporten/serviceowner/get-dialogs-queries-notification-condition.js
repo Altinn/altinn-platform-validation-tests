@@ -8,6 +8,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param { string } conditionType
  * @param { string } activityType
  * @param { string } transmissionId
+ * @param labels
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDialogsQueriesNotificationCondition(

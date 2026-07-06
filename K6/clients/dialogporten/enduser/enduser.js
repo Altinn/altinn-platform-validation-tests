@@ -19,22 +19,22 @@ const TAGS = {
 
 class EnduserApiClient {
     /**
-   *
-   * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-   * @param {*} tokenGenerator
-   */
+     *
+     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
+     * @param {*} tokenGenerator
+     */
     constructor(baseUrl, tokenGenerator) {
         /**
          * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
          */
         this.tokenGenerator = tokenGenerator;
         /**
-     * @property {string} BASE_PATH The path to the api without host information
-     */
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/dialogporten/api/v1/enduser";
         /**
-     * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
-     */
+         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
@@ -43,11 +43,12 @@ class EnduserApiClient {
     }
 
     /**
-   * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/SearchDialogs
-   * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/End/V1ServiceOwnerDialogsQueriesSearch_Dialog
-   * @param  DialogSearchParamsBuilder - object containing query parameters for the request
-   * @returns http.RefinedResponse
-   */
+     * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/SearchDialogs
+     * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/End/V1ServiceOwnerDialogsQueriesSearch_Dialog
+     *
+     * @param DialogSearchParamsBuilder - object containing query parameters for the request
+     * @returns http.RefinedResponse
+     */
 
     GetDialogs(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -91,9 +92,10 @@ class EnduserApiClient {
     /**
      * Get dialog
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialog
-     * @param {string} dialogId The ID of the dialog to retrieve
-     * @labels {object} Optional labels to add to the request
      *
+     * @param {string} dialogId The ID of the dialog to retrieve
+     * @param labels
+     * @labels {object} Optional labels to add to the request
      */
     GetDialog(dialogId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -125,9 +127,10 @@ class EnduserApiClient {
     /**
      * Get dialog activities
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogActivities
+     *
      * @param { string } dialogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogActivities(
         dialogId,
@@ -162,10 +165,11 @@ class EnduserApiClient {
     /**
      * Get dialog activity
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogActivity
+     *
      * @param { string } dialogId
      * @param { string } activityId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogActivity(
         dialogId,
@@ -201,9 +205,10 @@ class EnduserApiClient {
     /**
      * Get dialog seen logs
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogSeenLogs
+     *
      * @param { string } dialogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogSeenLogs(
         dialogId,
@@ -238,10 +243,11 @@ class EnduserApiClient {
     /**
      * Get dialog seen log
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogSeenLog
+     *
      * @param { string } dialogId
      * @param { string } seenLogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogSeenLog(
         dialogId,
@@ -277,9 +283,10 @@ class EnduserApiClient {
     /**
      * Get dialog transmissions
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogTransmissions
+     *
      * @param { string } dialogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogTransmissions(
         dialogId,
@@ -314,10 +321,11 @@ class EnduserApiClient {
     /**
      * Get dialog transmission
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogTransmission
+     *
      * @param { string } dialogId
      * @param { string } transmissionId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogTransmission(
         dialogId,
@@ -352,9 +360,10 @@ class EnduserApiClient {
     /**
      * Get dialog context labellog
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogContextLabellog
+     *
      * @param { string } dialogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogContextLabellog(
         dialogId,
@@ -389,8 +398,9 @@ class EnduserApiClient {
     /**
      * Get parties
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetParties
+     *
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetParties(
         labels = null,
@@ -424,8 +434,9 @@ class EnduserApiClient {
     /**
      * Get service resources
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetServiceResources
+     *
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetServiceResources(
         labels = null,
@@ -459,9 +470,10 @@ class EnduserApiClient {
     /**
      * Get dialog lookup
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogLookup
-     * @param {string}  dialogId
+     *
+     * @param {string} dialogId
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return http.RefinedResponse
+     * @returns http.RefinedResponse
      */
     GetDialogLookup(
         dialogId,

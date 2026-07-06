@@ -21,9 +21,12 @@ export const afUrl = (() => {
 
 /**
  * Function to get a cookie object for the given PID.
+ *
  * @param {string} pid - The personal identification number (PID) of the user.
- * @return {Object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
- * **/
+ * @param user
+ * @returns {object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
+ * *
+ */
 export function getCookie(user) {
     const token = getToken(user.pid, user.userId, user.partyId, user.partyUuid);
     const cookie = {
@@ -43,10 +46,14 @@ export function getCookie(user) {
 }
 
 /**
-* Function to get a personal token for a given PID.
-* @param {string} pid - The personal identification number (PID) of the user.
-* @return {string} - The generated personal token.
-**/
+ * Function to get a personal token for a given PID.
+ *
+ * @param {string} pid - The personal identification number (PID) of the user.
+ * @param userId
+ * @param partyId
+ * @param partyUuid
+ * @returns {string} - The generated personal token.
+ **/
 function getToken(pid, userId, partyId, partyUuid) {
     const tokenOpts = new PersonalTokenGeneratorOptions();
     tokenOpts.set("env", environment);
@@ -68,6 +75,7 @@ function getToken(pid, userId, partyId, partyUuid) {
 
 /**
  * Function to initialize a session with the given token.
+ *
  * @param {F} token - The personal token to initialize the session.
  * @returns sessionId
  */
@@ -94,9 +102,10 @@ function getSessionId(token) {
 
 /**
  * Async function to wait for the page to load.
+ *
  * @param {object} page - The page object to interact with.
  * @param {number} empties - Number of empty checks to perform (default is 1).
- * @return {Promise<void>} - A promise that resolves when the page is loaded.
+ * @returns {Promise<void>} - A promise that resolves when the page is loaded.
  */
 export async function waitForPageLoaded(page, empties = 1) {
     const button = page.getByRole("button", {

@@ -4,6 +4,7 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
 
 /**
  * Creates a new Request based on a SystemId for a SystemUser.
+ *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
  * @param {string } systemId
  * @param {string } partyOrgNo

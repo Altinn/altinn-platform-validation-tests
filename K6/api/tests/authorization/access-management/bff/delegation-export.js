@@ -85,6 +85,8 @@ export function setup() {
 
 /**
  * Main function executed by each VU.
+ *
+ * @param segmentedData
  */
 export default function (segmentedData) {
     const [accessManagementApiClient, tokenGenerator] = getClients();

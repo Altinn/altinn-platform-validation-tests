@@ -4,6 +4,7 @@ import { SystemRegisterApiClient } from "../../../../clients/authentication/inde
 
 /**
  * Retrieves the List of all the Registered Systems, except those marked as deleted.
+ *
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API
  * @returns (string | ArrayBuffer | null)
  */

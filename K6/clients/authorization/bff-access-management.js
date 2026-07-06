@@ -34,8 +34,8 @@ class BffAccessManagementApiClient {
         tokenGenerator,
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -53,11 +53,12 @@ class BffAccessManagementApiClient {
         return TAGS;
     }
     /**
-    * Get is hoved admin
-    * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
-    * @returns http.RefinedResponse
-    */
+     * Get is hoved admin
+     *
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * @returns http.RefinedResponse
+     */
     GetIsHovedAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/ishovedadmin`);
@@ -81,6 +82,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Get permissions for a user
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      */
@@ -107,6 +109,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Get delegated resources for a user
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
@@ -134,6 +137,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Get delegated rights for a resource
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
@@ -160,11 +164,12 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Search for access packages
-    * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
-    * returns http.RefinedResponse
-    */
+     * Search for access packages
+     *
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
     SearchAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/accesspackage/search`);
@@ -188,6 +193,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Search for resources
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
@@ -215,6 +221,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Get resource owners
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
@@ -241,11 +248,12 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Get organization data from cdn
-    * @param {*} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
-    * returns http.RefinedResponse
-    */
+     * Get organization data from cdn
+     *
+     * @param {*} queryParams - object with query parameters to be appended to the url
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
     GetOrganizationData(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/cdn/orgdata`);
@@ -268,11 +276,12 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Get organization data from lookup
-    * @param {*} orgNo - organization number to get data for
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
-    * returns http.RefinedResponse
-    */
+     * Get organization data from lookup
+     *
+     * @param {*} orgNo - organization number to get data for
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
+     * returns http.RefinedResponse
+     */
     GetOrganizationDataFromLookup(orgNo, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/lookup/org/${orgNo}`);
@@ -296,11 +305,11 @@ class BffAccessManagementApiClient {
 
     /**
      * Get role metadata
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
-     *
-    */
+     */
     GetRoleMeta(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/role/meta`);
@@ -324,6 +333,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Get rights metadata for a resource
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
      * returns http.RefinedResponse
@@ -351,6 +361,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Get delegated instances for a resource
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
@@ -378,6 +389,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Check if user has delegated rights for a resource
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
@@ -405,6 +417,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Delegate rights for a resource to a user
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {string} body - object with the body of the request
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
@@ -434,6 +447,7 @@ class BffAccessManagementApiClient {
 
     /**
      * Check if user has delegated rights for a resource
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
      * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
      * returns http.RefinedResponse
@@ -460,11 +474,12 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Get active consents for a user
-    * @param {object} uuid - uuid for the user to get active consents for
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * returns http.RefinedResponse
-    */
+     * Get active consents for a user
+     *
+     * @param {object} uuid - uuid for the user to get active consents for
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * returns http.RefinedResponse
+     */
     GetActiveConsentsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/consent/active/${uuid}`);
@@ -486,11 +501,12 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Get consent log for a user
-    * @param {object} uuid - uuid for the user to get consent log for
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * returns http.RefinedResponse
-    */
+     * Get consent log for a user
+     *
+     * @param {object} uuid - uuid for the user to get consent log for
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * returns http.RefinedResponse
+     */
     GetConsentLogForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/consent/log/${uuid}`);
@@ -512,11 +528,12 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Get resource by id
-    * @param {object} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * returns http.RefinedResponse
-    */
+     * Get resource by id
+     *
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * returns http.RefinedResponse
+     */
     GetResourceById(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resources`);
@@ -539,11 +556,13 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Get pending delegations for a user
-    * @param {object} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * returns http.RefinedResponse
-    */
+     * Get pending delegations for a user
+     *
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param uuid
+     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * returns http.RefinedResponse
+     */
     GetPendingDelegationsForUser(uuid, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/systemuser/${uuid}/pending`);
@@ -565,12 +584,14 @@ class BffAccessManagementApiClient {
     }
 
     /**
-    * Delegation Export
-    * Docs: TODO: add docs link
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @return http.RefinedResponse
-    */
+     * Delegation Export
+     * Docs: TODO: add docs link
+     *
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     DelegationExport(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/delegationexport`);

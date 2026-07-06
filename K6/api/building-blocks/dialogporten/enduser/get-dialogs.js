@@ -4,10 +4,11 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 
 /**
  * Function to get dialogs
+ *
  * @param {EnduserApiClient} enduserApiClient
  * @param {string} queryParams - query parameters for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @returns response body of the request
  */
 export function GetDialogs(enduserApiClient, queryParams, labels = null) {
     const res = enduserApiClient.GetDialogs(queryParams, labels);
@@ -26,10 +27,11 @@ export function GetDialogs(enduserApiClient, queryParams, labels = null) {
 
 /**
  * Function to get a dialog by id
+ *
  * @param {EnduserApiClient} enduserApiClient
  * @param {string} dialogId - id of the dialog to get
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @returns response body of the request
  */
 export function GetDialog(enduserApiClient, dialogId, labels = null) {
     const res = enduserApiClient.GetDialog(dialogId, labels);

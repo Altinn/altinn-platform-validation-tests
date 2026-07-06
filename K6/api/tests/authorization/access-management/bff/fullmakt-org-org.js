@@ -140,6 +140,8 @@ export function setup() {
 
 /**
  * Main function executed by each VU.
+ *
+ * @param segmentedData
  */
 export default function (segmentedData) {
     // testdata. [0] contains segmented user data for each VU, [1] contains access packages

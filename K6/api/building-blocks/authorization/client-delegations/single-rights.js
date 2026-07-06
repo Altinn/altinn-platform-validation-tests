@@ -4,8 +4,11 @@ import { BffSingleRightApiClient } from "../../../../clients/authorization/index
 
 /**
  * Post single right for the specified query parameters
+ *
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
+ * @param bffSingleRightApiClient
  * @param {} queryParams - queryParams for the request
+ * @param rights
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, labels = null) {
@@ -16,10 +19,12 @@ export function PostSingleRight(bffSingleRightApiClient, queryParams, rights, la
 
 /**
  * Revoke single right for the specified query parameters
+ *
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
+ * @param bffSingleRightApiClient
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return (string | ArrayBuffer | null)
+ * @returns (string | ArrayBuffer | null)
  * */
 export function RevokeSingleRight(bffSingleRightApiClient, queryParams, labels = null) {
     const res = bffSingleRightApiClient.DeleteDelegate(queryParams, labels);
@@ -29,10 +34,12 @@ export function RevokeSingleRight(bffSingleRightApiClient, queryParams, labels =
 
 /**
  * Get delegation check for a resource
+ *
  * @param {BffSingleRightApiClient} clientDelegationsApiClient A client to interact with the client delegations API
+ * @param bffSingleRightApiClient
  * @param {*} queryParams - query parameters for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
- * @return (string | ArrayBuffer | null)
+ * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegationCheck(bffSingleRightApiClient, queryParams, labels = null) {
     const res = bffSingleRightApiClient.GetDelegationCheck(queryParams, labels);
@@ -42,8 +49,11 @@ export function GetDelegationCheck(bffSingleRightApiClient, queryParams, labels 
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param status_code
+ * @param status_text
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

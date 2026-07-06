@@ -5,13 +5,13 @@ import { RegisterLookupClient } from "../../../clients/authentication/index.js";
 /**
  * Lookup parties in Register
  *
- *
  * @param {RegisterLookupClient} registerLookupClient
  * @param {string} fields - Comma separated list of fields to include in result (e.g. "person,party,user")
  * @param {string} username - Username used for request verification
  * @param {{ data: string[] }} requestBody - Request body for lookup.
- *  Example: { data: ["urn:altinn:party:username:Vegard"] } or for instance {"data" : ["urn:altinn:user:id:2051839"]}
+ * Example: { data: ["urn:altinn:party:username:Vegard"] } or for instance {"data" : ["urn:altinn:user:id:2051839"]}
  * @param {string | null} label - Optional label for the request tag.
+ * @param labels
  * @returns {import("k6/http").RefinedResponse}
  */
 export function LookUpPartyInRegister(

@@ -4,6 +4,7 @@ import { SystemRegisterApiClient } from "../../../../clients/authentication/inde
 
 /**
  * Retrieves a list of the predfined default rights for the Product type, if any
+ *
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API
  * @param {string } systemId The Id of the Registered System
  * @returns (string | ArrayBuffer | null)

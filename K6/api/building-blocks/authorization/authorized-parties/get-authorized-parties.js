@@ -4,6 +4,7 @@ import { AuthorizedPartiesClient } from "../../../../clients/authorization/index
 
 /**
  * Get Authorized Parties
+ *
  * @param {AuthorizedPartiesClient} authorizedPartiesClient A client to interact with the Authorized Parties API
  * @param {*} type
  * @param {*} value

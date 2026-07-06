@@ -15,8 +15,8 @@ class OrdersV2ApiClient {
         tokenGenerator
     ) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -33,14 +33,14 @@ class OrdersV2ApiClient {
     }
 
     /**
-    * @param {string } idempotencyId
-    * @param {string } sendersReference
-    * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
-    * @param {string } requestedSendTime
-    * @param {Object } recipient
-    * @param {Array<Object> } reminders
-    * @returns http.RefinedResponse
-    */
+     * @param {string } idempotencyId
+     * @param {string } sendersReference
+     * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
+     * @param {string } requestedSendTime
+     * @param {object} recipient
+     * @param {Array<object>} reminders
+     * @returns http.RefinedResponse
+     */
     PostNotificationOrderV2(
         idempotencyId,
         sendersReference,

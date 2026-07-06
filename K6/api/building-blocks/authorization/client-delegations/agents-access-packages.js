@@ -4,6 +4,7 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authorization
 
 /**
  * Get access packages for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
@@ -16,8 +17,10 @@ export function GetAccessPackages(clientDelegationsApiClient, queryParams, label
 
 /**
  * Post access packages for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
+ * @param accessPackage
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function PostAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
@@ -28,8 +31,10 @@ export function PostAccessPackages(clientDelegationsApiClient, queryParams, acce
 
 /**
  * Delete access packages for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
+ * @param accessPackage
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */
 export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, accessPackage, labels = null) {
@@ -40,8 +45,11 @@ export function DeleteAccessPackages(clientDelegationsApiClient, queryParams, ac
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param status_code
+ * @param status_text
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

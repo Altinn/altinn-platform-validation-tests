@@ -21,8 +21,8 @@ class BffClientDelegationsApiClient {
         tokenGenerator
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -39,12 +39,14 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-    * Get agents
-    * Docs: TODO: add docs link
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Get agents
+     * Docs: TODO: add docs link
+     *
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     GetAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
@@ -69,13 +71,17 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-    * Post agents
-    * Docs: TODO: add docs link
-    * @param {string} partyId
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Post agents
+     * Docs: TODO: add docs link
+     *
+     * @param {string} partyId
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param to
+     * @param lastName
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     PostAgents(queryParams, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
@@ -103,13 +109,15 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-      * Delete agents
-      * Docs: TODO: add docs link
-      * @param {string} partyId
-      * @param {Object} queryParams
-      * @param {string|null} label - label for the request
-      * @returns http.RefinedResponse
-      */
+     * Delete agents
+     * Docs: TODO: add docs link
+     *
+     * @param {string} partyId
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     DeleteAgents(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents`);
@@ -133,12 +141,14 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-      * Get access packages
-      * Docs: TODO: add docs link
-      * @param {Object} queryParams
-      * @param {string|null} label - label for the request
-      * @returns http.RefinedResponse
-      */
+     * Get access packages
+     * Docs: TODO: add docs link
+     *
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     GetAgentsAccessPackages(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
@@ -162,12 +172,15 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-    * Post access packages
-    * Docs Docs: TODO: add docs link
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Post access packages
+     * Docs Docs: TODO: add docs link
+     *
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param accessPackage
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     PostAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
@@ -199,12 +212,15 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-    * Delete access packages
-    * Docs: TODO: add docs link
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Delete access packages
+     * Docs: TODO: add docs link
+     *
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param accessPackage
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     DeleteAgentsAccessPackages(queryParams, accessPackage, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
@@ -236,13 +252,15 @@ class BffClientDelegationsApiClient {
     }
 
     /**
-    * Get clients
-    * Docs: TODO: add docs link
-    * @param {string} partyId
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Get clients
+     * Docs: TODO: add docs link
+     *
+     * @param {string} partyId
+     * @param {object} queryParams
+     * @param {string|null} label - label for the request
+     * @param labels
+     * @returns http.RefinedResponse
+     */
     GetClients(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/clients`);

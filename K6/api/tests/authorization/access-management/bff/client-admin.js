@@ -98,6 +98,8 @@ function getClients() {
 
 /**
  * Main function executed by each VU.
+ *
+ * @param testData
  */
 export default function (testData) {
     // connectionsApiClient for bff

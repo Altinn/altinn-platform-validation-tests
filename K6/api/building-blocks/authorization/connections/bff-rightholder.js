@@ -4,6 +4,7 @@ import { BffConnectionsApiClient } from "../../../../clients/authorization/index
 
 /**
  * Get Authorized Parties
+ *
  * @param {BffConnectionsApiClient} bffConnectionsApiClient A client to interact with the bff connections API
  * @param {*} from - party id for the from user
  * @param {*} to - party id for the to user
@@ -31,7 +32,9 @@ export function PostRightholder(bffConnectionsApiClient, from, to, lastName = nu
 
 /**
  * Delete rightholder connection for a reportee
+ *
  * @param {BffConnectionsApiClient} BffConnectionsApiClient A client to interact with the bff connections API
+ * @param bffConnectionsApiClient
  * @param {} queryParams - queryParams for the request
  * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
  */

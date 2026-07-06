@@ -93,6 +93,7 @@ function getOptions() {
 
 /**
  * The default function is the main entry point for the test and is called for each iteration.
+ *
  * @param {} data
  */
 export default async function (data) {

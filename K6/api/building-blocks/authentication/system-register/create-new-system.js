@@ -4,6 +4,7 @@ import { SystemRegisterApiClient } from "../../../../clients/authentication/inde
 
 /**
  * Create a new System
+ *
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API
  * @param {string } vendorId
  * @param {string } name

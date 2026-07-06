@@ -675,9 +675,9 @@ const noNb = {
 
 export class SystemUserPage {
     /**
-    *
-    * @param {Page} page
-    */
+     *
+     * @param {Page} page
+     */
     constructor(page) {
         this.page = page;
 

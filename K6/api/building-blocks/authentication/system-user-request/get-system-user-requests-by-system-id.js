@@ -4,6 +4,7 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
 
 /**
  * Get SystemUserRequests for a given systemId (vendor endpoint).
+ *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
  * @param {string} systemId
  * @returns {string | null} Raw JSON response body

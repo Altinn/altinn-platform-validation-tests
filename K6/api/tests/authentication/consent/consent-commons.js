@@ -11,14 +11,14 @@ import { ENDUSER_SCOPE } from "../../../../scopes.js";
  * Shared helpers for the consent request events tests and their test data
  * generation. The consentee organizations and consenter users are kept in
  * dedicated CSV files (one per environment) so that:
- *   - the test data generator can spread consents across many organizations, and
- *   - consent-request-events.js can pick a random organization from that same list.
+ * - the test data generator can spread consents across many organizations, and
+ * - consent-request-events.js can pick a random organization from that same list.
  *
  * Test data folder (one folder per use case, one file per environment):
  * K6/testdata/authentication/consent/
- *   - consentee-orgs/<env>.csv       (header: orgNo)
- *   - consenter-persons/<env>.csv    (header: ssn,partyUuid)
- *   - lookup/<env>.csv               (header: Pid,Org,ConsentId)
+ * - consentee-orgs/<env>.csv       (header: orgNo)
+ * - consenter-persons/<env>.csv    (header: ssn,partyUuid)
+ * - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
 
 const TESTDATA_BASE_URL =
@@ -26,6 +26,7 @@ const TESTDATA_BASE_URL =
 
 /**
  * The organizations that receive (and therefore hold) consents.
+ *
  * @param {string} env Environment, e.g. "yt01".
  * @returns {Array<{orgNo: string}>}
  */
@@ -38,6 +39,7 @@ export function getConsenteeOrgs(env) {
 
 /**
  * The persons that approve consents.
+ *
  * @param {string} env Environment, e.g. "yt01".
  * @returns {Array<{ssn: string, partyUuid: string}>}
  */
@@ -50,6 +52,7 @@ export function getConsenterPersons(env) {
 
 /**
  * Previously generated consents (by consent-data.js) to look up.
+ *
  * @param {string} env Environment, e.g. "yt01".
  * @returns {Array<{Pid: string, Org: string, ConsentId: string}>}
  */
@@ -63,6 +66,7 @@ export function getLookupConsents(env) {
 /**
  * Base enterprise (org) token options: env, ttl and scopes, no identity. Used
  * to build the generator once; orgNo is set per iteration.
+ *
  * @param {string} env
  * @param {string} scopes
  * @returns {EnterpriseTokenGeneratorOptions}
@@ -78,6 +82,7 @@ export function getEnterpriseBaseTokenOpts(env, scopes) {
 /**
  * Enterprise (org) token options for a given org and scope. Set per iteration
  * via setTokenGeneratorOptions.
+ *
  * @param {string} env
  * @param {string} orgNo
  * @param {string} scopes
@@ -92,6 +97,7 @@ export function getEnterpriseTokenOpts(env, orgNo, scopes) {
 /**
  * Base personal (end user) token options: env, ttl and the enduser scope, no
  * identity. Used to build the generator once; partyuuid is set per iteration.
+ *
  * @param {string} env
  * @returns {PersonalTokenGeneratorOptions}
  */
@@ -106,6 +112,7 @@ export function getPersonalBaseTokenOpts(env) {
 /**
  * Personal (end user) token options for a given person. Set per iteration via
  * setTokenGeneratorOptions.
+ *
  * @param {string} env
  * @param {string} partyUuid
  * @returns {PersonalTokenGeneratorOptions}
@@ -119,6 +126,7 @@ export function getPersonalTokenOpts(env, partyUuid) {
 /**
  * `validTo` for generated consents. Far in the future so the consents (and the
  * events/lookup data derived from them) don't go stale between test runs.
+ *
  * @returns {string} ISO timestamp ~100 years from now.
  */
 export function consentValidTo() {

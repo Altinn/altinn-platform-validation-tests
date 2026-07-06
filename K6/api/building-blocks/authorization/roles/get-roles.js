@@ -4,6 +4,7 @@ import { RolesApiClient } from "../../../../clients/authorization/index.js";
 
 /**
  * Get Roles
+ *
  * @param {RolesApiClient} rolesApiClient A client to interact with the Roles API
  * @param {*} label
  */

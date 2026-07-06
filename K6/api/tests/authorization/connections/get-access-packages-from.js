@@ -16,6 +16,8 @@ export const options = getOptions([getAccessPackagesFromLabel, tokenGeneratorLab
 
 /**
  * Main function executed by each VU.
+ *
+ * @param testData
  */
 export default function (testData) {
     const [connectionsApiClient, tokenGenerator] = getClients();

@@ -49,7 +49,9 @@ export function getClients(bff = false) {
 
 /**
  * Function to get token options map.
+ *
  * @param {string} ssn - social security number
+ * @param userId
  * @returns map of token options
  */
 export function getTokenOpts(userId) {

@@ -4,13 +4,15 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  * Request Consent
+ *
  * @param {ConsentApiClient} consentApiClient A client to interact with the Consent API
  * @param {string} id
  * @param {string} from
  * @param {string} to
  * @param {string} validTo
- * @param {Array<{ action: string[], resource: [ {type: string, value: string}], metaData: Object }> } consentRights
+ * @param {Array<{action: string[], resource: [{type: string, value: string}], metaData: object}>} consentRights
  * @param {string} redirectUrl
+ * @param labels
  * @returns (string | ArrayBuffer | null)
  */
 export function RequestConsent(consentApiClient, id, from, to, validTo, consentRights, redirectUrl, labels = null) {

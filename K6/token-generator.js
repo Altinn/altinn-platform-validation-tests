@@ -47,6 +47,7 @@ export class PersonalTokenGenerator {
 
     /**
      * Creates a new PersonalTokenGenerator.
+     *
      * @param {PersonalTokenGeneratorOptions} tokenGeneratorOptions - Query parameters for the personal token request.
      * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME] - Basic auth username from env.
      * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD] - Basic auth password from env.
@@ -67,6 +68,7 @@ export class PersonalTokenGenerator {
 
         /**
          * Common HTTP options for the token request
+         *
          * @type {{headers: Record<string,string>, tags: {name: string}}}
          */
         this.tokenRequestOptions = {
@@ -91,6 +93,7 @@ export class PersonalTokenGenerator {
 
     /**
      * Reset token query parameters.
+     *
      * @param {PersonalTokenGeneratorOptions} tokenGeneratorOptions - New options to apply.
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
@@ -101,9 +104,10 @@ export class PersonalTokenGenerator {
 
     /**
      * Internal method to fetch a personal token.
-     * @private
+     *
      * @returns {string} Token response body.
      * @throws {Error} When HTTP response is not status 200.
+     * @private
      */
     #getPersonalToken() {
         const url = new URL(config.getPersonalTokenUrl);
@@ -125,6 +129,7 @@ export class PersonalTokenGenerator {
     /**
      * Memoizes any token-fetching function so repeated calls
      * with the same query parameters return cached tokens.
+     *
      * @template F
      * @param {F} f - Function to memoize.
      * @returns {() => any} Wrapped function with memoization.
@@ -149,6 +154,7 @@ export class PersonalTokenGenerator {
 
     /**
      * Retrieves a personal token (cached after first fetch).
+     *
      * @type {() => string}
      */
     getToken = this.#memoize(this.#getPersonalToken);
@@ -193,6 +199,7 @@ export class PersonalTokenGeneratorOptions extends Map {
 
     /**
      * Check if key exists in the allowed set.
+     *
      * @param {string} key
      * @returns {boolean}
      */
@@ -254,6 +261,7 @@ export class EnterpriseTokenGenerator {
 
     /**
      * Reset enterprise token query parameters.
+     *
      * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
@@ -264,8 +272,9 @@ export class EnterpriseTokenGenerator {
 
     /**
      * Internal call to the enterprise token endpoint.
-     * @private
+     *
      * @returns {string}
+     * @private
      */
     #getEnterpriseToken() {
         const url = new URL(config.getEnterpriseTokenUrl);
@@ -303,6 +312,7 @@ export class EnterpriseTokenGenerator {
 
     /**
      * Retrieves an enterprise token (cached).
+     *
      * @type {() => string}
      */
     getToken = this.#memoize(this.#getEnterpriseToken);
@@ -401,6 +411,7 @@ export class PlatformTokenGenerator {
 
     /**
      * Reset platform token query params and apply defaults.
+     *
      * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
@@ -412,6 +423,7 @@ export class PlatformTokenGenerator {
 
     /**
      * Ensure default values are applied if not provided.
+     *
      * @private
      */
     #applyDefaultOptions() {
@@ -428,8 +440,9 @@ export class PlatformTokenGenerator {
 
     /**
      * Internal call to get a platform access token.
-     * @private
+     *
      * @returns {string}
+     * @private
      */
     #getPlatformAccessToken() {
         const url = new URL(config.getPlatformAccessTokenUrl);
@@ -467,6 +480,7 @@ export class PlatformTokenGenerator {
 
     /**
      * Retrieves a platform token (cached).
+     *
      * @type {() => string}
      */
     getToken = this.#memoize(this.#getPlatformAccessToken);

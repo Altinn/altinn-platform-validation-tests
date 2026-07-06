@@ -4,6 +4,7 @@ import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 
 /**
  * Get Authorized Parties
+ *
  * @param {InfoPortalApiClient} infoPortalApiClient A client to interact with the info portal api
  * @param {*} labels Labels for k6 checks
  * @returns Authorized parties for the user
@@ -16,6 +17,7 @@ export function GetAuthorizedParties(infoPortalApiClient, labels = null) {
 
 /**
  * Get favorites
+ *
  * @param {InfoPortalApiClient} infoPortalApiClient A client to interact with the info portal api
  * @param {*} labels Labels for k6 checks
  * @returns Favorites for the user
@@ -28,6 +30,7 @@ export function GetFavorites(infoPortalApiClient, labels = null) {
 
 /**
  * Get current
+ *
  * @param {InfoPortalApiClient} infoPortalApiClient A client to interact with the info portal api
  * @param {*} labels Labels for k6 checks
  * @returns Current user info
@@ -41,8 +44,11 @@ export function GetCurrent(infoPortalApiClient, labels = null) {
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param status_code
+ * @param status_text
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

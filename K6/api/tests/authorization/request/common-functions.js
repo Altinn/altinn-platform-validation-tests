@@ -22,8 +22,8 @@ let requestApiClient = undefined;
  *   pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
  *
  * @returns {{ users: Array, packages: string[] }} Test input: parsed CSV rows
- *   and the URNs of packages that can be requested (Organisasjon, delegable and
- *   assignable).
+ * and the URNs of packages that can be requested (Organisasjon, delegable and
+ * assignable).
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -52,6 +52,7 @@ const EXCLUDED_PACKAGES = [
  * Fetches the access package catalogue from the meta API and returns the URNs of
  * packages that can be requested: those in an "Organisasjon" group that are both
  * delegable and assignable, minus {@link EXCLUDED_PACKAGES}.
+ *
  * @returns {string[]} valid access package URNs
  */
 function fetchAssignablePackages() {
@@ -94,6 +95,7 @@ export function getClients() {
 
 /**
  * Builds enduser personal-token options for a given user.
+ *
  * @param {string=} pid - the user's national identity number
  * @param {string=} partyUuid - the user's party uuid
  * @returns {Map}

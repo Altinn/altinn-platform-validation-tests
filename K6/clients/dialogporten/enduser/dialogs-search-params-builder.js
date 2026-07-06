@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} DialogSearchParams
+ * @typedef {object} DialogSearchParams
  * @property {string[]=} party
  * @property {string[]=} org
  * @property {string[]=} serviceResource
@@ -27,6 +27,7 @@
 
 /**
  * Builder for Dialogporten REST enduser search query params.
+ *
  * @see https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/SearchDialogs
  */
 export class DialogSearchParamsBuilder {
@@ -38,6 +39,7 @@ export class DialogSearchParamsBuilder {
     /**
      * Add parties by raw identifier (11-digit SSN or 9-digit org number).
      * Converts to the expected URI format automatically.
+     *
      * @param {string[]} parties
      * @returns {DialogSearchParamsBuilder}
      */
@@ -56,6 +58,7 @@ export class DialogSearchParamsBuilder {
 
     /**
      * Add parties already in URI format (urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}).
+     *
      * @param {string|string[]} partyURIs
      * @returns {DialogSearchParamsBuilder}
      */

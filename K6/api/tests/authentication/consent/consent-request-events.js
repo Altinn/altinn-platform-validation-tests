@@ -54,7 +54,7 @@ export const options = getOptions([getConsentRequestEventsLabel]);
 let consentApiClient = undefined;
 
 /**
-  * @type {EnterpriseTokenGenerator | undefined}
+ * @type {EnterpriseTokenGenerator | undefined}
  */
 let tokenGenerator = undefined;
 
