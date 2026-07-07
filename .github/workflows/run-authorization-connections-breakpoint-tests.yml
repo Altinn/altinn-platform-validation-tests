@@ -1,8 +1,10 @@
-name: "authentication - run k6 connections breakpoint tests"
+name: "authorization - run k6 connections breakpoint tests"
 on:
   schedule:
     - cron: "20 5 * * 2"
     - cron: "40 5 * * 2"
+    - cron: "0 6 * * 2"
+    - cron: "20 6 * * 2"
 run-name: "run breakpoint"
 permissions:
   contents: "read"
@@ -23,7 +25,7 @@ jobs:
       - name: "Generate k8s manifests"
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@ec383f5b2cafb06b2d760d14ae2d06f711d8e3e7"
         with:
-          config_file: "K6/api/tests/authentication/connections/breakpoint.yaml"
+          config_file: "K6/api/tests/authorization/connections/breakpoint.yaml"
       - if: "github.event.schedule == '20 5 * * 2'"
         name: "Run Breakpoint for .dist/yt01-get-connections-to-break"
         run: "kubectl apply --server-side -f .dist/yt01-get-connections-to-break"
@@ -31,4 +33,12 @@ jobs:
       - if: "github.event.schedule == '40 5 * * 2'"
         name: "Run Breakpoint for .dist/yt01-get-connections-from-break"
         run: "kubectl apply --server-side -f .dist/yt01-get-connections-from-break"
+        shell: "bash"
+      - if: "github.event.schedule == '0 6 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-get-access-packages-to-break"
+        run: "kubectl apply --server-side -f .dist/yt01-get-access-packages-to-break"
+        shell: "bash"
+      - if: "github.event.schedule == '20 6 * * 2'"
+        name: "Run Breakpoint for .dist/yt01-get-access-packages-from-break"
+        run: "kubectl apply --server-side -f .dist/yt01-get-access-packages-from-break"
         shell: "bash"
