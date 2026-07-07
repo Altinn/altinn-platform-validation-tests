@@ -45,8 +45,8 @@ export function setup() {
  * using Dialogporten-specific options for authentication.
  *
  * @returns {[
- *   GraphqlClient,
- *   PersonalTokenGenerator
+ * GraphqlClient,
+ * PersonalTokenGenerator
  * ]} Tuple containing the GraphQL client and token generator.
  */
 export function getClient() {
@@ -64,8 +64,9 @@ export function getClient() {
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.
- * @param {*} ssn
- * @returns
+ *
+ * @param {*} ssn TODO: description
+ * @returns TODO: description
  */
 export function getDialogportenOpts(ssn = null) {
     const tokenOpts = new PersonalTokenGeneratorOptions();
@@ -82,15 +83,16 @@ export function getDialogportenOpts(ssn = null) {
  * Function to retrieve the parties associated with an end user. It uses the GetParties GraphQL query to fetch the parties and their details.
  * The function processes the response to extract the party URIs for the organizations linked to the end user, including sub-parties.
  * The number of parties returned can be limited by the max_number_of_parties parameter, which defaults to 100 if not specified.
- * @param {*} graphqlClient
- * @param {*} label
- * @param {*} max_number_of_parties
- * @returns
+ *
+ * @param {*} graphqlClient TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {*} max_number_of_parties TODO: description
+ * @returns TODO: description
  */
-export function getParties(graphqlClient, label, max_number_of_parties = 100) {
+export function getParties(graphqlClient, labels, max_number_of_parties = 100) {
     const resp = GetParties(
         graphqlClient,
-        label,
+        labels,
     );
 
     const parties = JSON.parse(resp).data?.parties ?? [];
@@ -119,8 +121,9 @@ export function getParties(graphqlClient, label, max_number_of_parties = 100) {
 
 /**
  * Helper function to determine if a party is an organization party. It checks if the party is not deleted and if its type includes 'organization'.
- * @param {*} party
- * @return {boolean} true if the party is an organization party, false otherwise
+ *
+ * @param {*} party TODO: description
+ * @returns {boolean} true if the party is an organization party, false otherwise
  */
 function isOrganizationParty(party) {
     return !party.isDeleted &&

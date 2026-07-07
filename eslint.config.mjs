@@ -2,12 +2,14 @@ import globals from "globals";
 import { defineConfig } from "eslint/config";
 import stylistic from "@stylistic/eslint-plugin";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import jsdoc from "eslint-plugin-jsdoc";
 
 export default defineConfig([
   {
     plugins: {
       "@stylistic": stylistic,
       "simple-import-sort": simpleImportSort,
+      jsdoc
     },
   },
   {
@@ -40,7 +42,37 @@ export default defineConfig([
         "error",
         { "blankLine": "always", "prev": "import", "next": "*" },
         { "blankLine": "any", "prev": "import", "next": "import" }
-      ]
+      ],
+
+      "jsdoc/check-alignment": "error",
+      "jsdoc/check-indentation": "error",
+      "jsdoc/check-line-alignment": "error",
+
+      "jsdoc/multiline-blocks": [
+        "error",
+        {
+          noSingleLineBlocks: true,
+        },
+      ],
+
+      "jsdoc/require-asterisk-prefix": "error",
+
+      "jsdoc/tag-lines": [
+        "error",
+        "never",
+        {
+          startLines: 1,
+        },
+      ],
+
+      "jsdoc/sort-tags": "error",
+      "jsdoc/check-param-names": "error",
+      "jsdoc/check-tag-names": "error",
+      "jsdoc/check-types": "error",
+      "jsdoc/require-param": "error",
+      "jsdoc/require-param-description": "error",
+      "jsdoc/require-returns": "error",
+      "jsdoc/require-returns-description": "error",
     },
   },
 ]);

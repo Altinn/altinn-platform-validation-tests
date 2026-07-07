@@ -15,9 +15,9 @@ class ResourceRegistryApiClient {
         baseUrl
     ) {
         /**
-        *
-        * @property {string} BASE_PATH The path to the api without host information
-        */
+         *
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/resourceregistry/api/v1/resource/updated";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -34,12 +34,13 @@ class ResourceRegistryApiClient {
     }
 
     /**
-    * Get Updated Resources
-    * @param {string} since ISO 8601 timestamp, e.g. 2000-01-01T01:00:00.000Z
-    * @param {number} limit Number of resources to return per page
-    * @param {string|null} label Label for the request
-    * @returns http.RefinedResponse
-    */
+     * Get Updated Resources
+     *
+     * @param {string} since ISO 8601 timestamp, e.g. 2000-01-01T01:00:00.000Z
+     * @param {number} limit Number of resources to return per page
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     GetUpdatedResources(since, limit, labels = null) {
         const url = new URL(`${this.FULL_PATH}`);
         url.searchParams.append("since", since);

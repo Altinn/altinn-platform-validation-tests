@@ -4,10 +4,11 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 
 /**
  * Function to get dialog context label log
- * @param {EnduserApiClient} enduserApiClient
+ *
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get context label log for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns response body of the request
  */
 export function GetDialogContextLabelLog(
     enduserApiClient,

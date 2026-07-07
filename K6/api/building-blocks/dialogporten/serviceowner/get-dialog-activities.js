@@ -4,10 +4,11 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 
 /**
  * Function to get dialog activities
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get activities for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns response body of the request
  */
 export function GetDialogActivities(
     serviceOwnerApiClient,
@@ -33,11 +34,13 @@ export function GetDialogActivities(
 
 /**
  * Function to get a dialog activity by id
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog the activity belongs to
  * param {string} activityId - id of the activity to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param activityId TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns response body of the request
  */
 export function GetDialogActivity(
     serviceOwnerApiClient,

@@ -4,12 +4,13 @@ import { SystemUserRequestApiClient } from "../../../../clients/authentication/i
 
 /**
  * Creates a new Request based on a SystemId for a SystemUser.
+ *
  * @param {SystemUserRequestApiClient} systemUserRequestApiClient A client to interact with the System User Request API
- * @param {string } systemId
- * @param {string } partyOrgNo
- * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
- * @param {string } redirectUrl
- * @param {Array<{ urn: string }> } accessPackages
+ * @param {string } systemId TODO: description
+ * @param {string } partyOrgNo TODO: description
+ * @param {Array<{resource: Array<{value: string, id: string}>}>} rights TODO: description
+ * @param {string } redirectUrl TODO: description
+ * @param {Array<{ urn: string }> } accessPackages TODO: description
  * @returns (string | ArrayBuffer | null)
  */
 export function CreateSystemUserRequest(

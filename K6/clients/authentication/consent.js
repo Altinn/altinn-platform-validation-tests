@@ -9,22 +9,22 @@ const TAGS = {
 
 class ConsentApiClient {
     /**
-   *
-   * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-   * @param {*} tokenGenerator
-   */
+     *
+     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
+     * @param {*} tokenGenerator TODO: description
+     */
     constructor(baseUrl, tokenGenerator) {
         /**
          * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
          */
         this.tokenGenerator = tokenGenerator;
         /**
-     * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
-     */
+         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         */
         this.FULL_PATH = baseUrl + "/accessmanagement/api/v1";
         /**
-     * @property {string} BASE_PATH The path to the api without host information
-     */
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/accessmanagement/api/v1";
     }
 
@@ -33,17 +33,19 @@ class ConsentApiClient {
     }
 
     /**
-   * Request Consent
-   * Requires an org token with scope ConsentScope.WRITE.
-   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
-   * @param {string} id
-   * @param {string} from
-   * @param {string} to
-   * @param {string} validTo
-   * @param {Array<{ action: string[], resource: [ {type: string, value: string}], metaData: Object }> } consentRights
-   * @param {string} redirectUrl
-   * @returns http.RefinedResponse
-   */
+     * Request Consent
+     * Requires an org token with scope ConsentScope.WRITE.
+     * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
+     *
+     * @param {string} id TODO: description
+     * @param {string} from TODO: description
+     * @param {string} to TODO: description
+     * @param {string} validTo TODO: description
+     * @param {Array<{action: string[], resource: [{type: string, value: string}], metaData: object}>} consentRights TODO: description
+     * @param {string} redirectUrl TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     RequestConsent(id, from, to, validTo, consentRights, redirectUrl, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/enterprise/consentrequests`;
@@ -75,12 +77,14 @@ class ConsentApiClient {
     }
 
     /**
-   * Approve Consent
-   * Requires a personal (end user) token with scope `altinn:portal/enduser`.
-   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
-   * @param {string } id
-   * @returns http.RefinedResponse
-   */
+     * Approve Consent
+     * Requires a personal (end user) token with scope `altinn:portal/enduser`.
+     * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
+     *
+     * @param {string } id TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     ApproveConsent(id, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/bff/consentrequests/${id}/accept`;
@@ -104,20 +108,20 @@ class ConsentApiClient {
     }
 
     /**
-   * Lookup Maskinporten consent token for a consent request.
-   *
-   * The endpoint we're using is the endpoint Maskinporten uses to lookup a consent request before returning the token.
-   *
-   * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
-   * Requires an org token with scope MaskinportenConsentScope.LOOKUP.
-   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/retrieve-token/}
-   *
-   * @param {string} id
-   * @param {string} from
-   * @param {string} to
-   * @param {string|null} label - Optional label for the request tag.
-   * @returns http.RefinedResponse
-   */
+     * Lookup Maskinporten consent token for a consent request.
+     *
+     * The endpoint we're using is the endpoint Maskinporten uses to lookup a consent request before returning the token.
+     *
+     * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
+     * Requires an org token with scope MaskinportenConsentScope.LOOKUP.
+     * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/retrieve-token/}
+     *
+     * @param {string} id TODO: description
+     * @param {string} from TODO: description
+     * @param {string} to TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     LookupConsent(id, from, to, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/maskinporten/consent/lookup/`;
@@ -147,18 +151,18 @@ class ConsentApiClient {
     }
 
     /**
-   * Get a page of consent request events for the authenticated organization.
-   *
-   * Returns events ordered by event id (oldest first), max 100 per page.
-   *
-   * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
-   * Requires an org token with scope ConsentScope.READ.
-   * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
-   *
-   * @param {string} [queryString] - URL-encoded query string (without leading "?"), as produced by {@link ConsentRequestEventsQueryBuilder#build}.
-   * @param {Object.<string, string>|null} [labels] - Optional request tags.
-   * @returns http.RefinedResponse
-   */
+     * Get a page of consent request events for the authenticated organization.
+     *
+     * Returns events ordered by event id (oldest first), max 100 per page.
+     *
+     * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
+     * Requires an org token with scope ConsentScope.READ.
+     * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
+     *
+     * @param {string} [queryString] - URL-encoded query string (without leading "?"), as produced by {@link ConsentRequestEventsQueryBuilder#build}.
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     GetConsentRequestEvents(queryString = "", labels = null) {
         const token = this.tokenGenerator.getToken();
         const path = `${this.FULL_PATH}/enterprise/consentrequests/events`;

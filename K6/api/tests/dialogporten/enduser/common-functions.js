@@ -44,8 +44,8 @@ export function setup() {
  * using Dialogporten-specific options for authentication.
  *
  * @returns {[
- *   EnduserApiClient,
- *   PersonalTokenGenerator
+ * EnduserApiClient,
+ * PersonalTokenGenerator
  * ]} Tuple containing the API client and token generator.
  */
 export function getClient() {
@@ -63,8 +63,9 @@ export function getClient() {
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.
- * @param {*} ssn
- * @returns
+ *
+ * @param {*} ssn TODO: description
+ * @returns TODO: description
  */
 export function getDialogportenOpts(ssn = null) {
     const tokenOpts = new Map();

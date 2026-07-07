@@ -2,16 +2,16 @@
  * Be om tilgang-flyt.
  *
  * Per iterasjon plukkes to unike brukere og én tilfeldig tilgangspakke:
- *   - Bruker A: ber om tilgangspakken.
- *   - Bruker B: daglig leder av Virksomhet B; mottar og godkjenner forespørselen.
- *   - Tilgangspakken plukkes tilfeldig fra metadata-API-et (se common-functions.js).
+ * - Bruker A: ber om tilgangspakken.
+ * - Bruker B: daglig leder av Virksomhet B; mottar og godkjenner forespørselen.
+ * - Tilgangspakken plukkes tilfeldig fra metadata-API-et (se common-functions.js).
  *
  * Steg:
- *   1. (Forutsetning) Virksomhet B legger til Bruker A som connection (assignment),
- *      slik at det finnes en relasjon før A kan be om tilgang. Krever: pid + etternavn
- *   2. Bruker A ber om tilgangspakken, rettet til Virksomhet B
- *   3. Bruker B lister sine mottatte forespørsler og finner den siste opprettede
- *   4. Bruker B godkjenner forespørselen på vegne av Virksomhet B
+ * 1. (Forutsetning) Virksomhet B legger til Bruker A som connection (assignment),
+ * slik at det finnes en relasjon før A kan be om tilgang. Krever: pid + etternavn
+ * 2. Bruker A ber om tilgangspakken, rettet til Virksomhet B
+ * 3. Bruker B lister sine mottatte forespørsler og finner den siste opprettede
+ * 4. Bruker B godkjenner forespørselen på vegne av Virksomhet B
  *
  * Alle kall bruker personlige enduser-tokens (Altinn); den aktive brukerens token
  * byttes mellom stegene via den delte token-generatoren.

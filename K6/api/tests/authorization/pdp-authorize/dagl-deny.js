@@ -20,6 +20,8 @@ const resource = "ttd-dialogporten-performance-test-02";
 
 /**
  * Main function executed by each VU.
+ *
+ * @param testData TODO: description
  */
 export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();

@@ -8,22 +8,22 @@ const TAGS = {
 
 class AuthorizedPartiesClient {
     /**
-   *
-   * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-   * @param {*} tokenGenerator
-   */
+     *
+     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
+     * @param {*} tokenGenerator TODO: description
+     */
     constructor(baseUrl, tokenGenerator) {
         /**
          * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
          */
         this.tokenGenerator = tokenGenerator;
         /**
-     * @property {string} BASE_PATH The path to the api without host information
-     */
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/accessmanagement/api/v1";
         /**
-     * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
-     */
+         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         */
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
@@ -32,13 +32,16 @@ class AuthorizedPartiesClient {
     }
 
     /**
-   * Get Authorized Parties
-   * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
-   * @param {string} type
-   * @param {string} value
-   * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-   * @returns http.RefinedResponse
-   */
+     * Get Authorized Parties
+     * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
+     *
+     * @param {string} type TODO: description
+     * @param {string} value TODO: description
+     * @param queryParams TODO: description
+     * @param parties TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);

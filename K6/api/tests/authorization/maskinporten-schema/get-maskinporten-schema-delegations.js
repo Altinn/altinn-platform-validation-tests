@@ -71,6 +71,8 @@ export const options = getOptions(
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

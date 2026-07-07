@@ -66,10 +66,11 @@ export class MaskinportenAccessTokenGenerator {
 
     /**
      * Build and POST a JWT Bearer grant to the token endpoint to get a Maskinporten access token.
-     * @private
+     *
      * @param {string} scopes – Space-separated list of scopes to request.
      * @returns {string} A Maskinporten access token.
      * @throws {Error} If the HTTP request fails or the response cannot be parsed.
+     * @private
      */
     #generateAccessToken(scopes) {
         const grant = this.#createJwtGrant(scopes);
@@ -109,9 +110,10 @@ export class MaskinportenAccessTokenGenerator {
 
     /**
      * Create a signed JWT assertion for a JWT Bearer OAuth2 grant.
-     * @private
+     *
      * @param {string} scopes – Requested scopes.
      * @returns {string} A signed JWT.
+     * @private
      */
     #createJwtGrant(scopes) {
         const header = {
@@ -145,10 +147,11 @@ export class MaskinportenAccessTokenGenerator {
 
     /**
      * Memoizes token generation — caches per client ID + scopes pair, respecting expiration.
-     * @private
+     *
      * @template F
      * @param {F} f – The token generation function.
      * @returns {() => string} A wrapper that returns cached tokens if still valid.
+     * @private
      */
     #memoize(f) {
         const cache = new Map();
@@ -196,6 +199,7 @@ export class MaskinportenAccessTokenGenerator {
 
     /**
      * Returns a (possibly cached) Maskinporten token.
+     *
      * @type {() => string}
      */
     getToken = this.#memoize(this.#generateAccessToken);
@@ -224,8 +228,9 @@ export class MaskinportenTokenGeneratorOptions extends Map {
 
     /**
      * Only `scopes` is valid.
-     * @param {string} key
-     * @returns {boolean}
+     *
+     * @param {string} key TODO: description
+     * @returns {boolean} TODO: description
      */
     static isValidConfigOption(key) {
         return key == "scopes";

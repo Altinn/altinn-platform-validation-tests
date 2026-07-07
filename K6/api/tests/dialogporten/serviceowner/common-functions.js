@@ -67,6 +67,7 @@ export function getClients() {
 
 /**
  * Setup function to fetch and parse CSV data of end users for testing
+ *
  * @returns data parsed from the CSV file containing end user information
  */
 export function setup() {

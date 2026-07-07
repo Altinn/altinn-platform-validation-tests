@@ -8,15 +8,15 @@ class ClientDelegationsApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator,
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -35,8 +35,9 @@ class ClientDelegationsApiClient {
     /**
      * Get clients where the user is agent
      * Docs: TODO: add link to docs
-     * @param {string|null} label - label for the request
-     * @return http.RefinedResponse
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      */
     GetMyClients(labels = null) {
         const token = this.tokenGenerator.getToken();

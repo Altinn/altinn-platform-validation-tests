@@ -52,6 +52,8 @@ export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClien
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -70,10 +72,10 @@ export function setup() {
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- *   BffConnectionsApiClient,
- *   BffClientDelegationsApiClient,
- *   BffAccessPackageApiClient,
- *   PersonalTokenGenerator
+ * BffConnectionsApiClient,
+ * BffClientDelegationsApiClient,
+ * BffAccessPackageApiClient,
+ * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
 function getClients() {
@@ -98,6 +100,8 @@ function getClients() {
 
 /**
  * Main function executed by each VU.
+ *
+ * @param testData TODO: description
  */
 export default function (testData) {
     // connectionsApiClient for bff

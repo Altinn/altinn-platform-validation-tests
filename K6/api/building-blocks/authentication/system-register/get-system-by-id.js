@@ -4,6 +4,7 @@ import { SystemRegisterApiClient } from "../../../../clients/authentication/inde
 
 /**
  * Retrieves a Registered System frontend DTO for the systemId.
+ *
  * @param {SystemRegisterApiClient} systemRegisterClient A client to interact with the System Register API
  * @param {string } systemId The Id of the Registered System
  * @returns (string | ArrayBuffer | null)

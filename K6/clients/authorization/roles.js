@@ -13,9 +13,9 @@ class RolesApiClient {
         baseUrl
     ) {
         /**
-        *
-        * @property {string} BASE_PATH The path to the api without host information
-        */
+         *
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/accessmanagement/api/v1/meta/info/roles";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -29,11 +29,12 @@ class RolesApiClient {
     }
 
     /**
-    * Get Roles
-    * Docs TODO: This link does not work, nothing yet {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Roles}
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * @returns http.RefinedResponse
-    */
+     * Get Roles
+     * Docs TODO: This link does not work, nothing yet {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Roles}
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     GetRoles(labels) {
         const url = new URL(`${this.FULL_PATH}`);
         let tags = {

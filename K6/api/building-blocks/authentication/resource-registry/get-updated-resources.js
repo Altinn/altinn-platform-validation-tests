@@ -4,11 +4,12 @@ import { ResourceRegistryApiClient } from "../../../../clients/authentication/in
 
 /**
  * Get Updated Resources
+ *
  * @param {ResourceRegistryApiClient} resourceRegistryClient A client to interact with the Resource Registry API
  * @param {string} since ISO 8601 timestamp, e.g. 2000-01-01T01:00:00.000Z
  * @param {number} limit Number of resources to return per page 10
- * @param {string|null} label Label for the request
- * @returns {Object} Parsed JSON response
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object} Parsed JSON response
  */
 export function GetUpdatedResources(resourceRegistryClient, since, limit, labels = null) {
     const res = resourceRegistryClient.GetUpdatedResources(since, limit, labels);

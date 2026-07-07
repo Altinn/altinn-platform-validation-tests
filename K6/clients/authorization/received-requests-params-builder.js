@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} ReceivedRequestsParams
+ * @typedef {object} ReceivedRequestsParams
  * @property {string} party - required, the party whose received requests are listed (party uuid)
  * @property {string=} from - filter on the party the requests originate from (party uuid)
  * @property {string[]=} status - filter on request status
@@ -8,6 +8,7 @@
 
 /**
  * Valid values for the `status` query parameter (RequestStatus enum).
+ *
  * @see https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/get_enduser_request_received
  */
 export const RequestStatus = {
@@ -23,14 +24,13 @@ export const RequestStatus = {
  * Builder for the GET /enduser/request/received query parameters.
  * `party` is required; everything else is optional.
  *
+ * @see https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/get_enduser_request_received
  * @example
  * const queryParams = new ReceivedRequestsParamsBuilder()
  *     .withParty("a3a3...-...-...-...")        // partyUuid
  *     .withFrom("b4b4...-...-...-...")         // optional, partyUuid
  *     .withStatus(RequestStatus.Pending)       // optional, enum value()
  *     .build();
- *
- * @see https://docs.altinn.studio/nb/api/accessmanagement/enduser/#/Request/get_enduser_request_received
  */
 export class ReceivedRequestsParamsBuilder {
     constructor() {
@@ -39,8 +39,9 @@ export class ReceivedRequestsParamsBuilder {
 
     /**
      * Required. The party whose received requests are listed
+     *
      * @param {string} party - party uuid, e.g. "a3a3...-...-...-..."
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withParty(party) {
         this.params.party = party;
@@ -49,8 +50,9 @@ export class ReceivedRequestsParamsBuilder {
 
     /**
      * Optional. Only return requests originating from this party
+     *
      * @param {string} from - party uuid, e.g. "b4b4...-...-...-..."
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withFrom(from) {
         this.params.from = from;
@@ -59,8 +61,9 @@ export class ReceivedRequestsParamsBuilder {
 
     /**
      * Optional. Filter on one or more request statuses.
+     *
      * @param {string|string[]} status - one or more {@link RequestStatus} values, e.g. RequestStatus.Pending
-     * @returns {ReceivedRequestsParamsBuilder}
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withStatus(status) {
         this.params.status = Array.isArray(status) ? status : [status];
@@ -69,8 +72,9 @@ export class ReceivedRequestsParamsBuilder {
 
     /**
      * Optional. Filter on request type.
-     * @param {string} type
-     * @returns {ReceivedRequestsParamsBuilder}
+     *
+     * @param {string} type TODO: description
+     * @returns {ReceivedRequestsParamsBuilder} TODO: description
      */
     withType(type) {
         this.params.type = type;
@@ -78,7 +82,7 @@ export class ReceivedRequestsParamsBuilder {
     }
 
     /**
-     * @returns {ReceivedRequestsParams}
+     * @returns {ReceivedRequestsParams} TODO: description
      */
     build() {
         if (this.params.party === undefined) {

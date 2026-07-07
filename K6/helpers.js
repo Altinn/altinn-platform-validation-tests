@@ -9,7 +9,7 @@ import { papaparse, randomItem } from "./common-imports.js";
  * Uses `check()` to report pass/fail instead of throwing.
  *
  * @param {Function} conditionFn - Function that returns true on success, false otherwise.
- * @param {Object} options - Retry settings.
+ * @param {object} options - Retry settings.
  * @param {number} options.retries - How many times to retry (default 10).
  * @param {number} options.intervalSeconds - Seconds between attempts (default 5).
  * @param {string} options.testscenario - Prefix used in log/check output.
@@ -62,6 +62,8 @@ export function readCsv(filename) {
 }
 /**
  *
+ * @param listOfItems TODO: description
+ * @param randomize TODO: description
  * @returns A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
@@ -76,6 +78,9 @@ export function getItemFromList(listOfItems, randomize = false) {
  * Divide the list of items into multiple sublists
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
+ *
+ * @param listOfItems TODO: description
+ * @param numberOfSublists TODO: description
  * @returns A list with numberOfSublists lists.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
@@ -95,6 +100,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
 
 /**
  * An attempt to abstract finding the number of VUs. Current implementation is a bit restrictive/opinionated but we can build upon.
+ *
  * @returns The number of VUs for the test
  */
 export function getNumberOfVUs() {
@@ -107,9 +113,10 @@ export function getNumberOfVUs() {
 
 /**
  * Function to get k6 options based on labels.
+ *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {Object}
+ * @returns {object} TODO: description
  */
 export function getOptions(labels, groups = []) {
     const options = {
@@ -144,8 +151,9 @@ export function checkIp(ip) {
 
 /**
  * Ensures required environment variables exist.
+ *
  * @param {string[]} vars - Array of environment variable names
- * @returns {Object} key-value map of env vars
+ * @returns {object} key-value map of env vars
  */
 export function requireEnv(vars) {
     const missing = [];
@@ -179,9 +187,7 @@ export function requireEnv(vars) {
  * @param {Array<any>} list - The source array to pick items from.
  * @param {number} count - The number of unique items to select.
  * @returns {Array<any>} An array containing the randomly selected unique items.
- *
  * @throws {Error} If `count` is greater than the size of the list.
- *
  * @example
  * const [from, to, user] = pickUnique(users, 3);
  */

@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} DialogSearchVariables
+ * @typedef {object} DialogSearchVariables
  * @property {string[]} partyURIs
  * @property {string=} search
  * @property {string[]=} org
@@ -36,8 +36,9 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Add parties to the search variables. The party ids can be either pid/ssn (11 digits) or org number (9 digits), and the builder will convert them to the expected party URI format.
-     * @param {string []} parties
-     * @returns
+     *
+     * @param {string []} parties TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withParties(parties) {
         const partyUris = [];
@@ -58,9 +59,13 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * Add parties to the search variables. The party URIs must be in the format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}.
-     * @param {string []} parties. Parties already on the URI format urn:altinn:person:identifier-no:{pid} or urn:altinn:organization:identifier-no:{orgnr}
-     * @returns
+     * Adds party URIs to the search variables.
+     * Party URIs must be in the format
+     * `urn:altinn:person:identifier-no:{pid}` or
+     * `urn:altinn:organization:identifier-no:{orgnr}`.
+     *
+     * @param {string|string[]} partyURIs - One or more party URIs.
+     * @returns {DialogSearchVariablesBuilder} The builder instance for chaining.
      */
     withPartyURIs(partyURIs) {
         this.variables.partyURIs = Array.isArray(partyURIs) ? partyURIs : [partyURIs];
@@ -69,8 +74,9 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a search string to the search variables. The search string can be used to search for dialogs that contain the specified string in the title or content of the dialog.
-     * @param {searchterm} search
-     * @returns
+     *
+     * @param {searchterm} search TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withSearch(search) {
         this.variables.search = search;
@@ -78,20 +84,27 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * Adds an organization filter to the search variables. The organization filter can be used to search for dialogs that are associated with the specified organization(s).
-     * The organizations will be the short abbreviation of the organization, e.g. "nav" for the Norwegian Labour and Welfare Administration, "skd" for the Norwegian Tax Administration, etc.
-     * @param {string []} orgs. The short abbreviation of the organization(s) to filter by, e.g. "nav" for the Norwegian Labour and Welfare Administration, "skd" for the Norwegian Tax Administration, etc.
-     * @returns
+     * Adds one or more organization filters to the search variables.
+     * The organization filter is used to search for dialogs associated with the
+     * specified organization(s).
+     *
+     * Organizations are identified by their short abbreviation, such as `nav`
+     * for the Norwegian Labour and Welfare Administration or `skd` for the
+     * Norwegian Tax Administration.
+     *
+     * @param {string|string[]} orgs - One or more organization abbreviations.
+     * @returns {DialogSearchVariablesBuilder} The builder instance for chaining.
      */
-    withOrg(org) {
-        this.variables.org = Array.isArray(org) ? org : [org];
+    withOrgs(orgs) {
+        this.variables.org = Array.isArray(orgs) ? orgs : [orgs];
         return this;
     }
 
     /**
      * Adds a status filter to the search variables. The status filter can be used to search for dialogs that have the specified status(es). Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED.
+     *
      * @param {string | string []} status The status or statuses to filter by. Valid statuses are: NOT_APPLICABLE, IN_PROGRESS, AWAITING, REQUIRES_ATTENTION, COMPLETED.
-     * @returns
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withStatus(status) {
         this.variables.status = Array.isArray(status) ? status : [status];
@@ -100,8 +113,9 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a continuation token to the search variables. The continuation token can be used to paginate through search results. When a search query returns more results than the specified limit, a continuation token is included in the response. This token can be used in a subsequent search query to retrieve the next page of results.
-     * @param {*} token
-     * @returns
+     *
+     * @param {*} token TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withContinuationToken(token) {
         this.variables.continuationToken = token;
@@ -110,8 +124,9 @@ export class DialogSearchVariablesBuilder {
 
     /**
      * Adds a limit to the search variables. The limit can be used to specify the maximum number of results to return in a search query. If the number of results exceeds the limit, a continuation token will be included in the response that can be used to retrieve the next page of results.
+     *
      * @param { number } limit must be between 1 and 1000.
-     * @returns
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withLimit(limit) {
         this.variables.limit = limit;
@@ -119,8 +134,8 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * @param {string|string[]} label
-     * @returns {DialogSearchVariablesBuilder}
+     * @param {string|string[]} label TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withLabel(label) {
         this.variables.label = Array.isArray(label)
@@ -131,8 +146,8 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * @param {string} updatedAfter
-     * @returns {DialogSearchVariablesBuilder}
+     * @param {string} updatedAfter TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withUpdatedAfter(updatedAfter) {
         this.variables.updatedAfter = updatedAfter;
@@ -140,8 +155,8 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * @param {string} updatedBefore
-     * @returns {DialogSearchVariablesBuilder}
+     * @param {string} updatedBefore TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withUpdatedBefore(updatedBefore) {
         this.variables.updatedBefore = updatedBefore;
@@ -149,8 +164,8 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * @param {string} searchLanguageCode
-     * @returns {DialogSearchVariablesBuilder}
+     * @param {string} searchLanguageCode TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withSearchLanguageCode(searchLanguageCode) {
         this.variables.searchLanguageCode = searchLanguageCode;
@@ -158,8 +173,8 @@ export class DialogSearchVariablesBuilder {
     }
 
     /**
-     * @param {string|string[]} serviceResources
-     * @returns {DialogSearchVariablesBuilder}
+     * @param {string|string[]} serviceResources TODO: description
+     * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withServiceResources(serviceResources) {
         this.variables.serviceResources =

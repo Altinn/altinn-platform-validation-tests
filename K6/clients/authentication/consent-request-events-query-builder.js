@@ -24,8 +24,9 @@ export class ConsentRequestEventsQueryBuilder {
 
     /**
      * Only include events created at or after this timestamp.
+     *
      * @param {string} createdAfter DateTimeOffset, e.g. "2026-01-01T00:00:00Z".
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: description
      */
     withCreatedAfter(createdAfter) {
         this.params.createdAfter = createdAfter;
@@ -35,8 +36,9 @@ export class ConsentRequestEventsQueryBuilder {
     /**
      * Only include events created before this timestamp. Must be strictly greater
      * than `createdAfter` when both are set.
+     *
      * @param {string} createdBefore DateTimeOffset, e.g. "2026-02-01T00:00:00Z".
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: description
      */
     withCreatedBefore(createdBefore) {
         this.params.createdBefore = createdBefore;
@@ -45,8 +47,9 @@ export class ConsentRequestEventsQueryBuilder {
 
     /**
      * Filter by event type. Repeatable, so an array adds multiple `EventType` params.
+     *
      * @param {string|string[]} eventType One or more values from {@link ConsentEventType} (accepted, revoked, rejected).
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: description
      */
     withEventType(eventType) {
         const eventTypes = Array.isArray(eventType) ? eventType : [eventType];
@@ -62,8 +65,9 @@ export class ConsentRequestEventsQueryBuilder {
 
     /**
      * Only include events belonging to a specific consent request.
+     *
      * @param {string} consentRequestId The id of the consent request.
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: description
      */
     withConsentRequestId(consentRequestId) {
         this.params.ConsentRequestID = consentRequestId;
@@ -73,7 +77,8 @@ export class ConsentRequestEventsQueryBuilder {
     /**
      * Build the URL-encoded query string (without a leading "?").
      * Returns an empty string when no parameters have been set.
-     * @returns {string}
+     *
+     * @returns {string} TODO: description
      */
     build() {
         const parts = [];

@@ -10,7 +10,7 @@ import { PdpAuthorizeClient } from "../../../../clients/authorization/index.js";
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 
 export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, expectedResponse, subscriptionKey, labels = null) {
@@ -30,7 +30,7 @@ export function PdpAuthorizeUser(pdpAuthorizeClient, ssn, resourceId, action, ex
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 
 export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, labels = null) {
@@ -50,7 +50,7 @@ export function PdpAuthorizeUserInstance(pdpAuthorizeClient, tossn, fromssn, res
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 
 export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, resourceId, instanceId, task, action, expectedResponse, subscriptionKey, labels = null) {
@@ -68,7 +68,7 @@ export function PdpAuthorizeOrgInstance(pdpAuthorizeClient, tossn, fromorg, reso
  * @param {*} action - e.g. read, write, sign
  * @param {*} expectedResponse - e.g. Permit, Deny, NotApplicable
  * @param {*} subscriptionKey - subscription key for the API
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 
 export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, action, expectedResponse, subscriptionKey, labels = null) {
@@ -79,8 +79,10 @@ export function PdpAuthorizeDagl(pdpAuthorizeClient, ssn, org, resourceId, actio
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param expectedResponse TODO: description
  */
 function checker(res, method, expectedResponse) {
     const succeed = check(res, {

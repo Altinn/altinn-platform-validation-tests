@@ -4,10 +4,10 @@ import { BffAccessPackageApiClient } from "../../../../clients/authorization/ind
 
 /**
  * Post Delegations
+ *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- *
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function PostDelegations(accessPackageApiClient, queryParams, labels = null) {
@@ -31,9 +31,10 @@ export function PostDelegations(accessPackageApiClient, queryParams, labels = nu
 
 /**
  * Delete Delegations
+ *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function DeleteDelegations(accessPackageApiClient, queryParams, labels = null) {
@@ -57,10 +58,11 @@ export function DeleteDelegations(accessPackageApiClient, queryParams, labels = 
 
 /**
  * Get Delegations
+ *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return (string | ArrayBuffer | null)
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegations(accessPackageApiClient, queryParams, labels = null) {
     const res = accessPackageApiClient.GetDelegations(queryParams, labels);
@@ -83,9 +85,10 @@ export function GetDelegations(accessPackageApiClient, queryParams, labels = nul
 
 /**
  * Get Delegation Check
+ *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetDelegationCheck(accessPackageApiClient, queryParams, labels = null) {
@@ -109,10 +112,11 @@ export function GetDelegationCheck(accessPackageApiClient, queryParams, labels =
 
 /**
  * Get Permission
+ *
  * @param {BffAccessPackageApiClient} accessPackageApiClient A client to interact with the /accesspackage API
  * @param {*} accessPackageId - id of the access package
  * @param {*} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function GetPermission(accessPackageApiClient, accessPackageId, queryParams, labels = null) {

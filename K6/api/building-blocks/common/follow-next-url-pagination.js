@@ -3,7 +3,8 @@ import http from "k6/http";
 
 /**
  * Extract `links.next` URL from a JSON response body.
- * @param {string|object} body - parsed JSON object
+ *
+ * @param {string|object} parsedBody - parsed JSON object
  * @returns {string|null} - The next URL or null if not found
  */
 export function extractNextUrl(parsedBody) {
@@ -29,14 +30,10 @@ export function extractNextUrl(parsedBody) {
  * It keeps following `links.next` and ensures each response body changes
  * (to avoid "stuck" pagination) and that URLs don't loop.
  *
- * @param {string} token
+ * @param {string} token TODO: description
  * @param {string|null} nextUrl Fully qualified URL from `links.next`
  * @param {number} [maxPages=10] Maximum number of pages to fetch
- * @param {Object.<string, string>|null} [labels=null] Extra request tags (e.g. an
- *   `action` label) merged into each page request so the paged calls roll up
- *   under the same metric/threshold as the first page. The helper's own
- *   `name: "next-url"` tag always wins, so continuation-token URLs don't fan out
- *   the metrics by name.
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
  */
 export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = null) {

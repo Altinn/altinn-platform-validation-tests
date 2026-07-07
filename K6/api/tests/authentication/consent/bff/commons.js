@@ -48,7 +48,7 @@ export const worst_case_users = [
 ];
 
 /**
-  * @type {BffAccessManagementApiClient | undefined}
+ * @type {BffAccessManagementApiClient | undefined}
  */
 let accessManagementApiClient = undefined;
 
@@ -67,8 +67,8 @@ let personalTokenGenerator = undefined;
  * reused.
  *
  * @returns {[
- *   BffAccessManagementApiClient,
- *   PersonalTokenGenerator
+ * BffAccessManagementApiClient,
+ * PersonalTokenGenerator
  * ]} The initialized API client and token generator.
  */
 export function getClients() {

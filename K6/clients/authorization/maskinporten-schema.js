@@ -9,15 +9,15 @@ class MaskinportenSchemaApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator,
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -35,10 +35,11 @@ class MaskinportenSchemaApiClient {
 
     /**
      * Post an offered delegation in Maskinporten Schema API. This will create a delegation from the "from" parameter to the "to" parameter with the specified resource and label.
+     *
      * @param {} from - The identifier of the delegating party (e.g., an organization number)
      * @param {*} to - The identifier of the receiving party (e.g., a person identifier or organization number)
      * @param {*} resource - The identifier of the resource for which the delegation is being offered
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns A k6 HTTP response object from the POST request to the Maskinporten Schema API
      */
     PostOffered(from, to, resource, labels = null) {
@@ -83,9 +84,10 @@ class MaskinportenSchemaApiClient {
 
     /**
      * Get delegations in Maskinporten Schema API. This will retrieve delegations based on the provided query parameters.
+     *
      * @param {*} queryParams - An object containing key-value pairs to be used as query parameters in the API call
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return A k6 HTTP response object from the GET request to the Maskinporten Schema API
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns A k6 HTTP response object from the GET request to the Maskinporten Schema API
      */
     GetDelegations(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();

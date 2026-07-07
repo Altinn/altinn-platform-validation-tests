@@ -4,8 +4,10 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 
 /**
  * Approve Consent
+ *
  * @param {ConsentApiClient} consentApiClient A client to interact with the Consent API
- * @param {string } id
+ * @param {string } id TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns (string | ArrayBuffer | null)
  */
 export function ApproveConsent(consentApiClient, id, labels = null) {

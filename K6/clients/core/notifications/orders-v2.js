@@ -8,15 +8,15 @@ class OrdersV2ApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator
     ) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -33,14 +33,14 @@ class OrdersV2ApiClient {
     }
 
     /**
-    * @param {string } idempotencyId
-    * @param {string } sendersReference
-    * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
-    * @param {string } requestedSendTime
-    * @param {Object } recipient
-    * @param {Array<Object> } reminders
-    * @returns http.RefinedResponse
-    */
+     * @param {string } idempotencyId TODO: description
+     * @param {string } sendersReference TODO: description
+     * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation TODO: description
+     * @param {string } requestedSendTime TODO: description
+     * @param {object} recipient TODO: description
+     * @param {Array<object>} reminders TODO: description
+     * @returns http.RefinedResponse TODO: description
+     */
     PostNotificationOrderV2(
         idempotencyId,
         sendersReference,

@@ -16,15 +16,15 @@ class SystemRegisterApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator
     ) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -43,6 +43,7 @@ class SystemRegisterApiClient {
     /**
      * Retrieves the List of all the Registered Systems, except those marked as deleted.
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister}
+     *
      * @returns http.RefinedResponse
      */
     GetAllSystemsFromRegister() {
@@ -63,6 +64,7 @@ class SystemRegisterApiClient {
 
     /**
      * Retrieves a Registered System frontend DTO for the systemId.
+     *
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -86,6 +88,7 @@ class SystemRegisterApiClient {
     /**
      * Retrieves a Registered System for the systemId.
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId_}
+     *
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -109,13 +112,14 @@ class SystemRegisterApiClient {
     /**
      * Replaces the entire registered system
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_}
+     *
      * @param {string } systemId The Id of the Registered System
-     * @param {string } vendorId
-     * @param {string } name
-     * @param {string[] } clientId
-     * @param {{ en: string, nn: string, nb: string } } description
-     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-     * @param {string[] } allowedRedirectUrls
+     * @param {string } vendorId TODO: description
+     * @param {string } name TODO: description
+     * @param {string[] } clientId TODO: description
+     * @param {{ en: string, nn: string, nb: string } } description TODO: description
+     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights TODO: description
+     * @param {string[] } allowedRedirectUrls TODO: description
      * @returns http.RefinedResponse
      */
     UpdateVendorSystemRegister(
@@ -160,10 +164,10 @@ class SystemRegisterApiClient {
     }
 
     /**
-    * @param {string } systemId The Id of the Registered System
-    * @param {Array<{ urn: string }> } body
-    * @returns http.RefinedResponse
-    */
+     * @param {string } systemId The Id of the Registered System
+     * @param {Array<{ urn: string }> } body TODO: description
+     * @returns http.RefinedResponse
+     */
     UpdateVendorAccessPackages(systemId, body) {
         const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
@@ -184,8 +188,9 @@ class SystemRegisterApiClient {
     /**
      * Updates the rights on a registered system
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
-    *  @param {string } systemId The Id of the Registered System
-    *  @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body
+     *
+     * @param {string } systemId The Id of the Registered System
+     * @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body TODO: description
      * @returns http.RefinedResponse
      */
     UpdateRightsVendorSystemRegister(systemId, body) {
@@ -208,6 +213,7 @@ class SystemRegisterApiClient {
     /**
      * Set the registered system to be deleted.
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/delete_systemregister_vendor__systemId_}
+     *
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -231,6 +237,7 @@ class SystemRegisterApiClient {
     /**
      * Retrieves a list of the predfined default rights for the Product type, if any
      * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
+     *
      * @param {string } systemId The Id of the Registered System
      * @returns http.RefinedResponse
      */
@@ -252,16 +259,18 @@ class SystemRegisterApiClient {
     }
 
     /**
-    * Create a new System
-    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/post_systemregister_vendor}
-    * @param {string } vendorId
-    * @param {string } name
-    * @param {string[] } clientId
-    * @param {{ en: string, nn: string, nb: string } } description
-    * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-    * @param {string[] } allowedRedirectUrls
-    * @returns http.RefinedResponse
-    */
+     * Create a new System
+     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/post_systemregister_vendor}
+     *
+     * @param {string } vendorId TODO: description
+     * @param {string } name TODO: description
+     * @param {string[] } clientId TODO: description
+     * @param {{ en: string, nn: string, nb: string } } description TODO: description
+     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights TODO: description
+     * @param {string[] } allowedRedirectUrls TODO: description
+     * @param accessPackages TODO: description
+     * @returns http.RefinedResponse
+     */
     CreateSystemRegister(
         vendorId,
         name,

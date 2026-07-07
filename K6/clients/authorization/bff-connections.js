@@ -11,15 +11,15 @@ class BffConnectionsApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://am.ui.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator,
     ) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -36,13 +36,13 @@ class BffConnectionsApiClient {
     }
 
     /**
-    * Get connections
-    * Docs
-    * @param {string} partyId
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Get connections
+     * Docs
+     *
+     * @param {object} queryParams TODO: description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     GetConnections(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/rightholders`);
@@ -67,13 +67,14 @@ class BffConnectionsApiClient {
     }
 
     /**
-    * Post rightholder for an user
-    * @param {string} from
-    * @param {Object} to - person identifier for the rightholder
-    * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Post rightholder for an user
+     *
+     * @param {string} from TODO: description
+     * @param {object} to - person identifier for the rightholder
+     * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     PostRightholder(from, to, lastName, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=undefined`); // TODO: Is this correct?
@@ -100,14 +101,13 @@ class BffConnectionsApiClient {
     }
 
     /**
-    * Post rightholder for an organization
-    * @param {Object} from - party uuid for the reportee organization
-    * @param {Object} to - organization number for the rightholder organization
-    * @param {string} lastName - last name of the rightholder, needed for creating a rightholder connection
-    * @param {Object} queryParams
-    * @param {string|null} label - label for the request
-    * @returns http.RefinedResponse
-    */
+     * Post rightholder for an organization
+     *
+     * @param {object} from - party uuid for the reportee organization
+     * @param {object} to - organization number for the rightholder organization
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     PostRightholderOrg(from, to, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
@@ -131,9 +131,10 @@ class BffConnectionsApiClient {
 
     /**
      * Delete rightholder connection for a reportee
+     *
      * @param {*} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs, if null the url will be used as label
-     * returns http.RefinedResponse
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs., if null the url will be used as label
+     * @returns http.RefinedResponse
      */
     DeleteRightholder(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();

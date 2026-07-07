@@ -36,13 +36,13 @@ let personalTokenGenerator = undefined;
  *
  * @param {string} serviceOwnerOrgNo - Organization number used when generating the enterprise token.
  * @returns {[
- *   ServiceOwnerApiClient,
- *   BffUserApiClient,
- *   BffAccessManagementApiClient,
- *   BffConnectionsApiClient,
- *   BffAccessPackageApiClient,
- *   GraphqlClient,
- *   PersonalTokenGenerator
+ * ServiceOwnerApiClient,
+ * BffUserApiClient,
+ * BffAccessManagementApiClient,
+ * BffConnectionsApiClient,
+ * BffAccessPackageApiClient,
+ * GraphqlClient,
+ * PersonalTokenGenerator
  * ]} The initialized API clients and shared personal token generator.
  */
 export function getClients(serviceOwnerOrgNo) {
@@ -91,6 +91,8 @@ export function getTokenOpts(userId, partyuuid) {
 
 /**
  * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
+ *
+ * @param list TODO: description
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {
@@ -100,6 +102,8 @@ export function getFromTo(list) {
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
@@ -123,9 +127,10 @@ export function getDialogportenOpts(ssn) {
 /**
  * Helper function to create the body for delegating rights for a resource and instance to another user,
  * based on the rights meta for the resource and the "to" user.
- * @param { JSON } rightsMeta
- * @param {*} to
- * @returns
+ *
+ * @param { JSON } rightsMeta TODO: description
+ * @param {*} to TODO: description
+ * @returns TODO: description
  */
 export function getInstanceDelegationBody(rightsMeta, to) {
     return {

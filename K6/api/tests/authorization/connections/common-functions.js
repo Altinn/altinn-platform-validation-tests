@@ -23,8 +23,8 @@ let tokenGenerator = undefined;
  *
  * @param {boolean} [bff=false] - Whether to configure the client for BFF endpoints.
  * @returns {[
- *   ConnectionsApiClient,
- *   PersonalTokenGenerator
+ * ConnectionsApiClient,
+ * PersonalTokenGenerator
  * ]} The initialized API client and token generator.
  */
 export function getClients(bff = false) {
@@ -49,7 +49,8 @@ export function getClients(bff = false) {
 
 /**
  * Function to get token options map.
- * @param {string} ssn - social security number
+ *
+ * @param userId TODO: description
  * @returns map of token options
  */
 export function getTokenOpts(userId) {
@@ -63,6 +64,8 @@ export function getTokenOpts(userId) {
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

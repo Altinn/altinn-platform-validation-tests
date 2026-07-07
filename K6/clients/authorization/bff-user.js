@@ -16,15 +16,15 @@ class BffUserApiClient {
     /**
      *
      * @param {string} baseUrl e.g. https://am.ui.at23.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator,
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -44,8 +44,9 @@ class BffUserApiClient {
 
     /**
      * Get lookup party user
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      */
     GetLookupPartUser(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -67,11 +68,12 @@ class BffUserApiClient {
     }
 
     /**
-    * Is company profile admin
-    * @param {object} queryParams - object with query parameters to be appended to the url
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * @returns http.RefinedResponse
-    */
+     * Is company profile admin
+     *
+     * @param {object} queryParams - object with query parameters to be appended to the url
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
     GetIsCompanyProfileAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/user/isCompanyProfileAdmin`);
@@ -95,9 +97,10 @@ class BffUserApiClient {
 
     /**
      * Get reportees for a user
+     *
      * @param {string} userId - id of the user to get reportees for
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      */
     GetReportee(userId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -121,7 +124,8 @@ class BffUserApiClient {
 
     /**
      * Get profile
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse
      */
     GetProfile(labels = null) {
@@ -145,9 +149,10 @@ class BffUserApiClient {
 
     /**
      * Get is admin
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      */
     GetIsAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -172,9 +177,10 @@ class BffUserApiClient {
 
     /**
      * Get is client admin
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      * */
     GetIsClientAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -199,8 +205,9 @@ class BffUserApiClient {
 
     /**
      * Get actor list old
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      */
     GetActorListOld(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -223,8 +230,9 @@ class BffUserApiClient {
 
     /**
      * Get actor list favorites
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      * */
     GetActorListFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -247,9 +255,10 @@ class BffUserApiClient {
 
     /**
      * Get is instance admin
+     *
      * @param {object} queryParams - object with query parameters to be appended to the url
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * returns http.RefinedResponse
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
      */
     GetIsInstanceAdmin(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -4,10 +4,11 @@ import { AuthorizedPartiesClient } from "../../../../clients/authorization/index
 
 /**
  * Get Authorized Parties
+ *
  * @param {AuthorizedPartiesClient} authorizedPartiesClient A client to interact with the Authorized Parties API
  * @param {*} type
  * @param {*} value
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  */
 
 export function GetAuthorizedParties(authorizedPartiesClient, type, value, queryParams, partyFilter = null, labels = null) {

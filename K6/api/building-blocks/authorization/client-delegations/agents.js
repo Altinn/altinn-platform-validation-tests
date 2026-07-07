@@ -4,9 +4,11 @@ import { BffClientDelegationsApiClient } from "../../../../clients/authorization
 
 /**
  * Get agents for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetAgents(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetAgents(queryParams, labels);
@@ -16,9 +18,13 @@ export function GetAgents(clientDelegationsApiClient, queryParams, labels = null
 
 /**
  * Post agents for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param to TODO: description
+ * @param lastName TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName, labels = null) {
     const res = clientDelegationsApiClient.PostAgents(queryParams, to, lastName, labels);
@@ -28,9 +34,11 @@ export function PostAgents(clientDelegationsApiClient, queryParams, to, lastName
 
 /**
  * Delete agents for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.DeleteAgents(queryParams, labels);
@@ -40,9 +48,11 @@ export function DeleteAgents(clientDelegationsApiClient, queryParams, labels = n
 
 /**
  * Get clients for the specified query parameters
+ *
  * @param {BffClientDelegationsApiClient} clientDelegationsApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export function GetClients(clientDelegationsApiClient, queryParams, labels = null) {
     const res = clientDelegationsApiClient.GetClients(queryParams, labels);
@@ -52,10 +62,11 @@ export function GetClients(clientDelegationsApiClient, queryParams, labels = nul
 
 /**
  * Delegation Export
+ *
  * @param {BffAccessManagementApiClient} accessManagementApiClient A client to interact with the client delegations API
  * @param {} queryParams - queryParams for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return {Object} response body
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object} response body
  */
 export function DelegationExport(accessManagementApiClient, queryParams, labels = null) {
     const res = accessManagementApiClient.DelegationExport(queryParams, labels);
@@ -65,8 +76,11 @@ export function DelegationExport(accessManagementApiClient, queryParams, labels 
 
 /**
  * Function to check common response properties
+ *
  * @param {} res - response object
  * @param {*} method - method name for logging
+ * @param status_code TODO: description
+ * @param status_text TODO: description
  */
 function checker(res, method, status_code = 200, status_text = "200 OK") {
     const succeed = check(res, {

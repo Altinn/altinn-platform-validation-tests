@@ -9,20 +9,22 @@ const TAGS = {
 class InfoPortalApiClient {
     /**
      * ApiClient for the infoportal api endpoints
+     *
      * @param {string} baseUrl e.g. https://info.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
 
-        /** @property {string} BASE_PATH The path to the api without host information
-        */
+        /**
+         * @property {string} BASE_PATH The path to the api without host information
+         */
         this.BASE_PATH = "/api/users";
         /**
          * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
@@ -36,9 +38,10 @@ class InfoPortalApiClient {
 
     /**
      * Get authorized parties for the user
-     * @param {Object} labels - k6 check tags
+     *
+     * @param {object} labels - k6 check tags
      * @returns http.RefinedResponse
-    */
+     */
     GetAuthorizedParties(labels = null) {
 
         const url = this.FULL_PATH + "/authorized-parties";
@@ -50,9 +53,10 @@ class InfoPortalApiClient {
 
     /**
      * Get favorites for the user
-     * @param {Object} labels - k6 check tags
+     *
+     * @param {object} labels - k6 check tags
      * @returns http.RefinedResponse
-    */
+     */
     GetFavorites(labels = null) {
         const url = this.FULL_PATH + "/favorites";
         return this.#getEndpoint(url, {
@@ -63,9 +67,10 @@ class InfoPortalApiClient {
 
     /**
      * Get current user info
-     * @param {Object} labels - k6 check tags
+     *
+     * @param {object} labels - k6 check tags
      * @returns http.RefinedResponse
-    */
+     */
     GetCurrent(labels = null) {
         const url = this.FULL_PATH + "/current";
         return this.#getEndpoint(url, {
@@ -76,9 +81,10 @@ class InfoPortalApiClient {
 
     /**
      * Method to do the actuel http call to the api, used by all the public methods in this class
-     * @param {url} url
-     * @param {*} labels
-     * @returns
+     *
+     * @param {url} url TODO: Description
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns TODO: description
      */
     #getEndpoint(url, labels) {
         const token = this.tokenGenerator.getToken();
