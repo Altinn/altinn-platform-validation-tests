@@ -10,6 +10,14 @@ const config = {
 };
 
 
+const TAGS = {
+    getToken: {
+        token_generator: "maskinporten-token-generator",
+        name: config.tokenUrl,
+        action: "get-token"
+    },
+};
+
 /**
  * Builder for Maskinporten token options.
  */
@@ -61,10 +69,7 @@ export class MaskinportenAccessTokenGenerator {
         this.tokenGeneratorOptions = tokenGeneratorOptions ?? {};
 
         this.requestParams = {
-            tags: {
-                tokenGenerator: "Maskinporten Token Generator",
-                name: config.tokenUrl,
-            },
+            tags: TAGS.getToken,
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
