@@ -37,7 +37,6 @@ const PLATFORM_TOKEN_TAGS = {
     },
 };
 
-
 /**
  * Base token generator.
  */
@@ -108,7 +107,6 @@ class BaseTokenGenerator {
         return response.body;
     }
 }
-
 
 /**
  * Personal token builder.
@@ -188,7 +186,6 @@ export class PersonalTokenBuilder {
     }
 }
 
-
 /**
  * Enterprise token builder.
  */
@@ -262,7 +259,6 @@ export class EnterpriseTokenBuilder {
     }
 }
 
-
 /**
  * Platform token builder.
  */
@@ -297,7 +293,6 @@ export class PlatformTokenBuilder {
     }
 }
 
-
 /**
  * Personal token generator.
  */
@@ -316,7 +311,6 @@ export class PersonalTokenGenerator extends BaseTokenGenerator {
     }
 }
 
-
 /**
  * Enterprise token generator.
  */
@@ -334,7 +328,6 @@ export class EnterpriseTokenGenerator extends BaseTokenGenerator {
         return ENTERPRISE_TOKEN_TAGS;
     }
 }
-
 
 /**
  * Platform token generator.

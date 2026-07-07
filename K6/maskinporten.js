@@ -9,7 +9,6 @@ const config = {
     tokenUrl: "https://test.maskinporten.no/token",
 };
 
-
 const TAGS = {
     getToken: {
         token_generator: "maskinporten-token-generator",
@@ -35,7 +34,6 @@ export class MaskinportenTokenBuilder {
         return { ...this.options };
     }
 }
-
 
 /**
  * Generates Maskinporten access tokens using a JWT Bearer Assertion.
@@ -76,11 +74,9 @@ export class MaskinportenAccessTokenGenerator {
         };
     }
 
-
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = tokenGeneratorOptions;
     }
-
 
     getToken() {
         const scopes = this.tokenGeneratorOptions.scopes;
@@ -101,7 +97,6 @@ export class MaskinportenAccessTokenGenerator {
 
         return token;
     }
-
 
     #generateAccessToken(scopes) {
         const grant = this.#createJwtGrant(scopes);
@@ -134,7 +129,6 @@ export class MaskinportenAccessTokenGenerator {
         }
     }
 
-
     #createJwtGrant(scopes) {
         const header = {
             alg: "RS256",
@@ -162,7 +156,6 @@ export class MaskinportenAccessTokenGenerator {
             ),
         );
     }
-
 
     #getExpirationTimestamp(token) {
         try {
