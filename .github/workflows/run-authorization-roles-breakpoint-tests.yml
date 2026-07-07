@@ -1,6 +1,7 @@
-name: "dialogporten - run k6 serviceowner breakpoint tests"
+name: "authorization - run k6 roles breakpoint tests"
 on:
-  workflow_dispatch: {}
+  schedule:
+    - cron: "40 4 * * 3"
 run-name: "run breakpoint"
 permissions:
   contents: "read"
@@ -21,4 +22,8 @@ jobs:
       - name: "Generate k8s manifests"
         uses: "Altinn/altinn-platform/actions/generate-k6-manifests@ec383f5b2cafb06b2d760d14ae2d06f711d8e3e7"
         with:
-          config_file: "K6/api/tests/dialogporten/serviceowner/breakpoint.yaml"
+          config_file: "K6/api/tests/authorization/roles/breakpoint.yaml"
+      - if: "github.event.schedule == '40 4 * * 3'"
+        name: "Run Breakpoint for .dist/yt01-get-roles-break"
+        run: "kubectl apply --server-side -f .dist/yt01-get-roles-break"
+        shell: "bash"
