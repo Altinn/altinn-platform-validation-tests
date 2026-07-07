@@ -3,16 +3,33 @@ import KJUR from "https://unpkg.com/jsrsasign@10.8.6/lib/jsrsasign.js";
 import encoding from "k6/encoding";
 import http from "k6/http";
 
-import { TokenGeneratorOptions } from "./token-generator.js";
-
 const config = {
     maskinportenBaseUrl: "https://test.maskinporten.no",
     audienceUrl: "https://test.maskinporten.no/",
     tokenUrl: "https://test.maskinporten.no/token",
 };
 
+
 /**
- * @implements {TokenGenerator}
+ * Builder for Maskinporten token options.
+ */
+export class MaskinportenTokenBuilder {
+    constructor() {
+        this.options = {};
+    }
+
+    withScopes(scopes) {
+        this.options.scopes = scopes;
+        return this;
+    }
+
+    build() {
+        return { ...this.options };
+    }
+}
+
+
+/**
  * Generates Maskinporten access tokens using a JWT Bearer Assertion.
  */
 export class MaskinportenAccessTokenGenerator {
@@ -21,13 +38,6 @@ export class MaskinportenAccessTokenGenerator {
     #encodedJwk;
     #cache = new Map();
 
-    /**
-     * @param {MaskinportenTokenGeneratorOptions} tokenGeneratorOptions TODO: description
-     * @param {string} [machineportenKid=__ENV.MACHINEPORTEN_KID] – Key ID for the JWK used to sign JWTs.
-     * @param {string} [machineportenClientId=__ENV.MACHINEPORTEN_CLIENT_ID] – Maskinporten client ID.
-     * @param {string} [encodedJwk=__ENV.ENCODED_JWK] – Base64-encoded JWK containing private key.
-     * @throws {Error} When required env values are missing.
-     */
     constructor(
         tokenGeneratorOptions,
         machineportenKid = __ENV.MACHINEPORTEN_KID,
@@ -48,7 +58,7 @@ export class MaskinportenAccessTokenGenerator {
         this.#machineportenClientId = machineportenClientId;
         this.#encodedJwk = encodedJwk;
 
-        this.tokenGeneratorOptions = tokenGeneratorOptions;
+        this.tokenGeneratorOptions = tokenGeneratorOptions ?? {};
 
         this.requestParams = {
             tags: {
@@ -61,24 +71,16 @@ export class MaskinportenAccessTokenGenerator {
         };
     }
 
-    /**
-     * Replace current options.
-     *
-     * @param {MaskinportenTokenGeneratorOptions} tokenGeneratorOptions TODO: description
-     */
+
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = tokenGeneratorOptions;
     }
 
-    /**
-     * Returns a cached token if still valid, otherwise generates a new one.
-     *
-     * @returns {string} TODO: description
-     */
-    getToken() {
-        const scopes = this.tokenGeneratorOptions.get("scopes");
 
-        const cacheKey = `${this.#machineportenClientId}:${scopes}`;
+    getToken() {
+        const scopes = this.tokenGeneratorOptions.scopes;
+
+        const cacheKey = `${this.#machineportenClientId}:${scopes} `;
         const cached = this.#cache.get(cacheKey);
 
         if (cached && cached.expiresAt > Date.now()) {
@@ -95,14 +97,7 @@ export class MaskinportenAccessTokenGenerator {
         return token;
     }
 
-    /**
-     * Build and POST a JWT Bearer grant to the token endpoint to get a Maskinporten access token.
-     *
-     * @param {string} scopes – Space-separated list of scopes to request.
-     * @returns {string} A Maskinporten access token.
-     * @throws {Error} If the HTTP request fails or the response cannot be parsed.
-     * @private
-     */
+
     #generateAccessToken(scopes) {
         const grant = this.#createJwtGrant(scopes);
 
@@ -120,7 +115,7 @@ export class MaskinportenAccessTokenGenerator {
 
         if (response.status !== 200) {
             throw new Error(
-                `Failed to generate Maskinporten token: ${response.body}`,
+                `Failed to generate Maskinporten token: ${response.body} `,
             );
         }
 
@@ -128,19 +123,13 @@ export class MaskinportenAccessTokenGenerator {
             return JSON.parse(response.body).access_token;
         } catch (e) {
             throw new Error(
-                `Unable to parse Maskinporten token: ${e.message}`,
+                `Unable to parse Maskinporten token: ${e.message} `,
                 { cause: e },
             );
         }
     }
 
-    /**
-     * Create a signed JWT assertion for a JWT Bearer OAuth2 grant.
-     *
-     * @param {string} scopes – Requested scopes.
-     * @returns {string} A signed JWT.
-     * @private
-     */
+
     #createJwtGrant(scopes) {
         const header = {
             alg: "RS256",
@@ -148,7 +137,7 @@ export class MaskinportenAccessTokenGenerator {
             kid: this.#machineportenKid,
         };
 
-        const now = Math.floor(Date.now() / 1000); // in seconds
+        const now = Math.floor(Date.now() / 1000);
 
         const payload = {
             aud: config.audienceUrl,
@@ -169,13 +158,7 @@ export class MaskinportenAccessTokenGenerator {
         );
     }
 
-    /**
-     * Extract expiration timestamp from JWT.
-     *
-     * @param {string} token TODO: description
-     * @returns {number} TODO: description
-     * @private
-     */
+
     #getExpirationTimestamp(token) {
         try {
             const payloadSegment = token.split(".")[1];
@@ -203,17 +186,9 @@ export class MaskinportenAccessTokenGenerator {
             return expirationTimestamp;
         } catch (e) {
             throw new Error(
-                `Failed to decode JWT payload for expiration: ${e.message}`,
+                `Failed to decode JWT payload for expiration: ${e.message} `,
                 { cause: e },
             );
         }
     }
-}
-
-/**
- * Validates Maskinporten token generator options.
- * Only `'scopes'` is permitted.
- */
-export class MaskinportenTokenGeneratorOptions extends TokenGeneratorOptions {
-    static validOptions = ["scopes"];
 }
