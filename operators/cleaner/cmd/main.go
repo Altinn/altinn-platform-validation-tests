@@ -182,11 +182,13 @@ func main() {
 		Cache: cache.Options{
 			DefaultNamespaces: map[string]cache.Config{
 				"authentication": {},
+				"authorization":  {},
 				"core":           {},
 				"correspondence": {},
 				"dialogporten":   {},
 				"platform":       {},
 				"portaler":       {},
+				"register":       {},
 			},
 		},
 	})
