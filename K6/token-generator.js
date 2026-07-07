@@ -37,135 +37,138 @@ const PLATFORM_TOKEN_TAGS = {
 };
 
 /**
- * Generates personal tokens by calling the configured token endpoint.
+ * Base class for validating token generator options.
  */
-export class PersonalTokenGenerator {
-    #username;
-    #password;
-    #credentials;
-    #encodedCredentials;
+export class TokenGeneratorOptions extends Map {
+    static validOptions = [];
 
-    /**
-     * Creates a new PersonalTokenGenerator.
-     *
-     * @param {PersonalTokenGeneratorOptions} tokenGeneratorOptions - Query parameters for the personal token request.
-     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME] - Basic auth username from env.
-     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD] - Basic auth password from env.
-     * @throws {Error} If username or password is not supplied.
-     */
-    constructor(
-        tokenGeneratorOptions,
+    constructor(options) {
+        super(options);
+
+        const validOptions = new Set(this.constructor.validOptions);
+
+        for (const key of this.keys()) {
+            if (!validOptions.has(key)) {
+                throw new Error(
+                    `TokenGeneratorOptions: "${key}" is not a valid option`,
+                );
+            }
+        }
+    }
+
+    static isValidTokenOption(key) {
+        return new Set(this.validOptions).has(key);
+    }
+}
+
+/**
+ * @interface
+ */
+class BaseTokenGenerator {
+    #cache = new Map();
+
+    constructor({
+        endpoint,
+        name,
+        options,
+        optionsClass,
         username = __ENV.TOKEN_GENERATOR_USERNAME,
         password = __ENV.TOKEN_GENERATOR_PASSWORD,
-    ) {
-        if (username === undefined || password === undefined) {
-            throw Error("TokenGenerator requires a username and password");
+    }) {
+        if (!username || !password) {
+            throw new Error(
+                "TokenGenerator requires a username and password",
+            );
         }
-        this.#username = username;
-        this.#password = password;
-        this.#credentials = `${this.#username}:${this.#password}`;
-        this.#encodedCredentials = encoding.b64encode(this.#credentials);
 
-        /**
-         * Common HTTP options for the token request
-         *
-         * @type {{headers: Record<string,string>, tags: {name: string}}}
-         */
+        this.endpoint = endpoint;
+        this.optionsClass = optionsClass;
+        this.tokenGeneratorOptions = new optionsClass(options);
+
+        const encodedCredentials = encoding.b64encode(
+            `${username}:${password}`,
+        );
+
         this.tokenRequestOptions = {
             headers: {
-                Authorization: `Basic ${this.#encodedCredentials}`,
+                Authorization: `Basic ${encodedCredentials}`,
             },
             tags: {
-                token_generator: "personal-token-generator",
-                name: config.getPersonalTokenUrl,
+                token_generator: name,
+                name: endpoint,
                 action: "get-token"
             },
         };
+    }
 
-        this.tokenGeneratorOptions = new PersonalTokenGeneratorOptions(
-            tokenGeneratorOptions,
+    setTokenGeneratorOptions(options) {
+        this.tokenGeneratorOptions = new this.optionsClass(options);
+    }
+
+    getToken() {
+        const key = JSON.stringify(
+            [...this.tokenGeneratorOptions.entries()]
+                .sort(([a], [b]) => a.localeCompare(b)),
         );
-    }
 
-    static get TAGS() {
-        return PERSONAL_TOKEN_TAGS;
-    }
+        if (this.#cache.has(key)) {
+            return this.#cache.get(key);
+        }
 
-    /**
-     * Reset token query parameters.
-     *
-     * @param {PersonalTokenGeneratorOptions} tokenGeneratorOptions - New options to apply.
-     */
-    setTokenGeneratorOptions(tokenGeneratorOptions) {
-        this.tokenGeneratorOptions = new PersonalTokenGeneratorOptions(
-            tokenGeneratorOptions,
-        );
-    }
+        const url = new URL(this.endpoint);
 
-    /**
-     * Internal method to fetch a personal token.
-     *
-     * @returns {string} Token response body.
-     * @throws {Error} When HTTP response is not status 200.
-     * @private
-     */
-    #getPersonalToken() {
-        const url = new URL(config.getPersonalTokenUrl);
-
-        for (let [k, v] of this.tokenGeneratorOptions) {
+        for (const [k, v] of this.tokenGeneratorOptions) {
             url.searchParams.append(k, v);
         }
 
-        const response = http.get(url.toString(), this.tokenRequestOptions);
+        const response = http.get(
+            url.toString(),
+            this.tokenRequestOptions,
+        );
 
-        if (response.status != 200) {
+        if (response.status !== 200) {
             throw new Error(
-                `getPersonalToken: failed to get token from ${url}, got: ${response.status_text}`,
+                `Failed to get token from ${url}: ${response.status_text}`,
             );
         }
+
+        this.#cache.set(key, response.body);
+
         return response.body;
     }
+}
 
-    /**
-     * Memoizes any token-fetching function so repeated calls
-     * with the same query parameters return cached tokens.
-     *
-     * @template F
-     * @param {F} f - Function to memoize.
-     * @returns {() => any} Wrapped function with memoization.
-     * @private
-     */
-    #memoize(f) {
-        const cache = new Map();
-        return function () {
-            let key = "";
-            for (let [k, v] of this.tokenGeneratorOptions) {
-                key = key.concat(`${k}=${v}&`);
-            }
-            if (cache.has(key)) {
-                return cache.get(key);
-            } else {
-                let result = f.apply(this);
-                cache.set(key, result);
-                return result;
-            }
-        };
+/**
+ * @implements {TokenGenerator}
+ * Generates personal tokens by calling the configured token endpoint.
+ */
+
+export class PersonalTokenGenerator extends BaseTokenGenerator {
+
+    constructor(options, username, password) {
+        super({
+            endpoint: config.getPersonalTokenUrl,
+            name: config.getPersonalTokenUrl,
+            options,
+            optionsClass: PersonalTokenGeneratorOptions,
+            username,
+            password,
+        });
     }
-
-    /**
-     * Retrieves a personal token (cached after first fetch).
-     *
-     * @type {() => string}
-     */
-    getToken = this.#memoize(this.#getPersonalToken);
+    static get TAGS() {
+        return PERSONAL_TOKEN_TAGS;
+    }
 }
 
 /**
  * Validates allowed query parameters for personal tokens.
  * Extends native Map to store key/value pairs.
  */
-export class PersonalTokenGeneratorOptions extends Map {
-    static getPersonalTokenValidOptions = [
+
+
+
+export class PersonalTokenGeneratorOptions extends TokenGeneratorOptions {
+    static validOptions = [
         "env",
         "scopes",
         "userId",
@@ -180,149 +183,34 @@ export class PersonalTokenGeneratorOptions extends Map {
         "ttl",
         "delegationSource",
     ];
-
-    /**
-     * @param {Iterable<[string, any]>} [options] Key/value pairs to initialize
-     */
-    constructor(options) {
-        if (options) {
-            for (let [k, v] of options) {
-                if (!PersonalTokenGeneratorOptions.isValidTokenOption(k)) {
-                    throw Error(`TokenGeneratorOptions: "${k}" is not a valid option`);
-                }
-            }
-            super(options);
-        } else {
-            super();
-        }
-    }
-
-    /**
-     * Check if key exists in the allowed set.
-     *
-     * @param {string} key TODO: description
-     * @returns {boolean} Whether the key is valid or not
-     */
-    static isValidTokenOption(key) {
-        return PersonalTokenGeneratorOptions.getPersonalTokenValidOptions.includes(
-            key,
-        );
-    }
 }
 
 /**
+ * @implements {TokenGenerator}
  * Generates enterprise (Maskinporten) tokens.
  * Works similarly to PersonalTokenGenerator but uses enterprise-specific parameters.
  */
-export class EnterpriseTokenGenerator {
-    #username;
-    #password;
-    #credentials;
-    #encodedCredentials;
-
-    /**
-     * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions TODO: description
-     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME] TODO: description
-     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD] TODO: description
-     */
-    constructor(
-        tokenGeneratorOptions,
-        username = __ENV.TOKEN_GENERATOR_USERNAME,
-        password = __ENV.TOKEN_GENERATOR_PASSWORD,
-    ) {
-        if (username === undefined || password === undefined) {
-            throw Error("TokenGenerator requires a username and password");
-        }
-        this.#username = username;
-        this.#password = password;
-
-        this.#credentials = `${this.#username}:${this.#password}`;
-        this.#encodedCredentials = encoding.b64encode(this.#credentials);
-
-        this.tokenRequestOptions = {
-            headers: {
-                Authorization: `Basic ${this.#encodedCredentials}`,
-            },
-            tags: {
-                token_generator: "enterprise-token-generator",
-                name: config.getEnterpriseTokenUrl,
-                action: "get-token"
-            },
-        };
-
-        this.tokenGeneratorOptions = new EnterpriseTokenGeneratorOptions(
-            tokenGeneratorOptions,
-        );
+export class EnterpriseTokenGenerator extends BaseTokenGenerator {
+    constructor(options, username, password) {
+        super({
+            endpoint: config.getEnterpriseTokenUrl,
+            name: config.getEnterpriseTokenUrl,
+            options,
+            optionsClass: EnterpriseTokenGeneratorOptions,
+            username,
+            password,
+        });
     }
-
     static get TAGS() {
         return ENTERPRISE_TOKEN_TAGS;
     }
-
-    /**
-     * Reset enterprise token query parameters.
-     *
-     * @param {EnterpriseTokenGeneratorOptions} tokenGeneratorOptions TODO: description
-     */
-    setTokenGeneratorOptions(tokenGeneratorOptions) {
-        this.tokenGeneratorOptions = new EnterpriseTokenGeneratorOptions(
-            tokenGeneratorOptions,
-        );
-    }
-
-    /**
-     * Internal call to the enterprise token endpoint.
-     *
-     * @returns {string} TODO: description
-     * @private
-     */
-    #getEnterpriseToken() {
-        const url = new URL(config.getEnterpriseTokenUrl);
-
-        for (let [k, v] of this.tokenGeneratorOptions) {
-            url.searchParams.append(k, v);
-        }
-
-        const response = http.get(url.toString(), this.tokenRequestOptions);
-
-        if (response.status != 200) {
-            throw new Error(
-                `getEnterpriseToken: failed to get token from ${url}, got: ${response.status_text}`,
-            );
-        }
-        return response.body;
-    }
-
-    #memoize(f) {
-        const cache = new Map();
-        return function () {
-            let key = "";
-            for (let [k, v] of this.tokenGeneratorOptions) {
-                key = key.concat(`${k}=${v}&`);
-            }
-            if (cache.has(key)) {
-                return cache.get(key);
-            } else {
-                let result = f.apply(this);
-                cache.set(key, result);
-                return result;
-            }
-        };
-    }
-
-    /**
-     * Retrieves an enterprise token (cached).
-     *
-     * @type {() => string}
-     */
-    getToken = this.#memoize(this.#getEnterpriseToken);
 }
 
 /**
  * Validates allowed enterprise-specific query options.
  */
-export class EnterpriseTokenGeneratorOptions extends Map {
-    static getEnterpriseTokenValidOptions = [
+export class EnterpriseTokenGeneratorOptions extends TokenGeneratorOptions {
+    static validOptions = [
         "env",
         "scopes",
         "org",
@@ -337,177 +225,62 @@ export class EnterpriseTokenGeneratorOptions extends Map {
         "ttl",
         "delegationSource",
     ];
-
-    constructor(options) {
-        if (options) {
-            for (let [k, v] of options) {
-                if (!EnterpriseTokenGeneratorOptions.isValidTokenOption(k)) {
-                    throw Error(`TokenGeneratorOptions: "${k}" is not a valid option`);
-                }
-            }
-            super(options);
-        } else {
-            super();
-        }
-    }
-
-    static isValidTokenOption(key) {
-        return EnterpriseTokenGeneratorOptions.getEnterpriseTokenValidOptions.includes(
-            key,
-        );
-    }
 }
 
 /**
+ * @implements {TokenGenerator}
  * Generates platform access tokens — useful for internal Altinn platform calls.
  */
-export class PlatformTokenGenerator {
-    #username;
-    #password;
-    #credentials;
-    #encodedCredentials;
-    static #platformApp = "k6-e2e-tests";
-    static #defaultTtl = 60000;
+export class PlatformTokenGenerator extends BaseTokenGenerator {
+    static platformApp = "k6-e2e-tests";
+    static defaultTtl = 60000;
 
-    /**
-     * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions TODO: description
-     * @param {string} [username=__ENV.TOKEN_GENERATOR_USERNAME] TODO: description
-     * @param {string} [password=__ENV.TOKEN_GENERATOR_PASSWORD] TODO: description
-     */
-    constructor(
-        tokenGeneratorOptions,
-        username = __ENV.TOKEN_GENERATOR_USERNAME,
-        password = __ENV.TOKEN_GENERATOR_PASSWORD,
-    ) {
-        if (username === undefined || password === undefined) {
-            throw Error("TokenGenerator requires a username and password");
-        }
-        this.#username = username;
-        this.#password = password;
-        this.#credentials = `${this.#username}:${this.#password}`;
-        this.#encodedCredentials = encoding.b64encode(this.#credentials);
+    constructor(options, username, password) {
+        super({
+            endpoint: config.getPlatformAccessTokenUrl,
+            name: config.getPlatformAccessTokenUrl,
+            options,
+            optionsClass: PlatformTokenGeneratorOptions,
+            username,
+            password,
+        });
 
-        this.tokenRequestOptions = {
-            headers: {
-                Authorization: `Basic ${this.#encodedCredentials}`,
-            },
-            tags: {
-                token_generator: "platform-token-generator",
-                name: config.getPlatformAccessTokenUrl,
-                action: "get-token"
-            },
-        };
-
-        this.tokenGeneratorOptions = new PlatformTokenGeneratorOptions(
-            tokenGeneratorOptions,
-        );
-
-        this.#applyDefaultOptions();
+        this.#applyDefaults();
     }
 
     static get TAGS() {
         return PLATFORM_TOKEN_TAGS;
     }
 
-    /**
-     * Reset platform token query params and apply defaults.
-     *
-     * @param {PlatformTokenGeneratorOptions} tokenGeneratorOptions TODO: description
-     */
-    setTokenGeneratorOptions(tokenGeneratorOptions) {
-        this.tokenGeneratorOptions = new PlatformTokenGeneratorOptions(
-            tokenGeneratorOptions,
-        );
-        this.#applyDefaultOptions();
+    setTokenGeneratorOptions(options) {
+        super.setTokenGeneratorOptions(options);
+        this.#applyDefaults();
     }
 
-    /**
-     * Ensure default values are applied if not provided.
-     *
-     * @private
-     */
-    #applyDefaultOptions() {
+    #applyDefaults() {
         if (!this.tokenGeneratorOptions.has("app")) {
             this.tokenGeneratorOptions.set(
                 "app",
-                PlatformTokenGenerator.#platformApp,
+                PlatformTokenGenerator.platformApp,
             );
         }
+
         if (!this.tokenGeneratorOptions.has("ttl")) {
-            this.tokenGeneratorOptions.set("ttl", PlatformTokenGenerator.#defaultTtl);
-        }
-    }
-
-    /**
-     * Internal call to get a platform access token.
-     *
-     * @returns {string} TODO: description
-     * @private
-     */
-    #getPlatformAccessToken() {
-        const url = new URL(config.getPlatformAccessTokenUrl);
-
-        for (let [k, v] of this.tokenGeneratorOptions) {
-            url.searchParams.append(k, v);
-        }
-
-        const response = http.get(url.toString(), this.tokenRequestOptions);
-
-        if (response.status != 200) {
-            throw new Error(
-                `getPlatformAccessToken: failed to get token from ${url}, got: ${response.status_text}`,
+            this.tokenGeneratorOptions.set(
+                "ttl",
+                PlatformTokenGenerator.defaultTtl,
             );
         }
-        return response.body;
     }
-
-    #memoize(f) {
-        const cache = new Map();
-        return function () {
-            let key = "";
-            for (let [k, v] of this.tokenGeneratorOptions) {
-                key = key.concat(`${k}=${v}&`);
-            }
-            if (cache.has(key)) {
-                return cache.get(key);
-            } else {
-                let result = f.apply(this);
-                cache.set(key, result);
-                return result;
-            }
-        };
-    }
-
-    /**
-     * Retrieves a platform token (cached).
-     *
-     * @type {() => string}
-     */
-    getToken = this.#memoize(this.#getPlatformAccessToken);
 }
 
 /**
  * Internal validation for allowed platform token options.
  */
-export class PlatformTokenGeneratorOptions extends Map {
-    static getPlatformAccessTokenValidOptions = ["env", "app", "ttl"];
-
-    constructor(options) {
-        if (options) {
-            for (let [k, v] of options) {
-                if (!PlatformTokenGeneratorOptions.isValidTokenOption(k)) {
-                    throw Error(`TokenGeneratorOptions: "${k}" is not a valid option`);
-                }
-            }
-            super(options);
-        } else {
-            super();
-        }
-    }
-
-    static isValidTokenOption(key) {
-        return PlatformTokenGeneratorOptions.getPlatformAccessTokenValidOptions.includes(
-            key,
-        );
-    }
+export class PlatformTokenGeneratorOptions extends TokenGeneratorOptions {
+    static validOptions = [
+        "env",
+        "app",
+        "ttl",
+    ];
 }
