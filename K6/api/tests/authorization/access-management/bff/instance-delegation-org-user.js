@@ -6,7 +6,7 @@ import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authorization/access-package/index.js";
 import { DelegateRightsForResource, GetActiveConsent, GetDelegatedInstancesForResource, GetResourceById, GetRightsMeta, GetRolePermissions } from "../../../../building-blocks/authorization/client-delegations/index.js";
-import { CheckDelegationForResource, GetOrganizationData, GetPendingDelegationsForUser, GetRoleMeta } from "../../../../building-blocks/authorization/client-delegations/index.js";
+import { CheckDelegationForResource, GetOrganizationData, GetPendingDelegationsForUser } from "../../../../building-blocks/authorization/client-delegations/index.js";
 import { GetConnections } from "../../../../building-blocks/authorization/connections/index.js";
 import {
     GetActorListFavorites,
