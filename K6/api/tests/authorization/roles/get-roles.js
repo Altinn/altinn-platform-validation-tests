@@ -46,5 +46,6 @@ function getClients() {
  */
 export default function () {
     const [rolesApiClient] = getClients();
+
     GetRoles(rolesApiClient, labels);
 }
