@@ -1,10 +1,12 @@
 import { check } from "k6";
 
 import {
-    AuthorizedPartiesClient,
-    AuthorizedPartiesQuery,
     AuthorizedPartiesResponse,
     UrnAttribute,
+} from "../../../../clients/authorization/authorized-parties.types.js";
+import {
+    AuthorizedPartiesClient,
+    AuthorizedPartiesQuery,
 } from "../../../../clients/authorization/index.js";
 
 /**
