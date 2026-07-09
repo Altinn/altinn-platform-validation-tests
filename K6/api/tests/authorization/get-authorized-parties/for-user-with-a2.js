@@ -1,11 +1,11 @@
 
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query-builder.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
-const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = { step: "getAuthorizedPartiesForUser" };
@@ -15,12 +15,11 @@ export const options = getOptions([label]);
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(data, randomize);
-    const queryParams = {
-        includeAltinn2: includeAltinn2
-    };
-    if (includeAltinn2) {
-        queryParams.includeAltinn2 = "true";
-    }
+
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn2(false)
+        .build();
+
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:person:identifier-no",

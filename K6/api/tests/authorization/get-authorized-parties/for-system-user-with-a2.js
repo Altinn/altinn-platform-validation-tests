@@ -1,11 +1,11 @@
 import http from "k6/http";
 
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query-builder.js";
 import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
 
-const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = { step: "getAuthorizedPartiesForSystemUser" };
@@ -20,13 +20,18 @@ export function setup() {
 }
 
 export default function (data) {
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn2(true)
+        .build();
+
+
     const [authorizedPartiesClient] = getClients();
     const systemUser = getItemFromList(data, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
         "urn:altinn:systemuser:uuid",
         systemUser.systemuserUuid,
-        includeAltinn2,
+        queryParams,
         null,
         label
     );

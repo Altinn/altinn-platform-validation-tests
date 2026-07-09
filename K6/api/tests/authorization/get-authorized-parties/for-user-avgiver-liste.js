@@ -1,4 +1,5 @@
 
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query-builder.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
@@ -14,14 +15,15 @@ export const options = getOptions([label]);
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(data, randomize);
-    const queryParams = {
-        includeAltinn2: true,
-        includeAltinn3: true,
-        includeRoles: false,
-        includeAccessPackages: false,
-        includeResources: false,
-        includeInstances: false
-    };
+
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn2(true)
+        .includeAltinn3(true)
+        .includeRoles(false)
+        .includeAccessPackages(false)
+        .includeResources(false)
+        .includeInstances(false)
+        .build();
 
     GetAuthorizedParties(
         authorizedPartiesClient,

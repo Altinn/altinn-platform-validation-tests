@@ -3,7 +3,7 @@ import { check } from "k6";
 import { RolesApiClient } from "../../../../clients/authorization/index.js";
 import {
     RolesResponse,
-} from "../../../../clients/authorization/types.js";
+} from "../../../../clients/authorization/roles.types.js";
 
 /**
  * Get Roles
