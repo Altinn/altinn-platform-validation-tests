@@ -1,6 +1,7 @@
 import http from "k6/http";
 
-import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query-builder.js";
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query.builder.js";
+import { AuthorizedPartiesRequestBuilder } from "../../../../clients/authorization/authorized-parties-request.builder.js";
 import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
@@ -20,6 +21,11 @@ export function setup() {
 }
 
 export default function (data) {
+
+    const request = new AuthorizedPartiesRequestBuilder()
+        .withSystemUser(systemUser.systemuserUuid)
+        .build();
+
     const queryParams = new AuthorizedPartiesQueryBuilder()
         .includeAltinn2(true)
         .build();
@@ -28,10 +34,8 @@ export default function (data) {
     const systemUser = getItemFromList(data, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:systemuser:uuid",
-        systemUser.systemuserUuid,
+        request,
         queryParams,
-        null,
         label
     );
 }

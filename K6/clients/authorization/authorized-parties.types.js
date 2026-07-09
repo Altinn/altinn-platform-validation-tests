@@ -3,7 +3,7 @@
  *
  * These parameters control which access information is included in the response.
  *
- * @typedef {Ooject} AuthorizedPartiesQuery
+ * @typedef {object} AuthorizedPartiesQuery
  * @property {boolean} [includeAltinn2] Include parties with Altinn 2 access information.
  * @property {boolean} [includeAltinn3] Include parties with Altinn 3 access information.
  * @property {boolean} [includeRoles] Include authorized roles for each party.
@@ -18,20 +18,24 @@
  */
 
 /**
- * Subject used for authorized party lookup.
+ * Request body for retrieving authorized parties for a subject.
  *
- * @typedef {object} UrnAttribute
- * @property {string} type URN type identifier.
- * @property {string} value URN value.
+ * @typedef {object} AuthorizedPartiesRequest
+ * @property {string} type Subject identifier type URN.
+ * Example: "urn:altinn:person:identifier-no"
+ * @property {string} value Subject identifier value.
+ * Example: "01017012345"
+ * @property {Array<UrnAttribute>|null} [partyFilter] Optional filter limiting the lookup to specific parties.
  */
 
 /**
- * Request body for the Authorized Parties endpoint.
+ * Attribute represented by a URN type and value.
  *
- * @typedef {object} AuthorizedPartyRequest
- * @property {string} type Subject identifier type.
- * @property {string} value Subject identifier value.
- * @property {Array<UrnAttribute>|null} [partyFilter] Optional filter limiting the lookup to specific parties.
+ * @typedef {object} UrnAttribute
+ * @property {string} type URN type identifier.
+ * Example: "urn:altinn:organization:identifier-no"
+ * @property {string} value URN value.
+ * Example: "991825827"
  */
 
 /**
@@ -40,7 +44,7 @@
  * @typedef {object} AuthorizedResource
  * @property {string|null} resourceId Resource identifier.
  * @property {string|null} instanceId Instance identifier.
- * @property {string|null} instanceRef Instance URN.
+ * @property {string|null} instanceRef Instance reference URN.
  */
 
 /**
@@ -57,7 +61,7 @@
  * @property {string|null} emailId Email identifier.
  * @property {string|null} unitType Unit type.
  * @property {boolean} isDeleted Indicates whether the party is deleted.
- * @property {boolean} onlyHierarchyElementWithNoAccess Indicates that this hierarchy element itself has no access.
+ * @property {boolean} onlyHierarchyElementWithNoAccess Indicates whether this hierarchy element has no access itself.
  * @property {Array<string>|null} authorizedResources Authorized resource identifiers.
  * @property {Array<string>|null} authorizedAccessPackages Authorized access package identifiers.
  * @property {Array<string>|null} authorizedRoles Authorized role identifiers.
@@ -78,13 +82,13 @@
  */
 
 /**
- * RFC7807 problem details.
+ * RFC7807 problem details response.
  *
  * @typedef {object} ProblemDetails
  * @property {string|null} type Problem type URI.
  * @property {string|null} title Problem title.
  * @property {number|null} status HTTP status code.
- * @property {string|null} detail Detailed description.
+ * @property {string|null} detail Detailed problem description.
  * @property {string|null} instance Request instance identifier.
  */
 
@@ -96,26 +100,29 @@
  * @property {string|null} title Problem title.
  * @property {number|null} status HTTP status code.
  * @property {string|null} traceId Request trace identifier.
- * @property {{[x: string]: Array<string>}} errors Validation errors keyed by field name.
+ * @property {{[key: string]: Array<string>}} errors Validation errors keyed by field name.
  */
 
 /**
+ * Response containing authorized parties.
+ *
  * @typedef {Array<AuthorizedParty>} AuthorizedPartiesResponse
  */
 
 /**
+ * Response containing Maskinporten delegations.
+ *
  * @typedef {Array<MaskinportenDelegation>} MaskinportenDelegationsResponse
  */
 
+export const AuthorizedPartiesQuery = undefined;
+export const AuthorizedPartiesRequest = undefined;
 export const UrnAttribute = undefined;
-export const AuthorizedPartyRequest = undefined;
 export const AuthorizedResource = undefined;
 export const AuthorizedParty = undefined;
 export const MaskinportenDelegation = undefined;
 export const ProblemDetails = undefined;
 export const ValidationProblemDetails = undefined;
-
-export const AuthorizedPartiesQuery = undefined;
 
 export const AuthorizedPartiesResponse = undefined;
 export const MaskinportenDelegationsResponse = undefined;

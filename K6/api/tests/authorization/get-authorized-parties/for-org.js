@@ -1,4 +1,5 @@
-import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query-builder.js";
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query.builder.js";
+import { AuthorizedPartiesRequestBuilder } from "../../../../clients/authorization/authorized-parties-request.builder.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
@@ -15,14 +16,16 @@ export default function (data) {
     const queryParams = new AuthorizedPartiesQueryBuilder()
         .build();
 
+    const request = new AuthorizedPartiesRequestBuilder()
+        .withPerson(party.orgno)
+        .build();
+
     const [authorizedPartiesClient] = getClients();
     const party = getItemFromList(data, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:organization:identifier-no",
-        party.orgno,
+        request,
         queryParams,
-        null,
         label
     );
 }

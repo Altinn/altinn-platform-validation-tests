@@ -1,42 +1,32 @@
 import { check } from "k6";
 
-import {
-    AuthorizedPartiesQuery,
-    AuthorizedPartiesResponse,
-    UrnAttribute,
-} from "../../../../clients/authorization/authorized-parties.types.js";
-import {
-    AuthorizedPartiesClient,
-} from "../../../../clients/authorization/index.js";
+import { AuthorizedPartiesQuery, AuthorizedPartiesRequest, AuthorizedPartiesResponse } from "../../../../clients/authorization/authorized-parties.types.js";
+import { AuthorizedPartiesClient } from "../../../../clients/authorization/index.js";
 
 /**
  * Retrieves the parties the specified subject is authorized to represent.
  *
+ * Use {@link AuthorizedPartiesRequestBuilder} to create the request object.
+ * Use {@link AuthorizedPartiesQueryBuilder} to create query parameters.
+ *
  * @param {AuthorizedPartiesClient} authorizedPartiesClient Client for the Authorized Parties API.
- * @param {string} type Subject identifier type (for example, "urn:altinn:person:identifier-no").
- * @param {string} value Subject identifier value.
+ * @param {AuthorizedPartiesRequest} request Authorized parties lookup request.
  * @param {AuthorizedPartiesQuery|null} [queryParams]
  * Optional query parameters. Use {@link AuthorizedPartiesQueryBuilder} to
  * construct this object instead of creating it manually.
- * @param {Array<UrnAttribute>|null} [partyFilter]
- * Optional filter limiting the lookup to specific parties.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request tags that will be merged with the default request tags.
  * @returns {AuthorizedPartiesResponse} List of authorized parties.
  */
 export function GetAuthorizedParties(
     authorizedPartiesClient,
-    type,
-    value,
+    request,
     queryParams = null,
-    partyFilter = null,
     labels = null,
 ) {
     const res = authorizedPartiesClient.GetAuthorizedParties(
-        type,
-        value,
+        request,
         queryParams,
-        partyFilter,
         labels,
     );
 

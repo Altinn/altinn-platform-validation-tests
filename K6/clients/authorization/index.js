@@ -14,4 +14,4 @@ export { ReceivedRequestsParamsBuilder, RequestStatus } from "./received-request
 export { RequestApiClient } from "./request.js";
 export { RolesApiClient } from "./roles.js";
 // Helper Classes
-export { AuthorizedPartiesQueryBuilder } from "./authorized-parties-query-builder.js";
+export { AuthorizedPartiesQueryBuilder } from "./authorized-parties-query.builder.js";
