@@ -1,4 +1,23 @@
 /**
+ * Query parameters for retrieving authorized parties.
+ *
+ * These parameters control which access information is included in the response.
+ *
+ * @typedef {Ooject} AuthorizedPartiesQuery
+ * @property {boolean} [includeAltinn2] Include parties with Altinn 2 access information.
+ * @property {boolean} [includeAltinn3] Include parties with Altinn 3 access information.
+ * @property {boolean} [includeRoles] Include authorized roles for each party.
+ * @property {boolean} [includeAccessPackages] Include authorized access packages for each party.
+ * @property {boolean} [includeResources] Include authorized resources for each party.
+ * @property {boolean} [includeInstances] Include authorized instances for each party.
+ * @property {"false"|"true"|"auto"} [includePartiesViaKeyRoles] Include parties accessible through key roles.
+ * @property {"false"|"true"|"auto"} [includeSubParties] Include sub parties in the hierarchy.
+ * @property {"false"|"true"|"auto"} [includeInactiveParties] Include inactive parties.
+ * @property {string} [orgCode] Filter results to parties relevant for a specific resource owner organization code.
+ * @property {Array<string>} [anyOfResourceIds] Filter results to parties where the subject has access to one or more resources.
+ */
+
+/**
  * Subject used for authorized party lookup.
  *
  * @typedef {object} UrnAttribute
@@ -95,6 +114,8 @@ export const AuthorizedParty = undefined;
 export const MaskinportenDelegation = undefined;
 export const ProblemDetails = undefined;
 export const ValidationProblemDetails = undefined;
+
+export const AuthorizedPartiesQuery = undefined;
 
 export const AuthorizedPartiesResponse = undefined;
 export const MaskinportenDelegationsResponse = undefined;

@@ -4,7 +4,7 @@ import {
     AuthorizedPartiesQuery,
     AuthorizedPartyRequest,
     UrnAttribute,
-} from "./authorized-parties.types";
+} from "./authorized-parties.types.js";
 
 const DEFAULT_PARTY_FILTER_LENGTH = Number(__ENV.LENGTH_PARTY_FILTER ?? "25");
 
