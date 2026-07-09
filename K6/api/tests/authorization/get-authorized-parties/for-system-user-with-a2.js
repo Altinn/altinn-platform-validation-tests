@@ -21,6 +21,8 @@ export function setup() {
 }
 
 export default function (data) {
+    const [authorizedPartiesClient] = getClients();
+    const systemUser = getItemFromList(data, randomize);
 
     const request = new AuthorizedPartiesRequestBuilder()
         .withSystemUser(systemUser.systemuserUuid)
@@ -30,8 +32,6 @@ export default function (data) {
         .includeAltinn2(true)
         .build();
 
-    const [authorizedPartiesClient] = getClients();
-    const systemUser = getItemFromList(data, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
         request,

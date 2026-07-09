@@ -13,6 +13,8 @@ const label = { step: "getAuthorizedPartiesForOrg" };
 export const options = getOptions([label]);
 
 export default function (data) {
+    const [authorizedPartiesClient] = getClients();
+    const party = getItemFromList(data, randomize);
 
     const request = new AuthorizedPartiesRequestBuilder()
         .withPerson(party.orgno)
@@ -22,8 +24,6 @@ export default function (data) {
         .includeAltinn2(true)
         .build();
 
-    const [authorizedPartiesClient] = getClients();
-    const party = getItemFromList(data, randomize);
     GetAuthorizedParties(
         authorizedPartiesClient,
         request,

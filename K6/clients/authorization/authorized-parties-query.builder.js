@@ -229,6 +229,6 @@ export class AuthorizedPartiesQueryBuilder {
      * @returns {object} Query parameters for the authorized parties endpoint.
      */
     build() {
-        return structuredClone(this.query);
+        return this.query;
     }
 }
