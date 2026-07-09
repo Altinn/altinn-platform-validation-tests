@@ -24,7 +24,6 @@ export default function (data) {
         .includeAltinn2(true)
         .build();
 
-
     const [authorizedPartiesClient] = getClients();
     const systemUser = getItemFromList(data, randomize);
     GetAuthorizedParties(

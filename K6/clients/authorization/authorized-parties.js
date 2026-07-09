@@ -1,6 +1,12 @@
 import http from "k6/http";
 
-const lengthPartyFilter = __ENV.LENGTH_PARTY_FILTER ?? "25";
+import {
+    AuthorizedPartiesQuery,
+    AuthorizedPartyRequest,
+    UrnAttribute,
+} from "./authorized-parties.types";
+
+const DEFAULT_PARTY_FILTER_LENGTH = Number(__ENV.LENGTH_PARTY_FILTER ?? "25");
 
 const TAGS = {
     GetAuthorizedParties: { action: "get-authorized-parties" },
@@ -8,9 +14,10 @@ const TAGS = {
 
 class AuthorizedPartiesClient {
     /**
+     * Creates a client for the Authorized Parties API.
      *
-     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator TODO: description
+     * @param {string} baseUrl API base URL, for example https://platform.at22.altinn.cloud.
+     * @param {*} tokenGenerator Token generator used for authenticated API calls.
      */
     constructor(baseUrl, tokenGenerator) {
         /**
@@ -27,73 +34,127 @@ class AuthorizedPartiesClient {
         this.FULL_PATH = baseUrl + this.BASE_PATH;
     }
 
+    /**
+     * Default request tags used by the client.
+     *
+     * @returns {object} Default k6 tags.
+     */
     static get TAGS() {
         return TAGS;
     }
 
     /**
-     * Get Authorized Parties
-     * Docs {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
+     * Retrieves authorized parties for a subject.
      *
-     * @param {string} type TODO: description
-     * @param {string} value TODO: description
-     * @param queryParams TODO: description
-     * @param parties TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * Docs:
+     * {@link https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/#/Authorized%20Parties}
+     *
+     * @param {string} type Subject identifier type.
+     * @param {string} value Subject identifier value.
+     * @param {AuthorizedPartiesQuery|null} [queryParams] Optional query parameters.
+     * @param {Array<string>|null} [parties] Optional party identifiers used to create partyFilter.
+     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse} k6 HTTP response.
      */
-    GetAuthorizedParties(type, value, queryParams, parties = null, labels = null) {
+    GetAuthorizedParties(
+        type,
+        value,
+        queryParams = null,
+        parties = null,
+        labels = null,
+    ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(`${this.FULL_PATH}/resourceowner/authorizedparties`);
-        let tags = {
+
+        const url = new URL(
+            `${this.FULL_PATH}/resourceowner/authorizedparties`,
+        );
+
+        if (queryParams !== null) {
+            Object.entries(queryParams).forEach(([key, queryValue]) => {
+                if (queryValue !== undefined && queryValue !== null) {
+                    url.searchParams.append(key, queryValue);
+                }
+            });
+        }
+
+        const tags = {
+            ...TAGS.GetAuthorizedParties,
             endpoint: url.toString(),
             name: url.toString(),
-            action: TAGS.GetAuthorizedParties.action
+            ...labels,
         };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        for (const key in queryParams) {
-            url.searchParams.append(key, queryParams[key]);
-        }
 
+        /** @type {AuthorizedPartyRequest} */
         const body = {
-            type: type,
-            value: value,
+            type,
+            value,
         };
+
         if (parties !== null) {
-            body["partyFilter"] = this.#getPartyFilter(
+            body.partyFilter = this.#getPartyFilter(
                 parties,
-                lengthPartyFilter,
-                value
+                DEFAULT_PARTY_FILTER_LENGTH,
+                value,
             );
         }
-        return http.post(url.toString(), JSON.stringify(body), params);
+
+        return http.post(
+            url.toString(),
+            JSON.stringify(body),
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
     }
 
-    #getPartyFilter(parties, length, ssn) {
-        const result = [{ type: "urn:altinn:person:identifier-no", value: ssn }];
+    /**
+     * Creates party filter objects from party identifiers.
+     *
+     * @param {Array<string>} parties Party identifiers.
+     * @param {number} length Maximum number of parties to include.
+     * @param {string} subjectValue Subject identifier.
+     * @returns {Array<UrnAttribute>} Party filters.
+     */
+    #getPartyFilter(parties, length, subjectValue) {
+        /** @type {Array<UrnAttribute>} */
+        const result = [
+            {
+                type: "urn:altinn:person:identifier-no",
+                value: subjectValue,
+            },
+        ];
+
         for (const party of parties) {
             if (result.length >= length) {
                 break;
             }
+
             const [type, id] = party.split(":");
-            if (type === "org") {
-                result.push({
-                    type: "urn:altinn:organization:identifier-no",
-                    value: id,
-                });
-            } else if (type === "person") {
-                result.push({ type: "urn:altinn:person:identifier-no", value: id });
+
+            switch (type) {
+                case "org":
+                    result.push({
+                        type: "urn:altinn:organization:identifier-no",
+                        value: id,
+                    });
+                    break;
+
+                case "person":
+                    result.push({
+                        type: "urn:altinn:person:identifier-no",
+                        value: id,
+                    });
+                    break;
+
+                default:
+                    break;
             }
         }
+
         return result;
     }
 }

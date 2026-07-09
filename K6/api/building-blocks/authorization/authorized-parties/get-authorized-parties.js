@@ -1,30 +1,69 @@
 import { check } from "k6";
 
-import { AuthorizedPartiesClient } from "../../../../clients/authorization/index.js";
+import {
+    AuthorizedPartiesClient,
+    AuthorizedPartiesQuery,
+    AuthorizedPartiesResponse,
+    UrnAttribute,
+} from "../../../../clients/authorization/index.js";
 
 /**
- * Get Authorized Parties
+ * Retrieves the parties the specified subject is authorized to represent.
  *
- * @param {AuthorizedPartiesClient} authorizedPartiesClient A client to interact with the Authorized Parties API
- * @param {*} type
- * @param {*} value
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {AuthorizedPartiesClient} authorizedPartiesClient Client for the Authorized Parties API.
+ * @param {string} type Subject identifier type (for example, "urn:altinn:person:identifier-no").
+ * @param {string} value Subject identifier value.
+ * @param {AuthorizedPartiesQuery|null} [queryParams]
+ * Optional query parameters. Use {@link AuthorizedPartiesQueryBuilder} to
+ * construct this object instead of creating it manually.
+ * @param {Array<UrnAttribute>|null} [partyFilter]
+ * Optional filter limiting the lookup to specific parties.
+ * @param {{[key: string]: string}} [labels]
+ * Optional k6 request tags that will be merged with the default request tags.
+ * @returns {AuthorizedPartiesResponse} List of authorized parties.
  */
+export function GetAuthorizedParties(
+    authorizedPartiesClient,
+    type,
+    value,
+    queryParams = null,
+    partyFilter = null,
+    labels = null,
+) {
+    const res = authorizedPartiesClient.GetAuthorizedParties(
+        type,
+        value,
+        queryParams,
+        partyFilter,
+        labels,
+    );
 
-export function GetAuthorizedParties(authorizedPartiesClient, type, value, queryParams, partyFilter = null, labels = null) {
-    const res = authorizedPartiesClient.GetAuthorizedParties(type, value, queryParams, partyFilter, labels);
+    /** @type {AuthorizedPartiesResponse} */
+    let resBody = [];
 
     const succeed = check(res, {
         "GetAuthorizedParties - status code is 200": (r) => r.status === 200,
-        "GetAuthorizedParties - status text is 200 OK": (r) => r.status_text == "200 OK",
-        "GetAuthorizedParties - body is not empty": (r) => {
-            const res_body = JSON.parse(r.body);
-            return res_body !== null && res_body !== undefined;
-        }
+        "GetAuthorizedParties - status text is 200 OK": (r) => r.status_text === "200 OK",
     });
+
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
+        return resBody;
     }
-    return res.json();
+
+    check(res, {
+        "GetAuthorizedParties - body is valid": (r) => {
+            try {
+                resBody = JSON.parse(r.body);
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+                return false;
+            }
+        },
+    });
+
+    return resBody;
 }
