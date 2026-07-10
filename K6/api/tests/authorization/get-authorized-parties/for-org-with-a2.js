@@ -17,7 +17,7 @@ export default function (data) {
     const party = getItemFromList(data, randomize);
 
     const request = new AuthorizedPartiesRequestBuilder()
-        .withPerson(party.orgno)
+        .withOrganization(party.orgno)
         .build();
 
     const queryParams = new AuthorizedPartiesQueryBuilder()

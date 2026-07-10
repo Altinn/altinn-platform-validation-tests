@@ -20,7 +20,7 @@ export default function (data) {
         .build();
 
     const request = new AuthorizedPartiesRequestBuilder()
-        .withPerson(party.orgno)
+        .withOrganization(party.orgno)
         .build();
 
     GetAuthorizedParties(
