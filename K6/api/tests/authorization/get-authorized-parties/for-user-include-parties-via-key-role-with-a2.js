@@ -1,11 +1,12 @@
 
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/authorization/authorized-parties-query.builder.js";
+import { AuthorizedPartiesRequestBuilder } from "../../../../clients/authorization/authorized-parties-request.builder.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
-const includeAltinn2 = true;
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 const label = { step: "getAuthorizedPartiesForUserIncludePartiesViaKeyRole" };
@@ -15,16 +16,20 @@ export const options = getOptions([label]);
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(data, randomize);
-    const queryParams = {
-        includeAltinn2: includeAltinn2,
-        includePartiesViaKeyRoles: false
-    };
+
+    const request = new AuthorizedPartiesRequestBuilder()
+        .withPerson(userParty.ssn)
+        .build();
+
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn2(true)
+        .includePartiesViaKeyRoles(false)
+        .build();
+
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:person:identifier-no",
-        userParty.ssn,
+        request,
         queryParams,
-        null,
         label
     );
 }

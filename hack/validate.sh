@@ -10,7 +10,7 @@ for file in $(find ./K6 -type f -name "*.js"); do
   filename=$(basename "$file")
 
   # Check if the filename is not in kebab-case format
-  if [[ ! "$filename" =~ ^[a-z0-9]+(-[a-z0-9]+)*\.js$ ]]; then
+  if [[ ! "$filename" =~ ^[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+(-[a-z0-9]+)*)*\.js$ ]]; then
     echo "Filename not in kebab-case: $file"
     found_non_kebab_case=true
   fi

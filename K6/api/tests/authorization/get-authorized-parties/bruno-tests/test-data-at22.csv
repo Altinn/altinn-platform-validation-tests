@@ -1,0 +1,9 @@
+label,userid,partyid,partyuuid,pid,token_type,scopes
+personA,20961123,51206777,c897620a-9375-4e8a-bc2e-8e15382e1333,13923047349,Personal,altinn:accessmanagement/authorizedparties
+personB,20064050,50260472,0ab17c0c-f5cb-48e8-a0c4-4b023889f132,07900699128,Personal,altinn:accessmanagement/authorizedparties
+agentB,20276551,50807487,37b157f8-0011-496f-8dcc-cdfbd2594da6,14906198453,Personal,altinn:accessmanagement/authorizedparties
+hovedenhetA_dagligleder,20051704,50677787,0816ed53-0ee8-47cf-958f-a711677ccb74,04828399387,Personal,altinn:accessmanagement/authorizedparties
+hovedenhetA_personC,20470095,50148188,626c7294-dfcd-4509-bbef-f6800719052f,19810597510,Personal,altinn:accessmanagement/authorizedparties
+hovedenhetB_dagligleder,20285504,51171378,399ee1b6-3040-4328-9c2c-9eb027de562d,22836699509,Personal,altinn:accessmanagement/authorizedparties
+hovedenhetC_dagligleder,20466887,51162744,61bfd247-3c86-47f5-86b1-47561ba31a4e,04914399756,Personal,altinn:accessmanagement/authorizedparties
+hovedenhetD_dagligleder,20029398,50938781,0364a8ed-c4d6-4a91-b0a8-04f7c3c2cd5d,13817299460,Personal,altinn:accessmanagement/authorizedparties
