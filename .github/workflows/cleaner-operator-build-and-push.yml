@@ -1,0 +1,56 @@
+name: Build and Push Cleanup Operator
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "operators/cleaner/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: altinnplatformvalidationtests.azurecr.io
+  IMAGE_NAME: cleanup-controller
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./operators/cleaner/go.mod
+
+      - name: Azure Login
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
+        with:
+          client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+          subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+      - name: Login to ACR
+        run: |
+          az acr login --name ${{ env.REGISTRY }}
+
+      - name: Set image tag
+        id: vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "img=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image (Kubebuilder)
+        run: |
+          make docker-build IMG=${{ steps.vars.outputs.img }}
+        working-directory: ./operators/cleaner
+
+      - name: Push Docker image (Kubebuilder)
+        run: |
+          make docker-push IMG=${{ steps.vars.outputs.img }}
+        working-directory: ./operators/cleaner
