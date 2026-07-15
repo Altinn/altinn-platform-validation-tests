@@ -22,6 +22,9 @@ const TAGS = {
     DeleteAccessPackage: {
         action: "delete-access-package",
     },
+    GetAccessPackageDelegationCheck: {
+        action: "get-access-package-delegation-check",
+    },
 };
 
 class ConnectionsClient {
@@ -446,6 +449,56 @@ DeleteAccessPackage(query = null, labels = null) {
     }
 
     return http.del(url.toString(), null, {
+        tags,
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+/**
+ * Checks access package delegation.
+ *
+ * @param {AccessPackageDelegationCheckQuery|null} [query]
+ * Query parameters. Prefer using
+ * {@link AccessPackageDelegationCheckQueryBuilder}.
+ * @param {{[key: string]: string}} [labels]
+ * Optional k6 request tags.
+ * @returns {http.RefinedResponse}
+ */
+GetAccessPackageDelegationCheck(query = null, labels = null) {
+    const token = this.tokenGenerator.getToken();
+
+    const url = new URL(`${this.FULL_PATH}/accesspackages/delegationcheck`);
+
+    if (query !== null) {
+        for (const [key, value] of Object.entries(query)) {
+            if (value === undefined || value === null) {
+                continue;
+            }
+
+            if (Array.isArray(value)) {
+                value.forEach((v) => url.searchParams.append(key, v));
+            } else {
+                url.searchParams.append(key, value);
+            }
+        }
+    }
+
+    let tags = {
+        endpoint: `${this.FULL_PATH}/accesspackages/delegationcheck`,
+        name: `${this.FULL_PATH}/accesspackages/delegationcheck`,
+        action: TAGS.GetAccessPackageDelegationCheck.action,
+    };
+
+    if (labels !== null) {
+        tags = {
+            ...labels,
+            ...tags,
+        };
+    }
+
+    return http.get(url.toString(), {
         tags,
         headers: {
             Authorization: `Bearer ${token}`,

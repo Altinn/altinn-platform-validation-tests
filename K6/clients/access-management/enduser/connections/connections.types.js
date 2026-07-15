@@ -263,3 +263,107 @@
  * @property {string|null} [packageId]
  * @property {string|null} [package]
  */
+
+/**
+ * Result of an access package delegation check.
+ *
+ * @typedef {Object} AccessPackageDtoCheck
+ * @property {AccessPackageDto} package
+ * @property {boolean} result
+ * @property {Array<AccessPackageDtoCheckReason>|null} reasons
+ */
+
+/**
+ * Reason why an access package delegation check succeeded or failed.
+ *
+ * @typedef {Object} AccessPackageDtoCheckReason
+ * @property {string|null} description
+ * @property {string|null} roleId UUID.
+ * @property {string|null} roleUrn
+ * @property {string|null} fromId UUID.
+ * @property {string|null} fromName
+ * @property {string|null} toId UUID.
+ * @property {string|null} toName
+ * @property {string|null} viaId UUID.
+ * @property {string|null} viaName
+ * @property {string|null} viaRoleId UUID.
+ * @property {string|null} viaRoleUrn
+ */
+
+/**
+ * Paginated result containing access package delegation checks.
+ *
+ * @typedef {Object} AccessPackageDtoCheckPaginatedResult
+ * @property {Array<AccessPackageDtoCheck>|null} data
+ * @property {PaginatedResultLinks} links
+ */
+
+// -----------------------------------------------------------------------------
+// Query models
+// -----------------------------------------------------------------------------
+
+/**
+ * Query parameters for checking access package delegation.
+ *
+ * Use {@link AccessPackageDelegationCheckQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} AccessPackageDelegationCheckQuery
+ * @property {string} party Party UUID.
+ * @property {Array<string>|null} [packageIds] Package UUIDs.
+ * @property {Array<string>|null} [packages] Package identifiers.
+ */
+
+
+/**
+ * @typedef {Object} RoleDto
+ * @property {string} id UUID.
+ * @property {string|null} name
+ * @property {string|null} code
+ * @property {string|null} description
+ * @property {boolean} isKeyRole
+ * @property {string|null} urn
+ * @property {string|null} legacyRoleCode
+ * @property {string|null} legacyUrn
+ * @property {boolean} isResourcePolicyAvailable
+ * @property {ProviderDto} provider
+ * @property {boolean|null} isRevocable
+ */
+
+/**
+ * @typedef {Object} RolePermissionDto
+ * @property {RoleDto} role
+ * @property {Array<PermissionDto>|null} permissions
+ */
+
+/**
+ * @typedef {Object} RolePermissionDtoPaginatedResult
+ * @property {Array<RolePermissionDto>|null} data
+ * @property {PaginatedResultLinks} links
+ */
+
+// -----------------------------------------------------------------------------
+// Query models
+// -----------------------------------------------------------------------------
+
+/**
+ * Query parameters for retrieving role permissions.
+ *
+ * Use {@link GetRolesQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} GetRolesQuery
+ * @property {string} party Party UUID.
+ * @property {string} from Source party UUID.
+ * @property {string} to Target party UUID.
+ */
+
+/**
+ * Query parameters for deleting a role permission.
+ *
+ * Use {@link DeleteRoleQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} DeleteRoleQuery
+ * @property {string} party Party UUID.
+ * @property {string} from Source party UUID.
+ * @property {string} to Target party UUID.
+ * @property {string} rolecode Role code.
+ */

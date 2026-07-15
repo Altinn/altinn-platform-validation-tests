@@ -332,11 +332,11 @@ class CreateAccessPackageQueryBuilder {
     /**
      * Optional package identifier.
      *
-     * @param {string} package Package identifier.
+     * @param {string} pkg Package identifier.
      * @returns {CreateAccessPackageQueryBuilder}
      */
-    withPackage(package) {
-        this.query.package = package;
+    withPackage(pkg) {
+        this.query.package = pkg;
         return this;
     }
 
@@ -405,11 +405,11 @@ class DeleteAccessPackageQueryBuilder {
     /**
      * Optional package identifier.
      *
-     * @param {string} package Package identifier.
+     * @param {string} pkg Package identifier.
      * @returns {DeleteAccessPackageQueryBuilder}
      */
-    withPackage(package) {
-        this.query.package = package;
+    withPackage(pkg) {
+        this.query.package = pkg;
         return this;
     }
 
@@ -423,6 +423,172 @@ class DeleteAccessPackageQueryBuilder {
     }
 }
 
+/**
+ * Builder for access package delegation check query parameters.
+ */
+class AccessPackageDelegationCheckQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {AccessPackageDelegationCheckQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Optional package identifiers.
+     *
+     * @param {Array<string>} packageIds Package UUIDs.
+     * @returns {AccessPackageDelegationCheckQueryBuilder}
+     */
+    withPackageIds(packageIds) {
+        this.query.packageIds = packageIds;
+        return this;
+    }
+
+    /**
+     * Optional package identifiers.
+     *
+     * @param {Array<string>} packages Package identifiers.
+     * @returns {AccessPackageDelegationCheckQueryBuilder}
+     */
+    withPackages(packages) {
+        this.query.packages = packages;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {AccessPackageDelegationCheckQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for retrieving role permissions query parameters.
+ */
+class GetRolesQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {GetRolesQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required source party identifier.
+     *
+     * @param {string} from From party UUID.
+     * @returns {GetRolesQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To party UUID.
+     * @returns {GetRolesQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetRolesQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for deleting role permissions query parameters.
+ */
+class DeleteRoleQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {DeleteRoleQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required source party identifier.
+     *
+     * @param {string} from From party UUID.
+     * @returns {DeleteRoleQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To party UUID.
+     * @returns {DeleteRoleQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required role code.
+     *
+     * @param {string} rolecode Role code.
+     * @returns {DeleteRoleQueryBuilder}
+     */
+    withRolecode(rolecode) {
+        this.query.rolecode = rolecode;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {DeleteRoleQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+
+
 
 
 export {
@@ -433,4 +599,7 @@ export {
     GetAccessPackagesQueryBuilder,
     CreateAccessPackageQueryBuilder,
     DeleteAccessPackageQueryBuilder,
+    AccessPackageDelegationCheckQueryBuilder,
+    GetRolesQueryBuilder,
+    DeleteRoleQueryBuilder,
 };
