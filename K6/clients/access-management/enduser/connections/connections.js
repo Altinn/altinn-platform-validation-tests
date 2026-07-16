@@ -25,6 +25,38 @@ const TAGS = {
     GetAccessPackageDelegationCheck: {
         action: "get-access-package-delegation-check",
     },
+    GetRoles: {
+        action: "get-roles",
+    },
+    DeleteRole: {
+        action: "delete-role",
+    },
+
+    GetResources: {
+        action: "get-resources",
+    },
+    DeleteResource: {
+        action: "delete-resource",
+    },
+    GetResourceRights: {
+        action: "get-resource-rights",
+    },
+    CreateResourceRights: {
+        action: "create-resource-rights",
+    },
+    UpdateResourceRights: {
+        action: "update-resource-rights",
+    },
+
+    GetResourceRights: {
+        action: "get-resource-rights",
+    },
+    CreateResourceRights: {
+        action: "create-resource-rights",
+    },
+    UpdateResourceRights: {
+        action: "update-resource-rights",
+    },
 };
 
 class ConnectionsClient {
@@ -223,288 +255,578 @@ class ConnectionsClient {
             },
         });
     }
-}
 
-/**
- * Gets users connected to a party.
- *
- * @param {GetConnectionUsersQuery|null} [query]
- * Query parameters. Prefer using
- * {@link GetConnectionUsersQueryBuilder}.
- * @param {{[key: string]: string|number}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-GetConnectionUsers(
-    query = null,
-    headers = {
-        "X-Page-Size": 100,
-        "X-Page-Number": 0,
-    },
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
 
-    const url = new URL(`${this.FULL_PATH}/users`);
-
-    if (query !== null) {
-        for (const [key, value] of Object.entries(query)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((v) => url.searchParams.append(key, v));
-            } else {
-                url.searchParams.append(key, value);
-            }
-        }
-    }
-
-    let tags = {
-        endpoint: `${this.FULL_PATH}/users`,
-        name: `${this.FULL_PATH}/users`,
-        action: TAGS.GetConnectionUsers.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.get(url.toString(), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            ...headers,
+    /**
+     * Gets users connected to a party.
+     *
+     * @param {GetConnectionUsersQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetConnectionUsersQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetConnectionUsers(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
         },
-    });
-}
+        labels = null,) {
+        const token = this.tokenGenerator.getToken();
 
-/**
- * Gets access package permissions for connections.
- *
- * @param {GetAccessPackagesQuery|null} [query]
- * Query parameters. Prefer using
- * {@link GetAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string|number}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-GetAccessPackages(
-    query = null,
-    headers = {
-        "X-Page-Size": 100,
-        "X-Page-Number": 0,
-    },
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/users`);
 
-    const url = new URL(`${this.FULL_PATH}/accesspackages`);
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
 
-    if (query !== null) {
-        for (const [key, value] of Object.entries(query)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((v) => url.searchParams.append(key, v));
-            } else {
-                url.searchParams.append(key, value);
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
             }
         }
-    }
 
-    let tags = {
-        endpoint: `${this.FULL_PATH}/accesspackages`,
-        name: `${this.FULL_PATH}/accesspackages`,
-        action: TAGS.GetAccessPackages.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
+        let tags = {
+            endpoint: `${this.FULL_PATH}/users`,
+            name: `${this.FULL_PATH}/users`,
+            action: TAGS.GetConnectionUsers.action,
         };
-    }
 
-    return http.get(url.toString(), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            ...headers,
-        },
-    });
-}
-
-/**
- * Creates an access package assignment.
- *
- * @param {CreateAccessPackageQuery|null} [query]
- * Query parameters. Prefer using
- * {@link CreateAccessPackageQueryBuilder}.
- * @param {PersonInput|null} [body]
- * Request body.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-CreateAccessPackage(
-    query = null,
-    body = null,
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = new URL(`${this.FULL_PATH}/accesspackages`);
-
-    if (query !== null) {
-        for (const [key, value] of Object.entries(query)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((v) => url.searchParams.append(key, v));
-            } else {
-                url.searchParams.append(key, value);
-            }
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
         }
-    }
 
-    let tags = {
-        endpoint: `${this.FULL_PATH}/accesspackages`,
-        name: `${this.FULL_PATH}/accesspackages`,
-        action: TAGS.CreateAccessPackage.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.post(
-        url.toString(),
-        body !== null ? JSON.stringify(body) : null,
-        {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+                ...headers,
             },
+        });
+    }
+
+    /**
+     * Gets access package permissions for connections.
+     *
+     * @param {GetAccessPackagesQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetAccessPackagesQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetAccessPackages(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
         },
-    );
-}
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
 
-/**
- * Deletes an access package assignment.
- *
- * @param {DeleteAccessPackageQuery|null} [query]
- * Query parameters. Prefer using
- * {@link DeleteAccessPackageQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-DeleteAccessPackage(query = null, labels = null) {
-    const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/accesspackages`);
 
-    const url = new URL(`${this.FULL_PATH}/accesspackages`);
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
 
-    if (query !== null) {
-        for (const [key, value] of Object.entries(query)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((v) => url.searchParams.append(key, v));
-            } else {
-                url.searchParams.append(key, value);
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
             }
         }
-    }
 
-    let tags = {
-        endpoint: `${this.FULL_PATH}/accesspackages`,
-        name: `${this.FULL_PATH}/accesspackages`,
-        action: TAGS.DeleteAccessPackage.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
+        let tags = {
+            endpoint: `${this.FULL_PATH}/accesspackages`,
+            name: `${this.FULL_PATH}/accesspackages`,
+            action: TAGS.GetAccessPackages.action,
         };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
+            },
+        });
     }
 
-    return http.del(url.toString(), null, {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-}
+    /**
+     * Creates an access package assignment.
+     *
+     * @param {CreateAccessPackageQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link CreateAccessPackageQueryBuilder}.
+     * @param {PersonInput|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    CreateAccessPackage(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
 
-/**
- * Checks access package delegation.
- *
- * @param {AccessPackageDelegationCheckQuery|null} [query]
- * Query parameters. Prefer using
- * {@link AccessPackageDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-GetAccessPackageDelegationCheck(query = null, labels = null) {
-    const token = this.tokenGenerator.getToken();
+        const url = new URL(`${this.FULL_PATH}/accesspackages`);
 
-    const url = new URL(`${this.FULL_PATH}/accesspackages/delegationcheck`);
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
 
-    if (query !== null) {
-        for (const [key, value] of Object.entries(query)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((v) => url.searchParams.append(key, v));
-            } else {
-                url.searchParams.append(key, value);
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
             }
         }
-    }
 
-    let tags = {
-        endpoint: `${this.FULL_PATH}/accesspackages/delegationcheck`,
-        name: `${this.FULL_PATH}/accesspackages/delegationcheck`,
-        action: TAGS.GetAccessPackageDelegationCheck.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
+        let tags = {
+            endpoint: `${this.FULL_PATH}/accesspackages`,
+            name: `${this.FULL_PATH}/accesspackages`,
+            action: TAGS.CreateAccessPackage.action,
         };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
     }
 
-    return http.get(url.toString(), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
+    /**
+     * Deletes an access package assignment.
+     *
+     * @param {DeleteAccessPackageQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link DeleteAccessPackageQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    DeleteAccessPackage(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/accesspackages`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/accesspackages`,
+            name: `${this.FULL_PATH}/accesspackages`,
+            action: TAGS.DeleteAccessPackage.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url.toString(), null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+    /**
+     * Checks access package delegation.
+     *
+     * @param {AccessPackageDelegationCheckQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link AccessPackageDelegationCheckQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetAccessPackageDelegationCheck(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/accesspackages/delegationcheck`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/accesspackages/delegationcheck`,
+            name: `${this.FULL_PATH}/accesspackages/delegationcheck`,
+            action: TAGS.GetAccessPackageDelegationCheck.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+    /**
+     * Gets role permissions.
+     *
+     * @param {GetRolesQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetRolesQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetRoles(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
         },
-    });
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/roles`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/roles`,
+            name: `${this.FULL_PATH}/roles`,
+            action: TAGS.GetRoles.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
+            },
+        });
+    }
+    /**
+     * Deletes a role permission.
+     *
+     * @param {DeleteRoleQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link DeleteRoleQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    DeleteRole(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/roles`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/roles`,
+            name: `${this.FULL_PATH}/roles`,
+            action: TAGS.DeleteRole.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url.toString(), null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+    /**
+     * Gets resource rights.
+     *
+     * @param {GetResourceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetResourceRightsQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetResourceRights(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/rights`,
+            name: `${this.FULL_PATH}/resources/rights`,
+            action: TAGS.GetResourceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Creates resource rights.
+     *
+     * @param {CreateResourceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link CreateResourceRightsQueryBuilder}.
+     * @param {RightKeyListDto|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    CreateResourceRights(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/rights`,
+            name: `${this.FULL_PATH}/resources/rights`,
+            action: TAGS.CreateResourceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+    /**
+     * Updates resource rights.
+     *
+     * @param {UpdateResourceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link UpdateResourceRightsQueryBuilder}.
+     * @param {RightKeyListDto|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    UpdateResourceRights(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/rights`,
+            name: `${this.FULL_PATH}/resources/rights`,
+            action: TAGS.UpdateResourceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+
 }
-
-
 export { ConnectionsClient };

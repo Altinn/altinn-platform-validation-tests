@@ -588,6 +588,293 @@ class DeleteRoleQueryBuilder {
 }
 
 
+/**
+ * Builder for retrieving resource permissions query parameters.
+ */
+class GetResourcesQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {GetResourcesQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Optional source party identifier.
+     *
+     * @param {string} from From UUID.
+     * @returns {GetResourcesQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Optional target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {GetResourcesQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Optional resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {GetResourcesQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetResourcesQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for deleting resource permission query parameters.
+ */
+class DeleteResourceQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {DeleteResourceQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required source party identifier.
+     *
+     * @param {string} from From UUID.
+     * @returns {DeleteResourceQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {DeleteResourceQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Optional resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {DeleteResourceQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {DeleteResourceQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for retrieving resource rights query parameters.
+ */
+class GetResourceRightsQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {GetResourceRightsQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required source party identifier.
+     *
+     * @param {string} from From UUID.
+     * @returns {GetResourceRightsQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {GetResourceRightsQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {GetResourceRightsQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetResourceRightsQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for creating resource rights query parameters.
+ */
+class CreateResourceRightsQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {CreateResourceRightsQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {CreateResourceRightsQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {CreateResourceRightsQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {CreateResourceRightsQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for updating resource rights query parameters.
+ */
+class UpdateResourceRightsQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {UpdateResourceRightsQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {UpdateResourceRightsQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {UpdateResourceRightsQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {UpdateResourceRightsQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
 
 
 
@@ -602,4 +889,7 @@ export {
     AccessPackageDelegationCheckQueryBuilder,
     GetRolesQueryBuilder,
     DeleteRoleQueryBuilder,
+    GetResourceRightsQueryBuilder,
+    CreateResourceRightsQueryBuilder,
+    UpdateResourceRightsQueryBuilder,
 };

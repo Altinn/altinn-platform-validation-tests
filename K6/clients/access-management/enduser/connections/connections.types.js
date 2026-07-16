@@ -367,3 +367,155 @@
  * @property {string} to Target party UUID.
  * @property {string} rolecode Role code.
  */
+
+
+/**
+ * @typedef {Object} ResourcePermissionDto
+ * @property {ResourceDto} resource
+ * @property {Array<PermissionDto>|null} permissions
+ */
+
+// -----------------------------------------------------------------------------
+// Query models
+// -----------------------------------------------------------------------------
+
+/**
+ * Query parameters for retrieving resource permissions.
+ *
+ * Use {@link GetResourcesQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} GetResourcesQuery
+ * @property {string} party Party UUID.
+ * @property {string|null} [from] From UUID.
+ * @property {string|null} [to] To UUID.
+ * @property {string|null} [resource] Resource identifier.
+ */
+
+/**
+ * Query parameters for deleting a resource permission.
+ *
+ * Use {@link DeleteResourceQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} DeleteResourceQuery
+ * @property {string} party Party UUID.
+ * @property {string} from From UUID.
+ * @property {string} to To UUID.
+ * @property {string|null} [resource] Resource identifier.
+ */
+
+/**
+ * @typedef {Object} ExternalResourceRightDto
+ * @property {ResourceDto} resource
+ * @property {Array<RightPermission>|null} directRights
+ * @property {Array<RightPermission>|null} indirectRights
+ */
+
+/**
+ * @typedef {Object} RightKeyListDto
+ * @property {Array<string>|null} directRightKeys
+ */
+
+// -----------------------------------------------------------------------------
+// Query models
+// -----------------------------------------------------------------------------
+
+/**
+ * Query parameters for retrieving resource rights.
+ *
+ * Use {@link GetResourceRightsQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} GetResourceRightsQuery
+ * @property {string} party Party UUID.
+ * @property {string} from From UUID.
+ * @property {string} to To UUID.
+ * @property {string} resource Resource identifier.
+ */
+
+/**
+ * Query parameters for creating resource rights.
+ *
+ * Use {@link CreateResourceRightsQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} CreateResourceRightsQuery
+ * @property {string} party Party UUID.
+ * @property {string} to To UUID.
+ * @property {string} resource Resource identifier.
+ */
+
+/**
+ * Query parameters for updating resource rights.
+ *
+ * Use {@link UpdateResourceRightsQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} UpdateResourceRightsQuery
+ * @property {string} party Party UUID.
+ * @property {string} to To UUID.
+ * @property {string} resource Resource identifier.
+ */
+/**
+ * @typedef {Object} RightPermission
+ * @property {RightDto} right
+ * @property {AccessReason} reason
+ * @property {Array<PermissionDto>|null} permissions
+ */
+
+/**
+ * @typedef {Object} ExternalResourceRightDto
+ * @property {ResourceDto} resource
+ * @property {Array<RightPermission>|null} directRights
+ * @property {Array<RightPermission>|null} indirectRights
+ */
+
+/**
+ * @typedef {Object} RightKeyListDto
+ * @property {Array<string>|null} directRightKeys
+ */
+
+/**
+ * @typedef {Object} RightDto
+ * @property {string|null} key
+ * @property {string|null} name
+ * @property {Array<AttributeDto>|null} resource
+ * @property {AttributeDto} action
+ */
+
+/**
+ * @typedef {Object} AccessReason
+ * @property {AccessReasonFlag} flag
+ * @property {Array<AccessReasonRecord>|null} items
+ */
+
+/**
+ * @typedef {number} AccessReasonFlag
+ * Enum values:
+ * 0, 1, 2, 4, 8, 16
+ */
+
+/**
+ * @typedef {Object} AccessReasonRecord
+ * @property {string|null} name
+ * @property {string|null} description
+ */
+
+/**
+ * @typedef {Object} RightPermission
+ * @property {RightDto} right
+ * @property {AccessReason} reason
+ * @property {Array<PermissionDto>|null} permissions
+ */
+
+/**
+ * @typedef {Object} ExternalResourceRightDto
+ * @property {ResourceDto} resource
+ * @property {Array<RightPermission>|null} directRights
+ * @property {Array<RightPermission>|null} indirectRights
+ */
+
+/**
+ * @typedef {Object} RightKeyListDto
+ * @property {Array<string>|null} directRightKeys
+ */
+
+/**
+ * @typedef {number} AccessReasonFlag
+ */
