@@ -557,3 +557,148 @@
  * @property {string} party Party UUID.
  * @property {string|null} [resource] Resource identifier.
  */
+
+/**
+ * @typedef {Object} InstanceTypeDto
+ * @property {string} id UUID.
+ * @property {string|null} name
+ */
+
+/**
+ * @typedef {Object} InstanceDto
+ * @property {string|null} refId
+ * @property {InstanceTypeDto} type
+ */
+
+/**
+ * @typedef {Object} InstancePermissionDto
+ * @property {ResourceDto} resource
+ * @property {InstanceDto} instance
+ * @property {Array<PermissionDto>|null} permissions
+ */
+
+/**
+ * Query parameters for retrieving instance permissions.
+ *
+ * Use {@link GetInstancesQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} GetInstancesQuery
+ * @property {string} party Party UUID.
+ * @property {string|null} [from] From UUID.
+ * @property {string|null} [to] To UUID.
+ * @property {string|null} [resource] Resource identifier.
+ * @property {string|null} [instance] Instance identifier.
+ */
+
+/**
+ * Query parameters for deleting instance permissions.
+ *
+ * Use {@link DeleteInstanceQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} DeleteInstanceQuery
+ * @property {string} party Party UUID.
+ * @property {string} from From UUID.
+ * @property {string} to To UUID.
+ * @property {string} resource Resource identifier.
+ * @property {string} instance Instance identifier.
+ */
+/**
+ * @typedef {Object} ExtInstanceRightDto
+ * @property {ResourceDto} resource
+ * @property {InstanceDto} instance
+ * @property {Array<RightPermission>|null} directRights
+ * @property {Array<RightPermission>|null} indirectRights
+ */
+
+/**
+ * @typedef {Object} InstanceRightsDelegationDto
+ * @property {PersonInputDto} to
+ * @property {Array<string>|null} directRightKeys
+ */
+/**
+ * @typedef {Object} PersonInputDto
+ * @property {string|null} personIdentifier Person identifier.
+ * @property {string|null} lastName Last name.
+ */
+
+/**
+ * Query parameters for retrieving instance rights.
+ *
+ * Use {@link GetInstanceRightsQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} GetInstanceRightsQuery
+ * @property {string} party Party UUID.
+ * @property {string} from From party UUID.
+ * @property {string} to To party UUID.
+ * @property {string} resource Resource identifier.
+ * @property {string} instance Instance identifier.
+ */
+
+/**
+ * Query parameters for creating instance rights.
+ *
+ * Use {@link CreateInstanceRightsQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} CreateInstanceRightsQuery
+ * @property {string} party Party UUID.
+ * @property {string|null} [to] To UUID.
+ * @property {string} resource Resource identifier.
+ * @property {string} instance Instance identifier.
+ */
+
+/**
+ * Query parameters for updating instance rights.
+ *
+ * Use {@link UpdateInstanceRightsQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} UpdateInstanceRightsQuery
+ * @property {string} party Party UUID.
+ * @property {string} to To UUID.
+ * @property {string} resource Resource identifier.
+ * @property {string} instance Instance identifier.
+ */
+
+/**
+ * @typedef {Object} InstanceCheckDto
+ * @property {ResourceDto} resource
+ * @property {InstanceDto} instance
+ * @property {RightCheckDto[]|null} rights
+ */
+
+/**
+* @typedef {Object} GetInstanceDelegationCheckQuery
+* @property {string} party Party identifier.
+* @property {string} resource Resource identifier.
+* @property {string} instance Instance reference.
+*/
+
+
+/**
+ * @typedef {Object} SimplifiedPartyDto
+ * @property {string} id
+ * @property {string|null} name
+ * @property {string|null} type
+ * @property {string|null} variant
+ * @property {string|null} organizationIdentifier
+ * @property {boolean} isDeleted
+ * @property {string|null} deletedAt
+ */
+
+/**
+ * @typedef {Object} PaginatedResultLinks
+ * @property {string|null} next
+ */
+
+/**
+ * @typedef {Object} SimplifiedPartyDtoPaginatedResult
+ * @property {SimplifiedPartyDto[]|null} data
+ * @property {PaginatedResultLinks} links
+ */
+
+
+/**
+ * @typedef {Object} GetInstanceUsersQuery
+ * @property {string} party Party identifier.
+ * @property {string} resource Resource identifier.
+ * @property {string} instance Instance reference.
+ */

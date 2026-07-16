@@ -916,6 +916,432 @@ class GetResourceDelegationCheckQueryBuilder {
     }
 }
 
+/**
+ * Builder for retrieving instance permissions query parameters.
+ */
+class GetInstancesQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {GetInstancesQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Optional source party identifier.
+     *
+     * @param {string} from From UUID.
+     * @returns {GetInstancesQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Optional target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {GetInstancesQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Optional resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {GetInstancesQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Optional instance identifier.
+     *
+     * @param {string} instance Instance identifier.
+     * @returns {GetInstancesQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetInstancesQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for deleting instance permissions query parameters.
+ */
+class DeleteInstanceQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {DeleteInstanceQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required source party identifier.
+     *
+     * @param {string} from From UUID.
+     * @returns {DeleteInstanceQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {DeleteInstanceQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {DeleteInstanceQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Required instance identifier.
+     *
+     * @param {string} instance Instance identifier.
+     * @returns {DeleteInstanceQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {DeleteInstanceQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for retrieving instance rights query parameters.
+ */
+class GetInstanceRightsQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {GetInstanceRightsQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required source party identifier.
+     *
+     * @param {string} from From party UUID.
+     * @returns {GetInstanceRightsQueryBuilder}
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To party UUID.
+     * @returns {GetInstanceRightsQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {GetInstanceRightsQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Required instance identifier.
+     *
+     * @param {string} instance Instance identifier.
+     * @returns {GetInstanceRightsQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetInstanceRightsQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for creating instance rights query parameters.
+ */
+class CreateInstanceRightsQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {CreateInstanceRightsQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Optional target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {CreateInstanceRightsQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {CreateInstanceRightsQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Required instance identifier.
+     *
+     * @param {string} instance Instance identifier.
+     * @returns {CreateInstanceRightsQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {CreateInstanceRightsQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for updating instance rights query parameters.
+ */
+class UpdateInstanceRightsQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {UpdateInstanceRightsQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Required target party identifier.
+     *
+     * @param {string} to To UUID.
+     * @returns {UpdateInstanceRightsQueryBuilder}
+     */
+    withTo(to) {
+        this.query.to = to;
+        return this;
+    }
+
+    /**
+     * Required resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {UpdateInstanceRightsQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Required instance identifier.
+     *
+     * @param {string} instance Instance identifier.
+     * @returns {UpdateInstanceRightsQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {UpdateInstanceRightsQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+class GetInstanceDelegationCheckQueryBuilder {
+    constructor() {
+        /** @type {GetInstanceDelegationCheckQuery} */
+        this.query = {};
+    }
+
+    /**
+     * @param {string} party
+     * @returns {GetInstanceDelegationCheckQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * @param {string} resource
+     * @returns {GetInstanceDelegationCheckQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * @param {string} instance
+     * @returns {GetInstanceDelegationCheckQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * @returns {GetInstanceDelegationCheckQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+class GetInstanceUsersQueryBuilder {
+    constructor() {
+        /** @type {GetInstanceUsersQuery} */
+        this.query = {};
+    }
+
+    /**
+     * @param {string} party
+     * @returns {GetInstanceUsersQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * @param {string} resource
+     * @returns {GetInstanceUsersQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * @param {string} instance
+     * @returns {GetInstanceUsersQueryBuilder}
+     */
+    withInstance(instance) {
+        this.query.instance = instance;
+        return this;
+    }
+
+    /**
+     * @returns {GetInstanceUsersQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+
 
 export {
     GetConnectionUsersQueryBuilder,
@@ -932,4 +1358,11 @@ export {
     CreateResourceRightsQueryBuilder,
     UpdateResourceRightsQueryBuilder,
     GetResourceDelegationCheckQueryBuilder,
+    GetInstancesQueryBuilder,
+    DeleteInstanceQueryBuilder,
+    GetInstanceRightsQueryBuilder,
+    CreateInstanceRightsQueryBuilder,
+    UpdateInstanceRightsQueryBuilder,
+    GetInstanceDelegationCheckQueryBuilder,
+    GetInstanceUsersQueryBuilder
 };

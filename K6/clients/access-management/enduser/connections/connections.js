@@ -60,6 +60,37 @@ const TAGS = {
     GetResourceDelegationCheck: {
         action: "get-resource-delegation-check",
     },
+    GetInstances: {
+        action: "get-instances",
+    },
+    DeleteInstance: {
+        action: "delete-instance",
+    },
+    GetInstanceRights: {
+        action: "get-instance-rights",
+    },
+    CreateInstanceRights: {
+        action: "create-instance-rights",
+    },
+    UpdateInstanceRights: {
+        action: "update-instance-rights",
+    },
+    GetInstanceRights: {
+        action: "get-instance-rights",
+    },
+    CreateInstanceRights: {
+        action: "create-instance-rights",
+    },
+    UpdateInstanceRights: {
+        action: "update-instance-rights",
+    },
+
+    GetInstanceDelegationCheck: {
+        action: "get-instance-delegation-check",
+    },
+    GetInstanceUsers: {
+        action: "get-instance-users",
+    },
 };
 
 class ConnectionsClient {
@@ -875,6 +906,586 @@ class ConnectionsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+    /**
+     * Gets instance permissions.
+     *
+     * @param {GetInstancesQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetInstancesQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetInstances(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances`,
+            name: `${this.FULL_PATH}/resources/instances`,
+            action: TAGS.GetInstances.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Deletes instance permissions.
+     *
+     * @param {DeleteInstanceQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link DeleteInstanceQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    DeleteInstance(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances`,
+            name: `${this.FULL_PATH}/resources/instances`,
+            action: TAGS.DeleteInstance.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url.toString(), null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+    /**
+     * Gets instance rights.
+     *
+     * @param {GetInstanceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetInstanceRightsQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetInstanceRights(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
+            name: `${this.FULL_PATH}/resources/instances/rights`,
+            action: TAGS.GetInstanceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Creates instance rights.
+     *
+     * @param {CreateInstanceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link CreateInstanceRightsQueryBuilder}.
+     * @param {InstanceRightsDelegationDto|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    CreateInstanceRights(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
+            name: `${this.FULL_PATH}/resources/instances/rights`,
+            action: TAGS.CreateInstanceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+    /**
+     * Updates instance rights.
+     *
+     * @param {UpdateInstanceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link UpdateInstanceRightsQueryBuilder}.
+     * @param {RightKeyListDto|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    UpdateInstanceRights(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
+            name: `${this.FULL_PATH}/resources/instances/rights`,
+            action: TAGS.UpdateInstanceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+    /**
+     * Gets instance rights.
+     *
+     * @param {GetInstanceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetInstanceRightsQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetInstanceRights(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
+            name: `${this.FULL_PATH}/resources/instances/rights`,
+            action: TAGS.GetInstanceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Creates instance rights.
+     *
+     * @param {CreateInstanceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link CreateInstanceRightsQueryBuilder}.
+     * @param {InstanceRightsDelegationDto|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    CreateInstanceRights(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
+            name: `${this.FULL_PATH}/resources/instances/rights`,
+            action: TAGS.CreateInstanceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+    /**
+     * Updates instance rights.
+     *
+     * @param {UpdateInstanceRightsQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link UpdateInstanceRightsQueryBuilder}.
+     * @param {RightKeyListDto|null} [body]
+     * Request body.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    UpdateInstanceRights(
+        query = null,
+        body = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
+            name: `${this.FULL_PATH}/resources/instances/rights`,
+            action: TAGS.UpdateInstanceRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(
+            url.toString(),
+            body !== null ? JSON.stringify(body) : null,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+    /**
+     * Checks instance delegation.
+     *
+     * @param {GetInstanceDelegationCheckQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetInstanceDelegationCheckQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetInstanceDelegationCheck(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/delegationcheck`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/delegationcheck`,
+            name: `${this.FULL_PATH}/resources/instances/delegationcheck`,
+            action: TAGS.GetInstanceDelegationCheck.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+    /**
+     * Gets users with access to an instance.
+     *
+     * @param {GetInstanceUsersQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetInstanceUsersQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetInstanceUsers(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources/instances/users`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/instances/users`,
+            name: `${this.FULL_PATH}/resources/instances/users`,
+            action: TAGS.GetInstanceUsers.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...headers,
             },
         });
     }
