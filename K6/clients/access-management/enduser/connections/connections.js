@@ -57,6 +57,9 @@ const TAGS = {
     UpdateResourceRights: {
         action: "update-resource-rights",
     },
+    GetResourceDelegationCheck: {
+        action: "get-resource-delegation-check",
+    },
 };
 
 class ConnectionsClient {
@@ -826,7 +829,55 @@ class ConnectionsClient {
             },
         );
     }
+    /**
+     * Checks resource delegation.
+     *
+     * @param {GetResourceDelegationCheckQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetResourceDelegationCheckQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    GetResourceDelegationCheck(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
 
+        const url = new URL(`${this.FULL_PATH}/resources/delegationcheck`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources/delegationcheck`,
+            name: `${this.FULL_PATH}/resources/delegationcheck`,
+            action: TAGS.GetResourceDelegationCheck.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
 
 }
 export { ConnectionsClient };

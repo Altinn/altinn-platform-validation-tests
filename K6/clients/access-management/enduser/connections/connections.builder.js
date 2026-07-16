@@ -876,6 +876,45 @@ class UpdateResourceRightsQueryBuilder {
     }
 }
 
+/**
+ * Builder for checking resource delegation query parameters.
+ */
+class GetResourceDelegationCheckQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Required party identifier.
+     *
+     * @param {string} party Party UUID.
+     * @returns {GetResourceDelegationCheckQueryBuilder}
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Optional resource identifier.
+     *
+     * @param {string} resource Resource identifier.
+     * @returns {GetResourceDelegationCheckQueryBuilder}
+     */
+    withResource(resource) {
+        this.query.resource = resource;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetResourceDelegationCheckQuery}
+     */
+    build() {
+        return this.query;
+    }
+}
 
 
 export {
@@ -892,4 +931,5 @@ export {
     GetResourceRightsQueryBuilder,
     CreateResourceRightsQueryBuilder,
     UpdateResourceRightsQueryBuilder,
+    GetResourceDelegationCheckQueryBuilder,
 };

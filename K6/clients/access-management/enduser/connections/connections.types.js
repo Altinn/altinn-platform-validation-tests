@@ -519,3 +519,41 @@
 /**
  * @typedef {number} AccessReasonFlag
  */
+
+/**
+ * @typedef {Object} ResourceCheckDto
+ * @property {ResourceDto} resource
+ * @property {Array<RightCheckDto>|null} rights
+ */
+
+/**
+ * @typedef {Object} RightCheckDto
+ * @property {RightDto} right
+ * @property {boolean} result
+ * @property {Array<DelegationCheckReasonCode>|null} reasonCodes
+ */
+
+/**
+ * Reason code explaining the result of a resource delegation check.
+ *
+ * @typedef {"Unknown"|
+ * "RoleAccess"|
+ * "DelegationAccess"|
+ * "MissingRoleAccess"|
+ * "MissingDelegationAccess"|
+ * "AccessListValidationFail"|
+ * "PackageAccess"|
+ * "MissingPackageAccess"|
+ * "ResourceNotDelegable"|
+ * "ResourceIsMaskinPortenSchema"} DelegationCheckReasonCode
+ */
+
+/**
+ * Query parameters for checking resource delegation.
+ *
+ * Use {@link GetResourceDelegationCheckQueryBuilder} to construct this object.
+ *
+ * @typedef {Object} GetResourceDelegationCheckQuery
+ * @property {string} party Party UUID.
+ * @property {string|null} [resource] Resource identifier.
+ */
