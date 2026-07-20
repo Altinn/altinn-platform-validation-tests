@@ -164,3 +164,48 @@
  * @property {Object} model The underlying members payload.
  * @property {Array<PartyUrn>} model.data Members.
  */
+
+
+/**
+ * @typedef {Object} Org
+ * @property {{[key:string]: string|null}|null} name
+ * Localized organization names keyed by language code.
+ * @property {string|null} logo
+ * @property {string|null} orgnr
+ * @property {string|null} homepage
+ * @property {Array<string>|null} environments
+ */
+
+/**
+ * @typedef {Object} OrgList
+ * @property {{[key:string]: Org}|null} orgs
+ */
+
+
+/**
+ * @typedef {Object} AttributeMatchDTO
+ * @property {string|null} type
+ * @property {string|null} value
+ */
+
+/**
+ * @typedef {Object} RightDto
+ * @property {string|null} key
+ * Unique key for the action.
+ * @property {string|null} name
+ * Display name of the action.
+ * @property {Array<AttributeMatchDTO>|null} resource
+ * Resource attributes associated with the right.
+ * @property {AttributeMatchDTO|null} action
+ * Action associated with the right.
+ */
+
+/**
+ * @typedef {Object} RightDecomposedDto
+ * @property {RightDto} right
+ */
+
+/**
+ * @typedef {Object} ResourceDecomposedDto
+ * @property {Array<RightDecomposedDto>|null} rights
+ */
