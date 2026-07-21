@@ -376,3 +376,31 @@
  * @property {string|null} Keyword Keyword filter.
  * @property {string|null} Reference Reference filter.
  */
+
+/**
+ * @typedef {Object} UpdatedResourceSubject
+ * @property {string|null} subjectUrn
+ * @property {string|null} resourceUrn
+ * @property {string} updatedAt
+ * @property {boolean} deleted
+ */
+
+/**
+ * @typedef {Object} UpdatedResourceSubjectPaginated
+ * @property {Array<UpdatedResourceSubject>|null} data
+ * @property {PaginatedLinks} links
+ */
+
+/**
+ * @typedef {Object} UpdatedResourceSubjectsContinuationToken
+ * @property {string|null} resourceUrn
+ * @property {string|null} subjectUrn
+ */
+
+/**
+ * @typedef {Object} UpdatedResourceSubjectsQueryBuilder
+ * @property {Object} query
+ * @property {string} [query.since] Date time used for filtering.
+ * @property {string} [query.token] Continuation token.
+ * @property {number} [query.limit] Maximum number of pairs returned.
+ */

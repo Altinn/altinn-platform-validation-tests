@@ -10,7 +10,7 @@
  * @property {string|null} query.Keyword Keyword filter.
  * @property {string|null} query.Reference Reference filter.
  */
-export class ResourceSearchQueryBuilder {
+class ResourceSearchQueryBuilder {
     constructor() {
         this.query = {
             Id: null,
@@ -102,4 +102,69 @@ export class ResourceSearchQueryBuilder {
     build() {
         return this.query;
     }
+}
+
+/**
+ * Builder for creating query parameters for retrieving updated resources.
+ *
+ * @typedef {Object} ResourceUpdatedQueryBuilder
+ * @property {Object} query The underlying query parameter object.
+ * @property {string} [query.since] Date time used for filtering.
+ * @property {string} [query.token] Opaque continuation token.
+ * @property {number} [query.limit] Maximum number of pairs returned.
+ */
+class ResourceUpdatedQueryBuilder {
+    constructor() {
+        this.query = {};
+    }
+
+    /**
+     * Sets the date time used for filtering.
+     *
+     * @param {string} since Date time.
+     * @returns {ResourceUpdatedQueryBuilder}
+     */
+    since(since) {
+        this.query.since = since;
+
+        return this;
+    }
+
+    /**
+     * Sets the continuation token.
+     *
+     * @param {string} token Continuation token.
+     * @returns {ResourceUpdatedQueryBuilder}
+     */
+    token(token) {
+        this.query.token = token;
+
+        return this;
+    }
+
+    /**
+     * Sets the maximum number of pairs returned.
+     *
+     * @param {number} limit Maximum number of pairs.
+     * @returns {ResourceUpdatedQueryBuilder}
+     */
+    limit(limit) {
+        this.query.limit = limit;
+
+        return this;
+    }
+
+    /**
+     * Returns the built query object.
+     *
+     * @returns {Object}
+     */
+    build() {
+        return this.query;
+    }
+}
+
+export {
+    ResourceSearchQueryBuilder,
+    ResourceUpdatedQueryBuilder
 }

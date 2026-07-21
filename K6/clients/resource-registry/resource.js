@@ -51,7 +51,9 @@ const TAGS = {
         action: "resource-search",
     },
 
-
+    ResourceUpdated: {
+        action: "resource-updated",
+    },
 
 
 
@@ -651,6 +653,60 @@ class ResourceClient {
             endpoint: url,
             name: url,
             action: ResourceClient.TAGS.ResourceSearch.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+    /**
+     * Gets the updated resources since the provided last updated time.
+     *
+     * @param {ResourceUpdatedQueryBuilder|Object} [query]
+     * Optional query parameters.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse}
+     */
+    ResourceUpdated(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        let url = `${this.FULL_PATH}/updated`;
+
+        if (query !== null) {
+            const params = [];
+
+            Object.keys(query).forEach((key) => {
+                const value = query[key];
+
+                if (value === undefined || value === null) {
+                    return;
+                }
+
+                params.push(
+                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+                );
+            });
+
+            if (params.length > 0) {
+                url = `${url}?${params.join("&")}`;
+            }
+        }
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.ResourceUpdated.action,
         };
 
         if (labels !== null) {
