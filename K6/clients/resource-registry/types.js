@@ -209,3 +209,117 @@
  * @typedef {Object} ResourceDecomposedDto
  * @property {Array<RightDecomposedDto>|null} rights
  */
+
+/**
+ * @typedef {"Default"|"Altinn1"|"Altinn2"|"Altinn3"|"ExternalPlatform"} ReferenceSource
+ */
+
+/**
+ * @typedef {"Default"|"Uri"|"DelegationSchemeId"|"MaskinportenScope"|"ServiceCode"|"ServiceEditionCode"|"ApplicationId"|"ServiceEditionVersion"} ReferenceType
+ */
+
+/**
+ * @typedef {"PrivatePerson"|"LegalEntityEnterprise"|"Company"|"BankruptcyEstate"|"SelfRegisteredUser"} ResourcePartyType
+ */
+
+/**
+ * @typedef {0|1} ResourceAccessListMode
+ */
+
+/**
+ * @typedef {0|1|2|4|8|16|32|64|128} ResourceType
+ */
+
+/**
+ * @typedef {Object} ContactPoint
+ * @property {string|null} category
+ * @property {string|null} email
+ * @property {string|null} telephone
+ * @property {string|null} contactPage
+ */
+
+/**
+ * @typedef {Object} ResourceReference
+ * @property {ReferenceSource} referenceSource
+ * @property {string|null} reference
+ * @property {ReferenceType} referenceType
+ */
+
+/**
+ * @typedef {Object} CompetentAuthority
+ * @property {string|null} organization
+ * @property {string|null} orgcode
+ * @property {{[key:string]:string|null}|null} name
+ */
+
+/**
+ * @typedef {Object} Keyword
+ * @property {string|null} word
+ * @property {string|null} language
+ */
+
+/**
+ * @typedef {Object} AuthorizationReferenceAttribute
+ * @property {string|null} id
+ * @property {string|null} value
+ */
+
+/**
+ * @typedef {Object} ConsentMetadata
+ * @property {boolean} optional
+ */
+
+/**
+ * @typedef {Object} ServiceResource
+ * @property {string} identifier
+ * @property {string|null} version
+ * @property {{[key:string]:string}} title
+ * @property {{[key:string]:string}} description
+ * @property {{[key:string]:string}|null} rightDescription
+ * @property {string|null} homepage
+ * @property {string|null} status
+ * @property {Array<string>|null} spatial
+ * @property {Array<ContactPoint>} contactPoints
+ * @property {Array<string>|null} produces
+ * @property {string|null} isPartOf
+ * @property {Array<string>|null} thematicAreas
+ * @property {Array<ResourceReference>|null} resourceReferences
+ * @property {boolean} delegable
+ * @property {boolean} visible
+ * @property {CompetentAuthority} hasCompetentAuthority
+ * @property {Array<Keyword>|null} keywords
+ * @property {ResourceAccessListMode} accessListMode
+ * @property {boolean} selfIdentifiedUserEnabled
+ * @property {boolean} enterpriseUserEnabled
+ * @property {ResourceType} resourceType
+ * @property {Array<ResourcePartyType>|null} availableForType
+ * @property {Array<AuthorizationReferenceAttribute>|null} authorizationReference
+ * @property {string|null} consentTemplate
+ * @property {{[key:string]:ConsentMetadata}|null} consentMetadata
+ * @property {{[key:string]:string}|null} consentText
+ * @property {boolean} isOneTimeConsent
+ * @property {number} versionId
+ */
+
+/**
+ * Builder for creating query parameters for retrieving resources.
+ *
+ * @typedef {Object} ResourceListQueryBuilder
+ * @property {boolean} [includeApps]
+ * @property {boolean} [includeAltinn2]
+ * @property {boolean} [includeMigratedApps]
+ */
+
+
+/**
+ * @typedef {Object} AttributeMatchV2
+ * @property {string} type
+ * @property {string} value
+ * @property {string} urn
+ */
+
+/**
+ * @typedef {Object} AttributeMatchV2Paginated
+ * @property {Array<AttributeMatchV2>} data
+ * @property {PaginatedLinks} links
+ */
