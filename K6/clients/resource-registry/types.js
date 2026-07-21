@@ -323,3 +323,56 @@
  * @property {Array<AttributeMatchV2>} data
  * @property {PaginatedLinks} links
  */
+
+
+/**
+ * @typedef {Object} UrnJsonTypeValue
+ * @property {string} type
+ * @property {string} value
+ */
+
+/**
+ * @typedef {Object} PolicyRuleDTO
+ * @property {Array<UrnJsonTypeValue>|null} subject
+ * @property {UrnJsonTypeValue} action
+ * @property {Array<UrnJsonTypeValue>|null} resource
+ */
+
+/**
+ * @typedef {Object} PolicySubjectDTO
+ * @property {Array<UrnJsonTypeValue>|null} subjectAttributes
+ */
+
+/**
+ * @typedef {Object} PolicyRightsDTO
+ * @property {UrnJsonTypeValue} action
+ * @property {Array<UrnJsonTypeValue>|null} resource
+ * @property {Array<PolicySubjectDTO>|null} subjects
+ * @property {string|null} rightKey
+ * @property {Array<string>|null} subjectTypes
+ */
+
+
+/**
+ * @typedef {Object} SubjectResources
+ * @property {AttributeMatchV2} subject
+ * @property {Array<AttributeMatchV2>} resources
+ */
+
+/**
+ * @typedef {Object} SubjectResourcesPaginated
+ * @property {Array<SubjectResources>} data
+ * @property {PaginatedLinks} links
+ */
+
+/**
+ * Builder for searching resources.
+ *
+ * @typedef {Object} ResourceSearchQueryBuilder
+ * @property {string|null} Id Resource identifier filter.
+ * @property {string|null} Title Title filter.
+ * @property {string|null} Description Description filter.
+ * @property {ResourceType|null} ResourceType Resource type filter.
+ * @property {string|null} Keyword Keyword filter.
+ * @property {string|null} Reference Reference filter.
+ */

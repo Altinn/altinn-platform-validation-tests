@@ -38,6 +38,26 @@ const TAGS = {
     ResourceGetPolicySubjects: {
         action: "resource-get-policy-subjects",
     },
+    ResourceGetPolicyRules: {
+        action: "resource-get-policy-rules",
+    },
+    ResourceGetPolicyRights: {
+        action: "resource-get-policy-rights",
+    },
+    ResourceGetResourcesBySubjects: {
+        action: "resource-get-resources-by-subjects",
+    },
+    ResourceSearch: {
+        action: "resource-search",
+    },
+
+
+
+
+
+
+
+
 };
 
 class ResourceClient {
@@ -486,7 +506,167 @@ class ResourceClient {
     }
 
 
+    /**
+     * Gets flattened policy rules for a resource.
+     *
+     * @param {string} id Resource identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     *
+     * @returns {http.RefinedResponse}
+     */
+    ResourceGetPolicyRules(id, labels = null) {
+        const token = this.tokenGenerator.getToken();
 
+        const url = `${this.FULL_PATH}/${id}/policy/rules`;
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: ResourceClient.TAGS.ResourceGetPolicyRules.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+    /**
+     * Gets rights from a resource policy.
+     *
+     * @param {string} id Resource identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     *
+     * @returns {http.RefinedResponse}
+     */
+    ResourceGetPolicyRights(id, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/${id}/policy/rights`;
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: ResourceClient.TAGS.ResourceGetPolicyRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
+
+    /**
+     * Gets resources connected to subjects.
+     *
+     * @param {Array<string>} subjects List of subjects for resource information.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     *
+     * @returns {http.RefinedResponse}
+     */
+    ResourceGetResourcesBySubjects(subjects, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/bysubjects`;
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: ResourceClient.TAGS.ResourceGetResourcesBySubjects.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, JSON.stringify(subjects), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+    }
+
+    /**
+     * Searches for resources in the resource registry.
+     *
+     * @param {ResourceSearchQueryBuilder|Object|null} [query]
+     * Optional search query parameters.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     *
+     * @returns {http.RefinedResponse}
+     */
+    ResourceSearch(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        let url = `${this.FULL_PATH}/Search`;
+
+        if (query !== null) {
+            const params = [];
+
+            Object.keys(query).forEach((key) => {
+                const value = query[key];
+
+                if (value === undefined || value === null) {
+                    return;
+                }
+
+                params.push(
+                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+                );
+            });
+
+            if (params.length > 0) {
+                url = `${url}?${params.join("&")}`;
+            }
+        }
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: ResourceClient.TAGS.ResourceSearch.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    }
 
 
 
