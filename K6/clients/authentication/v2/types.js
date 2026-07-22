@@ -141,3 +141,85 @@
  * @property {string|null} partyId Party identifier.
  * @property {string|null} systemId System identifier.
  */
+
+
+/**
+ * @typedef {Object} RegisteredSystemDTO
+ * @property {string|null} systemId System identifier.
+ * @property {string|null} systemVendorOrgNumber Vendor organization number.
+ * @property {string|null} systemVendorOrgName Vendor organization name.
+ * @property {Object<string, string>|null} name Localized system names.
+ * @property {Object<string, string>|null} description Localized system descriptions.
+ * @property {Right[]|null} rights System rights.
+ * @property {AccessPackage[]|null} accessPackages System access packages.
+ * @property {boolean} isVisible Whether the system is visible.
+ */
+
+/**
+ * @typedef {Object} RegisteredSystemResponse
+ * @property {string|null} id System identifier.
+ * @property {VendorInfo|null} vendor Vendor information.
+ * @property {Object<string, string>|null} name Localized system names.
+ * @property {Object<string, string>|null} description Localized system descriptions.
+ * @property {Right[]|null} rights System rights.
+ * @property {AccessPackage[]|null} accessPackages System access packages.
+ * @property {boolean} isDeleted Whether the system is deleted.
+ * @property {string[]|null} clientId Client identifiers.
+ * @property {boolean} isVisible Whether the system is visible.
+ * @property {string[]|null} allowedRedirectUrls Allowed redirect URLs.
+ */
+
+/**
+ * @typedef {Object} RegisterSystemRequest
+ * @property {string|null} id System identifier.
+ * @property {VendorInfo|null} vendor Vendor information.
+ * @property {Object<string, string>|null} name Localized system names.
+ * @property {Object<string, string>|null} description Localized system descriptions.
+ * @property {Right[]|null} rights System rights.
+ * @property {AccessPackage[]|null} accessPackages System access packages.
+ * @property {string[]|null} clientId Client identifiers.
+ * @property {boolean} isVisible Whether the system is visible.
+ * @property {string[]|null} allowedRedirectUrls Allowed redirect URLs.
+ */
+
+/**
+ * @typedef {Object} SystemRegisterUpdateResult
+ * @property {boolean} succeeded Whether the update succeeded.
+ */
+
+/**
+ * @typedef {Object} VendorInfo
+ * @property {string|null} ID Vendor identifier.
+ */
+
+/**
+ * @typedef {Object} Right
+ * @property {string|null} action Action identifier.
+ * @property {AttributePair[]|null} resource Resource attribute pairs.
+ */
+
+/**
+ * @typedef {Object} AttributePair
+ * @property {string} id Attribute identifier.
+ * @property {string} value Attribute value.
+ */
+
+/**
+ * @typedef {Object} AccessPackage
+ * @property {string|null} urn Access package URN.
+ */
+
+/**
+ * @typedef {Object} SystemChangeLog
+ * @property {string|null} systemInternalId Internal system identifier.
+ * @property {string|null} changedByOrgNumber Organization number that performed the change.
+ * @property {SystemChangeType|null} changeType Type of change performed.
+ * @property {*} changedData Changed data payload.
+ * @property {string|null} clientId Client identifier associated with the change.
+ * @property {string|null} created Timestamp when the change was created.
+ */
+
+/**
+ * @typedef {"create"|"update"|"rightsupdate"|"accesspackageupdate"|"delete"|"unknown"} SystemChangeType
+ * Type of change performed on a registered system.
+ */
