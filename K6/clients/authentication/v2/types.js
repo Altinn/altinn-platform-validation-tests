@@ -93,3 +93,51 @@
  * @property {string|null} reporteeOrgNo Reportee organisation number.
  * @property {string|null} systemId System identifier.
  */
+
+
+
+/**
+ * Represents a paginated list of clients available for system user delegation.
+ *
+ * @typedef {Object} ClientInfoClientInfoPaginated
+ * @property {ClientInfo[]|null} data Client information items.
+ * @property {PaginatedLinks|null} links Pagination links.
+ * @property {SystemUserInfo|null} systemUserInformation System user information.
+ */
+
+/**
+ * Represents information about a delegation client.
+ *
+ * @typedef {Object} ClientInfo
+ * @property {string} clientId Client identifier.
+ * @property {string|null} clientOrganizationNumber Client organisation number.
+ * @property {string|null} clientOrganizationName Client organisation name.
+ */
+
+/**
+ * Represents a delegation between an agent and a client.
+ *
+ * @typedef {Object} ClientDelegationResponse
+ * @property {string} agent Agent system user identifier.
+ * @property {string} client Client identifier.
+ */
+
+/**
+ * Represents a delegation response.
+ *
+ * @typedef {Object} DelegationResponse
+ * @property {string} agentSystemUserId Agent system user identifier.
+ * @property {string} delegationId Delegation identifier.
+ * @property {string|null} customerId Customer identifier.
+ * @property {string|null} assignmentId Assignment identifier.
+ * @property {string|null} customerName Customer name.
+ */
+
+/**
+ * Represents system user information.
+ *
+ * @typedef {Object} SystemUserInfo
+ * @property {string|null} id System user identifier.
+ * @property {string|null} partyId Party identifier.
+ * @property {string|null} systemId System identifier.
+ */
