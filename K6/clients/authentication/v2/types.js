@@ -286,3 +286,55 @@
  * @typedef {Object} GuidOpaque
  * @property {string|null} value Opaque GUID value.
  */
+
+
+/**
+ * Represents a request to change a system user.
+ *
+ * @typedef {Object} ChangeRequestSystemUser
+ * @property {Right[]|null} [requiredRights] Rights to add to the system user.
+ * @property {Right[]|null} [unwantedRights] Rights to remove from the system user.
+ * @property {AccessPackage[]|null} [requiredAccessPackages] Access packages to add to the system user.
+ * @property {AccessPackage[]|null} [unwantedAccessPackages] Access packages to remove from the system user.
+ * @property {string|null} [redirectUrl] Redirect URL after completion.
+ */
+
+/**
+ * Represents the response for a change request.
+ *
+ * @typedef {Object} ChangeRequestResponse
+ * @property {string} id Request identifier.
+ * @property {string|null} [externalRef] External reference.
+ * @property {string} systemId System identifier.
+ * @property {string} systemUserId System user identifier.
+ * @property {string} partyOrgNo Party organization number.
+ * @property {Right[]|null} [requiredRights] Rights requested to be added.
+ * @property {Right[]|null} [unwantedRights] Rights requested to be removed.
+ * @property {AccessPackage[]|null} [requiredAccessPackages] Access packages requested to be added.
+ * @property {AccessPackage[]|null} [unwantedAccessPackages] Access packages requested to be removed.
+ * @property {string} status Request status.
+ * @property {string|null} [redirectUrl] Redirect URL.
+ * @property {string|null} [confirmUrl] Confirmation URL.
+ */
+
+/**
+ * Represents a paginated list of change request responses.
+ *
+ * @typedef {Object} ChangeRequestResponsePaginated
+ * @property {ChangeRequestResponse[]|null} [data] Items in the current page.
+ * @property {PaginatedLinks} links Pagination links.
+ */
+
+/**
+ * Represents an opaque GUID pagination token.
+ *
+ * @typedef {Object} GuidOpaque
+ * @property {string} value Inner GUID value.
+ */
+
+/**
+ * Pagination links.
+ *
+ * @typedef {Object} PaginatedLinks
+ * @property {string|null} [next] Link to the next page.
+ */
