@@ -268,3 +268,58 @@
  * @property {number|null} pageSize Number of items to return in one page.
  * @property {StatusOrderBy|null} orderBy Order in which status feed entries should be returned.
  */
+
+/**
+ * @typedef {"Plain"|"Html"} EmailContentType
+ */
+
+/**
+ * @typedef {"Plain"|"Html"} EmailContentType
+ */
+
+/**
+ * @typedef {Object} ShortMessageContentExt
+ * @property {string|null} sender The sender identifier displayed in the recipient's SMS message.
+ * @property {string} body The text content of the SMS message to be delivered to the recipient.
+ */
+
+/**
+ * @typedef {Object} ShortMessageDeliveryDetailsExt
+ * @property {string} phoneNumber The recipient's phone number in international format.
+ * @property {number} timeToLiveInSeconds The time-to-live duration, specified in seconds.
+ * @property {ShortMessageContentExt} smsSettings SMS content and sender information.
+ */
+
+/**
+ * @typedef {Object} InstantSmsNotificationOrderRequestExt
+ * @property {string} idempotencyId The unique identifier used to ensure the same notification is not processed multiple times.
+ * @property {string|null} sendersReference The reference identifier assigned by the sender for tracking purposes.
+ * @property {ShortMessageDeliveryDetailsExt} recipientSms Recipient SMS details.
+ */
+
+/**
+ * @typedef {Object} InstantEmailContentExt
+ * @property {string} subject The subject of the email.
+ * @property {string} body The body content of the email.
+ * @property {string|null} senderEmailAddress The sender's email address.
+ * @property {EmailContentType|null} contentType The content type of the body.
+ */
+
+/**
+ * @typedef {Object} InstantEmailDetailsExt
+ * @property {string} emailAddress The recipient's email address.
+ * @property {InstantEmailContentExt} emailSettings Email content and sender information.
+ */
+
+/**
+ * @typedef {Object} InstantEmailNotificationOrderRequestExt
+ * @property {string} idempotencyId The unique identifier used to ensure the same notification is not processed multiple times.
+ * @property {string|null} sendersReference The reference identifier assigned by the sender for tracking purposes.
+ * @property {InstantEmailDetailsExt} recipientEmail Recipient email details.
+ */
+
+/**
+ * @typedef {Object} InstantNotificationOrderResponseExt
+ * @property {string} notificationOrderId Unique identifier for the notification order.
+ * @property {NotificationOrderChainShipmentExt} notification Notification shipment information.
+ */
