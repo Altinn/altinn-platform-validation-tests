@@ -223,3 +223,66 @@
  * @typedef {"create"|"update"|"rightsupdate"|"accesspackageupdate"|"delete"|"unknown"} SystemChangeType
  * Type of change performed on a registered system.
  */
+
+/**
+ * @typedef {Object} CreateRequestSystemUser
+ * @property {string|null} externalRef External reference supplied by the vendor.
+ * @property {string} systemId Registered system identifier.
+ * @property {string} partyOrgNo Customer organization number.
+ * @property {Right[]|null} rights Rights requested for the system user.
+ * @property {AccessPackage[]|null} accessPackages Access packages requested for the system user.
+ * @property {string|null} redirectUrl Redirect URL after request completion.
+ */
+
+/**
+ * @typedef {Object} CreateAgentRequestSystemUser
+ * @property {string|null} externalRef External reference supplied by the vendor.
+ * @property {string} systemId Registered system identifier.
+ * @property {string} partyOrgNo Customer organization number.
+ * @property {AccessPackage[]} accessPackages Access packages requested for the agent system user.
+ * @property {string|null} redirectUrl Redirect URL after request completion.
+ */
+
+/**
+ * @typedef {Object} RequestSystemResponse
+ * @property {string} id Request identifier.
+ * @property {string|null} externalRef External reference supplied by the vendor.
+ * @property {string} systemId Registered system identifier.
+ * @property {string} partyOrgNo Customer organization number.
+ * @property {Right[]} rights Requested rights.
+ * @property {AccessPackage[]} accessPackages Requested access packages.
+ * @property {string} status Current request status.
+ * @property {string|null} redirectUrl Redirect URL associated with the request.
+ * @property {string|null} confirmUrl Confirmation URL associated with the request.
+ */
+
+/**
+ * @typedef {Object} AgentRequestSystemResponse
+ * @property {string} id Request identifier.
+ * @property {string|null} externalRef External reference supplied by the vendor.
+ * @property {string} systemId Registered system identifier.
+ * @property {string} partyOrgNo Customer organization number.
+ * @property {AccessPackage[]} accessPackages Requested access packages.
+ * @property {string} status Current request status.
+ * @property {string|null} redirectUrl Redirect URL associated with the request.
+ * @property {string|null} confirmUrl Confirmation URL associated with the request.
+ */
+
+/**
+ * @typedef {Object} RequestSystemResponsePaginated
+ * @property {RequestSystemResponse[]|null} data Paginated request system user responses.
+ * @property {PaginatedLinks|null} links Pagination links.
+ */
+
+/**
+ * @typedef {Object} AgentRequestSystemResponsePaginated
+ * @property {AgentRequestSystemResponse[]|null} data Paginated agent request system user responses.
+ * @property {PaginatedLinks|null} links Pagination links.
+ */
+
+/**
+ * Represents an opaque GUID value returned by the API.
+ *
+ * @typedef {Object} GuidOpaque
+ * @property {string|null} value Opaque GUID value.
+ */
