@@ -4,8 +4,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {string} term TODO: Description
-     * @returns {PackagesSearchQueryBuilder} TODO: Description
+     * @param {string} term See the client method.
+     * @returns {PackagesSearchQueryBuilder} This builder, for chaining.
      */
     WithTerm(term) {
         this.query.term = term;
@@ -14,8 +14,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {Array<string>} resourceProviderCode TODO: Description
-     * @returns {PackagesSearchQueryBuilder} TODO: Description
+     * @param {Array<string>} resourceProviderCode See the client method.
+     * @returns {PackagesSearchQueryBuilder} This builder, for chaining.
      */
     WithResourceProviderCode(resourceProviderCode) {
         this.query.resourceProviderCode = resourceProviderCode;
@@ -24,8 +24,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {boolean} searchInResources TODO: Description
-     * @returns {PackagesSearchQueryBuilder} TODO: Description
+     * @param {boolean} searchInResources See the client method.
+     * @returns {PackagesSearchQueryBuilder} This builder, for chaining.
      */
     WithSearchInResources(searchInResources) {
         this.query.searchInResources = searchInResources;
@@ -34,8 +34,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {string} typeName TODO: Description
-     * @returns {PackagesSearchQueryBuilder} TODO: Description
+     * @param {string} typeName See the client method.
+     * @returns {PackagesSearchQueryBuilder} This builder, for chaining.
      */
     WithTypeName(typeName) {
         this.query.typeName = typeName;
@@ -44,8 +44,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {boolean} simpleSearch TODO: Description
-     * @returns {PackagesSearchQueryBuilder} TODO: Description
+     * @param {boolean} simpleSearch See the client method.
+     * @returns {PackagesSearchQueryBuilder} This builder, for chaining.
      */
     WithSimpleSearch(simpleSearch) {
         this.query.simpleSearch = simpleSearch;
@@ -54,8 +54,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {boolean} strict TODO: Description
-     * @returns {PackagesSearchQueryBuilder} TODO: Description
+     * @param {boolean} strict See the client method.
+     * @returns {PackagesSearchQueryBuilder} This builder, for chaining.
      */
     WithStrict(strict) {
         this.query.strict = strict;
@@ -64,7 +64,7 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;

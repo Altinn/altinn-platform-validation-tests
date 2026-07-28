@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { TypesClient } from "../../../../clients/types/index.js";
+import { TypesClient } from "../../../../../clients/access-management/metadata/types/index.js";
 
 /**
  * Gets organization sub types.

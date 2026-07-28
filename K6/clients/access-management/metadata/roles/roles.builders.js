@@ -4,8 +4,8 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @param {string} role TODO: Description
-     * @returns {RolesGetRolePackagesQueryBuilder} TODO: Description
+     * @param {string} role See the client method.
+     * @returns {RolesGetRolePackagesQueryBuilder} This builder, for chaining.
      */
     WithRole(role) {
         this.query.role = role;
@@ -14,8 +14,8 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @param {string} variant TODO: Description
-     * @returns {RolesGetRolePackagesQueryBuilder} TODO: Description
+     * @param {string} variant See the client method.
+     * @returns {RolesGetRolePackagesQueryBuilder} This builder, for chaining.
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -24,8 +24,8 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @param {boolean} includeResources TODO: Description
-     * @returns {RolesGetRolePackagesQueryBuilder} TODO: Description
+     * @param {boolean} includeResources See the client method.
+     * @returns {RolesGetRolePackagesQueryBuilder} This builder, for chaining.
      */
     WithIncludeResources(includeResources) {
         this.query.includeResources = includeResources;
@@ -34,7 +34,7 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;
@@ -47,8 +47,8 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @param {string} role TODO: Description
-     * @returns {RolesGetRoleResourcesQueryBuilder} TODO: Description
+     * @param {string} role See the client method.
+     * @returns {RolesGetRoleResourcesQueryBuilder} This builder, for chaining.
      */
     WithRole(role) {
         this.query.role = role;
@@ -57,8 +57,8 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @param {string} variant TODO: Description
-     * @returns {RolesGetRoleResourcesQueryBuilder} TODO: Description
+     * @param {string} variant See the client method.
+     * @returns {RolesGetRoleResourcesQueryBuilder} This builder, for chaining.
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -67,8 +67,8 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @param {boolean} includePackageResources TODO: Description
-     * @returns {RolesGetRoleResourcesQueryBuilder} TODO: Description
+     * @param {boolean} includePackageResources See the client method.
+     * @returns {RolesGetRoleResourcesQueryBuilder} This builder, for chaining.
      */
     WithIncludePackageResources(includePackageResources) {
         this.query.includePackageResources = includePackageResources;
@@ -77,7 +77,7 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;
@@ -90,8 +90,8 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @param {string} variant TODO: Description
-     * @returns {RolesGetRolePackagesByIdQueryBuilder} TODO: Description
+     * @param {string} variant See the client method.
+     * @returns {RolesGetRolePackagesByIdQueryBuilder} This builder, for chaining.
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -100,8 +100,8 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @param {boolean} includeResources TODO: Description
-     * @returns {RolesGetRolePackagesByIdQueryBuilder} TODO: Description
+     * @param {boolean} includeResources See the client method.
+     * @returns {RolesGetRolePackagesByIdQueryBuilder} This builder, for chaining.
      */
     WithIncludeResources(includeResources) {
         this.query.includeResources = includeResources;
@@ -110,7 +110,7 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;
@@ -123,8 +123,8 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @param {string} variant TODO: Description
-     * @returns {RolesGetRoleResourcesByIdQueryBuilder} TODO: Description
+     * @param {string} variant See the client method.
+     * @returns {RolesGetRoleResourcesByIdQueryBuilder} This builder, for chaining.
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -133,8 +133,8 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @param {boolean} includePackageResources TODO: Description
-     * @returns {RolesGetRoleResourcesByIdQueryBuilder} TODO: Description
+     * @param {boolean} includePackageResources See the client method.
+     * @returns {RolesGetRoleResourcesByIdQueryBuilder} This builder, for chaining.
      */
     WithIncludePackageResources(includePackageResources) {
         this.query.includePackageResources = includePackageResources;
@@ -143,7 +143,7 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;

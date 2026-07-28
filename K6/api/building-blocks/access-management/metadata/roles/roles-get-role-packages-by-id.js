@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RolesClient } from "../../../../clients/roles/index.js";
+import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
 
 /**
  * Gets role packages by role id.

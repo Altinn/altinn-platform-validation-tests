@@ -52,7 +52,7 @@ class RolesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RolesGetRoles(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -76,6 +76,7 @@ class RolesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -86,7 +87,7 @@ class RolesClient {
      * @param {string} id Role identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RolesGetRole(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -95,7 +96,7 @@ class RolesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRole.action,
         };
 
@@ -110,6 +111,7 @@ class RolesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -121,7 +123,7 @@ class RolesClient {
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RolesGetRolePackages(query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -160,7 +162,7 @@ class RolesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRolePackages.action,
         };
 
@@ -175,6 +177,7 @@ class RolesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -186,7 +189,7 @@ class RolesClient {
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RolesGetRoleResources(query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -225,7 +228,7 @@ class RolesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRoleResources.action,
         };
 
@@ -240,6 +243,7 @@ class RolesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -252,7 +256,7 @@ class RolesClient {
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RolesGetRolePackagesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -281,7 +285,7 @@ class RolesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRolePackagesById.action,
         };
 
@@ -296,6 +300,7 @@ class RolesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -308,7 +313,7 @@ class RolesClient {
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RolesGetRoleResourcesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -337,7 +342,7 @@ class RolesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRoleResourcesById.action,
         };
 
@@ -352,6 +357,7 @@ class RolesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

@@ -37,7 +37,7 @@ class TypesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     TypesGetOrganizationSubTypes(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -61,6 +61,7 @@ class TypesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

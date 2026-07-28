@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { PackagesClient } from "../../../../clients/packages/index.js";
+import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 
 /**
  * Gets packages for an area.

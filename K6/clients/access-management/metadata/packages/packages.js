@@ -65,7 +65,7 @@ class PackagesClient {
      * @param {PackagesSearchQueryBuilder | object} query Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -119,6 +119,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -128,7 +129,7 @@ class PackagesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesExport(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -152,6 +153,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -161,7 +163,7 @@ class PackagesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetGroup(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -185,6 +187,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -195,7 +198,7 @@ class PackagesClient {
      * @param {string} id Group identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetGroupById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -204,7 +207,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}`,
             action: TAGS.PackagesGetGroupById.action,
         };
 
@@ -219,6 +222,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -229,7 +233,7 @@ class PackagesClient {
      * @param {string} id Group identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetGroupAreasById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -238,7 +242,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}/areas`,
             action: TAGS.PackagesGetGroupAreasById.action,
         };
 
@@ -253,6 +257,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -263,7 +268,7 @@ class PackagesClient {
      * @param {string} id Area identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetAreaById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -272,7 +277,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}`,
             action: TAGS.PackagesGetAreaById.action,
         };
 
@@ -287,6 +292,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -297,7 +303,7 @@ class PackagesClient {
      * @param {string} id Area identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetAreaPackagesById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -306,7 +312,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}/packages`,
             action: TAGS.PackagesGetAreaPackagesById.action,
         };
 
@@ -321,6 +327,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -331,7 +338,7 @@ class PackagesClient {
      * @param {string} id Package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetPackageById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -340,7 +347,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}`,
             action: TAGS.PackagesGetPackageById.action,
         };
 
@@ -355,6 +362,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -365,7 +373,7 @@ class PackagesClient {
      * @param {string} urnValue Package URN.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetPackageByUrn(urnValue, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -374,7 +382,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/package/urn/{urnValue}`,
             action: TAGS.PackagesGetPackageByUrn.action,
         };
 
@@ -389,6 +397,7 @@ class PackagesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -399,7 +408,7 @@ class PackagesClient {
      * @param {string} id Package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PackagesGetPackageResourcesById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -408,7 +417,7 @@ class PackagesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}/resources`,
             action: TAGS.PackagesGetPackageResourcesById.action,
         };
 
