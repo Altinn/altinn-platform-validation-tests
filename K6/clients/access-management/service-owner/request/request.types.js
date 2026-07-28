@@ -3,19 +3,19 @@
  */
 
 /**
- * @typedef {Object} RequestReferenceDto
+ * @typedef {object} RequestReferenceDto
  * @property {string|null} id
  * @property {string|null} referenceId
  */
 
 /**
- * @typedef {Object} RequestLinks
+ * @typedef {object} RequestLinks
  * @property {string|null} detailsLink
  * @property {string|null} statusLink
  */
 
 /**
- * @typedef {Object} PartyEntityDto
+ * @typedef {object} PartyEntityDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} type
@@ -25,7 +25,7 @@
  */
 
 /**
- * @typedef {Object} CreateServiceOwnerRequest
+ * @typedef {object} CreateServiceOwnerRequest
  * @property {string|null} from
  * @property {string|null} to
  * @property {RequestReferenceDto} resource
@@ -33,7 +33,7 @@
  */
 
 /**
- * @typedef {Object} RequestResourceDto
+ * @typedef {object} RequestResourceDto
  * @property {string|null} from
  * @property {string|null} to
  * @property {string|null} resource
@@ -41,14 +41,14 @@
  */
 
 /**
- * @typedef {Object} RequestPackageDto
+ * @typedef {object} RequestPackageDto
  * @property {string|null} from
  * @property {string|null} to
  * @property {string|null} package
  */
 
 /**
- * @typedef {Object} RequestDto
+ * @typedef {object} RequestDto
  * @property {string} id
  * @property {RequestStatus} status
  * @property {string|null} type

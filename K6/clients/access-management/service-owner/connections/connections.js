@@ -41,7 +41,7 @@ class ConnectionsClient {
      * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     ConnectionsCreateAccessPackage(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -76,7 +76,7 @@ class ConnectionsClient {
      * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     ConnectionsRevokeAccessPackage(request, labels = null) {
         const token = this.tokenGenerator.getToken();

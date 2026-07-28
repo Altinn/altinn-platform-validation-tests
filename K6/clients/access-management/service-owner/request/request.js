@@ -52,7 +52,7 @@ class RequestClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RequestGetPartyUrns(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -86,7 +86,7 @@ class RequestClient {
      * @param {string} id Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RequestGetRequestStatus(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -120,7 +120,7 @@ class RequestClient {
      * @param {string} id Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RequestWithdrawRequest(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -154,7 +154,7 @@ class RequestClient {
      * @param {RequestResourceDto} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RequestCreateResourceRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -189,7 +189,7 @@ class RequestClient {
      * @param {RequestPackageDto} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RequestCreatePackageRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -224,7 +224,7 @@ class RequestClient {
      * @param {CreateServiceOwnerRequest} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RequestCreateRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();

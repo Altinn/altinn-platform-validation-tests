@@ -8,8 +8,8 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @param {ServiceOwnerConnectionPartyUrn} from
-     * @returns {ServiceOwnerAccessPackageDelegationBuilder}
+     * @param {ServiceOwnerConnectionPartyUrn} from TODO: Description
+     * @returns {ServiceOwnerAccessPackageDelegationBuilder} TODO: Description
      */
     WithFrom(from) {
         this.request.from = from;
@@ -18,8 +18,8 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @param {ServiceOwnerConnectionPartyUrn} to
-     * @returns {ServiceOwnerAccessPackageDelegationBuilder}
+     * @param {ServiceOwnerConnectionPartyUrn} to TODO: Description
+     * @returns {ServiceOwnerAccessPackageDelegationBuilder} TODO: Description
      */
     WithTo(to) {
         this.request.to = to;
@@ -28,8 +28,8 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @param {AccessPackageUrn} packageUrn
-     * @returns {ServiceOwnerAccessPackageDelegationBuilder}
+     * @param {AccessPackageUrn} packageUrn TODO: Description
+     * @returns {ServiceOwnerAccessPackageDelegationBuilder} TODO: Description
      */
     WithPackageUrn(packageUrn) {
         this.request.packageUrn = packageUrn;
@@ -38,7 +38,7 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @returns {ServiceOwnerAccessPackageDelegation}
+     * @returns {ServiceOwnerAccessPackageDelegation} TODO: Description
      */
     Build() {
         if (this.request.from === null) {
