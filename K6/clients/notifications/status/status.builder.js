@@ -9,8 +9,8 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @param {number} seq TODO: description
-     * @returns {StatusFeedQueryBuilder} TODO: description
+     * @param {number} seq Value to set.
+     * @returns {StatusFeedQueryBuilder} This builder, for chaining.
      */
     WithSeq(seq) {
         this.query.seq = seq;
@@ -19,8 +19,8 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @param {number} pageSize TODO: description
-     * @returns {StatusFeedQueryBuilder} TODO: description
+     * @param {number} pageSize Value to set.
+     * @returns {StatusFeedQueryBuilder} This builder, for chaining.
      */
     WithPageSize(pageSize) {
         this.query.pageSize = pageSize;
@@ -29,8 +29,8 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @param {StatusOrderBy} orderBy TODO: description
-     * @returns {StatusFeedQueryBuilder} TODO: description
+     * @param {StatusOrderBy} orderBy Value to set.
+     * @returns {StatusFeedQueryBuilder} This builder, for chaining.
      */
     WithOrderBy(orderBy) {
         this.query.orderBy = orderBy;
@@ -39,7 +39,7 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @returns {StatusFeedQuery} TODO: description
+     * @returns {StatusFeedQuery} The built payload.
      */
     Build() {
         return this.query;

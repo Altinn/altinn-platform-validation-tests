@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { OrderClient } from "../../../../clients/order/index.js";
+import { OrderClient } from "../../../../clients/notifications/order/index.js";
 
 /**
  * Creates a new composed email notification order.

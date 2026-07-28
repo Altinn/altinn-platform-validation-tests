@@ -1,7 +1,7 @@
 
 import { check } from "k6";
 
-import { StatusClient } from "../../../../clients/status/index.js";
+import { StatusClient } from "../../../../clients/notifications/status/index.js";
 
 /**
  * Retrieves an array of order status change history.

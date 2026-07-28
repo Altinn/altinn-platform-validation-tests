@@ -7,8 +7,8 @@ class ShortMessageContentBuilder {
     }
 
     /**
-     * @param {string} sender TODO: description
-     * @returns {ShortMessageContentBuilder} TODO: description
+     * @param {string} sender Value to set.
+     * @returns {ShortMessageContentBuilder} This builder, for chaining.
      */
     WithSender(sender) {
         this.request.sender = sender;
@@ -17,8 +17,8 @@ class ShortMessageContentBuilder {
     }
 
     /**
-     * @param {string} body TODO: description
-     * @returns {ShortMessageContentBuilder} TODO: description
+     * @param {string} body Value to set.
+     * @returns {ShortMessageContentBuilder} This builder, for chaining.
      */
     WithBody(body) {
         this.request.body = body;
@@ -27,7 +27,7 @@ class ShortMessageContentBuilder {
     }
 
     /**
-     * @returns {ShortMessageContentExt} TODO: description
+     * @returns {ShortMessageContentExt} The built payload.
      */
     Build() {
         if (this.request.body === null) {
@@ -48,8 +48,8 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @param {string} phoneNumber TODO: description
-     * @returns {ShortMessageDeliveryDetailsBuilder} TODO: description
+     * @param {string} phoneNumber Value to set.
+     * @returns {ShortMessageDeliveryDetailsBuilder} This builder, for chaining.
      */
     WithPhoneNumber(phoneNumber) {
         this.request.phoneNumber = phoneNumber;
@@ -58,8 +58,8 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @param {number} timeToLiveInSeconds TODO: description
-     * @returns {ShortMessageDeliveryDetailsBuilder} TODO: description
+     * @param {number} timeToLiveInSeconds Value to set.
+     * @returns {ShortMessageDeliveryDetailsBuilder} This builder, for chaining.
      */
     WithTimeToLiveInSeconds(timeToLiveInSeconds) {
         this.request.timeToLiveInSeconds = timeToLiveInSeconds;
@@ -68,8 +68,8 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @param {ShortMessageContentExt} smsSettings TODO: description
-     * @returns {ShortMessageDeliveryDetailsBuilder} TODO: description
+     * @param {ShortMessageContentExt} smsSettings Value to set.
+     * @returns {ShortMessageDeliveryDetailsBuilder} This builder, for chaining.
      */
     WithSmsSettings(smsSettings) {
         this.request.smsSettings = smsSettings;
@@ -78,7 +78,7 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @returns {ShortMessageDeliveryDetailsExt} TODO: description
+     * @returns {ShortMessageDeliveryDetailsExt} The built payload.
      */
     Build() {
         if (this.request.phoneNumber === null) {
@@ -131,8 +131,8 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} idempotencyId TODO: description
-     * @returns {InstantSmsNotificationOrderRequestBuilder} TODO: description
+     * @param {string} idempotencyId Value to set.
+     * @returns {InstantSmsNotificationOrderRequestBuilder} This builder, for chaining.
      */
     WithIdempotencyId(idempotencyId) {
         this.request.idempotencyId = idempotencyId;
@@ -141,8 +141,8 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} sendersReference TODO: description
-     * @returns {InstantSmsNotificationOrderRequestBuilder} TODO: description
+     * @param {string} sendersReference Value to set.
+     * @returns {InstantSmsNotificationOrderRequestBuilder} This builder, for chaining.
      */
     WithSendersReference(sendersReference) {
         this.request.sendersReference = sendersReference;
@@ -151,8 +151,8 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {ShortMessageDeliveryDetailsExt} recipientSms TODO: description
-     * @returns {InstantSmsNotificationOrderRequestBuilder} TODO: description
+     * @param {ShortMessageDeliveryDetailsExt} recipientSms Value to set.
+     * @returns {InstantSmsNotificationOrderRequestBuilder} This builder, for chaining.
      */
     WithRecipientSms(recipientSms) {
         this.request.recipientSms = recipientSms;
@@ -161,7 +161,7 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @returns {InstantSmsNotificationOrderRequestExt} TODO: description
+     * @returns {InstantSmsNotificationOrderRequestExt} The built payload.
      */
     Build() {
         if (this.request.idempotencyId === null) {
@@ -191,8 +191,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {string} subject TODO: description
-     * @returns {InstantEmailContentBuilder} TODO: description
+     * @param {string} subject Value to set.
+     * @returns {InstantEmailContentBuilder} This builder, for chaining.
      */
     WithSubject(subject) {
         this.request.subject = subject;
@@ -201,8 +201,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {string} body TODO: description
-     * @returns {InstantEmailContentBuilder} TODO: description
+     * @param {string} body Value to set.
+     * @returns {InstantEmailContentBuilder} This builder, for chaining.
      */
     WithBody(body) {
         this.request.body = body;
@@ -211,8 +211,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {string} senderEmailAddress TODO: description
-     * @returns {InstantEmailContentBuilder} TODO: description
+     * @param {string} senderEmailAddress Value to set.
+     * @returns {InstantEmailContentBuilder} This builder, for chaining.
      */
     WithSenderEmailAddress(senderEmailAddress) {
         this.request.senderEmailAddress = senderEmailAddress;
@@ -221,8 +221,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType TODO: description
-     * @returns {InstantEmailContentBuilder} TODO: description
+     * @param {EmailContentType} contentType Value to set.
+     * @returns {InstantEmailContentBuilder} This builder, for chaining.
      */
     WithContentType(contentType) {
         this.request.contentType = contentType;
@@ -231,7 +231,7 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @returns {InstantEmailContentExt} TODO: description
+     * @returns {InstantEmailContentExt} The built payload.
      */
     Build() {
         if (this.request.subject === null) {
@@ -255,8 +255,8 @@ class InstantEmailDetailsBuilder {
     }
 
     /**
-     * @param {string} emailAddress TODO: description
-     * @returns {InstantEmailDetailsBuilder} TODO: description
+     * @param {string} emailAddress Value to set.
+     * @returns {InstantEmailDetailsBuilder} This builder, for chaining.
      */
     WithEmailAddress(emailAddress) {
         this.request.emailAddress = emailAddress;
@@ -265,8 +265,8 @@ class InstantEmailDetailsBuilder {
     }
 
     /**
-     * @param {InstantEmailContentExt} emailSettings TODO: description
-     * @returns {InstantEmailDetailsBuilder} TODO: description
+     * @param {InstantEmailContentExt} emailSettings Value to set.
+     * @returns {InstantEmailDetailsBuilder} This builder, for chaining.
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -275,7 +275,7 @@ class InstantEmailDetailsBuilder {
     }
 
     /**
-     * @returns {InstantEmailDetailsExt} TODO: description
+     * @returns {InstantEmailDetailsExt} The built payload.
      */
     Build() {
         if (this.request.emailAddress === null) {
@@ -318,8 +318,8 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} idempotencyId TODO: description
-     * @returns {InstantEmailNotificationOrderRequestBuilder} TODO: description
+     * @param {string} idempotencyId Value to set.
+     * @returns {InstantEmailNotificationOrderRequestBuilder} This builder, for chaining.
      */
     WithIdempotencyId(idempotencyId) {
         this.request.idempotencyId = idempotencyId;
@@ -328,8 +328,8 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} sendersReference TODO: description
-     * @returns {InstantEmailNotificationOrderRequestBuilder} TODO: description
+     * @param {string} sendersReference Value to set.
+     * @returns {InstantEmailNotificationOrderRequestBuilder} This builder, for chaining.
      */
     WithSendersReference(sendersReference) {
         this.request.sendersReference = sendersReference;
@@ -338,8 +338,8 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {InstantEmailDetailsExt} recipientEmail TODO: description
-     * @returns {InstantEmailNotificationOrderRequestBuilder} TODO: description
+     * @param {InstantEmailDetailsExt} recipientEmail Value to set.
+     * @returns {InstantEmailNotificationOrderRequestBuilder} This builder, for chaining.
      */
     WithRecipientEmail(recipientEmail) {
         this.request.recipientEmail = recipientEmail;
@@ -348,7 +348,7 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @returns {InstantEmailNotificationOrderRequestExt} TODO: description
+     * @returns {InstantEmailNotificationOrderRequestExt} The built payload.
      */
     Build() {
         if (this.request.idempotencyId === null) {

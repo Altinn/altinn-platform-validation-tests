@@ -321,3 +321,19 @@
  * @property {string} notificationOrderId Unique identifier for the notification order.
  * @property {NotificationOrderChainShipmentExt} notification Notification shipment information.
  */
+
+/**
+ * Represents a request to send a notification immediately to a single recipient.
+ *
+ * @typedef {object} InstantNotificationOrderRequestExt
+ * @property {string} idempotencyId The unique identifier used to ensure the same notification is not processed multiple times.
+ * @property {string|null} [sendersReference] The reference identifier assigned by the sender for tracking purposes.
+ * @property {InstantNotificationRecipientExt} recipient
+ */
+
+/**
+ * Represents recipient information for an urgent notification delivery.
+ *
+ * @typedef {object} InstantNotificationRecipientExt
+ * @property {ShortMessageDeliveryDetailsExt} recipientSms
+ */

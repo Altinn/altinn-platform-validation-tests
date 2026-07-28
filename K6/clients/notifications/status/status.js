@@ -42,7 +42,7 @@ class StatusClient {
      * @param {string} id Notification order identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     StatusGetShipment(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -51,7 +51,7 @@ class StatusClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}`,
             action: TAGS.StatusGetShipment.action,
         };
 
@@ -67,6 +67,7 @@ class StatusClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -77,7 +78,7 @@ class StatusClient {
      * @param {StatusFeedQuery|null} queryParams Optional feed query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     StatusGetFeed(queryParams = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -87,16 +88,18 @@ class StatusClient {
         if (queryParams !== null) {
             const params = [];
 
-            if (queryParams.seq !== null) {
-                params.push(`Seq=${queryParams.seq}`);
-            }
+            const queryKeys = {
+                Seq: queryParams.seq,
+                PageSize: queryParams.pageSize,
+                OrderBy: queryParams.orderBy,
+            };
 
-            if (queryParams.pageSize !== null) {
-                params.push(`PageSize=${queryParams.pageSize}`);
-            }
+            for (const [key, value] of Object.entries(queryKeys)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
 
-            if (queryParams.orderBy !== null) {
-                params.push(`OrderBy=${queryParams.orderBy}`);
+                params.push(`${key}=${encodeURIComponent(value)}`);
             }
 
             if (params.length > 0) {
@@ -106,7 +109,7 @@ class StatusClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/feed`,
             action: TAGS.StatusGetFeed.action,
         };
 
@@ -122,6 +125,7 @@ class StatusClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }

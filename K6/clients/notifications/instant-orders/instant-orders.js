@@ -1,6 +1,9 @@
 import http from "k6/http";
 
 const TAGS = {
+    InstantOrdersCreate: {
+        action: "instant-orders-create",
+    },
     InstantOrdersCreateSms: {
         action: "instant-orders-create-sms",
     },
@@ -41,7 +44,7 @@ class InstantOrdersClient {
      * @param {InstantSmsNotificationOrderRequestExt} request SMS notification payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     InstantOrdersCreateSms(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -66,6 +69,7 @@ class InstantOrdersClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -76,7 +80,7 @@ class InstantOrdersClient {
      * @param {InstantEmailNotificationOrderRequestExt} request Email notification payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     InstantOrdersCreateEmail(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -101,6 +105,45 @@ class InstantOrdersClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Creates an instant notification order.
+     *
+     * POST /future/orders/instant
+     *
+     * @param {InstantNotificationOrderRequestExt} request Instant order.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    InstantOrdersCreate(request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}`;
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.InstantOrdersCreate.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }

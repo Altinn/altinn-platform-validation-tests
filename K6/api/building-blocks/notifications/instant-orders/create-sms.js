@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { InstantOrdersClient } from "../../../../clients/instant-orders/index.js";
+import { InstantOrdersClient } from "../../../../clients/notifications/instant-orders/index.js";
 
 /**
  * Creates and sends an instant SMS notification.
