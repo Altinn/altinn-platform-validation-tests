@@ -5,9 +5,9 @@ import { AttachmentClient } from "../../../../clients/correspondence/index.js";
 /**
  * Initializes a new shared attachment.
  *
- * @param {AttachmentClient} attachmentClient TODO: Description
- * @param {InitializeAttachmentExt} request TODO: Description
- * @param {{[key:string]:string}|null} labels TODO: Description
+ * @param {AttachmentClient} attachmentClient Client for the API.
+ * @param {InitializeAttachmentExt} request See the client method.
+ * @param {{[key:string]:string}|null} labels See the client method.
  * @returns {string|null} Attachment id.
  */
 export function InitializeAttachment(

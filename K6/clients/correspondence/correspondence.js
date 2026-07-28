@@ -63,7 +63,7 @@ class CorrespondenceClient {
      * Correspondence initialization payload.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     InitializeCorrespondence(body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -101,7 +101,7 @@ class CorrespondenceClient {
      * Optional query parameters.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetCorrespondences(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,7 +153,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PurgeCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -162,7 +162,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/purge`,
             action: TAGS.PurgeCorrespondence.action,
         };
 
@@ -194,7 +194,7 @@ class CorrespondenceClient {
      * Attachment UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DownloadAttachment(correspondenceId, attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -204,7 +204,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/attachment/{attachmentId}/download`,
             action: TAGS.DownloadAttachment.action,
         };
 
@@ -233,7 +233,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DownloadAllAttachments(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -243,7 +243,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/attachments/downloadall`,
             action: TAGS.DownloadAllAttachments.action,
         };
 
@@ -272,7 +272,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     MarkAsRead(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -282,7 +282,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/markasread`,
             action: TAGS.MarkAsRead.action,
         };
 
@@ -312,7 +312,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ConfirmCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -322,7 +322,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/confirm`,
             action: TAGS.ConfirmCorrespondence.action,
         };
 
@@ -352,7 +352,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -362,7 +362,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}`,
             action: TAGS.GetCorrespondence.action,
         };
 
@@ -391,7 +391,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetCorrespondenceDetails(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -401,7 +401,7 @@ class CorrespondenceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/details`,
             action: TAGS.GetCorrespondenceDetails.action,
         };
 

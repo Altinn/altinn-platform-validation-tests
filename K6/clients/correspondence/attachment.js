@@ -40,7 +40,7 @@ class AttachmentClient {
     /**
      * Default request tags.
      *
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     static get TAGS() {
         return TAGS;
@@ -49,9 +49,9 @@ class AttachmentClient {
     /**
      * Initializes a shared attachment.
      *
-     * @param {InitializeAttachmentExt} request TODO: Description
-     * @param {{[key:string]:string}|null} labels TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {InitializeAttachmentExt} request See the client method.
+     * @param {{[key:string]:string}|null} labels See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     InitializeAttachment(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -73,6 +73,7 @@ class AttachmentClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );
@@ -81,11 +82,11 @@ class AttachmentClient {
     /**
      * Uploads attachment data.
      *
-     * @param {string} attachmentId TODO: Description
+     * @param {string} attachmentId See the client method.
      * @param {*} fileData Binary payload (ArrayBuffer, http.file(), string, etc.)
-     * @param {string} [contentType] TODO: Description
-     * @param {{[key:string]:string}|null} labels TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {string} [contentType] See the client method.
+     * @param {{[key:string]:string}|null} labels See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     UploadAttachment(
         attachmentId,
@@ -102,7 +103,7 @@ class AttachmentClient {
         const tags = {
             ...labels,
             endpoint: url.toString(),
-            name: url.toString(),
+            name: `${this.FULL_PATH}/attachment/{attachmentId}/upload`,
             action: TAGS.UploadAttachment.action,
         };
 
@@ -122,9 +123,9 @@ class AttachmentClient {
     /**
      * Gets attachment metadata.
      *
-     * @param {string} attachmentId TODO: Description
-     * @param {{[key:string]:string}|null} labels TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {string} attachmentId See the client method.
+     * @param {{[key:string]:string}|null} labels See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -136,7 +137,7 @@ class AttachmentClient {
         const tags = {
             ...labels,
             endpoint: url.toString(),
-            name: url.toString(),
+            name: `${this.FULL_PATH}/attachment/{attachmentId}`,
             action: TAGS.GetAttachment.action,
         };
 
@@ -144,6 +145,7 @@ class AttachmentClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -151,9 +153,9 @@ class AttachmentClient {
     /**
      * Deletes an attachment.
      *
-     * @param {string} attachmentId TODO: Description
-     * @param {{[key:string]:string}|null} labels TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {string} attachmentId See the client method.
+     * @param {{[key:string]:string}|null} labels See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -165,7 +167,7 @@ class AttachmentClient {
         const tags = {
             ...labels,
             endpoint: url.toString(),
-            name: url.toString(),
+            name: `${this.FULL_PATH}/attachment/{attachmentId}`,
             action: TAGS.DeleteAttachment.action,
         };
 
@@ -173,6 +175,7 @@ class AttachmentClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -180,9 +183,9 @@ class AttachmentClient {
     /**
      * Gets detailed attachment metadata.
      *
-     * @param {string} attachmentId TODO: Description
-     * @param {{[key:string]:string}|null} labels TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {string} attachmentId See the client method.
+     * @param {{[key:string]:string}|null} labels See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetAttachmentDetails(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -194,7 +197,7 @@ class AttachmentClient {
         const tags = {
             ...labels,
             endpoint: url.toString(),
-            name: url.toString(),
+            name: `${this.FULL_PATH}/attachment/{attachmentId}/details`,
             action: TAGS.GetAttachmentDetails.action,
         };
 
@@ -202,6 +205,7 @@ class AttachmentClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -209,9 +213,9 @@ class AttachmentClient {
     /**
      * Downloads attachment data.
      *
-     * @param {string} attachmentId TODO: Description
-     * @param {{[key:string]:string}|null} labels TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {string} attachmentId See the client method.
+     * @param {{[key:string]:string}|null} labels See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DownloadAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -223,7 +227,7 @@ class AttachmentClient {
         const tags = {
             ...labels,
             endpoint: url.toString(),
-            name: url.toString(),
+            name: `${this.FULL_PATH}/attachment/{attachmentId}/download`,
             action: TAGS.DownloadAttachment.action,
         };
 
@@ -232,6 +236,7 @@ class AttachmentClient {
             responseType: "binary",
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

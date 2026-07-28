@@ -20,8 +20,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} resourceId TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {string} resourceId See the client method.
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withResourceId(resourceId) {
         this.query.resourceId = resourceId;
@@ -29,8 +29,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} from ISO date-time TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {string} from ISO date-time
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withFrom(from) {
         this.query.from = from;
@@ -38,8 +38,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} to ISO date-time TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {string} to ISO date-time
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withTo(to) {
         this.query.to = to;
@@ -47,8 +47,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {CorrespondenceStatusExt} status TODO: Description TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {CorrespondenceStatusExt} status See the client method.
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withStatus(status) {
         this.query.status = status;
@@ -56,8 +56,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {CorrespondencesRoleType} role TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {CorrespondencesRoleType} role See the client method.
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withRole(role) {
         this.query.role = role;
@@ -65,8 +65,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} onBehalfOf TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {string} onBehalfOf See the client method.
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withOnBehalfOf(onBehalfOf) {
         this.query.onBehalfOf = onBehalfOf;
@@ -74,8 +74,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} sendersReference TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {string} sendersReference See the client method.
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withSendersReference(sendersReference) {
         this.query.sendersReference = sendersReference;
@@ -83,8 +83,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} idempotentKey UUID TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {string} idempotentKey UUID
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withIdempotentKey(idempotentKey) {
         this.query.idempotentKey = idempotentKey;
@@ -92,8 +92,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {number} altinn2CorrespondenceId TODO: Description
-     * @returns {CorrespondenceQueryBuilder} TODO: Description
+     * @param {number} altinn2CorrespondenceId See the client method.
+     * @returns {CorrespondenceQueryBuilder} This builder, for chaining.
      */
     withAltinn2CorrespondenceId(altinn2CorrespondenceId) {
         this.query.altinn2CorrespondenceId = altinn2CorrespondenceId;
@@ -101,7 +101,7 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @returns {CorrespondenceQuery} TODO: Description
+     * @returns {CorrespondenceQuery} The built payload.
      */
     build() {
         if (
@@ -138,8 +138,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {BaseCorrespondenceExt} correspondence TODO: Description
-     * @returns {InitializeCorrespondencesBuilder} TODO: Description
+     * @param {BaseCorrespondenceExt} correspondence See the client method.
+     * @returns {InitializeCorrespondencesBuilder} This builder, for chaining.
      */
     withCorrespondence(correspondence) {
         this.model.correspondence = correspondence;
@@ -147,8 +147,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {Array<string>} recipients TODO: Description
-     * @returns {InitializeCorrespondencesBuilder} TODO: Description
+     * @param {Array<string>} recipients See the client method.
+     * @returns {InitializeCorrespondencesBuilder} This builder, for chaining.
      */
     withRecipients(recipients) {
         this.model.recipients = recipients;
@@ -156,8 +156,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {Array<string>} attachmentIds TODO: Description
-     * @returns {InitializeCorrespondencesBuilder} TODO: Description
+     * @param {Array<string>} attachmentIds See the client method.
+     * @returns {InitializeCorrespondencesBuilder} This builder, for chaining.
      */
     withExistingAttachments(attachmentIds) {
         this.model.existingAttachments = attachmentIds;
@@ -165,8 +165,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {string} idempotentKey TODO: Description
-     * @returns {InitializeCorrespondencesBuilder} TODO: Description
+     * @param {string} idempotentKey See the client method.
+     * @returns {InitializeCorrespondencesBuilder} This builder, for chaining.
      */
     withIdempotentKey(idempotentKey) {
         this.model.idempotentKey = idempotentKey;
@@ -176,7 +176,7 @@ class InitializeCorrespondencesBuilder {
     /**
      * Builds InitializeCorrespondencesExt.
      *
-     * @returns {InitializeCorrespondencesExt} TODO: Description
+     * @returns {InitializeCorrespondencesExt} The built payload.
      */
     build() {
         if (this.model.correspondence === null) {
@@ -212,8 +212,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {string} value TODO: Description
-     * @returns {boolean} TODO: Description
+     * @param {string} value See the client method.
+     * @returns {boolean} The built payload.
      */
     isGuid(value) {
         return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -248,8 +248,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} resourceId TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {string} resourceId See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withResourceId(resourceId) {
         this.model.resourceId = resourceId;
@@ -257,8 +257,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} sendersReference TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {string} sendersReference See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withSendersReference(sendersReference) {
         this.model.sendersReference = sendersReference;
@@ -266,8 +266,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} messageSender TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {string} messageSender See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withMessageSender(messageSender) {
         this.model.messageSender = messageSender;
@@ -275,8 +275,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {CorrespondenceContentExt} content TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {CorrespondenceContentExt} content See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withContent(content) {
         this.model.content = content;
@@ -284,8 +284,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} requestedPublishTime ISO date-time TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {string} requestedPublishTime ISO date-time
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withRequestedPublishTime(requestedPublishTime) {
         this.model.requestedPublishTime = requestedPublishTime;
@@ -293,8 +293,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} dueDateTime ISO date-time TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {string} dueDateTime ISO date-time
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withDueDateTime(dueDateTime) {
         this.model.dueDateTime = dueDateTime;
@@ -302,8 +302,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {Array<ExternalReferenceExt>} references TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {Array<ExternalReferenceExt>} references See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withExternalReferences(references) {
         this.model.externalReferences = references;
@@ -311,8 +311,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {{[key:string]:string}} properties TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {{[key:string]:string}} properties See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withPropertyList(properties) {
         this.model.propertyList = properties;
@@ -320,8 +320,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {Array<CorrespondenceReplyOptionExt>} replyOptions TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {Array<CorrespondenceReplyOptionExt>} replyOptions See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withReplyOptions(replyOptions) {
         this.model.replyOptions = replyOptions;
@@ -329,8 +329,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {InitializeCorrespondenceNotificationExt} notification TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {InitializeCorrespondenceNotificationExt} notification See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withNotification(notification) {
         this.model.notification = notification;
@@ -338,8 +338,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {boolean} ignoreReservation TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {boolean} ignoreReservation See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withIgnoreReservation(ignoreReservation) {
         this.model.ignoreReservation = ignoreReservation;
@@ -347,8 +347,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {boolean} value TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {boolean} value See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withConfirmationNeeded(value) {
         this.model.isConfirmationNeeded = value;
@@ -356,8 +356,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {boolean} value TODO: Description
-     * @returns {BaseCorrespondenceBuilder} TODO: Description
+     * @param {boolean} value See the client method.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withConfidential(value) {
         this.model.isConfidential = value;
@@ -365,7 +365,7 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @returns {BaseCorrespondenceExt} TODO: Description
+     * @returns {BaseCorrespondenceExt} The built payload.
      */
     build() {
         if (!this.model.resourceId) {
@@ -433,8 +433,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationTemplateExt} template TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {NotificationTemplateExt} template See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withNotificationTemplate(template) {
         this.model.notificationTemplate = template;
@@ -442,8 +442,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} subject TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} subject See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withEmailSubject(subject) {
         this.model.emailSubject = subject;
@@ -451,8 +451,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} body See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withEmailBody(body) {
         this.model.emailBody = body;
@@ -460,8 +460,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {EmailContentType} contentType See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withEmailContentType(contentType) {
         this.model.emailContentType = contentType;
@@ -469,8 +469,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} body See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withSmsBody(body) {
         this.model.smsBody = body;
@@ -478,8 +478,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {boolean} sendReminder TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {boolean} sendReminder See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withSendReminder(sendReminder) {
         this.model.sendReminder = sendReminder;
@@ -487,8 +487,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} subject TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} subject See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withReminderEmailSubject(subject) {
         this.model.reminderEmailSubject = subject;
@@ -496,8 +496,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} body See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withReminderEmailBody(body) {
         this.model.reminderEmailBody = body;
@@ -505,8 +505,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {EmailContentType} contentType See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withReminderEmailContentType(contentType) {
         this.model.reminderEmailContentType = contentType;
@@ -514,8 +514,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} body See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withReminderSmsBody(body) {
         this.model.reminderSmsBody = body;
@@ -523,8 +523,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationChannelExt} channel TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {NotificationChannelExt} channel See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withNotificationChannel(channel) {
         this.model.notificationChannel = channel;
@@ -532,8 +532,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationChannelExt} channel TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {NotificationChannelExt} channel See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withReminderNotificationChannel(channel) {
         this.model.reminderNotificationChannel = channel;
@@ -541,8 +541,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} sendersReference TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {string} sendersReference See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withSendersReference(sendersReference) {
         this.model.sendersReference = sendersReference;
@@ -550,8 +550,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {Array<NotificationRecipientExt>} recipients TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {Array<NotificationRecipientExt>} recipients See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withCustomRecipients(recipients) {
         this.model.customRecipients = recipients;
@@ -559,8 +559,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationRecipientExt} recipient TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {NotificationRecipientExt} recipient See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withCustomRecipient(recipient) {
         this.model.customRecipient = recipient;
@@ -568,8 +568,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {Array<CustomNotificationRecipientExt>} recipients TODO: Description
-     * @returns {NotificationBuilder} TODO: Description
+     * @param {Array<CustomNotificationRecipientExt>} recipients See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withCustomNotificationRecipients(recipients) {
         this.model.customNotificationRecipients = recipients;
@@ -577,8 +577,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {boolean} override TODO: Description
-     * @returns {NotificationBuilder}TODO: Description
+     * @param {boolean} override See the client method.
+     * @returns {NotificationBuilder} This builder, for chaining.
      */
     withOverrideRegisteredContactInformation(override) {
         this.model.overrideRegisteredContactInformation = override;
@@ -588,7 +588,7 @@ class NotificationBuilder {
     /**
      * Builds InitializeCorrespondenceNotificationExt.
      *
-     * @returns {InitializeCorrespondenceNotificationExt} TODO: Description
+     * @returns {InitializeCorrespondenceNotificationExt} The built payload.
      */
     build() {
         if (

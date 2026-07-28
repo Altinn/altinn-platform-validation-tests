@@ -1,48 +1,405 @@
-// ============================================================================
-// Request Models
-// ============================================================================
-
 /**
- * Request model for initializing one or more correspondences.
- *
- * @typedef {object} InitializeCorrespondencesExt
- * @property {BaseCorrespondenceExt} correspondence
- * Correspondence data.
- * @property {Array<string>} recipients
- * Recipients of the correspondence.
- * Can be organization identifiers, national identity numbers,
- * or self-identified users.
- * @property {Array<string>|null} existingAttachments
- * Existing attachment ids to attach to the correspondence.
- * @property {string|null} idempotentKey
- * Optional idempotency key to prevent duplicate correspondence creation.
+ * @typedef {object} AltinnProblemDetails
+ * @property {string|null} [type]
+ * @property {string|null} [title]
+ * @property {number|null} [status]
+ * @property {string|null} [detail]
+ * @property {string|null} [instance]
+ * @property {string} code
+ * @property {string|null} [traceId] OpenTelemetry trace ID for the request.
+ * @property {string|null} [errorCode] Altinn error code (e.g. CORR-00001).
  */
 
 /**
- * Request model for attachment initialization.
+ * @typedef {object} AltinnValidationProblemDetails
+ * @property {string|null} [type]
+ * @property {string|null} [title]
+ * @property {number|null} [status]
+ * @property {string|null} [detail]
+ * @property {string|null} [instance]
+ * @property {string|null} [code] Altinn error code (e.g. STD-00000).
+ * @property {Array<object>|null} [validationErrors] Structured validation errors per field.
+ * @property {string|null} [traceId] OpenTelemetry trace ID for the request.
+ * @property {{[key: string]: Array<string>}|null} [errors] Field-keyed validation error messages (legacy format).
+ */
+
+/**
+ * Defines the location of the attachment data
+ *
+ * @typedef {"AltinnCorrespondenceAttachment"|"ExternalStorage"} AttachmentDataLocationTypeExt
+ */
+
+/**
+ * Represents the important statuses for an attachment
+ *
+ * @typedef {"Initialized"|"UploadProcessing"|"Published"|"Purged"|"Failed"|"Expired"} AttachmentStatusExt
+ */
+
+/**
+ * Represents a request object for the operation, InitializeCorrespondence, that can create a correspondence in Altinn.
+ *
+ * @typedef {object} BaseCorrespondenceExt
+ * @property {string} resourceId The Resource Id associated with the correspondence service.
+ * @property {string|null} [sender] The Sending organization of the correspondence.
+ * @property {string} sendersReference A reference used by senders and receivers to identify a specific Correspondence using external identification methods.
+ * @property {string|null} [messageSender] An alternative name for the sender of the correspondence. The name will be displayed instead of the organization name.
+ * @property {InitializeCorrespondenceContentExt} content
+ * @property {string|null} [requestedPublishTime] When the correspondence should become visible to the recipient.
+ * @property {string|null} [dueDateTime] When the recipient must reply to the correspondence
+ * @property {Array<ExternalReferenceExt>|null} [externalReferences] A list of references Senders can use to tell the recipient that the correspondence is related to the referenced item(s) Examples include Altinn App instances, Altinn Broker File Transfers
+ * @property {{[key: string]: string}|null} [propertyList] User-defined properties related to the Correspondence
+ * @property {Array<CorrespondenceReplyOptionExt>|null} [replyOptions] Options for how the recipient can reply to the Correspondence
+ * @property {InitializeCorrespondenceNotificationExt} notification
+ * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
+ * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
+ * @property {boolean} isConfidential Specifies whether the correspondence is confidential
+ */
+
+/**
+ * Represents a binary attachment to a Correspondence
+ *
+ * @typedef {object} CorrespondenceAttachmentExt
+ * @property {string|null} [fileName] The name of the attachment file.
+ * @property {string|null} [displayName] A logical name for the file, which will be shown in Altinn Inbox.
+ * @property {boolean} isEncrypted A value indicating whether the attachment is encrypted or not.
+ * @property {string|null} [checksum] MD5 checksum for file data.
+ * @property {string} sendersReference A reference value given to the attachment by the creator.
+ * @property {number|null} [expirationInDays] Relative expiration time (days) for the attachment.
+ * @property {string} id A unique id for the correspondence attachment.
+ * @property {AttachmentDataLocationTypeExt} dataLocationType
+ * @property {string} created The date on which this attachment is created
+ * @property {AttachmentStatusExt} status
+ * @property {string|null} [statusText] Current attachment status text description
+ * @property {string} statusChanged Timestamp for when the Current Attachment Status was changed
+ * @property {string|null} [dataType] The attachment data type in MIME format
+ * @property {string|null} [expirationTime] The expiration time for this attachment on this correspondence.
+ */
+
+/**
+ * Represents the content of a reportee element of the type correspondence.
+ *
+ * @typedef {object} CorrespondenceContentExt
+ * @property {string|null} [language] Gets or sets the language of the correspondence, specified according to ISO 639-1
+ * @property {string} messageTitle Gets or sets the correspondence message title. Subject. Must be plaintext.
+ * @property {string|null} [messageSummary] Gets or sets a summary text of the correspondence. Must be plaintext.
+ * @property {string} messageBody Gets or sets the main body of the correspondence. Must be (CommonMark) Markdown.
+ * @property {Array<CorrespondenceAttachmentExt>|null} [attachments] Gets or sets a list of attachments.
+ */
+
+/**
+ * A more detailed object representing all the details for a correspondence, including status history and notifications
+ *
+ * @typedef {object} CorrespondenceDetailsExt
+ * @property {string} resourceId The Resource Id associated with the correspondence service.
+ * @property {string|null} [sender] The Sending organization of the correspondence.
+ * @property {string} sendersReference A reference used by senders and receivers to identify a specific Correspondence using external identification methods.
+ * @property {string|null} [messageSender] An alternative name for the sender of the correspondence. The name will be displayed instead of the organization name.
+ * @property {CorrespondenceContentExt} content
+ * @property {string|null} [requestedPublishTime] When the correspondence should become visible to the recipient.
+ * @property {string|null} [dueDateTime] When the recipient must reply to the correspondence
+ * @property {Array<ExternalReferenceExt>|null} [externalReferences] A list of references Senders can use to tell the recipient that the correspondence is related to the referenced item(s) Examples include Altinn App instances, Altinn Broker File Transfers
+ * @property {{[key: string]: string}|null} [propertyList] User-defined properties related to the Correspondence
+ * @property {Array<CorrespondenceReplyOptionExt>|null} [replyOptions] Options for how the recipient can reply to the Correspondence
+ * @property {InitializeCorrespondenceNotificationExt} notification
+ * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
+ * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
+ * @property {boolean} isConfidential Specifies whether the correspondence is confidential
+ * @property {string|null} [recipient] The recipient of the correspondence.
+ * @property {string} correspondenceId Unique Id for this correspondence
+ * @property {string} created When the correspondence was created
+ * @property {CorrespondenceStatusExt} status
+ * @property {string|null} [statusText] The current status text for the Correspondence
+ * @property {string} statusChanged Timestamp for when the Current Correspondence Status was changed
+ * @property {Array<NotificationExt>|null} [notifications] Notifications directly related to this Correspondence.
+ * @property {number|null} [altinn2CorrespondenceId] The identifier/reference from Altinn 2 for migrated correspondence. Will be null for correspondence created in Altinn 3.
+ * @property {string|null} [published] Is null until the correspondence is published.
+ * @property {string|null} [read] Timestamp for when the correspondence was first read by the recipient. Is null until the correspondence has been read.
+ * @property {Array<CorrespondenceStatusEventExt>|null} [statusHistory] The Status history for the Correspondence
+ * @property {DialogPortenSystemLabel} systemLabel
+ */
+
+/**
+ * Summary of a notification order linked to a correspondence.
+ *
+ * @typedef {object} CorrespondenceNotificationOverviewExt
+ * @property {string|null} [notificationOrderId] The notification order identifier, when available.
+ * @property {boolean} isReminder Whether the notification is a reminder.
+ */
+
+/**
+ * An object representing an overview of a correspondence with enough details to drive the business process
+ *
+ * @typedef {object} CorrespondenceOverviewExt
+ * @property {string} resourceId The Resource Id associated with the correspondence service.
+ * @property {string|null} [sender] The Sending organization of the correspondence.
+ * @property {string} sendersReference A reference used by senders and receivers to identify a specific Correspondence using external identification methods.
+ * @property {string|null} [messageSender] An alternative name for the sender of the correspondence. The name will be displayed instead of the organization name.
+ * @property {CorrespondenceContentExt} content
+ * @property {string|null} [requestedPublishTime] When the correspondence should become visible to the recipient.
+ * @property {string|null} [dueDateTime] When the recipient must reply to the correspondence
+ * @property {Array<ExternalReferenceExt>|null} [externalReferences] A list of references Senders can use to tell the recipient that the correspondence is related to the referenced item(s) Examples include Altinn App instances, Altinn Broker File Transfers
+ * @property {{[key: string]: string}|null} [propertyList] User-defined properties related to the Correspondence
+ * @property {Array<CorrespondenceReplyOptionExt>|null} [replyOptions] Options for how the recipient can reply to the Correspondence
+ * @property {InitializeCorrespondenceNotificationExt} notification
+ * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
+ * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
+ * @property {boolean} isConfidential Specifies whether the correspondence is confidential
+ * @property {string|null} [recipient] The recipient of the correspondence.
+ * @property {string} correspondenceId Unique Id for this correspondence
+ * @property {string} created When the correspondence was created
+ * @property {CorrespondenceStatusExt} status
+ * @property {string|null} [statusText] The current status text for the Correspondence
+ * @property {string} statusChanged Timestamp for when the Current Correspondence Status was changed
+ * @property {Array<CorrespondenceNotificationOverviewExt>|null} [notifications] An overview of the notifications for this correspondence
+ * @property {number|null} [altinn2CorrespondenceId] The identifier/reference from Altinn 2 for migrated correspondence. Will be null for correspondence created in Altinn 3.
+ * @property {string|null} [published] Is null until the correspondence is published.
+ * @property {string|null} [read] Timestamp for when the correspondence was first read by the recipient. Is null until the correspondence has been read.
+ */
+
+/**
+ * Represents a ReplyOption with information provided by the sender. A reply option is a way for recipients to respond to a correspondence in addition to the normal Read and Confirm operations
+ *
+ * @typedef {object} CorrespondenceReplyOptionExt
+ * @property {string|null} [linkURL] Gets or sets the URL to be used as a reply/response to a correspondence.
+ * @property {string|null} [linkText] Gets or sets the url text.
+ */
+
+/**
+ * An entity representing a Correspondence Status Event
+ *
+ * @typedef {object} CorrespondenceStatusEventExt
+ * @property {CorrespondenceStatusExt} status
+ * @property {string|null} [statusText] Correspondence Status Text description
+ * @property {string} statusChanged Timestamp for when this Correspondence Status Event occurred
+ */
+
+/**
+ * Represents the important statuses for an Correspondence
+ *
+ * @typedef {"Initialized"|"ReadyForPublish"|"Published"|"Fetched"|"Read"|"Replied"|"Confirmed"|"PurgedByRecipient"|"PurgedByAltinn"|"Archived"|"Reserved"|"Failed"|"AttachmentsDownloaded"} CorrespondenceStatusExt
+ */
+
+/**
+ * An entity representing a a list of Correspondences
+ *
+ * @typedef {object} CorrespondencesExt
+ * @property {Array<string>|null} [ids] Correspondence ids
+ */
+
+/**
+ * @typedef {"Recipient"|"Sender"|"RecipientAndSender"} CorrespondencesRoleType
+ */
+
+/**
+ * Represents a custom notification recipient with override options
+ *
+ * @typedef {object} CustomNotificationRecipientExt
+ * @property {string|null} [recipientToOverride] This is not used, but is required by the API.
+ * @property {Array<NotificationRecipientExt>|null} [recipients] Only the first recipient will be used as custom recipient.
+ */
+
+/**
+ * @typedef {"Default"|"Bin"|"Archive"|"MarkedAsUnopened"|"Sent"} DialogPortenSystemLabel
+ */
+
+/**
+ * @typedef {"Plain"|"Html"} EmailContentType
+ */
+
+/**
+ * Represents a reference to another item in the Altinn ecosystem
+ *
+ * @typedef {object} ExternalReferenceExt
+ * @property {string|null} [referenceValue] The Reference Value
+ * @property {ReferenceTypeExt} referenceType
+ */
+
+/**
+ * Defines the location of the attachment data during the Initialize Correspondence Operation
+ *
+ * @typedef {"NewCorrespondenceAttachment"|"ExistingCorrespondenceAttachment"|"ExistingExternalStorage"} InitializeAttachmentDataLocationTypeExt
+ */
+
+/**
+ * Represents an attachment to a specific correspondence as part of Initialize Correspondence Operation
  *
  * @typedef {object} InitializeCorrespondenceAttachmentExt
- * @property {string|null} fileName
- * Name of the attachment file.
- * @property {string|null} displayName
- * Logical name displayed in Altinn Inbox.
- * @property {boolean} isEncrypted
- * Whether the attachment is encrypted.
- * @property {string|null} checksum
- * MD5 checksum for file data.
- * @property {string} sendersReference
- * Reference value given by the creator.
- * @property {number|null} expirationInDays
- * Relative expiration time in days.
- * @property {string|null} id
- * Attachment UUID.
- * @property {InitializeAttachmentDataLocationTypeExt|null} dataLocationType
- * Location of attachment data.
+ * @property {string|null} [fileName] The name of the attachment file.
+ * @property {string|null} [displayName] A logical name for the file, which will be shown in Altinn Inbox.
+ * @property {boolean} isEncrypted A value indicating whether the attachment is encrypted or not.
+ * @property {string|null} [checksum] MD5 checksum for file data.
+ * @property {string} sendersReference A reference value given to the attachment by the creator.
+ * @property {number|null} [expirationInDays] Relative expiration time (days) for the attachment.
+ * @property {string} id A unique id for the correspondence attachment.
+ * @property {InitializeAttachmentDataLocationTypeExt} dataLocationType
  */
 
-// ============================================================================
-// Query Models
-// ============================================================================
+/**
+ * Represents the content of a Correspondence.
+ *
+ * @typedef {object} InitializeCorrespondenceContentExt
+ * @property {string|null} [language] Gets or sets the language of the correspondence, specified according to ISO 639-1
+ * @property {string} messageTitle Gets or sets the correspondence message title. Subject. Must be plaintext.
+ * @property {string|null} [messageSummary] Gets or sets a summary text of the correspondence. Must be plaintext.
+ * @property {string} messageBody Gets or sets the main body of the correspondence. Must be (CommonMark) Markdown.
+ * @property {Array<InitializeCorrespondenceAttachmentExt>|null} [attachments] Gets or sets metadata of the attachments added in the Attachments field. Uses the InitializeCorrespondenceAttachmentExt model.
+ */
+
+/**
+ * Used to specify a single notification connected to a specific Correspondence during the Initialize Correspondence operation
+ *
+ * @typedef {object} InitializeCorrespondenceNotificationExt
+ * @property {NotificationTemplateExt} notificationTemplate
+ * @property {string|null} [emailSubject] The emails subject for the main notification. Maximum length is 512 characters.
+ * @property {string|null} [emailBody] The email body for the main notification. Maximum length is 10,000 characters.
+ * @property {EmailContentType} emailContentType
+ * @property {string|null} [smsBody] The sms body for the main notification. Maximum length is 2,144 characters (16 SMS segments × 134 characters per segment). This aligns with the Altinn Notifications service SMS processing limits.
+ * @property {boolean} sendReminder Should a reminder be sent if the notification is not confirmed or opened
+ * @property {string|null} [reminderEmailSubject] The email subject to use for the reminder notification Maximum length is 512 characters.
+ * @property {string|null} [reminderEmailBody] The email body to use for the reminder notification. Maximum length is 10,000 characters.
+ * @property {EmailContentType} reminderEmailContentType
+ * @property {string|null} [reminderSmsBody] The sms body to use for the reminder notification. Maximum length is 2,144 characters (16 SMS segments × 134 characters per segment). This aligns with the Altinn Notifications service SMS processing limits.
+ * @property {NotificationChannelExt} notificationChannel
+ * @property {NotificationChannelExt} reminderNotificationChannel
+ * @property {string|null} [sendersReference] Senders Reference for this notification
+ * @property {Array<NotificationRecipientExt>|null} [customRecipients] A list of additional recipients for the notification. These are processed in addition to the Correspondence recipient; if not set, only the Correspondence recipient receives the notification.
+ * @property {NotificationRecipientExt} customRecipient
+ * @property {Array<CustomNotificationRecipientExt>|null} [customNotificationRecipients] Only the first list of recipients will be used. If not set, the notification will be sent to the recipient of the Correspondence
+ * @property {boolean} overrideRegisteredContactInformation When set to true, only CustomRecipients will be used for notifications, overriding the default correspondence recipient. This flag can only be used when CustomRecipients is provided. Default value is false (use default contact info + custom recipients).
+ */
+
+/**
+ * @typedef {object} InitializeCorrespondencesExt
+ * @property {BaseCorrespondenceExt} correspondence
+ * @property {Array<string>} recipients List of recipients for the correspondence: organization (urn:altinn:organization:identifier-no:ORGNR), national identity number (urn:altinn:person:identifier-no:SSN), self identified user (urn:altinn:person:idporten-email:EMAIL), or legacy selfidentified user (urn:altinn:person:legacy-selfidentified:USERNAME).
+ * @property {Array<string>|null} [existingAttachments] Existing attachments that should be added to the correspondence
+ * @property {string|null} [idempotentKey] Optional idempotency key to prevent duplicate correspondence creation
+ */
+
+/**
+ * Contains information about the created correspondences and their attachments.
+ *
+ * @typedef {object} InitializeCorrespondencesResponseExt
+ * @property {Array<InitializedCorrespondencesExt>|null} [correspondences] The initialized correspondences
+ * @property {Array<string>|null} [attachmentIds] The IDs of the attachments that is included in the correspondences
+ */
+
+/**
+ * Represents a correspondence that has been initialized
+ *
+ * @typedef {object} InitializedCorrespondencesExt
+ * @property {string} correspondenceId The ID of the correspondence
+ * @property {CorrespondenceStatusExt} status
+ * @property {string|null} [recipient] The recipient of the correspondence
+ * @property {Array<InitializedCorrespondencesNotificationsExt>|null} [notifications] Information about the notifications that were created for the correspondence
+ */
+
+/**
+ * Information about a notification that were created for the correspondence
+ *
+ * @typedef {object} InitializedCorrespondencesNotificationsExt
+ * @property {string|null} [orderId] The order ID of the notification
+ * @property {boolean|null} [isReminder] Boolean indicating if the notification is a reminder
+ * @property {InitializedNotificationStatusExt} status
+ */
+
+/**
+ * @typedef {"Success"|"MissingContact"|"Failure"} InitializedNotificationStatusExt
+ */
+
+/**
+ * Enum describing available notification channels.
+ *
+ * @typedef {"Email"|"Sms"|"EmailPreferred"|"SmsPreferred"|"EmailAndSms"} NotificationChannelExt
+ */
+
+/**
+ * An abstract class representing a status overview of a notification channels
+ *
+ * @typedef {object} NotificationDetailsExt
+ * @property {string|null} [id] The notification id
+ * @property {boolean} succeeded Boolean indicating if the sending of the notification was successful
+ * @property {NotificationRecipientExt} recipient
+ * @property {NotificationStatusExt} sendStatus
+ */
+
+/**
+ * Represents a notification connected to a specific correspondence
+ *
+ * @typedef {object} NotificationExt
+ * @property {string|null} [id] The id of the notification order
+ * @property {string|null} [sendersReference] An optional senders reference of the notification
+ * @property {string|null} [creator] The short name of the creator of the notification order
+ * @property {string} created The date and time of when the notification order was created
+ * @property {boolean} isReminder whether the notification is a reminder notification
+ * @property {NotificationChannelExt} notificationChannel
+ * @property {boolean|null} [ignoreReservation] Whether notifications generated by this order should ignore KRR reservations
+ * @property {string|null} [resourceId] The id of the resource that the notification is related to
+ * @property {NotificationProcessStatusExt} processingStatus
+ * @property {NotificationStatusDetailsExt} notificationStatusDetails
+ */
+
+/**
+ * An abstract class representing a status overview of a notification channels
+ *
+ * @typedef {object} NotificationProcessStatusExt
+ * @property {string|null} [status] The actual status of the notification
+ * @property {string|null} [description] The description of the status
+ * @property {string} lastUpdate The date time of when the status was last updated
+ */
+
+/**
+ * A class representing a a recipient of a notification
+ *
+ * @typedef {object} NotificationRecipientExt
+ * @property {string|null} [emailAddress] the email address of the recipient
+ * @property {string|null} [mobileNumber] the mobileNumber of the recipient
+ * @property {string|null} [organizationNumber] the organization number of the recipient
+ * @property {string|null} [nationalIdentityNumber] The SSN of the recipient
+ * @property {boolean|null} [isReserved] Boolean indicating if the recipient is reserved
+ */
+
+/**
+ * A class representing a summary of status overviews of all notification channels
+ *
+ * @typedef {object} NotificationStatusDetailsExt
+ * @property {NotificationDetailsExt} email
+ * @property {NotificationDetailsExt} sms
+ * @property {Array<NotificationDetailsExt>|null} [emails]
+ * @property {Array<NotificationDetailsExt>|null} [smses]
+ */
+
+/**
+ * A class representing a status summary
+ *
+ * @typedef {object} NotificationStatusExt
+ * @property {string|null} [status] The actual status of the notification
+ * @property {string|null} [description] The description of the status
+ * @property {string} lastUpdate The date time of when the status was last updated
+ */
+
+/**
+ * Enum describing available notification templates.
+ *
+ * @typedef {"CustomMessage"|"GenericAltinnMessage"} NotificationTemplateExt
+ */
+
+/**
+ * @typedef {object} ProblemDetails
+ * @property {string|null} [type]
+ * @property {string|null} [title]
+ * @property {number|null} [status]
+ * @property {string|null} [detail]
+ * @property {string|null} [instance]
+ * @property {string|null} [traceId] OpenTelemetry trace ID for the request.
+ * @property {string|null} [errorCode] Altinn error code (e.g. CORR-00001).
+ */
+
+/**
+ * Defines what kind of reference
+ *
+ * @typedef {"Generic"|"AltinnAppInstance"|"AltinnBrokerFileTransfer"|"DialogportenDialogId"|"DialogportenProcessId"|"DialogportenTransmissionId"|"DialogportenTransmissionType"} ReferenceTypeExt
+ */
 
 /**
  * Query parameters for retrieving correspondences.
@@ -70,625 +427,41 @@
  * Legacy Altinn 2 correspondence id.
  */
 
-// ============================================================================
-// Response Models
-// ============================================================================
-
-/**
- * Response from initializing correspondences.
- *
- * @typedef {object} InitializeCorrespondencesResponseExt
- * @property {Array<InitializedCorrespondencesExt>|null} correspondences
- * Initialized correspondences.
- * @property {Array<string>|null} attachmentIds
- * Attachment identifiers included in the correspondences.
- */
-
-/**
- * List response containing correspondence identifiers.
- *
- * @typedef {object} CorrespondencesExt
- * @property {Array<string>|null} ids
- * Correspondence UUIDs.
- */
-
-/**
- * Overview of a correspondence.
- *
- * Returned by:
- * GET /correspondence/api/v1/correspondence/{correspondenceId}
- *
- * @typedef {object} CorrespondenceOverviewExt
- * @property {string} resourceId
- * Resource identifier.
- * @property {string|null} sender
- * Sending organization.
- * @property {string} sendersReference
- * Sender supplied reference.
- * @property {string|null} messageSender
- * Alternative sender display name.
- * @property {CorrespondenceContentExt|null} content
- * Correspondence content.
- * @property {string|null} requestedPublishTime
- * Requested publish timestamp.
- * @property {string|null} dueDateTime
- * Recipient due date.
- * @property {Array<ExternalReferenceExt>|null} externalReferences
- * External references.
- * @property {{[key:string]:string}|null} propertyList
- * User-defined properties.
- * @property {Array<CorrespondenceReplyOptionExt>|null} replyOptions
- * Reply options.
- * @property {InitializeCorrespondenceNotificationExt|null} notification
- * Notification configuration.
- * @property {boolean|null} ignoreReservation
- * Whether KRR reservation should be ignored.
- * @property {boolean} isConfirmationNeeded
- * Whether confirmation is required.
- * @property {boolean} isConfidential
- * Whether correspondence is confidential.
- * @property {string|null} recipient
- * Recipient identifier.
- * @property {string} correspondenceId
- * Correspondence UUID.
- * @property {string} created
- * Creation timestamp.
- * @property {CorrespondenceStatusExt} status
- * Current correspondence status.
- * @property {string|null} statusText
- * Current status description.
- * @property {string} statusChanged
- * Status change timestamp.
- * @property {Array<CorrespondenceNotificationOverviewExt>|null} notifications
- * Notification summaries.
- * @property {number|null} altinn2CorrespondenceId
- * Legacy Altinn 2 correspondence identifier.
- * @property {string|null} published
- * Publish timestamp.
- * @property {string|null} read
- * First read timestamp.
- */
-
-// ============================================================================
-// Shared Models
-// ============================================================================
-
-/**
- * Represents detailed information about a correspondence.
- *
- * Returned by:
- * GET /correspondence/api/v1/correspondence/{correspondenceId}/details
- *
- * @typedef {object} CorrespondenceDetailsExt
- * @property {string} correspondenceId
- * Correspondence UUID.
- * @property {string} resourceId
- * Resource identifier.
- * @property {string|null} sender
- * Sending organization.
- * @property {string} sendersReference
- * Sender supplied reference.
- * @property {string|null} messageSender
- * Alternative sender display name.
- * @property {CorrespondenceContentExt|null} content
- * Correspondence content.
- * @property {string|null} requestedPublishTime
- * Requested publish timestamp.
- * @property {string|null} dueDateTime
- * Recipient due date.
- * @property {Array<ExternalReferenceExt>|null} externalReferences
- * External references.
- * @property {{[key:string]:string}|null} propertyList
- * User-defined properties.
- * @property {Array<CorrespondenceReplyOptionExt>|null} replyOptions
- * Reply options.
- * @property {Array<CorrespondenceAttachmentExt>|null} attachments
- * Correspondence attachments.
- * @property {Array<CorrespondenceStatusEventExt>|null} statusHistory
- * Correspondence status history.
- * @property {Array<NotificationExt>|null} notifications
- * Notifications connected to correspondence.
- * @property {CorrespondenceStatusExt} status
- * Current correspondence status.
- * @property {string|null} statusText
- * Current status description.
- * @property {string} statusChanged
- * Status change timestamp.
- * @property {boolean} isConfirmationNeeded
- * Whether confirmation is required.
- * @property {boolean} isConfidential
- * Whether correspondence is confidential.
- * @property {string|null} recipient
- * Recipient identifier.
- * @property {string|null} published
- * Publish timestamp.
- * @property {string|null} read
- * First read timestamp.
- */
-
-/**
- * Correspondence content.
- *
- * @typedef {object} CorrespondenceContentExt
- * @property {string} language
- * Content language.
- * @property {string} title
- * Correspondence title.
- * @property {string} body
- * Correspondence body.
- * @property {string|null} summary
- * Optional summary.
- */
-
-/**
- * Represents a correspondence attachment.
- *
- * @typedef {object} CorrespondenceAttachmentExt
- * @property {string|null} fileName
- * Attachment filename.
- * @property {string|null} displayName
- * Display name shown in Altinn Inbox.
- * @property {boolean} isEncrypted
- * Whether attachment is encrypted.
- * @property {string|null} checksum
- * MD5 checksum.
- * @property {string} sendersReference
- * Sender attachment reference.
- * @property {number|null} expirationInDays
- * Expiration duration in days.
- * @property {string} id
- * Attachment UUID.
- * @property {AttachmentDataLocationTypeExt} dataLocationType
- * Attachment data location.
- * @property {string} created
- * Creation timestamp.
- * @property {AttachmentStatusExt} status
- * Attachment status.
- * @property {string|null} statusText
- * Status description.
- * @property {string} statusChanged
- * Status changed timestamp.
- * @property {string|null} dataType
- * MIME type.
- * @property {string|null} expirationTime
- * Attachment expiration timestamp.
- */
-
-// ============================================================================
-// Notification Models
-// ============================================================================
-
-/**
- * Notification connected to a correspondence.
- *
- * @typedef {object} NotificationExt
- * @property {string|null} id
- * Notification order id.
- * @property {string|null} sendersReference
- * Notification sender reference.
- * @property {string|null} creator
- * Creator short name.
- * @property {string} created
- * Creation timestamp.
- * @property {boolean} isReminder
- * Whether notification is a reminder.
- * @property {NotificationChannelExt} notificationChannel
- * Notification channel.
- * @property {boolean|null} ignoreReservation
- * Whether KRR reservations should be ignored.
- * @property {string|null} resourceId
- * Related resource id.
- * @property {NotificationProcessStatusExt|null} processingStatus
- * Processing status.
- * @property {NotificationStatusDetailsExt|null} notificationStatusDetails
- * Notification status details.
- */
-
-/**
- * Notification configuration during correspondence initialization.
- *
- * @typedef {object} InitializeCorrespondenceNotificationExt
- * @property {NotificationTemplateExt|null} template
- * Notification template.
- * @property {NotificationChannelExt|null} notificationChannel
- * Notification channel.
- * @property {Array<NotificationRecipientExt>|null} recipients
- * Custom notification recipients.
- * @property {string|null} emailSubject
- * Email subject.
- * @property {string|null} emailBody
- * Email body.
- * @property {EmailContentType|null} emailContentType
- * Email content format.
- * @property {string|null} smsBody
- * SMS body.
- * @property {string|null} reminderEmailSubject
- * Reminder email subject.
- * @property {string|null} reminderEmailBody
- * Reminder email body.
- * @property {string|null} reminderSmsBody
- * Reminder SMS body.
- */
-
-/**
- * Notification recipient.
- *
- * @typedef {object} NotificationRecipientExt
- * @property {string|null} emailAddress
- * Email address.
- * @property {string|null} mobileNumber
- * Mobile number.
- * @property {string|null} organizationNumber
- * Organization number.
- * @property {string|null} nationalIdentityNumber
- * National identity number.
- * @property {boolean|null} isReserved
- * Whether recipient is reserved.
- */
-
-/**
- * Notification status details.
- *
- * @typedef {object} NotificationDetailsExt
- * @property {string|null} id
- * Notification UUID.
- * @property {boolean} succeeded
- * Whether sending succeeded.
- * @property {NotificationRecipientExt|null} recipient
- * Recipient details.
- * @property {NotificationStatusExt|null} sendStatus
- * Send status.
- */
-
-/**
- * Notification status summary.
- *
- * @typedef {object} NotificationStatusExt
- * @property {string|null} status
- * Status value.
- * @property {string|null} description
- * Status description.
- * @property {string} lastUpdate
- * Last update timestamp.
- */
-
-/**
- * Notification status overview.
- *
- * @typedef {object} NotificationStatusDetailsExt
- * @property {NotificationDetailsExt|null} email
- * Email status.
- * @property {NotificationDetailsExt|null} sms
- * SMS status.
- * @property {Array<NotificationDetailsExt>|null} emails
- * Email statuses.
- * @property {Array<NotificationDetailsExt>|null} smses
- * SMS statuses.
- */
-
-// ============================================================================
-// Additional Shared Models
-// ============================================================================
-
-/**
- * Reference to another item in the Altinn ecosystem.
- *
- * @typedef {object} ExternalReferenceExt
- * @property {string} referenceValue
- * Reference value.
- * @property {ReferenceTypeExt} referenceType
- * Type of reference.
- */
-
-/**
- * Reply option provided by the sender.
- *
- * @typedef {object} CorrespondenceReplyOptionExt
- * @property {string} linkURL
- * URL used for replying to the correspondence.
- * @property {string|null} linkText
- * Display text for the reply link.
- */
-
-/**
- * Represents a correspondence status event.
- *
- * @typedef {object} CorrespondenceStatusEventExt
- * @property {CorrespondenceStatusExt} status
- * Correspondence status.
- * @property {string|null} statusText
- * Status description.
- * @property {string} statusChanged
- * Timestamp when status changed.
- */
-
-/**
- * Summary of a notification order linked to a correspondence.
- *
- * @typedef {object} CorrespondenceNotificationOverviewExt
- * @property {string|null} notificationOrderId
- * Notification order UUID.
- * @property {boolean} isReminder
- * Whether notification is a reminder.
- */
-
-// ============================================================================
-// Initialized Models
-// ============================================================================
-
-/**
- * Information about an initialized correspondence.
- *
- * @typedef {object} InitializedCorrespondencesExt
- * @property {string|null} id
- * Correspondence UUID.
- * @property {string|null} sendersReference
- * Sender reference.
- * @property {Array<string>|null} attachmentIds
- * Attachment identifiers.
- */
-
-/**
- * Initialized notification result.
- *
- * @typedef {object} InitializedCorrespondencesNotificationsExt
- * @property {string|null} orderId
- * Notification order UUID.
- * @property {boolean|null} isReminder
- * Whether notification is a reminder.
- * @property {InitializedNotificationStatusExt|null} status
- * Initialization status.
- */
-
-// ============================================================================
-// Attachment Models
-// ============================================================================
-
-/**
- * Attachment initialization data location type.
- *
- * @typedef {string} InitializeAttachmentDataLocationTypeExt
- * @enum
- * "NewCorrespondenceAttachment"
- * "ExistingCorrespondenceAttachment"
- * "ExistingExternalStorage"
- */
-
-/**
- * Attachment data location type.
- *
- * @typedef {string} AttachmentDataLocationTypeExt
- * @enum
- * "AltinnCorrespondenceAttachment"
- * "ExternalStorage"
- */
-
-// ============================================================================
-// Error Models
-// ============================================================================
-
-/**
- * Standard problem details response.
- *
- * @typedef {object} ProblemDetails
- * @property {string|null} type
- * Problem type.
- * @property {string|null} title
- * Problem title.
- * @property {number|null} status
- * HTTP status code.
- * @property {string|null} detail
- * Problem details.
- * @property {string|null} instance
- * Problem instance.
- * @property {string|null} traceId
- * OpenTelemetry trace id.
- * @property {string|null} errorCode
- * Altinn error code.
- */
-
-/**
- * Altinn problem details response.
- *
- * @typedef {object} AltinnProblemDetails
- * @property {string|null} type
- * Problem type.
- * @property {string|null} title
- * Problem title.
- * @property {number|null} status
- * HTTP status code.
- * @property {string|null} detail
- * Problem details.
- * @property {string|null} instance
- * Problem instance.
- * @property {string} code
- * Altinn error code.
- * @property {string|null} traceId
- * OpenTelemetry trace id.
- * @property {string|null} errorCode
- * Altinn error code.
- */
-
-/**
- * Altinn validation problem details response.
- *
- * @typedef {object} AltinnValidationProblemDetails
- * @property {string|null} type
- * Problem type.
- * @property {string|null} title
- * Problem title.
- * @property {number|null} status
- * HTTP status code.
- * @property {string|null} detail
- * Problem details.
- * @property {string|null} instance
- * Problem instance.
- * @property {string|null} code
- * Altinn error code.
- * @property {Array<AltinnValidationError>|null} validationErrors
- * Structured validation errors.
- * @property {string|null} traceId
- * OpenTelemetry trace id.
- * @property {{[key:string]:Array<string>}|null} errors
- * Legacy field validation errors.
- */
-
-/**
- * Validation error details.
- *
- * @typedef {object} AltinnValidationError
- * @property {string} code
- * Validation error code.
- * @property {string} detail
- * Human readable error message.
- * @property {Array<string>} paths
- * JSON pointer paths to invalid fields.
- */
-
-// ============================================================================
-// Enums
-// ============================================================================
-
-/**
- * Represents the important statuses for a correspondence.
- *
- * @typedef {string} CorrespondenceStatusExt
- * @enum
- * "Initialized"
- * "ReadyForPublish"
- * "Published"
- * "Fetched"
- * "Read"
- * "Replied"
- * "Confirmed"
- * "PurgedByRecipient"
- * "PurgedByAltinn"
- * "Archived"
- * "Reserved"
- * "Failed"
- * "AttachmentsDownloaded"
- */
-
-/**
- * Represents the important statuses for an attachment.
- *
- * @typedef {string} AttachmentStatusExt
- * @enum
- * "Initialized"
- * "UploadProcessing"
- * "Published"
- * "Purged"
- * "Failed"
- * "Expired"
- */
-
-/**
- * Defines the location of attachment data during initialization.
- *
- * @typedef {string} InitializeAttachmentDataLocationTypeExt
- * @enum
- * "NewCorrespondenceAttachment"
- * "ExistingCorrespondenceAttachment"
- * "ExistingExternalStorage"
- */
-
-/**
- * Defines the location of attachment data.
- *
- * @typedef {string} AttachmentDataLocationTypeExt
- * @enum
- * "AltinnCorrespondenceAttachment"
- * "ExternalStorage"
- */
-
-/**
- * Available notification channels.
- *
- * @typedef {string} NotificationChannelExt
- * @enum
- * "Email"
- * "Sms"
- * "EmailPreferred"
- * "SmsPreferred"
- * "EmailAndSms"
- */
-
-/**
- * Available notification templates.
- *
- * @typedef {string} NotificationTemplateExt
- * @enum
- * "CustomMessage"
- * "GenericAltinnMessage"
- */
-
-/**
- * Email content format.
- *
- * @typedef {string} EmailContentType
- * @enum
- * "Plain"
- * "Html"
- */
-
-/**
- * Notification initialization status.
- *
- * @typedef {string} InitializedNotificationStatusExt
- * @enum
- * "Success"
- * "MissingContact"
- * "Failure"
- */
-
-/**
- * Defines what kind of external reference is used.
- *
- * @typedef {string} ReferenceTypeExt
- * @enum
- * "Generic"
- * "AltinnAppInstance"
- * "AltinnBrokerFileTransfer"
- * "DialogportenDialogId"
- * "DialogportenProcessId"
- * "DialogportenTransmissionId"
- * "DialogportenTransmissionType"
- */
-
-/**
- * Dialogporten system labels.
- *
- * @typedef {string} DialogPortenSystemLabel
- * @enum
- * "Default"
- * "Bin"
- * "Archive"
- * "MarkedAsUnopened"
- * "Sent"
- */
-
-// ============================================================================
-// Primitive Supporting Models
-// ============================================================================
-
-/**
- * Correspondence roles used when filtering correspondence.
- *
- * @typedef {string} CorrespondencesRoleType
- * @enum
- * "Recipient"
- * "Sender"
- * "RecipientAndSender"
- */
-
-/**
- * Generic notification processing status.
- *
- * @typedef {object} NotificationProcessStatusExt
- * @property {string|null} status
- * Current processing status.
- * @property {string|null} description
- * Status description.
- * @property {string} lastUpdate
- * Timestamp of last status update.
- */
+export const AltinnProblemDetails = undefined;
+export const AltinnValidationProblemDetails = undefined;
+export const AttachmentDataLocationTypeExt = undefined;
+export const AttachmentStatusExt = undefined;
+export const BaseCorrespondenceExt = undefined;
+export const CorrespondenceAttachmentExt = undefined;
+export const CorrespondenceContentExt = undefined;
+export const CorrespondenceDetailsExt = undefined;
+export const CorrespondenceNotificationOverviewExt = undefined;
+export const CorrespondenceOverviewExt = undefined;
+export const CorrespondenceReplyOptionExt = undefined;
+export const CorrespondenceStatusEventExt = undefined;
+export const CorrespondenceStatusExt = undefined;
+export const CorrespondencesExt = undefined;
+export const CorrespondencesRoleType = undefined;
+export const CustomNotificationRecipientExt = undefined;
+export const DialogPortenSystemLabel = undefined;
+export const EmailContentType = undefined;
+export const ExternalReferenceExt = undefined;
+export const InitializeAttachmentDataLocationTypeExt = undefined;
+export const InitializeCorrespondenceAttachmentExt = undefined;
+export const InitializeCorrespondenceContentExt = undefined;
+export const InitializeCorrespondenceNotificationExt = undefined;
+export const InitializeCorrespondencesExt = undefined;
+export const InitializeCorrespondencesResponseExt = undefined;
+export const InitializedCorrespondencesExt = undefined;
+export const InitializedCorrespondencesNotificationsExt = undefined;
+export const InitializedNotificationStatusExt = undefined;
+export const NotificationChannelExt = undefined;
+export const NotificationDetailsExt = undefined;
+export const NotificationExt = undefined;
+export const NotificationProcessStatusExt = undefined;
+export const NotificationRecipientExt = undefined;
+export const NotificationStatusDetailsExt = undefined;
+export const NotificationStatusExt = undefined;
+export const NotificationTemplateExt = undefined;
+export const ProblemDetails = undefined;
+export const ReferenceTypeExt = undefined;
