@@ -15,20 +15,20 @@
  */
 
 /**
- * @typedef {Object} ConsentResourceAttributeDto
+ * @typedef {object} ConsentResourceAttributeDto
  * @property {string|null} type
  * @property {string|null} value
  */
 
 /**
- * @typedef {Object} ConsentRightDto
+ * @typedef {object} ConsentRightDto
  * @property {Array<string>|null} action
  * @property {Array<ConsentResourceAttributeDto>|null} resource
  * @property {{[key:string]: string}|null} metadata
  */
 
 /**
- * @typedef {Object} ConsentRequestDto
+ * @typedef {object} ConsentRequestDto
  * @property {string} id
  * @property {string|null} from
  * @property {string|null} requiredDelegator
@@ -41,7 +41,7 @@
  */
 
 /**
- * @typedef {Object} ConsentRequestEventDto
+ * @typedef {object} ConsentRequestEventDto
  * @property {string} consentEventID
  * @property {string} created
  * @property {string|null} performedBy
@@ -50,7 +50,7 @@
  */
 
 /**
- * @typedef {Object} ConsentRequestDetailsDto
+ * @typedef {object} ConsentRequestDetailsDto
  * @property {string} id
  * @property {string|null} from
  * @property {string|null} to
@@ -68,25 +68,25 @@
  */
 
 /**
- * @typedef {Object} ConsentStatusChangeDto
+ * @typedef {object} ConsentStatusChangeDto
  * @property {string} consentRequestId
  * @property {string|null} eventType
  * @property {string} changedDate
  */
 
 /**
- * @typedef {Object} PaginatedResultLinks
+ * @typedef {object} PaginatedResultLinks
  * @property {string|null} next
  */
 
 /**
- * @typedef {Object} ConsentStatusChangeDtoPaginatedResult
+ * @typedef {object} ConsentStatusChangeDtoPaginatedResult
  * @property {Array<ConsentStatusChangeDto>|null} data
  * @property {PaginatedResultLinks} links
  */
 
 /**
- * @typedef {Object} ProblemDetails
+ * @typedef {object} ProblemDetails
  * @property {string|null} type
  * @property {string|null} title
  * @property {number|null} status
@@ -94,12 +94,11 @@
  * @property {string|null} instance
  */
 
-
 /**
  * Builder for creating ConsentRequestDto payloads.
  *
- * @typedef {Object} ConsentRequestBuilder
- * @property {Object} request The underlying consent request payload.
+ * @typedef {object} ConsentRequestBuilder
+ * @property {object} request The underlying consent request payload.
  * @property {string|null} request.id Consent request UUID.
  * @property {string|null} request.from Party URN the consent request is created from.
  * @property {string|null} request.requiredDelegator Required delegator party URN.
@@ -114,8 +113,8 @@
 /**
  * Builder for creating query parameters for retrieving consent request events.
  *
- * @typedef {Object} ConsentRequestEventsQueryBuilder
- * @property {Object} query The underlying query parameter object.
+ * @typedef {object} ConsentRequestEventsQueryBuilder
+ * @property {object} query The underlying query parameter object.
  * @property {string} [query.continuationToken] Pagination continuation token.
  * @property {string} [query.createdAfter] Filter events created after this timestamp.
  * @property {string} [query.createdBefore] Filter events created before this timestamp.

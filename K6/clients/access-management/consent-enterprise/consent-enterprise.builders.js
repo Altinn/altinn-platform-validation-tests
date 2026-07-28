@@ -14,8 +14,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string} id
-     * @returns {ConsentRequestBuilder}
+     * @param {string} id TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithId(id) {
         this.request.id = id;
@@ -24,8 +24,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} from
-     * @returns {ConsentRequestBuilder}
+     * @param {string|null} from TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithFrom(from) {
         this.request.from = from;
@@ -34,8 +34,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} requiredDelegator
-     * @returns {ConsentRequestBuilder}
+     * @param {string|null} requiredDelegator TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithRequiredDelegator(requiredDelegator) {
         this.request.requiredDelegator = requiredDelegator;
@@ -44,8 +44,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} to
-     * @returns {ConsentRequestBuilder}
+     * @param {string|null} to TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithTo(to) {
         this.request.to = to;
@@ -54,8 +54,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string} validTo
-     * @returns {ConsentRequestBuilder}
+     * @param {string} validTo TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithValidTo(validTo) {
         this.request.validTo = validTo;
@@ -64,8 +64,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {Array<ConsentRightDto>} consentRights
-     * @returns {ConsentRequestBuilder}
+     * @param {Array<ConsentRightDto>} consentRights TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithConsentRights(consentRights) {
         this.request.consentRights = consentRights;
@@ -74,8 +74,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {{[key:string]: string}|null} requestMessage
-     * @returns {ConsentRequestBuilder}
+     * @param {{[key:string]: string}|null} requestMessage TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithRequestMessage(requestMessage) {
         this.request.requestMessage = requestMessage;
@@ -84,8 +84,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} redirectUrl
-     * @returns {ConsentRequestBuilder}
+     * @param {string|null} redirectUrl TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -94,8 +94,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {ConsentPortalViewMode|null} portalViewMode
-     * @returns {ConsentRequestBuilder}
+     * @param {ConsentPortalViewMode|null} portalViewMode TODO: Description
+     * @returns {ConsentRequestBuilder} TODO: Description
      */
     WithPortalViewMode(portalViewMode) {
         this.request.portalViewMode = portalViewMode;
@@ -104,7 +104,7 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @returns {ConsentRequestDto}
+     * @returns {ConsentRequestDto} TODO: Description
      */
     Build() {
         return this.request;
@@ -116,8 +116,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} continuationToken
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @param {string} continuationToken TODO: Description
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
      */
     WithContinuationToken(continuationToken) {
         this.query.continuationToken = continuationToken;
@@ -126,8 +126,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} createdAfter
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @param {string} createdAfter TODO: Description
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
      */
     WithCreatedAfter(createdAfter) {
         this.query.createdAfter = createdAfter;
@@ -136,8 +136,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} createdBefore
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @param {string} createdBefore TODO: Description
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
      */
     WithCreatedBefore(createdBefore) {
         this.query.createdBefore = createdBefore;
@@ -146,8 +146,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {Array<string>} eventType
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @param {Array<string>} eventType TODO: Description
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
      */
     WithEventType(eventType) {
         this.query.eventType = eventType;
@@ -156,8 +156,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} consentRequestId
-     * @returns {ConsentRequestEventsQueryBuilder}
+     * @param {string} consentRequestId TODO: Description
+     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
      */
     WithConsentRequestId(consentRequestId) {
         this.query.consentRequestId = consentRequestId;
@@ -166,16 +166,14 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
     }
 }
 
-
-
 export {
     ConsentRequestBuilder,
     ConsentRequestEventsQueryBuilder,
-}
+};

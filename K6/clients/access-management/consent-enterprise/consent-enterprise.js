@@ -44,7 +44,7 @@ class EnterpriseClient {
      * @param {ConsentRequestDto} request Consent request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     EnterpriseCreateConsentRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -79,7 +79,7 @@ class EnterpriseClient {
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     EnterpriseGetConsentRequest(consentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -110,11 +110,11 @@ class EnterpriseClient {
     /**
      * Gets consent request events.
      *
-     * @param {ConsentRequestEventsQueryBuilder|Object} [query]
+     * @param {ConsentRequestEventsQueryBuilder | object} [query]
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     EnterpriseGetConsentRequestEvents(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
