@@ -1,4 +1,4 @@
-import { check, fail } from "k6";
+import { check } from "k6";
 
 import { OrdersApiClient } from "../../../../clients/core/notifications/index.js";
 import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";

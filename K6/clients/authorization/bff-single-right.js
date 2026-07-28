@@ -1,4 +1,3 @@
-import crypto from "k6/crypto";
 import http from "k6/http";
 
 const TAGS = {

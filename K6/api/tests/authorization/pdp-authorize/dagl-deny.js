@@ -1,7 +1,7 @@
 import exec from "k6/execution";
 
 import { randomIntBetween } from "../../../../common-imports.js";
-import { getItemFromList, getOptions, pickUnique } from "../../../../helpers.js";
+import { getOptions, pickUnique } from "../../../../helpers.js";
 import { PdpAuthorizeDagl } from "../../../building-blocks/authorization/pdp-authorize/index.js";
 import { getClients, getTokenOpts } from "./common-functions.js";
 
