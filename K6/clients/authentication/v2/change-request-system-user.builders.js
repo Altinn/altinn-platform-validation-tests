@@ -13,7 +13,7 @@ class ChangeRequestSystemUserBuilder {
      * Adds required rights.
      *
      * @param {Right[]} rights Rights to add.
-     * @returns {ChangeRequestSystemUserBuilder} TODO: Description
+     * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
     WithRequiredRights(rights) {
         this.request.requiredRights = rights;
@@ -25,7 +25,7 @@ class ChangeRequestSystemUserBuilder {
      * Adds unwanted rights.
      *
      * @param {Right[]} rights Rights to remove.
-     * @returns {ChangeRequestSystemUserBuilder} TODO: Description
+     * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
     WithUnwantedRights(rights) {
         this.request.unwantedRights = rights;
@@ -37,7 +37,7 @@ class ChangeRequestSystemUserBuilder {
      * Adds required access packages.
      *
      * @param {AccessPackage[]} accessPackages Access packages to add.
-     * @returns {ChangeRequestSystemUserBuilder} TODO: Description
+     * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
     WithRequiredAccessPackages(accessPackages) {
         this.request.requiredAccessPackages = accessPackages;
@@ -49,7 +49,7 @@ class ChangeRequestSystemUserBuilder {
      * Adds unwanted access packages.
      *
      * @param {AccessPackage[]} accessPackages Access packages to remove.
-     * @returns {ChangeRequestSystemUserBuilder} TODO: Description
+     * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
     WithUnwantedAccessPackages(accessPackages) {
         this.request.unwantedAccessPackages = accessPackages;
@@ -61,7 +61,7 @@ class ChangeRequestSystemUserBuilder {
      * Sets redirect URL.
      *
      * @param {string} redirectUrl Redirect URL.
-     * @returns {ChangeRequestSystemUserBuilder} TODO: Description
+     * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
     WithRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -72,7 +72,7 @@ class ChangeRequestSystemUserBuilder {
     /**
      * Builds the change request model.
      *
-     * @returns {ChangeRequestSystemUser} TODO: Description
+     * @returns {ChangeRequestSystemUser} The built payload.
      */
     Build() {
         return this.request;

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserClient } from "../../../../clients/system-user/index.js";
+import { SystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
  * Retrieves a SystemUser by external id information.

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserClientDelegationClient } from "../../../../clients/systemuserclientdelegation/index.js";
+import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
  * Gets clients delegated to the specified system user.

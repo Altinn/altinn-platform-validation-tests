@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserClientDelegationClient } from "../../../../clients/systemuserclientdelegation/index.js";
+import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
  * Retrieves agent system users associated with the authenticated party.

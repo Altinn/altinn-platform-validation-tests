@@ -15,8 +15,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} externalRef TODO: Description
-     * @returns {CreateRequestSystemUserBuilder} TODO: Description
+     * @param {string} externalRef See the client method.
+     * @returns {CreateRequestSystemUserBuilder} This builder, for chaining.
      */
     withExternalRef(externalRef) {
         this.request.externalRef = externalRef;
@@ -24,8 +24,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} systemId TODO: Description
-     * @returns {CreateRequestSystemUserBuilder} TODO: Description
+     * @param {string} systemId See the client method.
+     * @returns {CreateRequestSystemUserBuilder} This builder, for chaining.
      */
     withSystemId(systemId) {
         this.request.systemId = systemId;
@@ -33,8 +33,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} partyOrgNo TODO: Description
-     * @returns {CreateRequestSystemUserBuilder} TODO: Description
+     * @param {string} partyOrgNo See the client method.
+     * @returns {CreateRequestSystemUserBuilder} This builder, for chaining.
      */
     withPartyOrgNo(partyOrgNo) {
         this.request.partyOrgNo = partyOrgNo;
@@ -42,8 +42,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {Right[]} rights TODO: Description
-     * @returns {CreateRequestSystemUserBuilder} TODO: Description
+     * @param {Right[]} rights See the client method.
+     * @returns {CreateRequestSystemUserBuilder} This builder, for chaining.
      */
     withRights(rights) {
         this.request.rights = rights;
@@ -51,8 +51,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {AccessPackage[]} accessPackages TODO: Description
-     * @returns {CreateRequestSystemUserBuilder} TODO: Description
+     * @param {AccessPackage[]} accessPackages See the client method.
+     * @returns {CreateRequestSystemUserBuilder} This builder, for chaining.
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
@@ -60,8 +60,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} redirectUrl TODO: Description
-     * @returns {CreateRequestSystemUserBuilder} TODO: Description
+     * @param {string} redirectUrl See the client method.
+     * @returns {CreateRequestSystemUserBuilder} This builder, for chaining.
      */
     withRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -69,7 +69,7 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @returns {CreateRequestSystemUser} TODO: Description
+     * @returns {CreateRequestSystemUser} The built payload.
      */
     build() {
         return this.request;
@@ -92,8 +92,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} externalRef TODO: Description
-     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
+     * @param {string} externalRef See the client method.
+     * @returns {CreateAgentRequestSystemUserBuilder} This builder, for chaining.
      */
     withExternalRef(externalRef) {
         this.request.externalRef = externalRef;
@@ -101,8 +101,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} systemId TODO: Description
-     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
+     * @param {string} systemId See the client method.
+     * @returns {CreateAgentRequestSystemUserBuilder} This builder, for chaining.
      */
     withSystemId(systemId) {
         this.request.systemId = systemId;
@@ -110,8 +110,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} partyOrgNo TODO: Description
-     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
+     * @param {string} partyOrgNo See the client method.
+     * @returns {CreateAgentRequestSystemUserBuilder} This builder, for chaining.
      */
     withPartyOrgNo(partyOrgNo) {
         this.request.partyOrgNo = partyOrgNo;
@@ -119,8 +119,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {AccessPackage[]} accessPackages TODO: Description
-     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
+     * @param {AccessPackage[]} accessPackages See the client method.
+     * @returns {CreateAgentRequestSystemUserBuilder} This builder, for chaining.
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
@@ -128,8 +128,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} redirectUrl TODO: Description
-     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
+     * @param {string} redirectUrl See the client method.
+     * @returns {CreateAgentRequestSystemUserBuilder} This builder, for chaining.
      */
     withRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -137,7 +137,7 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @returns {CreateAgentRequestSystemUser} TODO: Description
+     * @returns {CreateAgentRequestSystemUser} The built payload.
      */
     build() {
         return this.request;

@@ -52,7 +52,7 @@ class ChangeRequestSystemUserClient {
      * @param {string|null} systemUserId System user identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorCreate(
         request,
@@ -100,6 +100,7 @@ class ChangeRequestSystemUserClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -110,7 +111,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -119,7 +120,7 @@ class ChangeRequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{requestId}`,
             action: TAGS.ChangeRequestSystemUserVendorGet.action,
         };
 
@@ -134,6 +135,7 @@ class ChangeRequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -144,7 +146,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,7 +155,7 @@ class ChangeRequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{requestId}`,
             action: TAGS.ChangeRequestSystemUserVendorDelete.action,
         };
 
@@ -168,6 +170,7 @@ class ChangeRequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -180,7 +183,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGetByExternalRef(
         systemId,
@@ -194,7 +197,7 @@ class ChangeRequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
             action: TAGS.ChangeRequestSystemUserVendorGetByExternalRef.action,
         };
 
@@ -209,6 +212,7 @@ class ChangeRequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -220,7 +224,7 @@ class ChangeRequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGetBySystem(
         systemId,
@@ -237,7 +241,7 @@ class ChangeRequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
             action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
         };
 
@@ -252,6 +256,7 @@ class ChangeRequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
+                Accept: "application/json",
             },
         });
     }

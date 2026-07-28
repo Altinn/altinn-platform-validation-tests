@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ChangeRequestSystemUserClient } from "../../../../clients/change-request-system-user/index.js";
+import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
  * Creates a change request for a system user.

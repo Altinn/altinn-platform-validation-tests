@@ -67,7 +67,7 @@ class SystemRegisterClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterGet(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -91,6 +91,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -100,7 +101,7 @@ class SystemRegisterClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorGet(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -124,6 +125,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -134,7 +136,7 @@ class SystemRegisterClient {
      * @param {RegisterSystemRequest} request System registration request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -159,6 +161,7 @@ class SystemRegisterClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -169,7 +172,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorGetById(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -178,7 +181,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterVendorGetById.action,
         };
 
@@ -193,6 +196,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -204,7 +208,7 @@ class SystemRegisterClient {
      * @param {RegisterSystemRequest} request Updated system model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdate(systemId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -213,7 +217,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterVendorUpdate.action,
         };
 
@@ -229,6 +233,7 @@ class SystemRegisterClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -239,7 +244,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorDelete(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -248,7 +253,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterVendorDelete.action,
         };
 
@@ -263,6 +268,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -274,7 +280,7 @@ class SystemRegisterClient {
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterGetRights(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -287,7 +293,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterGetRights.action,
         };
 
@@ -302,6 +308,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -313,7 +320,7 @@ class SystemRegisterClient {
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterGetAccessPackages(
         systemId,
@@ -330,7 +337,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterGetAccessPackages.action,
         };
 
@@ -345,6 +352,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -356,7 +364,7 @@ class SystemRegisterClient {
      * @param {Right[]} rights Rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdateRights(systemId, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -365,7 +373,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}/rights`,
             action: TAGS.SystemRegisterVendorUpdateRights.action,
         };
 
@@ -381,6 +389,7 @@ class SystemRegisterClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -392,7 +401,7 @@ class SystemRegisterClient {
      * @param {AccessPackage[]} accessPackages Access packages.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdateAccessPackages(
         systemId,
@@ -405,7 +414,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
             action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
         };
 
@@ -421,6 +430,7 @@ class SystemRegisterClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -431,7 +441,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SystemRegisterVendorGetChangeLog(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -440,7 +450,7 @@ class SystemRegisterClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
             action: TAGS.SystemRegisterVendorGetChangeLog.action,
         };
 
@@ -455,6 +465,7 @@ class SystemRegisterClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

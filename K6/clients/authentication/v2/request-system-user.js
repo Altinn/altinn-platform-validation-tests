@@ -62,7 +62,7 @@ class RequestSystemUserClient {
      * @param {CreateRequestSystemUser} request Request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -87,6 +87,7 @@ class RequestSystemUserClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -97,7 +98,7 @@ class RequestSystemUserClient {
      * @param {CreateAgentRequestSystemUser} request Agent request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -122,6 +123,7 @@ class RequestSystemUserClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -132,7 +134,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -141,7 +143,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
             action: TAGS.RequestSystemUserVendorGet.action,
         };
 
@@ -156,6 +158,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -166,7 +169,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -175,7 +178,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
             action: TAGS.RequestSystemUserVendorDelete.action,
         };
 
@@ -190,6 +193,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -200,7 +204,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -209,7 +213,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/agent/{encodeURIComponent(requestId)}`,
             action: TAGS.RequestSystemUserVendorAgentGet.action,
         };
 
@@ -224,6 +228,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -236,7 +241,7 @@ class RequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorGetByExternalRef(
         systemId,
@@ -250,7 +255,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
             action: TAGS.RequestSystemUserVendorGetByExternalRef.action,
         };
 
@@ -265,6 +270,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -277,7 +283,7 @@ class RequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGetByExternalRef(
         systemId,
@@ -291,7 +297,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
             action: TAGS.RequestSystemUserVendorAgentGetByExternalRef.action,
         };
 
@@ -306,6 +312,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -317,7 +324,7 @@ class RequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorGetBySystem(systemId, token = null, labels = null) {
         const authToken = this.tokenGenerator.getToken();
@@ -330,7 +337,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
             action: TAGS.RequestSystemUserVendorGetBySystem.action,
         };
 
@@ -345,6 +352,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
+                Accept: "application/json",
             },
         });
     }
@@ -356,7 +364,7 @@ class RequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGetBySystem(
         systemId,
@@ -373,7 +381,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
             action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
         };
 
@@ -388,6 +396,7 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
+                Accept: "application/json",
             },
         });
     }

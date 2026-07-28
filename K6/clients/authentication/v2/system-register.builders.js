@@ -17,8 +17,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets the system identifier.
      *
-     * @param {string|null} id TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {string|null} id See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withId(id) {
         this.request.id = id;
@@ -29,8 +29,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets vendor information.
      *
-     * @param {VendorInfo|null} vendor TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {VendorInfo|null} vendor See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withVendor(vendor) {
         this.request.vendor = vendor;
@@ -41,8 +41,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets localized system names.
      *
-     * @param {{[key: string]: string}|null} name TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {{[key: string]: string}|null} name See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withName(name) {
         this.request.name = name;
@@ -53,8 +53,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets localized system descriptions.
      *
-     * @param {{[key: string]: string}|null} description TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {{[key: string]: string}|null} description See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withDescription(description) {
         this.request.description = description;
@@ -65,8 +65,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets system rights.
      *
-     * @param {Right[]|null} rights TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {Right[]|null} rights See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withRights(rights) {
         this.request.rights = rights;
@@ -77,8 +77,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets system access packages.
      *
-     * @param {AccessPackage[]|null} accessPackages TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {AccessPackage[]|null} accessPackages See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
@@ -89,8 +89,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets client identifiers.
      *
-     * @param {string[]|null} clientId TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {string[]|null} clientId See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withClientId(clientId) {
         this.request.clientId = clientId;
@@ -101,8 +101,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets visibility.
      *
-     * @param {boolean} isVisible TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {boolean} isVisible See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withVisibility(isVisible) {
         this.request.isVisible = isVisible;
@@ -113,8 +113,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets allowed redirect URLs.
      *
-     * @param {string[]|null} allowedRedirectUrls TODO: Description
-     * @returns {RegisterSystemRequestBuilder} TODO: Description
+     * @param {string[]|null} allowedRedirectUrls See the client method.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withAllowedRedirectUrls(allowedRedirectUrls) {
         this.request.allowedRedirectUrls = allowedRedirectUrls;
@@ -125,7 +125,7 @@ class RegisterSystemRequestBuilder {
     /**
      * Builds the request model.
      *
-     * @returns {RegisterSystemRequest} TODO: Description
+     * @returns {RegisterSystemRequest} The built payload.
      */
     build() {
         return this.request;

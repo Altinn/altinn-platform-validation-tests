@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RequestSystemUserClient } from "../../../../clients/request-system-user/index.js";
+import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
  * Retrieves an agent system user request by id.

@@ -11,8 +11,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} id TODO: Description
-     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
+     * @param {string|null} id See the client method.
+     * @returns {SystemUserUpdateDtoBuilder} This builder, for chaining.
      */
     withId(id) {
         this.request.id = id;
@@ -20,8 +20,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} partyId TODO: Description
-     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
+     * @param {string|null} partyId See the client method.
+     * @returns {SystemUserUpdateDtoBuilder} This builder, for chaining.
      */
     withPartyId(partyId) {
         this.request.partyId = partyId;
@@ -29,8 +29,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} reporteeOrgNo TODO: Description
-     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
+     * @param {string|null} reporteeOrgNo See the client method.
+     * @returns {SystemUserUpdateDtoBuilder} This builder, for chaining.
      */
     withReporteeOrgNo(reporteeOrgNo) {
         this.request.reporteeOrgNo = reporteeOrgNo;
@@ -38,8 +38,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} integrationTitle TODO: Description
-     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
+     * @param {string|null} integrationTitle See the client method.
+     * @returns {SystemUserUpdateDtoBuilder} This builder, for chaining.
      */
     withIntegrationTitle(integrationTitle) {
         this.request.integrationTitle = integrationTitle;
@@ -47,8 +47,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} systemId TODO: Description
-     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
+     * @param {string|null} systemId See the client method.
+     * @returns {SystemUserUpdateDtoBuilder} This builder, for chaining.
      */
     withSystemId(systemId) {
         this.request.systemId = systemId;
@@ -56,7 +56,7 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @returns {SystemUserUpdateDto} TODO: Description
+     * @returns {SystemUserUpdateDto} The built payload.
      */
     build() {
         return this.request;
