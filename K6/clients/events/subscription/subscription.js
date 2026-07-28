@@ -50,7 +50,7 @@ class SubscriptionClient {
      * @param {SubscriptionRequestModel} request Subscription payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SubscriptionCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -75,6 +75,7 @@ class SubscriptionClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -84,7 +85,7 @@ class SubscriptionClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SubscriptionGetAll(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -108,6 +109,7 @@ class SubscriptionClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -118,7 +120,7 @@ class SubscriptionClient {
      * @param {number} id Subscription id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SubscriptionGet(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -127,7 +129,7 @@ class SubscriptionClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}`,
             action: TAGS.SubscriptionGet.action,
         };
 
@@ -142,6 +144,7 @@ class SubscriptionClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -152,7 +155,7 @@ class SubscriptionClient {
      * @param {number} id Subscription id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SubscriptionDelete(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -161,7 +164,7 @@ class SubscriptionClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}`,
             action: TAGS.SubscriptionDelete.action,
         };
 
@@ -176,6 +179,7 @@ class SubscriptionClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -186,7 +190,7 @@ class SubscriptionClient {
      * @param {number} id Subscription id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SubscriptionValidate(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -195,7 +199,7 @@ class SubscriptionClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/validate/{id}`,
             action: TAGS.SubscriptionValidate.action,
         };
 
@@ -210,6 +214,7 @@ class SubscriptionClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

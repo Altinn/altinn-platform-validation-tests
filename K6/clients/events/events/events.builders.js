@@ -23,7 +23,7 @@ export class EventsQueryBuilder {
      * Sets the required resource filter.
      *
      * @param {string} resource Resource identifier.
-     * @returns {EventsQueryBuilder} TODO: Description
+     * @returns {EventsQueryBuilder} This builder, for chaining.
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -34,7 +34,7 @@ export class EventsQueryBuilder {
      * Sets the event id to start retrieving events after.
      *
      * @param {string} after Event identifier.
-     * @returns {EventsQueryBuilder} TODO: Description
+     * @returns {EventsQueryBuilder} This builder, for chaining.
      */
     withAfter(after) {
         this.query.after = after;
@@ -45,7 +45,7 @@ export class EventsQueryBuilder {
      * Filters events by subject.
      *
      * @param {string} subject Subject identifier.
-     * @returns {EventsQueryBuilder} TODO: Description
+     * @returns {EventsQueryBuilder} This builder, for chaining.
      */
     withSubject(subject) {
         this.query.subject = subject;
@@ -58,7 +58,7 @@ export class EventsQueryBuilder {
      * Maps to the Altinn-AlternativeSubject header.
      *
      * @param {string} alternativeSubject Alternative subject identifier.
-     * @returns {EventsQueryBuilder} TODO: Description
+     * @returns {EventsQueryBuilder} This builder, for chaining.
      */
     withAlternativeSubject(alternativeSubject) {
         this.query.alternativeSubject = alternativeSubject;
@@ -69,7 +69,7 @@ export class EventsQueryBuilder {
      * Filters events by event types.
      *
      * @param {string[]} types Event types.
-     * @returns {EventsQueryBuilder} TODO: Description
+     * @returns {EventsQueryBuilder} This builder, for chaining.
      */
     withTypes(types) {
         this.query.type = types;
@@ -80,7 +80,7 @@ export class EventsQueryBuilder {
      * Sets the maximum number of events returned.
      *
      * @param {number} size Maximum result size.
-     * @returns {EventsQueryBuilder} TODO: Description
+     * @returns {EventsQueryBuilder} This builder, for chaining.
      */
     withSize(size) {
         this.query.size = size;
@@ -90,7 +90,7 @@ export class EventsQueryBuilder {
     /**
      * Builds the query parameters object.
      *
-     * @returns {EventsQueryParams} TODO: Description
+     * @returns {EventsQueryParams} The built payload.
      */
     build() {
         return {

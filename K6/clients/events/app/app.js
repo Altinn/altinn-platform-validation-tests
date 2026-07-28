@@ -44,7 +44,7 @@ class AppClient {
      * @param {AppCloudEventRequestModel} request Event payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AppCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -69,6 +69,7 @@ class AppClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -81,7 +82,7 @@ class AppClient {
      * @param {object} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AppGetByApp(org, app, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -96,6 +97,7 @@ class AppClient {
             },
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         };
 
@@ -147,7 +149,7 @@ class AppClient {
      * @param {string} [person] Person number header value.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AppGetByParty(query = null, person = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -162,6 +164,7 @@ class AppClient {
             },
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         };
 

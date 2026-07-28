@@ -13,8 +13,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} source TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {string} source See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithSource(source) {
         this.request.source = source;
@@ -23,8 +23,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} specversion TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {string} specversion See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithSpecversion(specversion) {
         this.request.specversion = specversion;
@@ -33,8 +33,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} type TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {string} type See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithType(type) {
         this.request.type = type;
@@ -43,8 +43,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} subject TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {string} subject See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithSubject(subject) {
         this.request.subject = subject;
@@ -53,8 +53,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} alternativesubject TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {string} alternativesubject See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithAlternativeSubject(alternativesubject) {
         this.request.alternativesubject = alternativesubject;
@@ -63,8 +63,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {*} data TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {*} data See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithData(data) {
         this.request.data = data;
@@ -73,8 +73,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} dataschema TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {string} dataschema See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithDataSchema(dataschema) {
         this.request.dataschema = dataschema;
@@ -83,8 +83,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {ContentType} contenttype TODO: Description
-     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
+     * @param {ContentType} contenttype See the client method.
+     * @returns {AppCloudEventRequestModelBuilder} This builder, for chaining.
      */
     WithContentType(contenttype) {
         this.request.contenttype = contenttype;
@@ -93,7 +93,7 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @returns {AppCloudEventRequestModel} TODO: Description
+     * @returns {AppCloudEventRequestModel} The built payload.
      */
     Build() {
         return this.request;
@@ -105,8 +105,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} after TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {string} after See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithAfter(after) {
         this.query.after = after;
@@ -115,8 +115,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} from TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {string} from See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithFrom(from) {
         this.query.from = from;
@@ -125,8 +125,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} to TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {string} to See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithTo(to) {
         this.query.to = to;
@@ -135,8 +135,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {number} party TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {number} party See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithParty(party) {
         this.query.party = party;
@@ -145,8 +145,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} unit TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {string} unit See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithUnit(unit) {
         this.query.unit = unit;
@@ -155,8 +155,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} person TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {string} person See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithPerson(person) {
         this.query.person = person;
@@ -165,8 +165,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string[]} type TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {string[]} type See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithTypes(type) {
         this.query.type = type;
@@ -175,8 +175,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {number} size TODO: Description
-     * @returns {AppEventsByAppQueryBuilder} TODO: Description
+     * @param {number} size See the client method.
+     * @returns {AppEventsByAppQueryBuilder} This builder, for chaining.
      */
     WithSize(size) {
         this.query.size = size;
@@ -185,7 +185,7 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;
@@ -198,8 +198,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} after TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string} after See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithAfter(after) {
         this.query.after = after;
@@ -208,8 +208,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} from TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string} from See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithFrom(from) {
         this.query.from = from;
@@ -218,8 +218,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} to TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string} to See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithTo(to) {
         this.query.to = to;
@@ -228,8 +228,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {number} party TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {number} party See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithParty(party) {
         this.query.party = party;
@@ -238,8 +238,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} unit TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string} unit See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithUnit(unit) {
         this.query.unit = unit;
@@ -248,8 +248,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} person TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string} person See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithPerson(person) {
         this.query.person = person;
@@ -258,8 +258,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string[]} source TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string[]} source See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithSources(source) {
         this.query.source = source;
@@ -268,8 +268,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string[]} type TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {string[]} type See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithTypes(type) {
         this.query.type = type;
@@ -278,8 +278,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {number} size TODO: Description
-     * @returns {AppPartyEventsQueryBuilder} TODO: Description
+     * @param {number} size See the client method.
+     * @returns {AppPartyEventsQueryBuilder} This builder, for chaining.
      */
     WithSize(size) {
         this.query.size = size;
@@ -288,7 +288,7 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;

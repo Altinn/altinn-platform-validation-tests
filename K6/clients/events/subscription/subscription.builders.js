@@ -26,8 +26,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the endpoint receiving matching events.
      *
-     * @param {string} endPoint TODO: Description
-     * @returns {SubscriptionRequestModelBuilder} TODO: Description
+     * @param {string} endPoint See the client method.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
      */
     withEndpoint(endPoint) {
         this.request.endPoint = endPoint;
@@ -37,8 +37,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the source filter.
      *
-     * @param {string} sourceFilter TODO: Description
-     * @returns {SubscriptionRequestModelBuilder} TODO: Description
+     * @param {string} sourceFilter See the client method.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
      */
     withSourceFilter(sourceFilter) {
         this.request.sourceFilter = sourceFilter;
@@ -48,8 +48,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the subject filter.
      *
-     * @param {string} subjectFilter TODO: Description
-     * @returns {SubscriptionRequestModelBuilder} TODO: Description
+     * @param {string} subjectFilter See the client method.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
      */
     withSubjectFilter(subjectFilter) {
         this.request.subjectFilter = subjectFilter;
@@ -59,8 +59,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the resource filter.
      *
-     * @param {string} resourceFilter TODO: Description
-     * @returns {SubscriptionRequestModelBuilder} TODO: Description
+     * @param {string} resourceFilter See the client method.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
      */
     withResourceFilter(resourceFilter) {
         this.request.resourceFilter = resourceFilter;
@@ -70,8 +70,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the alternative subject filter.
      *
-     * @param {string} alternativeSubjectFilter TODO: Description
-     * @returns {SubscriptionRequestModelBuilder} TODO: Description
+     * @param {string} alternativeSubjectFilter See the client method.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
      */
     withAlternativeSubjectFilter(alternativeSubjectFilter) {
         this.request.alternativeSubjectFilter = alternativeSubjectFilter;
@@ -81,8 +81,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the event type filter.
      *
-     * @param {string} typeFilter TODO: Description
-     * @returns {SubscriptionRequestModelBuilder} TODO: Description
+     * @param {string} typeFilter See the client method.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
      */
     withTypeFilter(typeFilter) {
         this.request.typeFilter = typeFilter;
@@ -92,7 +92,7 @@ class SubscriptionRequestModelBuilder {
     /**
      * Builds the subscription request payload.
      *
-     * @returns {SubscriptionRequestModel} TODO: Description
+     * @returns {SubscriptionRequestModel} The built payload.
      */
     build() {
         return {

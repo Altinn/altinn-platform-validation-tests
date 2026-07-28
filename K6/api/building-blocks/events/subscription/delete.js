@@ -1,7 +1,7 @@
 
 import { check } from "k6";
 
-import { SubscriptionClient } from "../../../../clients/subscription/index.js";
+import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
 
 /**
  * Deletes a subscription.

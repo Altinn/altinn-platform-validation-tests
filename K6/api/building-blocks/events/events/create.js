@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { EventsClient } from "../../../../clients/events/index.js";
+import { EventsClient } from "../../../../clients/events/events/index.js";
 
 /**
  * Posts a new CloudEvent.

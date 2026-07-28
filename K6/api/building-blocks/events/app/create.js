@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AppClient } from "../../../../clients/app/index.js";
+import { AppClient } from "../../../../clients/events/app/index.js";
 
 /**
  * Inserts a new event.
