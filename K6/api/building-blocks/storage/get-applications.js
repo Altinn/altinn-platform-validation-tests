@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ApplicationsClient } from "../../../../clients/applications/applications.client.js";
+import { ApplicationsClient } from "../../../clients/storage/index.js";
 
 /**
  * Retrieves all applications.

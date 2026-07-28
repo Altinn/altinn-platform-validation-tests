@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ApplicationsClient } from "../../../../clients/applications/applications.client.js";
+import { ApplicationsClient } from "../../../clients/storage/index.js";
 
 /**
  * Retrieves applications deployed by an organization.
@@ -8,7 +8,7 @@ import { ApplicationsClient } from "../../../../clients/applications/application
  * @param {ApplicationsClient} applicationsClient Applications API client.
  * @param {string} org Organization identifier.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {Array<Application>} TODO: Description
+ * @returns {Array<Application>} Parsed response body, or null when the call failed.
  */
 export function GetApplicationsByOrg(
     applicationsClient,

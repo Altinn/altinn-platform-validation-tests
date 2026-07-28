@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ApplicationsClient } from "../../../../clients/applications/applications.client.js";
+import { ApplicationsClient } from "../../../clients/storage/index.js";
 
 /**
  * Creates application metadata.
@@ -9,7 +9,7 @@ import { ApplicationsClient } from "../../../../clients/applications/application
  * @param {string|null} appId Application identifier.
  * @param {Application} application Application metadata.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {Application|null} TODO: Description
+ * @returns {Application|null} Parsed response body, or null when the call failed.
  */
 export function CreateApplication(
     applicationsClient,

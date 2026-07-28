@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ApplicationsClient } from "../../../../clients/storage/index.js";
+import { ApplicationsClient } from "../../../clients/storage/index.js";
 
 /**
  * Updates an existing text resource.
