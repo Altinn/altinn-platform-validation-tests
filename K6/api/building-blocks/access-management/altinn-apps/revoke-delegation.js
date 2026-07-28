@@ -1,14 +1,26 @@
 import { check } from "k6";
 
-import { AppsInstanceDelegationClient } from "../../../../clients/delegation/index.js";
+import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import {
+    AppsInstanceDelegationRequestDto,
+    AppsInstanceDelegationResponseDto,
+} from "../../../../clients/access-management/altinn-apps/types.js";
 
 /**
  * Revokes delegation rights for an application instance.
  *
- * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for Apps Instance Delegation API.
+ * POST /app/delegationrevoke/resource/{resourceId}/instance/{instanceId}
+ *
+ * The API responds with AppsInstanceDelegationResponseDto here, not the Revoke
+ * variant, so the rights carry a delegation status and not a revoke status.
+ *
+ * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
  * @param {AppsInstanceDelegationRequestDto} request Revoke request.
+ * @param {string} [expectedStatus] Expected status for every right in the
+ * response, e.g. Delegated or NotDelegated. Only checked when set.
+ * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
  * @returns {AppsInstanceDelegationResponseDto|null} Revoke response.
  */
@@ -17,12 +29,15 @@ export function RevokeDelegation(
     resourceId,
     instanceId,
     request,
+    expectedStatus = null,
+    platformAccessToken = null,
     labels = null,
 ) {
     const res = appsInstanceDelegationClient.RevokeDelegation(
         resourceId,
         instanceId,
         request,
+        platformAccessToken,
         labels,
     );
 
@@ -42,7 +57,7 @@ export function RevokeDelegation(
         return delegation;
     }
 
-    check(res, {
+    const parsed = check(res, {
         "RevokeDelegation - body is valid": (r) => {
             try {
                 delegation = JSON.parse(r.body);
@@ -56,6 +71,17 @@ export function RevokeDelegation(
             }
         },
     });
+
+    if (parsed && expectedStatus !== null) {
+        check(delegation, {
+            [`RevokeDelegation - every right is ${expectedStatus}`]: (b) => {
+                const rights = b?.rights ?? [];
+
+                return rights.length > 0
+                    && rights.every((right) => right.status === expectedStatus);
+            },
+        });
+    }
 
     return delegation;
 }

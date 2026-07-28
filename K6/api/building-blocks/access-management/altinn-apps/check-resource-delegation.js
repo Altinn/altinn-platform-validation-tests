@@ -1,30 +1,41 @@
 import { check } from "k6";
 
-import { AppsInstanceDelegationClient } from "../../../../clients/delegation/index.js";
+import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import {
+    ResourceRightDelegationCheckResultDtoPaginated,
+} from "../../../../clients/access-management/altinn-apps/types.js";
 
 /**
  * Checks whether rights can be delegated for an application instance.
  *
- * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for Apps Instance Delegation API.
+ * GET /app/delegationcheck/resource/{resourceId}/instance/{instanceId}
+ *
+ * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
+ * @param {string} [expectedStatus] Expected delegable status for every result,
+ * e.g. Delegable or NotDelegable. Only checked when set.
+ * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {Array<ResourceRightDelegationCheckResultDto>} Delegation check results.
+ * @returns {ResourceRightDelegationCheckResultDtoPaginated|null} Delegation check results.
  */
 export function CheckResourceDelegation(
     appsInstanceDelegationClient,
     resourceId,
     instanceId,
+    expectedStatus = null,
+    platformAccessToken = null,
     labels = null,
 ) {
     const res = appsInstanceDelegationClient.CheckResourceDelegation(
         resourceId,
         instanceId,
+        platformAccessToken,
         labels,
     );
 
-    /** @type {Array<ResourceRightDelegationCheckResultDto>} */
-    let result = [];
+    /** @type {ResourceRightDelegationCheckResultDtoPaginated|null} */
+    let result = null;
 
     const succeed = check(res, {
         "CheckResourceDelegation - status code is 200": (r) =>
@@ -39,12 +50,10 @@ export function CheckResourceDelegation(
         return result;
     }
 
-    check(res, {
+    const parsed = check(res, {
         "CheckResourceDelegation - body is valid": (r) => {
             try {
-                const body = JSON.parse(r.body);
-
-                result = body.data ?? [];
+                result = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -55,6 +64,17 @@ export function CheckResourceDelegation(
             }
         },
     });
+
+    if (parsed && expectedStatus !== null) {
+        check(result, {
+            [`CheckResourceDelegation - every result is ${expectedStatus}`]: (b) => {
+                const data = b?.data ?? [];
+
+                return data.length > 0
+                    && data.every((item) => item.status === expectedStatus);
+            },
+        });
+    }
 
     return result;
 }

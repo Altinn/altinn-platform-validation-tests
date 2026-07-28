@@ -2,7 +2,7 @@ import http from "k6/http";
 
 import {
     AppsInstanceDelegationRequestDto,
-} from "./apps-instance-delegation.types.js";
+} from "./types.js";
 
 const TAGS = {
     CheckResourceDelegation: {
@@ -21,6 +21,23 @@ const TAGS = {
         action: "delete-delegations",
     },
 };
+
+/**
+ * Encodes a path value one segment at a time.
+ *
+ * Instance ids are on the form {instanceOwnerPartyId}/{instanceGuid}, so the
+ * separating slash has to stay a slash. Encoding the value as a whole turns it
+ * into %2F, which the API will not route.
+ *
+ * @param {string} value Path value, possibly containing slashes.
+ * @returns {string} The value with every segment percent encoded.
+ */
+function encodePath(value) {
+    return String(value)
+        .split("/")
+        .map((segment) => encodeURIComponent(segment))
+        .join("/");
+}
 
 class AppsInstanceDelegationClient {
     /**
@@ -49,35 +66,29 @@ class AppsInstanceDelegationClient {
     /**
      * Default request tags.
      *
-     * @returns {object} TODO: description
+     * @returns {object} Tags keyed by client method name.
      */
     static get TAGS() {
         return TAGS;
     }
 
     /**
-     * Checks whether rights may be delegated for an application instance.
+     * Builds the request tags for a call.
      *
-     * @param {string} resourceId Resource identifier.
-     * @param {string} instanceId Instance identifier.
+     * The name tag is kept on the templated path so that every resource and
+     * instance does not end up as its own metric.
+     *
+     * @param {string} action Action tag.
+     * @param {string} template Templated path, without host information.
+     * @param {string} url Fully-qualified request URL.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {{[key:string]:string}} Request tags.
      */
-    CheckResourceDelegation(
-        resourceId,
-        instanceId,
-        labels = null,
-    ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/app/delegationcheck/resource/${encodeURIComponent(resourceId)}/instance/${encodeURIComponent(instanceId)}`
-        );
-
+    #getTags(action, template, url, labels) {
         let tags = {
-            endpoint: url.toString(),
-            name: url.toString(),
-            action: TAGS.CheckResourceDelegation.action,
+            endpoint: url,
+            name: `${this.FULL_PATH}${template}`,
+            action,
         };
 
         if (labels !== null) {
@@ -87,57 +98,106 @@ class AppsInstanceDelegationClient {
             };
         }
 
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        return tags;
+    }
+
+    /**
+     * Builds the request headers for a call.
+     *
+     * @param {string|null} platformAccessToken Optional platform access token.
+     * @param {string|null} contentType Optional request body content type.
+     * @returns {{[key:string]:string}} Request headers.
+     */
+    #getHeaders(platformAccessToken, contentType = null) {
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            Accept: "application/json",
+        };
+
+        if (contentType !== null) {
+            headers["Content-Type"] = contentType;
+        }
+
+        if (platformAccessToken !== null) {
+            headers.PlatformAccessToken = `${platformAccessToken}`;
+        }
+
+        return headers;
+    }
+
+    /**
+     * Checks whether rights may be delegated for an application instance.
+     *
+     * GET /app/delegationcheck/resource/{resourceId}/instance/{instanceId}
+     *
+     * @param {string} resourceId Resource identifier.
+     * @param {string} instanceId Instance identifier.
+     * @param {string|null} platformAccessToken Optional platform access token.
+     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    CheckResourceDelegation(
+        resourceId,
+        instanceId,
+        platformAccessToken = null,
+        labels = null,
+    ) {
+        const template = "/app/delegationcheck/resource/{resourceId}/instance/{instanceId}";
+
+        const url = new URL(
+            `${this.FULL_PATH}/app/delegationcheck/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
+        ).toString();
+
+        return http.get(url, {
+            tags: this.#getTags(
+                TAGS.CheckResourceDelegation.action,
+                template,
+                url,
+                labels,
+            ),
+            headers: this.#getHeaders(platformAccessToken),
         });
     }
 
     /**
      * Creates one or more delegations for an application instance.
      *
+     * POST /app/delegations/resource/{resourceId}/instance/{instanceId}
+     *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Delegation request.
+     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreateDelegation(
         resourceId,
         instanceId,
         request,
+        platformAccessToken = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
+        const template = "/app/delegations/resource/{resourceId}/instance/{instanceId}";
 
         const url = new URL(
-            `${this.FULL_PATH}/app/delegations/resource/${encodeURIComponent(resourceId)}/instance/${encodeURIComponent(instanceId)}`
-        );
-
-        let tags = {
-            endpoint: url.toString(),
-            name: url.toString(),
-            action: TAGS.CreateDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
+            `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
+        ).toString();
 
         return http.post(
-            url.toString(),
+            url,
             JSON.stringify(request),
             {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
+                tags: this.#getTags(
+                    TAGS.CreateDelegation.action,
+                    template,
+                    url,
+                    labels,
+                ),
+                headers: this.#getHeaders(
+                    platformAccessToken,
+                    "application/json",
+                ),
             },
         );
     }
@@ -145,86 +205,79 @@ class AppsInstanceDelegationClient {
     /**
      * Gets existing delegations for an application instance.
      *
+     * GET /app/delegations/resource/{resourceId}/instance/{instanceId}
+     *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
+     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetDelegations(
         resourceId,
         instanceId,
+        platformAccessToken = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
+        const template = "/app/delegations/resource/{resourceId}/instance/{instanceId}";
 
         const url = new URL(
-            `${this.FULL_PATH}/app/delegations/resource/${encodeURIComponent(resourceId)}/instance/${encodeURIComponent(instanceId)}`
-        );
+            `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
+        ).toString();
 
-        let tags = {
-            endpoint: url.toString(),
-            name: url.toString(),
-            action: TAGS.GetDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        return http.get(url, {
+            tags: this.#getTags(
+                TAGS.GetDelegations.action,
+                template,
+                url,
+                labels,
+            ),
+            headers: this.#getHeaders(platformAccessToken),
         });
     }
 
     /**
      * Revokes one or more delegations for an application instance.
      *
+     * POST /app/delegationrevoke/resource/{resourceId}/instance/{instanceId}
+     *
+     * Note that this endpoint responds with AppsInstanceDelegationResponseDto,
+     * not the Revoke variant. That is what the API does, do not "fix" it.
+     *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Revoke request.
+     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RevokeDelegation(
         resourceId,
         instanceId,
         request,
+        platformAccessToken = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
+        const template = "/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}";
 
         const url = new URL(
-            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodeURIComponent(resourceId)}/instance/${encodeURIComponent(instanceId)}`
-        );
-
-        let tags = {
-            endpoint: url.toString(),
-            name: url.toString(),
-            action: TAGS.RevokeDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
+            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
+        ).toString();
 
         return http.post(
-            url.toString(),
+            url,
             JSON.stringify(request),
             {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
+                tags: this.#getTags(
+                    TAGS.RevokeDelegation.action,
+                    template,
+                    url,
+                    labels,
+                ),
+                headers: this.#getHeaders(
+                    platformAccessToken,
+                    "application/json",
+                ),
             },
         );
     }
@@ -232,43 +285,37 @@ class AppsInstanceDelegationClient {
     /**
      * Deletes all delegations for an application instance.
      *
+     * DELETE /app/delegationrevoke/resource/{resourceId}/instance/{instanceId}
+     *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
+     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} TODO: description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteDelegations(
         resourceId,
         instanceId,
+        platformAccessToken = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
+        const template = "/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}";
 
         const url = new URL(
-            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodeURIComponent(resourceId)}/instance/${encodeURIComponent(instanceId)}`
-        );
-
-        let tags = {
-            endpoint: url.toString(),
-            name: url.toString(),
-            action: TAGS.DeleteDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
+            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
+        ).toString();
 
         return http.del(
-            url.toString(),
+            url,
             null,
             {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                tags: this.#getTags(
+                    TAGS.DeleteDelegations.action,
+                    template,
+                    url,
+                    labels,
+                ),
+                headers: this.#getHeaders(platformAccessToken),
             },
         );
     }

@@ -1,13 +1,20 @@
 import { check } from "k6";
 
-import { AppsInstanceDelegationClient } from "../../../../clients/apps-instance-delegation/index.js";
+import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import {
+    AppsInstanceRevokeResponseDtoPaginated,
+} from "../../../../clients/access-management/altinn-apps/types.js";
 
 /**
- * Revokes delegations for an application instance.
+ * Revokes all delegations for an application instance.
+ *
+ * DELETE /app/delegationrevoke/resource/{resourceId}/instance/{instanceId}
  *
  * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
+ * @param {string} [expectedStatus] Expected revoke status for every right,
+ * e.g. Revoked or NotRevoked. Only checked when set.
  * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AppsInstanceRevokeResponseDtoPaginated|null} Revocation result.
@@ -16,6 +23,7 @@ export function DeleteDelegations(
     appsInstanceDelegationClient,
     resourceId,
     instanceId,
+    expectedStatus = null,
     platformAccessToken = null,
     labels = null,
 ) {
@@ -42,7 +50,7 @@ export function DeleteDelegations(
         return result;
     }
 
-    check(res, {
+    const parsed = check(res, {
         "DeleteDelegations - body is valid": (r) => {
             try {
                 result = JSON.parse(r.body);
@@ -56,6 +64,19 @@ export function DeleteDelegations(
             }
         },
     });
+
+    if (parsed && expectedStatus !== null) {
+        check(result, {
+            [`DeleteDelegations - every right is ${expectedStatus}`]: (b) => {
+                const rights = (b?.data ?? []).flatMap(
+                    (delegation) => delegation.rights ?? [],
+                );
+
+                return rights.length > 0
+                    && rights.every((right) => right.status === expectedStatus);
+            },
+        });
+    }
 
     return result;
 }

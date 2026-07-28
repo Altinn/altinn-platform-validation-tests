@@ -146,6 +146,17 @@
  * @property {PaginatedLinks=} links
  */
 
+/**
+ * Error body returned for 400 and 500 responses.
+ *
+ * @typedef {object} ProblemDetails
+ * @property {string=} type
+ * @property {string=} title
+ * @property {number=} status
+ * @property {string=} detail
+ * @property {string=} instance
+ */
+
 export const PartyUuidUrn = undefined;
 export const OrganizationIdentifierUrn = undefined;
 export const PartyUrnUrnJsonTypeValue = undefined;
@@ -180,3 +191,5 @@ export const PaginatedLinks = undefined;
 export const AppsInstanceDelegationResponseDtoPaginated = undefined;
 export const AppsInstanceRevokeResponseDtoPaginated = undefined;
 export const ResourceRightDelegationCheckResultDtoPaginated = undefined;
+
+export const ProblemDetails = undefined;
