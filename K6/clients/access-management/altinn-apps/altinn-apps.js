@@ -49,7 +49,7 @@ class AppsInstanceDelegationClient {
     /**
      * Default request tags.
      *
-     * @returns {object}
+     * @returns {object} TODO: description
      */
     static get TAGS() {
         return TAGS;
@@ -61,7 +61,7 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     CheckResourceDelegation(
         resourceId,
@@ -102,7 +102,7 @@ class AppsInstanceDelegationClient {
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Delegation request.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     CreateDelegation(
         resourceId,
@@ -148,7 +148,7 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     GetDelegations(
         resourceId,
@@ -189,7 +189,7 @@ class AppsInstanceDelegationClient {
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Revoke request.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     RevokeDelegation(
         resourceId,
@@ -235,7 +235,7 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     DeleteDelegations(
         resourceId,

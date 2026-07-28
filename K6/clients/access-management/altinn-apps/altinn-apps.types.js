@@ -1,11 +1,11 @@
 /**
- * @typedef {Object} PartyUuidUrn
+ * @typedef {object} PartyUuidUrn
  * @property {"urn:altinn:party:uuid"} type
  * @property {string} value
  */
 
 /**
- * @typedef {Object} OrganizationIdentifierUrn
+ * @typedef {object} OrganizationIdentifierUrn
  * @property {"urn:altinn:organization:identifier-no"} type
  * @property {string} value
  */
@@ -15,7 +15,7 @@
  */
 
 /**
- * @typedef {Object} ActionIdUrn
+ * @typedef {object} ActionIdUrn
  * @property {"urn:oasis:names:tc:xacml:1.0:action:action-id"} type
  * @property {string} value
  */
@@ -25,19 +25,19 @@
  */
 
 /**
- * @typedef {Object} UrnJsonTypeValue
+ * @typedef {object} UrnJsonTypeValue
  * @property {string} type
  * @property {string} value
  */
 
 /**
- * @typedef {Object} RightDto
+ * @typedef {object} RightDto
  * @property {Array<UrnJsonTypeValue>=} resource
  * @property {ActionUrnUrnJsonTypeValue=} action
  */
 
 /**
- * @typedef {Object} AppsInstanceDelegationRequestDto
+ * @typedef {object} AppsInstanceDelegationRequestDto
  * @property {PartyUrnUrnJsonTypeValue} from
  * @property {PartyUrnUrnJsonTypeValue} to
  * @property {Array<RightDto>} rights
@@ -70,34 +70,34 @@
  */
 
 /**
- * @typedef {Object} AttributeMatchExternal
+ * @typedef {object} AttributeMatchExternal
  * @property {string} id
  * @property {string} value
  */
 
 /**
- * @typedef {Object} DetailExternal
+ * @typedef {object} DetailExternal
  * @property {DetailCodeExternal=} code
  * @property {string=} description
- * @property {Object<string, Array<AttributeMatchExternal>>=} parameters
+ * @property {{[key: string]: Array<AttributeMatchExternal>}=} parameters
  */
 
 /**
- * @typedef {Object} RightDelegationResultDto
+ * @typedef {object} RightDelegationResultDto
  * @property {Array<UrnJsonTypeValue>=} resource
  * @property {ActionUrnUrnJsonTypeValue=} action
  * @property {DelegationStatusExternal=} status
  */
 
 /**
- * @typedef {Object} RightRevokeResultDto
+ * @typedef {object} RightRevokeResultDto
  * @property {Array<UrnJsonTypeValue>=} resource
  * @property {ActionUrnUrnJsonTypeValue=} action
  * @property {RevokeStatusExternal=} status
  */
 
 /**
- * @typedef {Object} ResourceRightDelegationCheckResultDto
+ * @typedef {object} ResourceRightDelegationCheckResultDto
  * @property {string} rightKey
  * @property {Array<UrnJsonTypeValue>} resource
  * @property {ActionUrnUrnJsonTypeValue} action
@@ -106,7 +106,7 @@
  */
 
 /**
- * @typedef {Object} AppsInstanceDelegationResponseDto
+ * @typedef {object} AppsInstanceDelegationResponseDto
  * @property {PartyUrnUrnJsonTypeValue} from
  * @property {PartyUrnUrnJsonTypeValue} to
  * @property {string} resourceId
@@ -115,7 +115,7 @@
  */
 
 /**
- * @typedef {Object} AppsInstanceRevokeResponseDto
+ * @typedef {object} AppsInstanceRevokeResponseDto
  * @property {PartyUrnUrnJsonTypeValue} from
  * @property {PartyUrnUrnJsonTypeValue} to
  * @property {string} resourceId
@@ -124,24 +124,24 @@
  */
 
 /**
- * @typedef {Object} PaginatedLinks
+ * @typedef {object} PaginatedLinks
  * @property {string=} next
  */
 
 /**
- * @typedef {Object} AppsInstanceDelegationResponseDtoPaginated
+ * @typedef {object} AppsInstanceDelegationResponseDtoPaginated
  * @property {Array<AppsInstanceDelegationResponseDto>=} data
  * @property {PaginatedLinks=} links
  */
 
 /**
- * @typedef {Object} AppsInstanceRevokeResponseDtoPaginated
+ * @typedef {object} AppsInstanceRevokeResponseDtoPaginated
  * @property {Array<AppsInstanceRevokeResponseDto>=} data
  * @property {PaginatedLinks=} links
  */
 
 /**
- * @typedef {Object} ResourceRightDelegationCheckResultDtoPaginated
+ * @typedef {object} ResourceRightDelegationCheckResultDtoPaginated
  * @property {Array<ResourceRightDelegationCheckResultDto>=} data
  * @property {PaginatedLinks=} links
  */
