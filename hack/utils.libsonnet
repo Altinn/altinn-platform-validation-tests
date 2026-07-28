@@ -14,7 +14,7 @@
 
   checkoutAction: std.format(
     'actions/checkout@%s',
-    '9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0'
+    '3d3c42e5aac5ba805825da76410c181273ba90b1'
   ),  // v7
 
   setupNode: std.format(
