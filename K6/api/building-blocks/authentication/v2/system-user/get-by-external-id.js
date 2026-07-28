@@ -2,12 +2,11 @@ import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/system-user/index.js";
 
-
 /**
  * Retrieves a SystemUser by external id information.
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
- * @param {Object} query Query parameters.
+ * @param {object} query Query parameters.
  * @param {string} [query.clientId] MaskinPorten client id.
  * @param {string} [query.systemProviderOrgNo] System provider organisation number.
  * @param {string} [query.systemUserOwnerOrgNo] System user owner organisation number.

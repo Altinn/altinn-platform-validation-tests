@@ -15,8 +15,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} externalRef
-     * @returns {CreateRequestSystemUserBuilder}
+     * @param {string} externalRef TODO: Description
+     * @returns {CreateRequestSystemUserBuilder} TODO: Description
      */
     withExternalRef(externalRef) {
         this.request.externalRef = externalRef;
@@ -24,8 +24,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} systemId
-     * @returns {CreateRequestSystemUserBuilder}
+     * @param {string} systemId TODO: Description
+     * @returns {CreateRequestSystemUserBuilder} TODO: Description
      */
     withSystemId(systemId) {
         this.request.systemId = systemId;
@@ -33,8 +33,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} partyOrgNo
-     * @returns {CreateRequestSystemUserBuilder}
+     * @param {string} partyOrgNo TODO: Description
+     * @returns {CreateRequestSystemUserBuilder} TODO: Description
      */
     withPartyOrgNo(partyOrgNo) {
         this.request.partyOrgNo = partyOrgNo;
@@ -42,8 +42,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {Right[]} rights
-     * @returns {CreateRequestSystemUserBuilder}
+     * @param {Right[]} rights TODO: Description
+     * @returns {CreateRequestSystemUserBuilder} TODO: Description
      */
     withRights(rights) {
         this.request.rights = rights;
@@ -51,8 +51,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {AccessPackage[]} accessPackages
-     * @returns {CreateRequestSystemUserBuilder}
+     * @param {AccessPackage[]} accessPackages TODO: Description
+     * @returns {CreateRequestSystemUserBuilder} TODO: Description
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
@@ -60,8 +60,8 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} redirectUrl
-     * @returns {CreateRequestSystemUserBuilder}
+     * @param {string} redirectUrl TODO: Description
+     * @returns {CreateRequestSystemUserBuilder} TODO: Description
      */
     withRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -69,7 +69,7 @@ class CreateRequestSystemUserBuilder {
     }
 
     /**
-     * @returns {CreateRequestSystemUser}
+     * @returns {CreateRequestSystemUser} TODO: Description
      */
     build() {
         return this.request;
@@ -92,8 +92,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} externalRef
-     * @returns {CreateAgentRequestSystemUserBuilder}
+     * @param {string} externalRef TODO: Description
+     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
      */
     withExternalRef(externalRef) {
         this.request.externalRef = externalRef;
@@ -101,8 +101,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} systemId
-     * @returns {CreateAgentRequestSystemUserBuilder}
+     * @param {string} systemId TODO: Description
+     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
      */
     withSystemId(systemId) {
         this.request.systemId = systemId;
@@ -110,8 +110,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} partyOrgNo
-     * @returns {CreateAgentRequestSystemUserBuilder}
+     * @param {string} partyOrgNo TODO: Description
+     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
      */
     withPartyOrgNo(partyOrgNo) {
         this.request.partyOrgNo = partyOrgNo;
@@ -119,8 +119,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {AccessPackage[]} accessPackages
-     * @returns {CreateAgentRequestSystemUserBuilder}
+     * @param {AccessPackage[]} accessPackages TODO: Description
+     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
@@ -128,8 +128,8 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @param {string} redirectUrl
-     * @returns {CreateAgentRequestSystemUserBuilder}
+     * @param {string} redirectUrl TODO: Description
+     * @returns {CreateAgentRequestSystemUserBuilder} TODO: Description
      */
     withRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -137,7 +137,7 @@ class CreateAgentRequestSystemUserBuilder {
     }
 
     /**
-     * @returns {CreateAgentRequestSystemUser}
+     * @returns {CreateAgentRequestSystemUser} TODO: Description
      */
     build() {
         return this.request;
@@ -145,6 +145,6 @@ class CreateAgentRequestSystemUserBuilder {
 }
 
 export {
-    CreateRequestSystemUserBuilder,
     CreateAgentRequestSystemUserBuilder,
+    CreateRequestSystemUserBuilder,
 };

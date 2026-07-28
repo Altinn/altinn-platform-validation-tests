@@ -2,13 +2,12 @@ import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/system-user/index.js";
 
-
 /**
  * Retrieves SystemUsers belonging to a vendor system.
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
  * @param {string} systemId System identifier.
- * @param {Object} [query] Query parameters.
+ * @param {object} [query] Query parameters.
  * @param {Int64Opaque} [query.token] Continuation token.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {SystemUserPaginated|null} Paginated SystemUsers.

@@ -50,7 +50,7 @@ class SystemUserClientDelegationClient {
      * @param {string} [agent] System user id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     GetAvailableClients(agent = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -91,7 +91,7 @@ class SystemUserClientDelegationClient {
      * @param {string} [agent] System user id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     GetClients(agent = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -133,7 +133,7 @@ class SystemUserClientDelegationClient {
      * @param {string} client Client id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     DelegateClient(agent, client, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -175,7 +175,7 @@ class SystemUserClientDelegationClient {
      * @param {string} client Client id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RemoveClient(agent, client, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -216,7 +216,7 @@ class SystemUserClientDelegationClient {
      * @param {string} [party] Party identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     GetAgents(party = null, labels = null) {
         const token = this.tokenGenerator.getToken();

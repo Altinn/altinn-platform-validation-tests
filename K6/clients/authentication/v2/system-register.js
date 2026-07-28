@@ -67,7 +67,7 @@ class SystemRegisterClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterGet(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -100,7 +100,7 @@ class SystemRegisterClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorGet(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -134,7 +134,7 @@ class SystemRegisterClient {
      * @param {RegisterSystemRequest} request System registration request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -169,7 +169,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorGetById(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -204,7 +204,7 @@ class SystemRegisterClient {
      * @param {RegisterSystemRequest} request Updated system model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorUpdate(systemId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -239,7 +239,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorDelete(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -274,7 +274,7 @@ class SystemRegisterClient {
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterGetRights(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -313,7 +313,7 @@ class SystemRegisterClient {
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterGetAccessPackages(
         systemId,
@@ -356,7 +356,7 @@ class SystemRegisterClient {
      * @param {Right[]} rights Rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorUpdateRights(systemId, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -392,7 +392,7 @@ class SystemRegisterClient {
      * @param {AccessPackage[]} accessPackages Access packages.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorUpdateAccessPackages(
         systemId,
@@ -431,7 +431,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemRegisterVendorGetChangeLog(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();

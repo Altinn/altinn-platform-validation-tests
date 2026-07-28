@@ -17,8 +17,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets the system identifier.
      *
-     * @param {string|null} id
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {string|null} id TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withId(id) {
         this.request.id = id;
@@ -29,8 +29,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets vendor information.
      *
-     * @param {VendorInfo|null} vendor
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {VendorInfo|null} vendor TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withVendor(vendor) {
         this.request.vendor = vendor;
@@ -41,8 +41,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets localized system names.
      *
-     * @param {Object<string, string>|null} name
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {{[key: string]: string}|null} name TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withName(name) {
         this.request.name = name;
@@ -53,8 +53,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets localized system descriptions.
      *
-     * @param {Object<string, string>|null} description
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {{[key: string]: string}|null} description TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withDescription(description) {
         this.request.description = description;
@@ -65,8 +65,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets system rights.
      *
-     * @param {Right[]|null} rights
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {Right[]|null} rights TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withRights(rights) {
         this.request.rights = rights;
@@ -77,8 +77,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets system access packages.
      *
-     * @param {AccessPackage[]|null} accessPackages
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {AccessPackage[]|null} accessPackages TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
@@ -89,8 +89,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets client identifiers.
      *
-     * @param {string[]|null} clientId
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {string[]|null} clientId TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withClientId(clientId) {
         this.request.clientId = clientId;
@@ -101,8 +101,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets visibility.
      *
-     * @param {boolean} isVisible
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {boolean} isVisible TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withVisibility(isVisible) {
         this.request.isVisible = isVisible;
@@ -113,8 +113,8 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets allowed redirect URLs.
      *
-     * @param {string[]|null} allowedRedirectUrls
-     * @returns {RegisterSystemRequestBuilder}
+     * @param {string[]|null} allowedRedirectUrls TODO: Description
+     * @returns {RegisterSystemRequestBuilder} TODO: Description
      */
     withAllowedRedirectUrls(allowedRedirectUrls) {
         this.request.allowedRedirectUrls = allowedRedirectUrls;
@@ -125,7 +125,7 @@ class RegisterSystemRequestBuilder {
     /**
      * Builds the request model.
      *
-     * @returns {RegisterSystemRequest}
+     * @returns {RegisterSystemRequest} TODO: Description
      */
     build() {
         return this.request;

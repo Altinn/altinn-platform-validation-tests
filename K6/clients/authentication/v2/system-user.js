@@ -47,14 +47,14 @@ class SystemUserClient {
     /**
      * Finds a SystemUser by external id.
      *
-     * @param {Object} query Query parameters.
-     * @param {string} [query.clientId]
-     * @param {string} [query.systemProviderOrgNo]
-     * @param {string} [query.systemUserOwnerOrgNo]
-     * @param {string} [query.externalRef]
+     * @param {object} query Query parameters.
+     * @param {string} [query.clientId] TODO: Description
+     * @param {string} [query.systemProviderOrgNo] TODO: Description
+     * @param {string} [query.systemUserOwnerOrgNo] TODO: Description
+     * @param {string} [query.externalRef] TODO: Description
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemUserGetByExternalId(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -109,7 +109,7 @@ class SystemUserClient {
      * @param {SystemUserUpdateDto} request Updated SystemUser.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemUserUpdate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -141,13 +141,13 @@ class SystemUserClient {
     /**
      * Retrieves a SystemUser by vendor query.
      *
-     * @param {Object} query Query parameters.
-     * @param {string} [query["system-id"]]
-     * @param {string} [query["external-ref"]]
-     * @param {string} [query.orgno]
+     * @param {object} query Query parameters.
+     * @param {string} [query["system-id"]] TODO: Description
+     * @param {string} [query["external-ref"]] TODO: Description
+     * @param {string} [query.orgno] TODO: Description
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemUserVendorGetByQuery(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -200,11 +200,11 @@ class SystemUserClient {
      * Retrieves SystemUsers for a vendor system.
      *
      * @param {string} systemId System identifier.
-     * @param {Object} [query] Query parameters.
+     * @param {object} [query] Query parameters.
      * @param {Int64Opaque} [query.token] Continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemUserVendorGetBySystem(systemId, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -260,11 +260,11 @@ class SystemUserClient {
     /**
      * Retrieves SystemUsers for internal streaming.
      *
-     * @param {Object} [query] Query parameters.
+     * @param {object} [query] Query parameters.
      * @param {Int64Opaque} [query.token] Continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     SystemUserInternalStream(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

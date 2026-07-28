@@ -62,7 +62,7 @@ class RequestSystemUserClient {
      * @param {CreateRequestSystemUser} request Request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -97,7 +97,7 @@ class RequestSystemUserClient {
      * @param {CreateAgentRequestSystemUser} request Agent request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorAgentCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -132,7 +132,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -160,15 +160,14 @@ class RequestSystemUserClient {
         });
     }
 
-
     /**
- * Deletes a system user request.
- *
- * @param {string} requestId Request identifier.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Deletes a system user request.
+     *
+     * @param {string} requestId Request identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     */
     RequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
@@ -201,7 +200,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorAgentGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -237,7 +236,7 @@ class RequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorGetByExternalRef(
         systemId,
@@ -270,17 +269,16 @@ class RequestSystemUserClient {
         });
     }
 
-
     /**
- * Retrieves an agent system user request by system id, organization number and external reference.
- *
- * @param {string} systemId System identifier.
- * @param {string} orgNo Organization number.
- * @param {string} externalRef External reference.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Retrieves an agent system user request by system id, organization number and external reference.
+     *
+     * @param {string} systemId System identifier.
+     * @param {string} orgNo Organization number.
+     * @param {string} externalRef External reference.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
+     */
     RequestSystemUserVendorAgentGetByExternalRef(
         systemId,
         orgNo,
@@ -319,7 +317,7 @@ class RequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorGetBySystem(systemId, token = null, labels = null) {
         const authToken = this.tokenGenerator.getToken();
@@ -358,7 +356,7 @@ class RequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions TODO: Description
      */
     RequestSystemUserVendorAgentGetBySystem(
         systemId,

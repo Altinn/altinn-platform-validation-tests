@@ -2,12 +2,11 @@ import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/system-user/index.js";
 
-
 /**
  * Retrieves a SystemUser by vendor query.
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
- * @param {Object} query Query parameters.
+ * @param {object} query Query parameters.
  * @param {string} [query["system-id"]] Vendor system id.
  * @param {string} [query["external-ref"]] External reference.
  * @param {string} [query.orgno] Reportee organisation number.

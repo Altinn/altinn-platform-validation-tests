@@ -11,8 +11,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} id
-     * @returns {SystemUserUpdateDtoBuilder}
+     * @param {string|null} id TODO: Description
+     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
      */
     withId(id) {
         this.request.id = id;
@@ -20,8 +20,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} partyId
-     * @returns {SystemUserUpdateDtoBuilder}
+     * @param {string|null} partyId TODO: Description
+     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
      */
     withPartyId(partyId) {
         this.request.partyId = partyId;
@@ -29,8 +29,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} reporteeOrgNo
-     * @returns {SystemUserUpdateDtoBuilder}
+     * @param {string|null} reporteeOrgNo TODO: Description
+     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
      */
     withReporteeOrgNo(reporteeOrgNo) {
         this.request.reporteeOrgNo = reporteeOrgNo;
@@ -38,8 +38,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} integrationTitle
-     * @returns {SystemUserUpdateDtoBuilder}
+     * @param {string|null} integrationTitle TODO: Description
+     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
      */
     withIntegrationTitle(integrationTitle) {
         this.request.integrationTitle = integrationTitle;
@@ -47,8 +47,8 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @param {string|null} systemId
-     * @returns {SystemUserUpdateDtoBuilder}
+     * @param {string|null} systemId TODO: Description
+     * @returns {SystemUserUpdateDtoBuilder} TODO: Description
      */
     withSystemId(systemId) {
         this.request.systemId = systemId;
@@ -56,7 +56,7 @@ export class SystemUserUpdateDtoBuilder {
     }
 
     /**
-     * @returns {SystemUserUpdateDto}
+     * @returns {SystemUserUpdateDto} TODO: Description
      */
     build() {
         return this.request;

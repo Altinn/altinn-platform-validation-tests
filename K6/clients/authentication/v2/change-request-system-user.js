@@ -52,7 +52,7 @@ class ChangeRequestSystemUserClient {
      * @param {string|null} systemUserId System user identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions
      */
     ChangeRequestSystemUserVendorCreate(
         request,
@@ -110,7 +110,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions
      */
     ChangeRequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -144,7 +144,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions
      */
     ChangeRequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -173,15 +173,15 @@ class ChangeRequestSystemUserClient {
     }
 
     /**
- * Retrieves a change request by external reference.
- *
- * @param {string} systemId System identifier.
- * @param {string} orgNo Organisation number.
- * @param {string} externalRef External reference.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Retrieves a change request by external reference.
+     *
+     * @param {string} systemId System identifier.
+     * @param {string} orgNo Organisation number.
+     * @param {string} externalRef External reference.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO:  Descriptions
+     */
     ChangeRequestSystemUserVendorGetByExternalRef(
         systemId,
         orgNo,
@@ -220,7 +220,7 @@ class ChangeRequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO:  Descriptions
      */
     ChangeRequestSystemUserVendorGetBySystem(
         systemId,
