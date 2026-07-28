@@ -9,8 +9,8 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @param {number} seq
-     * @returns {StatusFeedQueryBuilder}
+     * @param {number} seq TODO: description
+     * @returns {StatusFeedQueryBuilder} TODO: description
      */
     WithSeq(seq) {
         this.query.seq = seq;
@@ -19,8 +19,8 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @param {number} pageSize
-     * @returns {StatusFeedQueryBuilder}
+     * @param {number} pageSize TODO: description
+     * @returns {StatusFeedQueryBuilder} TODO: description
      */
     WithPageSize(pageSize) {
         this.query.pageSize = pageSize;
@@ -29,8 +29,8 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @param {StatusOrderBy} orderBy
-     * @returns {StatusFeedQueryBuilder}
+     * @param {StatusOrderBy} orderBy TODO: description
+     * @returns {StatusFeedQueryBuilder} TODO: description
      */
     WithOrderBy(orderBy) {
         this.query.orderBy = orderBy;
@@ -39,7 +39,7 @@ class StatusFeedQueryBuilder {
     }
 
     /**
-     * @returns {StatusFeedQuery}
+     * @returns {StatusFeedQuery} TODO: description
      */
     Build() {
         return this.query;

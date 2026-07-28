@@ -7,8 +7,8 @@ class ShortMessageContentBuilder {
     }
 
     /**
-     * @param {string} sender
-     * @returns {ShortMessageContentBuilder}
+     * @param {string} sender TODO: description
+     * @returns {ShortMessageContentBuilder} TODO: description
      */
     WithSender(sender) {
         this.request.sender = sender;
@@ -17,8 +17,8 @@ class ShortMessageContentBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {ShortMessageContentBuilder}
+     * @param {string} body TODO: description
+     * @returns {ShortMessageContentBuilder} TODO: description
      */
     WithBody(body) {
         this.request.body = body;
@@ -27,7 +27,7 @@ class ShortMessageContentBuilder {
     }
 
     /**
-     * @returns {ShortMessageContentExt}
+     * @returns {ShortMessageContentExt} TODO: description
      */
     Build() {
         if (this.request.body === null) {
@@ -48,8 +48,8 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @param {string} phoneNumber
-     * @returns {ShortMessageDeliveryDetailsBuilder}
+     * @param {string} phoneNumber TODO: description
+     * @returns {ShortMessageDeliveryDetailsBuilder} TODO: description
      */
     WithPhoneNumber(phoneNumber) {
         this.request.phoneNumber = phoneNumber;
@@ -58,8 +58,8 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @param {number} timeToLiveInSeconds
-     * @returns {ShortMessageDeliveryDetailsBuilder}
+     * @param {number} timeToLiveInSeconds TODO: description
+     * @returns {ShortMessageDeliveryDetailsBuilder} TODO: description
      */
     WithTimeToLiveInSeconds(timeToLiveInSeconds) {
         this.request.timeToLiveInSeconds = timeToLiveInSeconds;
@@ -68,8 +68,8 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @param {ShortMessageContentExt} smsSettings
-     * @returns {ShortMessageDeliveryDetailsBuilder}
+     * @param {ShortMessageContentExt} smsSettings TODO: description
+     * @returns {ShortMessageDeliveryDetailsBuilder} TODO: description
      */
     WithSmsSettings(smsSettings) {
         this.request.smsSettings = smsSettings;
@@ -78,7 +78,7 @@ class ShortMessageDeliveryDetailsBuilder {
     }
 
     /**
-     * @returns {ShortMessageDeliveryDetailsExt}
+     * @returns {ShortMessageDeliveryDetailsExt} TODO: description
      */
     Build() {
         if (this.request.phoneNumber === null) {
@@ -107,19 +107,19 @@ class ShortMessageDeliveryDetailsBuilder {
  * Example:
  *
  * const request = new InstantSmsNotificationOrderRequestBuilder()
- *     .WithIdempotencyId(idempotencyId)
- *     .WithRecipientSms(
- *         new ShortMessageDeliveryDetailsBuilder()
- *             .WithPhoneNumber("+4799999999")
- *             .WithTimeToLiveInSeconds(3600)
- *             .WithSmsSettings(
- *                 new ShortMessageContentBuilder()
- *                     .WithBody("Hello!")
- *                     .Build(),
- *             )
- *             .Build(),
- *     )
- *     .Build();
+ * .WithIdempotencyId(idempotencyId)
+ * .WithRecipientSms(
+ * new ShortMessageDeliveryDetailsBuilder()
+ * .WithPhoneNumber("+4799999999")
+ * .WithTimeToLiveInSeconds(3600)
+ * .WithSmsSettings(
+ * new ShortMessageContentBuilder()
+ * .WithBody("Hello!")
+ * .Build(),
+ * )
+ * .Build(),
+ * )
+ * .Build();
  */
 class InstantSmsNotificationOrderRequestBuilder {
     constructor() {
@@ -131,8 +131,8 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} idempotencyId
-     * @returns {InstantSmsNotificationOrderRequestBuilder}
+     * @param {string} idempotencyId TODO: description
+     * @returns {InstantSmsNotificationOrderRequestBuilder} TODO: description
      */
     WithIdempotencyId(idempotencyId) {
         this.request.idempotencyId = idempotencyId;
@@ -141,8 +141,8 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} sendersReference
-     * @returns {InstantSmsNotificationOrderRequestBuilder}
+     * @param {string} sendersReference TODO: description
+     * @returns {InstantSmsNotificationOrderRequestBuilder} TODO: description
      */
     WithSendersReference(sendersReference) {
         this.request.sendersReference = sendersReference;
@@ -151,8 +151,8 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {ShortMessageDeliveryDetailsExt} recipientSms
-     * @returns {InstantSmsNotificationOrderRequestBuilder}
+     * @param {ShortMessageDeliveryDetailsExt} recipientSms TODO: description
+     * @returns {InstantSmsNotificationOrderRequestBuilder} TODO: description
      */
     WithRecipientSms(recipientSms) {
         this.request.recipientSms = recipientSms;
@@ -161,7 +161,7 @@ class InstantSmsNotificationOrderRequestBuilder {
     }
 
     /**
-     * @returns {InstantSmsNotificationOrderRequestExt}
+     * @returns {InstantSmsNotificationOrderRequestExt} TODO: description
      */
     Build() {
         if (this.request.idempotencyId === null) {
@@ -191,8 +191,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {string} subject
-     * @returns {InstantEmailContentBuilder}
+     * @param {string} subject TODO: description
+     * @returns {InstantEmailContentBuilder} TODO: description
      */
     WithSubject(subject) {
         this.request.subject = subject;
@@ -201,8 +201,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {InstantEmailContentBuilder}
+     * @param {string} body TODO: description
+     * @returns {InstantEmailContentBuilder} TODO: description
      */
     WithBody(body) {
         this.request.body = body;
@@ -211,8 +211,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {string} senderEmailAddress
-     * @returns {InstantEmailContentBuilder}
+     * @param {string} senderEmailAddress TODO: description
+     * @returns {InstantEmailContentBuilder} TODO: description
      */
     WithSenderEmailAddress(senderEmailAddress) {
         this.request.senderEmailAddress = senderEmailAddress;
@@ -221,8 +221,8 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType
-     * @returns {InstantEmailContentBuilder}
+     * @param {EmailContentType} contentType TODO: description
+     * @returns {InstantEmailContentBuilder} TODO: description
      */
     WithContentType(contentType) {
         this.request.contentType = contentType;
@@ -231,7 +231,7 @@ class InstantEmailContentBuilder {
     }
 
     /**
-     * @returns {InstantEmailContentExt}
+     * @returns {InstantEmailContentExt} TODO: description
      */
     Build() {
         if (this.request.subject === null) {
@@ -246,7 +246,6 @@ class InstantEmailContentBuilder {
     }
 }
 
-
 class InstantEmailDetailsBuilder {
     constructor() {
         this.request = {
@@ -256,8 +255,8 @@ class InstantEmailDetailsBuilder {
     }
 
     /**
-     * @param {string} emailAddress
-     * @returns {InstantEmailDetailsBuilder}
+     * @param {string} emailAddress TODO: description
+     * @returns {InstantEmailDetailsBuilder} TODO: description
      */
     WithEmailAddress(emailAddress) {
         this.request.emailAddress = emailAddress;
@@ -266,8 +265,8 @@ class InstantEmailDetailsBuilder {
     }
 
     /**
-     * @param {InstantEmailContentExt} emailSettings
-     * @returns {InstantEmailDetailsBuilder}
+     * @param {InstantEmailContentExt} emailSettings TODO: description
+     * @returns {InstantEmailDetailsBuilder} TODO: description
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -276,7 +275,7 @@ class InstantEmailDetailsBuilder {
     }
 
     /**
-     * @returns {InstantEmailDetailsExt}
+     * @returns {InstantEmailDetailsExt} TODO: description
      */
     Build() {
         if (this.request.emailAddress === null) {
@@ -295,19 +294,19 @@ class InstantEmailDetailsBuilder {
  * Example:
  *
  * const request = new InstantEmailNotificationOrderRequestBuilder()
- *     .WithIdempotencyId(idempotencyId)
- *     .WithRecipientEmail(
- *         new InstantEmailDetailsBuilder()
- *             .WithEmailAddress("user@example.com")
- *             .WithEmailSettings(
- *                 new InstantEmailContentBuilder()
- *                     .WithSubject("Subject")
- *                     .WithBody("Body")
- *                     .Build(),
- *             )
- *             .Build(),
- *     )
- *     .Build();
+ * .WithIdempotencyId(idempotencyId)
+ * .WithRecipientEmail(
+ * new InstantEmailDetailsBuilder()
+ * .WithEmailAddress("user@example.com")
+ * .WithEmailSettings(
+ * new InstantEmailContentBuilder()
+ * .WithSubject("Subject")
+ * .WithBody("Body")
+ * .Build(),
+ * )
+ * .Build(),
+ * )
+ * .Build();
  */
 class InstantEmailNotificationOrderRequestBuilder {
     constructor() {
@@ -319,8 +318,8 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} idempotencyId
-     * @returns {InstantEmailNotificationOrderRequestBuilder}
+     * @param {string} idempotencyId TODO: description
+     * @returns {InstantEmailNotificationOrderRequestBuilder} TODO: description
      */
     WithIdempotencyId(idempotencyId) {
         this.request.idempotencyId = idempotencyId;
@@ -329,8 +328,8 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {string} sendersReference
-     * @returns {InstantEmailNotificationOrderRequestBuilder}
+     * @param {string} sendersReference TODO: description
+     * @returns {InstantEmailNotificationOrderRequestBuilder} TODO: description
      */
     WithSendersReference(sendersReference) {
         this.request.sendersReference = sendersReference;
@@ -339,8 +338,8 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @param {InstantEmailDetailsExt} recipientEmail
-     * @returns {InstantEmailNotificationOrderRequestBuilder}
+     * @param {InstantEmailDetailsExt} recipientEmail TODO: description
+     * @returns {InstantEmailNotificationOrderRequestBuilder} TODO: description
      */
     WithRecipientEmail(recipientEmail) {
         this.request.recipientEmail = recipientEmail;
@@ -349,7 +348,7 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 
     /**
-     * @returns {InstantEmailNotificationOrderRequestExt}
+     * @returns {InstantEmailNotificationOrderRequestExt} TODO: description
      */
     Build() {
         if (this.request.idempotencyId === null) {
@@ -368,15 +367,11 @@ class InstantEmailNotificationOrderRequestBuilder {
     }
 }
 
-
-
-
-
 export {
-    ShortMessageContentBuilder,
-    ShortMessageDeliveryDetailsBuilder,
-    InstantSmsNotificationOrderRequestBuilder,
     InstantEmailContentBuilder,
     InstantEmailDetailsBuilder,
     InstantEmailNotificationOrderRequestBuilder,
+    InstantSmsNotificationOrderRequestBuilder,
+    ShortMessageContentBuilder,
+    ShortMessageDeliveryDetailsBuilder,
 };

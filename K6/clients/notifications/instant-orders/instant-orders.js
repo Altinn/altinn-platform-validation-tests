@@ -41,7 +41,7 @@ class InstantOrdersClient {
      * @param {InstantSmsNotificationOrderRequestExt} request SMS notification payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     InstantOrdersCreateSms(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -76,7 +76,7 @@ class InstantOrdersClient {
      * @param {InstantEmailNotificationOrderRequestExt} request Email notification payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     InstantOrdersCreateEmail(request, labels = null) {
         const token = this.tokenGenerator.getToken();

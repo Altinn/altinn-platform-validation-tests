@@ -11,7 +11,7 @@
  */
 
 /**
- * @typedef {Object} NotificationOrderChainRequestExt
+ * @typedef {object} NotificationOrderChainRequestExt
  * @property {string|null} sendersReference Sender's reference identifier.
  * @property {string} requestedSendTime Earliest date and time when the notification should be delivered.
  * @property {string|null} conditionEndpoint URI endpoint that can determine whether the notification should be sent.
@@ -22,7 +22,7 @@
  */
 
 /**
- * @typedef {Object} ComposedEmailRequestExt
+ * @typedef {object} ComposedEmailRequestExt
  * @property {string|null} sendersReference Sender's reference identifier.
  * @property {string} requestedSendTime Earliest date and time when the notification should be delivered.
  * @property {string|null} conditionEndpoint URI endpoint that can determine whether the notification should be sent.
@@ -32,19 +32,19 @@
  */
 
 /**
- * @typedef {Object} NotificationOrderChainResponseExt
+ * @typedef {object} NotificationOrderChainResponseExt
  * @property {string} notificationOrderId Unique identifier for the notification order chain.
  * @property {NotificationOrderChainReceiptExt} notification Complete receipt for the notification order chain creation.
  */
 
 /**
- * @typedef {Object} DialogportenIdentifiersExt
+ * @typedef {object} DialogportenIdentifiersExt
  * @property {string|null} dialogId Identifier for a specific dialog within Dialogporten.
  * @property {string|null} transmissionId Identifier for a specific transmission within Dialogporten.
  */
 
 /**
- * @typedef {Object} NotificationRecipientExt
+ * @typedef {object} NotificationRecipientExt
  * @property {RecipientEmailExt|null} recipientEmail Email recipient.
  * @property {RecipientSmsExt|null} recipientSms SMS recipient.
  * @property {RecipientPersonExt|null} recipientPerson Person recipient.
@@ -53,7 +53,7 @@
  */
 
 /**
- * @typedef {Object} NotificationReminderExt
+ * @typedef {object} NotificationReminderExt
  * @property {string|null} sendersReference Sender's reference for this reminder.
  * @property {string|null} conditionEndpoint Condition endpoint used to determine if the reminder should be sent.
  * @property {number|null} delayDays Number of days to delay this reminder.
@@ -62,19 +62,19 @@
  */
 
 /**
- * @typedef {Object} RecipientEmailExt
+ * @typedef {object} RecipientEmailExt
  * @property {string} emailAddress Email address of the intended recipient.
  * @property {EmailSendingOptionsExt} emailSettings Email sending options.
  */
 
 /**
- * @typedef {Object} RecipientSmsExt
+ * @typedef {object} RecipientSmsExt
  * @property {string} phoneNumber Recipient phone number in international format.
  * @property {SmsSendingOptionsExt} smsSettings SMS sending options.
  */
 
 /**
- * @typedef {Object} RecipientPersonExt
+ * @typedef {object} RecipientPersonExt
  * @property {EmailSendingOptionsExt|null} emailSettings Email sending options.
  * @property {SmsSendingOptionsExt|null} smsSettings SMS sending options.
  * @property {string|null} resourceId URN-formatted resource identifier for authorization and auditing purposes.
@@ -86,7 +86,7 @@
  */
 
 /**
- * @typedef {Object} RecipientOrganizationExt
+ * @typedef {object} RecipientOrganizationExt
  * @property {EmailSendingOptionsExt|null} emailSettings Email sending options.
  * @property {SmsSendingOptionsExt|null} smsSettings SMS sending options.
  * @property {string|null} resourceId URN-formatted resource identifier for authorization and auditing purposes.
@@ -96,7 +96,7 @@
  */
 
 /**
- * @typedef {Object} RecipientExternalIdentityExt
+ * @typedef {object} RecipientExternalIdentityExt
  * @property {EmailSendingOptionsExt|null} emailSettings Email sending options.
  * @property {SmsSendingOptionsExt|null} smsSettings SMS sending options.
  * @property {string|null} resourceId URN-formatted resource identifier for authorization and auditing purposes.
@@ -106,13 +106,13 @@
  */
 
 /**
- * @typedef {Object} RecipientComposedEmailExt
+ * @typedef {object} RecipientComposedEmailExt
  * @property {string} emailAddress Email address of the recipient.
  * @property {ComposedEmailSendingOptionsExt} emailSettings Email sending options including SAS-referenced files.
  */
 
 /**
- * @typedef {Object} EmailSendingOptionsExt
+ * @typedef {object} EmailSendingOptionsExt
  * @property {string|null} senderEmailAddress Sender's email address.
  * @property {string} subject Subject line of the email.
  * @property {string} body Main body content of the email.
@@ -121,14 +121,14 @@
  */
 
 /**
- * @typedef {Object} SmsSendingOptionsExt
+ * @typedef {object} SmsSendingOptionsExt
  * @property {string|null} sender Sender identifier displayed in the recipient's SMS message.
  * @property {string} body Text content of the SMS message.
  * @property {SendingTimePolicy} sendingTimePolicy Policy controlling when the SMS should be delivered.
  */
 
 /**
- * @typedef {Object} ComposedEmailSendingOptionsExt
+ * @typedef {object} ComposedEmailSendingOptionsExt
  * @property {string|null} senderEmailAddress Sender's email address.
  * @property {string} subject Subject line of the email.
  * @property {string} body Main body content of the email.
@@ -138,51 +138,49 @@
  */
 
 /**
- * @typedef {Object} SasFileReferenceExt
+ * @typedef {object} SasFileReferenceExt
  * @property {string} filename Filename including extension.
  * @property {string} mimeType MIME type of the file.
  * @property {string} sasUrl SAS URL granting time-limited read access to the file in Azure Blob Storage.
  */
 
 /**
- * @typedef {Object} NotificationOrderChainReceiptExt
+ * @typedef {object} NotificationOrderChainReceiptExt
  * @property {string} shipmentId Unique identifier for this shipment.
  * @property {string|null} sendersReference Sender's reference identifier.
  * @property {NotificationOrderChainShipmentExt[]|null} reminders Reminders associated with this notification order.
  */
 
 /**
- * @typedef {Object} NotificationOrderChainShipmentExt
+ * @typedef {object} NotificationOrderChainShipmentExt
  * @property {string} shipmentId Unique identifier for this shipment.
  * @property {string|null} sendersReference Sender's reference identifier.
  */
 
 /**
- * @typedef {Object} NotificationResourceLinksExt
+ * @typedef {object} NotificationResourceLinksExt
  * @property {string|null} self Self link.
  */
 
 /**
- * @typedef {Object} NotificationsStatusSummaryExt
+ * @typedef {object} NotificationsStatusSummaryExt
  * @property {EmailNotificationStatusExt|null} email Email notification status.
  * @property {SmsNotificationStatusExt|null} sms SMS notification status.
  */
 
 /**
- * @typedef {Object} EmailNotificationStatusExt
+ * @typedef {object} EmailNotificationStatusExt
  * @property {NotificationResourceLinksExt|null} links Resource links.
  * @property {number} generated Number of generated notifications.
  * @property {number} succeeded Number of succeeded notifications.
  */
 
 /**
- * @typedef {Object} SmsNotificationStatusExt
+ * @typedef {object} SmsNotificationStatusExt
  * @property {NotificationResourceLinksExt|null} links Resource links.
  * @property {number} generated Number of generated notifications.
  * @property {number} succeeded Number of succeeded notifications.
  */
-
-
 
 /**
  * @typedef {"Asc"|"Desc"} StatusOrderBy
@@ -228,21 +226,21 @@
  */
 
 /**
- * @typedef {Object} IDeliveryManifestExt
+ * @typedef {object} IDeliveryManifestExt
  * @property {NotificationStatus} status Current lifecycle status of the entity.
  * @property {string} lastUpdate Date and time when the status was last updated.
  * @property {string|null} destination Destination address where the entity is intended to be sent.
  */
 
 /**
- * @typedef {Object} StatusFeedRecipientExt
+ * @typedef {object} StatusFeedRecipientExt
  * @property {string|null} destination Recipient destination, supporting both email and SMS formats.
  * @property {NotificationStatus} status Current status of the processing lifecycle.
  * @property {string} lastUpdate Date and time of the last update.
  */
 
 /**
- * @typedef {Object} NotificationDeliveryManifestExt
+ * @typedef {object} NotificationDeliveryManifestExt
  * @property {string} shipmentId Unique identifier for the shipment.
  * @property {string|null} sendersReference Sender's reference identifier.
  * @property {string|null} type Shipment type.
@@ -252,7 +250,7 @@
  */
 
 /**
- * @typedef {Object} StatusFeedExt
+ * @typedef {object} StatusFeedExt
  * @property {string} shipmentId Unique identifier for the shipment associated with this order status.
  * @property {string|null} sendersReference Sender's reference for the order.
  * @property {StatusFeedRecipientExt[]|null} recipients Recipients and delivery status information.
@@ -263,7 +261,7 @@
  */
 
 /**
- * @typedef {Object} StatusFeedQuery
+ * @typedef {object} StatusFeedQuery
  * @property {number|null} seq Sequence number to start fetching status feed entries from.
  * @property {number|null} pageSize Number of items to return in one page.
  * @property {StatusOrderBy|null} orderBy Order in which status feed entries should be returned.
@@ -278,27 +276,27 @@
  */
 
 /**
- * @typedef {Object} ShortMessageContentExt
+ * @typedef {object} ShortMessageContentExt
  * @property {string|null} sender The sender identifier displayed in the recipient's SMS message.
  * @property {string} body The text content of the SMS message to be delivered to the recipient.
  */
 
 /**
- * @typedef {Object} ShortMessageDeliveryDetailsExt
+ * @typedef {object} ShortMessageDeliveryDetailsExt
  * @property {string} phoneNumber The recipient's phone number in international format.
  * @property {number} timeToLiveInSeconds The time-to-live duration, specified in seconds.
  * @property {ShortMessageContentExt} smsSettings SMS content and sender information.
  */
 
 /**
- * @typedef {Object} InstantSmsNotificationOrderRequestExt
+ * @typedef {object} InstantSmsNotificationOrderRequestExt
  * @property {string} idempotencyId The unique identifier used to ensure the same notification is not processed multiple times.
  * @property {string|null} sendersReference The reference identifier assigned by the sender for tracking purposes.
  * @property {ShortMessageDeliveryDetailsExt} recipientSms Recipient SMS details.
  */
 
 /**
- * @typedef {Object} InstantEmailContentExt
+ * @typedef {object} InstantEmailContentExt
  * @property {string} subject The subject of the email.
  * @property {string} body The body content of the email.
  * @property {string|null} senderEmailAddress The sender's email address.
@@ -306,20 +304,20 @@
  */
 
 /**
- * @typedef {Object} InstantEmailDetailsExt
+ * @typedef {object} InstantEmailDetailsExt
  * @property {string} emailAddress The recipient's email address.
  * @property {InstantEmailContentExt} emailSettings Email content and sender information.
  */
 
 /**
- * @typedef {Object} InstantEmailNotificationOrderRequestExt
+ * @typedef {object} InstantEmailNotificationOrderRequestExt
  * @property {string} idempotencyId The unique identifier used to ensure the same notification is not processed multiple times.
  * @property {string|null} sendersReference The reference identifier assigned by the sender for tracking purposes.
  * @property {InstantEmailDetailsExt} recipientEmail Recipient email details.
  */
 
 /**
- * @typedef {Object} InstantNotificationOrderResponseExt
+ * @typedef {object} InstantNotificationOrderResponseExt
  * @property {string} notificationOrderId Unique identifier for the notification order.
  * @property {NotificationOrderChainShipmentExt} notification Notification shipment information.
  */

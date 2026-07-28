@@ -42,7 +42,7 @@ class OrderClient {
      * @param {NotificationOrderChainRequestExt} request Notification order request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     OrderCreateOrder(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,7 +77,7 @@ class OrderClient {
      * @param {ComposedEmailRequestExt} request Composed email order request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     OrderCreateComposedEmail(request, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -42,7 +42,7 @@ class StatusClient {
      * @param {string} id Notification order identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     StatusGetShipment(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,7 +77,7 @@ class StatusClient {
      * @param {StatusFeedQuery|null} queryParams Optional feed query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: description
      */
     StatusGetFeed(queryParams = null, labels = null) {
         const token = this.tokenGenerator.getToken();

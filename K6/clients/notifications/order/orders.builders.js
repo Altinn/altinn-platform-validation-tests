@@ -16,19 +16,19 @@ class NotificationOrderChainRequestExtBuilder {
      *
      * Usage:
      * new NotificationOrderChainRequestExtBuilder()
-     *     .WithIdempotencyId("order-123")
-     *     .WithRecipient({
-     *         recipientEmail: {
-     *             emailAddress: "recipient@example.com",
-     *             emailSettings: {
-     *                 subject: "Subject",
-     *                 body: "Body",
-     *             },
-     *         },
-     *     })
-     *     .Build();
+     * .WithIdempotencyId("order-123")
+     * .WithRecipient({
+     * recipientEmail: {
+     * emailAddress: "recipient@example.com",
+     * emailSettings: {
+     * subject: "Subject",
+     * body: "Body",
+     * },
+     * },
+     * })
+     * .Build();
      *
-     * @returns {NotificationOrderChainRequestExt}
+     * @returns {NotificationOrderChainRequestExt} TODO: description
      */
     Build() {
         if (this.request.idempotencyId === null) {
@@ -47,8 +47,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {string|null} sendersReference
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {string|null} sendersReference TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithSendersReference(sendersReference) {
         this.request.sendersReference = sendersReference;
@@ -57,8 +57,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {string} requestedSendTime
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {string} requestedSendTime TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithRequestedSendTime(requestedSendTime) {
         this.request.requestedSendTime = requestedSendTime;
@@ -67,8 +67,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {string|null} conditionEndpoint
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {string|null} conditionEndpoint TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithConditionEndpoint(conditionEndpoint) {
         this.request.conditionEndpoint = conditionEndpoint;
@@ -77,8 +77,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {DialogportenIdentifiersExt} dialogportenAssociation
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {DialogportenIdentifiersExt} dialogportenAssociation TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithDialogportenAssociation(dialogportenAssociation) {
         this.request.dialogportenAssociation = dialogportenAssociation;
@@ -87,8 +87,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {string} idempotencyId
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {string} idempotencyId TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithIdempotencyId(idempotencyId) {
         this.request.idempotencyId = idempotencyId;
@@ -97,8 +97,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {NotificationRecipientExt} recipient
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {NotificationRecipientExt} recipient TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithRecipient(recipient) {
         this.request.recipient = recipient;
@@ -107,8 +107,8 @@ class NotificationOrderChainRequestExtBuilder {
     }
 
     /**
-     * @param {NotificationReminderExt[]} reminders
-     * @returns {NotificationOrderChainRequestExtBuilder}
+     * @param {NotificationReminderExt[]} reminders TODO: description
+     * @returns {NotificationOrderChainRequestExtBuilder} TODO: description
      */
     WithReminders(reminders) {
         this.request.reminders = reminders;
@@ -116,10 +116,6 @@ class NotificationOrderChainRequestExtBuilder {
         return this;
     }
 }
-
-
-
-
 
 class ComposedEmailRequestExtBuilder {
     constructor() {
@@ -138,18 +134,18 @@ class ComposedEmailRequestExtBuilder {
      *
      * Usage:
      * new ComposedEmailRequestExtBuilder()
-     *     .WithIdempotencyId("order-123")
-     *     .WithRecipient({
-     *         emailAddress: "recipient@example.com",
-     *         emailSettings: {
-     *             subject: "Subject",
-     *             body: "Body",
-     *             attachments: [],
-     *         },
-     *     })
-     *     .Build();
+     * .WithIdempotencyId("order-123")
+     * .WithRecipient({
+     * emailAddress: "recipient@example.com",
+     * emailSettings: {
+     * subject: "Subject",
+     * body: "Body",
+     * attachments: [],
+     * },
+     * })
+     * .Build();
      *
-     * @returns {ComposedEmailRequestExt}
+     * @returns {ComposedEmailRequestExt} TODO: description
      */
     Build() {
         if (this.request.idempotencyId === null) {
@@ -168,8 +164,8 @@ class ComposedEmailRequestExtBuilder {
     }
 
     /**
-     * @param {string|null} sendersReference
-     * @returns {ComposedEmailRequestExtBuilder}
+     * @param {string|null} sendersReference TODO: description
+     * @returns {ComposedEmailRequestExtBuilder} TODO: description
      */
     WithSendersReference(sendersReference) {
         this.request.sendersReference = sendersReference;
@@ -178,8 +174,8 @@ class ComposedEmailRequestExtBuilder {
     }
 
     /**
-     * @param {string} requestedSendTime
-     * @returns {ComposedEmailRequestExtBuilder}
+     * @param {string} requestedSendTime TODO: description
+     * @returns {ComposedEmailRequestExtBuilder} TODO: description
      */
     WithRequestedSendTime(requestedSendTime) {
         this.request.requestedSendTime = requestedSendTime;
@@ -188,8 +184,8 @@ class ComposedEmailRequestExtBuilder {
     }
 
     /**
-     * @param {string|null} conditionEndpoint
-     * @returns {ComposedEmailRequestExtBuilder}
+     * @param {string|null} conditionEndpoint TODO: description
+     * @returns {ComposedEmailRequestExtBuilder} TODO: description
      */
     WithConditionEndpoint(conditionEndpoint) {
         this.request.conditionEndpoint = conditionEndpoint;
@@ -198,8 +194,8 @@ class ComposedEmailRequestExtBuilder {
     }
 
     /**
-     * @param {DialogportenIdentifiersExt} dialogportenAssociation
-     * @returns {ComposedEmailRequestExtBuilder}
+     * @param {DialogportenIdentifiersExt} dialogportenAssociation TODO: description
+     * @returns {ComposedEmailRequestExtBuilder} TODO: description
      */
     WithDialogportenAssociation(dialogportenAssociation) {
         this.request.dialogportenAssociation = dialogportenAssociation;
@@ -208,8 +204,8 @@ class ComposedEmailRequestExtBuilder {
     }
 
     /**
-     * @param {string} idempotencyId
-     * @returns {ComposedEmailRequestExtBuilder}
+     * @param {string} idempotencyId TODO: description
+     * @returns {ComposedEmailRequestExtBuilder} TODO: description
      */
     WithIdempotencyId(idempotencyId) {
         this.request.idempotencyId = idempotencyId;
@@ -218,8 +214,8 @@ class ComposedEmailRequestExtBuilder {
     }
 
     /**
-     * @param {RecipientComposedEmailExt} recipient
-     * @returns {ComposedEmailRequestExtBuilder}
+     * @param {RecipientComposedEmailExt} recipient TODO: description
+     * @returns {ComposedEmailRequestExtBuilder} TODO: description
      */
     WithRecipient(recipient) {
         this.request.recipient = recipient;
@@ -227,7 +223,6 @@ class ComposedEmailRequestExtBuilder {
         return this;
     }
 }
-
 
 class NotificationRecipientExtBuilder {
     constructor() {
@@ -241,8 +236,8 @@ class NotificationRecipientExtBuilder {
     }
 
     /**
-     * @param {RecipientEmailExt} recipientEmail
-     * @returns {NotificationRecipientExtBuilder}
+     * @param {RecipientEmailExt} recipientEmail TODO: description
+     * @returns {NotificationRecipientExtBuilder} TODO: description
      */
     WithRecipientEmail(recipientEmail) {
         this.request.recipientEmail = recipientEmail;
@@ -251,8 +246,8 @@ class NotificationRecipientExtBuilder {
     }
 
     /**
-     * @param {RecipientSmsExt} recipientSms
-     * @returns {NotificationRecipientExtBuilder}
+     * @param {RecipientSmsExt} recipientSms TODO: description
+     * @returns {NotificationRecipientExtBuilder} TODO: description
      */
     WithRecipientSms(recipientSms) {
         this.request.recipientSms = recipientSms;
@@ -261,8 +256,8 @@ class NotificationRecipientExtBuilder {
     }
 
     /**
-     * @param {RecipientPersonExt} recipientPerson
-     * @returns {NotificationRecipientExtBuilder}
+     * @param {RecipientPersonExt} recipientPerson TODO: description
+     * @returns {NotificationRecipientExtBuilder} TODO: description
      */
     WithRecipientPerson(recipientPerson) {
         this.request.recipientPerson = recipientPerson;
@@ -271,8 +266,8 @@ class NotificationRecipientExtBuilder {
     }
 
     /**
-     * @param {RecipientOrganizationExt} recipientOrganization
-     * @returns {NotificationRecipientExtBuilder}
+     * @param {RecipientOrganizationExt} recipientOrganization TODO: description
+     * @returns {NotificationRecipientExtBuilder} TODO: description
      */
     WithRecipientOrganization(recipientOrganization) {
         this.request.recipientOrganization = recipientOrganization;
@@ -281,8 +276,8 @@ class NotificationRecipientExtBuilder {
     }
 
     /**
-     * @param {RecipientExternalIdentityExt} recipientExternalIdentity
-     * @returns {NotificationRecipientExtBuilder}
+     * @param {RecipientExternalIdentityExt} recipientExternalIdentity TODO: description
+     * @returns {NotificationRecipientExtBuilder} TODO: description
      */
     WithRecipientExternalIdentity(recipientExternalIdentity) {
         this.request.recipientExternalIdentity = recipientExternalIdentity;
@@ -291,7 +286,7 @@ class NotificationRecipientExtBuilder {
     }
 
     /**
-     * @returns {NotificationRecipientExt}
+     * @returns {NotificationRecipientExt} TODO: description
      */
     Build() {
         const recipients = [
@@ -312,8 +307,6 @@ class NotificationRecipientExtBuilder {
     }
 }
 
-
-
 class RecipientEmailExtBuilder {
     constructor() {
         this.request = {
@@ -323,8 +316,8 @@ class RecipientEmailExtBuilder {
     }
 
     /**
-     * @param {string} emailAddress
-     * @returns {RecipientEmailExtBuilder}
+     * @param {string} emailAddress TODO: description
+     * @returns {RecipientEmailExtBuilder} TODO: description
      */
     WithEmailAddress(emailAddress) {
         this.request.emailAddress = emailAddress;
@@ -333,8 +326,8 @@ class RecipientEmailExtBuilder {
     }
 
     /**
-     * @param {EmailSendingOptionsExt} emailSettings
-     * @returns {RecipientEmailExtBuilder}
+     * @param {EmailSendingOptionsExt} emailSettings TODO: description
+     * @returns {RecipientEmailExtBuilder} TODO: description
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -343,7 +336,7 @@ class RecipientEmailExtBuilder {
     }
 
     /**
-     * @returns {RecipientEmailExt}
+     * @returns {RecipientEmailExt} TODO: description
      */
     Build() {
         if (this.request.emailAddress === null) {
@@ -358,8 +351,6 @@ class RecipientEmailExtBuilder {
     }
 }
 
-
-
 class RecipientSmsExtBuilder {
     constructor() {
         this.request = {
@@ -369,8 +360,8 @@ class RecipientSmsExtBuilder {
     }
 
     /**
-     * @param {string} phoneNumber
-     * @returns {RecipientSmsExtBuilder}
+     * @param {string} phoneNumber TODO: description
+     * @returns {RecipientSmsExtBuilder} TODO: description
      */
     WithPhoneNumber(phoneNumber) {
         this.request.phoneNumber = phoneNumber;
@@ -379,8 +370,8 @@ class RecipientSmsExtBuilder {
     }
 
     /**
-     * @param {SmsSendingOptionsExt} smsSettings
-     * @returns {RecipientSmsExtBuilder}
+     * @param {SmsSendingOptionsExt} smsSettings TODO: description
+     * @returns {RecipientSmsExtBuilder} TODO: description
      */
     WithSmsSettings(smsSettings) {
         this.request.smsSettings = smsSettings;
@@ -389,7 +380,7 @@ class RecipientSmsExtBuilder {
     }
 
     /**
-     * @returns {RecipientSmsExt}
+     * @returns {RecipientSmsExt} TODO: description
      */
     Build() {
         if (this.request.phoneNumber === null) {
@@ -403,8 +394,6 @@ class RecipientSmsExtBuilder {
         return this.request;
     }
 }
-
-
 
 class RecipientPersonExtBuilder {
     constructor() {
@@ -421,8 +410,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {EmailSendingOptionsExt} emailSettings
-     * @returns {RecipientPersonExtBuilder}
+     * @param {EmailSendingOptionsExt} emailSettings TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -431,8 +420,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {SmsSendingOptionsExt} smsSettings
-     * @returns {RecipientPersonExtBuilder}
+     * @param {SmsSendingOptionsExt} smsSettings TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithSmsSettings(smsSettings) {
         this.request.smsSettings = smsSettings;
@@ -441,8 +430,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {string|null} resourceId
-     * @returns {RecipientPersonExtBuilder}
+     * @param {string|null} resourceId TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithResourceId(resourceId) {
         this.request.resourceId = resourceId;
@@ -451,8 +440,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {string|null} resourceAction
-     * @returns {RecipientPersonExtBuilder}
+     * @param {string|null} resourceAction TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithResourceAction(resourceAction) {
         this.request.resourceAction = resourceAction;
@@ -461,8 +450,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {string} nationalIdentityNumber
-     * @returns {RecipientPersonExtBuilder}
+     * @param {string} nationalIdentityNumber TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithNationalIdentityNumber(nationalIdentityNumber) {
         this.request.nationalIdentityNumber = nationalIdentityNumber;
@@ -471,8 +460,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {ChannelSchema} channelSchema
-     * @returns {RecipientPersonExtBuilder}
+     * @param {ChannelSchema} channelSchema TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithChannelSchema(channelSchema) {
         this.request.channelSchema = channelSchema;
@@ -481,8 +470,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {boolean|null} ignoreReservation
-     * @returns {RecipientPersonExtBuilder}
+     * @param {boolean|null} ignoreReservation TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithIgnoreReservation(ignoreReservation) {
         this.request.ignoreReservation = ignoreReservation;
@@ -491,8 +480,8 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @param {boolean|null} useStaleContactInformation
-     * @returns {RecipientPersonExtBuilder}
+     * @param {boolean|null} useStaleContactInformation TODO: description
+     * @returns {RecipientPersonExtBuilder} TODO: description
      */
     WithUseStaleContactInformation(useStaleContactInformation) {
         this.request.useStaleContactInformation =
@@ -502,7 +491,7 @@ class RecipientPersonExtBuilder {
     }
 
     /**
-     * @returns {RecipientPersonExt}
+     * @returns {RecipientPersonExt} TODO: description
      */
     Build() {
         if (this.request.nationalIdentityNumber === null) {
@@ -519,7 +508,6 @@ class RecipientPersonExtBuilder {
     }
 }
 
-
 class RecipientOrganizationExtBuilder {
     constructor() {
         this.request = {
@@ -533,8 +521,8 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @param {EmailSendingOptionsExt} emailSettings
-     * @returns {RecipientOrganizationExtBuilder}
+     * @param {EmailSendingOptionsExt} emailSettings TODO: description
+     * @returns {RecipientOrganizationExtBuilder} TODO: description
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -543,8 +531,8 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @param {SmsSendingOptionsExt} smsSettings
-     * @returns {RecipientOrganizationExtBuilder}
+     * @param {SmsSendingOptionsExt} smsSettings TODO: description
+     * @returns {RecipientOrganizationExtBuilder} TODO: description
      */
     WithSmsSettings(smsSettings) {
         this.request.smsSettings = smsSettings;
@@ -553,8 +541,8 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @param {string|null} resourceId
-     * @returns {RecipientOrganizationExtBuilder}
+     * @param {string|null} resourceId TODO: description
+     * @returns {RecipientOrganizationExtBuilder} TODO: description
      */
     WithResourceId(resourceId) {
         this.request.resourceId = resourceId;
@@ -563,8 +551,8 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @param {string|null} resourceAction
-     * @returns {RecipientOrganizationExtBuilder}
+     * @param {string|null} resourceAction TODO: description
+     * @returns {RecipientOrganizationExtBuilder} TODO: description
      */
     WithResourceAction(resourceAction) {
         this.request.resourceAction = resourceAction;
@@ -573,8 +561,8 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @param {string} orgNumber
-     * @returns {RecipientOrganizationExtBuilder}
+     * @param {string} orgNumber TODO: description
+     * @returns {RecipientOrganizationExtBuilder} TODO: description
      */
     WithOrgNumber(orgNumber) {
         this.request.orgNumber = orgNumber;
@@ -583,8 +571,8 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @param {ChannelSchema} channelSchema
-     * @returns {RecipientOrganizationExtBuilder}
+     * @param {ChannelSchema} channelSchema TODO: description
+     * @returns {RecipientOrganizationExtBuilder} TODO: description
      */
     WithChannelSchema(channelSchema) {
         this.request.channelSchema = channelSchema;
@@ -593,7 +581,7 @@ class RecipientOrganizationExtBuilder {
     }
 
     /**
-     * @returns {RecipientOrganizationExt}
+     * @returns {RecipientOrganizationExt} TODO: description
      */
     Build() {
         if (this.request.orgNumber === null) {
@@ -610,8 +598,6 @@ class RecipientOrganizationExtBuilder {
     }
 }
 
-
-
 class RecipientExternalIdentityExtBuilder {
     constructor() {
         this.request = {
@@ -625,8 +611,8 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @param {EmailSendingOptionsExt} emailSettings
-     * @returns {RecipientExternalIdentityExtBuilder}
+     * @param {EmailSendingOptionsExt} emailSettings TODO: description
+     * @returns {RecipientExternalIdentityExtBuilder} TODO: description
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -635,8 +621,8 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @param {SmsSendingOptionsExt} smsSettings
-     * @returns {RecipientExternalIdentityExtBuilder}
+     * @param {SmsSendingOptionsExt} smsSettings TODO: description
+     * @returns {RecipientExternalIdentityExtBuilder} TODO: description
      */
     WithSmsSettings(smsSettings) {
         this.request.smsSettings = smsSettings;
@@ -645,8 +631,8 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @param {string|null} resourceId
-     * @returns {RecipientExternalIdentityExtBuilder}
+     * @param {string|null} resourceId TODO: description
+     * @returns {RecipientExternalIdentityExtBuilder} TODO: description
      */
     WithResourceId(resourceId) {
         this.request.resourceId = resourceId;
@@ -655,8 +641,8 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @param {string|null} resourceAction
-     * @returns {RecipientExternalIdentityExtBuilder}
+     * @param {string|null} resourceAction TODO: description
+     * @returns {RecipientExternalIdentityExtBuilder} TODO: description
      */
     WithResourceAction(resourceAction) {
         this.request.resourceAction = resourceAction;
@@ -665,8 +651,8 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @param {string} externalIdentity
-     * @returns {RecipientExternalIdentityExtBuilder}
+     * @param {string} externalIdentity TODO: description
+     * @returns {RecipientExternalIdentityExtBuilder} TODO: description
      */
     WithExternalIdentity(externalIdentity) {
         this.request.externalIdentity = externalIdentity;
@@ -675,8 +661,8 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @param {ChannelSchema} channelSchema
-     * @returns {RecipientExternalIdentityExtBuilder}
+     * @param {ChannelSchema} channelSchema TODO: description
+     * @returns {RecipientExternalIdentityExtBuilder} TODO: description
      */
     WithChannelSchema(channelSchema) {
         this.request.channelSchema = channelSchema;
@@ -685,7 +671,7 @@ class RecipientExternalIdentityExtBuilder {
     }
 
     /**
-     * @returns {RecipientExternalIdentityExt}
+     * @returns {RecipientExternalIdentityExt} TODO: description
      */
     Build() {
         if (this.request.externalIdentity === null) {
@@ -704,8 +690,6 @@ class RecipientExternalIdentityExtBuilder {
     }
 }
 
-
-
 class RecipientComposedEmailExtBuilder {
     constructor() {
         this.request = {
@@ -715,8 +699,8 @@ class RecipientComposedEmailExtBuilder {
     }
 
     /**
-     * @param {string} emailAddress
-     * @returns {RecipientComposedEmailExtBuilder}
+     * @param {string} emailAddress TODO: description
+     * @returns {RecipientComposedEmailExtBuilder} TODO: description
      */
     WithEmailAddress(emailAddress) {
         this.request.emailAddress = emailAddress;
@@ -725,8 +709,8 @@ class RecipientComposedEmailExtBuilder {
     }
 
     /**
-     * @param {ComposedEmailSendingOptionsExt} emailSettings
-     * @returns {RecipientComposedEmailExtBuilder}
+     * @param {ComposedEmailSendingOptionsExt} emailSettings TODO: description
+     * @returns {RecipientComposedEmailExtBuilder} TODO: description
      */
     WithEmailSettings(emailSettings) {
         this.request.emailSettings = emailSettings;
@@ -735,7 +719,7 @@ class RecipientComposedEmailExtBuilder {
     }
 
     /**
-     * @returns {RecipientComposedEmailExt}
+     * @returns {RecipientComposedEmailExt} TODO: description
      */
     Build() {
         if (this.request.emailAddress === null) {
@@ -754,7 +738,6 @@ class RecipientComposedEmailExtBuilder {
     }
 }
 
-
 class EmailSendingOptionsExtBuilder {
     constructor() {
         this.request = {
@@ -767,8 +750,8 @@ class EmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string|null} senderEmailAddress
-     * @returns {EmailSendingOptionsExtBuilder}
+     * @param {string|null} senderEmailAddress TODO: description
+     * @returns {EmailSendingOptionsExtBuilder} TODO: description
      */
     WithSenderEmailAddress(senderEmailAddress) {
         this.request.senderEmailAddress = senderEmailAddress;
@@ -777,8 +760,8 @@ class EmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string} subject
-     * @returns {EmailSendingOptionsExtBuilder}
+     * @param {string} subject TODO: description
+     * @returns {EmailSendingOptionsExtBuilder} TODO: description
      */
     WithSubject(subject) {
         this.request.subject = subject;
@@ -787,8 +770,8 @@ class EmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {EmailSendingOptionsExtBuilder}
+     * @param {string} body TODO: description
+     * @returns {EmailSendingOptionsExtBuilder} TODO: description
      */
     WithBody(body) {
         this.request.body = body;
@@ -797,8 +780,8 @@ class EmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType
-     * @returns {EmailSendingOptionsExtBuilder}
+     * @param {EmailContentType} contentType TODO: description
+     * @returns {EmailSendingOptionsExtBuilder} TODO: description
      */
     WithContentType(contentType) {
         this.request.contentType = contentType;
@@ -807,8 +790,8 @@ class EmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {SendingTimePolicy} sendingTimePolicy
-     * @returns {EmailSendingOptionsExtBuilder}
+     * @param {SendingTimePolicy} sendingTimePolicy TODO: description
+     * @returns {EmailSendingOptionsExtBuilder} TODO: description
      */
     WithSendingTimePolicy(sendingTimePolicy) {
         this.request.sendingTimePolicy = sendingTimePolicy;
@@ -817,7 +800,7 @@ class EmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @returns {EmailSendingOptionsExt}
+     * @returns {EmailSendingOptionsExt} TODO: description
      */
     Build() {
         if (this.request.subject === null) {
@@ -832,10 +815,6 @@ class EmailSendingOptionsExtBuilder {
     }
 }
 
-
-
-
-
 class SmsSendingOptionsExtBuilder {
     constructor() {
         this.request = {
@@ -846,8 +825,8 @@ class SmsSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string|null} sender
-     * @returns {SmsSendingOptionsExtBuilder}
+     * @param {string|null} sender TODO: description
+     * @returns {SmsSendingOptionsExtBuilder} TODO: description
      */
     WithSender(sender) {
         this.request.sender = sender;
@@ -856,8 +835,8 @@ class SmsSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {SmsSendingOptionsExtBuilder}
+     * @param {string} body TODO: description
+     * @returns {SmsSendingOptionsExtBuilder} TODO: description
      */
     WithBody(body) {
         this.request.body = body;
@@ -866,8 +845,8 @@ class SmsSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {SendingTimePolicy} sendingTimePolicy
-     * @returns {SmsSendingOptionsExtBuilder}
+     * @param {SendingTimePolicy} sendingTimePolicy TODO: description
+     * @returns {SmsSendingOptionsExtBuilder} TODO: description
      */
     WithSendingTimePolicy(sendingTimePolicy) {
         this.request.sendingTimePolicy = sendingTimePolicy;
@@ -876,7 +855,7 @@ class SmsSendingOptionsExtBuilder {
     }
 
     /**
-     * @returns {SmsSendingOptionsExt}
+     * @returns {SmsSendingOptionsExt} TODO: description
      */
     Build() {
         if (this.request.body === null) {
@@ -886,8 +865,6 @@ class SmsSendingOptionsExtBuilder {
         return this.request;
     }
 }
-
-
 
 class ComposedEmailSendingOptionsExtBuilder {
     constructor() {
@@ -902,8 +879,8 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string|null} senderEmailAddress
-     * @returns {ComposedEmailSendingOptionsExtBuilder}
+     * @param {string|null} senderEmailAddress TODO: description
+     * @returns {ComposedEmailSendingOptionsExtBuilder} TODO: description
      */
     WithSenderEmailAddress(senderEmailAddress) {
         this.request.senderEmailAddress = senderEmailAddress;
@@ -912,8 +889,8 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string} subject
-     * @returns {ComposedEmailSendingOptionsExtBuilder}
+     * @param {string} subject TODO: description
+     * @returns {ComposedEmailSendingOptionsExtBuilder} TODO: description
      */
     WithSubject(subject) {
         this.request.subject = subject;
@@ -922,8 +899,8 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {ComposedEmailSendingOptionsExtBuilder}
+     * @param {string} body TODO: description
+     * @returns {ComposedEmailSendingOptionsExtBuilder} TODO: description
      */
     WithBody(body) {
         this.request.body = body;
@@ -932,8 +909,8 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType
-     * @returns {ComposedEmailSendingOptionsExtBuilder}
+     * @param {EmailContentType} contentType TODO: description
+     * @returns {ComposedEmailSendingOptionsExtBuilder} TODO: description
      */
     WithContentType(contentType) {
         this.request.contentType = contentType;
@@ -942,8 +919,8 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {SendingTimePolicy} sendingTimePolicy
-     * @returns {ComposedEmailSendingOptionsExtBuilder}
+     * @param {SendingTimePolicy} sendingTimePolicy TODO: description
+     * @returns {ComposedEmailSendingOptionsExtBuilder} TODO: description
      */
     WithSendingTimePolicy(sendingTimePolicy) {
         this.request.sendingTimePolicy = sendingTimePolicy;
@@ -952,8 +929,8 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @param {SasFileReferenceExt[]} attachments
-     * @returns {ComposedEmailSendingOptionsExtBuilder}
+     * @param {SasFileReferenceExt[]} attachments TODO: description
+     * @returns {ComposedEmailSendingOptionsExtBuilder} TODO: description
      */
     WithAttachments(attachments) {
         this.request.attachments = attachments;
@@ -962,7 +939,7 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 
     /**
-     * @returns {ComposedEmailSendingOptionsExt}
+     * @returns {ComposedEmailSendingOptionsExt} TODO: description
      */
     Build() {
         if (this.request.subject === null) {
@@ -981,7 +958,6 @@ class ComposedEmailSendingOptionsExtBuilder {
     }
 }
 
-
 class SasFileReferenceExtBuilder {
     constructor() {
         this.request = {
@@ -992,8 +968,8 @@ class SasFileReferenceExtBuilder {
     }
 
     /**
-     * @param {string} filename
-     * @returns {SasFileReferenceExtBuilder}
+     * @param {string} filename TODO: description
+     * @returns {SasFileReferenceExtBuilder} TODO: description
      */
     WithFilename(filename) {
         this.request.filename = filename;
@@ -1002,8 +978,8 @@ class SasFileReferenceExtBuilder {
     }
 
     /**
-     * @param {string} mimeType
-     * @returns {SasFileReferenceExtBuilder}
+     * @param {string} mimeType TODO: description
+     * @returns {SasFileReferenceExtBuilder} TODO: description
      */
     WithMimeType(mimeType) {
         this.request.mimeType = mimeType;
@@ -1012,8 +988,8 @@ class SasFileReferenceExtBuilder {
     }
 
     /**
-     * @param {string} sasUrl
-     * @returns {SasFileReferenceExtBuilder}
+     * @param {string} sasUrl TODO: description
+     * @returns {SasFileReferenceExtBuilder} TODO: description
      */
     WithSasUrl(sasUrl) {
         this.request.sasUrl = sasUrl;
@@ -1022,7 +998,7 @@ class SasFileReferenceExtBuilder {
     }
 
     /**
-     * @returns {SasFileReferenceExt}
+     * @returns {SasFileReferenceExt} TODO: description
      */
     Build() {
         if (this.request.filename === null) {
@@ -1041,19 +1017,18 @@ class SasFileReferenceExtBuilder {
     }
 }
 
-
 export {
     ComposedEmailRequestExtBuilder,
-    EmailSendingOptionsExtBuilder,
     ComposedEmailSendingOptionsExtBuilder,
-    SasFileReferenceExtBuilder,
-    SmsSendingOptionsExtBuilder,
+    EmailSendingOptionsExtBuilder,
     NotificationOrderChainRequestExtBuilder,
+    NotificationRecipientExtBuilder,
+    RecipientComposedEmailExtBuilder,
+    RecipientEmailExtBuilder,
+    RecipientExternalIdentityExtBuilder,
+    RecipientOrganizationExtBuilder,
     RecipientPersonExtBuilder,
     RecipientSmsExtBuilder,
-    RecipientEmailExtBuilder,
-    RecipientOrganizationExtBuilder,
-    NotificationRecipientExtBuilder,
-    RecipientExternalIdentityExtBuilder,
-    RecipientComposedEmailExtBuilder
+    SasFileReferenceExtBuilder,
+    SmsSendingOptionsExtBuilder
 };
