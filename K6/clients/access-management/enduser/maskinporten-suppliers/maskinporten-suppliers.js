@@ -59,7 +59,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetMaskinportenSuppliers(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -97,6 +97,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -109,7 +110,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreateMaskinportenSupplier(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -147,6 +148,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -159,7 +161,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteMaskinportenSupplier(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -197,6 +199,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -209,7 +212,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetMaskinportenSupplierResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -247,6 +250,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -259,7 +263,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreateMaskinportenSupplierResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -297,6 +301,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -309,7 +314,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteMaskinportenSupplierResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -347,6 +352,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -359,7 +365,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetMaskinportenSupplierDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -397,6 +403,7 @@ class MaskinportenSuppliersClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

@@ -7,7 +7,7 @@ class MaskinportenSuppliersQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {MaskinportenSuppliersQueryBuilder} TODO: Description
+     * @returns {MaskinportenSuppliersQueryBuilder} This builder, for chaining.
      */
     withParty(party) {
         this.query.party = party;
@@ -18,7 +18,7 @@ class MaskinportenSuppliersQueryBuilder {
      * Optional supplier filter.
      *
      * @param {string} supplier Supplier identifier.
-     * @returns {MaskinportenSuppliersQueryBuilder} TODO: Description
+     * @returns {MaskinportenSuppliersQueryBuilder} This builder, for chaining.
      */
     withSupplier(supplier) {
         this.query.supplier = supplier;
@@ -29,7 +29,7 @@ class MaskinportenSuppliersQueryBuilder {
      * Optional cascade delete flag.
      *
      * @param {boolean} cascade Whether associated delegations should also be removed.
-     * @returns {MaskinportenSuppliersQueryBuilder} TODO: Description
+     * @returns {MaskinportenSuppliersQueryBuilder} This builder, for chaining.
      */
     withCascade(cascade) {
         this.query.cascade = cascade;
@@ -39,7 +39,7 @@ class MaskinportenSuppliersQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, supplier?: string, cascade?: boolean}} TODO: Description
+     * @returns {{party: string, supplier?: string, cascade?: boolean}} The built payload.
      */
     build() {
         return this.query;
@@ -58,7 +58,7 @@ class MaskinportenSupplierResourcesQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {MaskinportenSupplierResourcesQueryBuilder} TODO: Description
+     * @returns {MaskinportenSupplierResourcesQueryBuilder} This builder, for chaining.
      */
     withParty(party) {
         this.query.party = party;
@@ -69,7 +69,7 @@ class MaskinportenSupplierResourcesQueryBuilder {
      * Optional supplier filter.
      *
      * @param {string} supplier Supplier identifier.
-     * @returns {MaskinportenSupplierResourcesQueryBuilder} TODO: Description
+     * @returns {MaskinportenSupplierResourcesQueryBuilder} This builder, for chaining.
      */
     withSupplier(supplier) {
         this.query.supplier = supplier;
@@ -80,7 +80,7 @@ class MaskinportenSupplierResourcesQueryBuilder {
      * Optional resource filter.
      *
      * @param {string} resource Resource identifier.
-     * @returns {MaskinportenSupplierResourcesQueryBuilder} TODO: Description
+     * @returns {MaskinportenSupplierResourcesQueryBuilder} This builder, for chaining.
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -90,7 +90,7 @@ class MaskinportenSupplierResourcesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, supplier?: string, resource?: string}} TODO: Description
+     * @returns {{party: string, supplier?: string, resource?: string}} The built payload.
      */
     build() {
         return this.query;
@@ -109,7 +109,7 @@ class MaskinportenSupplierDelegationCheckQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {MaskinportenSupplierDelegationCheckQueryBuilder} TODO: Description
+     * @returns {MaskinportenSupplierDelegationCheckQueryBuilder} This builder, for chaining.
      */
     withParty(party) {
         this.query.party = party;
@@ -120,7 +120,7 @@ class MaskinportenSupplierDelegationCheckQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {MaskinportenSupplierDelegationCheckQueryBuilder} TODO: Description
+     * @returns {MaskinportenSupplierDelegationCheckQueryBuilder} This builder, for chaining.
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -130,7 +130,7 @@ class MaskinportenSupplierDelegationCheckQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, resource: string}} TODO: Description
+     * @returns {{party: string, resource: string}} The built payload.
      */
     build() {
         return this.query;

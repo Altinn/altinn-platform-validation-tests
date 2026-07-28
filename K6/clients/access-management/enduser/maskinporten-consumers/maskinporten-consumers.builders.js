@@ -10,7 +10,7 @@ class MaskinportenConsumersQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {MaskinportenConsumersQueryBuilder} TODO: Description
+     * @returns {MaskinportenConsumersQueryBuilder} This builder, for chaining.
      */
     withParty(party) {
         this.query.party = party;
@@ -21,7 +21,7 @@ class MaskinportenConsumersQueryBuilder {
      * Optional consumer filter.
      *
      * @param {string} consumer Consumer identifier.
-     * @returns {MaskinportenConsumersQueryBuilder} TODO: Description
+     * @returns {MaskinportenConsumersQueryBuilder} This builder, for chaining.
      */
     withConsumer(consumer) {
         this.query.consumer = consumer;
@@ -31,7 +31,7 @@ class MaskinportenConsumersQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, consumer?: string}} TODO: Description
+     * @returns {{party: string, consumer?: string}} The built payload.
      */
     build() {
         return this.query;
@@ -50,7 +50,7 @@ class MaskinportenConsumersResourcesQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {MaskinportenConsumersResourcesQueryBuilder} TODO: Description
+     * @returns {MaskinportenConsumersResourcesQueryBuilder} This builder, for chaining.
      */
     withParty(party) {
         this.query.party = party;
@@ -61,7 +61,7 @@ class MaskinportenConsumersResourcesQueryBuilder {
      * Optional consumer filter.
      *
      * @param {string} consumer Consumer identifier.
-     * @returns {MaskinportenConsumersResourcesQueryBuilder} TODO: Description
+     * @returns {MaskinportenConsumersResourcesQueryBuilder} This builder, for chaining.
      */
     withConsumer(consumer) {
         this.query.consumer = consumer;
@@ -72,7 +72,7 @@ class MaskinportenConsumersResourcesQueryBuilder {
      * Optional resource filter.
      *
      * @param {string} resource Resource identifier.
-     * @returns {MaskinportenConsumersResourcesQueryBuilder} TODO: Description
+     * @returns {MaskinportenConsumersResourcesQueryBuilder} This builder, for chaining.
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -82,7 +82,7 @@ class MaskinportenConsumersResourcesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, consumer?: string, resource?: string}} TODO: Description
+     * @returns {{party: string, consumer?: string, resource?: string}} The built payload.
      */
     build() {
         return this.query;

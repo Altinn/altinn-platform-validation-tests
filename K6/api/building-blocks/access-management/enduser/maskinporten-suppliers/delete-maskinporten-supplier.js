@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { MaskinportenSuppliersClient } from "../../../../clients/maskinporten-suppliers/index.js";
+import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
 
 /**
  * Deletes a Maskinporten supplier connection.

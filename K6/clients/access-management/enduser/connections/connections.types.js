@@ -57,6 +57,7 @@
  * @property {string|null} code
  * @property {string|null} urn
  * @property {string|null} legacyurn
+ * Note: the swagger declares this key as "legacyurn ", with a trailing space.
  * @property {Array<CompactRoleDto>|null} children
  */
 

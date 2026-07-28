@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ConnectionsClient } from "../../../../clients/connections/index.js";
+import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 
 /**
  * Checks instance delegation.

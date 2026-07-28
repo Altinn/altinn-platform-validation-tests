@@ -67,7 +67,7 @@ class RequestClient {
      * Page number header.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetReceivedRequests(
         query = null,
@@ -110,6 +110,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
                 ...(pageSize !== null && {
                     "X-Page-Size": pageSize,
                 }),
@@ -127,7 +128,7 @@ class RequestClient {
      * Query parameters. Prefer using {@link ReceivedRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetReceivedRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -165,6 +166,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -178,7 +180,7 @@ class RequestClient {
      * Optional resource rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ApproveReceivedRequest(
         party,
@@ -214,6 +216,7 @@ class RequestClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );
@@ -226,7 +229,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RejectReceivedRequest(
         party,
@@ -257,6 +260,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -271,7 +275,7 @@ class RequestClient {
      * Optional rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreateResourceRequest(
         party,
@@ -309,6 +313,7 @@ class RequestClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );
@@ -319,10 +324,10 @@ class RequestClient {
      *
      * @param {string} party Party UUID.
      * @param {string} to Party UUID.
-     * @param packageId TODO: Description
+     * @param {string} packageId Access package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreatePackageRequest(
         party,
@@ -355,6 +360,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -369,7 +375,7 @@ class RequestClient {
      * Page number header.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetSentRequests(
         query = null,
@@ -412,6 +418,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
                 ...(pageSize !== null && {
                     "X-Page-Size": pageSize,
                 }),
@@ -429,7 +436,7 @@ class RequestClient {
      * Query parameters. Prefer using {@link SentRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetSentRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -467,6 +474,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -478,7 +486,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     WithdrawSentRequest(
         party,
@@ -509,6 +517,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -520,7 +529,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetRequest(
         party,
@@ -551,6 +560,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -561,7 +571,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetDraftRequest(
         id,
@@ -590,6 +600,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -601,7 +612,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ConfirmDraftRequest(
         party,
@@ -632,6 +643,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

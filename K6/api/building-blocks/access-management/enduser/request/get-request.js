@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RequestClient } from "../../../../clients/access-management/enduser/request/index.js";
+import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
 
 /**
  * Gets a request by id.

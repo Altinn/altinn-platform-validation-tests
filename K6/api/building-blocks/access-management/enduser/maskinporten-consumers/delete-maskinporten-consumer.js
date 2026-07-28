@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { MaskinportenConsumersClient } from "../../../../clients/maskinporten-consumers/index.js";
+import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
 
 /**
  * Deletes a Maskinporten consumer connection for a party.
