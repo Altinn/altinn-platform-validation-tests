@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} AppCloudEventRequestModel
+ * @typedef {object} AppCloudEventRequestModel
  * @property {string|null} source Source of the event.
  * @property {string|null} specversion Specification version of the event.
  * @property {string|null} type Type of the event.
@@ -11,7 +11,7 @@
  */
 
 /**
- * @typedef {Object} CloudEvent
+ * @typedef {object} CloudEvent
  * @property {CloudEventsSpecVersion|null} specVersion Specification version.
  * @property {*} data Event payload.
  * @property {string|null} dataContentType Content type of the event payload.
@@ -26,7 +26,7 @@
  */
 
 /**
- * @typedef {Object} CloudEventAttribute
+ * @typedef {object} CloudEventAttribute
  * @property {CloudEventAttributeType|null} type Attribute type.
  * @property {string|null} name Attribute name.
  * @property {boolean} isRequired Whether the attribute is required.
@@ -34,13 +34,13 @@
  */
 
 /**
- * @typedef {Object} CloudEventAttributeType
+ * @typedef {object} CloudEventAttributeType
  * @property {string|null} name Type name.
  * @property {Type|null} clrType CLR type metadata.
  */
 
 /**
- * @typedef {Object} CloudEventsSpecVersion
+ * @typedef {object} CloudEventsSpecVersion
  * @property {string|null} versionId Specification version identifier.
  * @property {CloudEventAttribute|null} idAttribute ID attribute.
  * @property {CloudEventAttribute|null} dataContentTypeAttribute Data content type attribute.
@@ -55,7 +55,7 @@
  */
 
 /**
- * @typedef {Object} ContentType
+ * @typedef {object} ContentType
  * @property {string|null} boundary Multipart boundary.
  * @property {string|null} charSet Character set.
  * @property {string|null} mediaType Media type.
@@ -69,7 +69,7 @@
  * This is intentionally kept minimal because the API exposes framework
  * reflection details that are not relevant when consuming the API from k6.
  *
- * @typedef {Object} Type
+ * @typedef {object} Type
  * @property {string|null} name Type name.
  * @property {string|null} fullName Fully qualified type name.
  * @property {string|null} namespace Type namespace.
@@ -78,7 +78,7 @@
 /**
  * Query parameters used when retrieving cloud events.
  *
- * @typedef {Object} EventsQueryParams
+ * @typedef {object} EventsQueryParams
  * @property {string} resource Required resource attribute.
  * @property {string|null} [after] Retrieve events registered after this event id.
  * @property {string|null} [subject] Filter events by exact subject.
@@ -102,7 +102,7 @@
 /**
  * Problem details returned by the API on validation errors.
  *
- * @typedef {Object} ProblemDetails
+ * @typedef {object} ProblemDetails
  * @property {string|null} [type] Error type URI.
  * @property {string|null} [title] Error title.
  * @property {number|null} [status] HTTP status code.
@@ -110,11 +110,10 @@
  * @property {string|null} [instance] Error instance URI.
  */
 
-
 /**
  * Class that describes the events subscription request model.
  *
- * @typedef {Object} SubscriptionRequestModel
+ * @typedef {object} SubscriptionRequestModel
  * @property {string|null} endPoint Endpoint to receive matching events.
  * @property {string|null} sourceFilter Filter on source.
  * @property {string|null} subjectFilter Filter on subject.
@@ -126,7 +125,7 @@
 /**
  * Class that describes an events subscription.
  *
- * @typedef {Object} Subscription
+ * @typedef {object} Subscription
  * @property {number} id Subscription id.
  * @property {string|null} endPoint Endpoint to receive matching events.
  * @property {string|null} sourceFilter Filter on source.
@@ -143,7 +142,7 @@
 /**
  * An object containing a list of subscriptions and metadata.
  *
- * @typedef {Object} SubscriptionList
+ * @typedef {object} SubscriptionList
  * @property {number} count Number of subscriptions in the list.
  * @property {Subscription[]|null} subscriptions List of subscriptions.
  */

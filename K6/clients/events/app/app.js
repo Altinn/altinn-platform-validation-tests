@@ -44,7 +44,7 @@ class AppClient {
      * @param {AppCloudEventRequestModel} request Event payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     AppCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -78,10 +78,10 @@ class AppClient {
      *
      * @param {string} org Application owner acronym.
      * @param {string} app Application name.
-     * @param {Object} [query] Optional query parameters.
+     * @param {object} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     AppGetByApp(org, app, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -143,11 +143,11 @@ class AppClient {
     /**
      * Retrieves events related to a party.
      *
-     * @param {Object} [query] Optional query parameters.
+     * @param {object} [query] Optional query parameters.
      * @param {string} [person] Person number header value.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     AppGetByParty(query = null, person = null, labels = null) {
         const token = this.tokenGenerator.getToken();

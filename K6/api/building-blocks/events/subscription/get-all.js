@@ -2,7 +2,6 @@ import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/subscription/index.js";
 
-
 /**
  * Retrieves all subscriptions for the authorized consumer.
  *

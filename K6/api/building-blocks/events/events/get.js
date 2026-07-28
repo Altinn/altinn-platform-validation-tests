@@ -1,3 +1,5 @@
+import { check } from "k6";
+
 /**
  * Retrieves cloud events based on query parameters.
  *
@@ -5,7 +7,6 @@
  * @param {EventsQueryParams|null} [query] Optional query parameters.
  * @param {string|null} [alternativeSubject] Optional alternative subject header.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- *
  * @returns {CloudEvent[]|null} Cloud events.
  */
 export function EventsGet(

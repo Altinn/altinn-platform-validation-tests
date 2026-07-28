@@ -41,8 +41,7 @@ class EventsClient {
      * @param {CloudEvent} request CloudEvent payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     *
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     EventsCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -76,14 +75,11 @@ class EventsClient {
      *
      * @param {EventsQueryParams} [query]
      * Optional event filters.
-     *
      * @param {string} [alternativeSubject]
      * Alternative subject header value.
-     *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     *
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     EventsGet(query = null, alternativeSubject = null, labels = null) {
         const token = this.tokenGenerator.getToken();

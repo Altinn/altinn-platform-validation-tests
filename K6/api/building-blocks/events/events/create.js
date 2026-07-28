@@ -8,7 +8,6 @@ import { EventsClient } from "../../../../clients/events/index.js";
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {CloudEvent} event CloudEvent payload.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- *
  * @returns {string|null} Created event identifier.
  */
 export function EventsCreate(

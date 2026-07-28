@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/subscription/index.js";
+
 /**
  * Validates a specific subscription.
  *

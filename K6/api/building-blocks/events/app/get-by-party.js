@@ -6,7 +6,7 @@ import { AppClient } from "../../../../clients/app/index.js";
  * Retrieves events related to a party.
  *
  * @param {AppClient} appClient Client for the App API.
- * @param {Object} [query] Optional query parameters.
+ * @param {object} [query] Optional query parameters.
  * @param {string} [person] Person number header value.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.

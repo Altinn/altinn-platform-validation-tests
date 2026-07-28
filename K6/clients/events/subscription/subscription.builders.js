@@ -3,10 +3,10 @@
  *
  * Usage:
  * const request = new SubscriptionRequestModelBuilder()
- *     .withEndpoint("https://example.com/events")
- *     .withSourceFilter("https://example.com/app")
- *     .withTypeFilter("app.instance.created")
- *     .build();
+ * .withEndpoint("https://example.com/events")
+ * withSourceFilter("https://example.com/app")
+ * .withTypeFilter("app.instance.created")
+ * .build();
  *
  * @class
  */
@@ -26,8 +26,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the endpoint receiving matching events.
      *
-     * @param {string} endPoint
-     * @returns {SubscriptionRequestModelBuilder}
+     * @param {string} endPoint TODO: Description
+     * @returns {SubscriptionRequestModelBuilder} TODO: Description
      */
     withEndpoint(endPoint) {
         this.request.endPoint = endPoint;
@@ -37,8 +37,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the source filter.
      *
-     * @param {string} sourceFilter
-     * @returns {SubscriptionRequestModelBuilder}
+     * @param {string} sourceFilter TODO: Description
+     * @returns {SubscriptionRequestModelBuilder} TODO: Description
      */
     withSourceFilter(sourceFilter) {
         this.request.sourceFilter = sourceFilter;
@@ -48,8 +48,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the subject filter.
      *
-     * @param {string} subjectFilter
-     * @returns {SubscriptionRequestModelBuilder}
+     * @param {string} subjectFilter TODO: Description
+     * @returns {SubscriptionRequestModelBuilder} TODO: Description
      */
     withSubjectFilter(subjectFilter) {
         this.request.subjectFilter = subjectFilter;
@@ -59,8 +59,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the resource filter.
      *
-     * @param {string} resourceFilter
-     * @returns {SubscriptionRequestModelBuilder}
+     * @param {string} resourceFilter TODO: Description
+     * @returns {SubscriptionRequestModelBuilder} TODO: Description
      */
     withResourceFilter(resourceFilter) {
         this.request.resourceFilter = resourceFilter;
@@ -70,8 +70,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the alternative subject filter.
      *
-     * @param {string} alternativeSubjectFilter
-     * @returns {SubscriptionRequestModelBuilder}
+     * @param {string} alternativeSubjectFilter TODO: Description
+     * @returns {SubscriptionRequestModelBuilder} TODO: Description
      */
     withAlternativeSubjectFilter(alternativeSubjectFilter) {
         this.request.alternativeSubjectFilter = alternativeSubjectFilter;
@@ -81,8 +81,8 @@ class SubscriptionRequestModelBuilder {
     /**
      * Sets the event type filter.
      *
-     * @param {string} typeFilter
-     * @returns {SubscriptionRequestModelBuilder}
+     * @param {string} typeFilter TODO: Description
+     * @returns {SubscriptionRequestModelBuilder} TODO: Description
      */
     withTypeFilter(typeFilter) {
         this.request.typeFilter = typeFilter;
@@ -92,7 +92,7 @@ class SubscriptionRequestModelBuilder {
     /**
      * Builds the subscription request payload.
      *
-     * @returns {SubscriptionRequestModel}
+     * @returns {SubscriptionRequestModel} TODO: Description
      */
     build() {
         return {

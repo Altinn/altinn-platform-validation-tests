@@ -50,7 +50,7 @@ class SubscriptionClient {
      * @param {SubscriptionRequestModel} request Subscription payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     SubscriptionCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -84,7 +84,7 @@ class SubscriptionClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     SubscriptionGetAll(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -118,7 +118,7 @@ class SubscriptionClient {
      * @param {number} id Subscription id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     SubscriptionGet(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -152,7 +152,7 @@ class SubscriptionClient {
      * @param {number} id Subscription id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     SubscriptionDelete(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -186,7 +186,7 @@ class SubscriptionClient {
      * @param {number} id Subscription id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     SubscriptionValidate(id, labels = null) {
         const token = this.tokenGenerator.getToken();

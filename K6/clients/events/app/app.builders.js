@@ -13,8 +13,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} source
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {string} source TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithSource(source) {
         this.request.source = source;
@@ -23,8 +23,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} specversion
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {string} specversion TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithSpecversion(specversion) {
         this.request.specversion = specversion;
@@ -33,8 +33,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} type
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {string} type TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithType(type) {
         this.request.type = type;
@@ -43,8 +43,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} subject
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {string} subject TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithSubject(subject) {
         this.request.subject = subject;
@@ -53,8 +53,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} alternativesubject
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {string} alternativesubject TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithAlternativeSubject(alternativesubject) {
         this.request.alternativesubject = alternativesubject;
@@ -63,8 +63,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {*} data
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {*} data TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithData(data) {
         this.request.data = data;
@@ -73,8 +73,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {string} dataschema
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {string} dataschema TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithDataSchema(dataschema) {
         this.request.dataschema = dataschema;
@@ -83,8 +83,8 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @param {ContentType} contenttype
-     * @returns {AppCloudEventRequestModelBuilder}
+     * @param {ContentType} contenttype TODO: Description
+     * @returns {AppCloudEventRequestModelBuilder} TODO: Description
      */
     WithContentType(contenttype) {
         this.request.contenttype = contenttype;
@@ -93,7 +93,7 @@ class AppCloudEventRequestModelBuilder {
     }
 
     /**
-     * @returns {AppCloudEventRequestModel}
+     * @returns {AppCloudEventRequestModel} TODO: Description
      */
     Build() {
         return this.request;
@@ -105,8 +105,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} after
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {string} after TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithAfter(after) {
         this.query.after = after;
@@ -115,8 +115,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} from
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {string} from TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithFrom(from) {
         this.query.from = from;
@@ -125,8 +125,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} to
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {string} to TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithTo(to) {
         this.query.to = to;
@@ -135,8 +135,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {number} party
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {number} party TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithParty(party) {
         this.query.party = party;
@@ -145,8 +145,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} unit
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {string} unit TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithUnit(unit) {
         this.query.unit = unit;
@@ -155,8 +155,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string} person
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {string} person TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithPerson(person) {
         this.query.person = person;
@@ -165,8 +165,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {string[]} type
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {string[]} type TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithTypes(type) {
         this.query.type = type;
@@ -175,8 +175,8 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @param {number} size
-     * @returns {AppEventsByAppQueryBuilder}
+     * @param {number} size TODO: Description
+     * @returns {AppEventsByAppQueryBuilder} TODO: Description
      */
     WithSize(size) {
         this.query.size = size;
@@ -185,7 +185,7 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
@@ -198,8 +198,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} after
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string} after TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithAfter(after) {
         this.query.after = after;
@@ -208,8 +208,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} from
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string} from TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithFrom(from) {
         this.query.from = from;
@@ -218,8 +218,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} to
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string} to TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithTo(to) {
         this.query.to = to;
@@ -228,8 +228,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {number} party
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {number} party TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithParty(party) {
         this.query.party = party;
@@ -238,8 +238,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} unit
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string} unit TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithUnit(unit) {
         this.query.unit = unit;
@@ -248,8 +248,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string} person
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string} person TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithPerson(person) {
         this.query.person = person;
@@ -258,8 +258,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string[]} source
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string[]} source TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithSources(source) {
         this.query.source = source;
@@ -268,8 +268,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {string[]} type
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {string[]} type TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithTypes(type) {
         this.query.type = type;
@@ -278,8 +278,8 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @param {number} size
-     * @returns {AppPartyEventsQueryBuilder}
+     * @param {number} size TODO: Description
+     * @returns {AppPartyEventsQueryBuilder} TODO: Description
      */
     WithSize(size) {
         this.query.size = size;
@@ -288,14 +288,12 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
     }
 }
-
-
 
 export {
     AppCloudEventRequestModelBuilder, AppEventsByAppQueryBuilder, AppPartyEventsQueryBuilder,
