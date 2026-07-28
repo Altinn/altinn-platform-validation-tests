@@ -40,7 +40,7 @@ class AuthorizedPartiesClient {
      * {@link AuthorizedPartiesQueryBuilder} to construct this object.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetAuthorizedParties(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -80,6 +80,7 @@ class AuthorizedPartiesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

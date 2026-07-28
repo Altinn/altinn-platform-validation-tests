@@ -73,6 +73,7 @@ class AuthorizedPartiesClient {
                 tags,
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
                     "Content-type": "application/json",
                 },
             }

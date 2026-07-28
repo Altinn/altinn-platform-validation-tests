@@ -13,7 +13,7 @@ import {
  * @param {RolesApiClient} rolesApiClient A client to interact with the Roles API
  * @param {{[x: string]: string}} [labels]
  * Optional k6 tags merged with default request tags.
- * @returns {RolesResponse} TODO: description
+ * @returns {RolesResponse} Parsed response body, or null when the call failed.
  */
 export function GetRoles(rolesApiClient, labels = null) {
     const res = rolesApiClient.GetRoles(labels);
