@@ -1,3 +1,5 @@
+import { check } from "k6";
+
 export function GetResource(
     resourceClient,
     resourceId,

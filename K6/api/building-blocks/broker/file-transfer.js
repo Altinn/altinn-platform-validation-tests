@@ -5,10 +5,10 @@ import { FileTransferClient } from "../../../../clients/broker/index.js";
 /**
  * Initializes a file transfer.
  *
- * @param {FileTransferClient} fileTransferClient
- * @param {FileTransferInitializeRequest} request
- * @param {{[key:string]:string}} [labels]
- * @returns {FileTransferInitializeResponse|null}
+ * @param {FileTransferClient} fileTransferClient TODO: Description
+ * @param {FileTransferInitializeRequest} request TODO: Description
+ * @param {{[key:string]:string}} [labels] TODO: Description
+ * @returns {FileTransferInitializeResponse|null} TODO: Description
  */
 export function InitializeFileTransfer(
     fileTransferClient,
@@ -54,14 +54,13 @@ export function InitializeFileTransfer(
     return fileTransfer;
 }
 
-
 /**
  * Gets file transfer overview.
  *
- * @param {FileTransferClient} fileTransferClient
- * @param {string} fileTransferId
- * @param {{[key:string]:string}} [labels]
- * @returns {FileTransferOverview|null}
+ * @param {FileTransferClient} fileTransferClient TODO: Description
+ * @param {string} fileTransferId TODO: Description
+ * @param {{[key:string]:string}} [labels] TODO: Description
+ * @returns {FileTransferOverview|null} TODO: Description
  */
 export function GetFileTransfer(
     fileTransferClient,
@@ -107,14 +106,13 @@ export function GetFileTransfer(
     return fileTransfer;
 }
 
-
 /**
  * Gets detailed file transfer information.
  *
- * @param {FileTransferClient} fileTransferClient
- * @param {string} fileTransferId
- * @param {{[key:string]:string}} [labels]
- * @returns {FileTransferStatusDetails|null}
+ * @param {FileTransferClient} fileTransferClient TODO: Description
+ * @param {string} fileTransferId TODO: Description
+ * @param {{[key:string]:string}} [labels] TODO: Description
+ * @returns {FileTransferStatusDetails|null} TODO: Description
  */
 export function GetFileTransferDetails(
     fileTransferClient,
@@ -160,14 +158,13 @@ export function GetFileTransferDetails(
     return details;
 }
 
-
 /**
  * Gets available file transfers.
  *
- * @param {FileTransferClient} fileTransferClient
- * @param {FileTransferQuery|null} queryParams
- * @param {{[key:string]:string}} [labels]
- * @returns {Array<string>}
+ * @param {FileTransferClient} fileTransferClient TODO: Description
+ * @param {FileTransferQuery|null} queryParams TODO: Description
+ * @param {{[key:string]:string}} [labels] TODO: Description
+ * @returns {Array<string>} TODO: Description
  */
 export function GetFileTransfers(
     fileTransferClient,
@@ -213,14 +210,13 @@ export function GetFileTransfers(
     return fileTransferIds;
 }
 
-
 /**
  * Confirms that a file transfer has been downloaded.
  *
- * @param {FileTransferClient} fileTransferClient
- * @param {string} fileTransferId
- * @param {{[key:string]:string}} [labels]
- * @returns {boolean}
+ * @param {FileTransferClient} fileTransferClient TODO: Description
+ * @param {string} fileTransferId TODO: Description
+ * @param {{[key:string]:string}} [labels] TODO: Description
+ * @returns {boolean} TODO: Description
  */
 export function ConfirmDownload(
     fileTransferClient,

@@ -186,7 +186,6 @@ class FileTransferInitializeRequestBuilder {
     }
 }
 
-
 /**
  * Builder for creating file transfer query parameters.
  *

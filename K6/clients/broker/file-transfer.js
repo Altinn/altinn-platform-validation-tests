@@ -56,7 +56,7 @@ class FileTransferClient {
      * @param {FileTransferInitalizeExt} body File transfer metadata.
      * Prefer using {@link FileTransferInitializeRequestBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     InitializeFileTransfer(body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -76,7 +76,7 @@ class FileTransferClient {
      * Optional query parameters. Prefer using
      * {@link FileTransferQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetFileTransfers(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -102,7 +102,7 @@ class FileTransferClient {
      * @param {string} fileTransferId File transfer UUID.
      * @param {*} body Binary file content.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UploadFileTransfer(fileTransferId, body, labels = null) {
         return this.#post(
@@ -118,7 +118,7 @@ class FileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetFileTransfer(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -142,7 +142,7 @@ class FileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetFileTransferDetails(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -166,7 +166,7 @@ class FileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DownloadFileTransfer(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -190,7 +190,7 @@ class FileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     ConfirmDownload(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -213,6 +213,11 @@ class FileTransferClient {
     /**
      * Performs a POST request with bearer authentication.
      *
+     * @param url TODO: Description
+     * @param body TODO: Description
+     * @param action TODO: Description
+     * @param labels TODO: Description
+     * @returns TODO: Description
      * @private
      */
     #post(url, body, action, labels) {
@@ -233,6 +238,8 @@ class FileTransferClient {
     /**
      * Adds query parameters to a URL.
      *
+     * @param url TODO: Description
+     * @param query TODO: Description
      * @private
      */
     #appendQueryParameters(url, query) {
@@ -256,6 +263,9 @@ class FileTransferClient {
     /**
      * Creates k6 tags for a request.
      *
+     * @param action TODO: Description
+     * @param labels TODO: Description
+     * @returns TODO: Description
      * @private
      */
     #getTags(action, labels) {
