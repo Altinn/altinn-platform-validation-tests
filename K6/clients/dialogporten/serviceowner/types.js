@@ -1,21 +1,18 @@
 /**
- * @typedef {Object} V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel
+ * @typedef {object} V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel
  * @property {string} value
  * A label value.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label
+ * @typedef {object} V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label
  * @property {string} value
  */
 
-
 /**
- * @typedef {Object} V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest
+ * @typedef {object} V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest
  * @property {DialogEndUserContextsEntities_SystemLabel[]|null} [systemLabels]
  * List of system labels to set on target dialogs.
- *
- * @deprecated Use addLabels instead. This property will be removed in a future version.
  * @property {DialogEndUserContextsEntities_SystemLabel[]|null} [addLabels]
  * List of system labels to add to target dialogs. If multiple instances of 'bin', 'archive',
  * or 'default' are provided, the last one will be used.
@@ -25,10 +22,11 @@
  * @property {V1ServiceOwnerCommonActors_Actor|null} [performedBy]
  * Optional actor metadata describing who performed the change. Only available for admin-integrations
  * when EnduserId is omitted.
+ * @deprecated Use addLabels instead. This property will be removed in a future version.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerCommonActors_Actor
+ * @typedef {object} V1ServiceOwnerCommonActors_Actor
  * @property {Actors_ActorType} actorType
  * The type of actor; either the service owner, or someone representing the party.
  * @property {string|null} [actorName]
@@ -45,15 +43,12 @@
  * @typedef {"Default"|"Bin"|"Archive"|"MarkedAsUnopened"|"Sent"} DialogEndUserContextsEntities_SystemLabel
  */
 
-
 /**
- * @typedef {Object} V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel
+ * @typedef {object} V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel
  * @property {V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_DialogRevision[]|null} [dialogs]
  * List of target dialog ids with optional revision ids.
  * @property {DialogEndUserContextsEntities_SystemLabel[]|null} [systemLabels]
  * List of system labels to set on target dialogs.
- *
- * @deprecated Use addLabels instead. This property will be removed in a future version.
  * @property {DialogEndUserContextsEntities_SystemLabel[]|null} [addLabels]
  * List of system labels to add to the target dialogs. If multiple instances of 'bin', 'archive',
  * or 'default' are provided, the last one will be used.
@@ -63,10 +58,11 @@
  * @property {V1ServiceOwnerCommonActors_Actor|null} [performedBy]
  * Optional actor metadata describing who performed the operation. Only available for admin-integrations
  * when EndUserId is omitted.
+ * @deprecated Use addLabels instead. This property will be removed in a future version.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_DialogRevision
+ * @typedef {object} V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_DialogRevision
  * @property {string} dialogId
  * Target dialog id for system labels.
  * @property {string|null} [endUserContextRevision]
@@ -74,12 +70,10 @@
  * the entire operation will fail.
  */
 
-
-
 /**
  * Represents a transmission belonging to a dialog as returned to service owners.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesSearchTransmissions_Transmission
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_Transmission
  * @property {string} id - The unique identifier for the transmission in UUIDv7 format.
  * @property {?string} idempotentKey - An optional key to ensure idempotency in transmission creation. Reusing the same key within the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt - The date and time when the transmission was created.
@@ -97,7 +91,7 @@
 /**
  * Represents transmission content returned from a service owner transmission query.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesSearchTransmissions_Content
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_Content
  * @property {V1CommonContent_ContentValue} title - The title of the content.
  * @property {?V1CommonContent_ContentValue} summary - The summary of the content.
  * @property {?V1CommonContent_ContentValue} contentReference - Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL.
@@ -106,7 +100,7 @@
 /**
  * Represents an attachment associated with a transmission.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesSearchTransmissions_Attachment
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_Attachment
  * @property {string} id - The unique identifier for the attachment in UUIDv7 format.
  * @property {?V1CommonLocalizations_Localization[]} displayName - The display name of the attachment that should be used in GUIs.
  * @property {?string} name - The logical name of the attachment.
@@ -117,7 +111,7 @@
 /**
  * Represents a URL representation of a transmission attachment.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesSearchTransmissions_AttachmentUrl
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_AttachmentUrl
  * @property {string} id - The unique identifier for the attachment URL in UUIDv7 format.
  * @property {string} url - The fully qualified URL of the attachment. Will be set to "urn:dialogporten:unauthorized" if the user is not authorized to access the transmission.
  * @property {?string} mediaType - The media type of the attachment.
@@ -127,17 +121,16 @@
 /**
  * Represents a navigational action associated with a transmission.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesSearchTransmissions_NavigationalAction
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_NavigationalAction
  * @property {?V1CommonLocalizations_Localization[]} title - The title of the navigational action.
  * @property {string} url - The fully qualified URL of the navigational action.
  * @property {?string} expiresAt - The UTC timestamp when the navigational action expires and is no longer available.
  */
 
-
 /**
  * Represents a request to create a transmission on a dialog.
  *
- * @typedef {Object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionRequest
+ * @typedef {object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionRequest
  * @property {?string} id - A UUIDv7 may be provided to support idempotent additions to the list of transmissions. If not supplied, a new UUIDv7 will be generated.
  * @property {?string} idempotentKey - An optional key to ensure idempotency in transmission creation. Reusing the same key within the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt - If supplied, overrides the creating date and time for the transmission. If not supplied, the current date/time will be used.
@@ -155,7 +148,7 @@
 /**
  * Represents transmission content when creating a transmission.
  *
- * @typedef {Object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionContent
+ * @typedef {object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionContent
  * @property {V1CommonContent_ContentValue} title - The transmission title. Must be text/plain.
  * @property {?V1CommonContent_ContentValue} summary - The transmission summary.
  * @property {?V1CommonContent_ContentValue} contentReference - Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.
@@ -164,7 +157,7 @@
 /**
  * Represents an attachment included when creating a transmission.
  *
- * @typedef {Object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionAttachment
+ * @typedef {object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionAttachment
  * @property {?string} id - A self-defined UUIDv7 may be provided to support idempotent additions of transmission attachments. If not provided, a new UUIDv7 will be generated.
  * @property {?V1CommonLocalizations_Localization[]} displayName - The display name of the attachment that should be used in GUIs.
  * @property {?string} name - The logical name of the attachment.
@@ -175,7 +168,7 @@
 /**
  * Represents an attachment URL when creating a transmission.
  *
- * @typedef {Object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionAttachmentUrl
+ * @typedef {object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionAttachmentUrl
  * @property {string} url - The fully qualified URL of the attachment.
  * @property {?string} mediaType - The media type of the attachment.
  * @property {Attachments_AttachmentUrlConsumerType} consumerType - The type of consumer the URL is intended for.
@@ -184,17 +177,16 @@
 /**
  * Represents a navigational action included when creating a transmission.
  *
- * @typedef {Object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionNavigationalAction
+ * @typedef {object} V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionNavigationalAction
  * @property {?V1CommonLocalizations_Localization[]} title - The title of the navigational action.
  * @property {string} url - The fully qualified URL of the navigational action.
  * @property {?string} expiresAt - The UTC timestamp when the navigational action expires and is no longer available.
  */
 
-
 /**
  * Represents localized content with optional media metadata and authorization information.
  *
- * @typedef {Object} V1CommonContent_ContentValue
+ * @typedef {object} V1CommonContent_ContentValue
  * @property {?V1CommonLocalizations_Localization[]} value - A list of localizations for the content.
  * @property {string} mediaType - Media type of the content. This can also indicate that the content is embeddable.
  * @property {?boolean} isAuthorized - True if the authenticated user is authorized for this content. If not, the endpoints will be replaced with a fixed placeholder. Can be null if not applicable.
@@ -203,7 +195,7 @@
 /**
  * Represents a localized string value.
  *
- * @typedef {Object} V1CommonLocalizations_Localization
+ * @typedef {object} V1CommonLocalizations_Localization
  * @property {string} value - The localized text (or URL if a front-channel embed).
  * @property {string} languageCode - The language code of the localization in ISO 639-1 format.
  */
@@ -211,7 +203,7 @@
 /**
  * Represents an actor involved in a service owner operation.
  *
- * @typedef {Object} V1ServiceOwnerCommonActors_Actor
+ * @typedef {object} V1ServiceOwnerCommonActors_Actor
  * @property {Actors_ActorType} actorType - The type of actor; either the service owner, or someone representing the party.
  * @property {?string} actorName - The name of the actor.
  * @property {?string} actorId - The identifier (national identity number or organization number) of the actor.
@@ -235,30 +227,27 @@
  * @typedef {string} Attachments_AttachmentUrlConsumerType
  */
 
-
 /**
  * Represents the type of consumer that an attachment URL is intended for.
  *
  * @typedef {"Gui"|"Api"} Attachments_AttachmentUrlConsumerType
  */
 
-
 /**
  * A seen log entry for a dialog.
  *
  * Returned by the Service Owner Seen Log API.
  *
- * @typedef {Object} DialogSeenLog
+ * @typedef {object} DialogSeenLog
  * @property {string} id
- *   The unique identifier for the seen log entry in UUID format.
+ * The unique identifier for the seen log entry in UUID format.
  * @property {string} seenAt
- *   The date and time when the dialog was seen (UTC timestamp).
+ * The date and time when the dialog was seen (UTC timestamp).
  * @property {Actor} seenBy
- *   The actor that viewed the dialog.
+ * The actor that viewed the dialog.
  * @property {?boolean} [isViaServiceOwner]
- *   Indicates whether the dialog was viewed via the service owner context.
+ * Indicates whether the dialog was viewed via the service owner context.
  */
-
 
 /**
  * Gets end user context system labels for dialogs.
@@ -269,87 +258,78 @@
  * - `party` is required.
  * - `label` values are matched using OR semantics.
  * - Use the returned `continuationToken` to retrieve the next page when
- *   `hasNextPage` is `true`.
+ * `hasNextPage` is `true`.
  *
- * @async
  * @function searchDialogEndUserContext
- *
- * @param {Object} params
+ * @param {object} params
  * @param {string[]} params.party
- *   One or more owning parties to filter by.
+ * One or more owning parties to filter by.
  * @param {?string} [params.contentUpdatedAfter]
- *   Only return context for dialogs with `contentUpdatedAt` greater than or
- *   equal to this UTC date-time.
+ * Only return context for dialogs with `contentUpdatedAt` greater than or
+ * equal to this UTC date-time.
  * @param {?SystemLabel[]} [params.label]
- *   One or more system labels to filter by. Labels are matched using OR
- *   semantics.
+ * One or more system labels to filter by. Labels are matched using OR
+ * semantics.
  * @param {?string} [params.continuationToken]
- *   Continuation token from a previous response used to retrieve the next page.
+ * Continuation token from a previous response used to retrieve the next page.
  * @param {?number} [params.limit]
- *   Maximum number of results to return (1–1000, default: 100).
- *
+ * Maximum number of results to return (1–1000, default: 100).
  * @returns {Promise<PaginatedDialogEndUserContextList>}
- *
+ * @async
  * @throws {UnauthorizedError}
- *   Missing or invalid authentication token. Requires the
- *   `digdir:dialogporten.serviceprovider` and
- *   `digdir:dialogporten.serviceprovider.search` scopes.
+ * Missing or invalid authentication token. Requires the
+ * `digdir:dialogporten.serviceprovider` and
+ * `digdir:dialogporten.serviceprovider.search` scopes.
  * @throws {ServiceUnavailableError}
- *   Dialogporten is temporarily unavailable or in maintenance mode.
+ * Dialogporten is temporarily unavailable or in maintenance mode.
  */
-
-
 
 /**
  * A paginated list of dialog end user context items.
  *
- * @typedef {Object} PaginatedDialogEndUserContextList
+ * @typedef {object} PaginatedDialogEndUserContextList
  * @property {?DialogEndUserContextItem[]} [items]
- *   The paginated list of items.
+ * The paginated list of items.
  * @property {boolean} hasNextPage
- *   Whether there are more items available that can be fetched by supplying
- *   the continuation token.
+ * Whether there are more items available that can be fetched by supplying
+ * the continuation token.
  * @property {?string} [continuationToken]
- *   The continuation token to be used to fetch the next page of items.
+ * The continuation token to be used to fetch the next page of items.
  * @property {string} orderBy
- *   The current sorting order of the items.
+ * The current sorting order of the items.
  */
 
 /**
  * Dialog end user context information.
  *
- * @typedef {Object} DialogEndUserContextItem
+ * @typedef {object} DialogEndUserContextItem
  * @property {string} dialogId
- *   The dialog identifier in UUID format.
+ * The dialog identifier in UUID format.
  * @property {string} endUserContextRevision
- *   The end user context revision identifier in UUID format.
+ * The end user context revision identifier in UUID format.
  * @property {?SystemLabel[]} [systemLabels]
- *   The system labels currently applied to the dialog.
+ * The system labels currently applied to the dialog.
  */
-
 
 /**
  * Gets the activities belonging to a dialog.
  *
- * @async
  * @function getDialogActivities
- *
  * @param {string} dialogId
- *   The dialog identifier (UUID).
- *
+ * The dialog identifier (UUID).
  * @returns {Promise<DialogActivity[]>}
- *   The activities belonging to the dialog.
- *
+ * The activities belonging to the dialog.
+ * @async
  * @throws {NotFoundError}
- *   The supplied dialog ID was not found.
+ * The supplied dialog ID was not found.
  * @throws {UnauthorizedError}
- *   Missing or invalid authentication token. Requires the
- *   `digdir:dialogporten.serviceprovider` scope.
+ * Missing or invalid authentication token. Requires the
+ * `digdir:dialogporten.serviceprovider` scope.
  * @throws {ForbiddenError}
- *   Unauthorized to get the supplied dialog (dialog not owned by the
- *   authenticated organization or additional policy requirements apply).
+ * Unauthorized to get the supplied dialog (dialog not owned by the
+ * authenticated organization or additional policy requirements apply).
  * @throws {ServiceUnavailableError}
- *   Dialogporten is temporarily unavailable or in maintenance mode.
+ * Dialogporten is temporarily unavailable or in maintenance mode.
  */
 
 /**
@@ -361,125 +341,113 @@
  * header. Supply the dialog Revision value from the Get Dialog endpoint
  * to ensure the dialog has not been modified or deleted by another request.
  *
- * @async
  * @function createDialogActivity
- *
  * @param {string} dialogId
- *   The dialog identifier (UUID).
+ * The dialog identifier (UUID).
  * @param {ActivityRequest} activity
- *   The activity to create.
+ * The activity to create.
  * @param {?string} [ifMatch]
- *   Optional dialog revision (ETag) used for optimistic concurrency control.
- *
+ * Optional dialog revision (ETag) used for optimistic concurrency control.
  * @returns {Promise<string>}
- *   The UUID of the created activity.
- *
+ * The UUID of the created activity.
+ * @async
  * @throws {ValidationError}
- *   Validation error occurred. See problem details for validation errors.
+ * Validation error occurred. See problem details for validation errors.
  * @throws {NotFoundError}
- *   The supplied dialog ID was not found.
+ * The supplied dialog ID was not found.
  * @throws {ConflictError}
- *   A conflict occurred while processing the request.
+ * A conflict occurred while processing the request.
  * @throws {GoneError}
- *   The entity has been removed.
+ * The entity has been removed.
  * @throws {PreconditionFailedError}
- *   The supplied `If-Match` value did not match the current dialog revision.
+ * The supplied `If-Match` value did not match the current dialog revision.
  * @throws {UnprocessableEntityError}
- *   A domain error occurred. See problem details for details.
+ * A domain error occurred. See problem details for details.
  * @throws {UnauthorizedError}
- *   Missing or invalid authentication token. Requires the
- *   `digdir:dialogporten.serviceprovider` scope.
+ * Missing or invalid authentication token. Requires the
+ * `digdir:dialogporten.serviceprovider` scope.
  * @throws {ForbiddenError}
- *   Unauthorized to create an activity for the supplied dialog.
+ * Unauthorized to create an activity for the supplied dialog.
  * @throws {ServiceUnavailableError}
- *   Dialogporten is temporarily unavailable or in maintenance mode.
+ * Dialogporten is temporarily unavailable or in maintenance mode.
  */
-
-
 
 /**
  * A dialog activity.
  *
  * Returned by the Service Owner Activities API.
  *
- * @typedef {Object} DialogActivity
+ * @typedef {object} DialogActivity
  * @property {string} id
- *   The unique identifier for the activity in UUID format.
+ * The unique identifier for the activity in UUID format.
  * @property {string} createdAt
- *   The date and time when the activity was created (UTC timestamp).
+ * The date and time when the activity was created (UTC timestamp).
  * @property {?string} [extendedType]
- *   An arbitrary URI/URN describing a service-specific activity type.
+ * An arbitrary URI/URN describing a service-specific activity type.
  * @property {DialogActivityType} type
- *   The type of activity.
+ * The type of activity.
  * @property {?string} [transmissionId]
- *   The identifier of the related transmission, if any.
+ * The identifier of the related transmission, if any.
  */
 
 /**
  * Request payload used to create a dialog activity.
  *
- * @typedef {Object} ActivityRequest
+ * @typedef {object} ActivityRequest
  * @property {?string} [id]
- *   A UUIDv7 may be provided to support idempotent additions to the list of
- *   activities. If not supplied, a new UUIDv7 will be generated.
+ * A UUIDv7 may be provided to support idempotent additions to the list of
+ * activities. If not supplied, a new UUIDv7 will be generated.
  * @property {?string} [createdAt]
- *   If supplied, overrides the creation date and time for the activity.
- *   If not supplied, the current date/time will be used.
+ * If supplied, overrides the creation date and time for the activity.
+ * If not supplied, the current date/time will be used.
  * @property {?string} [extendedType]
- *   Arbitrary URI/URN describing a service-specific activity type.
+ * Arbitrary URI/URN describing a service-specific activity type.
  * @property {DialogActivityType} type
- *   The type of activity.
+ * The type of activity.
  * @property {?string} [transmissionId]
- *   If the activity is related to a particular transmission, this field
- *   contains the transmission identifier. Must be present in the request body.
+ * If the activity is related to a particular transmission, this field
+ * contains the transmission identifier. Must be present in the request body.
  * @property {Actor} performedBy
- *   The actor that performed the activity.
+ * The actor that performed the activity.
  * @property {?Localization[]} [description]
- *   Unstructured text describing the activity. Only set if the activity type
- *   is `Information`.
+ * Unstructured text describing the activity. Only set if the activity type
+ * is `Information`.
  */
-
 
 /**
  * The type of a dialog activity.
  *
  * @typedef {(
- *   'DialogCreated' |
- *   'DialogClosed' |
- *   'Information' |
- *   'TransmissionOpened' |
- *   'PaymentMade' |
- *   'SignatureProvided' |
- *   'DialogOpened' |
- *   'DialogDeleted' |
- *   'DialogRestored' |
- *   'SentToSigning' |
- *   'SentToFormFill' |
- *   'SentToSendIn' |
- *   'SentToPayment' |
- *   'FormSubmitted' |
- *   'FormSaved' |
- *   'CorrespondenceOpened' |
- *   'CorrespondenceConfirmed'
+ * 'DialogCreated' |
+ * 'DialogClosed' |
+ * 'Information' |
+ * 'TransmissionOpened' |
+ * 'PaymentMade' |
+ * 'SignatureProvided' |
+ * 'DialogOpened' |
+ * 'DialogDeleted' |
+ * 'DialogRestored' |
+ * 'SentToSigning' |
+ * 'SentToFormFill' |
+ * 'SentToSendIn' |
+ * 'SentToPayment' |
+ * 'FormSubmitted' |
+ * 'FormSaved' |
+ * 'CorrespondenceOpened' |
+ * 'CorrespondenceConfirmed'
  * )} DialogActivityType
  */
-
-
-
-
-
-
 
 /**
  * The aggregated status of the dialog.
  *
  * @typedef {(
- *   "InProgress" |
- *   "Draft" |
- *   "RequiresAttention" |
- *   "Completed" |
- *   "NotApplicable" |
- *   "Awaiting"
+ * "InProgress" |
+ * "Draft" |
+ * "RequiresAttention" |
+ * "Completed" |
+ * "NotApplicable" |
+ * "Awaiting"
  * )} DialogStatus
  */
 
@@ -487,14 +455,14 @@
  * The status values accepted when creating a dialog.
  *
  * @typedef {(
- *   "New" |
- *   "InProgress" |
- *   "Draft" |
- *   "Sent" |
- *   "RequiresAttention" |
- *   "Completed" |
- *   "NotApplicable" |
- *   "Awaiting"
+ * "New" |
+ * "InProgress" |
+ * "Draft" |
+ * "Sent" |
+ * "RequiresAttention" |
+ * "Completed" |
+ * "NotApplicable" |
+ * "Awaiting"
  * )} DialogStatusInput
  */
 
@@ -502,11 +470,11 @@
  * System defined labels used to categorize dialogs.
  *
  * @typedef {(
- *   "Default" |
- *   "Bin" |
- *   "Archive" |
- *   "MarkedAsUnopened" |
- *   "Sent"
+ * "Default" |
+ * "Bin" |
+ * "Archive" |
+ * "MarkedAsUnopened" |
+ * "Sent"
  * )} SystemLabel
  */
 
@@ -514,23 +482,23 @@
  * Types of activities associated with a dialog.
  *
  * @typedef {(
- *   "DialogCreated" |
- *   "DialogClosed" |
- *   "Information" |
- *   "TransmissionOpened" |
- *   "PaymentMade" |
- *   "SignatureProvided" |
- *   "DialogOpened" |
- *   "DialogDeleted" |
- *   "DialogRestored" |
- *   "SentToSigning" |
- *   "SentToFormFill" |
- *   "SentToSendIn" |
- *   "SentToPayment" |
- *   "FormSubmitted" |
- *   "FormSaved" |
- *   "CorrespondenceOpened" |
- *   "CorrespondenceConfirmed"
+ * "DialogCreated" |
+ * "DialogClosed" |
+ * "Information" |
+ * "TransmissionOpened" |
+ * "PaymentMade" |
+ * "SignatureProvided" |
+ * "DialogOpened" |
+ * "DialogDeleted" |
+ * "DialogRestored" |
+ * "SentToSigning" |
+ * "SentToFormFill" |
+ * "SentToSendIn" |
+ * "SentToPayment" |
+ * "FormSubmitted" |
+ * "FormSaved" |
+ * "CorrespondenceOpened" |
+ * "CorrespondenceConfirmed"
  * )} DialogActivityType
  */
 
@@ -538,14 +506,14 @@
  * Types of transmissions associated with a dialog.
  *
  * @typedef {(
- *   "Information" |
- *   "Acceptance" |
- *   "Rejection" |
- *   "Request" |
- *   "Alert" |
- *   "Decision" |
- *   "Submission" |
- *   "Correction"
+ * "Information" |
+ * "Acceptance" |
+ * "Rejection" |
+ * "Request" |
+ * "Alert" |
+ * "Decision" |
+ * "Submission" |
+ * "Correction"
  * )} DialogTransmissionType
  */
 
@@ -553,8 +521,8 @@
  * The type of consumer the attachment URL is intended for.
  *
  * @typedef {(
- *   "Gui" |
- *   "Api"
+ * "Gui" |
+ * "Api"
  * )} AttachmentUrlConsumerType
  */
 
@@ -562,8 +530,8 @@
  * The type of actor performing an action.
  *
  * @typedef {(
- *   "PartyRepresentative" |
- *   "ServiceOwner"
+ * "PartyRepresentative" |
+ * "ServiceOwner"
  * )} ActorType
  */
 
@@ -571,15 +539,15 @@
  * HTTP methods supported by actions and endpoints.
  *
  * @typedef {(
- *   "GET" |
- *   "POST" |
- *   "PUT" |
- *   "PATCH" |
- *   "DELETE" |
- *   "HEAD" |
- *   "OPTIONS" |
- *   "TRACE" |
- *   "CONNECT"
+ * "GET" |
+ * "POST" |
+ * "PUT" |
+ * "PATCH" |
+ * "DELETE" |
+ * "HEAD" |
+ * "OPTIONS" |
+ * "TRACE" |
+ * "CONNECT"
  * )} HttpVerb
  */
 
@@ -587,18 +555,16 @@
  * Priority of a GUI action.
  *
  * @typedef {(
- *   "Primary" |
- *   "Secondary" |
- *   "Tertiary"
+ * "Primary" |
+ * "Secondary" |
+ * "Tertiary"
  * )} DialogGuiActionPriority
  */
-
-
 
 /**
  * A localized text value.
  *
- * @typedef {Object} Localization
+ * @typedef {object} Localization
  * @property {string} value The localized text (or URL if a front-channel embed).
  * @property {string} languageCode The language code of the localization in ISO 639-1 format.
  */
@@ -606,7 +572,7 @@
 /**
  * A content value with localization and media type information.
  *
- * @typedef {Object} ContentValue
+ * @typedef {object} ContentValue
  * @property {Array<Localization>|null} value A list of localizations for the content.
  * @property {string} mediaType Media type of the content. This can also indicate that the content is embeddable.
  * @property {boolean|null} [isAuthorized] True if the authenticated user is authorized for this content.
@@ -615,7 +581,7 @@
 /**
  * Represents an actor performing an action in a dialog.
  *
- * @typedef {Object} Actor
+ * @typedef {object} Actor
  * @property {ActorType} actorType The type of actor; either the service owner or someone representing the party.
  * @property {string|null} [actorName] The name of the actor.
  * @property {string|null} [actorId] The identifier (national identity number or organization number) of the actor.
@@ -626,7 +592,7 @@
  *
  * Labels are not visible in end-user APIs.
  *
- * @typedef {Object} ServiceOwnerLabel
+ * @typedef {object} ServiceOwnerLabel
  * @property {string} value A label value.
  */
 
@@ -635,14 +601,14 @@
  *
  * Tags are not visible in end-user DTOs.
  *
- * @typedef {Object} Tag
+ * @typedef {object} Tag
  * @property {string} value A search tag value.
  */
 
 /**
  * Metadata about the dialog owned by the service owner.
  *
- * @typedef {Object} DialogServiceOwnerContext
+ * @typedef {object} DialogServiceOwnerContext
  * @property {Array<ServiceOwnerLabel>|null} [serviceOwnerLabels]
  * A list of labels, not visible in end-user APIs.
  */
@@ -650,20 +616,15 @@
 /**
  * Metadata about the dialog owned by end users.
  *
- * @typedef {Object} DialogEndUserContext
+ * @typedef {object} DialogEndUserContext
  * @property {Array<SystemLabel>|null} [systemLabels]
  * System defined labels used to categorize dialogs.
  */
 
-
-
-
-
-
 /**
  * A paginated list of dialog search results.
  *
- * @typedef {Object} PaginatedDialogSearchResult
+ * @typedef {object} PaginatedDialogSearchResult
  * @property {Array<DialogSearchResult>|null} items The paginated list of items.
  * @property {boolean} hasNextPage Whether there are more items available that can be fetched by supplying the continuation token.
  * @property {string|null} continuationToken The continuation token to be used to fetch the next page of items.
@@ -673,7 +634,7 @@
 /**
  * Dialog returned from the service owner dialog search endpoint.
  *
- * @typedef {Object} DialogSearchResult
+ * @typedef {object} DialogSearchResult
  * @property {string} id The unique identifier for the dialog in UUIDv7 format.
  * @property {string} org The service owner code representing the organization related to this dialog.
  * @property {string} revision The unique identifier for the revision in UUIDv4 format.
@@ -710,7 +671,7 @@
 /**
  * An entry in the dialog activity log returned by search.
  *
- * @typedef {Object} DialogActivity
+ * @typedef {object} DialogActivity
  * @property {string} id The unique identifier for the activity in UUIDv7 format.
  * @property {string|null} [createdAt] Date and time when the activity was created.
  * @property {string|null} [extendedType] Service-specific activity type URI.
@@ -723,7 +684,7 @@
 /**
  * A log entry describing when a dialog revision was seen.
  *
- * @typedef {Object} DialogSeenLog
+ * @typedef {object} DialogSeenLog
  * @property {string} id The unique identifier for the seen log entry in UUIDv7 format.
  * @property {string} seenAt Timestamp when the dialog revision was seen.
  * @property {Actor} seenBy Actor that saw the dialog revision.
@@ -734,7 +695,7 @@
 /**
  * Search result content for a dialog.
  *
- * @typedef {Object} SearchContent
+ * @typedef {object} SearchContent
  * @property {ContentValue} title The title of the dialog.
  * @property {ContentValue|null} [nonSensitiveTitle] Non-sensitive title used for lower authorization levels.
  * @property {ContentValue|null} [summary] Short summary of the dialog and its current state.
@@ -743,12 +704,10 @@
  * @property {ContentValue|null} [extendedStatus] Human-readable label for extended status.
  */
 
-
-
 /**
  * Request model for creating a dialog.
  *
- * @typedef {Object} CreateDialog
+ * @typedef {object} CreateDialog
  * @property {string|null} [id] Optional self-defined UUIDv7 used for idempotent creation.
  * @property {string|null} [idempotentKey] Optional key to ensure idempotent dialog creation.
  * @property {string} serviceResource Service identifier for the related service in URN format.
@@ -779,7 +738,7 @@
 /**
  * Metadata about the dialog owned by the service owner when creating a dialog.
  *
- * @typedef {Object} CreateDialogServiceOwnerContext
+ * @typedef {object} CreateDialogServiceOwnerContext
  * @property {Array<ServiceOwnerLabel>|null} [serviceOwnerLabels]
  * A list of labels not visible in end-user APIs.
  */
@@ -787,7 +746,7 @@
 /**
  * Content of a dialog during creation.
  *
- * @typedef {Object} CreateDialogContent
+ * @typedef {object} CreateDialogContent
  * @property {ContentValue} title The title of the dialog.
  * @property {ContentValue|null} [nonSensitiveTitle] Non-sensitive title used for search/list views.
  * @property {ContentValue|null} [summary] Short summary of the dialog and current state.
@@ -801,7 +760,7 @@
 /**
  * Attachment associated with a dialog.
  *
- * @typedef {Object} Attachment
+ * @typedef {object} Attachment
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {Array<Localization>|null} [displayName] Display name used in GUIs.
  * @property {string|null} [name] Logical name of the attachment.
@@ -812,19 +771,17 @@
 /**
  * URL representation of an attachment.
  *
- * @typedef {Object} AttachmentUrl
+ * @typedef {object} AttachmentUrl
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {string} url Fully qualified URL of the attachment.
  * @property {string|null} [mediaType] Media type of the attachment.
  * @property {AttachmentUrlConsumerType} consumerType Type of consumer the URL is intended for.
  */
 
-
-
 /**
  * A transmission associated with a dialog.
  *
- * @typedef {Object} Transmission
+ * @typedef {object} Transmission
  * @property {string|null} [id] Optional self-defined UUIDv7 used for idempotent creation.
  * @property {string|null} [idempotentKey] Optional idempotency key unique within the dialog.
  * @property {string} createdAt Creation date and time of the transmission.
@@ -842,7 +799,7 @@
 /**
  * Content associated with a transmission.
  *
- * @typedef {Object} TransmissionContent
+ * @typedef {object} TransmissionContent
  * @property {ContentValue} title Transmission title.
  * @property {ContentValue|null} [summary] Transmission summary.
  * @property {ContentValue|null} [contentReference] Front-channel embedded content reference.
@@ -851,7 +808,7 @@
 /**
  * Attachment associated with a transmission.
  *
- * @typedef {Object} TransmissionAttachment
+ * @typedef {object} TransmissionAttachment
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {Array<Localization>|null} [displayName] Display name used in GUIs.
  * @property {string|null} [name] Logical attachment name.
@@ -862,7 +819,7 @@
 /**
  * URL representation of a transmission attachment.
  *
- * @typedef {Object} TransmissionAttachmentUrl
+ * @typedef {object} TransmissionAttachmentUrl
  * @property {string} url Fully qualified URL of the attachment.
  * @property {string|null} [mediaType] Media type of the attachment.
  * @property {AttachmentUrlConsumerType} consumerType Type of consumer the URL is intended for.
@@ -871,7 +828,7 @@
 /**
  * A navigational action associated with a transmission.
  *
- * @typedef {Object} TransmissionNavigationalAction
+ * @typedef {object} TransmissionNavigationalAction
  * @property {Array<Localization>|null} [title] Title of the navigation action.
  * @property {string} url Fully qualified URL of the navigation action.
  * @property {string|null} [expiresAt] UTC timestamp when the action expires.
@@ -880,7 +837,7 @@
 /**
  * A GUI action associated with a dialog.
  *
- * @typedef {Object} GuiAction
+ * @typedef {object} GuiAction
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {string} action Action identifier corresponding to the authorization policy attribute.
  * @property {string} url URL where the user is redirected when the action is triggered.
@@ -895,7 +852,7 @@
 /**
  * An API action associated with a dialog.
  *
- * @typedef {Object} ApiAction
+ * @typedef {object} ApiAction
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {string} action Action identifier corresponding to the authorization policy attribute.
  * @property {string|null} [authorizationAttribute] Authorization resource attribute ID.
@@ -906,7 +863,7 @@
 /**
  * An endpoint belonging to an API action.
  *
- * @typedef {Object} ApiActionEndpoint
+ * @typedef {object} ApiActionEndpoint
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {string|null} [version] Arbitrary endpoint version identifier.
  * @property {string} url Fully qualified API endpoint URL.
@@ -921,7 +878,7 @@
 /**
  * Activity associated with a dialog during creation.
  *
- * @typedef {Object} Activity
+ * @typedef {object} Activity
  * @property {string|null} [id] Optional self-defined UUIDv7.
  * @property {string|null} [createdAt] Override activity creation timestamp.
  * @property {string|null} [extendedType] Service-specific activity type URI.
@@ -931,27 +888,25 @@
  * @property {Array<Localization>|null} [description] Unstructured activity description.
  */
 
-
 /**
  * @typedef {'NotExists'|'Exists'} NotificationConditionType
  * Notification condition type.
  */
 
 /**
- * @typedef {Object} NotificationCondition
+ * @typedef {object} NotificationCondition
  * @property {boolean} sendNotification Indicates whether a notification should be sent.
  */
 
-
 /**
- * @typedef {Object} GetTransmissionContent
+ * @typedef {object} GetTransmissionContent
  * @property {ContentValue} title Transmission title.
  * @property {ContentValue|null} summary Transmission summary.
  * @property {ContentValue|null} contentReference Front-channel embedded content reference.
  */
 
 /**
- * @typedef {Object} GetTransmissionAttachmentUrl
+ * @typedef {object} GetTransmissionAttachmentUrl
  * @property {string} id Attachment URL UUID.
  * @property {string} url Fully qualified attachment URL. May be `urn:dialogporten:unauthorized` if access is denied.
  * @property {string|null} mediaType Media type of the attachment.
@@ -959,7 +914,7 @@
  */
 
 /**
- * @typedef {Object} GetTransmissionAttachment
+ * @typedef {object} GetTransmissionAttachment
  * @property {string} id Attachment UUID.
  * @property {Localization[]|null} displayName Localized display name.
  * @property {string|null} name Logical attachment name.
@@ -968,14 +923,14 @@
  */
 
 /**
- * @typedef {Object} GetTransmissionNavigationalAction
+ * @typedef {object} GetTransmissionNavigationalAction
  * @property {Localization[]|null} title Localized action title.
  * @property {string} url Fully qualified navigational URL.
  * @property {string|null} expiresAt UTC timestamp when the action expires.
  */
 
 /**
- * @typedef {Object} GetTransmission
+ * @typedef {object} GetTransmission
  * @property {string} id Transmission UUID.
  * @property {string|null} idempotentKey Idempotency key for the transmission.
  * @property {string} createdAt Transmission creation timestamp.
@@ -991,21 +946,21 @@
  */
 
 /**
- * @typedef {Object} UpdateTransmissionContent
+ * @typedef {object} UpdateTransmissionContent
  * @property {ContentValue} title Transmission title.
  * @property {ContentValue|null} summary Transmission summary.
  * @property {ContentValue|null} contentReference Front-channel embedded content reference.
  */
 
 /**
- * @typedef {Object} UpdateTransmissionAttachmentUrl
+ * @typedef {object} UpdateTransmissionAttachmentUrl
  * @property {string} url Fully qualified attachment URL.
  * @property {string|null} mediaType Media type of the attachment.
  * @property {AttachmentUrlConsumerType} consumerType Intended consumer type for the URL.
  */
 
 /**
- * @typedef {Object} UpdateTransmissionAttachment
+ * @typedef {object} UpdateTransmissionAttachment
  * @property {string|null} id Attachment UUID.
  * @property {Localization[]|null} displayName Localized display name.
  * @property {string|null} name Logical attachment name.
@@ -1014,14 +969,14 @@
  */
 
 /**
- * @typedef {Object} UpdateTransmissionNavigationalAction
+ * @typedef {object} UpdateTransmissionNavigationalAction
  * @property {Localization[]|null} title Localized action title.
  * @property {string} url Fully qualified navigational URL.
  * @property {string|null} expiresAt UTC timestamp when the action expires.
  */
 
 /**
- * @typedef {Object} UpdateTransmissionRequest
+ * @typedef {object} UpdateTransmissionRequest
  * @property {string|null} idempotentKey Idempotency key for the transmission.
  * @property {string|null} createdAt Overrides the transmission creation timestamp.
  * @property {string|null} authorizationAttribute Authorization attribute used for access control.
@@ -1036,12 +991,10 @@
  * @property {boolean} isSilentUpdate Indicates whether the update should suppress notifications.
  */
 
-
-
 /**
  * A dialog seen log record.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGetSeenLog_SeenLog
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGetSeenLog_SeenLog
  * @property {string} id The unique identifier for the seen log entry (UUIDv7).
  * @property {string} seenAt The timestamp when the dialog revision was seen (ISO 8601 date-time).
  * @property {V1ServiceOwnerCommonActors_Actor} seenBy The actor that viewed the dialog revision.
@@ -1049,11 +1002,10 @@
  * @property {boolean} isCurrentEndUser Indicates whether the seen log entry was created by the end user supplied in the query.
  */
 
-
 /**
  * A dialog activity record.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGetActivity_Activity
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGetActivity_Activity
  * @property {string} id The unique identifier for the activity (UUIDv7).
  * @property {string|null} createdAt The date and time when the activity was created (ISO 8601 date-time).
  * @property {string|null} extendedType A service-specific activity type URI.
@@ -1063,12 +1015,10 @@
  * @property {V1CommonLocalizations_Localization[]|null} description Unstructured localized text describing the activity. Only set for Information activities.
  */
 
-
-
 /**
  * Dialog aggregate returned from the service owner GET dialog endpoint.
  *
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_Dialog
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_Dialog
  * @property {string} id The unique identifier for the dialog (UUIDv7).
  * @property {string|null} idempotentKey Optional idempotency key used during dialog creation.
  * @property {string} revision The unique identifier for the dialog revision (UUIDv4).
@@ -1111,7 +1061,7 @@
 /**
  * Dialog update request model.
  *
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Dialog
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Dialog
  * @property {number|null} progress Advisory progress indicator (1-100).
  * @property {string|null} extendedStatus Service-specific status extension.
  * @property {string|null} externalReference Service-specific external reference.
@@ -1130,9 +1080,8 @@
  * @property {V1ServiceOwnerDialogsCommandsUpdate_Activity[]|null} activities Activities to append.
  */
 
-
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_Dialog
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_Dialog
  * @property {string} id The unique identifier for the dialog in UUIDv7 format.
  * @property {string|null} idempotentKey Optional key used to ensure idempotent dialog creation.
  * @property {string} revision Unique identifier for the revision in UUIDv4 format.
@@ -1173,7 +1122,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Dialog
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Dialog
  * @property {number|null} progress Advisory progress indicator represented as a percentage from 1-100.
  * @property {string|null} extendedStatus Service-specific status indicator.
  * @property {string|null} externalReference Service-specific external reference.
@@ -1193,7 +1142,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_Content
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_Content
  * @property {V1CommonContent_ContentValue} title Dialog title.
  * @property {V1CommonContent_ContentValue|null} nonSensitiveTitle Non-sensitive dialog title.
  * @property {V1CommonContent_ContentValue|null} summary Dialog summary.
@@ -1205,12 +1154,12 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_Tag
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_Tag
  * @property {string} value Search tag value.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogAttachment
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogAttachment
  * @property {string} id Attachment identifier in UUIDv7 format.
  * @property {V1CommonLocalizations_Localization[]|null} displayName Attachment display name.
  * @property {string|null} name Logical attachment name.
@@ -1219,16 +1168,15 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogAttachmentUrl
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogAttachmentUrl
  * @property {string} id Attachment URL identifier in UUIDv7 format.
  * @property {string} url Attachment URL.
  * @property {string|null} mediaType Attachment media type.
  * @property {Attachments_AttachmentUrlConsumerType} consumerType Attachment URL consumer type.
  */
 
-
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogTransmission
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogTransmission
  * @property {string} id Unique identifier for the transmission in UUIDv7 format.
  * @property {string|null} idempotentKey Optional key used to ensure idempotent transmission creation.
  * @property {string} createdAt Timestamp when the transmission was created.
@@ -1246,14 +1194,14 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionContent
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionContent
  * @property {V1CommonContent_ContentValue} title Transmission title.
  * @property {V1CommonContent_ContentValue|null} summary Transmission summary.
  * @property {V1CommonContent_ContentValue|null} contentReference Embedded frontend content reference.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachment
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachment
  * @property {string} id Attachment identifier in UUIDv7 format.
  * @property {V1CommonLocalizations_Localization[]|null} displayName Attachment display name.
  * @property {string|null} name Logical attachment name.
@@ -1262,7 +1210,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachmentUrl
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachmentUrl
  * @property {string} id Attachment URL identifier in UUIDv7 format.
  * @property {string} url Attachment URL. May contain "urn:dialogporten:unauthorized" when access is denied.
  * @property {string|null} mediaType Attachment media type.
@@ -1270,14 +1218,14 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionNavigationalAction
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogTransmissionNavigationalAction
  * @property {V1CommonLocalizations_Localization[]|null} title Navigational action title.
  * @property {string} url Fully qualified URL for the navigational action.
  * @property {string|null} expiresAt Expiration timestamp for the navigational action.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogGuiAction
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogGuiAction
  * @property {string} id Action identifier in UUIDv7 format.
  * @property {string} action Action identifier corresponding to the authorization policy attribute.
  * @property {string} url URL where the user is redirected when triggering the action.
@@ -1291,7 +1239,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogApiAction
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogApiAction
  * @property {string} id Action identifier in UUIDv7 format.
  * @property {string} action API action identifier.
  * @property {string|null} authorizationAttribute Authorization resource attribute.
@@ -1302,7 +1250,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogActivity
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogActivity
  * @property {string} id Activity identifier in UUIDv7 format.
  * @property {string} createdAt Timestamp when the activity was created.
  * @property {DialogsEntitiesActivities_DialogActivityType} type Activity type.
@@ -1312,27 +1260,26 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogSeenLog
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogSeenLog
  * @property {string} id Seen log identifier in UUIDv7 format.
  * @property {string} seenAt Timestamp when the dialog was seen.
  * @property {string} endUserId Identifier of the end user.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogServiceOwnerContext
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogServiceOwnerContext
  * @property {string|null} reporteePartyId Service owner context party identifier.
  * @property {string|null} instanceId Related instance identifier.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsQueriesGet_DialogEndUserContext
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogEndUserContext
  * @property {string|null} systemLabel End user system label.
  * @property {boolean|null} isMarkedAsUnopened Indicates whether the dialog is marked as unopened.
  */
 
-
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Content
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Content
  * @property {V1CommonContent_ContentValue} title Dialog title.
  * @property {V1CommonContent_ContentValue|null} nonSensitiveTitle Non-sensitive dialog title used for search and list views.
  * @property {V1CommonContent_ContentValue|null} summary Dialog summary.
@@ -1344,12 +1291,12 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Tag
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Tag
  * @property {string} value Search tag value.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Attachment
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Attachment
  * @property {string|null} id Attachment identifier. A UUIDv7 may be supplied to support idempotent additions.
  * @property {V1CommonLocalizations_Localization[]|null} displayName Attachment display name.
  * @property {string|null} name Logical attachment name.
@@ -1358,14 +1305,14 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_AttachmentUrl
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_AttachmentUrl
  * @property {string} url Fully qualified attachment URL.
  * @property {string|null} mediaType Attachment media type.
  * @property {Attachments_AttachmentUrlConsumerType} consumerType Attachment URL consumer type.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Transmission
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Transmission
  * @property {string|null} idempotentKey Optional idempotency key for transmission creation.
  * @property {string|null} createdAt Overrides the transmission creation timestamp.
  * @property {string|null} authorizationAttribute Authorization resource attribute used in custom authorization rules.
@@ -1381,14 +1328,14 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionContent
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionContent
  * @property {V1CommonContent_ContentValue} title Transmission title. Must be text/plain.
  * @property {V1CommonContent_ContentValue|null} summary Transmission summary.
  * @property {V1CommonContent_ContentValue|null} contentReference HTTPS embedded frontend content reference.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment
  * @property {string|null} id Attachment identifier. A UUIDv7 may be supplied for idempotent additions.
  * @property {V1CommonLocalizations_Localization[]|null} displayName Attachment display name.
  * @property {string|null} name Logical attachment name.
@@ -1397,21 +1344,21 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachmentUrl
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachmentUrl
  * @property {string} url Fully qualified attachment URL.
  * @property {string|null} mediaType Attachment media type.
  * @property {Attachments_AttachmentUrlConsumerType} consumerType Attachment URL consumer type.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionNavigationalAction
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_TransmissionNavigationalAction
  * @property {V1CommonLocalizations_Localization[]|null} title Navigational action title.
  * @property {string} url Fully qualified URL of the navigational action.
  * @property {string|null} expiresAt Expiration timestamp for the navigational action.
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_GuiAction
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_GuiAction
  * @property {string|null} id Action identifier.
  * @property {string} action Action identifier corresponding to authorization policy.
  * @property {string} url URL where the user is redirected.
@@ -1425,7 +1372,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_ApiAction
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_ApiAction
  * @property {string|null} id Action identifier.
  * @property {string} action API action identifier.
  * @property {string|null} authorizationAttribute Authorization resource attribute.
@@ -1435,7 +1382,7 @@
  */
 
 /**
- * @typedef {Object} V1ServiceOwnerDialogsCommandsUpdate_Activity
+ * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_Activity
  * @property {string|null} id Activity identifier. A UUIDv7 may be supplied to support idempotent additions.
  * @property {DialogsEntitiesActivities_DialogActivityType} type Activity type.
  * @property {string|null} transmissionId Related transmission identifier.
@@ -1443,9 +1390,8 @@
  * @property {string|null} description Activity description.
  */
 
-
 /**
- * @typedef {Object} V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup
+ * @typedef {object} V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup
  * @property {string} dialogId Dialog identifier.
  * @property {string} instanceRef Instance reference.
  * @property {string} party Party identifier.
@@ -1456,7 +1402,7 @@
  */
 
 /**
- * @typedef {Object} V1CommonIdentifierLookup_IdentifierLookupServiceResource
+ * @typedef {object} V1CommonIdentifierLookup_IdentifierLookupServiceResource
  * @property {string} id Service resource identifier.
  * @property {boolean} isDelegable Whether the service resource is delegable.
  * @property {number} minimumAuthenticationLevel Minimum authentication level required.
@@ -1464,25 +1410,25 @@
  */
 
 /**
- * @typedef {Object} V1CommonIdentifierLookup_IdentifierLookupServiceOwner
+ * @typedef {object} V1CommonIdentifierLookup_IdentifierLookupServiceOwner
  * @property {string} orgNumber Service owner's organization number.
  * @property {string} code Service owner code.
  * @property {Array<V1CommonLocalizations_Localization>|null} name Localized service owner name.
  */
 
 /**
- * @typedef {Object} V1CommonLocalizations_Localization
+ * @typedef {object} V1CommonLocalizations_Localization
  * @property {string} value Localized text or URL if a front-channel embed.
  * @property {string} languageCode Language code in ISO 639-1 format.
  */
 
 /**
- * @typedef {Object} V1EndUserCommon_AcceptedLanguages
+ * @typedef {object} V1EndUserCommon_AcceptedLanguages
  * @property {Array<V1EndUserCommon_AcceptedLanguage>|null} acceptedLanguage Accepted language preferences.
  */
 
 /**
- * @typedef {Object} V1EndUserCommon_AcceptedLanguage
+ * @typedef {object} V1EndUserCommon_AcceptedLanguage
  * @property {string} languageCode Language code.
  * @property {number} weight Language preference weight.
  */
