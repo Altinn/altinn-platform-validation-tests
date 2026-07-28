@@ -11,8 +11,8 @@ class PrivateNotificationSettingsUpdateRequestBuilder {
      *
      * Must be on international format (+CCNNNN...).
      *
-     * @param {string|null} value TODO: Description
-     * @returns {PrivateNotificationSettingsUpdateRequestBuilder} TODO: Description
+     * @param {string|null} value See the client method.
+     * @returns {PrivateNotificationSettingsUpdateRequestBuilder} This builder, for chaining.
      */
     withValue(value) {
         if (value !== null) {
@@ -33,7 +33,7 @@ class PrivateNotificationSettingsUpdateRequestBuilder {
     /**
      * Builds the request.
      *
-     * @returns {PrivateNotificationSettingsUpdateRequest} TODO: Description
+     * @returns {PrivateNotificationSettingsUpdateRequest} The built payload.
      */
     build() {
         return this.request;

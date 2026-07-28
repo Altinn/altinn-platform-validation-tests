@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { DashboardClient } from "../../../../clients/dashboard/index.js";
+import { DashboardClient } from "../../../../clients/profil/dashboard/index.js";
 
 /**
  * Gets all notification addresses for the given email address.

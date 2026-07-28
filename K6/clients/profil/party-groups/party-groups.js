@@ -44,8 +44,8 @@ class PartyGroupsClient {
     /**
      * Retrieves all party groups for the current user.
      *
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetPartyGroups(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -67,6 +67,7 @@ class PartyGroupsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -74,9 +75,9 @@ class PartyGroupsClient {
     /**
      * Retrieves a party group.
      *
-     * @param {number} groupId TODO: Description
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {number} groupId See the client method.
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetPartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -100,6 +101,7 @@ class PartyGroupsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -107,9 +109,9 @@ class PartyGroupsClient {
     /**
      * Creates a party group.
      *
-     * @param {GroupRequest} request TODO: Description
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {GroupRequest} request See the client method.
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreatePartyGroup(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -132,6 +134,7 @@ class PartyGroupsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -139,10 +142,10 @@ class PartyGroupsClient {
     /**
      * Updates a party group.
      *
-     * @param {number} groupId TODO: Description
-     * @param {GroupRequest} request TODO: Description
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {number} groupId See the client method.
+     * @param {GroupRequest} request See the client method.
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     UpdatePartyGroup(groupId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -167,6 +170,7 @@ class PartyGroupsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -174,9 +178,9 @@ class PartyGroupsClient {
     /**
      * Deletes a party group.
      *
-     * @param {number} groupId TODO: Description
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {number} groupId See the client method.
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeletePartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -200,6 +204,7 @@ class PartyGroupsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -207,10 +212,10 @@ class PartyGroupsClient {
     /**
      * Adds a party to a group.
      *
-     * @param {number} groupId TODO: Description
-     * @param {string} partyUuid TODO: Description
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {number} groupId See the client method.
+     * @param {string} partyUuid See the client method.
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AddPartyToGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -234,6 +239,7 @@ class PartyGroupsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -241,10 +247,10 @@ class PartyGroupsClient {
     /**
      * Removes a party from a group.
      *
-     * @param {number} groupId TODO: Description
-     * @param {string} partyUuid TODO: Description
-     * @param {{[key: string]: string}} [labels] TODO: Description
-     * @returns {http.RefinedResponse} TODO: Description
+     * @param {number} groupId See the client method.
+     * @param {string} partyUuid See the client method.
+     * @param {{[key: string]: string}} [labels] See the client method.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RemovePartyFromGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -268,6 +274,7 @@ class PartyGroupsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

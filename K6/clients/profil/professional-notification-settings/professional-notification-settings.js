@@ -32,7 +32,7 @@ class ProfessionalNotificationSettingsClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/users/current/notificationsettings";
+        this.BASE_PATH = "/profile/api/v1/users/current/notificationsettings";
 
         /**
          * Fully-qualified API path.
@@ -50,7 +50,7 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetNotificationSettings(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -59,7 +59,7 @@ class ProfessionalNotificationSettingsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.GetNotificationSettings.action,
         };
 
@@ -74,6 +74,7 @@ class ProfessionalNotificationSettingsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -86,7 +87,7 @@ class ProfessionalNotificationSettingsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreateOrUpdateNotificationSettings(
         partyUuid,
@@ -99,7 +100,7 @@ class ProfessionalNotificationSettingsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.CreateOrUpdateNotificationSettings.action,
         };
 
@@ -115,6 +116,7 @@ class ProfessionalNotificationSettingsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -127,7 +129,7 @@ class ProfessionalNotificationSettingsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PatchNotificationSettings(partyUuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -136,7 +138,7 @@ class ProfessionalNotificationSettingsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.PatchNotificationSettings.action,
         };
 
@@ -152,6 +154,7 @@ class ProfessionalNotificationSettingsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -162,7 +165,7 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteNotificationSettings(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -171,7 +174,7 @@ class ProfessionalNotificationSettingsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.DeleteNotificationSettings.action,
         };
 
@@ -186,6 +189,7 @@ class ProfessionalNotificationSettingsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -195,7 +199,7 @@ class ProfessionalNotificationSettingsClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetAllNotificationSettings(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -219,6 +223,7 @@ class ProfessionalNotificationSettingsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

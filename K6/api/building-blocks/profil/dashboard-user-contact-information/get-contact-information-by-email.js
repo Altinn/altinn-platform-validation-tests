@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { DashboardUserContactInformationClient } from "../../../../clients/dashboard-user-contact-information/index.js";
+import { DashboardUserContactInformationClient } from "../../../../clients/profil/dashboard-user-contact-information/index.js";
 
 /**
  * Gets all user contact information for the given email address.

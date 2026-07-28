@@ -20,7 +20,7 @@ class PrivateNotificationsSettingsClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/users/current/notificationsettings/private";
+        this.BASE_PATH = "/profile/api/v1/users/current/notificationsettings/private";
 
         /**
          * Fully-qualified API path.
@@ -40,7 +40,7 @@ class PrivateNotificationsSettingsClient {
      * {@link PrivateNotificationSettingsUpdateRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     UpdatePrivateNotificationPhoneNumber(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -65,6 +65,7 @@ class PrivateNotificationsSettingsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { UsersClient } from "../../../../clients/users/index.js";
+import { UsersClient } from "../../../../clients/profil/users/index.js";
 
 /**
  * Gets the current user based on the request context.

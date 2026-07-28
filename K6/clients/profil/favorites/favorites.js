@@ -20,7 +20,7 @@ class FavoritesClient {
     constructor(baseUrl, tokenGenerator) {
         this.tokenGenerator = tokenGenerator;
 
-        this.BASE_PATH = "/users/current/party-groups/favorites";
+        this.BASE_PATH = "/profile/api/v1/users/current/party-groups/favorites";
 
         this.FULL_PATH = `${baseUrl}${this.BASE_PATH}`;
     }
@@ -34,7 +34,7 @@ class FavoritesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -58,6 +58,7 @@ class FavoritesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -68,7 +69,7 @@ class FavoritesClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AddFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,7 +78,7 @@ class FavoritesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{partyUuid}`,
             action: TAGS.AddFavorite.action,
         };
 
@@ -92,6 +93,7 @@ class FavoritesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -102,7 +104,7 @@ class FavoritesClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -111,7 +113,7 @@ class FavoritesClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{partyUuid}`,
             action: TAGS.DeleteFavorite.action,
         };
 
@@ -126,6 +128,7 @@ class FavoritesClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

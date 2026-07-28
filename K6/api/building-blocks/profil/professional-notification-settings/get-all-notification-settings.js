@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ProfessionalNotificationSettingsClient } from "../../../../clients/professional-notification-settings/index.js";
+import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
 
 /**
  * Gets notification settings for all parties.
@@ -9,7 +9,7 @@ import { ProfessionalNotificationSettingsClient } from "../../../../clients/prof
  * Client for the Professional Notification Settings API.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {Array<NotificationSettingsResponse>|null} TODO: Description
+ * @returns {Array<NotificationSettingsResponse>|null} Parsed response body, or null when the call failed.
  */
 export function GetAllNotificationSettings(
     professionalNotificationSettingsClient,

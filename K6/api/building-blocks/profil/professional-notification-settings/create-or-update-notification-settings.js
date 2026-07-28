@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ProfessionalNotificationSettingsClient } from "../../../../clients/professional-notification-settings/index.js";
+import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
 
 /**
  * Creates or updates notification settings for a party.
@@ -12,7 +12,7 @@ import { ProfessionalNotificationSettingsClient } from "../../../../clients/prof
  * Request body.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {boolean} TODO: Description
+ * @returns {boolean} Parsed response body, or null when the call failed.
  */
 export function CreateOrUpdateNotificationSettings(
     professionalNotificationSettingsClient,

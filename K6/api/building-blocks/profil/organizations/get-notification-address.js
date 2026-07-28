@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { OrganizationsClient } from "../../../../clients/organizations/index.js";
+import { OrganizationsClient } from "../../../../clients/profil/organizations/index.js";
 
 /**
  * Gets a notification address for an organization.

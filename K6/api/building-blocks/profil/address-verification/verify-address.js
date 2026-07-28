@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AddressVerificationClient } from "../../../../clients/address-verification/index.js";
+import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
 
 /**
  * Verifies an address for the current user by providing the verification code

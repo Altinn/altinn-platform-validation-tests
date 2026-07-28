@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { FavoritesClient } from "../../../../clients/favorites/index.js";
+import { FavoritesClient } from "../../../../clients/profil/favorites/index.js";
 
 /**
  * Removes a party from the favorites group for the current user.

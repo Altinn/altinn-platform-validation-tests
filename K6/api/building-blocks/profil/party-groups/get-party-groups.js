@@ -1,13 +1,13 @@
 import { check } from "k6";
 
-import { PartyGroupsClient } from "../../../../clients/party-groups/index.js";
+import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
 
 /**
  * Retrieves all party groups for the current user.
  *
- * @param {PartyGroupsClient} partyGroupsClient TODO: Description
- * @param {{[key: string]: string}} [labels] TODO: Description
- * @returns {Array<GroupResponse>|null} TODO: Description
+ * @param {PartyGroupsClient} partyGroupsClient Client for the API.
+ * @param {{[key: string]: string}} [labels] See the client method.
+ * @returns {Array<GroupResponse>|null} Parsed response body, or null when the call failed.
  */
 export function GetPartyGroups(
     partyGroupsClient,

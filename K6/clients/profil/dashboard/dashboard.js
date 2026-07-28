@@ -23,7 +23,7 @@ class DashboardClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/dashboard";
+        this.BASE_PATH = "/profile/api/v1/dashboard";
 
         /**
          * Fully-qualified API path.
@@ -41,7 +41,7 @@ class DashboardClient {
      * @param {string} organizationNumber Organization number.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -50,7 +50,7 @@ class DashboardClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/organizations/{organizationNumber}/notificationaddresses`,
             action: TAGS.GetNotificationAddresses.action,
         };
 
@@ -65,6 +65,7 @@ class DashboardClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -75,7 +76,7 @@ class DashboardClient {
      * @param {string} emailAddress Email address.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetNotificationAddressesByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -84,7 +85,7 @@ class DashboardClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/organizations/notificationaddresses/email/{emailAddress}`,
             action: TAGS.GetNotificationAddressesByEmail.action,
         };
 
@@ -99,6 +100,7 @@ class DashboardClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -111,7 +113,7 @@ class DashboardClient {
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetNotificationAddressesByPhoneNumber(
         phoneNumber,
@@ -155,6 +157,7 @@ class DashboardClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

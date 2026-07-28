@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { UsersClient } from "../../../../clients/users/index.js";
+import { UsersClient } from "../../../../clients/profil/users/index.js";
 
 /**
  * Partially updates the profile settings of the current user.

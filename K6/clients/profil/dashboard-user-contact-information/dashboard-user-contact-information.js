@@ -26,7 +26,7 @@ class DashboardUserContactInformationClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/dashboard";
+        this.BASE_PATH = "/profile/api/v1/dashboard";
 
         /**
          * Fully-qualified API path.
@@ -44,7 +44,7 @@ class DashboardUserContactInformationClient {
      * @param {string} organizationNumber Organization number.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetContactInformation(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -53,7 +53,7 @@ class DashboardUserContactInformationClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/organizations/{organizationNumber}/contactinformation`,
             action: TAGS.GetContactInformation.action,
         };
 
@@ -68,6 +68,7 @@ class DashboardUserContactInformationClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -78,7 +79,7 @@ class DashboardUserContactInformationClient {
      * @param {string} emailAddress Email address.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetContactInformationByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -87,7 +88,7 @@ class DashboardUserContactInformationClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/organizations/contactinformation/email/{emailAddress}`,
             action: TAGS.GetContactInformationByEmail.action,
         };
 
@@ -102,6 +103,7 @@ class DashboardUserContactInformationClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -114,7 +116,7 @@ class DashboardUserContactInformationClient {
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetContactInformationByPhoneNumber(
         phoneNumber,
@@ -158,6 +160,7 @@ class DashboardUserContactInformationClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

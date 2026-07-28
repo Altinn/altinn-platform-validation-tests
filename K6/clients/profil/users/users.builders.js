@@ -19,8 +19,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string|null} languageType TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {string|null} languageType See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithLanguageType(languageType) {
         if (languageType !== null && typeof languageType !== "string") {
@@ -33,8 +33,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {number} preSelectedPartyId TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {number} preSelectedPartyId See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithPreSelectedPartyId(preSelectedPartyId) {
         if (!Number.isInteger(preSelectedPartyId)) {
@@ -47,8 +47,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {boolean} value See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithDoNotPromptForParty(value) {
         if (typeof value !== "boolean") {
@@ -61,8 +61,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {boolean} value See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithShowClientUnits(value) {
         if (typeof value !== "boolean") {
@@ -75,8 +75,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {boolean} value See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithShouldShowSubEntities(value) {
         if (typeof value !== "boolean") {
@@ -89,8 +89,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {boolean} value See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithShouldShowDeletedEntities(value) {
         if (typeof value !== "boolean") {
@@ -103,8 +103,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string} language TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {string} language See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithLanguage(language) {
         if (typeof language !== "string" || language.length < 1) {
@@ -117,8 +117,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string|null} preselectedPartyUuid TODO: Description
-     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
+     * @param {string|null} preselectedPartyUuid See the client method.
+     * @returns {ProfileSettingPutRequestBuilder} This builder, for chaining.
      */
     WithPreselectedPartyUuid(preselectedPartyUuid) {
         if (
@@ -134,7 +134,7 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @returns {ProfileSettingPutRequest} TODO: Description
+     * @returns {ProfileSettingPutRequest} The built payload.
      */
     Build() {
         if (!this.request.language) {
@@ -145,8 +145,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string} value TODO: Description
-     * @returns {boolean} TODO: Description
+     * @param {string} value See the client method.
+     * @returns {boolean} The built payload.
      */
     IsValidUuid(value) {
         try {
@@ -167,8 +167,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {string|null} language TODO: Description
-     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
+     * @param {string|null} language See the client method.
+     * @returns {ProfileSettingsPatchRequestBuilder} This builder, for chaining.
      */
     WithLanguage(language) {
         if (language !== null && typeof language !== "string") {
@@ -181,8 +181,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value TODO: Description
-     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
+     * @param {boolean|null} value See the client method.
+     * @returns {ProfileSettingsPatchRequestBuilder} This builder, for chaining.
      */
     WithDoNotPromptForParty(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -195,8 +195,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {string|null} value TODO: Description
-     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
+     * @param {string|null} value See the client method.
+     * @returns {ProfileSettingsPatchRequestBuilder} This builder, for chaining.
      */
     WithPreselectedPartyUuid(value) {
         if (value !== null && !this.IsValidUuid(value)) {
@@ -212,8 +212,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value TODO: Description
-     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
+     * @param {boolean|null} value See the client method.
+     * @returns {ProfileSettingsPatchRequestBuilder} This builder, for chaining.
      */
     WithShowClientUnits(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -226,8 +226,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value TODO: Description
-     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
+     * @param {boolean|null} value See the client method.
+     * @returns {ProfileSettingsPatchRequestBuilder} This builder, for chaining.
      */
     WithShouldShowSubEntities(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -240,8 +240,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value TODO: Description
-     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
+     * @param {boolean|null} value See the client method.
+     * @returns {ProfileSettingsPatchRequestBuilder} This builder, for chaining.
      */
     WithShouldShowDeletedEntities(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -254,15 +254,15 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @returns {ProfileSettingsPatchRequest} TODO: Description
+     * @returns {ProfileSettingsPatchRequest} The built payload.
      */
     Build() {
         return this.request;
     }
 
     /**
-     * @param {string} value TODO: Description
-     * @returns {boolean} TODO: Description
+     * @param {string} value See the client method.
+     * @returns {boolean} The built payload.
      */
     IsValidUuid(value) {
         try {

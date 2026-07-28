@@ -29,7 +29,7 @@ class AddressVerificationClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/users/current/verification";
+        this.BASE_PATH = "/profile/api/v1/users/current/verification";
 
         /**
          * Fully-qualified API path.
@@ -46,7 +46,7 @@ class AddressVerificationClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetVerifiedAddresses(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -70,6 +70,7 @@ class AddressVerificationClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -83,7 +84,7 @@ class AddressVerificationClient {
      * {@link AddressVerificationRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     VerifyAddress(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -111,6 +112,7 @@ class AddressVerificationClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );
@@ -124,7 +126,7 @@ class AddressVerificationClient {
      * {@link AddressCodeSendRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     SendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -152,6 +154,7 @@ class AddressVerificationClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );
@@ -165,7 +168,7 @@ class AddressVerificationClient {
      * {@link AddressCodeResendRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -193,6 +196,7 @@ class AddressVerificationClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );

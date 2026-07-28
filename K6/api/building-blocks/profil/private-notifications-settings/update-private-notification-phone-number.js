@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { PrivateNotificationsSettingsClient } from "../../../../clients/private-notifications-settings/index.js";
+import { PrivateNotificationsSettingsClient } from "../../../../clients/profil/private-notifications-settings/index.js";
 
 /**
  * Updates the private notification phone number for the current user.
@@ -11,7 +11,7 @@ import { PrivateNotificationsSettingsClient } from "../../../../clients/private-
  * Request body. Use {@link PrivateNotificationSettingsUpdateRequestBuilder}.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {PrivateNotificationSettingsUpdateResponse|null} TODO: Description
+ * @returns {PrivateNotificationSettingsUpdateResponse|null} Parsed response body, or null when the call failed.
  */
 export function UpdatePrivateNotificationPhoneNumber(
     privateNotificationsSettingsClient,

@@ -63,7 +63,21 @@
 
 /**
  * @typedef {object} Organization
- * Placeholder typedef for organization data.
+ * @property {string|null} [orgNumber]
+ * @property {string|null} [name]
+ * @property {string|null} [unitType]
+ * @property {string|null} [telephoneNumber]
+ * @property {string|null} [mobileNumber]
+ * @property {string|null} [faxNumber]
+ * @property {string|null} [eMailAddress]
+ * @property {string|null} [internetAddress]
+ * @property {string|null} [mailingAddress]
+ * @property {string|null} [mailingPostalCode]
+ * @property {string|null} [mailingPostalCity]
+ * @property {string|null} [businessAddress]
+ * @property {string|null} [businessPostalCode]
+ * @property {string|null} [businessPostalCity]
+ * @property {string|null} [unitStatus]
  */
 
 /**

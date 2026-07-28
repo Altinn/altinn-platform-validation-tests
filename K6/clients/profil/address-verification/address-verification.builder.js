@@ -10,7 +10,7 @@ class AddressVerificationRequestBuilder {
      * Address to verify, either an email or a phone number.
      *
      * @param {string} value Address value. Must be between 5 and 320 characters.
-     * @returns {AddressVerificationRequestBuilder} TODO: Description
+     * @returns {AddressVerificationRequestBuilder} This builder, for chaining.
      */
     withValue(value) {
         if (typeof value !== "string") {
@@ -31,7 +31,7 @@ class AddressVerificationRequestBuilder {
      * Address type.
      *
      * @param {AddressType} type Address type.
-     * @returns {AddressVerificationRequestBuilder} TODO: Description
+     * @returns {AddressVerificationRequestBuilder} This builder, for chaining.
      */
     withType(type) {
         const allowedTypes = ["Email", "Sms"];
@@ -50,7 +50,7 @@ class AddressVerificationRequestBuilder {
      * Verification code for the address.
      *
      * @param {string} verificationCode Six digit verification code.
-     * @returns {AddressVerificationRequestBuilder} TODO: Description
+     * @returns {AddressVerificationRequestBuilder} This builder, for chaining.
      */
     withVerificationCode(verificationCode) {
         if (typeof verificationCode !== "string") {
@@ -70,7 +70,7 @@ class AddressVerificationRequestBuilder {
     /**
      * Builds the request object.
      *
-     * @returns {AddressVerificationRequest} TODO: Description
+     * @returns {AddressVerificationRequest} The built payload.
      */
     build() {
         return this.request;
@@ -89,7 +89,7 @@ class AddressCodeSendRequestBuilder {
      * Address to send verification code for.
      *
      * @param {string} value Address value. Must be between 5 and 320 characters.
-     * @returns {AddressCodeSendRequestBuilder} TODO: Description
+     * @returns {AddressCodeSendRequestBuilder} This builder, for chaining.
      */
     withValue(value) {
         if (typeof value !== "string") {
@@ -110,7 +110,7 @@ class AddressCodeSendRequestBuilder {
      * Address type.
      *
      * @param {AddressType} type Address type.
-     * @returns {AddressCodeSendRequestBuilder} TODO: Description
+     * @returns {AddressCodeSendRequestBuilder} This builder, for chaining.
      */
     withType(type) {
         const allowedTypes = ["Email", "Sms"];
@@ -128,7 +128,7 @@ class AddressCodeSendRequestBuilder {
     /**
      * Builds the request object.
      *
-     * @returns {AddressCodeSendRequest} TODO: Description
+     * @returns {AddressCodeSendRequest} The built payload.
      */
     build() {
         return this.request;
@@ -147,7 +147,7 @@ class AddressCodeResendRequestBuilder {
      * Address to resend verification code for.
      *
      * @param {string} value Address value. Must be between 5 and 320 characters.
-     * @returns {AddressCodeResendRequestBuilder} TODO: Description
+     * @returns {AddressCodeResendRequestBuilder} This builder, for chaining.
      */
     withValue(value) {
         if (typeof value !== "string") {
@@ -168,7 +168,7 @@ class AddressCodeResendRequestBuilder {
      * Address type.
      *
      * @param {AddressType} type Address type.
-     * @returns {AddressCodeResendRequestBuilder} TODO: Description
+     * @returns {AddressCodeResendRequestBuilder} This builder, for chaining.
      */
     withType(type) {
         const allowedTypes = ["Email", "Sms"];
@@ -186,7 +186,7 @@ class AddressCodeResendRequestBuilder {
     /**
      * Builds the request object.
      *
-     * @returns {AddressCodeResendRequest} TODO: Description
+     * @returns {AddressCodeResendRequest} The built payload.
      */
     build() {
         return this.request;

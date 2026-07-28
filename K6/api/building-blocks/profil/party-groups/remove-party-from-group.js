@@ -1,15 +1,15 @@
 import { check } from "k6";
 
-import { PartyGroupsClient } from "../../../../clients/party-groups/index.js";
+import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
 
 /**
  * Removes a party from a group.
  *
- * @param {PartyGroupsClient} partyGroupsClient TODO: Description
- * @param {number} groupId TODO: Description
- * @param {string} partyUuid TODO: Description
- * @param {{[key: string]: string}} [labels] TODO: Description
- * @returns {GroupResponse|null} TODO: Description
+ * @param {PartyGroupsClient} partyGroupsClient Client for the API.
+ * @param {number} groupId See the client method.
+ * @param {string} partyUuid See the client method.
+ * @param {{[key: string]: string}} [labels] See the client method.
+ * @returns {GroupResponse|null} Parsed response body, or null when the call failed.
  */
 export function RemovePartyFromGroup(
     partyGroupsClient,

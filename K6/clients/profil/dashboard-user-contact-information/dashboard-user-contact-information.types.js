@@ -6,6 +6,7 @@
  *
  * @typedef {object} DashboardUserContactInformationResponse
  * @property {string|null} [nationalIdentityNumber]
+ * @property {Array<string>|null} [resourceIncludeList] Resources the contact information applies to.
  * Gets or sets the national identity number (SSN/D-number) of the user.
  * @property {string} name
  * Gets or sets the full name of the user.

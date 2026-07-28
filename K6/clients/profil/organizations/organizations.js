@@ -32,7 +32,7 @@ class OrganizationsClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/organizations";
+        this.BASE_PATH = "/profile/api/v1/organizations";
 
         /**
          * Fully-qualified API path.
@@ -50,7 +50,7 @@ class OrganizationsClient {
      * @param {string} organizationNumber Organization number.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -59,7 +59,7 @@ class OrganizationsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
             action: TAGS.GetNotificationAddresses.action,
         };
 
@@ -74,6 +74,7 @@ class OrganizationsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -85,7 +86,7 @@ class OrganizationsClient {
      * @param {NotificationAddressRequest} request Notification address request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CreateNotificationAddress(
         organizationNumber,
@@ -98,7 +99,7 @@ class OrganizationsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
             action: TAGS.CreateNotificationAddress.action,
         };
 
@@ -114,6 +115,7 @@ class OrganizationsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -125,7 +127,7 @@ class OrganizationsClient {
      * @param {number} notificationAddressId Notification address identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetNotificationAddress(
         organizationNumber,
@@ -138,7 +140,7 @@ class OrganizationsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             action: TAGS.GetNotificationAddress.action,
         };
 
@@ -153,6 +155,7 @@ class OrganizationsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -165,7 +168,7 @@ class OrganizationsClient {
      * @param {NotificationAddressRequest} request Notification address request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     UpdateNotificationAddress(
         organizationNumber,
@@ -179,7 +182,7 @@ class OrganizationsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             action: TAGS.UpdateNotificationAddress.action,
         };
 
@@ -195,6 +198,7 @@ class OrganizationsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -206,7 +210,7 @@ class OrganizationsClient {
      * @param {number} notificationAddressId Notification address identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteNotificationAddress(
         organizationNumber,
@@ -219,7 +223,7 @@ class OrganizationsClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             action: TAGS.DeleteNotificationAddress.action,
         };
 
@@ -234,6 +238,7 @@ class OrganizationsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
