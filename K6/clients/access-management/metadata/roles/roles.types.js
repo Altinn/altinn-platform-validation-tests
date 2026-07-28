@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} AreaGroupDto
+ * @typedef {object} AreaGroupDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} urn
@@ -9,7 +9,7 @@
  */
 
 /**
- * @typedef {Object} AreaDto
+ * @typedef {object} AreaDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} urn
@@ -20,13 +20,13 @@
  */
 
 /**
- * @typedef {Object} ResourceTypeDto
+ * @typedef {object} ResourceTypeDto
  * @property {string} id
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} RoleDto
+ * @typedef {object} RoleDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} code
@@ -41,7 +41,7 @@
  */
 
 /**
- * @typedef {Object} PackageDto
+ * @typedef {object} PackageDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} urn
@@ -55,7 +55,7 @@
  */
 
 /**
- * @typedef {Object} ResourceDto
+ * @typedef {object} ResourceDto
  * @property {string} id
  * @property {string} providerId
  * @property {string} typeId

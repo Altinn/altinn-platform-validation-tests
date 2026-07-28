@@ -1,11 +1,11 @@
 /**
- * @typedef {Object} ProviderTypeDto
+ * @typedef {object} ProviderTypeDto
  * @property {string} id
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} ProviderDto
+ * @typedef {object} ProviderDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} refId
@@ -16,7 +16,7 @@
  */
 
 /**
- * @typedef {Object} TypeDto
+ * @typedef {object} TypeDto
  * @property {string} id
  * @property {string} providerId
  * @property {string|null} name
@@ -24,7 +24,7 @@
  */
 
 /**
- * @typedef {Object} SubTypeDto
+ * @typedef {object} SubTypeDto
  * @property {string} id
  * @property {string} typeId
  * @property {string|null} name

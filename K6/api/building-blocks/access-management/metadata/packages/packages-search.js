@@ -6,7 +6,7 @@ import { PackagesClient } from "../../../../clients/packages/index.js";
  * Searches access packages.
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
- * @param {PackagesSearchQueryBuilder|Object} query Query parameters.
+ * @param {PackagesSearchQueryBuilder | object} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {Array<PackageDtoSearchObject>|null} Search results.
  */

@@ -37,7 +37,7 @@ class TypesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     TypesGetOrganizationSubTypes(labels = null) {
         const token = this.tokenGenerator.getToken();

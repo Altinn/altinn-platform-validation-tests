@@ -4,8 +4,8 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @param {string} role
-     * @returns {RolesGetRolePackagesQueryBuilder}
+     * @param {string} role TODO: Description
+     * @returns {RolesGetRolePackagesQueryBuilder} TODO: Description
      */
     WithRole(role) {
         this.query.role = role;
@@ -14,8 +14,8 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @param {string} variant
-     * @returns {RolesGetRolePackagesQueryBuilder}
+     * @param {string} variant TODO: Description
+     * @returns {RolesGetRolePackagesQueryBuilder} TODO: Description
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -24,8 +24,8 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @param {boolean} includeResources
-     * @returns {RolesGetRolePackagesQueryBuilder}
+     * @param {boolean} includeResources TODO: Description
+     * @returns {RolesGetRolePackagesQueryBuilder} TODO: Description
      */
     WithIncludeResources(includeResources) {
         this.query.includeResources = includeResources;
@@ -34,7 +34,7 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
@@ -47,8 +47,8 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @param {string} role
-     * @returns {RolesGetRoleResourcesQueryBuilder}
+     * @param {string} role TODO: Description
+     * @returns {RolesGetRoleResourcesQueryBuilder} TODO: Description
      */
     WithRole(role) {
         this.query.role = role;
@@ -57,8 +57,8 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @param {string} variant
-     * @returns {RolesGetRoleResourcesQueryBuilder}
+     * @param {string} variant TODO: Description
+     * @returns {RolesGetRoleResourcesQueryBuilder} TODO: Description
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -67,8 +67,8 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @param {boolean} includePackageResources
-     * @returns {RolesGetRoleResourcesQueryBuilder}
+     * @param {boolean} includePackageResources TODO: Description
+     * @returns {RolesGetRoleResourcesQueryBuilder} TODO: Description
      */
     WithIncludePackageResources(includePackageResources) {
         this.query.includePackageResources = includePackageResources;
@@ -77,7 +77,7 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
@@ -90,8 +90,8 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @param {string} variant
-     * @returns {RolesGetRolePackagesByIdQueryBuilder}
+     * @param {string} variant TODO: Description
+     * @returns {RolesGetRolePackagesByIdQueryBuilder} TODO: Description
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -100,8 +100,8 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @param {boolean} includeResources
-     * @returns {RolesGetRolePackagesByIdQueryBuilder}
+     * @param {boolean} includeResources TODO: Description
+     * @returns {RolesGetRolePackagesByIdQueryBuilder} TODO: Description
      */
     WithIncludeResources(includeResources) {
         this.query.includeResources = includeResources;
@@ -110,7 +110,7 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
@@ -123,8 +123,8 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @param {string} variant
-     * @returns {RolesGetRoleResourcesByIdQueryBuilder}
+     * @param {string} variant TODO: Description
+     * @returns {RolesGetRoleResourcesByIdQueryBuilder} TODO: Description
      */
     WithVariant(variant) {
         this.query.variant = variant;
@@ -133,8 +133,8 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @param {boolean} includePackageResources
-     * @returns {RolesGetRoleResourcesByIdQueryBuilder}
+     * @param {boolean} includePackageResources TODO: Description
+     * @returns {RolesGetRoleResourcesByIdQueryBuilder} TODO: Description
      */
     WithIncludePackageResources(includePackageResources) {
         this.query.includePackageResources = includePackageResources;
@@ -143,7 +143,7 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;
@@ -151,8 +151,8 @@ class RolesGetRoleResourcesByIdQueryBuilder {
 }
 
 export {
-    RolesGetRolePackagesQueryBuilder,
-    RolesGetRoleResourcesQueryBuilder,
     RolesGetRolePackagesByIdQueryBuilder,
+    RolesGetRolePackagesQueryBuilder,
     RolesGetRoleResourcesByIdQueryBuilder,
+    RolesGetRoleResourcesQueryBuilder,
 };

@@ -4,8 +4,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {string} term
-     * @returns {PackagesSearchQueryBuilder}
+     * @param {string} term TODO: Description
+     * @returns {PackagesSearchQueryBuilder} TODO: Description
      */
     WithTerm(term) {
         this.query.term = term;
@@ -14,8 +14,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {Array<string>} resourceProviderCode
-     * @returns {PackagesSearchQueryBuilder}
+     * @param {Array<string>} resourceProviderCode TODO: Description
+     * @returns {PackagesSearchQueryBuilder} TODO: Description
      */
     WithResourceProviderCode(resourceProviderCode) {
         this.query.resourceProviderCode = resourceProviderCode;
@@ -24,8 +24,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {boolean} searchInResources
-     * @returns {PackagesSearchQueryBuilder}
+     * @param {boolean} searchInResources TODO: Description
+     * @returns {PackagesSearchQueryBuilder} TODO: Description
      */
     WithSearchInResources(searchInResources) {
         this.query.searchInResources = searchInResources;
@@ -34,8 +34,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {string} typeName
-     * @returns {PackagesSearchQueryBuilder}
+     * @param {string} typeName TODO: Description
+     * @returns {PackagesSearchQueryBuilder} TODO: Description
      */
     WithTypeName(typeName) {
         this.query.typeName = typeName;
@@ -44,8 +44,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {boolean} simpleSearch
-     * @returns {PackagesSearchQueryBuilder}
+     * @param {boolean} simpleSearch TODO: Description
+     * @returns {PackagesSearchQueryBuilder} TODO: Description
      */
     WithSimpleSearch(simpleSearch) {
         this.query.simpleSearch = simpleSearch;
@@ -54,8 +54,8 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @param {boolean} strict
-     * @returns {PackagesSearchQueryBuilder}
+     * @param {boolean} strict TODO: Description
+     * @returns {PackagesSearchQueryBuilder} TODO: Description
      */
     WithStrict(strict) {
         this.query.strict = strict;
@@ -64,7 +64,7 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @returns {Object}
+     * @returns {object} TODO: Description
      */
     Build() {
         return this.query;

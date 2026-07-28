@@ -62,10 +62,10 @@ class PackagesClient {
     /**
      * Searches access packages.
      *
-     * @param {PackagesSearchQueryBuilder|Object} query Query parameters.
+     * @param {PackagesSearchQueryBuilder | object} query Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -128,7 +128,7 @@ class PackagesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesExport(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -161,7 +161,7 @@ class PackagesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetGroup(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -195,7 +195,7 @@ class PackagesClient {
      * @param {string} id Group identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetGroupById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -229,7 +229,7 @@ class PackagesClient {
      * @param {string} id Group identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetGroupAreasById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -263,7 +263,7 @@ class PackagesClient {
      * @param {string} id Area identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetAreaById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -297,7 +297,7 @@ class PackagesClient {
      * @param {string} id Area identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetAreaPackagesById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -331,7 +331,7 @@ class PackagesClient {
      * @param {string} id Package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetPackageById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -365,7 +365,7 @@ class PackagesClient {
      * @param {string} urnValue Package URN.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetPackageByUrn(urnValue, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -399,7 +399,7 @@ class PackagesClient {
      * @param {string} id Package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PackagesGetPackageResourcesById(id, labels = null) {
         const token = this.tokenGenerator.getToken();

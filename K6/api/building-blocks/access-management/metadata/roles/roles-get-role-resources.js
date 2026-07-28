@@ -6,7 +6,7 @@ import { RolesClient } from "../../../../clients/roles/index.js";
  * Gets role resources.
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
- * @param {RolesGetRoleResourcesQueryBuilder|Object} query Query parameters.
+ * @param {RolesGetRoleResourcesQueryBuilder | object} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ResourceDto|null} Role resource.
  */

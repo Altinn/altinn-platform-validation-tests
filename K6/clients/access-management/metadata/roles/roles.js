@@ -52,7 +52,7 @@ class RolesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RolesGetRoles(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -86,7 +86,7 @@ class RolesClient {
      * @param {string} id Role identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RolesGetRole(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -117,11 +117,11 @@ class RolesClient {
     /**
      * Gets role packages.
      *
-     * @param {RolesGetRolePackagesQueryBuilder|Object} query
+     * @param {RolesGetRolePackagesQueryBuilder | object} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RolesGetRolePackages(query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -182,11 +182,11 @@ class RolesClient {
     /**
      * Gets role resources.
      *
-     * @param {RolesGetRoleResourcesQueryBuilder|Object} query
+     * @param {RolesGetRoleResourcesQueryBuilder | object} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RolesGetRoleResources(query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -248,11 +248,11 @@ class RolesClient {
      * Gets role packages by role id.
      *
      * @param {string} id Role identifier.
-     * @param {RolesGetRolePackagesByIdQueryBuilder|Object} query
+     * @param {RolesGetRolePackagesByIdQueryBuilder | object} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RolesGetRolePackagesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -304,11 +304,11 @@ class RolesClient {
      * Gets role resources by role id.
      *
      * @param {string} id Role identifier.
-     * @param {RolesGetRoleResourcesByIdQueryBuilder|Object} query
+     * @param {RolesGetRoleResourcesByIdQueryBuilder | object} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RolesGetRoleResourcesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
