@@ -50,7 +50,7 @@ class OrganizationsClient {
      * @param {string} organizationNumber Organization number.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -85,7 +85,7 @@ class OrganizationsClient {
      * @param {NotificationAddressRequest} request Notification address request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateNotificationAddress(
         organizationNumber,
@@ -125,7 +125,7 @@ class OrganizationsClient {
      * @param {number} notificationAddressId Notification address identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetNotificationAddress(
         organizationNumber,
@@ -165,7 +165,7 @@ class OrganizationsClient {
      * @param {NotificationAddressRequest} request Notification address request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdateNotificationAddress(
         organizationNumber,
@@ -206,7 +206,7 @@ class OrganizationsClient {
      * @param {number} notificationAddressId Notification address identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteNotificationAddress(
         organizationNumber,

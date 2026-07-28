@@ -1,6 +1,5 @@
 import { randomUUID } from "k6/experimental/webcrypto";
 
-
 /**
  * Builder for ProfileSettingPutRequest.
  */
@@ -20,8 +19,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string|null} languageType
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {string|null} languageType TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithLanguageType(languageType) {
         if (languageType !== null && typeof languageType !== "string") {
@@ -34,8 +33,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {number} preSelectedPartyId
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {number} preSelectedPartyId TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithPreSelectedPartyId(preSelectedPartyId) {
         if (!Number.isInteger(preSelectedPartyId)) {
@@ -48,8 +47,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {boolean} value TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithDoNotPromptForParty(value) {
         if (typeof value !== "boolean") {
@@ -62,8 +61,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {boolean} value TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithShowClientUnits(value) {
         if (typeof value !== "boolean") {
@@ -76,8 +75,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {boolean} value TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithShouldShowSubEntities(value) {
         if (typeof value !== "boolean") {
@@ -90,8 +89,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {boolean} value
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {boolean} value TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithShouldShowDeletedEntities(value) {
         if (typeof value !== "boolean") {
@@ -104,8 +103,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string} language
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {string} language TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithLanguage(language) {
         if (typeof language !== "string" || language.length < 1) {
@@ -118,8 +117,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string|null} preselectedPartyUuid
-     * @returns {ProfileSettingPutRequestBuilder}
+     * @param {string|null} preselectedPartyUuid TODO: Description
+     * @returns {ProfileSettingPutRequestBuilder} TODO: Description
      */
     WithPreselectedPartyUuid(preselectedPartyUuid) {
         if (
@@ -135,7 +134,7 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @returns {ProfileSettingPutRequest}
+     * @returns {ProfileSettingPutRequest} TODO: Description
      */
     Build() {
         if (!this.request.language) {
@@ -146,8 +145,8 @@ class ProfileSettingPutRequestBuilder {
     }
 
     /**
-     * @param {string} value
-     * @returns {boolean}
+     * @param {string} value TODO: Description
+     * @returns {boolean} TODO: Description
      */
     IsValidUuid(value) {
         try {
@@ -157,8 +156,6 @@ class ProfileSettingPutRequestBuilder {
         }
     }
 }
-
-
 
 /**
  * Builder for ProfileSettingsPatchRequest.
@@ -170,8 +167,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {string|null} language
-     * @returns {ProfileSettingsPatchRequestBuilder}
+     * @param {string|null} language TODO: Description
+     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
      */
     WithLanguage(language) {
         if (language !== null && typeof language !== "string") {
@@ -184,8 +181,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value
-     * @returns {ProfileSettingsPatchRequestBuilder}
+     * @param {boolean|null} value TODO: Description
+     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
      */
     WithDoNotPromptForParty(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -198,8 +195,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {string|null} value
-     * @returns {ProfileSettingsPatchRequestBuilder}
+     * @param {string|null} value TODO: Description
+     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
      */
     WithPreselectedPartyUuid(value) {
         if (value !== null && !this.IsValidUuid(value)) {
@@ -215,8 +212,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value
-     * @returns {ProfileSettingsPatchRequestBuilder}
+     * @param {boolean|null} value TODO: Description
+     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
      */
     WithShowClientUnits(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -229,8 +226,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value
-     * @returns {ProfileSettingsPatchRequestBuilder}
+     * @param {boolean|null} value TODO: Description
+     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
      */
     WithShouldShowSubEntities(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -243,8 +240,8 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @param {boolean|null} value
-     * @returns {ProfileSettingsPatchRequestBuilder}
+     * @param {boolean|null} value TODO: Description
+     * @returns {ProfileSettingsPatchRequestBuilder} TODO: Description
      */
     WithShouldShowDeletedEntities(value) {
         if (value !== null && typeof value !== "boolean") {
@@ -257,15 +254,15 @@ class ProfileSettingsPatchRequestBuilder {
     }
 
     /**
-     * @returns {ProfileSettingsPatchRequest}
+     * @returns {ProfileSettingsPatchRequest} TODO: Description
      */
     Build() {
         return this.request;
     }
 
     /**
-     * @param {string} value
-     * @returns {boolean}
+     * @param {string} value TODO: Description
+     * @returns {boolean} TODO: Description
      */
     IsValidUuid(value) {
         try {
@@ -276,8 +273,7 @@ class ProfileSettingsPatchRequestBuilder {
     }
 }
 
-
 export {
     ProfileSettingPutRequestBuilder,
     ProfileSettingsPatchRequestBuilder
-}
+};

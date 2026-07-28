@@ -46,7 +46,7 @@ class AddressVerificationClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetVerifiedAddresses(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -74,7 +74,6 @@ class AddressVerificationClient {
         });
     }
 
-
     /**
      * Verifies an address for the current user by providing the verification code
      * sent to the address.
@@ -84,7 +83,7 @@ class AddressVerificationClient {
      * {@link AddressVerificationRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     VerifyAddress(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -125,7 +124,7 @@ class AddressVerificationClient {
      * {@link AddressCodeSendRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     SendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -166,7 +165,7 @@ class AddressVerificationClient {
      * {@link AddressCodeResendRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     ResendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();

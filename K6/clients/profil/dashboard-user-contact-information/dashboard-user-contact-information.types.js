@@ -4,7 +4,7 @@
  * Represents a user's personal contact details they have registered for acting
  * on behalf of an organization.
  *
- * @typedef {Object} DashboardUserContactInformationResponse
+ * @typedef {object} DashboardUserContactInformationResponse
  * @property {string|null} [nationalIdentityNumber]
  * Gets or sets the national identity number (SSN/D-number) of the user.
  * @property {string} name
@@ -21,7 +21,7 @@
  */
 
 /**
- * @typedef {Object} ValidationProblemDetails
+ * @typedef {object} ValidationProblemDetails
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]

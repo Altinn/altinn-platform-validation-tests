@@ -1,4 +1,4 @@
-import { get, post, put, patch } from "../http-client.js";
+import { get, patch, post, put } from "../http-client.js";
 
 /**
  * Client for Users endpoints.
@@ -7,8 +7,8 @@ export class UsersClient {
     /**
      * Gets the user profile for a given user id.
      *
-     * @param {number} userID
-     * @returns {Promise<UserProfile>}
+     * @param {number} userID TODO: Description
+     * @returns {Promise<UserProfile>} TODO: Description
      */
     async getUserById(userID) {
         return get(`/users/${userID}`);
@@ -17,8 +17,8 @@ export class UsersClient {
     /**
      * Gets the user profile for a given user uuid.
      *
-     * @param {string} userUuid
-     * @returns {Promise<UserProfile>}
+     * @param {string} userUuid TODO: Description
+     * @returns {Promise<UserProfile>} TODO: Description
      */
     async getUserByUuid(userUuid) {
         return get(`/users/byuuid/${userUuid}`);
@@ -27,7 +27,7 @@ export class UsersClient {
     /**
      * Gets the current user based on the request context.
      *
-     * @returns {Promise<UserProfile>}
+     * @returns {Promise<UserProfile>} TODO: Description
      */
     async getCurrentUser() {
         return get("/users/current");
@@ -36,8 +36,8 @@ export class UsersClient {
     /**
      * Gets the user profile for a given SSN.
      *
-     * @param {string} ssn
-     * @returns {Promise<UserProfile>}
+     * @param {string} ssn TODO: Description
+     * @returns {Promise<UserProfile>} TODO: Description
      */
     async getUserBySsn(ssn) {
         return post("/users", ssn);
@@ -46,8 +46,8 @@ export class UsersClient {
     /**
      * Updates the profile settings of the current user.
      *
-     * @param {ProfileSettingPutRequest} request
-     * @returns {Promise<ProfileSettingPreference>}
+     * @param {ProfileSettingPutRequest} request TODO: Description
+     * @returns {Promise<ProfileSettingPreference>} TODO: Description
      */
     async updateProfileSettings(request) {
         return put("/users/current/profilesettings", request);
@@ -56,8 +56,8 @@ export class UsersClient {
     /**
      * Partially updates the profile settings of the current user.
      *
-     * @param {ProfileSettingsPatchRequest} request
-     * @returns {Promise<ProfileSettingPreference>}
+     * @param {ProfileSettingsPatchRequest} request TODO: Description
+     * @returns {Promise<ProfileSettingPreference>} TODO: Description
      */
     async patchProfileSettings(request) {
         return patch("/users/current/profilesettings", request);

@@ -1,7 +1,7 @@
 /**
  * Represents a notification address.
  *
- * @typedef {Object} DashboardNotificationAddressResponse
+ * @typedef {object} DashboardNotificationAddressResponse
  * @property {number} notificationAddressId
  * Altinn.Profile.Models.DashboardNotificationAddressResponse.NotificationAddressId
  * @property {string|null} [countryCode]
@@ -18,7 +18,7 @@
  * Last changed timestamp. ISO date-time.
  */
 /**
- * @typedef {Object} ProblemDetails
+ * @typedef {object} ProblemDetails
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]

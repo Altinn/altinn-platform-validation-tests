@@ -50,7 +50,7 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetNotificationSettings(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -86,7 +86,7 @@ class ProfessionalNotificationSettingsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateOrUpdateNotificationSettings(
         partyUuid,
@@ -127,7 +127,7 @@ class ProfessionalNotificationSettingsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PatchNotificationSettings(partyUuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -162,7 +162,7 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteNotificationSettings(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -195,7 +195,7 @@ class ProfessionalNotificationSettingsClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetAllNotificationSettings(labels = null) {
         const token = this.tokenGenerator.getToken();

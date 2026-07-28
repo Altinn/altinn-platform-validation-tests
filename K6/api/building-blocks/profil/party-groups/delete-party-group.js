@@ -5,10 +5,10 @@ import { PartyGroupsClient } from "../../../../clients/party-groups/index.js";
 /**
  * Deletes a party group.
  *
- * @param {PartyGroupsClient} partyGroupsClient
- * @param {number} groupId
- * @param {{[key: string]: string}} [labels]
- * @returns {boolean}
+ * @param {PartyGroupsClient} partyGroupsClient TODO: Description
+ * @param {number} groupId TODO: Description
+ * @param {{[key: string]: string}} [labels] TODO: Description
+ * @returns {boolean} TODO: Description
  */
 export function DeletePartyGroup(
     partyGroupsClient,

@@ -12,7 +12,7 @@ import { ProfessionalNotificationSettingsClient } from "../../../../clients/prof
  * Request body.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {boolean}
+ * @returns {boolean} TODO: Description
  */
 export function CreateOrUpdateNotificationSettings(
     professionalNotificationSettingsClient,

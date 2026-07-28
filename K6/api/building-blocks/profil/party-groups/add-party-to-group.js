@@ -5,11 +5,11 @@ import { PartyGroupsClient } from "../../../../clients/party-groups/index.js";
 /**
  * Adds a party to a group.
  *
- * @param {PartyGroupsClient} partyGroupsClient
- * @param {number} groupId
- * @param {string} partyUuid
- * @param {{[key: string]: string}} [labels]
- * @returns {GroupResponse|null}
+ * @param {PartyGroupsClient} partyGroupsClient TODO: Description
+ * @param {number} groupId TODO: Description
+ * @param {string} partyUuid TODO: Description
+ * @param {{[key: string]: string}} [labels] TODO: Description
+ * @returns {GroupResponse|null} TODO: Description
  */
 export function AddPartyToGroup(
     partyGroupsClient,

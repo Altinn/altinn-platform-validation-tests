@@ -44,7 +44,7 @@ class DashboardUserContactInformationClient {
      * @param {string} organizationNumber Organization number.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetContactInformation(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -72,15 +72,14 @@ class DashboardUserContactInformationClient {
         });
     }
 
-
     /**
- * Gets all user contact information for the given email address.
- *
- * @param {string} emailAddress Email address.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Gets all user contact information for the given email address.
+     *
+     * @param {string} emailAddress Email address.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO: Description
+     */
     GetContactInformationByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
 
@@ -108,15 +107,15 @@ class DashboardUserContactInformationClient {
     }
 
     /**
- * Gets all user contact information for the given phone number.
- *
- * @param {string} phoneNumber Phone number. Must contain between 5 and 15 digits.
- * @param {{countrycode?: string}|null} [query]
- * Optional query parameters.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Gets all user contact information for the given phone number.
+     *
+     * @param {string} phoneNumber Phone number. Must contain between 5 and 15 digits.
+     * @param {{countrycode?: string}|null} [query]
+     * Optional query parameters.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO: Description
+     */
     GetContactInformationByPhoneNumber(
         phoneNumber,
         query = null,

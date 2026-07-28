@@ -5,7 +5,7 @@
 /**
  * Optional string wrapper.
  *
- * @typedef {Object} StringOptional
+ * @typedef {object} StringOptional
  * @property {boolean} hasValue Read-only flag indicating whether a value exists.
  * @property {string|null} value
  */
@@ -13,7 +13,7 @@
 /**
  * Optional string list wrapper.
  *
- * @typedef {Object} StringListOptional
+ * @typedef {object} StringListOptional
  * @property {boolean} hasValue Read-only flag indicating whether a value exists.
  * @property {Array<string>|null} value
  */
@@ -21,7 +21,7 @@
 /**
  * Response model for professional notification settings.
  *
- * @typedef {Object} NotificationSettingsResponse
+ * @typedef {object} NotificationSettingsResponse
  * @property {string|null} emailAddress
  * @property {string|null} phoneNumber
  * @property {Array<string>|null} resourceIncludeList
@@ -35,7 +35,7 @@
 /**
  * Request model for creating or replacing professional notification settings.
  *
- * @typedef {Object} NotificationSettingsRequest
+ * @typedef {object} NotificationSettingsRequest
  * @property {string|null} [emailAddress]
  * @property {string|null} [phoneNumber]
  * @property {Array<string>|null} [resourceIncludeList]
@@ -44,7 +44,7 @@
 /**
  * Request model for partially updating professional notification settings.
  *
- * @typedef {Object} NotificationSettingsPatchRequest
+ * @typedef {object} NotificationSettingsPatchRequest
  * @property {StringOptional} [emailAddress]
  * @property {StringOptional} [phoneNumber]
  * @property {StringListOptional} [resourceIncludeList]

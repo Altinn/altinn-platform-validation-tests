@@ -41,7 +41,7 @@ class DashboardClient {
      * @param {string} organizationNumber Organization number.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -70,13 +70,13 @@ class DashboardClient {
     }
 
     /**
- * Gets all notification addresses for the given email address.
- *
- * @param {string} emailAddress Email address.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Gets all notification addresses for the given email address.
+     *
+     * @param {string} emailAddress Email address.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO: Description
+     */
     GetNotificationAddressesByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
 
@@ -103,8 +103,6 @@ class DashboardClient {
         });
     }
 
-
-
     /**
      * Gets all notification addresses for the given phone number.
      *
@@ -113,7 +111,7 @@ class DashboardClient {
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetNotificationAddressesByPhoneNumber(
         phoneNumber,

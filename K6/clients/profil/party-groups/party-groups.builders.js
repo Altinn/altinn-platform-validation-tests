@@ -11,7 +11,7 @@ class GroupRequestBuilder {
      * Sets the group name.
      *
      * @param {string} name The group name.
-     * @returns {GroupRequestBuilder}
+     * @returns {GroupRequestBuilder} TODO: Description
      */
     withName(name) {
         if (typeof name !== "string") {
@@ -30,7 +30,7 @@ class GroupRequestBuilder {
     /**
      * Builds the request.
      *
-     * @returns {GroupRequest}
+     * @returns {GroupRequest} TODO: Description
      */
     build() {
         if (!this.request.name) {

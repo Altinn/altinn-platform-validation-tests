@@ -10,7 +10,7 @@ import { ProfessionalNotificationSettingsClient } from "../../../../clients/prof
  * @param {string} partyUuid Party UUID.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {NotificationSettingsResponse|null}
+ * @returns {NotificationSettingsResponse|null} TODO: Description
  */
 export function DeleteNotificationSettings(
     professionalNotificationSettingsClient,

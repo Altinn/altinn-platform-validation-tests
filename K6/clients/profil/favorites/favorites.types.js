@@ -1,7 +1,7 @@
 /**
  * GroupResponse is used to represent a group of parties.
  *
- * @typedef {Object} GroupResponse
+ * @typedef {object} GroupResponse
  * @property {number} groupId
  * The unique identifier of the group.
  * @property {string|null} [name]

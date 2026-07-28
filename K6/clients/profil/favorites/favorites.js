@@ -34,7 +34,7 @@ class FavoritesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -68,7 +68,7 @@ class FavoritesClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     AddFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -102,7 +102,7 @@ class FavoritesClient {
      * @param {string} partyUuid Party UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();

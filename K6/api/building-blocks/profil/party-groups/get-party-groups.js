@@ -5,9 +5,9 @@ import { PartyGroupsClient } from "../../../../clients/party-groups/index.js";
 /**
  * Retrieves all party groups for the current user.
  *
- * @param {PartyGroupsClient} partyGroupsClient
- * @param {{[key: string]: string}} [labels]
- * @returns {Array<GroupResponse>|null}
+ * @param {PartyGroupsClient} partyGroupsClient TODO: Description
+ * @param {{[key: string]: string}} [labels] TODO: Description
+ * @returns {Array<GroupResponse>|null} TODO: Description
  */
 export function GetPartyGroups(
     partyGroupsClient,

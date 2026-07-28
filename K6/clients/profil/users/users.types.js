@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} UserProfile
+ * @typedef {object} UserProfile
  * @property {number} userId
  * @property {string|null} userUuid
  * @property {string|null} userName
@@ -18,7 +18,7 @@
  */
 
 /**
- * @typedef {Object} Party
+ * @typedef {object} Party
  * @property {number} partyId
  * @property {string|null} partyUuid
  * @property {PartyType} partyTypeName
@@ -40,7 +40,7 @@
  */
 
 /**
- * @typedef {Object} Person
+ * @typedef {object} Person
  * @property {string|null} ssn
  * @property {string|null} name
  * @property {string|null} firstName
@@ -62,12 +62,12 @@
  */
 
 /**
- * @typedef {Object} Organization
+ * @typedef {object} Organization
  * Placeholder typedef for organization data.
  */
 
 /**
- * @typedef {Object} ProfileSettingPreference
+ * @typedef {object} ProfileSettingPreference
  * @property {string|null} languageType
  * @property {string|null} language
  * @property {number} preSelectedPartyId
@@ -79,7 +79,7 @@
  */
 
 /**
- * @typedef {Object} ProfileSettingPutRequest
+ * @typedef {object} ProfileSettingPutRequest
  * @property {string|null} languageType
  * @property {number} preSelectedPartyId
  * @property {boolean} doNotPromptForParty
@@ -91,7 +91,7 @@
  */
 
 /**
- * @typedef {Object} ProfileSettingsPatchRequest
+ * @typedef {object} ProfileSettingsPatchRequest
  * @property {string|null} language
  * @property {boolean|null} doNotPromptForParty
  * @property {GuidNullableOptional|null} preselectedPartyUuid
@@ -101,14 +101,13 @@
  */
 
 /**
- * @typedef {Object} GuidNullableOptional
+ * @typedef {object} GuidNullableOptional
  * @property {boolean} hasValue
  * @property {string|null} value
  */
 
-
 /**
- * @typedef {Object} ProfileSettingPutRequestBuilderOptions
+ * @typedef {object} ProfileSettingPutRequestBuilderOptions
  * @property {string|null} [languageType]
  * @property {number} [preSelectedPartyId]
  * @property {boolean} doNotPromptForParty
@@ -119,10 +118,8 @@
  * @property {string|null} [preselectedPartyUuid]
  */
 
-
-
 /**
- * @typedef {Object} ProfileSettingsPatchRequestBuilderOptions
+ * @typedef {object} ProfileSettingsPatchRequestBuilderOptions
  * @property {string|null} [language]
  * @property {boolean|null} [doNotPromptForParty]
  * @property {string|null} [preselectedPartyUuid]

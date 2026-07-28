@@ -10,7 +10,7 @@ class AddressVerificationRequestBuilder {
      * Address to verify, either an email or a phone number.
      *
      * @param {string} value Address value. Must be between 5 and 320 characters.
-     * @returns {AddressVerificationRequestBuilder}
+     * @returns {AddressVerificationRequestBuilder} TODO: Description
      */
     withValue(value) {
         if (typeof value !== "string") {
@@ -31,7 +31,7 @@ class AddressVerificationRequestBuilder {
      * Address type.
      *
      * @param {AddressType} type Address type.
-     * @returns {AddressVerificationRequestBuilder}
+     * @returns {AddressVerificationRequestBuilder} TODO: Description
      */
     withType(type) {
         const allowedTypes = ["Email", "Sms"];
@@ -50,7 +50,7 @@ class AddressVerificationRequestBuilder {
      * Verification code for the address.
      *
      * @param {string} verificationCode Six digit verification code.
-     * @returns {AddressVerificationRequestBuilder}
+     * @returns {AddressVerificationRequestBuilder} TODO: Description
      */
     withVerificationCode(verificationCode) {
         if (typeof verificationCode !== "string") {
@@ -70,7 +70,7 @@ class AddressVerificationRequestBuilder {
     /**
      * Builds the request object.
      *
-     * @returns {AddressVerificationRequest}
+     * @returns {AddressVerificationRequest} TODO: Description
      */
     build() {
         return this.request;
@@ -89,7 +89,7 @@ class AddressCodeSendRequestBuilder {
      * Address to send verification code for.
      *
      * @param {string} value Address value. Must be between 5 and 320 characters.
-     * @returns {AddressCodeSendRequestBuilder}
+     * @returns {AddressCodeSendRequestBuilder} TODO: Description
      */
     withValue(value) {
         if (typeof value !== "string") {
@@ -110,7 +110,7 @@ class AddressCodeSendRequestBuilder {
      * Address type.
      *
      * @param {AddressType} type Address type.
-     * @returns {AddressCodeSendRequestBuilder}
+     * @returns {AddressCodeSendRequestBuilder} TODO: Description
      */
     withType(type) {
         const allowedTypes = ["Email", "Sms"];
@@ -128,7 +128,7 @@ class AddressCodeSendRequestBuilder {
     /**
      * Builds the request object.
      *
-     * @returns {AddressCodeSendRequest}
+     * @returns {AddressCodeSendRequest} TODO: Description
      */
     build() {
         return this.request;
@@ -147,7 +147,7 @@ class AddressCodeResendRequestBuilder {
      * Address to resend verification code for.
      *
      * @param {string} value Address value. Must be between 5 and 320 characters.
-     * @returns {AddressCodeResendRequestBuilder}
+     * @returns {AddressCodeResendRequestBuilder} TODO: Description
      */
     withValue(value) {
         if (typeof value !== "string") {
@@ -168,7 +168,7 @@ class AddressCodeResendRequestBuilder {
      * Address type.
      *
      * @param {AddressType} type Address type.
-     * @returns {AddressCodeResendRequestBuilder}
+     * @returns {AddressCodeResendRequestBuilder} TODO: Description
      */
     withType(type) {
         const allowedTypes = ["Email", "Sms"];
@@ -186,17 +186,15 @@ class AddressCodeResendRequestBuilder {
     /**
      * Builds the request object.
      *
-     * @returns {AddressCodeResendRequest}
+     * @returns {AddressCodeResendRequest} TODO: Description
      */
     build() {
         return this.request;
     }
 }
 
-
-
 export {
-    AddressVerificationRequestBuilder,
+    AddressCodeResendRequestBuilder,
     AddressCodeSendRequestBuilder,
-    AddressCodeResendRequestBuilder
+    AddressVerificationRequestBuilder
 };

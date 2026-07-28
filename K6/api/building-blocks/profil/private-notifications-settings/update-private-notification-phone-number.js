@@ -11,7 +11,7 @@ import { PrivateNotificationsSettingsClient } from "../../../../clients/private-
  * Request body. Use {@link PrivateNotificationSettingsUpdateRequestBuilder}.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {PrivateNotificationSettingsUpdateResponse|null}
+ * @returns {PrivateNotificationSettingsUpdateResponse|null} TODO: Description
  */
 export function UpdatePrivateNotificationPhoneNumber(
     privateNotificationsSettingsClient,

@@ -44,8 +44,8 @@ class PartyGroupsClient {
     /**
      * Retrieves all party groups for the current user.
      *
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetPartyGroups(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -74,9 +74,9 @@ class PartyGroupsClient {
     /**
      * Retrieves a party group.
      *
-     * @param {number} groupId
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {number} groupId TODO: Description
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetPartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -107,9 +107,9 @@ class PartyGroupsClient {
     /**
      * Creates a party group.
      *
-     * @param {GroupRequest} request
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {GroupRequest} request TODO: Description
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreatePartyGroup(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -139,10 +139,10 @@ class PartyGroupsClient {
     /**
      * Updates a party group.
      *
-     * @param {number} groupId
-     * @param {GroupRequest} request
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {number} groupId TODO: Description
+     * @param {GroupRequest} request TODO: Description
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdatePartyGroup(groupId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -174,9 +174,9 @@ class PartyGroupsClient {
     /**
      * Deletes a party group.
      *
-     * @param {number} groupId
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {number} groupId TODO: Description
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeletePartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -207,10 +207,10 @@ class PartyGroupsClient {
     /**
      * Adds a party to a group.
      *
-     * @param {number} groupId
-     * @param {string} partyUuid
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {number} groupId TODO: Description
+     * @param {string} partyUuid TODO: Description
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     AddPartyToGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -241,10 +241,10 @@ class PartyGroupsClient {
     /**
      * Removes a party from a group.
      *
-     * @param {number} groupId
-     * @param {string} partyUuid
-     * @param {{[key: string]: string}} [labels]
-     * @returns {http.RefinedResponse}
+     * @param {number} groupId TODO: Description
+     * @param {string} partyUuid TODO: Description
+     * @param {{[key: string]: string}} [labels] TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RemovePartyFromGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();

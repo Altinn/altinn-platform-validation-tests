@@ -1,7 +1,7 @@
 /**
  * Represents a notification address.
  *
- * @typedef {Object} NotificationAddressRequest
+ * @typedef {object} NotificationAddressRequest
  * @property {string|null} [countryCode]
  * Country code for phone number.
  * @property {string|null} [email]
@@ -13,7 +13,7 @@
 /**
  * Represents a notification address response.
  *
- * @typedef {Object} NotificationAddressResponse
+ * @typedef {object} NotificationAddressResponse
  * @property {string|null} [countryCode]
  * Country code for phone number.
  * @property {string|null} [email]
@@ -27,7 +27,7 @@
 /**
  * Represents an organization with notification addresses.
  *
- * @typedef {Object} OrganizationResponse
+ * @typedef {object} OrganizationResponse
  * @property {string|null} [organizationNumber]
  * The organization's organization number.
  * @property {Array<NotificationAddressResponse>|null} [notificationAddresses]
@@ -37,7 +37,7 @@
 /**
  * Validation problem details returned by the API.
  *
- * @typedef {Object} ValidationProblemDetails
+ * @typedef {object} ValidationProblemDetails
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]
@@ -49,7 +49,7 @@
 /**
  * Problem details returned by the API.
  *
- * @typedef {Object} ProblemDetails
+ * @typedef {object} ProblemDetails
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]

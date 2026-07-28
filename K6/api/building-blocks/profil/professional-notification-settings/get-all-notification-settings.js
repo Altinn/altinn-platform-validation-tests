@@ -9,7 +9,7 @@ import { ProfessionalNotificationSettingsClient } from "../../../../clients/prof
  * Client for the Professional Notification Settings API.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {Array<NotificationSettingsResponse>|null}
+ * @returns {Array<NotificationSettingsResponse>|null} TODO: Description
  */
 export function GetAllNotificationSettings(
     professionalNotificationSettingsClient,

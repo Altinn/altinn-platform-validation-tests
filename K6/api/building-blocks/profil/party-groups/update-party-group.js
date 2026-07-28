@@ -5,11 +5,11 @@ import { PartyGroupsClient } from "../../../../clients/party-groups/index.js";
 /**
  * Updates a party group.
  *
- * @param {PartyGroupsClient} partyGroupsClient
- * @param {number} groupId
- * @param {GroupRequest} request
- * @param {{[key: string]: string}} [labels]
- * @returns {GroupResponse|null}
+ * @param {PartyGroupsClient} partyGroupsClient TODO: Description
+ * @param {number} groupId TODO: Description
+ * @param {GroupRequest} request TODO: Description
+ * @param {{[key: string]: string}} [labels] TODO: Description
+ * @returns {GroupResponse|null} TODO: Description
  */
 export function UpdatePartyGroup(
     partyGroupsClient,
