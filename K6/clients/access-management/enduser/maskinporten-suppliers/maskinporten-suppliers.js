@@ -59,7 +59,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetMaskinportenSuppliers(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -109,7 +109,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateMaskinportenSupplier(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -159,7 +159,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteMaskinportenSupplier(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -209,7 +209,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetMaskinportenSupplierResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -259,7 +259,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateMaskinportenSupplierResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -309,7 +309,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteMaskinportenSupplierResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -359,7 +359,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetMaskinportenSupplierDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

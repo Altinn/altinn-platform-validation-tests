@@ -3,19 +3,19 @@
  */
 
 /**
- * @typedef {Object} RequestReferenceDto
+ * @typedef {object} RequestReferenceDto
  * @property {string|null} id UUID.
  * @property {string|null} referenceId
  */
 
 /**
- * @typedef {Object} RequestLinks
+ * @typedef {object} RequestLinks
  * @property {string|null} detailsLink
  * @property {string|null} statusLink
  */
 
 /**
- * @typedef {Object} PartyEntityDto
+ * @typedef {object} PartyEntityDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} type
@@ -25,12 +25,12 @@
  */
 
 /**
- * @typedef {Object} PaginatedResultLinks
+ * @typedef {object} PaginatedResultLinks
  * @property {string|null} next
  */
 
 /**
- * @typedef {Object} RequestDto
+ * @typedef {object} RequestDto
  * @property {string} id UUID.
  * @property {RequestStatus} status
  * @property {string|null} type
@@ -45,7 +45,7 @@
  */
 
 /**
- * @typedef {Object} RequestDtoPaginatedResult
+ * @typedef {object} RequestDtoPaginatedResult
  * @property {Array<RequestDto>|null} data
  * @property {PaginatedResultLinks|null} links
  */

@@ -67,7 +67,7 @@ class RequestClient {
      * Page number header.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetReceivedRequests(
         query = null,
@@ -127,7 +127,7 @@ class RequestClient {
      * Query parameters. Prefer using {@link ReceivedRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetReceivedRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -170,16 +170,16 @@ class RequestClient {
     }
 
     /**
- * Approves a received request.
- *
- * @param {string} party Party UUID.
- * @param {string} id Request UUID.
- * @param {Array<string>|null} [body]
- * Optional resource rights.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Approves a received request.
+     *
+     * @param {string} party Party UUID.
+     * @param {string} id Request UUID.
+     * @param {Array<string>|null} [body]
+     * Optional resource rights.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} TODO: Description
+     */
     ApproveReceivedRequest(
         party,
         id,
@@ -226,7 +226,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     RejectReceivedRequest(
         party,
@@ -271,7 +271,7 @@ class RequestClient {
      * Optional rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateResourceRequest(
         party,
@@ -319,10 +319,10 @@ class RequestClient {
      *
      * @param {string} party Party UUID.
      * @param {string} to Party UUID.
-     * @param {string} package Package identifier.
+     * @param packageId TODO: Description
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreatePackageRequest(
         party,
@@ -369,7 +369,7 @@ class RequestClient {
      * Page number header.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetSentRequests(
         query = null,
@@ -429,7 +429,7 @@ class RequestClient {
      * Query parameters. Prefer using {@link SentRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetSentRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -478,7 +478,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     WithdrawSentRequest(
         party,
@@ -520,7 +520,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetRequest(
         party,
@@ -561,7 +561,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetDraftRequest(
         id,
@@ -601,7 +601,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     ConfirmDraftRequest(
         party,

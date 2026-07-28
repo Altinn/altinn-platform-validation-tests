@@ -1,22 +1,22 @@
 /**
- * @typedef {Object} PaginatedResultLinks
+ * @typedef {object} PaginatedResultLinks
  * @property {string|null} next
  */
 
 /**
- * @typedef {Object} ProviderTypeDto
+ * @typedef {object} ProviderTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} ResourceTypeDto
+ * @typedef {object} ResourceTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} ProviderDto
+ * @typedef {object} ProviderDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} refId
@@ -27,7 +27,7 @@
  */
 
 /**
- * @typedef {Object} ResourceDto
+ * @typedef {object} ResourceDto
  * @property {string} id UUID.
  * @property {string} providerId UUID.
  * @property {string} typeId UUID.
@@ -39,20 +39,20 @@
  */
 
 /**
- * @typedef {Object} AccessPackageDto
+ * @typedef {object} AccessPackageDto
  * @property {string} id UUID.
  * @property {string|null} urn
  * @property {string} areaId UUID.
  */
 
 /**
- * @typedef {Object} ConnectionInstanceDto
+ * @typedef {object} ConnectionInstanceDto
  * @property {string|null} resourceRefId
  * @property {string|null} instanceId
  */
 
 /**
- * @typedef {Object} CompactRoleDto
+ * @typedef {object} CompactRoleDto
  * @property {string} id UUID.
  * @property {string|null} code
  * @property {string|null} urn
@@ -61,7 +61,7 @@
  */
 
 /**
- * @typedef {Object} CompactEntityDto
+ * @typedef {object} CompactEntityDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} type
@@ -80,7 +80,7 @@
  */
 
 /**
- * @typedef {Object} ConnectionDto
+ * @typedef {object} ConnectionDto
  * @property {CompactEntityDto} party
  * @property {Array<CompactRoleDto>|null} roles
  * @property {Array<AccessPackageDto>|null} packages
@@ -90,13 +90,13 @@
  */
 
 /**
- * @typedef {Object} ConnectionDtoPaginatedResult
+ * @typedef {object} ConnectionDtoPaginatedResult
  * @property {Array<ConnectionDto>|null} data
  * @property {PaginatedResultLinks} links
  */
 
 /**
- * @typedef {Object} AssignmentDto
+ * @typedef {object} AssignmentDto
  * @property {string} id UUID.
  * @property {string} roleId UUID.
  * @property {string} fromId UUID.
@@ -104,7 +104,7 @@
  */
 
 /**
- * @typedef {Object} PersonInput
+ * @typedef {object} PersonInput
  * @property {string|null} personIdentifier Person identifier. Either 11-digit national identity number or username.
  * @property {string|null} lastName Lastname.
  */
@@ -118,7 +118,7 @@
  *
  * Use {@link GetConnectionsQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetConnectionsQuery
+ * @typedef {object} GetConnectionsQuery
  * @property {string} party Party UUID.
  * @property {string|null} [from] From UUID.
  * @property {string|null} [to] To UUID.
@@ -134,7 +134,7 @@
  *
  * Use {@link CreateConnectionQueryBuilder} to construct this object.
  *
- * @typedef {Object} CreateConnectionQuery
+ * @typedef {object} CreateConnectionQuery
  * @property {string} party Party UUID.
  * @property {string|null} [to] To UUID.
  */
@@ -144,7 +144,7 @@
  *
  * Use {@link DeleteConnectionQueryBuilder} to construct this object.
  *
- * @typedef {Object} DeleteConnectionQuery
+ * @typedef {object} DeleteConnectionQuery
  * @property {string} party Party UUID.
  * @property {string} from From UUID.
  * @property {string} to To UUID.
@@ -152,7 +152,7 @@
  */
 
 /**
- * @typedef {Object} SimplifiedPartyDto
+ * @typedef {object} SimplifiedPartyDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} type
@@ -163,13 +163,13 @@
  */
 
 /**
- * @typedef {Object} SimplifiedConnectionDto
+ * @typedef {object} SimplifiedConnectionDto
  * @property {SimplifiedPartyDto} party
  * @property {Array<SimplifiedConnectionDto>|null} connections
  */
 
 /**
- * @typedef {Object} SimplifiedConnectionDtoPaginatedResult
+ * @typedef {object} SimplifiedConnectionDtoPaginatedResult
  * @property {Array<SimplifiedConnectionDto>|null} data
  * @property {PaginatedResultLinks} links
  */
@@ -183,20 +183,19 @@
  *
  * Use {@link GetConnectionUsersQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetConnectionUsersQuery
+ * @typedef {object} GetConnectionUsersQuery
  * @property {string} party Party UUID.
  */
 
-
 /**
- * @typedef {Object} CompactPackageDto
+ * @typedef {object} CompactPackageDto
  * @property {string} id UUID.
  * @property {string|null} urn
  * @property {string} areaId UUID.
  */
 
 /**
- * @typedef {Object} PermissionDto
+ * @typedef {object} PermissionDto
  * @property {CompactEntityDto} from
  * @property {CompactEntityDto} to
  * @property {CompactEntityDto} via
@@ -206,19 +205,19 @@
  */
 
 /**
- * @typedef {Object} PackagePermissionDto
+ * @typedef {object} PackagePermissionDto
  * @property {CompactPackageDto} package
  * @property {Array<PermissionDto>|null} permissions
  */
 
 /**
- * @typedef {Object} PackagePermissionDtoPaginatedResult
+ * @typedef {object} PackagePermissionDtoPaginatedResult
  * @property {Array<PackagePermissionDto>|null} data
  * @property {PaginatedResultLinks} links
  */
 
 /**
- * @typedef {Object} AssignmentPackageDto
+ * @typedef {object} AssignmentPackageDto
  * @property {string} id UUID.
  * @property {string} assignmentId UUID.
  * @property {string} packageId UUID.
@@ -233,7 +232,7 @@
  *
  * Use {@link GetAccessPackagesQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetAccessPackagesQuery
+ * @typedef {object} GetAccessPackagesQuery
  * @property {string} party Party UUID.
  * @property {string|null} [from]
  * @property {string|null} [to]
@@ -244,7 +243,7 @@
  *
  * Use {@link CreateAccessPackageQueryBuilder} to construct this object.
  *
- * @typedef {Object} CreateAccessPackageQuery
+ * @typedef {object} CreateAccessPackageQuery
  * @property {string} party Party UUID.
  * @property {string|null} [to]
  * @property {string|null} [packageId]
@@ -256,7 +255,7 @@
  *
  * Use {@link DeleteAccessPackageQueryBuilder} to construct this object.
  *
- * @typedef {Object} DeleteAccessPackageQuery
+ * @typedef {object} DeleteAccessPackageQuery
  * @property {string} party Party UUID.
  * @property {string} from From party UUID.
  * @property {string} to To party UUID.
@@ -267,7 +266,7 @@
 /**
  * Result of an access package delegation check.
  *
- * @typedef {Object} AccessPackageDtoCheck
+ * @typedef {object} AccessPackageDtoCheck
  * @property {AccessPackageDto} package
  * @property {boolean} result
  * @property {Array<AccessPackageDtoCheckReason>|null} reasons
@@ -276,7 +275,7 @@
 /**
  * Reason why an access package delegation check succeeded or failed.
  *
- * @typedef {Object} AccessPackageDtoCheckReason
+ * @typedef {object} AccessPackageDtoCheckReason
  * @property {string|null} description
  * @property {string|null} roleId UUID.
  * @property {string|null} roleUrn
@@ -293,7 +292,7 @@
 /**
  * Paginated result containing access package delegation checks.
  *
- * @typedef {Object} AccessPackageDtoCheckPaginatedResult
+ * @typedef {object} AccessPackageDtoCheckPaginatedResult
  * @property {Array<AccessPackageDtoCheck>|null} data
  * @property {PaginatedResultLinks} links
  */
@@ -307,15 +306,14 @@
  *
  * Use {@link AccessPackageDelegationCheckQueryBuilder} to construct this object.
  *
- * @typedef {Object} AccessPackageDelegationCheckQuery
+ * @typedef {object} AccessPackageDelegationCheckQuery
  * @property {string} party Party UUID.
  * @property {Array<string>|null} [packageIds] Package UUIDs.
  * @property {Array<string>|null} [packages] Package identifiers.
  */
 
-
 /**
- * @typedef {Object} RoleDto
+ * @typedef {object} RoleDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} code
@@ -330,13 +328,13 @@
  */
 
 /**
- * @typedef {Object} RolePermissionDto
+ * @typedef {object} RolePermissionDto
  * @property {RoleDto} role
  * @property {Array<PermissionDto>|null} permissions
  */
 
 /**
- * @typedef {Object} RolePermissionDtoPaginatedResult
+ * @typedef {object} RolePermissionDtoPaginatedResult
  * @property {Array<RolePermissionDto>|null} data
  * @property {PaginatedResultLinks} links
  */
@@ -350,7 +348,7 @@
  *
  * Use {@link GetRolesQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetRolesQuery
+ * @typedef {object} GetRolesQuery
  * @property {string} party Party UUID.
  * @property {string} from Source party UUID.
  * @property {string} to Target party UUID.
@@ -361,16 +359,15 @@
  *
  * Use {@link DeleteRoleQueryBuilder} to construct this object.
  *
- * @typedef {Object} DeleteRoleQuery
+ * @typedef {object} DeleteRoleQuery
  * @property {string} party Party UUID.
  * @property {string} from Source party UUID.
  * @property {string} to Target party UUID.
  * @property {string} rolecode Role code.
  */
 
-
 /**
- * @typedef {Object} ResourcePermissionDto
+ * @typedef {object} ResourcePermissionDto
  * @property {ResourceDto} resource
  * @property {Array<PermissionDto>|null} permissions
  */
@@ -384,7 +381,7 @@
  *
  * Use {@link GetResourcesQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetResourcesQuery
+ * @typedef {object} GetResourcesQuery
  * @property {string} party Party UUID.
  * @property {string|null} [from] From UUID.
  * @property {string|null} [to] To UUID.
@@ -396,7 +393,7 @@
  *
  * Use {@link DeleteResourceQueryBuilder} to construct this object.
  *
- * @typedef {Object} DeleteResourceQuery
+ * @typedef {object} DeleteResourceQuery
  * @property {string} party Party UUID.
  * @property {string} from From UUID.
  * @property {string} to To UUID.
@@ -404,14 +401,14 @@
  */
 
 /**
- * @typedef {Object} ExternalResourceRightDto
+ * @typedef {object} ExternalResourceRightDto
  * @property {ResourceDto} resource
  * @property {Array<RightPermission>|null} directRights
  * @property {Array<RightPermission>|null} indirectRights
  */
 
 /**
- * @typedef {Object} RightKeyListDto
+ * @typedef {object} RightKeyListDto
  * @property {Array<string>|null} directRightKeys
  */
 
@@ -424,7 +421,7 @@
  *
  * Use {@link GetResourceRightsQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetResourceRightsQuery
+ * @typedef {object} GetResourceRightsQuery
  * @property {string} party Party UUID.
  * @property {string} from From UUID.
  * @property {string} to To UUID.
@@ -436,7 +433,7 @@
  *
  * Use {@link CreateResourceRightsQueryBuilder} to construct this object.
  *
- * @typedef {Object} CreateResourceRightsQuery
+ * @typedef {object} CreateResourceRightsQuery
  * @property {string} party Party UUID.
  * @property {string} to To UUID.
  * @property {string} resource Resource identifier.
@@ -447,32 +444,32 @@
  *
  * Use {@link UpdateResourceRightsQueryBuilder} to construct this object.
  *
- * @typedef {Object} UpdateResourceRightsQuery
+ * @typedef {object} UpdateResourceRightsQuery
  * @property {string} party Party UUID.
  * @property {string} to To UUID.
  * @property {string} resource Resource identifier.
  */
 /**
- * @typedef {Object} RightPermission
+ * @typedef {object} RightPermission
  * @property {RightDto} right
  * @property {AccessReason} reason
  * @property {Array<PermissionDto>|null} permissions
  */
 
 /**
- * @typedef {Object} ExternalResourceRightDto
+ * @typedef {object} ExternalResourceRightDto
  * @property {ResourceDto} resource
  * @property {Array<RightPermission>|null} directRights
  * @property {Array<RightPermission>|null} indirectRights
  */
 
 /**
- * @typedef {Object} RightKeyListDto
+ * @typedef {object} RightKeyListDto
  * @property {Array<string>|null} directRightKeys
  */
 
 /**
- * @typedef {Object} RightDto
+ * @typedef {object} RightDto
  * @property {string|null} key
  * @property {string|null} name
  * @property {Array<AttributeDto>|null} resource
@@ -480,7 +477,7 @@
  */
 
 /**
- * @typedef {Object} AccessReason
+ * @typedef {object} AccessReason
  * @property {AccessReasonFlag} flag
  * @property {Array<AccessReasonRecord>|null} items
  */
@@ -492,27 +489,27 @@
  */
 
 /**
- * @typedef {Object} AccessReasonRecord
+ * @typedef {object} AccessReasonRecord
  * @property {string|null} name
  * @property {string|null} description
  */
 
 /**
- * @typedef {Object} RightPermission
+ * @typedef {object} RightPermission
  * @property {RightDto} right
  * @property {AccessReason} reason
  * @property {Array<PermissionDto>|null} permissions
  */
 
 /**
- * @typedef {Object} ExternalResourceRightDto
+ * @typedef {object} ExternalResourceRightDto
  * @property {ResourceDto} resource
  * @property {Array<RightPermission>|null} directRights
  * @property {Array<RightPermission>|null} indirectRights
  */
 
 /**
- * @typedef {Object} RightKeyListDto
+ * @typedef {object} RightKeyListDto
  * @property {Array<string>|null} directRightKeys
  */
 
@@ -521,13 +518,13 @@
  */
 
 /**
- * @typedef {Object} ResourceCheckDto
+ * @typedef {object} ResourceCheckDto
  * @property {ResourceDto} resource
  * @property {Array<RightCheckDto>|null} rights
  */
 
 /**
- * @typedef {Object} RightCheckDto
+ * @typedef {object} RightCheckDto
  * @property {RightDto} right
  * @property {boolean} result
  * @property {Array<DelegationCheckReasonCode>|null} reasonCodes
@@ -553,25 +550,25 @@
  *
  * Use {@link GetResourceDelegationCheckQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetResourceDelegationCheckQuery
+ * @typedef {object} GetResourceDelegationCheckQuery
  * @property {string} party Party UUID.
  * @property {string|null} [resource] Resource identifier.
  */
 
 /**
- * @typedef {Object} InstanceTypeDto
+ * @typedef {object} InstanceTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} InstanceDto
+ * @typedef {object} InstanceDto
  * @property {string|null} refId
  * @property {InstanceTypeDto} type
  */
 
 /**
- * @typedef {Object} InstancePermissionDto
+ * @typedef {object} InstancePermissionDto
  * @property {ResourceDto} resource
  * @property {InstanceDto} instance
  * @property {Array<PermissionDto>|null} permissions
@@ -582,7 +579,7 @@
  *
  * Use {@link GetInstancesQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetInstancesQuery
+ * @typedef {object} GetInstancesQuery
  * @property {string} party Party UUID.
  * @property {string|null} [from] From UUID.
  * @property {string|null} [to] To UUID.
@@ -595,7 +592,7 @@
  *
  * Use {@link DeleteInstanceQueryBuilder} to construct this object.
  *
- * @typedef {Object} DeleteInstanceQuery
+ * @typedef {object} DeleteInstanceQuery
  * @property {string} party Party UUID.
  * @property {string} from From UUID.
  * @property {string} to To UUID.
@@ -603,7 +600,7 @@
  * @property {string} instance Instance identifier.
  */
 /**
- * @typedef {Object} ExtInstanceRightDto
+ * @typedef {object} ExtInstanceRightDto
  * @property {ResourceDto} resource
  * @property {InstanceDto} instance
  * @property {Array<RightPermission>|null} directRights
@@ -611,12 +608,12 @@
  */
 
 /**
- * @typedef {Object} InstanceRightsDelegationDto
+ * @typedef {object} InstanceRightsDelegationDto
  * @property {PersonInputDto} to
  * @property {Array<string>|null} directRightKeys
  */
 /**
- * @typedef {Object} PersonInputDto
+ * @typedef {object} PersonInputDto
  * @property {string|null} personIdentifier Person identifier.
  * @property {string|null} lastName Last name.
  */
@@ -626,7 +623,7 @@
  *
  * Use {@link GetInstanceRightsQueryBuilder} to construct this object.
  *
- * @typedef {Object} GetInstanceRightsQuery
+ * @typedef {object} GetInstanceRightsQuery
  * @property {string} party Party UUID.
  * @property {string} from From party UUID.
  * @property {string} to To party UUID.
@@ -639,7 +636,7 @@
  *
  * Use {@link CreateInstanceRightsQueryBuilder} to construct this object.
  *
- * @typedef {Object} CreateInstanceRightsQuery
+ * @typedef {object} CreateInstanceRightsQuery
  * @property {string} party Party UUID.
  * @property {string|null} [to] To UUID.
  * @property {string} resource Resource identifier.
@@ -651,7 +648,7 @@
  *
  * Use {@link UpdateInstanceRightsQueryBuilder} to construct this object.
  *
- * @typedef {Object} UpdateInstanceRightsQuery
+ * @typedef {object} UpdateInstanceRightsQuery
  * @property {string} party Party UUID.
  * @property {string} to To UUID.
  * @property {string} resource Resource identifier.
@@ -659,22 +656,21 @@
  */
 
 /**
- * @typedef {Object} InstanceCheckDto
+ * @typedef {object} InstanceCheckDto
  * @property {ResourceDto} resource
  * @property {InstanceDto} instance
  * @property {RightCheckDto[]|null} rights
  */
 
 /**
-* @typedef {Object} GetInstanceDelegationCheckQuery
-* @property {string} party Party identifier.
-* @property {string} resource Resource identifier.
-* @property {string} instance Instance reference.
-*/
-
+ * @typedef {object} GetInstanceDelegationCheckQuery
+ * @property {string} party Party identifier.
+ * @property {string} resource Resource identifier.
+ * @property {string} instance Instance reference.
+ */
 
 /**
- * @typedef {Object} SimplifiedPartyDto
+ * @typedef {object} SimplifiedPartyDto
  * @property {string} id
  * @property {string|null} name
  * @property {string|null} type
@@ -685,19 +681,18 @@
  */
 
 /**
- * @typedef {Object} PaginatedResultLinks
+ * @typedef {object} PaginatedResultLinks
  * @property {string|null} next
  */
 
 /**
- * @typedef {Object} SimplifiedPartyDtoPaginatedResult
+ * @typedef {object} SimplifiedPartyDtoPaginatedResult
  * @property {SimplifiedPartyDto[]|null} data
  * @property {PaginatedResultLinks} links
  */
 
-
 /**
- * @typedef {Object} GetInstanceUsersQuery
+ * @typedef {object} GetInstanceUsersQuery
  * @property {string} party Party identifier.
  * @property {string} resource Resource identifier.
  * @property {string} instance Instance reference.

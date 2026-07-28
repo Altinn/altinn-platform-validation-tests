@@ -7,7 +7,7 @@ class ReceivedRequestsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {ReceivedRequestsQueryBuilder}
+     * @returns {ReceivedRequestsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -18,7 +18,7 @@ class ReceivedRequestsQueryBuilder {
      * Optional sender filter.
      *
      * @param {string} from Party UUID.
-     * @returns {ReceivedRequestsQueryBuilder}
+     * @returns {ReceivedRequestsQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -29,7 +29,7 @@ class ReceivedRequestsQueryBuilder {
      * Optional request status filter.
      *
      * @param {Array<RequestStatus>} status Request statuses.
-     * @returns {ReceivedRequestsQueryBuilder}
+     * @returns {ReceivedRequestsQueryBuilder} TODO: Description
      */
     withStatus(status) {
         this.query.status = status;
@@ -40,7 +40,7 @@ class ReceivedRequestsQueryBuilder {
      * Optional request type filter.
      *
      * @param {string} type Request type.
-     * @returns {ReceivedRequestsQueryBuilder}
+     * @returns {ReceivedRequestsQueryBuilder} TODO: Description
      */
     withType(type) {
         this.query.type = type;
@@ -50,7 +50,7 @@ class ReceivedRequestsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, from?: string, status?: Array<RequestStatus>, type?: string}}
+     * @returns {{party: string, from?: string, status?: Array<RequestStatus>, type?: string}} TODO: Description
      */
     build() {
         return this.query;
@@ -69,7 +69,7 @@ class SentRequestsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {SentRequestsQueryBuilder}
+     * @returns {SentRequestsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -80,7 +80,7 @@ class SentRequestsQueryBuilder {
      * Optional recipient filter.
      *
      * @param {string} to Party UUID.
-     * @returns {SentRequestsQueryBuilder}
+     * @returns {SentRequestsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -91,7 +91,7 @@ class SentRequestsQueryBuilder {
      * Optional request status filter.
      *
      * @param {Array<RequestStatus>} status Request statuses.
-     * @returns {SentRequestsQueryBuilder}
+     * @returns {SentRequestsQueryBuilder} TODO: Description
      */
     withStatus(status) {
         this.query.status = status;
@@ -102,7 +102,7 @@ class SentRequestsQueryBuilder {
      * Optional request type filter.
      *
      * @param {string} type Request type.
-     * @returns {SentRequestsQueryBuilder}
+     * @returns {SentRequestsQueryBuilder} TODO: Description
      */
     withType(type) {
         this.query.type = type;
@@ -112,7 +112,7 @@ class SentRequestsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, to?: string, status?: Array<RequestStatus>, type?: string}}
+     * @returns {{party: string, to?: string, status?: Array<RequestStatus>, type?: string}} TODO: Description
      */
     build() {
         return this.query;

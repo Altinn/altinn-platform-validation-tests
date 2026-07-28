@@ -10,7 +10,7 @@ class GetConnectionsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetConnectionsQueryBuilder}
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -21,7 +21,7 @@ class GetConnectionsQueryBuilder {
      * Optional from filter.
      *
      * @param {string} from From UUID.
-     * @returns {GetConnectionsQueryBuilder}
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -32,7 +32,7 @@ class GetConnectionsQueryBuilder {
      * Optional to filter.
      *
      * @param {string} to To UUID.
-     * @returns {GetConnectionsQueryBuilder}
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -42,8 +42,8 @@ class GetConnectionsQueryBuilder {
     /**
      * Optional client delegations filter.
      *
-     * @param {boolean} includeClientDelegations
-     * @returns {GetConnectionsQueryBuilder}
+     * @param {boolean} includeClientDelegations TODO: Description
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withIncludeClientDelegations(includeClientDelegations) {
         this.query.includeClientDelegations = includeClientDelegations;
@@ -53,8 +53,8 @@ class GetConnectionsQueryBuilder {
     /**
      * Optional agent connections filter.
      *
-     * @param {boolean} includeAgentConnections
-     * @returns {GetConnectionsQueryBuilder}
+     * @param {boolean} includeAgentConnections TODO: Description
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withIncludeAgentConnections(includeAgentConnections) {
         this.query.includeAgentConnections = includeAgentConnections;
@@ -64,8 +64,8 @@ class GetConnectionsQueryBuilder {
     /**
      * Optional access packages filter.
      *
-     * @param {boolean} includeAccessPackages
-     * @returns {GetConnectionsQueryBuilder}
+     * @param {boolean} includeAccessPackages TODO: Description
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withIncludeAccessPackages(includeAccessPackages) {
         this.query.includeAccessPackages = includeAccessPackages;
@@ -75,8 +75,8 @@ class GetConnectionsQueryBuilder {
     /**
      * Optional resources filter.
      *
-     * @param {boolean} includeResources
-     * @returns {GetConnectionsQueryBuilder}
+     * @param {boolean} includeResources TODO: Description
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withIncludeResources(includeResources) {
         this.query.includeResources = includeResources;
@@ -86,8 +86,8 @@ class GetConnectionsQueryBuilder {
     /**
      * Optional instances filter.
      *
-     * @param {boolean} includeInstances
-     * @returns {GetConnectionsQueryBuilder}
+     * @param {boolean} includeInstances TODO: Description
+     * @returns {GetConnectionsQueryBuilder} TODO: Description
      */
     withIncludeInstances(includeInstances) {
         this.query.includeInstances = includeInstances;
@@ -97,7 +97,7 @@ class GetConnectionsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetConnectionsQuery}
+     * @returns {GetConnectionsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -116,7 +116,7 @@ class CreateConnectionQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {CreateConnectionQueryBuilder}
+     * @returns {CreateConnectionQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -127,7 +127,7 @@ class CreateConnectionQueryBuilder {
      * Optional target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {CreateConnectionQueryBuilder}
+     * @returns {CreateConnectionQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -137,7 +137,7 @@ class CreateConnectionQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {CreateConnectionQuery}
+     * @returns {CreateConnectionQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -156,7 +156,7 @@ class DeleteConnectionQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {DeleteConnectionQueryBuilder}
+     * @returns {DeleteConnectionQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -167,8 +167,7 @@ class DeleteConnectionQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From UUID.
-     *
-     * @returns {DeleteConnectionQueryBuilder}
+     * @returns {DeleteConnectionQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -179,8 +178,7 @@ class DeleteConnectionQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     *
-     * @returns {DeleteConnectionQueryBuilder}
+     * @returns {DeleteConnectionQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -190,8 +188,8 @@ class DeleteConnectionQueryBuilder {
     /**
      * Optional cascade deletion.
      *
-     * @param {boolean} cascade
-     * @returns {DeleteConnectionQueryBuilder}
+     * @param {boolean} cascade TODO: Description
+     * @returns {DeleteConnectionQueryBuilder} TODO: Description
      */
     withCascade(cascade) {
         this.query.cascade = cascade;
@@ -201,7 +199,7 @@ class DeleteConnectionQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {DeleteConnectionQuery}
+     * @returns {DeleteConnectionQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -220,7 +218,7 @@ class GetConnectionUsersQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetConnectionUsersQueryBuilder}
+     * @returns {GetConnectionUsersQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -230,7 +228,7 @@ class GetConnectionUsersQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetConnectionUsersQuery}
+     * @returns {GetConnectionUsersQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -249,7 +247,7 @@ class GetAccessPackagesQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetAccessPackagesQueryBuilder}
+     * @returns {GetAccessPackagesQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -260,7 +258,7 @@ class GetAccessPackagesQueryBuilder {
      * Optional from party identifier.
      *
      * @param {string} from From party UUID.
-     * @returns {GetAccessPackagesQueryBuilder}
+     * @returns {GetAccessPackagesQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -271,7 +269,7 @@ class GetAccessPackagesQueryBuilder {
      * Optional to party identifier.
      *
      * @param {string} to To party UUID.
-     * @returns {GetAccessPackagesQueryBuilder}
+     * @returns {GetAccessPackagesQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -281,7 +279,7 @@ class GetAccessPackagesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetAccessPackagesQuery}
+     * @returns {GetAccessPackagesQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -300,7 +298,7 @@ class CreateAccessPackageQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {CreateAccessPackageQueryBuilder}
+     * @returns {CreateAccessPackageQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -311,7 +309,7 @@ class CreateAccessPackageQueryBuilder {
      * Optional target party identifier.
      *
      * @param {string} to To party UUID.
-     * @returns {CreateAccessPackageQueryBuilder}
+     * @returns {CreateAccessPackageQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -322,7 +320,7 @@ class CreateAccessPackageQueryBuilder {
      * Optional access package identifier.
      *
      * @param {string} packageId Package UUID.
-     * @returns {CreateAccessPackageQueryBuilder}
+     * @returns {CreateAccessPackageQueryBuilder} TODO: Description
      */
     withPackageId(packageId) {
         this.query.packageId = packageId;
@@ -333,7 +331,7 @@ class CreateAccessPackageQueryBuilder {
      * Optional package identifier.
      *
      * @param {string} pkg Package identifier.
-     * @returns {CreateAccessPackageQueryBuilder}
+     * @returns {CreateAccessPackageQueryBuilder} TODO: Description
      */
     withPackage(pkg) {
         this.query.package = pkg;
@@ -343,7 +341,7 @@ class CreateAccessPackageQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {CreateAccessPackageQuery}
+     * @returns {CreateAccessPackageQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -362,7 +360,7 @@ class DeleteAccessPackageQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {DeleteAccessPackageQueryBuilder}
+     * @returns {DeleteAccessPackageQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -373,7 +371,7 @@ class DeleteAccessPackageQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From party UUID.
-     * @returns {DeleteAccessPackageQueryBuilder}
+     * @returns {DeleteAccessPackageQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -384,8 +382,8 @@ class DeleteAccessPackageQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To party UUID.
-     * @returns {DeleteAccessPackageQueryBuilder}
-    */
+     * @returns {DeleteAccessPackageQueryBuilder} TODO: Description
+     */
     withTo(to) {
         this.query.to = to;
         return this;
@@ -395,7 +393,7 @@ class DeleteAccessPackageQueryBuilder {
      * Optional access package identifier.
      *
      * @param {string} packageId Package UUID.
-     * @returns {DeleteAccessPackageQueryBuilder}
+     * @returns {DeleteAccessPackageQueryBuilder} TODO: Description
      */
     withPackageId(packageId) {
         this.query.packageId = packageId;
@@ -406,7 +404,7 @@ class DeleteAccessPackageQueryBuilder {
      * Optional package identifier.
      *
      * @param {string} pkg Package identifier.
-     * @returns {DeleteAccessPackageQueryBuilder}
+     * @returns {DeleteAccessPackageQueryBuilder} TODO: Description
      */
     withPackage(pkg) {
         this.query.package = pkg;
@@ -416,7 +414,7 @@ class DeleteAccessPackageQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {DeleteAccessPackageQuery}
+     * @returns {DeleteAccessPackageQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -435,7 +433,7 @@ class AccessPackageDelegationCheckQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {AccessPackageDelegationCheckQueryBuilder}
+     * @returns {AccessPackageDelegationCheckQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -446,7 +444,7 @@ class AccessPackageDelegationCheckQueryBuilder {
      * Optional package identifiers.
      *
      * @param {Array<string>} packageIds Package UUIDs.
-     * @returns {AccessPackageDelegationCheckQueryBuilder}
+     * @returns {AccessPackageDelegationCheckQueryBuilder} TODO: Description
      */
     withPackageIds(packageIds) {
         this.query.packageIds = packageIds;
@@ -457,7 +455,7 @@ class AccessPackageDelegationCheckQueryBuilder {
      * Optional package identifiers.
      *
      * @param {Array<string>} packages Package identifiers.
-     * @returns {AccessPackageDelegationCheckQueryBuilder}
+     * @returns {AccessPackageDelegationCheckQueryBuilder} TODO: Description
      */
     withPackages(packages) {
         this.query.packages = packages;
@@ -467,7 +465,7 @@ class AccessPackageDelegationCheckQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {AccessPackageDelegationCheckQuery}
+     * @returns {AccessPackageDelegationCheckQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -486,7 +484,7 @@ class GetRolesQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetRolesQueryBuilder}
+     * @returns {GetRolesQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -497,7 +495,7 @@ class GetRolesQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From party UUID.
-     * @returns {GetRolesQueryBuilder}
+     * @returns {GetRolesQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -508,7 +506,7 @@ class GetRolesQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To party UUID.
-     * @returns {GetRolesQueryBuilder}
+     * @returns {GetRolesQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -518,7 +516,7 @@ class GetRolesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetRolesQuery}
+     * @returns {GetRolesQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -537,7 +535,7 @@ class DeleteRoleQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {DeleteRoleQueryBuilder}
+     * @returns {DeleteRoleQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -548,7 +546,7 @@ class DeleteRoleQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From party UUID.
-     * @returns {DeleteRoleQueryBuilder}
+     * @returns {DeleteRoleQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -559,7 +557,7 @@ class DeleteRoleQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To party UUID.
-     * @returns {DeleteRoleQueryBuilder}
+     * @returns {DeleteRoleQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -570,7 +568,7 @@ class DeleteRoleQueryBuilder {
      * Required role code.
      *
      * @param {string} rolecode Role code.
-     * @returns {DeleteRoleQueryBuilder}
+     * @returns {DeleteRoleQueryBuilder} TODO: Description
      */
     withRolecode(rolecode) {
         this.query.rolecode = rolecode;
@@ -580,13 +578,12 @@ class DeleteRoleQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {DeleteRoleQuery}
+     * @returns {DeleteRoleQuery} TODO: Description
      */
     build() {
         return this.query;
     }
 }
-
 
 /**
  * Builder for retrieving resource permissions query parameters.
@@ -600,7 +597,7 @@ class GetResourcesQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetResourcesQueryBuilder}
+     * @returns {GetResourcesQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -611,7 +608,7 @@ class GetResourcesQueryBuilder {
      * Optional source party identifier.
      *
      * @param {string} from From UUID.
-     * @returns {GetResourcesQueryBuilder}
+     * @returns {GetResourcesQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -622,7 +619,7 @@ class GetResourcesQueryBuilder {
      * Optional target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {GetResourcesQueryBuilder}
+     * @returns {GetResourcesQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -633,7 +630,7 @@ class GetResourcesQueryBuilder {
      * Optional resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {GetResourcesQueryBuilder}
+     * @returns {GetResourcesQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -643,7 +640,7 @@ class GetResourcesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetResourcesQuery}
+     * @returns {GetResourcesQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -662,7 +659,7 @@ class DeleteResourceQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {DeleteResourceQueryBuilder}
+     * @returns {DeleteResourceQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -673,7 +670,7 @@ class DeleteResourceQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From UUID.
-     * @returns {DeleteResourceQueryBuilder}
+     * @returns {DeleteResourceQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -684,7 +681,7 @@ class DeleteResourceQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {DeleteResourceQueryBuilder}
+     * @returns {DeleteResourceQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -695,7 +692,7 @@ class DeleteResourceQueryBuilder {
      * Optional resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {DeleteResourceQueryBuilder}
+     * @returns {DeleteResourceQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -705,7 +702,7 @@ class DeleteResourceQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {DeleteResourceQuery}
+     * @returns {DeleteResourceQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -724,7 +721,7 @@ class GetResourceRightsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetResourceRightsQueryBuilder}
+     * @returns {GetResourceRightsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -735,7 +732,7 @@ class GetResourceRightsQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From UUID.
-     * @returns {GetResourceRightsQueryBuilder}
+     * @returns {GetResourceRightsQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -746,7 +743,7 @@ class GetResourceRightsQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {GetResourceRightsQueryBuilder}
+     * @returns {GetResourceRightsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -757,7 +754,7 @@ class GetResourceRightsQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {GetResourceRightsQueryBuilder}
+     * @returns {GetResourceRightsQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -767,7 +764,7 @@ class GetResourceRightsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetResourceRightsQuery}
+     * @returns {GetResourceRightsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -786,7 +783,7 @@ class CreateResourceRightsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {CreateResourceRightsQueryBuilder}
+     * @returns {CreateResourceRightsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -797,7 +794,7 @@ class CreateResourceRightsQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {CreateResourceRightsQueryBuilder}
+     * @returns {CreateResourceRightsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -808,7 +805,7 @@ class CreateResourceRightsQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {CreateResourceRightsQueryBuilder}
+     * @returns {CreateResourceRightsQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -818,7 +815,7 @@ class CreateResourceRightsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {CreateResourceRightsQuery}
+     * @returns {CreateResourceRightsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -837,7 +834,7 @@ class UpdateResourceRightsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {UpdateResourceRightsQueryBuilder}
+     * @returns {UpdateResourceRightsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -848,7 +845,7 @@ class UpdateResourceRightsQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {UpdateResourceRightsQueryBuilder}
+     * @returns {UpdateResourceRightsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -859,7 +856,7 @@ class UpdateResourceRightsQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {UpdateResourceRightsQueryBuilder}
+     * @returns {UpdateResourceRightsQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -869,7 +866,7 @@ class UpdateResourceRightsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {UpdateResourceRightsQuery}
+     * @returns {UpdateResourceRightsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -888,7 +885,7 @@ class GetResourceDelegationCheckQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetResourceDelegationCheckQueryBuilder}
+     * @returns {GetResourceDelegationCheckQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -899,7 +896,7 @@ class GetResourceDelegationCheckQueryBuilder {
      * Optional resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {GetResourceDelegationCheckQueryBuilder}
+     * @returns {GetResourceDelegationCheckQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -909,7 +906,7 @@ class GetResourceDelegationCheckQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetResourceDelegationCheckQuery}
+     * @returns {GetResourceDelegationCheckQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -928,7 +925,7 @@ class GetInstancesQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetInstancesQueryBuilder}
+     * @returns {GetInstancesQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -939,7 +936,7 @@ class GetInstancesQueryBuilder {
      * Optional source party identifier.
      *
      * @param {string} from From UUID.
-     * @returns {GetInstancesQueryBuilder}
+     * @returns {GetInstancesQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -950,7 +947,7 @@ class GetInstancesQueryBuilder {
      * Optional target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {GetInstancesQueryBuilder}
+     * @returns {GetInstancesQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -961,7 +958,7 @@ class GetInstancesQueryBuilder {
      * Optional resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {GetInstancesQueryBuilder}
+     * @returns {GetInstancesQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -972,7 +969,7 @@ class GetInstancesQueryBuilder {
      * Optional instance identifier.
      *
      * @param {string} instance Instance identifier.
-     * @returns {GetInstancesQueryBuilder}
+     * @returns {GetInstancesQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -982,7 +979,7 @@ class GetInstancesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetInstancesQuery}
+     * @returns {GetInstancesQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -1001,7 +998,7 @@ class DeleteInstanceQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {DeleteInstanceQueryBuilder}
+     * @returns {DeleteInstanceQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -1012,7 +1009,7 @@ class DeleteInstanceQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From UUID.
-     * @returns {DeleteInstanceQueryBuilder}
+     * @returns {DeleteInstanceQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -1023,7 +1020,7 @@ class DeleteInstanceQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {DeleteInstanceQueryBuilder}
+     * @returns {DeleteInstanceQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -1034,7 +1031,7 @@ class DeleteInstanceQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {DeleteInstanceQueryBuilder}
+     * @returns {DeleteInstanceQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -1045,7 +1042,7 @@ class DeleteInstanceQueryBuilder {
      * Required instance identifier.
      *
      * @param {string} instance Instance identifier.
-     * @returns {DeleteInstanceQueryBuilder}
+     * @returns {DeleteInstanceQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -1055,7 +1052,7 @@ class DeleteInstanceQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {DeleteInstanceQuery}
+     * @returns {DeleteInstanceQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -1074,7 +1071,7 @@ class GetInstanceRightsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {GetInstanceRightsQueryBuilder}
+     * @returns {GetInstanceRightsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -1085,7 +1082,7 @@ class GetInstanceRightsQueryBuilder {
      * Required source party identifier.
      *
      * @param {string} from From party UUID.
-     * @returns {GetInstanceRightsQueryBuilder}
+     * @returns {GetInstanceRightsQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -1096,7 +1093,7 @@ class GetInstanceRightsQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To party UUID.
-     * @returns {GetInstanceRightsQueryBuilder}
+     * @returns {GetInstanceRightsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -1107,7 +1104,7 @@ class GetInstanceRightsQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {GetInstanceRightsQueryBuilder}
+     * @returns {GetInstanceRightsQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -1118,7 +1115,7 @@ class GetInstanceRightsQueryBuilder {
      * Required instance identifier.
      *
      * @param {string} instance Instance identifier.
-     * @returns {GetInstanceRightsQueryBuilder}
+     * @returns {GetInstanceRightsQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -1128,7 +1125,7 @@ class GetInstanceRightsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {GetInstanceRightsQuery}
+     * @returns {GetInstanceRightsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -1147,7 +1144,7 @@ class CreateInstanceRightsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {CreateInstanceRightsQueryBuilder}
+     * @returns {CreateInstanceRightsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -1158,7 +1155,7 @@ class CreateInstanceRightsQueryBuilder {
      * Optional target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {CreateInstanceRightsQueryBuilder}
+     * @returns {CreateInstanceRightsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -1169,7 +1166,7 @@ class CreateInstanceRightsQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {CreateInstanceRightsQueryBuilder}
+     * @returns {CreateInstanceRightsQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -1180,7 +1177,7 @@ class CreateInstanceRightsQueryBuilder {
      * Required instance identifier.
      *
      * @param {string} instance Instance identifier.
-     * @returns {CreateInstanceRightsQueryBuilder}
+     * @returns {CreateInstanceRightsQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -1190,7 +1187,7 @@ class CreateInstanceRightsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {CreateInstanceRightsQuery}
+     * @returns {CreateInstanceRightsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -1209,7 +1206,7 @@ class UpdateInstanceRightsQueryBuilder {
      * Required party identifier.
      *
      * @param {string} party Party UUID.
-     * @returns {UpdateInstanceRightsQueryBuilder}
+     * @returns {UpdateInstanceRightsQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -1220,7 +1217,7 @@ class UpdateInstanceRightsQueryBuilder {
      * Required target party identifier.
      *
      * @param {string} to To UUID.
-     * @returns {UpdateInstanceRightsQueryBuilder}
+     * @returns {UpdateInstanceRightsQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -1231,7 +1228,7 @@ class UpdateInstanceRightsQueryBuilder {
      * Required resource identifier.
      *
      * @param {string} resource Resource identifier.
-     * @returns {UpdateInstanceRightsQueryBuilder}
+     * @returns {UpdateInstanceRightsQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -1242,7 +1239,7 @@ class UpdateInstanceRightsQueryBuilder {
      * Required instance identifier.
      *
      * @param {string} instance Instance identifier.
-     * @returns {UpdateInstanceRightsQueryBuilder}
+     * @returns {UpdateInstanceRightsQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -1252,7 +1249,7 @@ class UpdateInstanceRightsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {UpdateInstanceRightsQuery}
+     * @returns {UpdateInstanceRightsQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -1266,8 +1263,8 @@ class GetInstanceDelegationCheckQueryBuilder {
     }
 
     /**
-     * @param {string} party
-     * @returns {GetInstanceDelegationCheckQueryBuilder}
+     * @param {string} party TODO: Description
+     * @returns {GetInstanceDelegationCheckQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -1275,8 +1272,8 @@ class GetInstanceDelegationCheckQueryBuilder {
     }
 
     /**
-     * @param {string} resource
-     * @returns {GetInstanceDelegationCheckQueryBuilder}
+     * @param {string} resource TODO: Description
+     * @returns {GetInstanceDelegationCheckQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -1284,8 +1281,8 @@ class GetInstanceDelegationCheckQueryBuilder {
     }
 
     /**
-     * @param {string} instance
-     * @returns {GetInstanceDelegationCheckQueryBuilder}
+     * @param {string} instance TODO: Description
+     * @returns {GetInstanceDelegationCheckQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -1293,7 +1290,7 @@ class GetInstanceDelegationCheckQueryBuilder {
     }
 
     /**
-     * @returns {GetInstanceDelegationCheckQuery}
+     * @returns {GetInstanceDelegationCheckQuery} TODO: Description
      */
     build() {
         return this.query;
@@ -1307,8 +1304,8 @@ class GetInstanceUsersQueryBuilder {
     }
 
     /**
-     * @param {string} party
-     * @returns {GetInstanceUsersQueryBuilder}
+     * @param {string} party TODO: Description
+     * @returns {GetInstanceUsersQueryBuilder} TODO: Description
      */
     withParty(party) {
         this.query.party = party;
@@ -1316,8 +1313,8 @@ class GetInstanceUsersQueryBuilder {
     }
 
     /**
-     * @param {string} resource
-     * @returns {GetInstanceUsersQueryBuilder}
+     * @param {string} resource TODO: Description
+     * @returns {GetInstanceUsersQueryBuilder} TODO: Description
      */
     withResource(resource) {
         this.query.resource = resource;
@@ -1325,8 +1322,8 @@ class GetInstanceUsersQueryBuilder {
     }
 
     /**
-     * @param {string} instance
-     * @returns {GetInstanceUsersQueryBuilder}
+     * @param {string} instance TODO: Description
+     * @returns {GetInstanceUsersQueryBuilder} TODO: Description
      */
     withInstance(instance) {
         this.query.instance = instance;
@@ -1334,35 +1331,33 @@ class GetInstanceUsersQueryBuilder {
     }
 
     /**
-     * @returns {GetInstanceUsersQuery}
+     * @returns {GetInstanceUsersQuery} TODO: Description
      */
     build() {
         return this.query;
     }
 }
 
-
-
 export {
-    GetConnectionUsersQueryBuilder,
-    GetConnectionsQueryBuilder,
-    CreateConnectionQueryBuilder,
-    DeleteConnectionQueryBuilder,
-    GetAccessPackagesQueryBuilder,
-    CreateAccessPackageQueryBuilder,
-    DeleteAccessPackageQueryBuilder,
     AccessPackageDelegationCheckQueryBuilder,
-    GetRolesQueryBuilder,
-    DeleteRoleQueryBuilder,
-    GetResourceRightsQueryBuilder,
-    CreateResourceRightsQueryBuilder,
-    UpdateResourceRightsQueryBuilder,
-    GetResourceDelegationCheckQueryBuilder,
-    GetInstancesQueryBuilder,
-    DeleteInstanceQueryBuilder,
-    GetInstanceRightsQueryBuilder,
+    CreateAccessPackageQueryBuilder,
+    CreateConnectionQueryBuilder,
     CreateInstanceRightsQueryBuilder,
-    UpdateInstanceRightsQueryBuilder,
+    CreateResourceRightsQueryBuilder,
+    DeleteAccessPackageQueryBuilder,
+    DeleteConnectionQueryBuilder,
+    DeleteInstanceQueryBuilder,
+    DeleteRoleQueryBuilder,
+    GetAccessPackagesQueryBuilder,
+    GetConnectionsQueryBuilder,
+    GetConnectionUsersQueryBuilder,
     GetInstanceDelegationCheckQueryBuilder,
-    GetInstanceUsersQueryBuilder
+    GetInstanceRightsQueryBuilder,
+    GetInstancesQueryBuilder,
+    GetInstanceUsersQueryBuilder,
+    GetResourceDelegationCheckQueryBuilder,
+    GetResourceRightsQueryBuilder,
+    GetRolesQueryBuilder,
+    UpdateInstanceRightsQueryBuilder,
+    UpdateResourceRightsQueryBuilder
 };

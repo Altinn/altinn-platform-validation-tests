@@ -1,23 +1,23 @@
 /**
- * @typedef {Object} AttributeDto
+ * @typedef {object} AttributeDto
  * @property {string|null} type
  * @property {string|null} value
  */
 
 /**
- * @typedef {Object} ProviderTypeDto
+ * @typedef {object} ProviderTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} ResourceTypeDto
+ * @typedef {object} ResourceTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} ProviderDto
+ * @typedef {object} ProviderDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} refId
@@ -28,7 +28,7 @@
  */
 
 /**
- * @typedef {Object} ResourceDto
+ * @typedef {object} ResourceDto
  * @property {string} id UUID.
  * @property {string} providerId UUID.
  * @property {string} typeId UUID.
@@ -44,19 +44,19 @@
  */
 
 /**
- * @typedef {Object} AccessReasonRecord
+ * @typedef {object} AccessReasonRecord
  * @property {string|null} name
  * @property {string|null} description
  */
 
 /**
- * @typedef {Object} AccessReason
+ * @typedef {object} AccessReason
  * @property {AccessReasonFlag} flag
  * @property {Array<AccessReasonRecord>|null} items
  */
 
 /**
- * @typedef {Object} RightDto
+ * @typedef {object} RightDto
  * @property {string|null} key
  * @property {string|null} name
  * @property {Array<AttributeDto>|null} resource
@@ -68,20 +68,20 @@
  */
 
 /**
- * @typedef {Object} RightCheckDto
+ * @typedef {object} RightCheckDto
  * @property {RightDto} right
  * @property {boolean} result
  * @property {Array<DelegationCheckReasonCode>|null} reasonCodes
  */
 
 /**
- * @typedef {Object} ResourceCheckDto
+ * @typedef {object} ResourceCheckDto
  * @property {ResourceDto} resource
  * @property {Array<RightCheckDto>|null} rights
  */
 
 /**
- * @typedef {Object} CompactRoleDto
+ * @typedef {object} CompactRoleDto
  * @property {string} id UUID.
  * @property {string|null} code
  * @property {string|null} urn
@@ -90,7 +90,7 @@
  */
 
 /**
- * @typedef {Object} CompactEntityDto
+ * @typedef {object} CompactEntityDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} type
@@ -109,20 +109,20 @@
  */
 
 /**
- * @typedef {Object} AccessPackageDto
+ * @typedef {object} AccessPackageDto
  * @property {string} id UUID.
  * @property {string|null} urn
  * @property {string} areaId UUID.
  */
 
 /**
- * @typedef {Object} ConnectionInstanceDto
+ * @typedef {object} ConnectionInstanceDto
  * @property {string|null} resourceRefId
  * @property {string|null} instanceId
  */
 
 /**
- * @typedef {Object} PermissionDto
+ * @typedef {object} PermissionDto
  * @property {CompactEntityDto} from
  * @property {CompactEntityDto} to
  * @property {CompactEntityDto} via
@@ -132,13 +132,13 @@
  */
 
 /**
- * @typedef {Object} ResourcePermissionDto
+ * @typedef {object} ResourcePermissionDto
  * @property {ResourceDto} resource
  * @property {Array<PermissionDto>|null} permissions
  */
 
 /**
- * @typedef {Object} ConnectionDto
+ * @typedef {object} ConnectionDto
  * @property {CompactEntityDto} party
  * @property {Array<CompactRoleDto>|null} roles
  * @property {Array<AccessPackageDto>|null} packages
@@ -148,7 +148,7 @@
  */
 
 /**
- * @typedef {Object} AssignmentDto
+ * @typedef {object} AssignmentDto
  * @property {string|null} id UUID.
  * @property {string|null} roleId UUID.
  * @property {string|null} fromId UUID.
@@ -164,7 +164,7 @@
  *
  * Use {@link MaskinportenSuppliersQueryBuilder} to construct this object.
  *
- * @typedef {Object} MaskinportenSuppliersQuery
+ * @typedef {object} MaskinportenSuppliersQuery
  * @property {string} party Party UUID.
  * @property {string|null} [supplier]
  * Supplier identifier.
@@ -179,7 +179,7 @@
  * Use {@link MaskinportenSupplierResourcesQueryBuilder} to construct this
  * object.
  *
- * @typedef {Object} MaskinportenSupplierResourcesQuery
+ * @typedef {object} MaskinportenSupplierResourcesQuery
  * @property {string} party Party UUID.
  * @property {string|null} [supplier]
  * Supplier identifier.
@@ -193,7 +193,7 @@
  * Use {@link MaskinportenSupplierDelegationCheckQueryBuilder} to construct this
  * object.
  *
- * @typedef {Object} MaskinportenSupplierDelegationCheckQuery
+ * @typedef {object} MaskinportenSupplierDelegationCheckQuery
  * @property {string} party Party UUID.
  * @property {string} resource Resource identifier.
  */

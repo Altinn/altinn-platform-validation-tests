@@ -129,7 +129,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetConnections(
         query = null,
@@ -189,7 +189,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateConnection(
         query = null,
@@ -248,7 +248,7 @@ class ConnectionsClient {
      * {@link DeleteConnectionQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteConnection(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -290,7 +290,6 @@ class ConnectionsClient {
         });
     }
 
-
     /**
      * Gets users connected to a party.
      *
@@ -301,7 +300,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetConnectionUsers(
         query = null,
@@ -360,7 +359,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetAccessPackages(
         query = null,
@@ -420,7 +419,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateAccessPackage(
         query = null,
@@ -479,7 +478,7 @@ class ConnectionsClient {
      * {@link DeleteAccessPackageQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteAccessPackage(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -529,7 +528,7 @@ class ConnectionsClient {
      * {@link AccessPackageDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetAccessPackageDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -581,7 +580,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetRoles(
         query = null,
@@ -638,7 +637,7 @@ class ConnectionsClient {
      * {@link DeleteRoleQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteRole(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -689,7 +688,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetResourceRights(
         query = null,
@@ -749,7 +748,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateResourceRights(
         query = null,
@@ -810,7 +809,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdateResourceRights(
         query = null,
@@ -868,7 +867,7 @@ class ConnectionsClient {
      * {@link GetResourceDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetResourceDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -919,7 +918,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetInstances(
         query = null,
@@ -977,7 +976,7 @@ class ConnectionsClient {
      * {@link DeleteInstanceQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteInstance(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1028,7 +1027,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetInstanceRights(
         query = null,
@@ -1088,7 +1087,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateInstanceRights(
         query = null,
@@ -1149,7 +1148,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdateInstanceRights(
         query = null,
@@ -1209,7 +1208,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetInstanceRights(
         query = null,
@@ -1269,7 +1268,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateInstanceRights(
         query = null,
@@ -1330,7 +1329,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdateInstanceRights(
         query = null,
@@ -1389,7 +1388,7 @@ class ConnectionsClient {
      * {@link GetInstanceDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetInstanceDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1440,7 +1439,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetInstanceUsers(
         query = null,

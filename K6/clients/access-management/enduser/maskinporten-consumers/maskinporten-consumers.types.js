@@ -3,38 +3,38 @@
  */
 
 /**
- * @typedef {Object} AccessReasonRecord
+ * @typedef {object} AccessReasonRecord
  * @property {string|null} name
  * @property {string|null} description
  */
 
 /**
- * @typedef {Object} ProviderTypeDto
+ * @typedef {object} ProviderTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} ResourceTypeDto
+ * @typedef {object} ResourceTypeDto
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {Object} AccessPackageDto
+ * @typedef {object} AccessPackageDto
  * @property {string} id UUID.
  * @property {string} urn
  * @property {string} areaId UUID.
  */
 
 /**
- * @typedef {Object} ConnectionInstanceDto
+ * @typedef {object} ConnectionInstanceDto
  * @property {string|null} resourceRefId
  * @property {string|null} instanceId
  */
 
 /**
- * @typedef {Object} ProviderDto
+ * @typedef {object} ProviderDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} refId
@@ -45,7 +45,7 @@
  */
 
 /**
- * @typedef {Object} AccessReason
+ * @typedef {object} AccessReason
  * @property {AccessReasonFlag} flag
  * @property {Array<AccessReasonRecord>|null} items
  */
@@ -59,7 +59,7 @@
  *
  * Use {@link MaskinportenConsumersQueryBuilder} to construct this object.
  *
- * @typedef {Object} MaskinportenConsumersQuery
+ * @typedef {object} MaskinportenConsumersQuery
  * @property {string} party Party UUID.
  * @property {string|null} [consumer]
  * @property {boolean|null} [cascade]
@@ -70,14 +70,14 @@
  *
  * Use {@link MaskinportenConsumerResourcesQueryBuilder} to construct this object.
  *
- * @typedef {Object} MaskinportenConsumerResourcesQuery
+ * @typedef {object} MaskinportenConsumerResourcesQuery
  * @property {string} party Party UUID.
  * @property {string|null} [consumer]
  * @property {string|null} [resource]
  */
 
 /**
- * @typedef {Object} CompactRoleDto
+ * @typedef {object} CompactRoleDto
  * @property {string} id UUID.
  * @property {string|null} code
  * @property {string|null} urn
@@ -86,7 +86,7 @@
  */
 
 /**
- * @typedef {Object} CompactEntityDto
+ * @typedef {object} CompactEntityDto
  * @property {string} id UUID.
  * @property {string|null} name
  * @property {string|null} type
@@ -105,7 +105,7 @@
  */
 
 /**
- * @typedef {Object} ResourceDto
+ * @typedef {object} ResourceDto
  * @property {string} id UUID.
  * @property {string} providerId UUID.
  * @property {string} typeId UUID.
@@ -117,7 +117,7 @@
  */
 
 /**
- * @typedef {Object} PermissionDto
+ * @typedef {object} PermissionDto
  * @property {CompactEntityDto} from
  * @property {CompactEntityDto} to
  * @property {CompactEntityDto} via
@@ -127,13 +127,13 @@
  */
 
 /**
- * @typedef {Object} ResourcePermissionDto
+ * @typedef {object} ResourcePermissionDto
  * @property {ResourceDto} resource
  * @property {Array<PermissionDto>|null} permissions
  */
 
 /**
- * @typedef {Object} ConnectionDto
+ * @typedef {object} ConnectionDto
  * @property {CompactEntityDto} party
  * @property {Array<CompactRoleDto>|null} roles
  * @property {Array<AccessPackageDto>|null} packages
