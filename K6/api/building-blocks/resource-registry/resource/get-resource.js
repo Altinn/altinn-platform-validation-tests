@@ -1,13 +1,13 @@
 import { check } from "k6";
 
-import { ResourceClient } from "../../../../clients/resource/index.js";
+import { ResourceClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Gets a resource.
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{versionId?: number}|Object} [query] Optional query parameters.
+ * @param {{versionId?: number} | object} [query] Optional query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ServiceResource|null} Resource.
  */

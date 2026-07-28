@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AccessListClient } from "../../../../clients/access-list/index.js";
+import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Gets access lists for a given member.

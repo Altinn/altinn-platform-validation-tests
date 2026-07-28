@@ -1,8 +1,8 @@
 /**
  * Builder for creating query parameters for searching resources.
  *
- * @typedef {Object} ResourceSearchQueryBuilder
- * @property {Object} query The underlying search query parameters.
+ * @typedef {object} ResourceSearchQueryBuilder
+ * @property {object} query The underlying search query parameters.
  * @property {string|null} query.Id Resource identifier filter.
  * @property {string|null} query.Title Title filter.
  * @property {string|null} query.Description Description filter.
@@ -25,8 +25,8 @@ class ResourceSearchQueryBuilder {
     /**
      * Sets resource identifier filter.
      *
-     * @param {string} value
-     * @returns {ResourceSearchQueryBuilder}
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
      */
     withId(value) {
         this.query.Id = value;
@@ -37,8 +37,8 @@ class ResourceSearchQueryBuilder {
     /**
      * Sets title filter.
      *
-     * @param {string} value
-     * @returns {ResourceSearchQueryBuilder}
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
      */
     withTitle(value) {
         this.query.Title = value;
@@ -49,8 +49,8 @@ class ResourceSearchQueryBuilder {
     /**
      * Sets description filter.
      *
-     * @param {string} value
-     * @returns {ResourceSearchQueryBuilder}
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
      */
     withDescription(value) {
         this.query.Description = value;
@@ -61,8 +61,8 @@ class ResourceSearchQueryBuilder {
     /**
      * Sets resource type filter.
      *
-     * @param {ResourceType} value
-     * @returns {ResourceSearchQueryBuilder}
+     * @param {ResourceType} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
      */
     withResourceType(value) {
         this.query.ResourceType = value;
@@ -73,8 +73,8 @@ class ResourceSearchQueryBuilder {
     /**
      * Sets keyword filter.
      *
-     * @param {string} value
-     * @returns {ResourceSearchQueryBuilder}
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
      */
     withKeyword(value) {
         this.query.Keyword = value;
@@ -85,8 +85,8 @@ class ResourceSearchQueryBuilder {
     /**
      * Sets reference filter.
      *
-     * @param {string} value
-     * @returns {ResourceSearchQueryBuilder}
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
      */
     withReference(value) {
         this.query.Reference = value;
@@ -97,7 +97,7 @@ class ResourceSearchQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {Object}
+     * @returns {object} The result.
      */
     build() {
         return this.query;
@@ -107,8 +107,8 @@ class ResourceSearchQueryBuilder {
 /**
  * Builder for creating query parameters for retrieving updated resources.
  *
- * @typedef {Object} ResourceUpdatedQueryBuilder
- * @property {Object} query The underlying query parameter object.
+ * @typedef {object} ResourceUpdatedQueryBuilder
+ * @property {object} query The underlying query parameter object.
  * @property {string} [query.since] Date time used for filtering.
  * @property {string} [query.token] Opaque continuation token.
  * @property {number} [query.limit] Maximum number of pairs returned.
@@ -122,7 +122,7 @@ class ResourceUpdatedQueryBuilder {
      * Sets the date time used for filtering.
      *
      * @param {string} since Date time.
-     * @returns {ResourceUpdatedQueryBuilder}
+     * @returns {ResourceUpdatedQueryBuilder} This builder, for chaining.
      */
     since(since) {
         this.query.since = since;
@@ -134,7 +134,7 @@ class ResourceUpdatedQueryBuilder {
      * Sets the continuation token.
      *
      * @param {string} token Continuation token.
-     * @returns {ResourceUpdatedQueryBuilder}
+     * @returns {ResourceUpdatedQueryBuilder} This builder, for chaining.
      */
     token(token) {
         this.query.token = token;
@@ -146,7 +146,7 @@ class ResourceUpdatedQueryBuilder {
      * Sets the maximum number of pairs returned.
      *
      * @param {number} limit Maximum number of pairs.
-     * @returns {ResourceUpdatedQueryBuilder}
+     * @returns {ResourceUpdatedQueryBuilder} This builder, for chaining.
      */
     limit(limit) {
         this.query.limit = limit;
@@ -157,7 +157,7 @@ class ResourceUpdatedQueryBuilder {
     /**
      * Returns the built query object.
      *
-     * @returns {Object}
+     * @returns {object} The result.
      */
     build() {
         return this.query;
@@ -167,4 +167,4 @@ class ResourceUpdatedQueryBuilder {
 export {
     ResourceSearchQueryBuilder,
     ResourceUpdatedQueryBuilder
-}
+};

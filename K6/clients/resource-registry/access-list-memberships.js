@@ -35,13 +35,13 @@ class AccessListMembershipsClient {
     /**
      * Gets memberships for parties and resources.
      *
-     * @param {Object|null} [query]
+     * @param {object | null} [query] Query parameters.
      * Optional query parameters.
      * @param {Array<string>} [query.party] Parties to include.
      * @param {Array<string>} [query.resource] Resources to include.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AccessListMembershipsGetMemberships(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -95,6 +95,7 @@ class AccessListMembershipsClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

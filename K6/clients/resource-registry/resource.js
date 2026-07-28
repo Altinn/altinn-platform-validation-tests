@@ -55,11 +55,6 @@ const TAGS = {
         action: "resource-updated",
     },
 
-
-
-
-
-
 };
 
 class ResourceClient {
@@ -91,13 +86,13 @@ class ResourceClient {
     /**
      * Gets all resources.
      *
-     * @param {Object} [query] Optional query parameters.
-     * @param {boolean} [query.includeApps]
-     * @param {boolean} [query.includeAltinn2]
-     * @param {boolean} [query.includeMigratedApps]
-     * @param {{[key:string]:string}} [labels]
+     * @param {object} [query] Optional query parameters.
+     * @param {boolean} [query.includeApps] Whether to include apps.
+     * @param {boolean} [query.includeAltinn2] Whether to include altinn2.
+     * @param {boolean} [query.includeMigratedApps] Whether to include migrated apps.
+     * @param {{[key:string]:string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetResourceList(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -141,6 +136,7 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -148,9 +144,9 @@ class ResourceClient {
     /**
      * Exports all resources as RDF/XML.
      *
-     * @param {{[key:string]:string}} [labels]
+     * @param {{[key:string]:string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceExport(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -179,14 +175,13 @@ class ResourceClient {
         });
     }
 
-
     /**
      * Gets a single resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{versionId?: number}|Object} [query] Optional query parameters.
+     * @param {{versionId?: number} | object} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetResource(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -230,17 +225,17 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
-
 
     /**
      * Creates a resource.
      *
      * @param {ServiceResource} resource Resource payload.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceCreateResource(resource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -265,10 +260,10 @@ class ResourceClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
-
 
     /**
      * Updates a resource.
@@ -276,7 +271,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {ServiceResource} resource Updated resource.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceUpdateResource(id, resource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -285,7 +280,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(id)}`,
             action: TAGS.ResourceUpdateResource.action,
         };
 
@@ -301,17 +296,17 @@ class ResourceClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
-
 
     /**
      * Deletes a resource.
      *
      * @param {string} id Resource identifier.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceDeleteResource(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -320,7 +315,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(id)}`,
             action: TAGS.ResourceDeleteResource.action,
         };
 
@@ -335,6 +330,7 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -344,7 +340,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetPolicy(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -353,7 +349,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
             action: TAGS.ResourceGetPolicy.action,
         };
 
@@ -368,6 +364,7 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -378,7 +375,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceCreatePolicy(id, policyFile, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -387,7 +384,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
             action: TAGS.ResourceCreatePolicy.action,
         };
 
@@ -407,6 +404,7 @@ class ResourceClient {
                 tags,
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
                 },
             },
         );
@@ -418,7 +416,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceUpdatePolicy(id, policyFile, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -427,7 +425,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
             action: TAGS.ResourceUpdatePolicy.action,
         };
 
@@ -447,19 +445,19 @@ class ResourceClient {
                 tags,
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
                 },
             },
         );
     }
 
-
     /**
      * Gets policy subjects.
      *
      * @param {string} id Resource identifier.
-     * @param {{reloadFromXacml?: boolean}|Object} [query] Optional query parameters.
+     * @param {{reloadFromXacml?: boolean} | object} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetPolicySubjects(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -488,7 +486,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
             action: TAGS.ResourceGetPolicySubjects.action,
         };
 
@@ -503,19 +501,18 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
-
 
     /**
      * Gets flattened policy rules for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     *
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetPolicyRules(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -524,7 +521,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}/policy/rules`,
             action: ResourceClient.TAGS.ResourceGetPolicyRules.action,
         };
 
@@ -539,6 +536,7 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -547,10 +545,9 @@ class ResourceClient {
      * Gets rights from a resource policy.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     *
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetPolicyRights(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -559,7 +556,7 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}/policy/rights`,
             action: ResourceClient.TAGS.ResourceGetPolicyRights.action,
         };
 
@@ -574,6 +571,7 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -582,10 +580,9 @@ class ResourceClient {
      * Gets resources connected to subjects.
      *
      * @param {Array<string>} subjects List of subjects for resource information.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     *
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceGetResourcesBySubjects(subjects, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -610,6 +607,7 @@ class ResourceClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -617,12 +615,11 @@ class ResourceClient {
     /**
      * Searches for resources in the resource registry.
      *
-     * @param {ResourceSearchQueryBuilder|Object|null} [query]
+     * @param {ResourceSearchQueryBuilder | object | null} [query] Query parameters.
      * Optional search query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     *
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -666,17 +663,18 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
     /**
      * Gets the updated resources since the provided last updated time.
      *
-     * @param {ResourceUpdatedQueryBuilder|Object} [query]
+     * @param {ResourceUpdatedQueryBuilder | object} [query] Query parameters.
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceUpdated(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -720,11 +718,10 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
-
-
 
 }
 

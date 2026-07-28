@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AccessListClient } from "../../../../clients/access-list/index.js";
+import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Creates or updates a resource connection.
@@ -11,7 +11,7 @@ import { AccessListClient } from "../../../../clients/access-list/index.js";
  * @param {string} resourceIdentifier Resource identifier.
  * @param {UpsertAccessListResourceConnectionDto} request Resource connection payload.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AccessListResourceConnectionWithVersionDto|null}
+ * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsUpsertResourceConnection(
     accessListClient,

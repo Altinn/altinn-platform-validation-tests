@@ -35,9 +35,9 @@ class ResourceOwnerClient {
     /**
      * Gets the organization list.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceOwnerGetOrgs(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -61,6 +61,7 @@ class ResourceOwnerClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

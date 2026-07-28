@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ResourceClient } from "../../../../clients/resource/index.js";
+import { ResourceClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Gets resources connected to subjects.

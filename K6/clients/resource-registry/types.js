@@ -7,7 +7,7 @@
  */
 
 /**
- * @typedef {Object} AccessListResourceMembershipWithActionFilterDto
+ * @typedef {object} AccessListResourceMembershipWithActionFilterDto
  * @property {PartyUrnPartyUuid} party
  * @property {ResourceUrnResourceId} resource
  * @property {string} since
@@ -15,7 +15,7 @@
  */
 
 /**
- * @typedef {Object} AccessListResourceMembershipWithActionFilterDtoListObject
+ * @typedef {object} AccessListResourceMembershipWithActionFilterDtoListObject
  * @property {Array<AccessListResourceMembershipWithActionFilterDto>} data
  */
 
@@ -28,7 +28,7 @@
  */
 
 /**
- * @typedef {Object} AccessListInfoDto
+ * @typedef {object} AccessListInfoDto
  * @property {string|null} urn URN of the access list.
  * @property {string} identifier The access list identifier.
  * @property {string} name The access list name.
@@ -39,7 +39,7 @@
  */
 
 /**
- * @typedef {Object} CreateAccessListModel
+ * @typedef {object} CreateAccessListModel
  * @property {string|null} name The access list name.
  * @property {string|null} description The access list description.
  */
@@ -53,7 +53,7 @@
  */
 
 /**
- * @typedef {Object} AccessListResourceConnectionDto
+ * @typedef {object} AccessListResourceConnectionDto
  * @property {string} resourceIdentifier The resource identifier.
  * @property {string} createdAt When the connection was created.
  * @property {string} updatedAt When the connection was last updated.
@@ -61,7 +61,7 @@
  */
 
 /**
- * @typedef {Object} AccessListResourceConnectionWithVersionDto
+ * @typedef {object} AccessListResourceConnectionWithVersionDto
  * @property {string} resourceIdentifier The resource identifier.
  * @property {string} createdAt When the connection was created.
  * @property {string} updatedAt When the connection was last updated.
@@ -69,43 +69,43 @@
  */
 
 /**
- * @typedef {Object} AccessListMembershipIdentifiers
+ * @typedef {object} AccessListMembershipIdentifiers
  * @property {number|null} ["urn:altinn:party:id"] Party identifier.
  * @property {string|null} ["urn:altinn:party:uuid"] Party UUID.
- * @property {Object|null} ["urn:altinn:organization:identifier-no"] Organization number.
+ * @property {object | null} ["urn:altinn:organization:identifier-no"] Organization number.
  */
 
 /**
- * @typedef {Object} AccessListMembershipDto
+ * @typedef {object} AccessListMembershipDto
  * @property {PartyUuidUrn} id Party UUID URN.
  * @property {string} since Since when the party has been a member of the access list.
  * @property {AccessListMembershipIdentifiers|null} identifiers Optional identifiers.
  */
 
 /**
- * @typedef {Object} PaginatedLinks
+ * @typedef {object} PaginatedLinks
  * @property {string|null} next Link to the next page of items.
  */
 
 /**
- * @typedef {Object} AccessListMembershipDtoAggregateVersionVersionedPaginated
+ * @typedef {object} AccessListMembershipDtoAggregateVersionVersionedPaginated
  * @property {Array<AccessListMembershipDto>} data Items.
  * @property {PaginatedLinks} links Pagination links.
  */
 
 /**
- * @typedef {Object} AccessListResourceConnectionDtoAggregateVersionVersionedPaginated
+ * @typedef {object} AccessListResourceConnectionDtoAggregateVersionVersionedPaginated
  * @property {Array<AccessListResourceConnectionDto>} data Items.
  * @property {PaginatedLinks} links Pagination links.
  */
 
 /**
- * @typedef {Object} UpsertAccessListResourceConnectionDto
+ * @typedef {object} UpsertAccessListResourceConnectionDto
  * @property {Array<string>|null} actionFilters Allowed actions.
  */
 
 /**
- * @typedef {Object} JsonPatchOperation
+ * @typedef {object} JsonPatchOperation
  * @property {"add"|"copy"|"move"|"remove"|"replace"|"test"} op Operation type.
  * @property {string} path JSON pointer path.
  * @property {string|null} from Source path for copy/move operations.
@@ -128,46 +128,41 @@
  * @typedef {string} AccessListResourceConnectionContinuationTokenOpaque
  */
 
-
 /**
- * @typedef {Object} AccessListRequestHeaders
+ * @typedef {object} AccessListRequestHeaders
  * @property {string|null} ifMatch If-Match header.
  * @property {string|null} ifNoneMatch If-None-Match header.
  * @property {string|null} ifModifiedSince If-Modified-Since header.
  * @property {string|null} ifUnmodifiedSince If-Unmodified-Since header.
  */
 
-
 /**
  * Builder for creating CreateAccessListModel payloads.
  *
- * @typedef {Object} CreateAccessListBuilder
- * @property {Object} model The underlying access list payload.
+ * @typedef {object} CreateAccessListBuilder
+ * @property {object} model The underlying access list payload.
  * @property {string|null} model.name Access list name.
  * @property {string|null} model.description Access list description.
  */
 
-
 /**
  * Builder for creating UpsertAccessListResourceConnectionDto payloads.
  *
- * @typedef {Object} AccessListResourceConnectionBuilder
- * @property {Object} model The underlying resource connection payload.
+ * @typedef {object} AccessListResourceConnectionBuilder
+ * @property {object} model The underlying resource connection payload.
  * @property {Array<string>|null} model.actionFilters Allowed actions.
  */
-
 
 /**
  * Builder for creating access list member payloads.
  *
- * @typedef {Object} AccessListMembersBuilder
- * @property {Object} model The underlying members payload.
+ * @typedef {object} AccessListMembersBuilder
+ * @property {object} model The underlying members payload.
  * @property {Array<PartyUrn>} model.data Members.
  */
 
-
 /**
- * @typedef {Object} Org
+ * @typedef {object} Org
  * @property {{[key:string]: string|null}|null} name
  * Localized organization names keyed by language code.
  * @property {string|null} logo
@@ -177,19 +172,18 @@
  */
 
 /**
- * @typedef {Object} OrgList
+ * @typedef {object} OrgList
  * @property {{[key:string]: Org}|null} orgs
  */
 
-
 /**
- * @typedef {Object} AttributeMatchDTO
+ * @typedef {object} AttributeMatchDTO
  * @property {string|null} type
  * @property {string|null} value
  */
 
 /**
- * @typedef {Object} RightDto
+ * @typedef {object} RightDto
  * @property {string|null} key
  * Unique key for the action.
  * @property {string|null} name
@@ -201,12 +195,12 @@
  */
 
 /**
- * @typedef {Object} RightDecomposedDto
+ * @typedef {object} RightDecomposedDto
  * @property {RightDto} right
  */
 
 /**
- * @typedef {Object} ResourceDecomposedDto
+ * @typedef {object} ResourceDecomposedDto
  * @property {Array<RightDecomposedDto>|null} rights
  */
 
@@ -231,7 +225,7 @@
  */
 
 /**
- * @typedef {Object} ContactPoint
+ * @typedef {object} ContactPoint
  * @property {string|null} category
  * @property {string|null} email
  * @property {string|null} telephone
@@ -239,38 +233,38 @@
  */
 
 /**
- * @typedef {Object} ResourceReference
+ * @typedef {object} ResourceReference
  * @property {ReferenceSource} referenceSource
  * @property {string|null} reference
  * @property {ReferenceType} referenceType
  */
 
 /**
- * @typedef {Object} CompetentAuthority
+ * @typedef {object} CompetentAuthority
  * @property {string|null} organization
  * @property {string|null} orgcode
  * @property {{[key:string]:string|null}|null} name
  */
 
 /**
- * @typedef {Object} Keyword
+ * @typedef {object} Keyword
  * @property {string|null} word
  * @property {string|null} language
  */
 
 /**
- * @typedef {Object} AuthorizationReferenceAttribute
+ * @typedef {object} AuthorizationReferenceAttribute
  * @property {string|null} id
  * @property {string|null} value
  */
 
 /**
- * @typedef {Object} ConsentMetadata
+ * @typedef {object} ConsentMetadata
  * @property {boolean} optional
  */
 
 /**
- * @typedef {Object} ServiceResource
+ * @typedef {object} ServiceResource
  * @property {string} identifier
  * @property {string|null} version
  * @property {{[key:string]:string}} title
@@ -304,47 +298,45 @@
 /**
  * Builder for creating query parameters for retrieving resources.
  *
- * @typedef {Object} ResourceListQueryBuilder
+ * @typedef {object} ResourceListQueryBuilder
  * @property {boolean} [includeApps]
  * @property {boolean} [includeAltinn2]
  * @property {boolean} [includeMigratedApps]
  */
 
-
 /**
- * @typedef {Object} AttributeMatchV2
+ * @typedef {object} AttributeMatchV2
  * @property {string} type
  * @property {string} value
  * @property {string} urn
  */
 
 /**
- * @typedef {Object} AttributeMatchV2Paginated
+ * @typedef {object} AttributeMatchV2Paginated
  * @property {Array<AttributeMatchV2>} data
  * @property {PaginatedLinks} links
  */
 
-
 /**
- * @typedef {Object} UrnJsonTypeValue
+ * @typedef {object} UrnJsonTypeValue
  * @property {string} type
  * @property {string} value
  */
 
 /**
- * @typedef {Object} PolicyRuleDTO
+ * @typedef {object} PolicyRuleDTO
  * @property {Array<UrnJsonTypeValue>|null} subject
  * @property {UrnJsonTypeValue} action
  * @property {Array<UrnJsonTypeValue>|null} resource
  */
 
 /**
- * @typedef {Object} PolicySubjectDTO
+ * @typedef {object} PolicySubjectDTO
  * @property {Array<UrnJsonTypeValue>|null} subjectAttributes
  */
 
 /**
- * @typedef {Object} PolicyRightsDTO
+ * @typedef {object} PolicyRightsDTO
  * @property {UrnJsonTypeValue} action
  * @property {Array<UrnJsonTypeValue>|null} resource
  * @property {Array<PolicySubjectDTO>|null} subjects
@@ -352,15 +344,14 @@
  * @property {Array<string>|null} subjectTypes
  */
 
-
 /**
- * @typedef {Object} SubjectResources
+ * @typedef {object} SubjectResources
  * @property {AttributeMatchV2} subject
  * @property {Array<AttributeMatchV2>} resources
  */
 
 /**
- * @typedef {Object} SubjectResourcesPaginated
+ * @typedef {object} SubjectResourcesPaginated
  * @property {Array<SubjectResources>} data
  * @property {PaginatedLinks} links
  */
@@ -368,7 +359,7 @@
 /**
  * Builder for searching resources.
  *
- * @typedef {Object} ResourceSearchQueryBuilder
+ * @typedef {object} ResourceSearchQueryBuilder
  * @property {string|null} Id Resource identifier filter.
  * @property {string|null} Title Title filter.
  * @property {string|null} Description Description filter.
@@ -378,7 +369,7 @@
  */
 
 /**
- * @typedef {Object} UpdatedResourceSubject
+ * @typedef {object} UpdatedResourceSubject
  * @property {string|null} subjectUrn
  * @property {string|null} resourceUrn
  * @property {string} updatedAt
@@ -386,20 +377,20 @@
  */
 
 /**
- * @typedef {Object} UpdatedResourceSubjectPaginated
+ * @typedef {object} UpdatedResourceSubjectPaginated
  * @property {Array<UpdatedResourceSubject>|null} data
  * @property {PaginatedLinks} links
  */
 
 /**
- * @typedef {Object} UpdatedResourceSubjectsContinuationToken
+ * @typedef {object} UpdatedResourceSubjectsContinuationToken
  * @property {string|null} resourceUrn
  * @property {string|null} subjectUrn
  */
 
 /**
- * @typedef {Object} UpdatedResourceSubjectsQueryBuilder
- * @property {Object} query
+ * @typedef {object} UpdatedResourceSubjectsQueryBuilder
+ * @property {object} query
  * @property {string} [query.since] Date time used for filtering.
  * @property {string} [query.token] Continuation token.
  * @property {number} [query.limit] Maximum number of pairs returned.

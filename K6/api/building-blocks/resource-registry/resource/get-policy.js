@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ResourceClient } from "../../../../clients/resource/index.js";
+import { ResourceClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Gets the XACML policy for a resource.
@@ -12,7 +12,6 @@ import { ResourceClient } from "../../../../clients/resource/index.js";
  */
 export function ResourceGetPolicy(resourceClient, id, labels = null) {
     const res = resourceClient.ResourceGetPolicy(id, labels);
-
 
     const succeed = check(res, {
         "ResourceGetPolicy - status code is 200": (r) =>

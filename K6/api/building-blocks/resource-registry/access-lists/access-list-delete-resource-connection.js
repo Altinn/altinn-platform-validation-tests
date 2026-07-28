@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AccessListClient } from "../../../../clients/access-list/index.js";
+import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Removes a resource connection from an access list.
@@ -10,7 +10,7 @@ import { AccessListClient } from "../../../../clients/access-list/index.js";
  * @param {string} identifier Access list identifier.
  * @param {string} resourceIdentifier Resource identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AccessListResourceConnectionWithVersionDto|null}
+ * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsDeleteResourceConnection(
     accessListClient,

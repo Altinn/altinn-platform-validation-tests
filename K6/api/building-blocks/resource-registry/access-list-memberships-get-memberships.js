@@ -1,12 +1,12 @@
 import { check } from "k6";
 
-import { AccessListMembershipsClient } from "../../../../clients/access-list-memberships/index.js";
+import { AccessListMembershipsClient } from "../../../clients/resource-registry/index.js";
 
 /**
  * Gets access list memberships for parties and resources.
  *
  * @param {AccessListMembershipsClient} accessListMembershipsClient Client for the Access List Memberships API.
- * @param {Object|null} [query] Optional query parameters.
+ * @param {object | null} [query] Optional query parameters.
  * @param {Array<string>} [query.party] Parties to include.
  * @param {Array<string>} [query.resource] Resources to include.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.

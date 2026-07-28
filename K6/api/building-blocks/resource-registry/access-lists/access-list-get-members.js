@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AccessListClient } from "../../../../clients/access-list/index.js";
+import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Gets access list members.
@@ -8,7 +8,7 @@ import { AccessListClient } from "../../../../clients/access-list/index.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
- * @param {Object|null} [query] Optional query parameters.
+ * @param {object | null} [query] Optional query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} Access list members.
  */

@@ -36,13 +36,13 @@ class ResourceV2Client {
      * Gets the policy rights for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {Object|null} [query]
+     * @param {object | null} [query] Query parameters.
      * Optional query parameters.
-     * @param {boolean} [query.includeServiceOwnerRights]
-     * @param {boolean} [query.includeAppRights]
-     * @param {{[key: string]: string}} [labels]
+     * @param {boolean} [query.includeServiceOwnerRights] Whether to include service owner rights.
+     * @param {boolean} [query.includeAppRights] Whether to include app rights.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceV2GetPolicyRights(
         id,
@@ -90,6 +90,7 @@ class ResourceV2Client {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

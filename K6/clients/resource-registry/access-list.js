@@ -71,8 +71,8 @@ class AccessListClient {
     /**
      * Creates query string parameters.
      *
-     * @param {Object|null} query
-     * @returns {string}
+     * @param {object | null} query Query parameters.
+     * @returns {string} The result.
      */
     buildQuery(query) {
         if (query === null || query === undefined) {
@@ -114,9 +114,9 @@ class AccessListClient {
      * Gets access lists for a given member.
      *
      * @param {string} party Member party UUID URN.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AccessListGetByMember(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -125,7 +125,7 @@ class AccessListClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}get-by-member?party={encodeURIComponent(party)}`,
             action: TAGS.AccessListGetByMember.action,
         };
 
@@ -140,6 +140,7 @@ class AccessListClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -148,13 +149,13 @@ class AccessListClient {
      * Gets access lists for a resource owner.
      *
      * @param {string} owner Resource owner.
-     * @param {Object|null} query Query parameters.
-     * @param {string} [query.token]
-     * @param {Array<string>} [query.include]
-     * @param {string} [query.resource]
-     * @param {{[key: string]: string}} [labels]
+     * @param {object | null} query Query parameters.
+     * @param {string} [query.token] Continuation token for paging.
+     * @param {Array<string>} [query.include] Related data to include.
+     * @param {string} [query.resource] Resource identifier to filter by.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AccessListGetByOwner(owner, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -163,7 +164,7 @@ class AccessListClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}{owner}${this.buildQuery(query)}`,
             action: TAGS.AccessListGetByOwner.action,
         };
 
@@ -178,6 +179,7 @@ class AccessListClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -187,12 +189,12 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {Object|null} query Query parameters.
-     * @param {Array<string>} [query.include]
-     * @param {{[key: string]: string}} [headers]
-     * @param {{[key: string]: string}} [labels]
+     * @param {object | null} query Query parameters.
+     * @param {Array<string>} [query.include] Related data to include.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AccessListGet(owner, identifier, query = null, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -201,7 +203,7 @@ class AccessListClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}${this.buildQuery(query)}`,
             action: TAGS.AccessListGet.action,
         };
 
@@ -216,323 +218,327 @@ class AccessListClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
                 ...headers,
             },
         });
     }
-}
-
-/**
- * Deletes an access list.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListDelete(owner, identifier, headers = {}, labels = null) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListDelete.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.del(url, null, {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            ...headers,
-        },
-    });
-}
-
-/**
- * Creates or updates an access list.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {CreateAccessListModel} request Access list payload.
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListUpsert(owner, identifier, request, headers = {}, labels = null) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListUpsert.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.put(url, JSON.stringify(request), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            ...headers,
-        },
-    });
-}
-
-/**
- * Updates an access list using JSON Patch.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {Array<JsonPatchOperation>} request Patch operations.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListPatch(owner, identifier, request, labels = null) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListPatch.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.patch(url, JSON.stringify(request), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
-}
-
-/**
- * Gets access list members.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {Object|null} query Query parameters.
- * @param {string} [query.token]
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListGetMembers(
-    owner,
-    identifier,
-    query = null,
-    headers = {},
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}/members${this.buildQuery(query)}`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListGetMembers.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.get(url, {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            ...headers,
-        },
-    });
-}
-
-/**
- * Replaces access list members.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {{data:Array<string>}} request Members payload.
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListReplaceMembers(
-    owner,
-    identifier,
-    request,
-    headers = {},
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListReplaceMembers.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.put(url, JSON.stringify(request), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            ...headers,
-        },
-    });
-}
-
-/**
- * Adds members to an access list.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {{data:Array<string>}} request Members payload.
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListAddMembers(
-    owner,
-    identifier,
-    request,
-    headers = {},
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListAddMembers.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.post(url, JSON.stringify(request), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            ...headers,
-        },
-    });
-}
-
-/**
- * Removes members from an access list.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {{data:Array<string>}} request Members payload.
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
-AccessListRemoveMembers(
-    owner,
-    identifier,
-    request,
-    headers = {},
-    labels = null,
-) {
-    const token = this.tokenGenerator.getToken();
-
-    const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
-
-    let tags = {
-        endpoint: url,
-        name: url,
-        action: TAGS.AccessListRemoveMembers.action,
-    };
-
-    if (labels !== null) {
-        tags = {
-            ...labels,
-            ...tags,
-        };
-    }
-
-    return http.del(url, JSON.stringify(request), {
-        tags,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            ...headers,
-        },
-    });
 
     /**
- * Gets resource connections for an access list.
- *
- * @param {string} owner Resource owner.
- * @param {string} identifier Access list identifier.
- * @param {Object|null} query Query parameters.
- * @param {string} [query.token]
- * @param {{[key: string]: string}} [headers]
- * Optional request headers.
- * @param {{[key: string]: string}} [labels]
- * Optional k6 request tags.
- * @returns {http.RefinedResponse}
- */
+     * Deletes an access list.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListDelete(owner, identifier, headers = {}, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}`,
+            action: TAGS.AccessListDelete.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url, null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Creates or updates an access list.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {CreateAccessListModel} request Access list payload.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListUpsert(owner, identifier, request, headers = {}, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}`,
+            action: TAGS.AccessListUpsert.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Updates an access list using JSON Patch.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {Array<JsonPatchOperation>} request Patch operations.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListPatch(owner, identifier, request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}`,
+            action: TAGS.AccessListPatch.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.patch(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Gets access list members.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {object | null} query Query parameters.
+     * @param {string} [query.token] Continuation token for paging.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListGetMembers(
+        owner,
+        identifier,
+        query = null,
+        headers = {},
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}/members${this.buildQuery(query)}`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/members${this.buildQuery(query)}`,
+            action: TAGS.AccessListGetMembers.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Replaces access list members.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {{data:Array<string>}} request Members payload.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListReplaceMembers(
+        owner,
+        identifier,
+        request,
+        headers = {},
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
+            action: TAGS.AccessListReplaceMembers.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Adds members to an access list.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {{data:Array<string>}} request Members payload.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListAddMembers(
+        owner,
+        identifier,
+        request,
+        headers = {},
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
+            action: TAGS.AccessListAddMembers.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Removes members from an access list.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {{data:Array<string>}} request Members payload.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    AccessListRemoveMembers(
+        owner,
+        identifier,
+        request,
+        headers = {},
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
+            action: TAGS.AccessListRemoveMembers.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                ...headers,
+            },
+        });
+    }
+
+    /**
+     * Gets resource connections for an access list.
+     *
+     * @param {string} owner Resource owner.
+     * @param {string} identifier Access list identifier.
+     * @param {object | null} query Query parameters.
+     * @param {string} [query.token] Continuation token for paging.
+     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
     AccessListGetResourceConnections(
         owner,
         identifier,
@@ -546,7 +552,7 @@ AccessListRemoveMembers(
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections${this.buildQuery(query)}`,
             action: TAGS.AccessListGetResourceConnections.action,
         };
 
@@ -561,6 +567,7 @@ AccessListRemoveMembers(
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
                 ...headers,
             },
         });
@@ -573,11 +580,11 @@ AccessListRemoveMembers(
      * @param {string} identifier Access list identifier.
      * @param {string} resourceIdentifier Resource identifier.
      * @param {UpsertAccessListResourceConnectionDto} request Resource connection payload.
-     * @param {{[key: string]: string}} [headers]
+     * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AccessListUpsertResourceConnection(
         owner,
@@ -593,7 +600,7 @@ AccessListRemoveMembers(
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
             action: TAGS.AccessListUpsertResourceConnection.action,
         };
 
@@ -620,11 +627,11 @@ AccessListRemoveMembers(
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {string} resourceIdentifier Resource identifier.
-     * @param {{[key: string]: string}} [headers]
+     * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AccessListDeleteResourceConnection(
         owner,
@@ -639,7 +646,7 @@ AccessListRemoveMembers(
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
             action: TAGS.AccessListDeleteResourceConnection.action,
         };
 
@@ -654,12 +661,11 @@ AccessListRemoveMembers(
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
                 ...headers,
             },
         });
     }
 }
-
-
 
 export { AccessListClient };

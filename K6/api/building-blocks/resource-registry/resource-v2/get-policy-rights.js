@@ -1,17 +1,17 @@
 import { check } from "k6";
 
-import { ResourceV2Client } from "../../../../clients/resource-v2/index.js";
+import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
 
 /**
  * Gets the policy rights for a resource.
  *
  * @param {ResourceV2Client} resourceV2Client Client for the Resource V2 API.
  * @param {string} id Resource identifier.
- * @param {Object|null} [query]
+ * @param {object | null} [query] Query parameters.
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}} [labels] See the API documentation.
  * Optional k6 request labels.
- * @returns {ResourceDecomposedDto|null}
+ * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
  */
 export function ResourceV2GetPolicyRights(
     resourceV2Client,
