@@ -36,9 +36,9 @@
  * @property {XacmlJsonObligationOrAdviceExternal[]|null} [associateAdvice]
  * @property {XacmlJsonCategoryExternal[]|null} [category]
  * @property {XacmlJsonPolicyIdentifierListExternal|null} [policyIdentifierList]
- *
- *
- * /**
+ */
+
+/**
  * @typedef {object} XacmlJsonStatusExternal
  * @property {string|null} [statusMessage]
  * @property {string[]|null} [statusDetails]
@@ -81,9 +81,9 @@
  * @property {string|null} [category]
  * @property {string|null} [dataType]
  * @property {string|null} [issuer]
- *
- *
- * /**
+ */
+
+/**
  * @typedef {object} XacmlJsonPolicyIdentifierListExternal
  * @property {XacmlJsonIdReferenceExternal[]|null} [policyIdReference]
  * @property {XacmlJsonIdReferenceExternal[]|null} [policySetIdReference]

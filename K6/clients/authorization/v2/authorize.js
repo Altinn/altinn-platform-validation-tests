@@ -20,7 +20,7 @@ class AuthorizeClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/authorize";
+        this.BASE_PATH = "/authorization/api/v1";
 
         /**
          * Fully-qualified API path.
@@ -35,15 +35,17 @@ class AuthorizeClient {
     /**
      * Authorizes an external XACML request.
      *
+     * POST /authorize
+     *
      * @param {XacmlJsonRequestRootExternal} request Authorization request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AuthorizePost(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const url = `${this.FULL_PATH}`;
+        const url = `${this.FULL_PATH}/authorize`;
 
         let tags = {
             endpoint: url,
@@ -63,6 +65,7 @@ class AuthorizeClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }

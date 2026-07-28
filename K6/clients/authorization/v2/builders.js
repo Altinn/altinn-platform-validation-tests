@@ -1,10 +1,9 @@
-// import { XacmlJsonAttributeExternalBuilder } from "./types.js";
-
 /**
  * Creates an XACML JSON Attribute.
  *
  * @param {Partial<XacmlJsonAttributeExternal>} [overrides]
- * @returns {XacmlJsonAttributeExternal}
+ * Properties that should replace the defaults.
+ * @returns {XacmlJsonAttributeExternal} An XACML JSON Attribute.
  */
 export function buildXacmlJsonAttributeExternal(overrides = {}) {
     return {
@@ -18,43 +17,11 @@ export function buildXacmlJsonAttributeExternal(overrides = {}) {
 }
 
 /**
- * Creates an XACML JSON Attribute Assignment.
- *
- * @param {Partial<XacmlJsonAttributeAssignmentExternal>} [overrides]
- * @returns {XacmlJsonAttributeAssignmentExternal}
- */
-export function buildXacmlJsonAttributeAssignmentExternal(
-    overrides = {},
-) {
-    return {
-        attributeId: "urn:test:attribute",
-        value: "test-value",
-        category: null,
-        dataType: "http://www.w3.org/2001/XMLSchema#string",
-        issuer: null,
-        ...overrides,
-    };
-}
-
-/**
- * Creates an XACML JSON Policy Identifier Reference.
- *
- * @param {Partial<XacmlJsonIdReferenceExternal>} [overrides]
- * @returns {XacmlJsonIdReferenceExternal}
- */
-export function buildXacmlJsonIdReferenceExternal(overrides = {}) {
-    return {
-        id: "urn:test:policy",
-        version: "1.0",
-        ...overrides,
-    };
-}
-
-/**
  * Creates an XACML JSON Request Reference.
  *
  * @param {Partial<XacmlJsonRequestReferenceExternal>} [overrides]
- * @returns {XacmlJsonRequestReferenceExternal}
+ * Properties that should replace the defaults.
+ * @returns {XacmlJsonRequestReferenceExternal} An XACML JSON Request Reference.
  */
 export function buildXacmlJsonRequestReferenceExternal(overrides = {}) {
     return {
@@ -66,27 +33,18 @@ export function buildXacmlJsonRequestReferenceExternal(overrides = {}) {
 }
 
 /**
- * Creates an opaque GUID pagination value.
- *
- * @param {Partial<GuidOpaque>} [overrides]
- * @returns {GuidOpaque}
- */
-export function buildGuidOpaque(overrides = {}) {
-    return {
-        value: "00000000-0000-0000-0000-000000000000",
-        ...overrides,
-    };
-}
-
-/**
  * Creates an XACML JSON Category.
  *
+ * categoryId is only mandatory for categories placed in the generic "category"
+ * member array, and is therefore left unset by default.
+ *
  * @param {Partial<XacmlJsonCategoryExternal>} [overrides]
- * @returns {XacmlJsonCategoryExternal}
+ * Properties that should replace the defaults.
+ * @returns {XacmlJsonCategoryExternal} An XACML JSON Category.
  */
 export function buildXacmlJsonCategoryExternal(overrides = {}) {
     return {
-        categoryId: "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        categoryId: null,
         id: null,
         content: null,
         attribute: [
@@ -97,75 +55,11 @@ export function buildXacmlJsonCategoryExternal(overrides = {}) {
 }
 
 /**
- * Creates an XACML JSON Obligation or Advice object.
- *
- * @param {Partial<XacmlJsonObligationOrAdviceExternal>} [overrides]
- * @returns {XacmlJsonObligationOrAdviceExternal}
- */
-export function buildXacmlJsonObligationOrAdviceExternal(overrides = {}) {
-    return {
-        id: "urn:test:obligation",
-        attributeAssignment: [
-            buildXacmlJsonAttributeAssignmentExternal(),
-        ],
-        ...overrides,
-    };
-}
-
-/**
- * Creates an XACML JSON Status Code.
- *
- * @param {Partial<XacmlJsonStatusCodeExternal>} [overrides]
- * @returns {XacmlJsonStatusCodeExternal}
- */
-export function buildXacmlJsonStatusCodeExternal(overrides = {}) {
-    return {
-        value: "urn:oasis:names:tc:xacml:1.0:status:ok",
-        statusCode: null,
-        ...overrides,
-    };
-}
-
-/**
- * Creates an XACML JSON Status.
- *
- * @param {Partial<XacmlJsonStatusExternal>} [overrides]
- * @returns {XacmlJsonStatusExternal}
- */
-export function buildXacmlJsonStatusExternal(overrides = {}) {
-    return {
-        statusMessage: "Success",
-        statusDetails: [],
-        statusCode: buildXacmlJsonStatusCodeExternal(),
-        ...overrides,
-    };
-}
-
-/**
- * Creates an XACML JSON Policy Identifier List.
- *
- * @param {Partial<XacmlJsonPolicyIdentifierListExternal>} [overrides]
- * @returns {XacmlJsonPolicyIdentifierListExternal}
- */
-export function buildXacmlJsonPolicyIdentifierListExternal(
-    overrides = {},
-) {
-    return {
-        policyIdReference: [
-            buildXacmlJsonIdReferenceExternal(),
-        ],
-        policySetIdReference: [
-            buildXacmlJsonIdReferenceExternal(),
-        ],
-        ...overrides,
-    };
-}
-
-/**
  * Creates an XACML JSON Multi Requests object.
  *
  * @param {Partial<XacmlJsonMultiRequestsExternal>} [overrides]
- * @returns {XacmlJsonMultiRequestsExternal}
+ * Properties that should replace the defaults.
+ * @returns {XacmlJsonMultiRequestsExternal} An XACML JSON Multi Requests object.
  */
 export function buildXacmlJsonMultiRequestsExternal(overrides = {}) {
     return {
@@ -179,20 +73,40 @@ export function buildXacmlJsonMultiRequestsExternal(overrides = {}) {
 /**
  * Creates an XACML JSON request.
  *
+ * The subject, resource and action attributes are placed in the named members
+ * the PDP expects them in, leaving the generic "category" member empty.
+ *
  * @param {Partial<XacmlJsonRequestExternal>} [overrides]
- * @returns {XacmlJsonRequestExternal}
+ * Properties that should replace the defaults.
+ * @returns {XacmlJsonRequestExternal} An XACML JSON request.
  */
 export function buildXacmlJsonRequestExternal(overrides = {}) {
     return {
         returnPolicyIdList: false,
         combinedDecision: false,
         xPathVersion: null,
-        category: [
+        category: [],
+        resource: [
+            buildXacmlJsonCategoryExternal({
+                attribute: [
+                    buildXacmlJsonAttributeExternal({
+                        attributeId: "urn:oasis:names:tc:xacml:1.0:resource:resource-id",
+                    }),
+                ],
+            }),
+        ],
+        action: [
+            buildXacmlJsonCategoryExternal({
+                attribute: [
+                    buildXacmlJsonAttributeExternal({
+                        attributeId: "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                    }),
+                ],
+            }),
+        ],
+        accessSubject: [
             buildXacmlJsonCategoryExternal(),
         ],
-        resource: [],
-        action: [],
-        accessSubject: [],
         recipientSubject: [],
         intermediarySubject: [],
         requestingMachine: [],
@@ -205,7 +119,8 @@ export function buildXacmlJsonRequestExternal(overrides = {}) {
  * Creates an XACML JSON request root.
  *
  * @param {Partial<XacmlJsonRequestRootExternal>} [overrides]
- * @returns {XacmlJsonRequestRootExternal}
+ * Properties that should replace the defaults.
+ * @returns {XacmlJsonRequestRootExternal} An XACML JSON request root.
  */
 export function buildXacmlJsonRequestRootExternal(overrides = {}) {
     return {
@@ -215,43 +130,11 @@ export function buildXacmlJsonRequestRootExternal(overrides = {}) {
 }
 
 /**
- * Creates an XACML JSON result.
- *
- * @param {Partial<XacmlJsonResultExternal>} [overrides]
- * @returns {XacmlJsonResultExternal}
- */
-export function buildXacmlJsonResultExternal(overrides = {}) {
-    return {
-        decision: "Permit",
-        status: buildXacmlJsonStatusExternal(),
-        obligations: [],
-        associateAdvice: [],
-        category: [],
-        policyIdentifierList: null,
-        ...overrides,
-    };
-}
-
-/**
- * Creates an XACML JSON response.
- *
- * @param {Partial<XacmlJsonResponseExternal>} [overrides]
- * @returns {XacmlJsonResponseExternal}
- */
-export function buildXacmlJsonResponseExternal(overrides = {}) {
-    return {
-        response: [
-            buildXacmlJsonResultExternal(),
-        ],
-        ...overrides,
-    };
-}
-
-/**
  * Creates an internal XACML API request model.
  *
  * @param {Partial<XacmlRequestApiModel>} [overrides]
- * @returns {XacmlRequestApiModel}
+ * Properties that should replace the defaults.
+ * @returns {XacmlRequestApiModel} An internal XACML API request model.
  */
 export function buildXacmlRequestApiModel(overrides = {}) {
     return {

@@ -23,7 +23,7 @@ class DecisionClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "";
+        this.BASE_PATH = "/authorization/api/v1";
 
         /**
          * Fully-qualified API path.
@@ -38,11 +38,18 @@ class DecisionClient {
     /**
      * Internal authorization endpoint.
      *
-     * @param {XacmlRequestApiModel} request
+     * POST /decision
+     *
+     * @param {XacmlRequestApiModel|string} request Decision request. Objects are
+     * serialized as JSON, strings are sent verbatim so that the XML variants of
+     * the endpoint can be used.
+     * @param {string} [contentType] Content type of the request body. The endpoint
+     * accepts application/json, application/xml and text/xml.
      * @param {{[key:string]:string}} [labels]
-     * @returns {http.RefinedResponse}
+     * Optional k6 tags that will be merged with the default request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    DecisionPost(request, labels = null) {
+    DecisionPost(request, contentType = "application/json", labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/decision`;
@@ -60,11 +67,16 @@ class DecisionClient {
             };
         }
 
-        return http.post(url, JSON.stringify(request), {
+        const body = typeof request === "string"
+            ? request
+            : JSON.stringify(request);
+
+        return http.post(url, body, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+                "Content-Type": contentType,
+                Accept: "application/json",
             },
         });
     }
@@ -72,9 +84,12 @@ class DecisionClient {
     /**
      * External authorization endpoint.
      *
-     * @param {XacmlJsonRequestRootExternal} request
+     * POST /authorize
+     *
+     * @param {XacmlJsonRequestRootExternal} request Authorization request.
      * @param {{[key:string]:string}} [labels]
-     * @returns {http.RefinedResponse}
+     * Optional k6 tags that will be merged with the default request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     AuthorizePost(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -99,6 +114,7 @@ class DecisionClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
