@@ -42,7 +42,7 @@ class ServiceOwnerClient {
      * Service owner initialization request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     InitializeServiceOwner(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -68,6 +68,7 @@ class ServiceOwnerClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             },
         );

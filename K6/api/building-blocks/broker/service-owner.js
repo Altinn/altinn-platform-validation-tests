@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ServiceOwnerClient } from "../../../../clients/broker/serviceowner.js";
+import { ServiceOwnerClient } from "../../../clients/broker/index.js";
 
 /**
  * Initializes the service owner for the calling organization within the broker service.

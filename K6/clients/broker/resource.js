@@ -41,7 +41,7 @@ class ResourceClient {
      * @param {string} resourceId Resource identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetResource(resourceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -65,6 +65,7 @@ class ResourceClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -78,7 +79,7 @@ class ResourceClient {
      * {@link ResourceRequestBuilder} to construct this object.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PutResource(resourceId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -106,6 +107,7 @@ class ResourceClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                    Accept: "application/json",
                 },
             }
         );

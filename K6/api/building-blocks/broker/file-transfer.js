@@ -1,14 +1,14 @@
 import { check } from "k6";
 
-import { FileTransferClient } from "../../../../clients/broker/index.js";
+import { FileTransferClient } from "../../../clients/broker/index.js";
 
 /**
  * Initializes a file transfer.
  *
- * @param {FileTransferClient} fileTransferClient TODO: Description
- * @param {FileTransferInitializeRequest} request TODO: Description
- * @param {{[key:string]:string}} [labels] TODO: Description
- * @returns {FileTransferInitializeResponse|null} TODO: Description
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
+ * @param {FileTransferInitalizeExt} request File transfer metadata.
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {FileTransferInitializeResponseExt|null} Parsed response body, or null when the call failed.
  */
 export function InitializeFileTransfer(
     fileTransferClient,
@@ -20,7 +20,7 @@ export function InitializeFileTransfer(
         labels,
     );
 
-    /** @type {FileTransferInitializeResponse|null} */
+    /** @type {FileTransferInitializeResponseExt|null} */
     let fileTransfer = null;
 
     const succeed = check(res, {
@@ -57,10 +57,10 @@ export function InitializeFileTransfer(
 /**
  * Gets file transfer overview.
  *
- * @param {FileTransferClient} fileTransferClient TODO: Description
- * @param {string} fileTransferId TODO: Description
- * @param {{[key:string]:string}} [labels] TODO: Description
- * @returns {FileTransferOverview|null} TODO: Description
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
+ * @param {string} fileTransferId File transfer UUID.
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {FileTransferOverviewExt|null} Parsed response body, or null when the call failed.
  */
 export function GetFileTransfer(
     fileTransferClient,
@@ -72,7 +72,7 @@ export function GetFileTransfer(
         labels,
     );
 
-    /** @type {FileTransferOverview|null} */
+    /** @type {FileTransferOverviewExt|null} */
     let fileTransfer = null;
 
     const succeed = check(res, {
@@ -109,10 +109,10 @@ export function GetFileTransfer(
 /**
  * Gets detailed file transfer information.
  *
- * @param {FileTransferClient} fileTransferClient TODO: Description
- * @param {string} fileTransferId TODO: Description
- * @param {{[key:string]:string}} [labels] TODO: Description
- * @returns {FileTransferStatusDetails|null} TODO: Description
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
+ * @param {string} fileTransferId File transfer UUID.
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {FileTransferStatusDetailsExt|null} Parsed response body, or null when the call failed.
  */
 export function GetFileTransferDetails(
     fileTransferClient,
@@ -124,7 +124,7 @@ export function GetFileTransferDetails(
         labels,
     );
 
-    /** @type {FileTransferStatusDetails|null} */
+    /** @type {FileTransferStatusDetailsExt|null} */
     let details = null;
 
     const succeed = check(res, {
@@ -161,10 +161,10 @@ export function GetFileTransferDetails(
 /**
  * Gets available file transfers.
  *
- * @param {FileTransferClient} fileTransferClient TODO: Description
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {FileTransferQuery|null} queryParams TODO: Description
- * @param {{[key:string]:string}} [labels] TODO: Description
- * @returns {Array<string>} TODO: Description
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {Array<string>} Parsed response body, or null when the call failed.
  */
 export function GetFileTransfers(
     fileTransferClient,
@@ -213,10 +213,10 @@ export function GetFileTransfers(
 /**
  * Confirms that a file transfer has been downloaded.
  *
- * @param {FileTransferClient} fileTransferClient TODO: Description
- * @param {string} fileTransferId TODO: Description
- * @param {{[key:string]:string}} [labels] TODO: Description
- * @returns {boolean} TODO: Description
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
+ * @param {string} fileTransferId File transfer UUID.
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {boolean} Parsed response body, or null when the call failed.
  */
 export function ConfirmDownload(
     fileTransferClient,
@@ -232,4 +232,94 @@ export function ConfirmDownload(
         "ConfirmDownload - status code is 204": (r) =>
             r.status === 204,
     });
+}
+
+/**
+ * Uploads the file of an initialized file transfer.
+ *
+ * POST /broker/api/v1/filetransfer/{fileTransferId}/upload
+ *
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
+ * @param {string} fileTransferId File transfer UUID.
+ * @param {*} body Binary file content.
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {FileTransferUploadResponseExt|null} Parsed response body, or null when the call failed.
+ */
+export function UploadFileTransfer(
+    fileTransferClient,
+    fileTransferId,
+    body,
+    labels = null,
+) {
+    const res = fileTransferClient.UploadFileTransfer(
+        fileTransferId,
+        body,
+        labels,
+    );
+
+    /** @type {FileTransferUploadResponseExt|null} */
+    let upload = null;
+
+    const succeed = check(res, {
+        "UploadFileTransfer - status code is 200": (r) => r.status === 200,
+        "UploadFileTransfer - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return upload;
+    }
+
+    check(res, {
+        "UploadFileTransfer - body is valid": (r) => {
+            try {
+                upload = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return upload;
+}
+
+/**
+ * Downloads the file of a file transfer.
+ *
+ * GET /broker/api/v1/filetransfer/{fileTransferId}/download
+ *
+ * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
+ * @param {string} fileTransferId File transfer UUID.
+ * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @returns {http.RefinedResponse} The HTTP response, whose body is the file content.
+ */
+export function DownloadFileTransfer(
+    fileTransferClient,
+    fileTransferId,
+    labels = null,
+) {
+    const res = fileTransferClient.DownloadFileTransfer(
+        fileTransferId,
+        labels,
+    );
+
+    const succeed = check(res, {
+        "DownloadFileTransfer - status code is 200": (r) => r.status === 200,
+        "DownloadFileTransfer - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+    }
+
+    return res;
 }
