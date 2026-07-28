@@ -1,9 +1,9 @@
 import { check } from "k6";
 
-import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 import {
     AppsInstanceDelegationResponseDtoPaginated,
-} from "../../../../clients/access-management/altinn-apps/types.js";
+} from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
+import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 
 /**
  * Gets delegations for an application instance.

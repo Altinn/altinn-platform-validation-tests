@@ -2,7 +2,7 @@ import http from "k6/http";
 
 import {
     AppsInstanceDelegationRequestDto,
-} from "./types.js";
+} from "./altinn-apps.types.js";
 
 const TAGS = {
     CheckResourceDelegation: {

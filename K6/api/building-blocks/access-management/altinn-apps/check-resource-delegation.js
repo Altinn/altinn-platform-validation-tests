@@ -1,9 +1,9 @@
 import { check } from "k6";
 
-import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 import {
     ResourceRightDelegationCheckResultDtoPaginated,
-} from "../../../../clients/access-management/altinn-apps/types.js";
+} from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
+import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 
 /**
  * Checks whether rights can be delegated for an application instance.

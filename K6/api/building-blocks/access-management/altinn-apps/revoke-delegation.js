@@ -1,10 +1,10 @@
 import { check } from "k6";
 
-import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 import {
     AppsInstanceDelegationRequestDto,
     AppsInstanceDelegationResponseDto,
-} from "../../../../clients/access-management/altinn-apps/types.js";
+} from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
+import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 
 /**
  * Revokes delegation rights for an application instance.
