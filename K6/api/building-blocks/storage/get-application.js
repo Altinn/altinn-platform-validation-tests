@@ -9,7 +9,7 @@ import { ApplicationsClient } from "../../../../clients/applications/application
  * @param {string} org Organization identifier.
  * @param {string} app Application identifier.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {Application|null}
+ * @returns {Application|null} TODO: Description
  */
 export function GetApplication(
     applicationsClient,

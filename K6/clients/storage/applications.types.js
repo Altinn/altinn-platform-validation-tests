@@ -1,9 +1,9 @@
 /**
- * @typedef {Object} Application
+ * @typedef {object} Application
  * @property {string|null} id
  * @property {string|null} versionId
  * @property {string|null} org
- * @property {Object<string,string|null>|null} title
+ * @property {{[key: string]: (string|null)}|null} title
  * @property {string|null} validFrom
  * @property {string|null} validTo
  * @property {string|null} processId
@@ -22,7 +22,7 @@
  * @property {boolean} disallowUserInstantiation
  * @property {string|null} homepage
  * @property {Array<Keyword>|null} keywords
- * @property {Object<string,string|null>|null} description
+ * @property {Record<string, string|null>|null} description
  * @property {AppMetadataAccess|null} access
  * @property {Array<AppMetadataContactPoint>|null} contactPoints
  * @property {string|null} created
@@ -32,14 +32,14 @@
  */
 
 /**
- * @typedef {Object} ApplicationList
+ * @typedef {object} ApplicationList
  * @property {Array<Application>|null} applications
  */
 
 /**
- * @typedef {Object} DataType
+ * @typedef {object} DataType
  * @property {string|null} id
- * @property {Object<string,string>|null} description
+ * @property {{[key: string]: string}|null} description
  * @property {Array<string>|null} allowedContentTypes
  * @property {Array<string>|null} allowedContributers
  * @property {Array<string>|null} allowedContributors
@@ -60,7 +60,7 @@
  */
 
 /**
- * @typedef {Object} PartyTypesAllowed
+ * @typedef {object} PartyTypesAllowed
  * @property {boolean} bankruptcyEstate
  * @property {boolean} organisation
  * @property {boolean} person
@@ -68,7 +68,7 @@
  */
 
 /**
- * @typedef {Object} ApplicationLogic
+ * @typedef {object} ApplicationLogic
  * @property {boolean|null} autoCreate
  * @property {string|null} classRef
  * @property {string|null} schemaRef
@@ -81,20 +81,20 @@
  */
 
 /**
- * @typedef {Object} DataField
+ * @typedef {object} DataField
  * @property {string|null} id
  * @property {string|null} path
  * @property {string|null} dataTypeId
  */
 
 /**
- * @typedef {Object} ShadowFields
+ * @typedef {object} ShadowFields
  * @property {string|null} prefix
  * @property {string|null} saveToDataType
  */
 
 /**
- * @typedef {Object} EFormidlingContract
+ * @typedef {object} EFormidlingContract
  * @property {string|null} serviceId
  * @property {string|null} dpfShipmentType
  * @property {string|null} receiver
@@ -108,18 +108,18 @@
  */
 
 /**
- * @typedef {Object} OnEntryConfig
+ * @typedef {object} OnEntryConfig
  * @property {string|null} show
  */
 
 /**
- * @typedef {Object} MessageBoxConfig
+ * @typedef {object} MessageBoxConfig
  * @property {HideSettings|null} hideSettings
  * @property {SyncAdapterSettings|null} syncAdapterSettings
  */
 
 /**
- * @typedef {Object} CopyInstanceSettings
+ * @typedef {object} CopyInstanceSettings
  * @property {boolean} enabled
  * @property {Array<string>|null} excludedDataTypes
  * @property {Array<string>|null} excludedDataFields
@@ -127,13 +127,13 @@
  */
 
 /**
- * @typedef {Object} HideSettings
+ * @typedef {object} HideSettings
  * @property {boolean} hideAlways
  * @property {Array<string>|null} hideOnTask
  */
 
 /**
- * @typedef {Object} SyncAdapterSettings
+ * @typedef {object} SyncAdapterSettings
  * @property {boolean} disableSync
  * @property {boolean} enableUserSuppliedDialogId
  * @property {boolean} disableCreate
@@ -153,34 +153,34 @@
  */
 
 /**
- * @typedef {Object} ApiScopesConfiguration
+ * @typedef {object} ApiScopesConfiguration
  * @property {ApiScopes|null} users
  * @property {ApiScopes|null} serviceOwners
  * @property {string|null} errorMessageTextResourceKey
  */
 
 /**
- * @typedef {Object} ApiScopes
+ * @typedef {object} ApiScopes
  * @property {string|null} read
  * @property {string|null} write
  * @property {string|null} errorMessageTextResourceKey
  */
 
 /**
- * @typedef {Object} Keyword
+ * @typedef {object} Keyword
  * @property {string|null} word
  * @property {string|null} language
  */
 
 /**
- * @typedef {Object} AppMetadataAccess
- * @property {Object<string,string|null>|null} rightDescription
+ * @typedef {object} AppMetadataAccess
+ * @property {{[key: string]: (string|null)}|null} rightDescription
  * @property {boolean} delegable
  * @property {boolean} visible
  */
 
 /**
- * @typedef {Object} AppMetadataContactPoint
+ * @typedef {object} AppMetadataContactPoint
  * @property {string|null} category
  * @property {string|null} email
  * @property {string|null} telephone
@@ -188,7 +188,7 @@
  */
 
 /**
- * @typedef {Object} TextResource
+ * @typedef {object} TextResource
  * @property {string|null} id
  * @property {string|null} org
  * @property {string|null} language
@@ -196,14 +196,14 @@
  */
 
 /**
- * @typedef {Object} TextResourceElement
+ * @typedef {object} TextResourceElement
  * @property {string|null} id
  * @property {string|null} value
  * @property {Array<TextResourceVariable>|null} variables
  */
 
 /**
- * @typedef {Object} TextResourceVariable
+ * @typedef {object} TextResourceVariable
  * @property {string|null} key
  * @property {string|null} dataSource
  * @property {string|null} defaultValue

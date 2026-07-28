@@ -70,7 +70,7 @@ class ApplicationsClient {
      * Get all applications.
      *
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetApplications(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -98,7 +98,7 @@ class ApplicationsClient {
      * @param {string|null} appId Application identifier.
      * @param {Application} application Application metadata.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateApplication(appId, application, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -134,7 +134,7 @@ class ApplicationsClient {
      *
      * @param {string} org Organization identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetApplicationsByOrg(org, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -162,7 +162,7 @@ class ApplicationsClient {
      * @param {string} org Organization identifier.
      * @param {string} app Application identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetApplication(org, app, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -191,7 +191,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {Application} application Application metadata.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdateApplication(org, app, application, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -225,7 +225,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {boolean|null} hard Permanently delete.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteApplication(org, app, hard = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -260,7 +260,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {TextResource} textResource Text resource.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     CreateTextResource(org, app, textResource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -294,7 +294,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {string} language Language code.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetTextResource(org, app, language, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -325,7 +325,7 @@ class ApplicationsClient {
      * @param {string} language Language code.
      * @param {TextResource} textResource Text resource.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UpdateTextResource(org, app, language, textResource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -360,7 +360,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {string} language Language code.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteTextResource(org, app, language, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -8,7 +8,7 @@ import { ApplicationsClient } from "../../../../clients/applications/application
  * @param {ApplicationsClient} applicationsClient Applications API client.
  * @param {string} org Organization identifier.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {Array<Application>}
+ * @returns {Array<Application>} TODO: Description
  */
 export function GetApplicationsByOrg(
     applicationsClient,
