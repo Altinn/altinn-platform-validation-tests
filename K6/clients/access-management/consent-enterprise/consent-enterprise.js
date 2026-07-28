@@ -44,7 +44,7 @@ class EnterpriseClient {
      * @param {ConsentRequestDto} request Consent request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     EnterpriseCreateConsentRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -69,6 +69,7 @@ class EnterpriseClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -79,7 +80,7 @@ class EnterpriseClient {
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     EnterpriseGetConsentRequest(consentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -88,7 +89,7 @@ class EnterpriseClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/consentrequests/{consentRequestId}`,
             action: TAGS.EnterpriseGetConsentRequest.action,
         };
 
@@ -103,6 +104,7 @@ class EnterpriseClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -114,7 +116,7 @@ class EnterpriseClient {
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     EnterpriseGetConsentRequestEvents(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,7 +155,7 @@ class EnterpriseClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/consentrequests/events`,
             action: TAGS.EnterpriseGetConsentRequestEvents.action,
         };
 
@@ -168,6 +170,7 @@ class EnterpriseClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }

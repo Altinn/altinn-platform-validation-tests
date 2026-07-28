@@ -14,8 +14,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string} id TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {string} id Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithId(id) {
         this.request.id = id;
@@ -24,8 +24,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} from TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {string|null} from Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithFrom(from) {
         this.request.from = from;
@@ -34,8 +34,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} requiredDelegator TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {string|null} requiredDelegator Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithRequiredDelegator(requiredDelegator) {
         this.request.requiredDelegator = requiredDelegator;
@@ -44,8 +44,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} to TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {string|null} to Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithTo(to) {
         this.request.to = to;
@@ -54,8 +54,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string} validTo TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {string} validTo Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithValidTo(validTo) {
         this.request.validTo = validTo;
@@ -64,8 +64,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {Array<ConsentRightDto>} consentRights TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {Array<ConsentRightDto>} consentRights Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithConsentRights(consentRights) {
         this.request.consentRights = consentRights;
@@ -74,8 +74,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {{[key:string]: string}|null} requestMessage TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {{[key:string]: string}|null} requestMessage Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithRequestMessage(requestMessage) {
         this.request.requestMessage = requestMessage;
@@ -84,8 +84,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {string|null} redirectUrl TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {string|null} redirectUrl Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
@@ -94,8 +94,8 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @param {ConsentPortalViewMode|null} portalViewMode TODO: Description
-     * @returns {ConsentRequestBuilder} TODO: Description
+     * @param {ConsentPortalViewMode|null} portalViewMode Value to set.
+     * @returns {ConsentRequestBuilder} This builder, for chaining.
      */
     WithPortalViewMode(portalViewMode) {
         this.request.portalViewMode = portalViewMode;
@@ -104,7 +104,7 @@ class ConsentRequestBuilder {
     }
 
     /**
-     * @returns {ConsentRequestDto} TODO: Description
+     * @returns {ConsentRequestDto} The built consent request.
      */
     Build() {
         return this.request;
@@ -116,8 +116,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} continuationToken TODO: Description
-     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
+     * @param {string} continuationToken Value to set.
+     * @returns {ConsentRequestEventsQueryBuilder} This builder, for chaining.
      */
     WithContinuationToken(continuationToken) {
         this.query.continuationToken = continuationToken;
@@ -126,8 +126,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} createdAfter TODO: Description
-     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
+     * @param {string} createdAfter Value to set.
+     * @returns {ConsentRequestEventsQueryBuilder} This builder, for chaining.
      */
     WithCreatedAfter(createdAfter) {
         this.query.createdAfter = createdAfter;
@@ -136,8 +136,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} createdBefore TODO: Description
-     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
+     * @param {string} createdBefore Value to set.
+     * @returns {ConsentRequestEventsQueryBuilder} This builder, for chaining.
      */
     WithCreatedBefore(createdBefore) {
         this.query.createdBefore = createdBefore;
@@ -146,8 +146,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {Array<string>} eventType TODO: Description
-     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
+     * @param {Array<string>} eventType Value to set.
+     * @returns {ConsentRequestEventsQueryBuilder} This builder, for chaining.
      */
     WithEventType(eventType) {
         this.query.eventType = eventType;
@@ -156,8 +156,8 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @param {string} consentRequestId TODO: Description
-     * @returns {ConsentRequestEventsQueryBuilder} TODO: Description
+     * @param {string} consentRequestId Value to set.
+     * @returns {ConsentRequestEventsQueryBuilder} This builder, for chaining.
      */
     WithConsentRequestId(consentRequestId) {
         this.query.consentRequestId = consentRequestId;
@@ -166,7 +166,7 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @returns {object} TODO: Description
+     * @returns {object} The built payload.
      */
     Build() {
         return this.query;

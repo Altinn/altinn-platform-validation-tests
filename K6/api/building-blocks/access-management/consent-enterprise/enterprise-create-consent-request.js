@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { EnterpriseClient } from "../../../../clients/enterprise/index.js";
+import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 
 /**
  * Creates a consent request.
