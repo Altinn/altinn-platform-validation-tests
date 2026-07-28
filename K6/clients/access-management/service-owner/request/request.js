@@ -52,7 +52,7 @@ class RequestClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestGetPartyUrns(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -76,6 +76,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -86,7 +87,7 @@ class RequestClient {
      * @param {string} id Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestGetRequestStatus(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -95,7 +96,7 @@ class RequestClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}/status`,
             action: TAGS.RequestGetRequestStatus.action,
         };
 
@@ -110,6 +111,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -120,7 +122,7 @@ class RequestClient {
      * @param {string} id Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestWithdrawRequest(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -129,7 +131,7 @@ class RequestClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            name: `${this.FULL_PATH}/{id}/withdraw`,
             action: TAGS.RequestWithdrawRequest.action,
         };
 
@@ -144,6 +146,7 @@ class RequestClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -154,7 +157,7 @@ class RequestClient {
      * @param {RequestResourceDto} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestCreateResourceRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -179,6 +182,7 @@ class RequestClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -189,7 +193,7 @@ class RequestClient {
      * @param {RequestPackageDto} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestCreatePackageRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -214,6 +218,7 @@ class RequestClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -224,7 +229,7 @@ class RequestClient {
      * @param {CreateServiceOwnerRequest} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     RequestCreateRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -249,6 +254,7 @@ class RequestClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }

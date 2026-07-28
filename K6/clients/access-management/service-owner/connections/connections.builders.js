@@ -8,8 +8,8 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @param {ServiceOwnerConnectionPartyUrn} from TODO: Description
-     * @returns {ServiceOwnerAccessPackageDelegationBuilder} TODO: Description
+     * @param {ServiceOwnerConnectionPartyUrn} from Value to set.
+     * @returns {ServiceOwnerAccessPackageDelegationBuilder} This builder, for chaining.
      */
     WithFrom(from) {
         this.request.from = from;
@@ -18,8 +18,8 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @param {ServiceOwnerConnectionPartyUrn} to TODO: Description
-     * @returns {ServiceOwnerAccessPackageDelegationBuilder} TODO: Description
+     * @param {ServiceOwnerConnectionPartyUrn} to Value to set.
+     * @returns {ServiceOwnerAccessPackageDelegationBuilder} This builder, for chaining.
      */
     WithTo(to) {
         this.request.to = to;
@@ -28,8 +28,8 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @param {AccessPackageUrn} packageUrn TODO: Description
-     * @returns {ServiceOwnerAccessPackageDelegationBuilder} TODO: Description
+     * @param {AccessPackageUrn} packageUrn Value to set.
+     * @returns {ServiceOwnerAccessPackageDelegationBuilder} This builder, for chaining.
      */
     WithPackageUrn(packageUrn) {
         this.request.packageUrn = packageUrn;
@@ -38,7 +38,7 @@ class ServiceOwnerAccessPackageDelegationBuilder {
     }
 
     /**
-     * @returns {ServiceOwnerAccessPackageDelegation} TODO: Description
+     * @returns {ServiceOwnerAccessPackageDelegation} The built payload.
      */
     Build() {
         if (this.request.from === null) {

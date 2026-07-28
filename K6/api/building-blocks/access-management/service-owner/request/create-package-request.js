@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RequestClient } from "../../../../clients/request/index.js";
+import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
 
 /**
  * Creates a package delegation request.

@@ -41,7 +41,7 @@ class ConnectionsClient {
      * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ConnectionsCreateAccessPackage(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -66,6 +66,7 @@ class ConnectionsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
@@ -76,7 +77,7 @@ class ConnectionsClient {
      * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} TODO: Description
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ConnectionsRevokeAccessPackage(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -101,6 +102,7 @@ class ConnectionsClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
+                Accept: "application/json",
             },
         });
     }
