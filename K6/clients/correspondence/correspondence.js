@@ -63,7 +63,7 @@ class CorrespondenceClient {
      * Correspondence initialization payload.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     InitializeCorrespondence(body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -101,7 +101,7 @@ class CorrespondenceClient {
      * Optional query parameters.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetCorrespondences(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,7 +153,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     PurgeCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -194,7 +194,7 @@ class CorrespondenceClient {
      * Attachment UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DownloadAttachment(correspondenceId, attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -233,7 +233,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DownloadAllAttachments(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -272,7 +272,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     MarkAsRead(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -312,7 +312,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     ConfirmCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -352,7 +352,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -391,7 +391,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse}
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetCorrespondenceDetails(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -11,10 +11,8 @@ import { CorrespondenceClient } from "../../../../clients/correspondence/index.j
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {CorrespondenceQuery|null} [queryParams]
  * Query parameters for filtering correspondences.
- *
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- *
  * @returns {Array<string>} Correspondence ids. Empty array when request fails.
  */
 export function GetCorrespondences(

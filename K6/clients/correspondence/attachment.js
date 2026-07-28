@@ -2,8 +2,6 @@ import http from "k6/http";
 
 import {
     InitializeAttachmentExt,
-    AttachmentOverviewExt,
-    AttachmentDetailsExt,
 } from "./attachment.types.js";
 
 const TAGS = {
@@ -42,7 +40,7 @@ class AttachmentClient {
     /**
      * Default request tags.
      *
-     * @returns {object}
+     * @returns {object} TODO: Description
      */
     static get TAGS() {
         return TAGS;
@@ -51,9 +49,9 @@ class AttachmentClient {
     /**
      * Initializes a shared attachment.
      *
-     * @param {InitializeAttachmentExt} request
-     * @param {{[key:string]:string}|null} labels
-     * @returns {http.RefinedResponse}
+     * @param {InitializeAttachmentExt} request TODO: Description
+     * @param {{[key:string]:string}|null} labels TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     InitializeAttachment(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -83,11 +81,11 @@ class AttachmentClient {
     /**
      * Uploads attachment data.
      *
-     * @param {string} attachmentId
+     * @param {string} attachmentId TODO: Description
      * @param {*} fileData Binary payload (ArrayBuffer, http.file(), string, etc.)
-     * @param {string} [contentType]
-     * @param {{[key:string]:string}|null} labels
-     * @returns {http.RefinedResponse}
+     * @param {string} [contentType] TODO: Description
+     * @param {{[key:string]:string}|null} labels TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     UploadAttachment(
         attachmentId,
@@ -124,9 +122,9 @@ class AttachmentClient {
     /**
      * Gets attachment metadata.
      *
-     * @param {string} attachmentId
-     * @param {{[key:string]:string}|null} labels
-     * @returns {http.RefinedResponse}
+     * @param {string} attachmentId TODO: Description
+     * @param {{[key:string]:string}|null} labels TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,9 +151,9 @@ class AttachmentClient {
     /**
      * Deletes an attachment.
      *
-     * @param {string} attachmentId
-     * @param {{[key:string]:string}|null} labels
-     * @returns {http.RefinedResponse}
+     * @param {string} attachmentId TODO: Description
+     * @param {{[key:string]:string}|null} labels TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DeleteAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -182,9 +180,9 @@ class AttachmentClient {
     /**
      * Gets detailed attachment metadata.
      *
-     * @param {string} attachmentId
-     * @param {{[key:string]:string}|null} labels
-     * @returns {http.RefinedResponse}
+     * @param {string} attachmentId TODO: Description
+     * @param {{[key:string]:string}|null} labels TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     GetAttachmentDetails(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -211,9 +209,9 @@ class AttachmentClient {
     /**
      * Downloads attachment data.
      *
-     * @param {string} attachmentId
-     * @param {{[key:string]:string}|null} labels
-     * @returns {http.RefinedResponse}
+     * @param {string} attachmentId TODO: Description
+     * @param {{[key:string]:string}|null} labels TODO: Description
+     * @returns {http.RefinedResponse} TODO: Description
      */
     DownloadAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();

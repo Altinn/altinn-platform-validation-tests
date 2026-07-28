@@ -11,7 +11,6 @@ import { CorrespondenceClient } from "../../../../clients/correspondence/index.j
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {string} correspondenceId Correspondence UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- *
  * @returns {CorrespondenceDetailsExt|null} Correspondence details or null when request fails.
  */
 export function GetCorrespondenceDetails(

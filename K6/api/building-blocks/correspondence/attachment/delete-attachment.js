@@ -5,10 +5,10 @@ import { AttachmentClient } from "../../../../clients/correspondence/index.js";
 /**
  * Deletes an attachment.
  *
- * @param {AttachmentClient} attachmentClient
- * @param {string} attachmentId
- * @param {{[key:string]:string}|null} labels
- * @returns {AttachmentOverviewExt|null}
+ * @param {AttachmentClient} attachmentClient TODO: Description
+ * @param {string} attachmentId TODO: Description
+ * @param {{[key:string]:string}|null} labels TODO: Description
+ * @returns {AttachmentOverviewExt|null} TODO: Description
  */
 export function DeleteAttachment(
     attachmentClient,

@@ -20,7 +20,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} resourceId
+     * @param {string} resourceId TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withResourceId(resourceId) {
         this.query.resourceId = resourceId;
@@ -28,7 +29,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} from ISO date-time
+     * @param {string} from ISO date-time TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withFrom(from) {
         this.query.from = from;
@@ -36,7 +38,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} to ISO date-time
+     * @param {string} to ISO date-time TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withTo(to) {
         this.query.to = to;
@@ -44,7 +47,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {CorrespondenceStatusExt} status
+     * @param {CorrespondenceStatusExt} status TODO: Description TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withStatus(status) {
         this.query.status = status;
@@ -52,7 +56,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {CorrespondencesRoleType} role
+     * @param {CorrespondencesRoleType} role TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withRole(role) {
         this.query.role = role;
@@ -60,7 +65,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} onBehalfOf
+     * @param {string} onBehalfOf TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withOnBehalfOf(onBehalfOf) {
         this.query.onBehalfOf = onBehalfOf;
@@ -68,7 +74,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} sendersReference
+     * @param {string} sendersReference TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withSendersReference(sendersReference) {
         this.query.sendersReference = sendersReference;
@@ -76,7 +83,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {string} idempotentKey UUID
+     * @param {string} idempotentKey UUID TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withIdempotentKey(idempotentKey) {
         this.query.idempotentKey = idempotentKey;
@@ -84,7 +92,8 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @param {number} altinn2CorrespondenceId
+     * @param {number} altinn2CorrespondenceId TODO: Description
+     * @returns {CorrespondenceQueryBuilder} TODO: Description
      */
     withAltinn2CorrespondenceId(altinn2CorrespondenceId) {
         this.query.altinn2CorrespondenceId = altinn2CorrespondenceId;
@@ -92,7 +101,7 @@ class CorrespondenceQueryBuilder {
     }
 
     /**
-     * @returns {CorrespondenceQuery}
+     * @returns {CorrespondenceQuery} TODO: Description
      */
     build() {
         if (
@@ -106,76 +115,6 @@ class CorrespondenceQueryBuilder {
         }
 
         return this.query;
-    }
-}
-
-
-
-/**
- * Builder for InitializeCorrespondencesExt.
- */
-class InitializeCorrespondencesBuilder {
-    constructor() {
-        this.request = {
-            correspondence: null,
-            recipients: [],
-            existingAttachments: null,
-            idempotentKey: null,
-        };
-    }
-
-    /**
-     * @param {BaseCorrespondenceExt} correspondence
-     */
-    withCorrespondence(correspondence) {
-        this.request.correspondence = correspondence;
-        return this;
-    }
-
-    /**
-     * @param {Array<string>} recipients
-     */
-    withRecipients(recipients) {
-        this.request.recipients = recipients;
-        return this;
-    }
-
-    /**
-     * @param {Array<string>} attachmentIds
-     */
-    withExistingAttachments(attachmentIds) {
-        this.request.existingAttachments = attachmentIds;
-        return this;
-    }
-
-    /**
-     * @param {string} idempotentKey UUID
-     */
-    withIdempotentKey(idempotentKey) {
-        this.request.idempotentKey = idempotentKey;
-        return this;
-    }
-
-    /**
-     * @returns {InitializeCorrespondencesExt}
-     */
-    build() {
-        if (this.request.correspondence === null) {
-            throw new Error(
-                "InitializeCorrespondences requires correspondence",
-            );
-        }
-
-        if (
-            !Array.isArray(this.request.recipients) ||
-            this.request.recipients.length === 0
-        ) {
-            throw new Error(
-                "InitializeCorrespondences requires at least one recipient",
-            );
-        }
-
-        return this.request;
     }
 }
 
@@ -199,8 +138,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {BaseCorrespondenceExt} correspondence
-     * @returns {InitializeCorrespondencesBuilder}
+     * @param {BaseCorrespondenceExt} correspondence TODO: Description
+     * @returns {InitializeCorrespondencesBuilder} TODO: Description
      */
     withCorrespondence(correspondence) {
         this.model.correspondence = correspondence;
@@ -208,8 +147,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {Array<string>} recipients
-     * @returns {InitializeCorrespondencesBuilder}
+     * @param {Array<string>} recipients TODO: Description
+     * @returns {InitializeCorrespondencesBuilder} TODO: Description
      */
     withRecipients(recipients) {
         this.model.recipients = recipients;
@@ -217,8 +156,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {Array<string>} attachmentIds
-     * @returns {InitializeCorrespondencesBuilder}
+     * @param {Array<string>} attachmentIds TODO: Description
+     * @returns {InitializeCorrespondencesBuilder} TODO: Description
      */
     withExistingAttachments(attachmentIds) {
         this.model.existingAttachments = attachmentIds;
@@ -226,8 +165,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {string} idempotentKey
-     * @returns {InitializeCorrespondencesBuilder}
+     * @param {string} idempotentKey TODO: Description
+     * @returns {InitializeCorrespondencesBuilder} TODO: Description
      */
     withIdempotentKey(idempotentKey) {
         this.model.idempotentKey = idempotentKey;
@@ -237,7 +176,7 @@ class InitializeCorrespondencesBuilder {
     /**
      * Builds InitializeCorrespondencesExt.
      *
-     * @returns {InitializeCorrespondencesExt}
+     * @returns {InitializeCorrespondencesExt} TODO: Description
      */
     build() {
         if (this.model.correspondence === null) {
@@ -273,8 +212,8 @@ class InitializeCorrespondencesBuilder {
     }
 
     /**
-     * @param {string} value
-     * @returns {boolean}
+     * @param {string} value TODO: Description
+     * @returns {boolean} TODO: Description
      */
     isGuid(value) {
         return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -309,8 +248,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} resourceId
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {string} resourceId TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withResourceId(resourceId) {
         this.model.resourceId = resourceId;
@@ -318,8 +257,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} sendersReference
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {string} sendersReference TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withSendersReference(sendersReference) {
         this.model.sendersReference = sendersReference;
@@ -327,8 +266,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} messageSender
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {string} messageSender TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withMessageSender(messageSender) {
         this.model.messageSender = messageSender;
@@ -336,8 +275,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {CorrespondenceContentExt} content
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {CorrespondenceContentExt} content TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withContent(content) {
         this.model.content = content;
@@ -345,8 +284,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} requestedPublishTime ISO date-time
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {string} requestedPublishTime ISO date-time TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withRequestedPublishTime(requestedPublishTime) {
         this.model.requestedPublishTime = requestedPublishTime;
@@ -354,8 +293,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {string} dueDateTime ISO date-time
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {string} dueDateTime ISO date-time TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withDueDateTime(dueDateTime) {
         this.model.dueDateTime = dueDateTime;
@@ -363,8 +302,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {Array<ExternalReferenceExt>} references
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {Array<ExternalReferenceExt>} references TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withExternalReferences(references) {
         this.model.externalReferences = references;
@@ -372,8 +311,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {{[key:string]:string}} properties
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {{[key:string]:string}} properties TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withPropertyList(properties) {
         this.model.propertyList = properties;
@@ -381,8 +320,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {Array<CorrespondenceReplyOptionExt>} replyOptions
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {Array<CorrespondenceReplyOptionExt>} replyOptions TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withReplyOptions(replyOptions) {
         this.model.replyOptions = replyOptions;
@@ -390,8 +329,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {InitializeCorrespondenceNotificationExt} notification
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {InitializeCorrespondenceNotificationExt} notification TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withNotification(notification) {
         this.model.notification = notification;
@@ -399,8 +338,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {boolean} ignoreReservation
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {boolean} ignoreReservation TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withIgnoreReservation(ignoreReservation) {
         this.model.ignoreReservation = ignoreReservation;
@@ -408,8 +347,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {boolean} value
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {boolean} value TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withConfirmationNeeded(value) {
         this.model.isConfirmationNeeded = value;
@@ -417,8 +356,8 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {boolean} value
-     * @returns {BaseCorrespondenceBuilder}
+     * @param {boolean} value TODO: Description
+     * @returns {BaseCorrespondenceBuilder} TODO: Description
      */
     withConfidential(value) {
         this.model.isConfidential = value;
@@ -426,7 +365,7 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @returns {BaseCorrespondenceExt}
+     * @returns {BaseCorrespondenceExt} TODO: Description
      */
     build() {
         if (!this.model.resourceId) {
@@ -465,7 +404,6 @@ class BaseCorrespondenceBuilder {
     }
 }
 
-
 /**
  * Builder for InitializeCorrespondenceNotificationExt.
  *
@@ -495,8 +433,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationTemplateExt} template
-     * @returns {NotificationBuilder}
+     * @param {NotificationTemplateExt} template TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withNotificationTemplate(template) {
         this.model.notificationTemplate = template;
@@ -504,8 +442,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} subject
-     * @returns {NotificationBuilder}
+     * @param {string} subject TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withEmailSubject(subject) {
         this.model.emailSubject = subject;
@@ -513,8 +451,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {NotificationBuilder}
+     * @param {string} body TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withEmailBody(body) {
         this.model.emailBody = body;
@@ -522,8 +460,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType
-     * @returns {NotificationBuilder}
+     * @param {EmailContentType} contentType TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withEmailContentType(contentType) {
         this.model.emailContentType = contentType;
@@ -531,8 +469,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {NotificationBuilder}
+     * @param {string} body TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withSmsBody(body) {
         this.model.smsBody = body;
@@ -540,8 +478,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {boolean} sendReminder
-     * @returns {NotificationBuilder}
+     * @param {boolean} sendReminder TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withSendReminder(sendReminder) {
         this.model.sendReminder = sendReminder;
@@ -549,8 +487,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} subject
-     * @returns {NotificationBuilder}
+     * @param {string} subject TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withReminderEmailSubject(subject) {
         this.model.reminderEmailSubject = subject;
@@ -558,8 +496,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {NotificationBuilder}
+     * @param {string} body TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withReminderEmailBody(body) {
         this.model.reminderEmailBody = body;
@@ -567,8 +505,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {EmailContentType} contentType
-     * @returns {NotificationBuilder}
+     * @param {EmailContentType} contentType TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withReminderEmailContentType(contentType) {
         this.model.reminderEmailContentType = contentType;
@@ -576,8 +514,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} body
-     * @returns {NotificationBuilder}
+     * @param {string} body TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withReminderSmsBody(body) {
         this.model.reminderSmsBody = body;
@@ -585,8 +523,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationChannelExt} channel
-     * @returns {NotificationBuilder}
+     * @param {NotificationChannelExt} channel TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withNotificationChannel(channel) {
         this.model.notificationChannel = channel;
@@ -594,8 +532,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationChannelExt} channel
-     * @returns {NotificationBuilder}
+     * @param {NotificationChannelExt} channel TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withReminderNotificationChannel(channel) {
         this.model.reminderNotificationChannel = channel;
@@ -603,8 +541,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {string} sendersReference
-     * @returns {NotificationBuilder}
+     * @param {string} sendersReference TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withSendersReference(sendersReference) {
         this.model.sendersReference = sendersReference;
@@ -612,8 +550,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {Array<NotificationRecipientExt>} recipients
-     * @returns {NotificationBuilder}
+     * @param {Array<NotificationRecipientExt>} recipients TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withCustomRecipients(recipients) {
         this.model.customRecipients = recipients;
@@ -621,8 +559,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {NotificationRecipientExt} recipient
-     * @returns {NotificationBuilder}
+     * @param {NotificationRecipientExt} recipient TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withCustomRecipient(recipient) {
         this.model.customRecipient = recipient;
@@ -630,8 +568,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {Array<CustomNotificationRecipientExt>} recipients
-     * @returns {NotificationBuilder}
+     * @param {Array<CustomNotificationRecipientExt>} recipients TODO: Description
+     * @returns {NotificationBuilder} TODO: Description
      */
     withCustomNotificationRecipients(recipients) {
         this.model.customNotificationRecipients = recipients;
@@ -639,8 +577,8 @@ class NotificationBuilder {
     }
 
     /**
-     * @param {boolean} override
-     * @returns {NotificationBuilder}
+     * @param {boolean} override TODO: Description
+     * @returns {NotificationBuilder}TODO: Description
      */
     withOverrideRegisteredContactInformation(override) {
         this.model.overrideRegisteredContactInformation = override;
@@ -650,7 +588,7 @@ class NotificationBuilder {
     /**
      * Builds InitializeCorrespondenceNotificationExt.
      *
-     * @returns {InitializeCorrespondenceNotificationExt}
+     * @returns {InitializeCorrespondenceNotificationExt} TODO: Description
      */
     build() {
         if (
@@ -742,16 +680,9 @@ class NotificationBuilder {
     }
 }
 
-export { };
-
-
-
-
-
 export {
+    BaseCorrespondenceBuilder,
     CorrespondenceQueryBuilder,
     InitializeCorrespondencesBuilder,
-    InitializeCorrespondencesBuilder,
-    BaseCorrespondenceBuilder,
     NotificationBuilder
 };

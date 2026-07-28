@@ -5,10 +5,10 @@ import { AttachmentClient } from "../../../../clients/correspondence/index.js";
 /**
  * Downloads attachment data.
  *
- * @param {AttachmentClient} attachmentClient
- * @param {string} attachmentId
- * @param {{[key:string]:string}|null} labels
- * @returns {ArrayBuffer|null}
+ * @param {AttachmentClient} attachmentClient TODO: Description
+ * @param {string} attachmentId TODO: Description
+ * @param {{[key:string]:string}|null} labels TODO: Description
+ * @returns {ArrayBuffer|null} TODO: Description
  */
 export function DownloadAttachment(
     attachmentClient,
