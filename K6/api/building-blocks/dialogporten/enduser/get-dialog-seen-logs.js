@@ -8,7 +8,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get seen log for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns response body of the request
+ * @returns {V1EndUserDialogsQueriesSearchSeenLogs_SeenLog[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogSeenLogs(
     enduserApiClient,
@@ -20,6 +20,9 @@ export function GetDialogSeenLogs(
         labels,
     );
 
+    /** @type {V1EndUserDialogsQueriesSearchSeenLogs_SeenLog[]} */
+    let seenLogs = [];
+
     const success = check(res, {
         "GetDialogSeenLog - status code MUST be 200": (res) => res.status == 200,
     });
@@ -27,9 +30,26 @@ export function GetDialogSeenLogs(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return seenLogs;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogSeenLogs - body is valid": (r) => {
+            try {
+                seenLogs = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return seenLogs;
 }
 
 /**
@@ -40,7 +60,7 @@ export function GetDialogSeenLogs(
  * param {string} seenLogEntryId - id of the seen log entry to get
  * @param seenLogEntryId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns TODO: description
+ * @returns {V1EndUserDialogsQueriesGetSeenLog_SeenLog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogSeenLog(
     enduserApiClient,
@@ -54,6 +74,9 @@ export function GetDialogSeenLog(
         labels,
     );
 
+    /** @type {V1EndUserDialogsQueriesGetSeenLog_SeenLog|null} */
+    let seenLog = null;
+
     const success = check(res, {
         "GetDialogSeenLogEntry - status code MUST be 200": (res) => res.status == 200,
     });
@@ -61,7 +84,24 @@ export function GetDialogSeenLog(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return seenLog;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogSeenLog - body is valid": (r) => {
+            try {
+                seenLog = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return seenLog;
 }
