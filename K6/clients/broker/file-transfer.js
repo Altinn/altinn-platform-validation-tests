@@ -56,6 +56,8 @@ class FileTransferClient {
     /**
      * Initializes a file transfer.
      *
+     * POST /filetransfer
+     *
      * @param {FileTransferInitalizeExt} body File transfer metadata.
      * Prefer using {@link FileTransferInitializeRequestBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -64,16 +66,35 @@ class FileTransferClient {
     InitializeFileTransfer(body, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        return this.#post(
-            this.FULL_PATH,
-            body,
-            TAGS.InitializeFileTransfer.action,
-            labels,
-        );
+        const url = this.FULL_PATH;
+
+        let tags = {
+            endpoint: url,
+            name: this.FULL_PATH,
+            action: TAGS.InitializeFileTransfer.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, JSON.stringify(body), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
     }
 
     /**
      * Gets file transfers matching the specified filters.
+     *
+     * GET /filetransfer
      *
      * @param {FileTransferQuery|null} [query]
      * Optional query parameters. Prefer using
@@ -86,15 +107,38 @@ class FileTransferClient {
 
         const url = new URL(this.FULL_PATH);
 
-        this.#appendQueryParameters(url, query);
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, v));
+                } else {
+                    url.searchParams.append(key, value);
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH,
+            action: TAGS.GetFileTransfers.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
 
         return http.get(url.toString(), {
-            tags: this.#getTags(
-                TAGS.GetFileTransfers.action,
-                labels,
-            ),
+            tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
     }
@@ -102,20 +146,39 @@ class FileTransferClient {
     /**
      * Uploads a file to an initialized file transfer.
      *
+     * POST /filetransfer/{fileTransferId}/upload
+     *
      * @param {string} fileTransferId File transfer UUID.
      * @param {*} body Binary file content.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     UploadFileTransfer(fileTransferId, body, labels = null) {
-        return this.#post(
-            `${this.FULL_PATH}/${fileTransferId}/upload`,
-            body,
-            TAGS.UploadFileTransfer.action,
-            labels,
-            "/{fileTransferId}/upload",
-            { "Content-Type": "application/octet-stream" },
-        );
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/${fileTransferId}/upload`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/upload`,
+            action: TAGS.UploadFileTransfer.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, body, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                "Content-Type": "application/octet-stream",
+            },
+        });
     }
 
     /**
@@ -124,7 +187,8 @@ class FileTransferClient {
      * POST /filetransfer/upload
      *
      * Recipient lists are expanded to indexed form field names, since a k6
-     * multipart body cannot repeat a field name.
+     * multipart body cannot repeat a field name. The body is left as an object
+     * so that k6 encodes it as multipart/form-data.
      *
      * @param {{[key: string]: *}} metadata Metadata form fields, e.g.
      * "Metadata.FileName", "Metadata.ResourceId", "Metadata.Sender" and
@@ -134,6 +198,8 @@ class FileTransferClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     InitializeAndUploadFileTransfer(metadata, file, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const body = { FileTransfer: file };
 
         for (const [key, value] of Object.entries(metadata)) {
@@ -152,17 +218,34 @@ class FileTransferClient {
             body[key] = value;
         }
 
-        return this.#post(
-            `${this.FULL_PATH}/upload`,
-            body,
-            TAGS.InitializeAndUploadFileTransfer.action,
-            labels,
-            "/upload",
-        );
+        const url = `${this.FULL_PATH}/upload`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/upload`,
+            action: TAGS.InitializeAndUploadFileTransfer.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, body, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
     }
 
     /**
      * Gets information about a file transfer.
+     *
+     * GET /filetransfer/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -173,24 +256,32 @@ class FileTransferClient {
 
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
-        return http.get(
-            url,
-            {
-                tags: this.#getTags(
-                    TAGS.GetFileTransfer.action,
-                    labels,
-                    "/{fileTransferId}",
-                    url,
-                ),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}`,
+            action: TAGS.GetFileTransfer.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
-        );
+        });
     }
 
     /**
      * Gets detailed information and status history for a file transfer.
+     *
+     * GET /filetransfer/{fileTransferId}/details
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -201,24 +292,32 @@ class FileTransferClient {
 
         const url = `${this.FULL_PATH}/${fileTransferId}/details`;
 
-        return http.get(
-            url,
-            {
-                tags: this.#getTags(
-                    TAGS.GetFileTransferDetails.action,
-                    labels,
-                    "/{fileTransferId}/details",
-                    url,
-                ),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/details`,
+            action: TAGS.GetFileTransferDetails.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
-        );
+        });
     }
 
     /**
      * Downloads the file from a file transfer.
+     *
+     * GET /filetransfer/{fileTransferId}/download
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -229,24 +328,31 @@ class FileTransferClient {
 
         const url = `${this.FULL_PATH}/${fileTransferId}/download`;
 
-        return http.get(
-            url,
-            {
-                tags: this.#getTags(
-                    TAGS.DownloadFileTransfer.action,
-                    labels,
-                    "/{fileTransferId}/download",
-                    url,
-                ),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/download`,
+            action: TAGS.DownloadFileTransfer.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
             },
-        );
+        });
     }
 
     /**
      * Confirms that a recipient has downloaded a file transfer.
+     *
+     * POST /filetransfer/{fileTransferId}/confirmdownload
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -257,92 +363,10 @@ class FileTransferClient {
 
         const url = `${this.FULL_PATH}/${fileTransferId}/confirmdownload`;
 
-        return http.post(
-            url,
-            null,
-            {
-                tags: this.#getTags(
-                    TAGS.ConfirmDownload.action,
-                    labels,
-                    "/{fileTransferId}/confirmdownload",
-                    url,
-                ),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
-        );
-    }
-
-    /**
-     * Performs a POST request with bearer authentication.
-     *
-     * @param {string} url Fully-qualified request URL.
-     * @param {*} body Request body.
-     * @param {string} action Action tag.
-     * @param {{[key: string]: string}|null} labels Optional k6 request labels.
-     * @param {string} [template] Templated path, appended to the base path.
-     * @param {{[key: string]: string}} [headers] Additional request headers.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
-     * @private
-     */
-    #post(url, body, action, labels, template = "", headers = {}) {
-        const token = this.tokenGenerator.getToken();
-
-        return http.post(
-            url,
-            body,
-            {
-                tags: this.#getTags(action, labels, template, url),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                    ...headers,
-                },
-            },
-        );
-    }
-
-    /**
-     * Adds query parameters to a URL.
-     *
-     * @param {URL} url URL to add the parameters to.
-     * @param {{[key: string]: *}|null} query Query parameters.
-     * @private
-     */
-    #appendQueryParameters(url, query) {
-        if (query === null) {
-            return;
-        }
-
-        for (const [key, value] of Object.entries(query)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((v) => url.searchParams.append(key, v));
-            } else {
-                url.searchParams.append(key, value);
-            }
-        }
-    }
-
-    /**
-     * Creates k6 tags for a request.
-     *
-     * @param {string} action Action tag.
-     * @param {{[key: string]: string}|null} labels Optional k6 request labels.
-     * @param {string} [template] Templated path, appended to the base path.
-     * @param {string} [url] Fully-qualified request URL.
-     * @returns {{[key: string]: string}} Request tags.
-     * @private
-     */
-    #getTags(action, labels, template = "", url = null) {
         let tags = {
-            endpoint: url ?? this.FULL_PATH,
-            name: `${this.FULL_PATH}${template}`,
-            action,
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/confirmdownload`,
+            action: TAGS.ConfirmDownload.action,
         };
 
         if (labels !== null) {
@@ -352,7 +376,13 @@ class FileTransferClient {
             };
         }
 
-        return tags;
+        return http.post(url, null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
     }
 }
 

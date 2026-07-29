@@ -61,56 +61,6 @@ class TusFileTransferClient {
     }
 
     /**
-     * Creates k6 tags for a request.
-     *
-     * @param {string} action Action tag.
-     * @param {string} template Templated path, without host information.
-     * @param {string} url Fully-qualified request URL.
-     * @param {{[key: string]: string}|null} labels Optional k6 request labels.
-     * @returns {{[key: string]: string}} Request tags.
-     */
-    #getTags(action, template, url, labels) {
-        let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}${template}`,
-            action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return tags;
-    }
-
-    /**
-     * Builds the request headers, including the mandatory tus version header.
-     *
-     * @param {{[key: string]: string|number}} [extra] Additional headers.
-     * Null and undefined values are skipped.
-     * @returns {{[key: string]: string}} Request headers.
-     */
-    #getHeaders(extra = {}) {
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        };
-
-        for (const [key, value] of Object.entries(extra)) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            headers[key] = `${value}`;
-        }
-
-        return headers;
-    }
-
-    /**
      * Gets the tus protocol options for an upload.
      *
      * OPTIONS /filetransfer/upload/tus/{fileTransferId}
@@ -122,14 +72,27 @@ class TusFileTransferClient {
     GetUploadOptions(fileTransferId, labels = null) {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}`,
+            action: TAGS.GetUploadOptions.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+        };
+
         return http.options(url, null, {
-            tags: this.#getTags(
-                TAGS.GetUploadOptions.action,
-                "/{fileTransferId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers,
         });
     }
 
@@ -153,17 +116,35 @@ class TusFileTransferClient {
     ) {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}`,
+            action: TAGS.CreatePartialUpload.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+        };
+
+        if (uploadLength !== null) {
+            headers["Upload-Length"] = `${uploadLength}`;
+        }
+
+        if (uploadConcat !== null) {
+            headers["Upload-Concat"] = `${uploadConcat}`;
+        }
+
         return http.post(url, null, {
-            tags: this.#getTags(
-                TAGS.CreatePartialUpload.action,
-                "/{fileTransferId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders({
-                "Upload-Length": uploadLength,
-                "Upload-Concat": uploadConcat,
-            }),
+            tags,
+            headers,
         });
     }
 
@@ -179,14 +160,27 @@ class TusFileTransferClient {
     GetUploadStatus(fileTransferId, labels = null) {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}`,
+            action: TAGS.GetUploadStatus.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+        };
+
         return http.request("HEAD", url, null, {
-            tags: this.#getTags(
-                TAGS.GetUploadStatus.action,
-                "/{fileTransferId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers,
         });
     }
 
@@ -204,17 +198,29 @@ class TusFileTransferClient {
     UploadChunk(fileTransferId, uploadOffset, body, labels = null) {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}`,
+            action: TAGS.UploadChunk.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+            "Content-Type": "application/offset+octet-stream",
+            "Upload-Offset": `${uploadOffset}`,
+        };
+
         return http.patch(url, body, {
-            tags: this.#getTags(
-                TAGS.UploadChunk.action,
-                "/{fileTransferId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders({
-                "Upload-Offset": uploadOffset,
-                "Content-Type": "application/offset+octet-stream",
-            }),
+            tags,
+            headers,
         });
     }
 
@@ -230,14 +236,27 @@ class TusFileTransferClient {
     DeleteUpload(fileTransferId, labels = null) {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}`,
+            action: TAGS.DeleteUpload.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+        };
+
         return http.del(url, null, {
-            tags: this.#getTags(
-                TAGS.DeleteUpload.action,
-                "/{fileTransferId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers,
         });
     }
 
@@ -254,14 +273,27 @@ class TusFileTransferClient {
     GetPartialUploadStatus(fileTransferId, partialUploadId, labels = null) {
         const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
+            action: TAGS.GetPartialUploadStatus.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+        };
+
         return http.request("HEAD", url, null, {
-            tags: this.#getTags(
-                TAGS.GetPartialUploadStatus.action,
-                "/{fileTransferId}/partial/{partialUploadId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers,
         });
     }
 
@@ -286,17 +318,29 @@ class TusFileTransferClient {
     ) {
         const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
+            action: TAGS.UploadPartialChunk.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+            "Content-Type": "application/offset+octet-stream",
+            "Upload-Offset": `${uploadOffset}`,
+        };
+
         return http.patch(url, body, {
-            tags: this.#getTags(
-                TAGS.UploadPartialChunk.action,
-                "/{fileTransferId}/partial/{partialUploadId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders({
-                "Upload-Offset": uploadOffset,
-                "Content-Type": "application/offset+octet-stream",
-            }),
+            tags,
+            headers,
         });
     }
 
@@ -313,14 +357,27 @@ class TusFileTransferClient {
     DeletePartialUpload(fileTransferId, partialUploadId, labels = null) {
         const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
+            action: TAGS.DeletePartialUpload.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            "Tus-Resumable": TUS_VERSION,
+        };
+
         return http.del(url, null, {
-            tags: this.#getTags(
-                TAGS.DeletePartialUpload.action,
-                "/{fileTransferId}/partial/{partialUploadId}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers,
         });
     }
 }
