@@ -12,11 +12,23 @@ import {
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../helpers.js";
-import { ConsentScope, MaskinportenConsentScope } from "../../../scopes.js";
+import { ConsentScope } from "../../../scopes.js";
 
 // The Maskinporten generator signs against test.maskinporten.no, so this only works in TT02.
 const ENVIRONMENT = "tt02";
 const ORG = "ttd";
+
+// Not in scopes.js — only used here, to request everything the client is provisioned for.
+const REQUESTS_WRITE_SCOPE = "altinn:accessmanagement/enduser:requests.write";
+const AUTHORIZE_SCOPE = "altinn:authorization/authorize";
+
+// Maskinporten takes the requested scopes space-separated in the grant.
+const SCOPES = [
+    REQUESTS_WRITE_SCOPE,
+    AUTHORIZE_SCOPE,
+    ConsentScope.READ,
+    ConsentScope.WRITE,
+].join(" ");
 
 const label = { step: "token-generators" };
 
@@ -91,7 +103,7 @@ export default function () {
             new EnterpriseTokenBuilder()
                 .withEnvironment(ENVIRONMENT)
                 .withOrganization(ORG)
-                .withScopes(ConsentScope.READ)
+                .withScopes(SCOPES)
                 .build(),
         );
 
@@ -101,9 +113,7 @@ export default function () {
     group("Maskinporten token generator signs with a PEM and caches", () => {
         // Fails with a 400 from Maskinporten if the grant lifetime exceeds 120s.
         const generator = new MaskinportenAccessTokenGenerator(
-            new MaskinportenTokenBuilder()
-                .withScopes(MaskinportenConsentScope.LOOKUP)
-                .build(),
+            new MaskinportenTokenBuilder().withScopes(SCOPES).build(),
         );
 
         const token = generator.getToken();
