@@ -62,7 +62,7 @@ export function GetResource(
  * @param {string} resourceId Altinn resource identifier.
  * @param {ResourceExt} request Resource to store.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The HTTP response, which has no documented body.
+ * @returns {boolean} Whether the call succeeded.
  */
 export function PutResource(
     resourceClient,
@@ -87,5 +87,5 @@ export function PutResource(
         console.log(res.body);
     }
 
-    return res;
+    return succeed;
 }
