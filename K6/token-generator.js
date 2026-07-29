@@ -38,11 +38,24 @@ const PLATFORM_TOKEN_TAGS = {
 };
 
 /**
- * Base token generator.
+ * Base token generator. Shared by the personal, enterprise and platform
+ * generators, which differ only in endpoint and tags.
+ *
+ * Options are sent as query parameters; any option with an `undefined` value is
+ * left out. Tokens are cached per option set for the lifetime of the VU.
  */
 class BaseTokenGenerator {
     #cache = new Map();
 
+    /**
+     * @param {object} config - Generator configuration.
+     * @param {string} config.endpoint - Token endpoint to call.
+     * @param {object} config.tags - Tags to put on the token request.
+     * @param {object} [config.options] - Built options from the matching builder.
+     * @param {string} [config.username=__ENV.TOKEN_GENERATOR_USERNAME] - Basic auth username.
+     * @param {string} [config.password=__ENV.TOKEN_GENERATOR_PASSWORD] - Basic auth password.
+     * @throws {Error} When username or password is missing.
+     */
     constructor({
         endpoint,
         tags,
@@ -71,10 +84,19 @@ class BaseTokenGenerator {
         };
     }
 
+    /**
+     * @param {object} options - Replacement options from the matching builder.
+     */
     setTokenGeneratorOptions(options) {
         this.tokenGeneratorOptions = options;
     }
 
+    /**
+     * Returns a token for the current options, cached per option set.
+     *
+     * @returns {string} The token, as returned by the endpoint.
+     * @throws {Error} If the endpoint does not answer 200.
+     */
     getToken() {
         const entries = Object.entries(this.tokenGeneratorOptions)
             .filter(([, value]) => value !== undefined);
@@ -112,6 +134,14 @@ class BaseTokenGenerator {
 
 /**
  * Personal token builder.
+ *
+ * Each `withX` maps to one query parameter: `withEnvironment` → `env`,
+ * `withAuthLevel` → `authLvl`, `withUsername` → `userName`,
+ * `withConsumerOrganizationNumber` → `consumerOrgNo`, `withPartyUuid` →
+ * `partyuuid`; the rest match their names.
+ *
+ * Starts out with `env` from `__ENV.ENVIRONMENT` and `ttl` 3600, since nearly
+ * every call site wants those — override with `withEnvironment` / `withTtl`.
  */
 export class PersonalTokenBuilder {
     constructor() {
@@ -185,6 +215,9 @@ export class PersonalTokenBuilder {
         return this;
     }
 
+    /**
+     * @returns {object} The built options, to pass to the generator.
+     */
     build() {
         return { ...this.options };
     }
@@ -192,6 +225,14 @@ export class PersonalTokenBuilder {
 
 /**
  * Enterprise token builder.
+ *
+ * Each `withX` maps to one query parameter: `withEnvironment` → `env`,
+ * `withOrganization` → `org`, `withOrganizationNumber` → `orgNo`,
+ * `withSupplierOrganizationNumber` → `supplierOrgNo`, `withUsername` →
+ * `userName`, `withPartyUuid` → `partyuuid`; the rest match their names.
+ *
+ * Starts out with `env` from `__ENV.ENVIRONMENT` and `ttl` 3600, since nearly
+ * every call site wants those — override with `withEnvironment` / `withTtl`.
  */
 export class EnterpriseTokenBuilder {
     constructor() {
@@ -260,6 +301,9 @@ export class EnterpriseTokenBuilder {
         return this;
     }
 
+    /**
+     * @returns {object} The built options, to pass to the generator.
+     */
     build() {
         return { ...this.options };
     }
@@ -267,6 +311,11 @@ export class EnterpriseTokenBuilder {
 
 /**
  * Platform token builder.
+ *
+ * `withEnvironment` → `env`, `withApplication` → `app`, `withTtl` → `ttl`.
+ *
+ * Starts out with `app` and `ttl` from the statics below. Unlike the personal
+ * and enterprise builders it does not default `env` — pass it explicitly.
  */
 export class PlatformTokenBuilder {
     static defaultApp = "k6-e2e-tests";
@@ -294,6 +343,9 @@ export class PlatformTokenBuilder {
         return this;
     }
 
+    /**
+     * @returns {object} The built options, to pass to the generator.
+     */
     build() {
         return { ...this.options };
     }
@@ -303,6 +355,11 @@ export class PlatformTokenBuilder {
  * Personal token generator.
  */
 export class PersonalTokenGenerator extends BaseTokenGenerator {
+    /**
+     * @param {object} [options] - Built options from the matching builder.
+     * @param {string} [username] - Basic auth username; defaults to __ENV.TOKEN_GENERATOR_USERNAME.
+     * @param {string} [password] - Basic auth password; defaults to __ENV.TOKEN_GENERATOR_PASSWORD.
+     */
     constructor(options, username, password) {
         super({
             endpoint: config.getPersonalTokenUrl,
@@ -313,6 +370,9 @@ export class PersonalTokenGenerator extends BaseTokenGenerator {
         });
     }
 
+    /**
+     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     */
     static get TAGS() {
         return PERSONAL_TOKEN_TAGS;
     }
@@ -322,6 +382,11 @@ export class PersonalTokenGenerator extends BaseTokenGenerator {
  * Enterprise token generator.
  */
 export class EnterpriseTokenGenerator extends BaseTokenGenerator {
+    /**
+     * @param {object} [options] - Built options from the matching builder.
+     * @param {string} [username] - Basic auth username; defaults to __ENV.TOKEN_GENERATOR_USERNAME.
+     * @param {string} [password] - Basic auth password; defaults to __ENV.TOKEN_GENERATOR_PASSWORD.
+     */
     constructor(options, username, password) {
         super({
             endpoint: config.getEnterpriseTokenUrl,
@@ -332,6 +397,9 @@ export class EnterpriseTokenGenerator extends BaseTokenGenerator {
         });
     }
 
+    /**
+     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     */
     static get TAGS() {
         return ENTERPRISE_TOKEN_TAGS;
     }
@@ -341,6 +409,11 @@ export class EnterpriseTokenGenerator extends BaseTokenGenerator {
  * Platform token generator.
  */
 export class PlatformTokenGenerator extends BaseTokenGenerator {
+    /**
+     * @param {object} [options] - Built options from the matching builder.
+     * @param {string} [username] - Basic auth username; defaults to __ENV.TOKEN_GENERATOR_USERNAME.
+     * @param {string} [password] - Basic auth password; defaults to __ENV.TOKEN_GENERATOR_PASSWORD.
+     */
     constructor(options, username, password) {
         super({
             endpoint: config.getPlatformAccessTokenUrl,
@@ -351,6 +424,9 @@ export class PlatformTokenGenerator extends BaseTokenGenerator {
         });
     }
 
+    /**
+     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     */
     static get TAGS() {
         return PLATFORM_TOKEN_TAGS;
     }

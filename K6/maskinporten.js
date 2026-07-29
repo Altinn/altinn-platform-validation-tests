@@ -22,17 +22,27 @@ const TAGS = {
 
 /**
  * Builder for Maskinporten token options.
+ *
+ * `withScopes` maps to the `scope` claim of the JWT grant. Maskinporten takes
+ * several scopes as one space-separated string.
  */
 export class MaskinportenTokenBuilder {
     constructor() {
         this.options = {};
     }
 
+    /**
+     * @param {string} scopes - Space-separated scopes to request.
+     * @returns {MaskinportenTokenBuilder} This builder, for chaining.
+     */
     withScopes(scopes) {
         this.options.scopes = scopes;
         return this;
     }
 
+    /**
+     * @returns {object} The built options, to pass to the generator.
+     */
     build() {
         return { ...this.options };
     }
@@ -47,6 +57,13 @@ export class MaskinportenAccessTokenGenerator {
     #clientPem;
     #cache = new Map();
 
+    /**
+     * @param {object} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
+     * @param {string} [maskinportenKid=__ENV.MASKINPORTEN_KID] - Key ID of the key registered on the Maskinporten client.
+     * @param {string} [maskinportenClientId=__ENV.MASKINPORTEN_CLIENT_ID] - Maskinporten client ID, used as the `iss` claim.
+     * @param {string} [clientPem=__ENV.MASKINPORTEN_CLIENT_PEM] - The client's private key as PEM. Quote it in .env so the newlines survive sourcing; literal `\n` sequences are converted back to real line breaks.
+     * @throws {Error} When any of the three values is missing, or the key is not a PEM.
+     */
     constructor(
         tokenGeneratorOptions,
         maskinportenKid = __ENV.MASKINPORTEN_KID,
@@ -83,14 +100,26 @@ export class MaskinportenAccessTokenGenerator {
         };
     }
 
+    /**
+     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     */
     static get TAGS() {
         return TAGS;
     }
 
+    /**
+     * @param {object} tokenGeneratorOptions - Replacement options from {@link MaskinportenTokenBuilder}.
+     */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = tokenGeneratorOptions;
     }
 
+    /**
+     * Returns an access token for the configured scopes, cached per client ID and
+     * scope set until it expires.
+     *
+     * @returns {string} A Maskinporten access token.
+     */
     getToken() {
         const scopes = this.tokenGeneratorOptions.scopes;
 
@@ -111,6 +140,14 @@ export class MaskinportenAccessTokenGenerator {
         return token;
     }
 
+    /**
+     * POSTs a JWT Bearer grant to the token endpoint.
+     *
+     * @param {string} scopes - Space-separated scopes to request.
+     * @returns {string} The access token from the response.
+     * @throws {Error} If the request fails or the response cannot be parsed.
+     * @private
+     */
     #generateAccessToken(scopes) {
         const grant = this.#createJwtGrant(scopes);
 
@@ -142,6 +179,13 @@ export class MaskinportenAccessTokenGenerator {
         }
     }
 
+    /**
+     * Signs the JWT assertion used as the OAuth2 JWT Bearer grant.
+     *
+     * @param {string} scopes - Space-separated scopes to put in the `scope` claim.
+     * @returns {string} The signed JWT.
+     * @private
+     */
     #createJwtGrant(scopes) {
         const header = {
             alg: "RS256",
@@ -165,6 +209,14 @@ export class MaskinportenAccessTokenGenerator {
         return KJUR.jws.JWS.sign("RS256", header, payload, this.#clientPem);
     }
 
+    /**
+     * Reads the `exp` claim of an access token, for cache eviction.
+     *
+     * @param {string} token - The access token to inspect.
+     * @returns {number} Expiry as a Unix timestamp in milliseconds.
+     * @throws {Error} If the payload cannot be decoded, or the token is already expired.
+     * @private
+     */
     #getExpirationTimestamp(token) {
         let expirationTimestamp;
 
