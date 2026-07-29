@@ -73,59 +73,6 @@ class AppsInstanceDelegationClient {
     }
 
     /**
-     * Builds the request tags for a call.
-     *
-     * The name tag is kept on the templated path so that every resource and
-     * instance does not end up as its own metric.
-     *
-     * @param {string} action Action tag.
-     * @param {string} template Templated path, without host information.
-     * @param {string} url Fully-qualified request URL.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {{[key:string]:string}} Request tags.
-     */
-    #getTags(action, template, url, labels) {
-        let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}${template}`,
-            action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return tags;
-    }
-
-    /**
-     * Builds the request headers for a call.
-     *
-     * @param {string|null} platformAccessToken Optional platform access token.
-     * @param {string|null} contentType Optional request body content type.
-     * @returns {{[key:string]:string}} Request headers.
-     */
-    #getHeaders(platformAccessToken, contentType = null) {
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            Accept: "application/json",
-        };
-
-        if (contentType !== null) {
-            headers["Content-Type"] = contentType;
-        }
-
-        if (platformAccessToken !== null) {
-            headers.PlatformAccessToken = `${platformAccessToken}`;
-        }
-
-        return headers;
-    }
-
-    /**
      * Checks whether rights may be delegated for an application instance.
      *
      * GET /app/delegationcheck/resource/{resourceId}/instance/{instanceId}
@@ -142,20 +89,35 @@ class AppsInstanceDelegationClient {
         platformAccessToken = null,
         labels = null,
     ) {
-        const template = "/app/delegationcheck/resource/{resourceId}/instance/{instanceId}";
-
         const url = new URL(
             `${this.FULL_PATH}/app/delegationcheck/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
         ).toString();
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/app/delegationcheck/resource/{resourceId}/instance/{instanceId}`,
+            action: TAGS.CheckResourceDelegation.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            Accept: "application/json",
+        };
+
+        if (platformAccessToken !== null) {
+            headers.PlatformAccessToken = `${platformAccessToken}`;
+        }
+
         return http.get(url, {
-            tags: this.#getTags(
-                TAGS.CheckResourceDelegation.action,
-                template,
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(platformAccessToken),
+            tags,
+            headers,
         });
     }
 
@@ -178,26 +140,39 @@ class AppsInstanceDelegationClient {
         platformAccessToken = null,
         labels = null,
     ) {
-        const template = "/app/delegations/resource/{resourceId}/instance/{instanceId}";
-
         const url = new URL(
             `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
         ).toString();
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
+            action: TAGS.CreateDelegation.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        };
+
+        if (platformAccessToken !== null) {
+            headers.PlatformAccessToken = `${platformAccessToken}`;
+        }
 
         return http.post(
             url,
             JSON.stringify(request),
             {
-                tags: this.#getTags(
-                    TAGS.CreateDelegation.action,
-                    template,
-                    url,
-                    labels,
-                ),
-                headers: this.#getHeaders(
-                    platformAccessToken,
-                    "application/json",
-                ),
+                tags,
+                headers,
             },
         );
     }
@@ -219,20 +194,35 @@ class AppsInstanceDelegationClient {
         platformAccessToken = null,
         labels = null,
     ) {
-        const template = "/app/delegations/resource/{resourceId}/instance/{instanceId}";
-
         const url = new URL(
             `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
         ).toString();
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
+            action: TAGS.GetDelegations.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            Accept: "application/json",
+        };
+
+        if (platformAccessToken !== null) {
+            headers.PlatformAccessToken = `${platformAccessToken}`;
+        }
+
         return http.get(url, {
-            tags: this.#getTags(
-                TAGS.GetDelegations.action,
-                template,
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(platformAccessToken),
+            tags,
+            headers,
         });
     }
 
@@ -258,26 +248,39 @@ class AppsInstanceDelegationClient {
         platformAccessToken = null,
         labels = null,
     ) {
-        const template = "/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}";
-
         const url = new URL(
             `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
         ).toString();
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
+            action: TAGS.RevokeDelegation.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        };
+
+        if (platformAccessToken !== null) {
+            headers.PlatformAccessToken = `${platformAccessToken}`;
+        }
 
         return http.post(
             url,
             JSON.stringify(request),
             {
-                tags: this.#getTags(
-                    TAGS.RevokeDelegation.action,
-                    template,
-                    url,
-                    labels,
-                ),
-                headers: this.#getHeaders(
-                    platformAccessToken,
-                    "application/json",
-                ),
+                tags,
+                headers,
             },
         );
     }
@@ -299,23 +302,38 @@ class AppsInstanceDelegationClient {
         platformAccessToken = null,
         labels = null,
     ) {
-        const template = "/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}";
-
         const url = new URL(
             `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
         ).toString();
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
+            action: TAGS.DeleteDelegations.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        const headers = {
+            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            Accept: "application/json",
+        };
+
+        if (platformAccessToken !== null) {
+            headers.PlatformAccessToken = `${platformAccessToken}`;
+        }
 
         return http.del(
             url,
             null,
             {
-                tags: this.#getTags(
-                    TAGS.DeleteDelegations.action,
-                    template,
-                    url,
-                    labels,
-                ),
-                headers: this.#getHeaders(platformAccessToken),
+                tags,
+                headers,
             },
         );
     }
