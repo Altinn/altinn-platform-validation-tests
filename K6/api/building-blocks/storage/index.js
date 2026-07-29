@@ -1,10 +1,15 @@
 export { CreateApplication } from "./create-application.js";
 export { CreateTextResource } from "./create-text-resource.js";
+export { CreateData, DeleteData, GetData, GetDataElements, UpdateData, UpdateDataElement, UpdateFileScanStatus } from "./data.js";
 export { DeleteApplication } from "./delete-application.js";
 export { DeleteTextResource } from "./delete-text-resource.js";
 export { GetApplication } from "./get-application.js";
 export { GetApplications } from "./get-applications.js";
 export { GetApplicationsByOrg } from "./get-applications-by-org.js";
 export { GetTextResource } from "./get-text-resource.js";
+export { CreateInstanceEvent, GetInstanceEvent, GetInstanceEvents } from "./instance-events.js";
+export { CompleteInstance, CreateInstance, DeleteInstance, GetInstance, GetInstanceByGuid, QueryInstances, UpdateDataValues, UpdatePresentationTexts, UpdateReadStatus, UpdateSubStatus } from "./instances.js";
+export { GetProcessHistory, UpdateProcessState, UpdateProcessStateAndEvents } from "./process.js";
+export { SignInstance } from "./sign.js";
 export { UpdateApplication } from "./update-application.js";
 export { UpdateTextResource } from "./update-text-resource.js";

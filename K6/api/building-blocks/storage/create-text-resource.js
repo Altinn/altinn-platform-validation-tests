@@ -1,11 +1,11 @@
 import { check } from "k6";
 
-import { ApplicationsClient } from "../../../clients/storage/index.js";
+import { TextsClient } from "../../../clients/storage/index.js";
 
 /**
  * Creates a new text resource.
  *
- * @param {ApplicationsClient} applicationsClient Applications API client.
+ * @param {TextsClient} textsClient Applications API client.
  * @param {string} org Organization identifier.
  * @param {string} app Application identifier.
  * @param {TextResource} textResource Text resource.
@@ -13,13 +13,13 @@ import { ApplicationsClient } from "../../../clients/storage/index.js";
  * @returns {TextResource|null} Created text resource.
  */
 export function CreateTextResource(
-    applicationsClient,
+    textsClient,
     org,
     app,
     textResource,
     labels = null,
 ) {
-    const res = applicationsClient.CreateTextResource(
+    const res = textsClient.CreateTextResource(
         org,
         app,
         textResource,

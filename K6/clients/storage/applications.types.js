@@ -231,3 +231,16 @@ export const AppMetadataContactPoint = {};
 export const TextResource = {};
 export const TextResourceElement = {};
 export const TextResourceVariable = {};
+
+/**
+ * Error body returned for 4xx and 5xx responses.
+ *
+ * @typedef {object} ProblemDetails
+ * @property {string|null} [type]
+ * @property {string|null} [title]
+ * @property {number|null} [status]
+ * @property {string|null} [detail]
+ * @property {string|null} [instance]
+ */
+
+export const ProblemDetails = undefined;

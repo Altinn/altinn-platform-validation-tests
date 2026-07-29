@@ -1,11 +1,11 @@
 import { check } from "k6";
 
-import { ApplicationsClient } from "../../../clients/storage/index.js";
+import { TextsClient } from "../../../clients/storage/index.js";
 
 /**
  * Deletes an existing text resource.
  *
- * @param {ApplicationsClient} applicationsClient Applications API client.
+ * @param {TextsClient} textsClient Applications API client.
  * @param {string} org Organization identifier.
  * @param {string} app Application identifier.
  * @param {string} language Language code.
@@ -13,13 +13,13 @@ import { ApplicationsClient } from "../../../clients/storage/index.js";
  * @returns {boolean} True when deletion succeeds.
  */
 export function DeleteTextResource(
-    applicationsClient,
+    textsClient,
     org,
     app,
     language,
     labels = null,
 ) {
-    const res = applicationsClient.DeleteTextResource(
+    const res = textsClient.DeleteTextResource(
         org,
         app,
         language,
