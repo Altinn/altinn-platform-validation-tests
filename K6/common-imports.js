@@ -1,15 +1,15 @@
 // Keep versioned libs in a single file to simplify updates
 export {
     MaskinportenAccessTokenGenerator,
-    MaskinportenTokenGeneratorOptions
+    MaskinportenTokenBuilder
 } from "./maskinporten.js";
 export {
+    EnterpriseTokenBuilder,
     EnterpriseTokenGenerator,
-    EnterpriseTokenGeneratorOptions,
+    PersonalTokenBuilder,
     PersonalTokenGenerator,
-    PersonalTokenGeneratorOptions,
+    PlatformTokenBuilder,
     PlatformTokenGenerator,
-    PlatformTokenGeneratorOptions,
 } from "./token-generator.js";
 export {
     randomIntBetween,

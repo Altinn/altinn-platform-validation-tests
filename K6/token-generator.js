@@ -44,6 +44,7 @@ class BaseTokenGenerator {
     #cache = new Map();
 
     constructor({
+        endpoint,
         tags,
         options,
         username = __ENV.TOKEN_GENERATOR_USERNAME,
@@ -55,6 +56,7 @@ class BaseTokenGenerator {
             );
         }
 
+        this.endpoint = endpoint;
         this.tokenGeneratorOptions = options ?? {};
 
         const encodedCredentials = encoding.b64encode(
@@ -77,12 +79,12 @@ class BaseTokenGenerator {
         const entries = Object.entries(this.tokenGeneratorOptions)
             .filter(([, value]) => value !== undefined);
 
-        const key = JSON.stringify(
+        const cacheKey = JSON.stringify(
             entries.sort(([a], [b]) => a.localeCompare(b)),
         );
 
-        if (this.#cache.has(key)) {
-            return this.#cache.get(key);
+        if (this.#cache.has(cacheKey)) {
+            return this.#cache.get(cacheKey);
         }
 
         const url = new URL(this.endpoint);
@@ -102,7 +104,7 @@ class BaseTokenGenerator {
             );
         }
 
-        this.#cache.set(key, response.body);
+        this.#cache.set(cacheKey, response.body);
 
         return response.body;
     }
@@ -299,7 +301,8 @@ export class PlatformTokenBuilder {
 export class PersonalTokenGenerator extends BaseTokenGenerator {
     constructor(options, username, password) {
         super({
-            tags: PERSONAL_TOKEN_TAGS.get_token,
+            endpoint: config.getPersonalTokenUrl,
+            tags: PERSONAL_TOKEN_TAGS.getToken,
             options,
             username,
             password,
@@ -317,7 +320,8 @@ export class PersonalTokenGenerator extends BaseTokenGenerator {
 export class EnterpriseTokenGenerator extends BaseTokenGenerator {
     constructor(options, username, password) {
         super({
-            tags: ENTERPRISE_TOKEN_TAGS.get_token,
+            endpoint: config.getEnterpriseTokenUrl,
+            tags: ENTERPRISE_TOKEN_TAGS.getToken,
             options,
             username,
             password,
@@ -335,7 +339,8 @@ export class EnterpriseTokenGenerator extends BaseTokenGenerator {
 export class PlatformTokenGenerator extends BaseTokenGenerator {
     constructor(options, username, password) {
         super({
-            tags: PLATFORM_TOKEN_TAGS.get_token,
+            endpoint: config.getPlatformAccessTokenUrl,
+            tags: PLATFORM_TOKEN_TAGS.getToken,
             options,
             username,
             password,

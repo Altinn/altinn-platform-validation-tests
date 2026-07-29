@@ -9,6 +9,9 @@ const config = {
     tokenUrl: "https://test.maskinporten.no/token",
 };
 
+// Maskinporten caps the JWT grant lifetime at 120 seconds; leave room for clock skew.
+const ASSERTION_LIFETIME_SECONDS = 100;
+
 const TAGS = {
     getToken: {
         token_generator: "maskinporten-token-generator",
@@ -39,30 +42,36 @@ export class MaskinportenTokenBuilder {
  * Generates Maskinporten access tokens using a JWT Bearer Assertion.
  */
 export class MaskinportenAccessTokenGenerator {
-    #machineportenKid;
-    #machineportenClientId;
-    #encodedJwk;
+    #maskinportenKid;
+    #maskinportenClientId;
+    #clientPem;
     #cache = new Map();
 
     constructor(
         tokenGeneratorOptions,
-        machineportenKid = __ENV.MACHINEPORTEN_KID,
-        machineportenClientId = __ENV.MACHINEPORTEN_CLIENT_ID,
-        encodedJwk = __ENV.ENCODED_JWK,
+        maskinportenKid = __ENV.MASKINPORTEN_KID,
+        maskinportenClientId = __ENV.MASKINPORTEN_CLIENT_ID,
+        clientPem = __ENV.MASKINPORTEN_CLIENT_PEM,
     ) {
-        if (
-            machineportenKid === undefined ||
-            machineportenClientId === undefined ||
-            encodedJwk === undefined
-        ) {
+        if (!maskinportenKid || !maskinportenClientId || !clientPem) {
             throw new Error(
-                "MaskinportenAccessTokenGenerator requires a maskinporten kid, client_id and an encoded jwk",
+                "MaskinportenAccessTokenGenerator requires MASKINPORTEN_KID, MASKINPORTEN_CLIENT_ID and MASKINPORTEN_CLIENT_PEM",
             );
         }
 
-        this.#machineportenKid = machineportenKid;
-        this.#machineportenClientId = machineportenClientId;
-        this.#encodedJwk = encodedJwk;
+        // Secret stores and .env files sometimes flatten the newlines in a PEM;
+        // jsrsasign needs the real line breaks back.
+        const normalizedPem = clientPem.replace(/\\n/g, "\n").trim();
+
+        if (!normalizedPem.startsWith("-----BEGIN")) {
+            throw new Error(
+                "MASKINPORTEN_CLIENT_PEM must be a PEM private key (-----BEGIN ...)",
+            );
+        }
+
+        this.#maskinportenKid = maskinportenKid;
+        this.#maskinportenClientId = maskinportenClientId;
+        this.#clientPem = normalizedPem;
 
         this.tokenGeneratorOptions = tokenGeneratorOptions ?? {};
 
@@ -81,7 +90,7 @@ export class MaskinportenAccessTokenGenerator {
     getToken() {
         const scopes = this.tokenGeneratorOptions.scopes;
 
-        const cacheKey = `${this.#machineportenClientId}:${scopes} `;
+        const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
         const cached = this.#cache.get(cacheKey);
 
         if (cached && cached.expiresAt > Date.now()) {
@@ -115,7 +124,7 @@ export class MaskinportenAccessTokenGenerator {
 
         if (response.status !== 200) {
             throw new Error(
-                `Failed to generate Maskinporten token: ${response.body} `,
+                `Failed to generate Maskinporten token: ${response.body}`,
             );
         }
 
@@ -123,7 +132,7 @@ export class MaskinportenAccessTokenGenerator {
             return JSON.parse(response.body).access_token;
         } catch (e) {
             throw new Error(
-                `Unable to parse Maskinporten token: ${e.message} `,
+                `Unable to parse Maskinporten token: ${e.message}`,
                 { cause: e },
             );
         }
@@ -133,7 +142,7 @@ export class MaskinportenAccessTokenGenerator {
         const header = {
             alg: "RS256",
             typ: "JWT",
-            kid: this.#machineportenKid,
+            kid: this.#maskinportenKid,
         };
 
         const now = Math.floor(Date.now() / 1000);
@@ -141,23 +150,20 @@ export class MaskinportenAccessTokenGenerator {
         const payload = {
             aud: config.audienceUrl,
             scope: scopes,
-            iss: this.#machineportenClientId,
+            iss: this.#maskinportenClientId,
             iat: now,
-            exp: now + 600,
+            // Maskinporten rejects assertions where exp - iat exceeds 120s.
+            // This is the lifetime of the grant, not of the access token it returns.
+            exp: now + ASSERTION_LIFETIME_SECONDS,
             jti: uuidv4(),
         };
 
-        return KJUR.jws.JWS.sign(
-            "RS256",
-            header,
-            payload,
-            JSON.parse(
-                encoding.b64decode(this.#encodedJwk, "std", "s"),
-            ),
-        );
+        return KJUR.jws.JWS.sign("RS256", header, payload, this.#clientPem);
     }
 
     #getExpirationTimestamp(token) {
+        let expirationTimestamp;
+
         try {
             const payloadSegment = token.split(".")[1];
 
@@ -173,20 +179,20 @@ export class MaskinportenAccessTokenGenerator {
                 encoding.b64decode(base64, "std", "s"),
             );
 
-            const expirationTimestamp = payload.exp * 1000;
-
-            if (expirationTimestamp <= Date.now()) {
-                throw new Error(
-                    "Received token is already expired or has an invalid expiration date",
-                );
-            }
-
-            return expirationTimestamp;
+            expirationTimestamp = payload.exp * 1000;
         } catch (e) {
             throw new Error(
-                `Failed to decode JWT payload for expiration: ${e.message} `,
+                `Failed to decode JWT payload for expiration: ${e.message}`,
                 { cause: e },
             );
         }
+
+        if (expirationTimestamp <= Date.now()) {
+            throw new Error(
+                "Received token is already expired or has an invalid expiration date",
+            );
+        }
+
+        return expirationTimestamp;
     }
 }
