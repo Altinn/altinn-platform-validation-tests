@@ -219,7 +219,8 @@ export function GetInstance(
  * @param {string} instanceGuid Instance UUID.
  * @param {boolean} hard Whether to hard delete.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The response, which has no documented body.
+ * @returns {Instance|null} The deleted instance on a soft delete, or null on a
+ * hard delete, which answers 204, and when the call failed.
  */
 export function DeleteInstance(
     instancesClient,
@@ -235,16 +236,42 @@ export function DeleteInstance(
         labels,
     );
 
+    /** @type {Instance|null} */
+    let instance = null;
+
+    // A soft delete answers 200 with the instance, a hard delete answers 204.
     const success = check(res, {
-        "DeleteInstance - status code is 200": (r) => r.status === 200,
+        "DeleteInstance - status code is 200 or 204": (r) =>
+            r.status === 200 || r.status === 204,
     });
 
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return instance;
     }
 
-    return res;
+    if (res.status === 204) {
+        return instance;
+    }
+
+    check(res, {
+        "DeleteInstance - body is valid": (r) => {
+            try {
+                instance = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return instance;
 }
 
 /**

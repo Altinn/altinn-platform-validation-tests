@@ -75,7 +75,8 @@ export function CreateData(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The response, which has no documented body.
+ * @returns {http.RefinedResponse} The HTTP response. The body is the file
+ * content, so the response is returned rather than a boolean.
  */
 export function GetData(
     dataClient,
@@ -348,7 +349,7 @@ export function UpdateDataElement(
  * @param {string} dataGuid Data element UUID.
  * @param {FileScanStatus} request File scan status to store.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The response, which has no documented body.
+ * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateFileScanStatus(
     dataClient,
@@ -375,5 +376,5 @@ export function UpdateFileScanStatus(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }

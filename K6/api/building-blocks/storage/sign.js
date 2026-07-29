@@ -10,7 +10,7 @@ import { SignClient } from "../../../clients/storage/index.js";
  * @param {string} instanceGuid Instance UUID.
  * @param {SignRequest} request Signature request.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The response, which has no documented body.
+ * @returns {boolean} Whether the call succeeded.
  */
 export function SignInstance(
     signClient,
@@ -35,5 +35,5 @@ export function SignInstance(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
