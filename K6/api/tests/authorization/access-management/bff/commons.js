@@ -85,13 +85,11 @@ export function getClients(serviceOwnerOrgNo) {
 
 // TODO: which one should be used here?
 export function getTokenOpts(userId, partyuuid) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:portal/enduser");
-    tokenOpts.set("userId", userId);
-    tokenOpts.set("partyuuid", partyuuid);
-    return tokenOpts;
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes("altinn:portal/enduser")
+        .withUserId(userId)
+        .withPartyUuid(partyuuid);
+    return tokenOpts.build();
 }
 
 /**
@@ -122,12 +120,11 @@ export function setup() {
 
 // TODO: which one should be used here?
 export function getDialogportenOpts(ssn) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten");
-    tokenOpts.set("pid", ssn);
-    return tokenOpts;
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes("digdir:dialogporten")
+        .withPid(ssn);
+
+    return tokenOpts.build();
 }
 
 /**

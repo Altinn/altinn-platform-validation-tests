@@ -89,9 +89,12 @@ export function getEnterpriseBaseTokenOpts(env, scopes) {
  * @returns {EnterpriseTokenGeneratorOptions} TODO: description
  */
 export function getEnterpriseTokenOpts(env, orgNo, scopes) {
-    const opts = getEnterpriseBaseTokenOpts(env, scopes);
-    opts.set("orgNo", orgNo);
-    return opts;
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(env)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withOrganizationNumber(orgNo)
+        .build();
 }
 
 /**

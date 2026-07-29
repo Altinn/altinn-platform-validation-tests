@@ -56,12 +56,10 @@ export function getClients() {
  * @returns map of token options
  */
 export function getTokenOpts(ssn) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
-    tokenOpts.set("pid", ssn);
-    return tokenOpts;
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes("altinn:authorization/authorize.admin")
+        .withPid(ssn);
+    return tokenOpts.build();
 }
 
 /**
