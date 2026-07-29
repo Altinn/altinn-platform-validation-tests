@@ -12,7 +12,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
  * @param {V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function SetDialogSystemLabels(
     enduserApiClient,
@@ -37,7 +37,7 @@ export function SetDialogSystemLabels(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
 
 /**
@@ -49,7 +49,7 @@ export function SetDialogSystemLabels(
  * @param {V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function BulkSetDialogSystemLabels(
     enduserApiClient,
@@ -72,5 +72,5 @@ export function BulkSetDialogSystemLabels(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }

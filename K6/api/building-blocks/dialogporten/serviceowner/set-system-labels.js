@@ -13,7 +13,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param {string} enduserId - the end user to act on behalf of
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function SetEndUserContextSystemLabels(
     serviceOwnerApiClient,
@@ -40,7 +40,7 @@ export function SetEndUserContextSystemLabels(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
 
 /**
@@ -52,7 +52,7 @@ export function SetEndUserContextSystemLabels(
  * @param {V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
  * @param {string} enduserId - the end user to act on behalf of
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function BulkSetEndUserContextSystemLabels(
     serviceOwnerApiClient,
@@ -75,5 +75,5 @@ export function BulkSetEndUserContextSystemLabels(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }

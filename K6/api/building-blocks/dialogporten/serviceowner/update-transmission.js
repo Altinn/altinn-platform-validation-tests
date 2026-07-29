@@ -13,7 +13,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param {V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest} request - the transmission to store
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateTransmission(
     serviceOwnerApiClient,
@@ -40,5 +40,5 @@ export function UpdateTransmission(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }

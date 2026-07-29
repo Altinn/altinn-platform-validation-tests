@@ -12,7 +12,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param {V1ServiceOwnerDialogsCommandsUpdate_Dialog} request - the dialog to store
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateDialog(
     serviceOwnerApiClient,
@@ -37,7 +37,7 @@ export function UpdateDialog(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
 
 /**
@@ -50,7 +50,7 @@ export function UpdateDialog(
  * @param {JsonPatchOperations_Operation[]} operations - the patch operations to apply
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function PatchDialog(
     serviceOwnerApiClient,
@@ -75,7 +75,7 @@ export function PatchDialog(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
 
 /**
@@ -87,7 +87,7 @@ export function PatchDialog(
  * @param {uuidv7} dialogId - id of the dialog
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function DeleteDialog(
     serviceOwnerApiClient,
@@ -110,5 +110,5 @@ export function DeleteDialog(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }

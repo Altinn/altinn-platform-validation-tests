@@ -12,7 +12,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param {V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label} request - the label to add
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function AddServiceOwnerLabels(
     serviceOwnerApiClient,
@@ -37,7 +37,7 @@ export function AddServiceOwnerLabels(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
 
 /**
@@ -50,7 +50,7 @@ export function AddServiceOwnerLabels(
  * @param {string} label - the label to remove
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns http.RefinedResponse - the response, which has no body on success
+ * @returns {boolean} Whether the call succeeded.
  */
 export function RemoveServiceOwnerLabel(
     serviceOwnerApiClient,
@@ -75,5 +75,5 @@ export function RemoveServiceOwnerLabel(
         console.log(res.body);
     }
 
-    return res;
+    return success;
 }
