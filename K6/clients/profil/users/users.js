@@ -39,51 +39,6 @@ class UsersClient {
     }
 
     /**
-     * Creates k6 tags for a request.
-     *
-     * @param {string} action Action tag.
-     * @param {string} template Templated path, appended to the base path.
-     * @param {string} url Fully-qualified request URL.
-     * @param {{[key: string]: string}|null} labels Optional k6 request labels.
-     * @returns {{[key: string]: string}} Request tags.
-     */
-    #getTags(action, template, url, labels) {
-        let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}${template}`,
-            action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return tags;
-    }
-
-    /**
-     * Builds the request headers.
-     *
-     * @param {boolean} [withBody] Whether the request carries a JSON body.
-     * @returns {{[key: string]: string}} Request headers.
-     */
-    #getHeaders(withBody = false) {
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            Accept: "application/json",
-        };
-
-        if (withBody) {
-            headers["Content-Type"] = "application/json";
-        }
-
-        return headers;
-    }
-
-    /**
      * Gets the user profile for a given user id.
      *
      * GET /users/{userID}
@@ -94,16 +49,29 @@ class UsersClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetUserById(userID, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const url = `${this.FULL_PATH}/${userID}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{userID}`,
+            action: TAGS.GetUserById.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
         return http.get(url, {
-            tags: this.#getTags(
-                TAGS.GetUserById.action,
-                "/{userID}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         });
     }
 
@@ -118,16 +86,29 @@ class UsersClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetUserByUuid(userUuid, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const url = `${this.FULL_PATH}/byuuid/${userUuid}`;
 
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/byuuid/{userUuid}`,
+            action: TAGS.GetUserByUuid.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
         return http.get(url, {
-            tags: this.#getTags(
-                TAGS.GetUserByUuid.action,
-                "/byuuid/{userUuid}",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         });
     }
 
@@ -141,16 +122,29 @@ class UsersClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetCurrentUser(labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const url = `${this.FULL_PATH}/current`;
 
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.GetCurrentUser.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
         return http.get(url, {
-            tags: this.#getTags(
-                TAGS.GetCurrentUser.action,
-                "/current",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(),
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         });
     }
 
@@ -165,16 +159,30 @@ class UsersClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetUserBySsn(ssn, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const url = this.FULL_PATH;
 
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.GetUserBySsn.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
         return http.post(url, JSON.stringify(ssn), {
-            tags: this.#getTags(
-                TAGS.GetUserBySsn.action,
-                "",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(true),
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
         });
     }
 
@@ -189,16 +197,30 @@ class UsersClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     UpdateProfileSettings(request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const url = `${this.FULL_PATH}/current/profilesettings`;
 
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.UpdateProfileSettings.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
         return http.put(url, JSON.stringify(request), {
-            tags: this.#getTags(
-                TAGS.UpdateProfileSettings.action,
-                "/current/profilesettings",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(true),
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
         });
     }
 
@@ -213,16 +235,30 @@ class UsersClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     PatchProfileSettings(request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
         const url = `${this.FULL_PATH}/current/profilesettings`;
 
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.PatchProfileSettings.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
         return http.patch(url, JSON.stringify(request), {
-            tags: this.#getTags(
-                TAGS.PatchProfileSettings.action,
-                "/current/profilesettings",
-                url,
-                labels,
-            ),
-            headers: this.#getHeaders(true),
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
         });
     }
 }
