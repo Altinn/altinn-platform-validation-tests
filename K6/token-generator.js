@@ -116,6 +116,8 @@ class BaseTokenGenerator {
 export class PersonalTokenBuilder {
     constructor() {
         this.options = {};
+        this.options.env = __ENV.ENVIRONMENT;
+        this.options.ttl = 3600;
     }
 
     withEnvironment(environment) {
@@ -194,6 +196,8 @@ export class PersonalTokenBuilder {
 export class EnterpriseTokenBuilder {
     constructor() {
         this.options = {};
+        this.options.env = __ENV.ENVIRONMENT;
+        this.options.ttl = 3600;
     }
 
     withEnvironment(environment) {

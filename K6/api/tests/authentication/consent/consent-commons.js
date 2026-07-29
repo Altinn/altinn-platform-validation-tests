@@ -1,8 +1,8 @@
 import http from "k6/http";
 
 import {
-    EnterpriseTokenGeneratorOptions,
-    PersonalTokenGeneratorOptions,
+    EnterpriseTokenBuilder,
+    PersonalTokenBuilder,
 } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { ENDUSER_SCOPE } from "../../../../scopes.js";
@@ -69,14 +69,14 @@ export function getLookupConsents(env) {
  *
  * @param {string} env TODO: description
  * @param {string} scopes TODO: description
- * @returns {EnterpriseTokenGeneratorOptions} TODO: description
+ * @returns {object} TODO: description
  */
 export function getEnterpriseBaseTokenOpts(env, scopes) {
-    return new EnterpriseTokenGeneratorOptions([
-        ["env", env],
-        ["ttl", 3600],
-        ["scopes", scopes],
-    ]);
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(env)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 }
 
 /**
@@ -99,14 +99,14 @@ export function getEnterpriseTokenOpts(env, orgNo, scopes) {
  * identity. Used to build the generator once; partyuuid is set per iteration.
  *
  * @param {string} env TODO: description
- * @returns {PersonalTokenGeneratorOptions} TODO: description
+ * @returns {object} TODO: description
  */
 export function getPersonalBaseTokenOpts(env) {
-    return new PersonalTokenGeneratorOptions([
-        ["env", env],
-        ["ttl", 3600],
-        ["scopes", ENDUSER_SCOPE],
-    ]);
+    return new PersonalTokenBuilder()
+        .withEnvironment(env)
+        .withTtl(3600)
+        .withScopes(ENDUSER_SCOPE)
+        .build();
 }
 
 /**
@@ -118,9 +118,12 @@ export function getPersonalBaseTokenOpts(env) {
  * @returns {PersonalTokenGeneratorOptions} TODO: description
  */
 export function getPersonalTokenOpts(env, partyUuid) {
-    const opts = getPersonalBaseTokenOpts(env);
-    opts.set("partyuuid", partyUuid);
-    return opts;
+    return new PersonalTokenBuilder()
+        .withEnvironment(env)
+        .withTtl(3600)
+        .withScopes(ENDUSER_SCOPE)
+        .withPartyUuid()
+        .build(partyUuid);
 }
 
 /**

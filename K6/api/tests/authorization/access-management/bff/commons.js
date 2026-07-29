@@ -4,7 +4,7 @@ import http from "k6/http";
 import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffUserApiClient } from "../../../../../clients/authorization/index.js";
 import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index.js";
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
 
 export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
@@ -47,20 +47,24 @@ let personalTokenGenerator = undefined;
  */
 export function getClients(serviceOwnerOrgNo) {
     if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider");
-        tokenOpts.set("org", "ttd");
-        tokenOpts.set("orgNo", serviceOwnerOrgNo);
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("digdir:dialogporten.serviceprovider")
+            .withOrganization("ttd")
+            .withOrganizationNumber(serviceOwnerOrgNo)
+            .build();
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
         serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
     }
     if (userApiClient == undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:pdp/authorize.enduser")
+            .build();
+
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
         userApiClient = new BffUserApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
@@ -79,6 +83,7 @@ export function getClients(serviceOwnerOrgNo) {
     ];
 }
 
+// TODO: which one should be used here?
 export function getTokenOpts(userId, partyuuid) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);
@@ -115,6 +120,7 @@ export function setup() {
     return segmentedData;
 }
 
+// TODO: which one should be used here?
 export function getDialogportenOpts(ssn) {
     const tokenOpts = new Map();
     tokenOpts.set("env", __ENV.ENVIRONMENT);

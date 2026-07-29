@@ -2,7 +2,7 @@ import { check, group } from "k6";
 import http from "k6/http";
 
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
 import {
     AddRevisorRoleToErForOrg,
@@ -43,11 +43,12 @@ export function setup() {
 export default function (facilitatorList) {
     const facilitator = getItemFromList(facilitatorList);
     group("Remove org from ER and make sure it's reflected in Register", () => {
-        const options = new PersonalTokenGeneratorOptions();
-        options.set("env", __ENV.ENVIRONMENT);
-        options.set("ttl", 3600);
-        options.set("scopes", "altinn:register/partylookup.admin");
-        options.set("pid", 22877497392);
+        const options = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:register/partylookup.admin")
+            .withPid(22877497392)
+            .build();
 
         const tokenGenerator = new PersonalTokenGenerator(options);
 
