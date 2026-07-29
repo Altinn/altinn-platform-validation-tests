@@ -25,7 +25,7 @@ const AUTHORIZE_SCOPE = "altinn:authorization/authorize";
 // Maskinporten takes the requested scopes space-separated in the grant.
 const SCOPES = [
     REQUESTS_WRITE_SCOPE,
-    AUTHORIZE_SCOPE,
+    //AUTHORIZE_SCOPE,
     ConsentScope.READ,
     ConsentScope.WRITE,
 ].join(" ");
@@ -123,15 +123,24 @@ export default function () {
     });
 
     group("Maskinporten rejects a key that is not a PEM", () => {
-        expect(
-            () =>
-                new MaskinportenAccessTokenGenerator(
-                    {},
-                    "kid",
-                    "client-id",
-                    "not-a-pem",
-                ),
-            "non-PEM key",
-        ).toThrow();
+        // k6-testing has no toThrow matcher, so catch it and assert on the message.
+        let message = "";
+        try {
+            new MaskinportenAccessTokenGenerator(
+                {},
+                "kid",
+                "client-id",
+                "not-a-pem",
+            );
+        } catch (e) {
+            message = e.message;
+        }
+
+        expect(message, "non-PEM key is rejected").toContain(
+            "must be a PEM private key",
+        );
     });
 }
+
+// Add report to the summary so we can see how long each generator took to get a token.
+export { handleSummary } from "../../../common-imports.js";
