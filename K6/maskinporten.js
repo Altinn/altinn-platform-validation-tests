@@ -83,6 +83,10 @@ export class MaskinportenAccessTokenGenerator {
         };
     }
 
+    static get TAGS() {
+        return TAGS;
+    }
+
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = tokenGeneratorOptions;
     }
