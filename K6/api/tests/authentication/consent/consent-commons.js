@@ -86,7 +86,7 @@ export function getEnterpriseBaseTokenOpts(env, scopes) {
  * @param {string} env TODO: description
  * @param {string} orgNo TODO: description
  * @param {string} scopes TODO: description
- * @returns {EnterpriseTokenGeneratorOptions} TODO: description
+ * @returns {object} Built enterprise token options.
  */
 export function getEnterpriseTokenOpts(env, orgNo, scopes) {
     return new EnterpriseTokenBuilder()
@@ -118,15 +118,15 @@ export function getPersonalBaseTokenOpts(env) {
  *
  * @param {string} env TODO: description
  * @param {string} partyUuid TODO: description
- * @returns {PersonalTokenGeneratorOptions} TODO: description
+ * @returns {object} Built personal token options.
  */
 export function getPersonalTokenOpts(env, partyUuid) {
     return new PersonalTokenBuilder()
         .withEnvironment(env)
         .withTtl(3600)
         .withScopes(ENDUSER_SCOPE)
-        .withPartyUuid()
-        .build(partyUuid);
+        .withPartyUuid(partyUuid)
+        .build();
 }
 
 /**

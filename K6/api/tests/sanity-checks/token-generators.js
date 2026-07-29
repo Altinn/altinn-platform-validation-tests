@@ -29,11 +29,8 @@ export const options = getOptions([
 ]);
 
 export function setup() {
-    if (__ENV.ENVIRONMENT != "tt02") {
-        throw new Error("// The Maskinporten generator signs against test.maskinporten.no, so this only works in TT02.");
-    }
-
     requireEnv([
+        "ENVIRONMENT",
         "TOKEN_GENERATOR_USERNAME",
         "TOKEN_GENERATOR_PASSWORD",
         "MASKINPORTEN_KID",
@@ -41,6 +38,11 @@ export function setup() {
         "MASKINPORTEN_CLIENT_PEM",
     ]);
 
+    if (__ENV.ENVIRONMENT !== "tt02") {
+        throw new Error(
+            "The Maskinporten generator signs against test.maskinporten.no, so this only works in TT02.",
+        );
+    }
 }
 
 export default function () {
