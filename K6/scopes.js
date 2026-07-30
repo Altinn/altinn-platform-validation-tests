@@ -165,9 +165,9 @@ export const AltinnScopes = {
  * @returns {string} A space-delimited scope string suitable for OAuth requests.
  * @example
  * const scopes = CreateScopeString([
- *   AccessManagementEnduserRequestsScope.WRITE,
- *   ConsentScope.READ,
- *   ConsentScope.WRITE,
+ *    AltinnScopes.ACCESSMANAGEMENT.ENDUSER.REQUESTS.WRITE,
+ *    AltinnScopes.CONSENTREQUESTS.READ,
+ *    AltinnScopes.CONSENTREQUESTS.WRITE
  * ]);
  *
  * // Returns:
