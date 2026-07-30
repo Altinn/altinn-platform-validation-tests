@@ -3,7 +3,7 @@ import { check, fail, group } from "k6";
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
-import { CreateScopeString, SystemRegisterScope } from "../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetSystemUsersBySystemId } from "../../../building-blocks/authentication/system-user/index.js";
 import {
     extractNextUrl,
@@ -28,7 +28,7 @@ export default function () {
             const systemId = "312605031_Virksomhetsbruker";
 
             const scopes = CreateScopeString([
-                SystemRegisterScope.WRITE
+                AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
             ]);
             const vendorTokenOptions = new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)

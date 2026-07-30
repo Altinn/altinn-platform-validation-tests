@@ -3,7 +3,7 @@ import http from "k6/http";
 import { BffAccessManagementApiClient } from "../../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
-import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /*
 * The users in this list have been selected based on the number of consent requests they have.
@@ -75,7 +75,7 @@ let personalTokenGenerator = undefined;
 export function getClients() {
     if (accessManagementApiClient == undefined) {
         const scopes = CreateScopeString([
-            PORTAL_ENDUSER_SCOPE
+            AltinnScopes.PORTAL.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -101,7 +101,7 @@ export function getClients() {
 */
 export function getTokenOpts(userId, partyuuid) {
     const scopes = CreateScopeString([
-        PORTAL_ENDUSER_SCOPE
+        AltinnScopes.PORTAL.ENDUSER
     ]);
     return new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)

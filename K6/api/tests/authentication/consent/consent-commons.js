@@ -1,11 +1,11 @@
 import http from "k6/http";
 
-import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import {
     EnterpriseTokenBuilder,
     PersonalTokenBuilder,
 } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString, } from "../../../../scopes.js";
 
 /**
  * Shared helpers for the consent request events tests and their test data
@@ -106,7 +106,7 @@ export function getEnterpriseTokenOpts(env, orgNo, scopes) {
  */
 export function getPersonalBaseTokenOpts(env) {
     const scopes = CreateScopeString([
-        PORTAL_ENDUSER_SCOPE
+        AltinnScopes.PORTAL.ENDUSER
     ]);
     return new PersonalTokenBuilder()
         .withEnvironment(env)
@@ -125,7 +125,7 @@ export function getPersonalBaseTokenOpts(env) {
  */
 export function getPersonalTokenOpts(env, partyUuid) {
     const scopes = CreateScopeString([
-        PORTAL_ENDUSER_SCOPE
+        AltinnScopes.PORTAL.ENDUSER
     ]);
     return new PersonalTokenBuilder()
         .withEnvironment(env)

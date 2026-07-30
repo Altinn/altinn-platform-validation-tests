@@ -2,10 +2,10 @@ import { check, group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
-import { AUTHORIZE_SCOPE, CreateScopeString, PORTAL_ENDUSER_SCOPE, SystemRegisterScope, SystemUserScope } from "../../../../../scopes.js";
 import { SystemRegisterApiClient, SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
 import { ApproveSystemUserRequest, CreateSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
 
@@ -21,11 +21,10 @@ export default function (data) {
     const systemOwner = "713431400";
 
     const scopes = CreateScopeString([
-        SystemRegisterScope.WRITE,
-        SystemUserScope.REQUEST.WRITE,
-        SystemUserScope.REQUEST.READ,
-        AUTHORIZE_SCOPE
-
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+        AltinnScopes.AUTHORIZATION.AUTHORIZE
     ]);
 
     const options = new EnterpriseTokenBuilder()
@@ -108,7 +107,7 @@ export default function (data) {
         const requestId = JSON.parse(res).id;
 
         const scopes = CreateScopeString([
-            PORTAL_ENDUSER_SCOPE
+            AltinnScopes.PORTAL.ENDUSER
         ]);
 
         const options = new PersonalTokenBuilder()

@@ -6,7 +6,7 @@ import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnection
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
 import { pickUnique, requireEnv } from "../../../../../helpers.js";
-import { CreateScopeString, PDP_AUTHORIZE_ENDUSER_SCOPE } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { DeleteDelegations, GetPermission, PostDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
 import {
     DeleteAccessPackages,
@@ -110,7 +110,7 @@ let clientDelegationsApiClient = undefined;
 function getClients() {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
-            PDP_AUTHORIZE_ENDUSER_SCOPE
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)

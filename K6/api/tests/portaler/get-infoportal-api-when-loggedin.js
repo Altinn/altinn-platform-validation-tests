@@ -22,11 +22,11 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { AltinnScopes, CreateScopeString, DigDirScopes, PDP_AUTHORIZE_ENDUSER_SCOPE, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString, DigDirScopes } from "../../../scopes.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
 import { getInfoCloud } from "./commons.js";
 
@@ -99,7 +99,7 @@ let personalTokenGenerator = undefined;
 function getClients() {
     if (infoPortalApiClient === undefined) {
         const scopes = CreateScopeString([
-            PDP_AUTHORIZE_ENDUSER_SCOPE
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -128,7 +128,7 @@ function getTokenOpts(userId) {
     const scopes = CreateScopeString([
         DigDirScopes.DIALOGPORTEN.NOCONSENT,
         "openid", // TODO: what is this supposed to be???
-        PORTAL_ENDUSER_SCOPE,
+        AltinnScopes.PORTAL.ENDUSER,
         AltinnScopes.INSTANCES.READ
 
     ]);

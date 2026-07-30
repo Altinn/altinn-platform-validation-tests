@@ -3,7 +3,7 @@ import { check } from "k6";
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
-import { CreateScopeString, ServiceOwnerNotificationsScope } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
 const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-organizations.json"));
@@ -20,7 +20,7 @@ export function setup() {
 
 export default function () {
     const scopes = CreateScopeString([
-        ServiceOwnerNotificationsScope.CREATE
+        AltinnScopes.SERVICEOWNER.NOTIFICATIONS.CREATE
     ]);
     const options = new EnterpriseTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)

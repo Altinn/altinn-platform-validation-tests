@@ -173,6 +173,6 @@ export const AltinnScopes = {
  * // Returns:
  * // "altinn:accessmanagement/enduser:requests.write altinn:consentrequests.read altinn:consentrequests.write"
  */
-function CreateScopeString(scopes) {
+export function CreateScopeString(scopes) {
     return scopes.filter(Boolean).join(" ");
 }

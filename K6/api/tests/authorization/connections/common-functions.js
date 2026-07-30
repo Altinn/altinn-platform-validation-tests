@@ -1,9 +1,9 @@
 import http from "k6/http";
 
-import { CreateScopeString, PDP_AUTHORIZE_ENDUSER_SCOPE, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import { ConnectionsApiClient } from "../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * @type {ConnectionsApiClient | undefined}
@@ -31,7 +31,7 @@ let tokenGenerator = undefined;
 export function getClients(bff = false) {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
-            PDP_AUTHORIZE_ENDUSER_SCOPE
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -60,7 +60,7 @@ export function getClients(bff = false) {
  */
 export function getTokenOpts(userId) {
     const scopes = CreateScopeString([
-        PORTAL_ENDUSER_SCOPE
+        AltinnScopes.PORTAL.ENDUSER
     ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)

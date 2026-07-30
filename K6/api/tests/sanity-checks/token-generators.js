@@ -9,15 +9,15 @@ import {
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../helpers.js";
-import { AccessManagementEnduserRequestsScope, ConsentScope } from "../../../scopes.js";
+import { AltinnScopes } from "../../../scopes.js";
 
 const ORG = "ttd";
 
 // Maskinporten takes the requested scopes space-separated in the grant.
 const SCOPES = [
-    AccessManagementEnduserRequestsScope.WRITE,
-    ConsentScope.READ,
-    ConsentScope.WRITE,
+    AltinnScopes.ACCESSMANAGEMENT.ENDUSER.REQUESTS.WRITE,
+    AltinnScopes.CONSENTREQUESTS.READ,
+    AltinnScopes.CONSENTREQUESTS.WRITE
 ].join(" ");
 
 // The generators tag their own requests with token_generator, not with the step

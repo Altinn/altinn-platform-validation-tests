@@ -1,7 +1,7 @@
-import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authorization/client-delegations.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetMyClients } from "../../../building-blocks/authorization/client-delegations/index.js";
 
 // Labels for different actions
@@ -47,7 +47,7 @@ export function setup() {
 export default function () {
     if (tokenGenerator === undefined) {
         const scopes = CreateScopeString([
-            PORTAL_ENDUSER_SCOPE
+            AltinnScopes.PORTAL.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -70,7 +70,7 @@ export default function () {
 
 function getTokenOpts(uuid) {
     const scopes = CreateScopeString([
-        PORTAL_ENDUSER_SCOPE
+        AltinnScopes.PORTAL.ENDUSER
     ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)

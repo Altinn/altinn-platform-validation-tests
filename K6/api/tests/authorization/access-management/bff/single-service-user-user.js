@@ -5,7 +5,7 @@ import http from "k6/http";
 import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffSingleRightApiClient } from "../../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
-import { CreateScopeString, PDP_AUTHORIZE_ENDUSER_SCOPE } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { GetDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
 import {
     GetDelegatedResources,
@@ -145,7 +145,7 @@ let userApiClient = undefined;
 function getClients() {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
-            PDP_AUTHORIZE_ENDUSER_SCOPE
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)

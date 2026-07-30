@@ -6,7 +6,7 @@ import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
-import { CreateScopeString, PDP_AUTHORIZE_ENDUSER_SCOPE, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
@@ -61,7 +61,7 @@ export function getClients(serviceOwnerOrgNo) {
     }
     if (userApiClient == undefined) {
         const scopes = CreateScopeString([
-            PDP_AUTHORIZE_ENDUSER_SCOPE
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -90,7 +90,7 @@ export function getClients(serviceOwnerOrgNo) {
 // TODO: which one should be used here?
 export function getTokenOpts(userId, partyuuid) {
     const scopes = CreateScopeString([
-        PORTAL_ENDUSER_SCOPE
+        AltinnScopes.PORTAL.ENDUSER
     ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withScopes(scopes)

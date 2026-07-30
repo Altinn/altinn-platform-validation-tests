@@ -2,7 +2,7 @@
 import { AuthorizedPartiesClient } from "../../../../../clients/authorization/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
-import { AccessManagementAuthorizedPartiesScope, CreateScopeString } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/authorization/authorized-parties/index.js";
 import { endUserLabels, endUsers } from "./end-users.js";
 
@@ -57,7 +57,7 @@ export function setup() {
 function getClients() {
     if (authorizedPartiesClient == undefined) {
         const scopes = CreateScopeString([
-            AccessManagementAuthorizedPartiesScope.ADMIN
+            AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.ADMIN
         ]);
         const tokenOpts = new EnterpriseTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)

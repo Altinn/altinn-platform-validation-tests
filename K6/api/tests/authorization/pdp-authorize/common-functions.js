@@ -3,7 +3,7 @@ import http from "k6/http";
 import { PdpAuthorizeClient } from "../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
-import { AuthorizationAuthorizeScope, CreateScopeString } from "../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * @type {PdpAuthorizeClient | undefined}
@@ -32,7 +32,7 @@ let tokenGenerator = undefined;
 export function getClients() {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
-            AuthorizationAuthorizeScope.ADMIN
+            AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -61,7 +61,7 @@ export function getClients() {
  */
 export function getTokenOpts(ssn) {
     const scopes = CreateScopeString([
-        AuthorizationAuthorizeScope.ADMIN
+        AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN
     ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withScopes(scopes)

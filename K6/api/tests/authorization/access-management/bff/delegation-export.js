@@ -4,7 +4,7 @@ import http from "k6/http";
 import { BffAccessManagementApiClient } from "../../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
-import { CreateScopeString, PDP_AUTHORIZE_ENDUSER_SCOPE } from "../../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { DelegationExport } from "../../../../building-blocks/authorization/client-delegations/index.js";
 import { getTokenOpts } from "./commons.js";
 
@@ -37,7 +37,7 @@ let accessManagementApiClient = undefined;
 function getClients() {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
-            PDP_AUTHORIZE_ENDUSER_SCOPE
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
 
         const tokenOpts = new PersonalTokenBuilder()
