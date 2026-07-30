@@ -1,56 +1,160 @@
-/**
- * Shared scope definitions used when generating tokens for the tests.
- */
-
-/**
- * Scopes for the enterprise consent request endpoints. These are ENTERPRISE /
- * ORGANIZATION scopes — they must be requested with an enterprise (org) token,
- * NOT a personal/end-user token.
- * - RequestConsent          requires ConsentScope.WRITE
- * - GetConsentRequestEvents requires ConsentScope.READ
- */
-export const ConsentScope = {
-    READ: "altinn:consentrequests.read",
-    WRITE: "altinn:consentrequests.write",
-};
-
-export const SystemRegisterScope = {
-    WRITE: "altinn:authentication/systemregister.write",
-    ADMIN: "altinn:authentication/systemregister.admin"
-};
-
-export const SystemUserScope = {
-    REQUEST: {
-        WRITE: "altinn:authentication/systemuser.request.write",
-        READ: "altinn:authentication/systemuser.request.read"
+export const DigDirScopes = {
+    DIALOGPORTEN: {
+        NOCONSENT: "digdir:dialogporten.noconsent"
     }
 };
 
-export const AccessManagementEnduserRequestsScope = {
-    WRITE: "altinn:accessmanagement/enduser:requests.write",
+export const AltinnScopes = {
+    ENDUSER: "altinn:enduser",
+    ENDUSERNOCONSENT: "altinn:endusernoconsent",
+
+    CONSENTREQUESTS: {
+        READ: "altinn:consentrequests.read",
+        WRITE: "altinn:consentrequests.write"
+    },
+
+    CONSENTTOKENS: {
+        READ: "altinn:consenttokens.read",
+        WRITE: "altinn:consenttokens.write"
+    },
+
+    DELEGATIONREQUESTS: {
+        READ: "altinn:delegationrequests.read",
+        WRITE: "altinn:delegationrequests.write"
+    },
+
+    ENTERPRISEUSERS: {
+        READ: "altinn:enterpriseusers.read",
+        WRITE: "altinn:enterpriseusers.write"
+    },
+
+    AUTHENTICATION: {
+        SYSTEMREGISTER: {
+            WRITE: "altinn:authentication/systemregister.write",
+            ADMIN: "altinn:authentication/systemregister.admin"
+        },
+        SYSTEMUSER: {
+            REQUEST: {
+                READ: "altinn:authentication/systemuser.request.read",
+                WRITE: "altinn:authentication/systemuser.request.write"
+            }
+        }
+    },
+
+    ACCESSMANAGEMENT: {
+        ENDUSER: {
+            REQUESTS: {
+                WRITE: "altinn:accessmanagement/enduser:requests.write"
+            }
+        },
+        AUTHORIZEDPARTIES: {
+            RESOURCEOWNER: "altinn:accessmanagement/authorizedparties.resourceowner",
+            ADMIN: "altinn:accessmanagement/authorizedparties.admin"
+        }
+    },
+
+    AUTHORIZATION: {
+        AUTHORIZE: "altinn:authorization/authorize",
+        ADMIN: "altinn:authorization/authorize.admin",
+
+        ROLESANDRIGHTS: {
+            READ: "altinn:rolesandrights.read",
+            WRITE: "altinn:rolesandrights.write"
+        },
+
+        ROLEDEFINITIONS: {
+            READ: "altinn:roledefinitions.read",
+            WRITE: "altinn:roledefinitions.write"
+        },
+
+        DELEGATIONS: {
+            READ: "altinn:delegations.read",
+            WRITE: "altinn:delegations.write"
+        }
+    },
+
+    MASKINPORTEN: {
+        DELEGATIONS: {
+            ADMIN: "altinn:maskinporten/delegations.admin"
+        },
+        CONSENT: {
+            READ: "altinn:maskinporten/consent.read"
+        }
+    },
+
+    PORTAL: {
+        ENDUSER: "altinn:portal/enduser"
+    },
+
+    PDP: {
+        AUTHORIZE: {
+            ENDUSER: "altinn:pdp/authorize.enduser"
+        }
+    },
+
+    PROFILES: {
+        READ: "altinn:profiles.read",
+        WRITE: "altinn:profiles.write"
+    },
+
+    LOOKUP: "altinn:lookup",
+
+    REPORTEES: "altinn:reportees",
+
+    INSTANCES: {
+        META: "altinn:instances.meta",
+        READ: "altinn:instances.read",
+        WRITE: "altinn:instances.write"
+    },
+
+    BROKERSERVICE: {
+        READ: "altinn:brokerservice.read",
+        WRITE: "altinn:brokerservice.write"
+    },
+
+    REGISTER: {
+        PARTYLOOKUP: {
+            ADMIN: "altinn:register/partylookup.admin"
+        }
+    },
+
+    SERVICEOWNER: {
+        DEFAULT: "altinn:serviceowner",
+
+        ORGANIZATIONS: "altinn:serviceowner/organizations",
+
+        REPORTEES: "altinn:serviceowner/reportees",
+
+        ROLESANDRIGHTS: "altinn:serviceowner/rolesandrights",
+
+        EVENTS: "altinn:serviceowner/events",
+
+        SRR: {
+            READ: "altinn:serviceowner/srr.read",
+            WRITE: "altinn:serviceowner/srr.write"
+        },
+
+        CONSENTS: "altinn:serviceowner/consents",
+
+        DELEGATIONREQUESTS: {
+            READ: "altinn:serviceowner/delegationrequests.read",
+            WRITE: "altinn:serviceowner/delegationrequests.write"
+        },
+
+        NOTIFICATIONS: {
+            READ: "altinn:serviceowner/notifications.read",
+            CREATE: "altinn:serviceowner/notifications.create"
+        }
+    },
+
+    SYSTEM: {
+        NOTIFICATIONS: {
+            CONDITION: {
+                CHECK: "altinn:system/notifications.condition.check"
+            }
+        }
+    }
 };
-
-export const AccessManagementAuthorizedPartiesScope = {
-    RESOURCE_OWNER: "altinn:accessmanagement/authorizedparties.resourceowner",
-    ADMIN: "altinn:accessmanagement/authorizedparties.admin",
-};
-
-export const MaskinportenDelegationsScope = {
-    ADMIN: "altinn:maskinporten/delegations.admin"
-};
-
-/**
- * Maskinporten scope used to look up a consent before a token is issued (org token):
- * - LookupConsent requires MaskinportenConsentScope.LOOKUP
- */
-export const MaskinportenConsentScope = {
-    LOOKUP: "altinn:maskinporten/consent.read",
-};
-
-// Personal (end user) scope used by the consenter to approve consents.
-export const PORTAL_ENDUSER_SCOPE = "altinn:portal/enduser";
-
-export const PDP_AUTHORIZE_ENDUSER_SCOPE = "altinn:pdp/authorize.enduser";
 
 /**
  * Creates an OAuth scope string from an array of scopes.
@@ -72,37 +176,3 @@ export const PDP_AUTHORIZE_ENDUSER_SCOPE = "altinn:pdp/authorize.enduser";
 function CreateScopeString(scopes) {
     return scopes.filter(Boolean).join(" ");
 }
-export const AUTHORIZE_SCOPE = "altinn:authorization/authorize";
-
-export const AuthorizationAuthorizeScope = {
-    ADMIN: "altinn:authorization/authorize.admin"
-};
-
-export const ServiceOwnerNotificationsScope = {
-    CREATE: "altinn:serviceowner/notifications.create"
-};
-
-export const SystemScopes = {
-    NOTIFICATIONS: {
-        CONDITION: {
-            CHECK: "altinn:system/notifications.condition.check"
-        }
-    }
-};
-
-export const DigDirScopes = {
-    DIALOGPORTEN: {
-        NOCONSENT: "digdir:dialogporten.noconsent"
-    }
-};
-
-export const AltinnScopes = {
-    INSTANCES: {
-        READ: "altinn:instances.read"
-    },
-    REGISTER: {
-        PARTYLOOKUP: {
-            ADMIN: "altinn:register/partylookup.admin"
-        }
-    }
-};
