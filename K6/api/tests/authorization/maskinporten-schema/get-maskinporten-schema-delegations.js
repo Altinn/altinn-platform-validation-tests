@@ -2,7 +2,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { MaskinportenSchemaApiClient } from "../../../../clients/authorization/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
 import { GetDelegations } from "../../../building-blocks/authorization/maskinporten-schema/index.js";
 
@@ -106,10 +106,11 @@ export default function (data) {
  */
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:maskinporten/delegations.admin");
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:maskinporten/delegations.admin")
+            .build();
 
         tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
     }

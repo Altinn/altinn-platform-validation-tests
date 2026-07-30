@@ -1,7 +1,7 @@
 import { check } from "k6";
 
 import { OrdersApiClient } from "../../../../clients/core/notifications/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { PostEmailNotificationOrder } from "../../../building-blocks/core/notifications/orders/index.js";
@@ -17,12 +17,11 @@ export function setup() {
 }
 
 export default function () {
-    const options = new EnterpriseTokenGeneratorOptions();
-    options.set("env", __ENV.ENVIRONMENT);
-    options.set("ttl", 3600);
-    options.set("scopes", "altinn:serviceowner/notifications.create");
-    options.set("org", "ttd");
-    options.set("orgNo", "991825827");
+    const options = new EnterpriseTokenBuilder()
+        .withScopes("altinn:serviceowner/notifications.create")
+        .withOrganization("ttd")
+        .withOrganizationNumber("991825827")
+        .build();
 
     const tokenGenerator
         = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd);

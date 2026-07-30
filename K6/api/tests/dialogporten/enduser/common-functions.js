@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
@@ -68,12 +68,12 @@ export function getClient() {
  * @returns TODO: description
  */
 export function getDialogportenOpts(ssn = null) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten");
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes("digdir:dialogporten");
+
     if (ssn !== null) {
-        tokenOpts.set("pid", ssn);
+        tokenOpts.withPid(ssn);
+
     }
     return tokenOpts;
 }

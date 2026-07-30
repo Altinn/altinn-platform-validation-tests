@@ -3,7 +3,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { BffAccessPackageApiClient, BffConnectionsApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
 import { DeleteDelegations, PostDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
@@ -64,10 +64,12 @@ export const options = getOptions([
  */
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:pdp/authorize.enduser")
+            .build();
+
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {

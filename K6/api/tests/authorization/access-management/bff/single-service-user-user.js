@@ -3,7 +3,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffSingleRightApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { GetDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
 import {
@@ -143,10 +143,12 @@ let userApiClient = undefined;
  */
 function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:pdp/authorize.enduser")
+            .build();
+
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
 

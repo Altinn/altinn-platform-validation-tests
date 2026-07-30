@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
@@ -38,12 +38,13 @@ let serviceOwnerApiClient = undefined;
  */
 export function getClients() {
     if (serviceOwnerApiClient === undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:system/notifications.condition.check");
-        tokenOpts.set("org", "test");
-        tokenOpts.set("orgNo", getItemFromList(orgNos));
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:system/notifications.condition.check")
+            .withOrganization("test")
+            .withOrganizationNumber(getItemFromList(orgNos))
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
 
