@@ -2,6 +2,8 @@ import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
+import { RegisteredSystemResponse } from "../../../../../clients/authentication/v2/types.js";
+
 /**
  * Retrieves a registered system by id.
  *

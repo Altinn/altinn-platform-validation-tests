@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { RegisterSystemRequest } from "../../../../../clients/authentication/v2/types.js";
 
 /**
  * Creates a new registered system.

@@ -19,6 +19,10 @@ class RegisterSystemRequestBuilder {
      *
      * @param {string|null} id See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withId("212485772_SuperSystemTriple") // Orgnumber + name of system. Orgnumber must match with vendor information to authenticate
+     * .build();
      */
     withId(id) {
         this.request.id = id;
@@ -31,10 +35,13 @@ class RegisterSystemRequestBuilder {
      *
      * @param {VendorInfo|null} vendor See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withVendor("0192:212485772") // area code: 0192, org number: 212485772
+     * .build();
      */
     withVendor(vendor) {
-        this.request.vendor = vendor;
-
+        this.request.vendor = { id: vendor };
         return this;
     }
 
@@ -55,6 +62,14 @@ class RegisterSystemRequestBuilder {
      *
      * @param {{[key: string]: string}|null} description See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withDescription({
+     *   "en": "English description",
+     *   "nb": "Norsk description",
+     *   "nn": "Nynorsk description"
+     * })
+     * .build();
      */
     withDescription(description) {
         this.request.description = description;
@@ -67,6 +82,18 @@ class RegisterSystemRequestBuilder {
      *
      * @param {Right[]|null} rights See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withRights([
+     *   {
+     *      "action": "read",
+     *     "resource": [
+     *       {
+     *         "value": "authentication-e2e-test",
+     *         "id": "urn:altinn:resource",
+     *       }
+     *     ]
+     *   },
      */
     withRights(rights) {
         this.request.rights = rights;
@@ -77,12 +104,15 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets system access packages.
      *
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withAccessPackages(["urn:altinn:accesspackage:forretningsforer-eiendom", "urn:altinn:accesspackage:jordbruk"])
+  ],
      * @param {AccessPackage[]|null} accessPackages See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      */
     withAccessPackages(accessPackages) {
         this.request.accessPackages = accessPackages;
-
         return this;
     }
 
@@ -115,6 +145,10 @@ class RegisterSystemRequestBuilder {
      *
      * @param {string[]|null} allowedRedirectUrls See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withAllowedRedirectUrls(["https://example.com", "https://example.org/redirect"])
+     * .build();
      */
     withAllowedRedirectUrls(allowedRedirectUrls) {
         this.request.allowedRedirectUrls = allowedRedirectUrls;
