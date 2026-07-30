@@ -23,9 +23,10 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString, DigDirScopes } from "../../../scopes.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
 import { getInfoCloud } from "./commons.js";
 
@@ -97,10 +98,14 @@ let personalTokenGenerator = undefined;
  */
 function getClients() {
     if (infoPortalApiClient === undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
@@ -120,10 +125,18 @@ function getClients() {
  * @returns Map containing the token options
  */
 function getTokenOpts(userId) {
-    const tokenOpts = new PersonalTokenGeneratorOptions();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read");
-    tokenOpts.set("userId", userId);
+    const scopes = CreateScopeString([
+        DigDirScopes.DIALOGPORTEN.NOCONSENT,
+        "openid", // TODO: what is this supposed to be???
+        AltinnScopes.PORTAL.ENDUSER,
+        AltinnScopes.INSTANCES.READ
+
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withUserId(userId)
+        .build();
     return tokenOpts;
 }
