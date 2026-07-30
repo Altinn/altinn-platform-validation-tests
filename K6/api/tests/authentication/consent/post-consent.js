@@ -127,7 +127,7 @@ function getClients() {
         const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
             getEnterpriseBaseTokenOpts(
                 __ENV.ENVIRONMENT,
-                AltinnScopes.MASKINPORTEN.CONSENT.LOOKUP
+                AltinnScopes.MASKINPORTEN.CONSENT.READ
             )
         );
 

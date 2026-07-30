@@ -32,7 +32,7 @@ let tokenGenerator = undefined;
 export function getClients() {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
-            AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN
+            AltinnScopes.AUTHORIZATION.ADMIN
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
@@ -61,7 +61,7 @@ export function getClients() {
  */
 export function getTokenOpts(ssn) {
     const scopes = CreateScopeString([
-        AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN
+        AltinnScopes.AUTHORIZATION.ADMIN
     ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withScopes(scopes)

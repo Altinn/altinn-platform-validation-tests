@@ -3,7 +3,7 @@ import { check, group } from "k6";
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
-import { CreateScopeString, SystemRegisterScope, SystemUserScope } from "../../../../scopes.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateNewSystem, DeleteSystem, UpdateVendorAccessPackages } from "../../../building-blocks/authentication/system-register/index.js";
 
 export function setup() {
@@ -29,10 +29,10 @@ function defaultObject() {
 
 export default function () {
     const scopes = CreateScopeString([
-        SystemRegisterScope.WRITE,
-        SystemUserScope.REQUEST.WRITE,
-        SystemUserScope.REQUEST.READ,
-        SystemRegisterScope.ADMIN
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.ADMIN
 
     ]);
     const options = new MaskinportenTokenBuilder()

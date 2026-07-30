@@ -34,7 +34,7 @@ function getClients() {
         const tokenGenerator = new EnterpriseTokenGenerator(
             getEnterpriseBaseTokenOpts(
                 __ENV.ENVIRONMENT,
-                AltinnScopes.MASKINPORTEN.LOOKUP
+                AltinnScopes.MASKINPORTEN.CONSENT.READ
             )
         );
 
