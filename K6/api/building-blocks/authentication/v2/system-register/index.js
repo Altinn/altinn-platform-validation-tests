@@ -22,4 +22,4 @@ export const SystemRegister = {
     VendorUpdate: SystemRegisterVendorUpdate,
     VendorUpdateAccessPackages: SystemRegisterVendorUpdateAccessPackages,
     VendorUpdateRights: SystemRegisterVendorUpdateRights,
-}
+};

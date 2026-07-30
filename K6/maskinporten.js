@@ -122,6 +122,7 @@ export class MaskinportenAccessTokenGenerator {
      */
     getToken() {
         const scopes = this.tokenGeneratorOptions.scopes;
+        console.log(scopes);
 
         const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
         const cached = this.#cache.get(cacheKey);
@@ -150,6 +151,8 @@ export class MaskinportenAccessTokenGenerator {
      */
     #generateAccessToken(scopes) {
         const grant = this.#createJwtGrant(scopes);
+        
+        console.log("attempted grant: " + grant);
 
         const body = {
             alg: "RS256",
@@ -205,6 +208,8 @@ export class MaskinportenAccessTokenGenerator {
             exp: now + ASSERTION_LIFETIME_SECONDS,
             jti: uuidv4(),
         };
+
+        console.log("attempted payload: " + JSON.stringify(payload));
 
         return KJUR.jws.JWS.sign("RS256", header, payload, this.#clientPem);
     }

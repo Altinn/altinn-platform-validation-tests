@@ -50,7 +50,7 @@ class SystemRegisterClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/systemregister";
+        this.BASE_PATH = "/authentication/api/v1/systemregister";
 
         /**
          * Fully-qualified API path.
@@ -138,10 +138,11 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorCreate(request, labels = null) {
+     SystemRegisterVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor`;
+        console.log(url);
 
         let tags = {
             endpoint: url,

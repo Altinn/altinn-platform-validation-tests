@@ -31,6 +31,7 @@ export const AltinnScopes = {
     AUTHENTICATION: {
         SYSTEMREGISTER: {
             WRITE: "altinn:authentication/systemregister.write",
+            READ: "altinn:authentication/systemregister.read",
             ADMIN: "altinn:authentication/systemregister.admin"
         },
         SYSTEMUSER: {

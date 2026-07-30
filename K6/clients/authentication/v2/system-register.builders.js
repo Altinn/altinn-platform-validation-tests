@@ -1,3 +1,5 @@
+import { AccessPackage } from "../../../clients/authentication/v2/types.js";
+
 class RegisterSystemRequestBuilder {
     constructor() {
         /** @type {RegisterSystemRequest} */
@@ -50,6 +52,14 @@ class RegisterSystemRequestBuilder {
      *
      * @param {{[key: string]: string}|null} name See the client method.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * @example
+     * const requestBody = new RegisterSystemRequestBuilder()
+     * .withName({
+     *   "en": "English name",
+     *   "nb": "Norsk name",
+     *   "nn": "Nynorsk name"
+     * })
+     * .build();
      */
     withName(name) {
         this.request.name = name;
@@ -104,15 +114,22 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets system access packages.
      *
+     * @param {string[]|null} accessPackages Access package urns. Each urn is wrapped as { urn } in the request body.
+     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      * @example
      * const requestBody = new RegisterSystemRequestBuilder()
      * .withAccessPackages(["urn:altinn:accesspackage:forretningsforer-eiendom", "urn:altinn:accesspackage:jordbruk"])
-  ],
-     * @param {AccessPackage[]|null} accessPackages See the client method.
-     * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
+     * .build();
+     * // -> accessPackages: [
+     * //      { "urn": "urn:altinn:accesspackage:forretningsforer-eiendom" },
+     * //      { "urn": "urn:altinn:accesspackage:jordbruk" }
+     * //    ]
      */
     withAccessPackages(accessPackages) {
-        this.request.accessPackages = accessPackages;
+        this.request.accessPackages = accessPackages === null
+            ? null
+            : accessPackages.map((urn) => ({ urn: urn }));
+
         return this;
     }
 
