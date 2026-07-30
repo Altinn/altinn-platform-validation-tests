@@ -4,6 +4,7 @@ import { AuthorizedPartiesClient } from "../../../../clients/authorization/index
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * @type {AuthorizedPartiesClient | undefined}
@@ -22,11 +23,14 @@ let authorizedPartiesClient = undefined;
  * @returns {[AuthorizedPartiesClient]} The initialized API client.
  */
 export function getClients() {
+    const scopes = CreateScopeString([
+        AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.RESOURCEOWNER
+    ]);
     if (authorizedPartiesClient == undefined) {
         const tokenOpts = new EnterpriseTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:accessmanagement/authorizedparties.resourceowner")
+            .withScopes(scopes)
             .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);

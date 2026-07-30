@@ -14,6 +14,7 @@ import http from "k6/http";
 import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { GetDelegationCheck } from "../../../../building-blocks/authorization/access-package/delegate.js";
 import { GetAgents, GetClients } from "../../../../building-blocks/authorization/client-delegations/index.js";
 import { GetConnections } from "../../../../building-blocks/authorization/connections/index.js";
@@ -80,10 +81,13 @@ export function setup() {
  */
 function getClients() {
     if (tokenGenerator == undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:pdp/authorize.enduser")
+            .withScopes(scopes)
             .build();
 
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);

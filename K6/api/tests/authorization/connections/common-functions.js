@@ -3,6 +3,7 @@ import http from "k6/http";
 import { ConnectionsApiClient } from "../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * @type {ConnectionsApiClient | undefined}
@@ -29,10 +30,13 @@ let tokenGenerator = undefined;
  */
 export function getClients(bff = false) {
     if (tokenGenerator == undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:pdp/authorize.enduser")
+            .withScopes(scopes)
             .build();
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
@@ -55,10 +59,13 @@ export function getClients(bff = false) {
  * @returns map of token options
  */
 export function getTokenOpts(userId) {
+    const scopes = CreateScopeString([
+        AltinnScopes.PORTAL.ENDUSER
+    ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes("altinn:portal/enduser")
+        .withScopes(scopes)
         .withUserId(userId)
         .build();
 

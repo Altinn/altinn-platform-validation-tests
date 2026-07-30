@@ -6,6 +6,7 @@ import { GraphqlClient } from "../../../../../clients/dialogporten/graphql/index
 import { ServiceOwnerApiClient } from "../../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
@@ -59,10 +60,13 @@ export function getClients(serviceOwnerOrgNo) {
         serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
     }
     if (userApiClient == undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:pdp/authorize.enduser")
+            .withScopes(scopes)
             .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
@@ -85,8 +89,11 @@ export function getClients(serviceOwnerOrgNo) {
 
 // TODO: which one should be used here?
 export function getTokenOpts(userId, partyuuid) {
+    const scopes = CreateScopeString([
+        AltinnScopes.PORTAL.ENDUSER
+    ]);
     const tokenOpts = new PersonalTokenBuilder()
-        .withScopes("altinn:portal/enduser")
+        .withScopes(scopes)
         .withUserId(userId)
         .withPartyUuid(partyuuid);
     return tokenOpts.build();

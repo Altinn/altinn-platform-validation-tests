@@ -9,16 +9,7 @@ import {
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../helpers.js";
-import { AccessManagementEnduserRequestsScope, ConsentScope } from "../../../scopes.js";
-
-const ORG = "ttd";
-
-// Maskinporten takes the requested scopes space-separated in the grant.
-const SCOPES = [
-    AccessManagementEnduserRequestsScope.WRITE,
-    ConsentScope.READ,
-    ConsentScope.WRITE,
-].join(" ");
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 
 // The generators tag their own requests with token_generator, not with the step
 // label, so collect the timings under those tags to see how long each one took.
@@ -46,6 +37,14 @@ export function setup() {
 }
 
 export default function () {
+    const ORG = "ttd";
+    // Maskinporten takes the requested scopes space-separated in the grant.
+    const scopes = CreateScopeString[
+        AltinnScopes.ACCESSMANAGEMENT.ENDUSER.REQUESTS.WRITE,
+        AltinnScopes.CONSENTREQUESTS.READ,
+        AltinnScopes.CONSENTREQUESTS.WRITE
+    ];
+
     group("Platform token", () => {
         const generator = new PlatformTokenGenerator(
             new PlatformTokenBuilder()
@@ -63,7 +62,7 @@ export default function () {
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withOrganization(ORG)
-                .withScopes(SCOPES)
+                .withScopes(scopes)
                 .build(),
         );
 
@@ -74,7 +73,7 @@ export default function () {
 
     group("Maskinporten token", () => {
         const generator = new MaskinportenAccessTokenGenerator(
-            new MaskinportenTokenBuilder().withScopes(SCOPES).build(),
+            new MaskinportenTokenBuilder().withScopes(scopes).build(),
         );
 
         check(generator.getToken(), {

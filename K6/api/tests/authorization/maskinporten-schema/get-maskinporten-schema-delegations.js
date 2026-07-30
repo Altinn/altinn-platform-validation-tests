@@ -4,6 +4,7 @@ import http from "k6/http";
 import { MaskinportenSchemaApiClient } from "../../../../clients/authorization/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetDelegations } from "../../../building-blocks/authorization/maskinporten-schema/index.js";
 
 // Labels for different actions
@@ -106,10 +107,13 @@ export default function (data) {
  */
 function getClients() {
     if (tokenGenerator == undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.MASKINPORTEN.DELEGATIONS.ADMIN
+        ]);
         const tokenOpts = new EnterpriseTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:maskinporten/delegations.admin")
+            .withScopes(scopes)
             .build();
 
         tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);

@@ -5,6 +5,7 @@ import http from "k6/http";
 import { SystemRegisterApiClient, SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateNewSystem } from "../../../building-blocks/authentication/system-register/index.js";
 import { ApproveSystemUserRequest, CreateSystemUserRequest } from "../../../building-blocks/authentication/system-user-request/index.js";
 
@@ -19,10 +20,17 @@ export default function (data) {
 
     const systemOwner = "713431400";
 
+    const scopes = CreateScopeString([
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+        AltinnScopes.AUTHORIZATION.AUTHORIZE
+    ]);
+
     const options = new EnterpriseTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes("altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize")
+        .withScopes(scopes)
         .withOrganizationNumber(systemOwner)
         .build();
 
@@ -98,10 +106,14 @@ export default function (data) {
 
         const requestId = JSON.parse(res).id;
 
+        const scopes = CreateScopeString([
+            AltinnScopes.PORTAL.ENDUSER
+        ]);
+
         const options = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:portal/enduser")
+            .withScopes(scopes)
             .withUserId(data[vu.idInTest - 1].userId)
             .withPartyUuid(data[vu.idInTest - 1].userPartyUuid)
             .build();
