@@ -75,7 +75,7 @@ let personalTokenGenerator = undefined;
 export function getClients() {
     if (accessManagementApiClient == undefined) {
         const scopes = CreateScopeString([
-            AltinnScopes.PORTAL.ENDUSER
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)

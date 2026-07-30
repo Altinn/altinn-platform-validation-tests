@@ -16,7 +16,7 @@
  * Pagination: cursor based, exposed as a `links.next` URL carrying an opaque
  * `continuationToken`; the page size is server-controlled (not configurable).
  * Response shape: { "links": { "next": <url|null> }, "data": [ ... ] }.
- * Requires an org token with scope ConsentScope.READ.
+ * Requires an org token with scope AltinnScopes.CONSENTREQUESTS.READ.
  * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
  */
 
