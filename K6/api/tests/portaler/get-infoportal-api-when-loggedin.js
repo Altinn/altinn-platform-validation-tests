@@ -22,6 +22,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
+import { AltinnScopes, CreateScopeString, DigDirScopes, PDP_AUTHORIZE_ENDUSER_SCOPE, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
@@ -97,10 +98,13 @@ let personalTokenGenerator = undefined;
  */
 function getClients() {
     if (infoPortalApiClient === undefined) {
+        const scopes = CreateScopeString([
+            PDP_AUTHORIZE_ENDUSER_SCOPE
+        ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:pdp/authorize.enduser")
+            .withScopes(scopes)
             .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
@@ -121,10 +125,17 @@ function getClients() {
  * @returns Map containing the token options
  */
 function getTokenOpts(userId) {
+    const scopes = CreateScopeString([
+        DigDirScopes.DIALOGPORTEN.NOCONSENT,
+        "openid", // TODO: what is this supposed to be???
+        PORTAL_ENDUSER_SCOPE,
+        AltinnScopes.INSTANCES.READ
+
+    ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes("digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read")
+        .withScopes(scopes)
         .withUserId(userId)
         .build();
     return tokenOpts;

@@ -3,6 +3,7 @@ import http from "k6/http";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
+import { CreateScopeString, SystemScopes } from "../../../../scopes.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
 export function setup() {
@@ -38,10 +39,13 @@ let serviceOwnerApiClient = undefined;
  */
 export function getClients() {
     if (serviceOwnerApiClient === undefined) {
+        const scopes = CreateScopeString([
+            SystemScopes.NOTIFICATIONS.CONDITION.CHECK
+        ]);
         const tokenOpts = new EnterpriseTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:system/notifications.condition.check")
+            .withScopes(scopes)
             .withOrganization("test")
             .withOrganizationNumber(getItemFromList(orgNos))
             .build();

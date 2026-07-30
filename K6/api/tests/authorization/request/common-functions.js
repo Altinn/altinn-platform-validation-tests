@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import { ConnectionsApiClient, MetaApiClient, RequestApiClient } from "../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
@@ -101,8 +102,11 @@ export function getClients() {
  * @returns {Map} TODO: description
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {
+    const scopes = CreateScopeString([
+        PORTAL_ENDUSER_SCOPE
+    ]);
     const tokenOpts = new PersonalTokenBuilder()
-        .withScopes("altinn:portal/enduser");
+        .withScopes(scopes);
 
     if (pid !== null) {
         tokenOpts.withPid(pid);

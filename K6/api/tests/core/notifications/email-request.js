@@ -4,6 +4,7 @@ import { OrdersApiClient } from "../../../../clients/core/notifications/index.js
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
+import { CreateScopeString, ServiceOwnerNotificationsScope } from "../../../../scopes.js";
 import { PostEmailNotificationOrder } from "../../../building-blocks/core/notifications/orders/index.js";
 
 export function setup() {
@@ -17,8 +18,11 @@ export function setup() {
 }
 
 export default function () {
+    const scopes = CreateScopeString([
+        ServiceOwnerNotificationsScope.CREATE
+    ]);
     const options = new EnterpriseTokenBuilder()
-        .withScopes("altinn:serviceowner/notifications.create")
+        .withScopes(scopes)
         .withOrganization("ttd")
         .withOrganizationNumber("991825827")
         .build();

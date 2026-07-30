@@ -1,11 +1,11 @@
 import http from "k6/http";
 
+import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import {
     EnterpriseTokenBuilder,
     PersonalTokenBuilder,
 } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
-import { ENDUSER_SCOPE } from "../../../../scopes.js";
 
 /**
  * Shared helpers for the consent request events tests and their test data
@@ -105,10 +105,13 @@ export function getEnterpriseTokenOpts(env, orgNo, scopes) {
  * @returns {object} TODO: description
  */
 export function getPersonalBaseTokenOpts(env) {
+    const scopes = CreateScopeString([
+        PORTAL_ENDUSER_SCOPE
+    ]);
     return new PersonalTokenBuilder()
         .withEnvironment(env)
         .withTtl(3600)
-        .withScopes(ENDUSER_SCOPE)
+        .withScopes(scopes)
         .build();
 }
 
@@ -121,10 +124,13 @@ export function getPersonalBaseTokenOpts(env) {
  * @returns {object} Built personal token options.
  */
 export function getPersonalTokenOpts(env, partyUuid) {
+    const scopes = CreateScopeString([
+        PORTAL_ENDUSER_SCOPE
+    ]);
     return new PersonalTokenBuilder()
         .withEnvironment(env)
         .withTtl(3600)
-        .withScopes(ENDUSER_SCOPE)
+        .withScopes(scopes)
         .withPartyUuid(partyUuid)
         .build();
 }

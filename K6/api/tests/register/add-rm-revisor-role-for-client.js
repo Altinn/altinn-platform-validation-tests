@@ -4,6 +4,7 @@ import http from "k6/http";
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     AddRevisorRoleToErForOrg,
     GetRevisorCustomerIdentifiersForParty,
@@ -43,10 +44,13 @@ export function setup() {
 export default function (facilitatorList) {
     const facilitator = getItemFromList(facilitatorList);
     group("Remove org from ER and make sure it's reflected in Register", () => {
+        const scopes = CreateScopeString([
+            AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN
+        ]);
         const options = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:register/partylookup.admin")
+            .withScopes(scopes)
             .withPid(22877497392)
             .build();
 

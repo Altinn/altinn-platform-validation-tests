@@ -3,6 +3,7 @@ import http from "k6/http";
 import { BffAccessManagementApiClient } from "../../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 
 /*
 * The users in this list have been selected based on the number of consent requests they have.
@@ -73,10 +74,13 @@ let personalTokenGenerator = undefined;
  */
 export function getClients() {
     if (accessManagementApiClient == undefined) {
+        const scopes = CreateScopeString([
+            PORTAL_ENDUSER_SCOPE
+        ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:pdp/authorize.enduser")
+            .withScopes(scopes)
             .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
@@ -96,10 +100,13 @@ export function getClients() {
 * These options are used by the token generator to create a token that can be used to authenticate the user when making requests to the API.
 */
 export function getTokenOpts(userId, partyuuid) {
+    const scopes = CreateScopeString([
+        PORTAL_ENDUSER_SCOPE
+    ]);
     return new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes("altinn:portal/enduser")
+        .withScopes(scopes)
         .withUserId(userId)
         .withPartyUuid(partyuuid)
         .build();

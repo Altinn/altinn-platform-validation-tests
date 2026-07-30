@@ -3,6 +3,7 @@ import { check, fail, group } from "k6";
 import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
+import { CreateScopeString, SystemUserScope } from "../../../../scopes.js";
 import { GetAgentSystemUserRequestsBySystemId } from "../../../building-blocks/authentication/system-user-request/index.js";
 import {
     extractNextUrl,
@@ -21,10 +22,13 @@ export default function () {
             const systemOwnerOrgNo = "312605031";
             const systemId = "312605031_Virksomhetsbruker";
 
+            const scopes = CreateScopeString([
+                SystemUserScope.REQUEST.READ
+            ]);
             const vendorTokenOptions = new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes("altinn:authentication/systemuser.request.read")
+                .withScopes(scopes)
                 .withOrganizationNumber(systemOwnerOrgNo)
                 .build();
 

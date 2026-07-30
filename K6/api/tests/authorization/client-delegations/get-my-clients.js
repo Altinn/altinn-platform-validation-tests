@@ -1,3 +1,4 @@
+import { CreateScopeString, PORTAL_ENDUSER_SCOPE } from "../../../../../scopes.js";
 import { ClientDelegationsApiClient } from "../../../../clients/authorization/client-delegations.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
@@ -45,10 +46,13 @@ export function setup() {
  */
 export default function () {
     if (tokenGenerator === undefined) {
+        const scopes = CreateScopeString([
+            PORTAL_ENDUSER_SCOPE
+        ]);
         const tokenOpts = new PersonalTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withTtl(3600)
-            .withScopes("altinn:portal/enduser")
+            .withScopes(scopes)
             .build();
 
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
@@ -65,10 +69,13 @@ export default function () {
 }
 
 function getTokenOpts(uuid) {
+    const scopes = CreateScopeString([
+        PORTAL_ENDUSER_SCOPE
+    ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes("altinn:portal/enduser")
+        .withScopes(scopes)
         .withPartyUuid(uuid)
         .build();
     return tokenOpts;

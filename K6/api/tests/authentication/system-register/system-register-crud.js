@@ -1,5 +1,6 @@
 import { check, group } from "k6";
 
+import { CreateScopeString, SystemRegisterScope, SystemUserScope } from "../../../../../scopes.js";
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
 import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
@@ -52,8 +53,16 @@ function defaultObject() {
 }
 
 export default function () {
+    const scopes = CreateScopeString([
+        SystemRegisterScope.WRITE,
+        SystemUserScope.REQUEST.WRITE,
+        SystemUserScope.REQUEST.READ,
+        SystemRegisterScope.WRITE,
+        SystemRegisterScope.ADMIN
+
+    ]);
     const options = new MaskinportenTokenBuilder()
-        .withScopes("altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemregister.write altinn:authentication/systemuser.request.read altinn:authentication/systemregister.admin")
+        .withScopes(scopes)
         .build();
 
     const tokenGenerator
