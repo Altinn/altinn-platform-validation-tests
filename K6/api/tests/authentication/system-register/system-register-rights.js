@@ -1,7 +1,7 @@
 import { check, group } from "k6";
 
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions, uuidv4 } from "../../../../common-imports.js";
+import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { CreateNewSystem, DeleteSystem, GetSystemRegisterRights } from "../../../building-blocks/authentication/system-register/index.js";
 
@@ -44,8 +44,8 @@ function defaultObject() {
 }
 
 export default function () {
-    const options = new MaskinportenTokenGeneratorOptions();
-    options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemregister.write altinn:authentication/systemuser.request.read altinn:authentication/systemregister.admin");
+    const options = new MaskinportenTokenBuilder()
+        .withScopes("altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemregister.write altinn:authentication/systemuser.request.read altinn:authentication/systemregister.admin");
 
     const tokenGenerator
         = new MaskinportenAccessTokenGenerator(options);

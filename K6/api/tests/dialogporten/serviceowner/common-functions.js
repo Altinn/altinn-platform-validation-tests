@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
@@ -44,15 +44,13 @@ let serviceOwnerApiClient = undefined;
  */
 export function getClients() {
     if (serviceOwnerApiClient === undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set(
-            "scopes",
-            "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search"
-        );
-        tokenOpts.set("org", "ttd");
-        tokenOpts.set("orgNo", orgNo);
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search")
+            .withOrganization("ttd")
+            .withOrganizationNumber(orgNo)
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
 

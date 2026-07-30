@@ -1,7 +1,7 @@
 import { check, fail, group } from "k6";
 
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { GetSystemUsersBySystemId } from "../../../building-blocks/authentication/system-user/index.js";
 import {
@@ -26,14 +26,12 @@ export default function () {
             const systemOwnerOrgNo = "312605031";
             const systemId = "312605031_Virksomhetsbruker";
 
-            const vendorTokenOptions = new EnterpriseTokenGeneratorOptions();
-            vendorTokenOptions.set("env", __ENV.ENVIRONMENT);
-            vendorTokenOptions.set("ttl", 3600);
-            vendorTokenOptions.set(
-                "scopes",
-                "altinn:authentication/systemregister.write",
-            );
-            vendorTokenOptions.set("orgNo", systemOwnerOrgNo);
+            const vendorTokenOptions = new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes("altinn:authentication/systemregister.write")
+                .withOrganizationNumber(systemOwnerOrgNo)
+                .build();
 
             const vendorTokenGenerator = new EnterpriseTokenGenerator(
                 vendorTokenOptions,

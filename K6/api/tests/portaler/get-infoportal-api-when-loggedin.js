@@ -23,7 +23,7 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
@@ -97,10 +97,11 @@ let personalTokenGenerator = undefined;
  */
 function getClients() {
     if (infoPortalApiClient === undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:pdp/authorize.enduser")
+            .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
@@ -120,10 +121,11 @@ function getClients() {
  * @returns Map containing the token options
  */
 function getTokenOpts(userId) {
-    const tokenOpts = new PersonalTokenGeneratorOptions();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read");
-    tokenOpts.set("userId", userId);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes("digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read")
+        .withUserId(userId)
+        .build();
     return tokenOpts;
 }

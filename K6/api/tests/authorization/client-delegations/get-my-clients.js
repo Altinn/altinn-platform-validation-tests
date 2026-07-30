@@ -1,5 +1,5 @@
 import { ClientDelegationsApiClient } from "../../../../clients/authorization/client-delegations.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 import { GetMyClients } from "../../../building-blocks/authorization/client-delegations/index.js";
 
@@ -45,10 +45,12 @@ export function setup() {
  */
 export default function () {
     if (tokenGenerator === undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", environment);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:portal/enduser");
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("altinn:portal/enduser")
+            .build();
+
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (clientDelegationsApiClient === undefined) {
@@ -63,10 +65,11 @@ export default function () {
 }
 
 function getTokenOpts(uuid) {
-    const tokenOpts = new PersonalTokenGeneratorOptions();
-    tokenOpts.set("env", environment);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:portal/enduser");
-    tokenOpts.set("partyuuid", uuid);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes("altinn:portal/enduser")
+        .withPartyUuid(uuid)
+        .build();
     return tokenOpts;
 }
