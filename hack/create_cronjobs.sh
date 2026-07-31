@@ -2,6 +2,7 @@
 set -euo pipefail
 
 DIST_DIRECTORY=".dist"
+rm -rf "$DIST_DIRECTORY"
 
 if [ ! -d "$DIST_DIRECTORY" ]; then
   mkdir "$DIST_DIRECTORY"

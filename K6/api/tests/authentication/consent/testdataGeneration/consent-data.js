@@ -8,7 +8,7 @@ import {
     PersonalTokenGenerator,
 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
-import { ConsentScope } from "../../../../../scopes.js";
+import { AltinnScopes } from "../../../../../scopes.js";
 import {
     ApproveConsent,
     RequestConsent,
@@ -50,7 +50,7 @@ let consenterTokenGenerator;
 function getClients() {
     if (consenteeClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, AltinnScopes.CONSENTREQUESTS.WRITE)
         );
         consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
     }
@@ -107,7 +107,7 @@ export default function (rows) {
         const [consenteeClient, consenterClient] = getClients();
 
         consenteeTokenGenerator.setTokenGeneratorOptions(
-            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, row.orgNo, ConsentScope.WRITE)
+            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, row.orgNo, AltinnScopes.CONSENTREQUESTS.WRITE)
         );
         consenterTokenGenerator.setTokenGeneratorOptions(
             getPersonalTokenOpts(__ENV.ENVIRONMENT, row.partyUuid)

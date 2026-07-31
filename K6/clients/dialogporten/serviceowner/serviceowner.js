@@ -19,6 +19,17 @@ const TAGS = {
     GetDialogTransmission: { action: "get-dialog-transmission" },
     GetEndUserContext: { action: "get-end-user-context" },
     GetDialogLookup: { action: "get-dialog-lookup" },
+    PutDialog: { action: "put-dialog" },
+    PatchDialog: { action: "patch-dialog" },
+    DeleteDialog: { action: "delete-dialog" },
+    PutTransmission: { action: "put-transmission" },
+    PurgeDialog: { action: "purge-dialog" },
+    RestoreDialog: { action: "restore-dialog" },
+    FreezeDialog: { action: "freeze-dialog" },
+    PostServiceOwnerLabels: { action: "post-service-owner-labels" },
+    DeleteServiceOwnerLabel: { action: "delete-service-owner-label" },
+    PutEndUserContextSystemLabels: { action: "put-end-user-context-system-labels" },
+    PostBulkSetSystemLabels: { action: "post-bulk-set-system-labels" },
 };
 
 class ServiceOwnerApiClient {
@@ -387,11 +398,11 @@ class ServiceOwnerApiClient {
         labels = null,
     ) {
         const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `dialogs/${dialogId}/context/labels`);
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels`);
 
         let tags = {
-            endpoint: this.FULL_PATH + "dialogs/dialogId/context/labels",
-            name: this.FULL_PATH + "dialogs/dialogId/context/labels",
+            endpoint: this.FULL_PATH + "/dialogs/dialogId/context/labels",
+            name: this.FULL_PATH + "/dialogs/dialogId/context/labels",
             action: TAGS.GetServiceOwnerLabels.action
         };
         if (labels != null) {
@@ -643,6 +654,464 @@ class ServiceOwnerApiClient {
         }
 
         return http.get(url.toString(), params);
+    }
+
+    /**
+     * Replaces a dialog.
+     *
+     * PUT /dialogs/{dialogId}
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {V1ServiceOwnerDialogsCommandsUpdate_Dialog} request - the dialog to store
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PutDialog(dialogId, request, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}",
+            action: TAGS.PutDialog.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.put(url.toString(), JSON.stringify(request), params);
+    }
+
+    /**
+     * Applies a JSON Patch document to a dialog.
+     *
+     * PATCH /dialogs/{dialogId}
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {JsonPatchOperations_Operation[]} operations - the patch operations to apply
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PatchDialog(dialogId, operations, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}",
+            action: TAGS.PatchDialog.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.patch(url.toString(), JSON.stringify(operations), params);
+    }
+
+    /**
+     * Deletes a dialog.
+     *
+     * DELETE /dialogs/{dialogId}
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    DeleteDialog(dialogId, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}",
+            action: TAGS.DeleteDialog.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.del(url.toString(), null, params);
+    }
+
+    /**
+     * Replaces a transmission on a dialog.
+     *
+     * PUT /dialogs/{dialogId}/transmissions/{transmissionId}
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {uuidv7} transmissionId - id of the transmission
+     * @param {V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest} request - the transmission to store
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PutTransmission(dialogId, transmissionId, request, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
+            action: TAGS.PutTransmission.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.put(url.toString(), JSON.stringify(request), params);
+    }
+
+    /**
+     * Purges a dialog, deleting it permanently.
+     *
+     * POST /dialogs/{dialogId}/actions/purge
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PurgeDialog(dialogId, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/purge`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/actions/purge",
+            action: TAGS.PurgeDialog.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.post(url.toString(), null, params);
+    }
+
+    /**
+     * Restores a soft deleted dialog.
+     *
+     * POST /dialogs/{dialogId}/actions/restore
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    RestoreDialog(dialogId, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/restore`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/actions/restore",
+            action: TAGS.RestoreDialog.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.post(url.toString(), null, params);
+    }
+
+    /**
+     * Freezes a dialog, making it read only.
+     *
+     * POST /dialogs/{dialogId}/actions/freeze
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    FreezeDialog(dialogId, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/freeze`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/actions/freeze",
+            action: TAGS.FreezeDialog.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.post(url.toString(), null, params);
+    }
+
+    /**
+     * Adds service owner labels to a dialog.
+     *
+     * POST /dialogs/{dialogId}/context/labels
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label} request - the label to add
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PostServiceOwnerLabels(dialogId, request, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
+            action: TAGS.PostServiceOwnerLabels.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.post(url.toString(), JSON.stringify(request), params);
+    }
+
+    /**
+     * Removes a service owner label from a dialog.
+     *
+     * DELETE /dialogs/{dialogId}/context/labels/{label}
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} label - the label to remove
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    DeleteServiceOwnerLabel(dialogId, label, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels/${label}`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/context/labels/{label}",
+            action: TAGS.DeleteServiceOwnerLabel.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.del(url.toString(), null, params);
+    }
+
+    /**
+     * Sets the end user system labels of a dialog.
+     *
+     * PUT /dialogs/{dialogId}/endusercontext/systemlabels
+     *
+     * @param {uuidv7} dialogId - id of the dialog
+     * @param {V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
+     * @param {string} enduserId - the end user to act on behalf of
+     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PutEndUserContextSystemLabels(dialogId, request, enduserId = null, ifMatch = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/endusercontext/systemlabels`);
+
+        if (enduserId != null) {
+            url.searchParams.append("enduserId", enduserId);
+        }
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/endusercontext/systemlabels",
+            action: TAGS.PutEndUserContextSystemLabels.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.put(url.toString(), JSON.stringify(request), params);
+    }
+
+    /**
+     * Sets the end user system labels of several dialogs in one request.
+     *
+     * POST /dialogs/endusercontext/systemlabels/actions/bulkset
+     *
+     * @param {V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
+     * @param {string} enduserId - the end user to act on behalf of
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PostBulkSetSystemLabels(request, enduserId = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset");
+
+        if (enduserId != null) {
+            url.searchParams.append("enduserId", enduserId);
+        }
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset",
+            action: TAGS.PostBulkSetSystemLabels.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.post(url.toString(), JSON.stringify(request), params);
     }
 }
 

@@ -8,7 +8,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns response body of the request
+ * @returns {V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogLookup(
     serviceOwnerApiClient,
@@ -20,6 +20,9 @@ export function GetDialogLookup(
         labels,
     );
 
+    /** @type {V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup|null} */
+    let dialogLookup = null;
+
     const success = check(res, {
         "GetDialogLookup - status code MUST be 200": (res) => res.status == 200,
     });
@@ -27,7 +30,24 @@ export function GetDialogLookup(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return dialogLookup;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogLookup - body is valid": (r) => {
+            try {
+                dialogLookup = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return dialogLookup;
 }
