@@ -4,7 +4,7 @@ import { AuthorizedPartiesQueryBuilder } from "../../../../clients/access-manage
 import { AuthorizedPartiesRequestBuilder } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties-request.builder.js";
 import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { GetAuthorizedParties } from "../../../building-blocks/authorization/authorized-parties/index.js";
+import { GetAuthorizedParties } from "../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { getClients } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
