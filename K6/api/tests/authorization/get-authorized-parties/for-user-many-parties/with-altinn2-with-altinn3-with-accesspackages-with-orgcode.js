@@ -1,7 +1,8 @@
 
 import { AuthorizedPartiesClient } from "../../../../../clients/authorization/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/authorization/authorized-parties/index.js";
 import { endUserLabels, endUsers } from "./end-users.js";
 
@@ -55,10 +56,14 @@ export function setup() {
  */
 function getClients() {
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");
+        const scopes = CreateScopeString([
+            AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.ADMIN
+        ]);
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
 

@@ -4,7 +4,7 @@ import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import { randomItem } from "../../../../common-imports.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../helpers.js";
-import { MaskinportenConsentScope } from "../../../../scopes.js";
+import { AltinnScopes } from "../../../../scopes.js";
 import { LookupConsent } from "../../../building-blocks/authentication/consent/index.js";
 import {
     getEnterpriseBaseTokenOpts,
@@ -34,7 +34,7 @@ function getClients() {
         const tokenGenerator = new EnterpriseTokenGenerator(
             getEnterpriseBaseTokenOpts(
                 __ENV.ENVIRONMENT,
-                MaskinportenConsentScope.LOOKUP
+                AltinnScopes.MASKINPORTEN.CONSENT.READ
             )
         );
 
