@@ -1,7 +1,6 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
-import { RegisteredSystemDTO } from "../../../../../clients/authentication/v2/types.js";
 
 /**
  * Retrieves all vendor registered systems.

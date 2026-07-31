@@ -25,12 +25,12 @@ export default function (data) {
     );
     CreateTransmission(
         serviceOwnerApiClient,
-        JSON.parse(dialogId),
+        dialogId,
         create_transmission_label,
     );
     CreateActivity(
         serviceOwnerApiClient,
-        JSON.parse(dialogId),
+        dialogId,
         create_activity_label,
     );
 }
