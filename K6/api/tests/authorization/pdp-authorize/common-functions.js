@@ -1,8 +1,9 @@
 import http from "k6/http";
 
 import { PdpAuthorizeClient } from "../../../../clients/authorization/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions, randomIntBetween } from "../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * @type {PdpAuthorizeClient | undefined}
@@ -30,13 +31,14 @@ let tokenGenerator = undefined;
  */
 export function getClients() {
     if (tokenGenerator == undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-
-        // This scope allows the token to be used for all users,
-        // so there is no need to generate a token per test user.
-        tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
+        const scopes = CreateScopeString([
+            AltinnScopes.AUTHORIZATION.ADMIN
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes) // This scope allows the token to be used for all users, so there is no need to generate a token per test user.
+            .build();
 
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
@@ -58,12 +60,13 @@ export function getClients() {
  * @returns map of token options
  */
 export function getTokenOpts(ssn) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:authorization/authorize.admin");
-    tokenOpts.set("pid", ssn);
-    return tokenOpts;
+    const scopes = CreateScopeString([
+        AltinnScopes.AUTHORIZATION.ADMIN
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes(scopes)
+        .withPid(ssn);
+    return tokenOpts.build();
 }
 
 /**

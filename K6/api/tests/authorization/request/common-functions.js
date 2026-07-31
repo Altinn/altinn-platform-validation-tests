@@ -1,8 +1,9 @@
 import http from "k6/http";
 
 import { ConnectionsApiClient, MetaApiClient, RequestApiClient } from "../../../../clients/authorization/index.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetAccessPackagesExport } from "../../../building-blocks/authorization/meta/index.js";
 
 /** @type {PersonalTokenGenerator | undefined} */
@@ -101,15 +102,17 @@ export function getClients() {
  * @returns {Map} TODO: description
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:portal/enduser");
+    const scopes = CreateScopeString([
+        AltinnScopes.PORTAL.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes(scopes);
+
     if (pid !== null) {
-        tokenOpts.set("pid", pid);
+        tokenOpts.withPid(pid);
     }
     if (partyUuid !== null) {
-        tokenOpts.set("partyuuid", partyUuid);
+        tokenOpts.withPartyUuid(partyUuid);
     }
-    return tokenOpts;
+    return tokenOpts.build();
 }

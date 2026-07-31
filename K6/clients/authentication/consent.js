@@ -34,7 +34,7 @@ class ConsentApiClient {
 
     /**
      * Request Consent
-     * Requires an org token with scope ConsentScope.WRITE.
+     * Requires an org token with scope AltinnScopes.CONSENTREQUESTS.WRITE.
      * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/request/}
      *
      * @param {string} id TODO: description
@@ -113,7 +113,7 @@ class ConsentApiClient {
      * The endpoint we're using is the endpoint Maskinporten uses to lookup a consent request before returning the token.
      *
      * Endpoint: /accessmanagement/api/v1/maskinporten/consent/lookup/
-     * Requires an org token with scope MaskinportenConsentScope.LOOKUP.
+     * Requires an org token with scope Altinn.MASKINPORTEN.CONSENT.READ.
      * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/retrieve-token/}
      *
      * @param {string} id TODO: description
@@ -156,7 +156,7 @@ class ConsentApiClient {
      * Returns events ordered by event id (oldest first), max 100 per page.
      *
      * Endpoint: GET /accessmanagement/api/v1/enterprise/consentrequests/events
-     * Requires an org token with scope ConsentScope.READ.
+     * Requires an org token with scope AltinnScopes.CONSENTREQUESTS.READ.
      * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
      *
      * @param {string} [queryString] - URL-encoded query string (without leading "?"), as produced by {@link ConsentRequestEventsQueryBuilder#build}.

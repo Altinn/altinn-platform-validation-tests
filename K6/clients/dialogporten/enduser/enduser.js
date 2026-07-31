@@ -87,7 +87,6 @@ class EnduserApiClient {
             params.headers["traceparent"] = uuidv4();
         }
 
-        console.log("GetDialogs URL: " + url.toString());
         return http.get(url.toString(), params);
     }
 
