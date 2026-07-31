@@ -50,6 +50,8 @@ export default function () {
         });
 
         group("Follow the next-link pagination", function () {
+            PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, "VendorAgentGetBySystem");
+
             const nextUrl = extractNextUrl(firstPage);
 
             let additionalPages = 0;

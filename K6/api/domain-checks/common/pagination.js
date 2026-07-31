@@ -91,9 +91,39 @@ function CheckItemsBelongToSystem(paginated, expectedSystemId, itemName) {
     return success;
 }
 
+/**
+ * Checks that a paginated response hands out a next link that can actually be followed,
+ * and that it points back at the environment the request was made against.
+ *
+ * @param {{links: {next: string}}} paginated - The paginated response.
+ * @param {string} expectedBaseUrl - The prefix the next link is expected to start with.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if the next link is usable, false otherwise.
+ */
+function CheckNextLink(paginated, expectedBaseUrl, operation) {
+    const nextLink = paginated?.links?.next;
+
+    const success = check(paginated, {
+        [`CheckNextLink - ${operation} returns a next link`]: () =>
+            typeof nextLink === "string" && nextLink.length > 0,
+        [`CheckNextLink - ${operation} next link is https`]: () =>
+            typeof nextLink === "string" && nextLink.startsWith("https://"),
+        [`CheckNextLink - ${operation} next link points at this environment`]: () =>
+            typeof nextLink === "string" && nextLink.startsWith(expectedBaseUrl),
+    });
+
+    if (!success) {
+        console.error(`CheckNextLink - ${operation} next link: ${nextLink}`);
+        console.error(`CheckNextLink - expected it to start with: ${expectedBaseUrl}`);
+    }
+
+    return success;
+}
+
 export const PaginationDomainChecks = {
     CheckPaginatedShape,
     CheckPaginatedNotEmpty,
     CheckMultiplePages,
     CheckItemsBelongToSystem,
+    CheckNextLink,
 };

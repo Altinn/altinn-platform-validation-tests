@@ -1,8 +1,7 @@
-import { check } from "k6";
-
 import { ResourceClient, ResourceUpdatedQueryBuilder } from "../../../../clients/resource-registry/index.js";
 import { requireEnv } from "../../../../helpers.js";
 import { ResourceUpdated } from "../../../building-blocks/resource-registry/resource/index.js";
+import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -27,21 +26,7 @@ export default function () {
 
     const updatedResources = ResourceUpdated(resourceClient, query);
 
-    const nextLink = updatedResources?.links?.next;
-
-    const succeed = check(updatedResources, {
-        "ResourceUpdated - links.next exists": () =>
-            nextLink !== null && nextLink !== undefined,
-        "ResourceUpdated - links.next is https": () =>
-            typeof nextLink === "string" && nextLink.startsWith("https://"),
-        "ResourceUpdated - links.next points at this environment": () =>
-            typeof nextLink === "string" && nextLink.startsWith(expectedBaseUrl),
-    });
-
-    if (!succeed) {
-        console.error(`ResourceUpdated - links.next: ${nextLink}`);
-        console.error(`ResourceUpdated - expected it to start with: ${expectedBaseUrl}`);
-    }
+    PaginationDomainChecks.CheckNextLink(updatedResources, expectedBaseUrl, "ResourceUpdated");
 }
 
 // add the custom reporting for this test to the default summary
