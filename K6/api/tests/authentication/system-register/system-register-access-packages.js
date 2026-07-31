@@ -81,22 +81,13 @@ export default async function () {
         .withAccessPackages(accessPackages.map((accessPackage) => accessPackage.urn))
         .build();
 
-    // A wide set, to check that an update replaces the single package the system was
-    // created with rather than adding to it.
+    // Disjoint from the set above, so the check also catches an update that adds to
+    // the access packages instead of replacing them. The register rejects packages it
+    // does not know or that are not delegable, so these are kept to ones in use by the
+    // other system register tests.
     const updatedAccessPackages = [
-        { "urn": "urn:altinn:accesspackage:post-og-telekommunikasjon" },
-        { "urn": "urn:altinn:accesspackage:dokumentbasert-tilsyn" },
-        { "urn": "urn:altinn:accesspackage:infrastruktur" },
-        { "urn": "urn:altinn:accesspackage:patent-varemerke-design" },
-        { "urn": "urn:altinn:accesspackage:tilskudd-stotte-erstatning" },
-        { "urn": "urn:altinn:accesspackage:mine-sider-kommune" },
-        { "urn": "urn:altinn:accesspackage:politi-og-domstol" },
-        { "urn": "urn:altinn:accesspackage:rapportering-statistikk" },
-        { "urn": "urn:altinn:accesspackage:forskning" },
-        { "urn": "urn:altinn:accesspackage:folkeregister" },
-        { "urn": "urn:altinn:accesspackage:maskinporten-scopes" },
-        { "urn": "urn:altinn:accesspackage:maskinlesbare-hendelser" },
-        { "urn": "urn:altinn:accesspackage:maskinporten-scopes-nuf" },
+        { "urn": "urn:altinn:accesspackage:forretningsforer-eiendom" },
+        { "urn": "urn:altinn:accesspackage:jordbruk" },
     ];
 
     group("System Register Access Packages", function () {
