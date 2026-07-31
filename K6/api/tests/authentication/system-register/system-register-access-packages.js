@@ -55,7 +55,9 @@ export default async function () {
 
     const systemId = `${vendorId}_${systemName}`;
 
-    const accessPackageUrns = ["urn:altinn:accesspackage:krav-og-utlegg"];
+    const accessPackages = [
+        { "urn": "urn:altinn:accesspackage:krav-og-utlegg" },
+    ];
 
     const requestBody = new RegisterSystemRequestBuilder()
         .withName({
@@ -72,7 +74,7 @@ export default async function () {
             "nb": "Integrasjonstest. Noe er randomisert her, men mye blir likt.",
             "nn": "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt."
         })
-        .withAccessPackages(accessPackageUrns)
+        .withAccessPackages(accessPackages.map((accessPackage) => accessPackage.urn))
         .build();
 
     // A wide set, to check that an update replaces the single package the system was
@@ -101,10 +103,7 @@ export default async function () {
         // view, so these reads go on the enduser token
         const registeredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckAccessPackages(
-            registeredAccessPackages,
-            accessPackageUrns.map((urn) => ({ urn: urn })),
-        );
+        SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
 
         // PUT /vendor/{systemId}/accesspackages - replaces the whole set
         const updateResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
