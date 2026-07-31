@@ -1,6 +1,6 @@
 import { SystemRegisterGet } from "./system-register-get.js";
-import { SystemRegisterGetAccessPackages } from "./system-register-get-access-packages.js";
-import { SystemRegisterGetRights } from "./system-register-get-rights.js";
+import { SystemRegisterGetAccessPackagesFrontend } from "./system-register-get-access-packages-frontend.js";
+import { SystemRegisterGetRightsFrontend } from "./system-register-get-rights-frontend.js";
 import { SystemRegisterVendorCreate } from "./system-register-vendor-create.js";
 import { SystemRegisterVendorDelete } from "./system-register-vendor-delete.js";
 import { SystemRegisterVendorGet } from "./system-register-vendor-get.js";
@@ -12,8 +12,8 @@ import { SystemRegisterVendorUpdateRights } from "./system-register-vendor-updat
 
 export const SystemRegister = {
     Get: SystemRegisterGet,
-    GetAccessPackages: SystemRegisterGetAccessPackages,
-    GetRights: SystemRegisterGetRights,
+    GetAccessPackagesFrontend: SystemRegisterGetAccessPackagesFrontend,
+    GetRightsFrontend: SystemRegisterGetRightsFrontend,
     VendorCreate: SystemRegisterVendorCreate,
     VendorDelete: SystemRegisterVendorDelete,
     VendorGet: SystemRegisterVendorGet,

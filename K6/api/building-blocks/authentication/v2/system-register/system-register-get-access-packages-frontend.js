@@ -13,13 +13,13 @@ import { SystemRegisterClient } from "../../../../../clients/authentication/v2/i
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AccessPackage[]|null} Access packages.
  */
-export function SystemRegisterGetAccessPackages(
+export function SystemRegisterGetAccessPackagesFrontend(
     systemRegisterClient,
     systemId,
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGetAccessPackages(
+    const res = systemRegisterClient.SystemRegisterGetAccessPackagesFrontend(
         systemId,
         useOldFormatForApp,
         labels,
@@ -29,9 +29,9 @@ export function SystemRegisterGetAccessPackages(
     let accessPackages = null;
 
     const succeed = check(res, {
-        "SystemRegisterGetAccessPackages - status code is 200": (r) =>
+        "SystemRegisterGetAccessPackagesFrontend - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterGetAccessPackages - status text is 200 OK": (r) =>
+        "SystemRegisterGetAccessPackagesFrontend - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -42,7 +42,7 @@ export function SystemRegisterGetAccessPackages(
     }
 
     check(res, {
-        "SystemRegisterGetAccessPackages - body is valid": (r) => {
+        "SystemRegisterGetAccessPackagesFrontend - body is valid": (r) => {
             try {
                 accessPackages = JSON.parse(r.body);
 

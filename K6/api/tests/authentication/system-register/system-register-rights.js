@@ -104,7 +104,7 @@ export default async function () {
         group("An end user gets the rights of the system", function () {
             // GET /{systemId}/rights - the rights as consumers see them, not the
             // vendor view, so this one goes on the enduser token
-            const registeredRights = SystemRegister.GetRights(enduserSystemRegisterClient, systemId);
+            const registeredRights = SystemRegister.GetRightsFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
         });

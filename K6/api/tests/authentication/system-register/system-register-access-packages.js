@@ -89,14 +89,11 @@ export default async function () {
 
     group("System Register Access Packages", function () {
         group("Register a system with one access package", function () {
-            // POST /vendor
             SystemRegister.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("An end user gets the access packages of the system", function () {
-            // GET /{systemId}/accesspackages - as consumers see them, not the vendor
-            // view, so this read goes on the enduser token
-            const registeredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
+            const registeredAccessPackages = SystemRegister.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
         });
@@ -106,7 +103,7 @@ export default async function () {
 
             SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdateAccessPackages");
 
-            const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
+            const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
         });

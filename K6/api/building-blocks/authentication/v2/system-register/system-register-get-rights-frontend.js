@@ -13,13 +13,13 @@ import { SystemRegisterClient } from "../../../../../clients/authentication/v2/i
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {Right[]|null} Rights.
  */
-export function SystemRegisterGetRights(
+export function SystemRegisterGetRightsFrontend(
     systemRegisterClient,
     systemId,
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGetRights(
+    const res = systemRegisterClient.SystemRegisterGetRightsFrontend(
         systemId,
         useOldFormatForApp,
         labels,
@@ -29,9 +29,9 @@ export function SystemRegisterGetRights(
     let rights = null;
 
     const succeed = check(res, {
-        "SystemRegisterGetRights - status code is 200": (r) =>
+        "SystemRegisterGetRightsFrontend - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterGetRights - status text is 200 OK": (r) =>
+        "SystemRegisterGetRightsFrontend - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -42,7 +42,7 @@ export function SystemRegisterGetRights(
     }
 
     check(res, {
-        "SystemRegisterGetRights - body is valid": (r) => {
+        "SystemRegisterGetRightsFrontend - body is valid": (r) => {
             try {
                 rights = JSON.parse(r.body);
 

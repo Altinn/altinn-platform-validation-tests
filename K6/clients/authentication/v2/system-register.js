@@ -19,10 +19,10 @@ const TAGS = {
     SystemRegisterVendorDelete: {
         action: "system-register-vendor-delete",
     },
-    SystemRegisterGetRights: {
+    SystemRegisterGetRightsFrontend: {
         action: "system-register-get-rights",
     },
-    SystemRegisterGetAccessPackages: {
+    SystemRegisterGetAccessPackagesFrontend: {
         action: "system-register-get-access-packages",
     },
     SystemRegisterVendorUpdateRights: {
@@ -286,7 +286,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGetRights(systemId, useOldFormatForApp = null, labels = null) {
+    SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         let url = `${this.FULL_PATH}/${systemId}/rights`;
@@ -298,7 +298,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetRights.action,
+            action: TAGS.SystemRegisterGetRightsFrontend.action,
         };
 
         if (labels !== null) {
@@ -328,7 +328,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGetAccessPackages(
+    SystemRegisterGetAccessPackagesFrontend(
         systemId,
         useOldFormatForApp = null,
         labels = null,
@@ -344,7 +344,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetAccessPackages.action,
+            action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
         };
 
         if (labels !== null) {
