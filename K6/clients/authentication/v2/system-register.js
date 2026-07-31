@@ -65,10 +65,7 @@ class SystemRegisterClient {
     /**
      * Retrieves all registered systems.
      *
-     * Requires the `altinn:portal/enduser` scope. This is the listing the frontend
-     * uses; to list the systems belonging to a vendor, use
-     * {@link SystemRegisterClient#SystemRegisterVendorGet} instead, which goes on the
-     * systemregister scopes the rest of this client uses.
+     * Requires the `altinn:portal/enduser` scope.
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -281,9 +278,7 @@ class SystemRegisterClient {
     /**
      * Retrieves default rights for a system.
      *
-     * Requires the `altinn:portal/enduser` scope. A Maskinporten token on the
-     * systemregister scopes gets a 403 here; the rights a vendor registered are on
-     * {@link SystemRegisterClient#SystemRegisterVendorGetById} instead.
+     * Requires the `altinn:portal/enduser` scope.
      *
      * @param {string} systemId System identifier.
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
@@ -325,9 +320,7 @@ class SystemRegisterClient {
     /**
      * Retrieves default access packages for a system.
      *
-     * Requires the `altinn:portal/enduser` scope. A Maskinporten token on the
-     * systemregister scopes gets a 403 here; the access packages a vendor registered
-     * are on {@link SystemRegisterClient#SystemRegisterVendorGetById} instead.
+     * Requires the `altinn:portal/enduser` scope.
      *
      * @param {string} systemId System identifier.
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.

@@ -5,9 +5,7 @@ import { SystemRegisterClient } from "../../../../../clients/authentication/v2/i
 /**
  * Retrieves default access packages for a system.
  *
- * Requires the `altinn:portal/enduser` scope. A Maskinporten token on the
- * systemregister scopes gets a 403 here; for the access packages a vendor
- * registered, use SystemRegisterVendorGetById instead.
+ * Requires the `altinn:portal/enduser` scope.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
