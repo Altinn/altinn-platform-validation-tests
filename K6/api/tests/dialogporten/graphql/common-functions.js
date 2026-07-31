@@ -96,7 +96,7 @@ export function getParties(graphqlClient, labels, max_number_of_parties = 100) {
         labels,
     );
 
-    const parties = JSON.parse(resp).data?.parties ?? [];
+    const parties = resp?.data?.parties ?? [];
     const result = [];
 
     for (const party of parties) {

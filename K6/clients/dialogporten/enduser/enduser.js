@@ -15,6 +15,8 @@ const TAGS = {
     GetParties: { action: "get-parties" },
     GetServiceResources: { action: "get-service-resources" },
     GetDialogLookup: { action: "get-dialog-lookup" },
+    PutDialogSystemLabels: { action: "put-dialog-system-labels" },
+    PostBulkSetSystemLabels: { action: "post-bulk-set-system-labels" },
 };
 
 class EnduserApiClient {
@@ -504,6 +506,77 @@ class EnduserApiClient {
         }
 
         return http.get(url.toString(), params);
+    }
+    /**
+     * Sets the system labels of a dialog for the end user.
+     *
+     * PUT /dialogs/{dialogId}/context/systemlabels
+     *
+     * @param {uuidv7} dialogId - id of the dialog to set labels on
+     * @param {V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PutDialogSystemLabels(dialogId, request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/systemlabels`);
+
+        let tags = {
+            endpoint: url.toString(),
+            name: this.FULL_PATH + "/dialogs/{dialogId}/context/systemlabels",
+            action: TAGS.PutDialogSystemLabels.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.put(url.toString(), JSON.stringify(request), params);
+    }
+
+    /**
+     * Sets the system labels of several dialogs for the end user in one request.
+     *
+     * POST /dialogs/context/systemlabels/actions/bulkset
+     *
+     * @param {V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    PostBulkSetSystemLabels(request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH + "/dialogs/context/systemlabels/actions/bulkset");
+
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.PostBulkSetSystemLabels.action,
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+            },
+        };
+
+        if (__ENV.TRACE_CALL) {
+            params.headers["traceparent"] = uuidv4();
+        }
+
+        return http.post(url.toString(), JSON.stringify(request), params);
     }
 }
 export { EnduserApiClient };
