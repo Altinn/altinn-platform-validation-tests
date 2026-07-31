@@ -1,17 +1,14 @@
+/**
+ * Builds the body for registering a system.
+ *
+ * Only the fields you set end up in the request. A field you leave alone is left out
+ * of the JSON entirely rather than sent as null, since the register treats the two
+ * differently.
+ */
 class RegisterSystemRequestBuilder {
     constructor() {
         /** @type {RegisterSystemRequest} */
-        this.request = {
-            id: null,
-            vendor: null,
-            name: null,
-            description: null,
-            rights: null,
-            accessPackages: null,
-            clientId: null,
-            isVisible: false,
-            allowedRedirectUrls: null,
-        };
+        this.request = {};
     }
 
     /**

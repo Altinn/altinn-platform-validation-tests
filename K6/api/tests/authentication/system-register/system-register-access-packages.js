@@ -77,9 +77,11 @@ export default async function () {
         })
         // Access packages are what this test is about, but the register wants a rights
         // array, and the builder leaves it null unless it is set.
-        .withRights([])
+        // .withRights([])
         .withAccessPackages(accessPackages.map((accessPackage) => accessPackage.urn))
         .build();
+
+    console.log("body: " + JSON.stringify(requestBody, null, 2));
 
     // Disjoint from the set above, so the check also catches an update that adds to
     // the access packages instead of replacing them. The register rejects packages it
