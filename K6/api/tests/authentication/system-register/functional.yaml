@@ -4,9 +4,14 @@ test_definitions:
   - test_file: system-register-crud.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
         test_run:
           secrets:
             - 313175650-maskinporten-client
@@ -14,9 +19,14 @@ test_definitions:
   - test_file: system-register-rights.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
         test_run:
           secrets:
             - 313175650-maskinporten-client
@@ -24,9 +34,14 @@ test_definitions:
   - test_file: system-register-access-packages.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
         test_run:
           secrets:
             - 313175650-maskinporten-client

@@ -169,9 +169,6 @@ export default async function () {
 
         SystemRegisterDomainChecks.CheckSystemIdIsAbsent(remainingVendorSystems, systemId);
 
-        // GET /vendor/{systemId}/changelog - every write above should be logged. Read
-        // once at the end, since the log is cumulative. Expected changes are listed
-        // chronologically; the check reverses the log, which comes newest first.
         const changeLog = SystemRegister.VendorGetChangeLog(systemRegisterClient, systemId);
 
         SystemRegisterDomainChecks.CheckSystemChangeLog(changeLog, [
