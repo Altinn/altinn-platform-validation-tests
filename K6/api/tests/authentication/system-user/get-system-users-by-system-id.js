@@ -1,8 +1,9 @@
 import { check, fail, group } from "k6";
 
 import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetSystemUsersBySystemId } from "../../../building-blocks/authentication/system-user/index.js";
 import {
     extractNextUrl,
@@ -26,14 +27,15 @@ export default function () {
             const systemOwnerOrgNo = "312605031";
             const systemId = "312605031_Virksomhetsbruker";
 
-            const vendorTokenOptions = new EnterpriseTokenGeneratorOptions();
-            vendorTokenOptions.set("env", __ENV.ENVIRONMENT);
-            vendorTokenOptions.set("ttl", 3600);
-            vendorTokenOptions.set(
-                "scopes",
-                "altinn:authentication/systemregister.write",
-            );
-            vendorTokenOptions.set("orgNo", systemOwnerOrgNo);
+            const scopes = CreateScopeString([
+                AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
+            ]);
+            const vendorTokenOptions = new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(scopes)
+                .withOrganizationNumber(systemOwnerOrgNo)
+                .build();
 
             const vendorTokenGenerator = new EnterpriseTokenGenerator(
                 vendorTokenOptions,
