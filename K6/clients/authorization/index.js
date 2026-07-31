@@ -13,5 +13,3 @@ export { PdpAuthorizeClient } from "./pdp-authorize.js";
 export { ReceivedRequestsParamsBuilder, RequestStatus } from "./received-requests-params-builder.js";
 export { RequestApiClient } from "./request.js";
 export { RolesApiClient } from "./roles.js";
-// Helper Classes
-export { AuthorizedPartiesQueryBuilder } from "./authorized-parties-query.builder.js";
