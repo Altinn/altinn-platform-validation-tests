@@ -4,7 +4,7 @@ import { browser } from "k6/browser";
 import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";
 import { CreateAgentSystemUserRequest } from "../../api/building-blocks/authentication/system-user-request/index.js";
 import { SystemRegisterApiClient, SystemUserRequestApiClient } from "../../clients/authentication/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, expect } from "../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, expect } from "../../common-imports.js";
 import { requireEnv } from "../../helpers.js";
 import { ClientDelegationPage, LoginPage } from "../pages/index.js";
 
@@ -112,11 +112,10 @@ export default async function () {
 
         const name = `k6browser-e2e-${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const options = new EnterpriseTokenGeneratorOptions();
-        options.set("env", __ENV.ENVIRONMENT);
-        options.set("ttl", 3600);
-        options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize altinn:resourceregistry/resource.admin altinn:register/partylookup.admin");
-        options.set("orgNo", "310547891");
+        const options = new EnterpriseTokenBuilder()
+            .withScopes("altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize altinn:resourceregistry/resource.admin altinn:register/partylookup.admin")
+            .withOrganizationNumber("310547891")
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(options);
 
