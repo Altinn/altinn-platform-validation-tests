@@ -21,7 +21,7 @@ export default function () {
     const queryParams = new AuthorizedPartiesQueryBuilder()
         .includeAltinn3(true)
         .includeAccessPackages(true)
-        .includeResources(true)
+        .includeResources(false)
         .build();
 
     GetAuthorizedParties(
