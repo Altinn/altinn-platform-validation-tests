@@ -37,7 +37,7 @@ class RolesApiClient {
      *
      * @param {{[x: string]: string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse} TODO:  Descriptions Exposes body with best possible type.
      */
     GetRoles(labels = null) {
         const url = new URL(`${this.FULL_PATH}`);
@@ -69,7 +69,7 @@ class RolesApiClient {
      * @param {string} id Role UUID.
      * @param {{[x: string]: string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse} TODO:  Descriptions Exposes body with best possible type.
      */
     GetRole(id, labels = null) {
         const url = new URL(`${this.FULL_PATH}/${id}`);
@@ -105,7 +105,7 @@ class RolesApiClient {
      * Whether resources should be included.
      * @param {{[x: string]: string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse} TODO:  Descriptions Exposes body with best possible type.
      */
     GetRolePackages(
         role,
@@ -153,7 +153,7 @@ class RolesApiClient {
      * Whether package resources should be included.
      * @param {{[x: string]: string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse} TODO:  Descriptions Exposes body with best possible type.
      */
     GetRoleResources(
         role,
@@ -201,7 +201,7 @@ class RolesApiClient {
      * Whether resources should be included.
      * @param {{[x: string]: string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse} TODO:  Descriptions Exposes body with best possible type.
      */
     GetRolePackagesById(
         id,
@@ -248,7 +248,7 @@ class RolesApiClient {
      * Whether package resources should be included.
      * @param {{[x: string]: string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse} TODO:  Descriptions Exposes body with best possible type.
      */
     GetRoleResourcesById(
         id,
