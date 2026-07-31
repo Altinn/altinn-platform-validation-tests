@@ -1,0 +1,56 @@
+import { check } from "k6";
+
+import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+
+/**
+ * Approves a change request for a system user.
+ *
+ * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
+ * @param {string} partyId Party the change request was made for.
+ * @param {string} requestId Change request identifier.
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @returns {boolean} Whether the change request was approved.
+ */
+export function ChangeRequestSystemUserApprove(
+    changeRequestSystemUserClient,
+    partyId,
+    requestId,
+    labels = null,
+) {
+    const res = changeRequestSystemUserClient.ChangeRequestSystemUserApprove(
+        partyId,
+        requestId,
+        labels,
+    );
+
+    const succeed = check(res, {
+        "ChangeRequestSystemUserApprove - status code is 200": (r) => r.status === 200,
+        "ChangeRequestSystemUserApprove - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return false;
+    }
+
+    let approved = false;
+
+    check(res, {
+        "ChangeRequestSystemUserApprove - body is valid": (r) => {
+            try {
+                approved = JSON.parse(r.body) === true;
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return approved;
+}

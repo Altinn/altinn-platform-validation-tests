@@ -16,6 +16,9 @@ const TAGS = {
     ChangeRequestSystemUserVendorGetBySystem: {
         action: "change-request-system-user-vendor-get-by-system",
     },
+    ChangeRequestSystemUserApprove: {
+        action: "change-request-system-user-approve",
+    },
 };
 
 class ChangeRequestSystemUserClient {
@@ -32,7 +35,7 @@ class ChangeRequestSystemUserClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/systemuser/changerequest";
+        this.BASE_PATH = "/authentication/api/v1/systemuser/changerequest";
 
         /**
          * Fully-qualified API path.
@@ -46,6 +49,8 @@ class ChangeRequestSystemUserClient {
 
     /**
      * Creates a change request for a system user.
+     *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {ChangeRequestSystemUser} request Change request payload.
      * @param {string|null} correlationId Correlation identifier.
@@ -108,6 +113,8 @@ class ChangeRequestSystemUserClient {
     /**
      * Retrieves a change request by id.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -143,6 +150,8 @@ class ChangeRequestSystemUserClient {
     /**
      * Deletes a change request by id.
      *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
+     *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -177,6 +186,8 @@ class ChangeRequestSystemUserClient {
 
     /**
      * Retrieves a change request by external reference.
+     *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organisation number.
@@ -220,6 +231,8 @@ class ChangeRequestSystemUserClient {
     /**
      * Retrieves change requests for a system.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
@@ -241,7 +254,7 @@ class ChangeRequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+            name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
             action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
         };
 
@@ -256,6 +269,45 @@ class ChangeRequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Approves a change request on behalf of the party it was made for.
+     *
+     * Requires the `altinn:portal/enduser` scope.
+     *
+     * @param {string} partyId Party the change request was made for.
+     * @param {string} requestId Change request identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    ChangeRequestSystemUserApprove(partyId, requestId, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/${encodeURIComponent(partyId)}/${encodeURIComponent(requestId)}/approve`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{partyId}/{requestId}/approve`,
+            action: TAGS.ChangeRequestSystemUserApprove.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
                 Accept: "application/json",
             },
         });

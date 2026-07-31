@@ -1,0 +1,244 @@
+import { group } from "k6";
+import { vu } from "k6/execution";
+import http from "k6/http";
+
+import { ChangeRequestSystemUserBuilder } from "../../../../clients/authentication/v2/change-request-system-user.builders.js";
+import {
+    ChangeRequestSystemUserClient,
+    RequestSystemUserClient,
+    SystemRegisterClient,
+    SystemUserClient
+} from "../../../../clients/authentication/v2/index.js";
+import { CreateRequestSystemUserBuilder } from "../../../../clients/authentication/v2/request-system-user.builders.js";
+import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
+import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { ChangeRequestSystemUser } from "../../../building-blocks/authentication/v2/change-request-system-user/index.js";
+import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
+import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
+import { SystemUser } from "../../../building-blocks/authentication/v2/system-user/index.js";
+import { ChangeRequestSystemUserDomainChecks } from "../../../domain-checks/change-request-system-user.js";
+import { SystemUserRequestDomainChecks } from "../../../domain-checks/system-user-request.js";
+
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
+        { tags: { action: "fetch-test-data" } });
+    return parseCsvData(res.body);
+}
+
+export default function (data) {
+    const customer = data[vu.idInTest - 1];
+
+    const systemOwner = "713431400";
+    const grantedResource = "ttd-dialogporten-performance-test-01";
+    const requestedResource = "authentication-e2e-test";
+    const redirectUrl = "https://digdir.no";
+
+    const systemName = `changerequest${uuidv4()}`;
+    const systemId = `${systemOwner}_${systemName}`;
+    const clientId = uuidv4();
+    const externalRef = uuidv4();
+
+    const right = (resource) => {
+        return {
+            "resource": [
+                {
+                    "value": resource,
+                    "id": "urn:altinn:resource"
+                }
+            ]
+        };
+    };
+
+    const grantedRights = [right(grantedResource)];
+    const requestedRights = [right(requestedResource)];
+
+    const vendorScopes = CreateScopeString([
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+        // Looking the system user up by external id is behind its own scope.
+        AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
+        AltinnScopes.AUTHORIZATION.AUTHORIZE
+    ]);
+
+    const vendorTokenOptions = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(vendorScopes)
+        .withOrganizationNumber(systemOwner)
+        .build();
+
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(vendorTokenOptions);
+
+    const systemRegisterClient
+        = new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator);
+
+    const vendorRequestSystemUserClient
+        = new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator);
+
+    const systemUserClient
+        = new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator);
+
+    const vendorChangeRequestClient
+        = new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator);
+
+    const approverScopes = CreateScopeString([
+        AltinnScopes.PORTAL.ENDUSER
+    ]);
+
+    const approverTokenOptions = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(approverScopes)
+        .withUserId(customer.userId)
+        .withPartyUuid(customer.userPartyUuid)
+        .build();
+
+    const approverTokenGenerator = new PersonalTokenGenerator(approverTokenOptions);
+
+    const approverRequestSystemUserClient
+        = new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator);
+
+    const approverChangeRequestClient
+        = new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator);
+
+    // The system is registered with both resources, so the change request can ask for a
+    // right the system user was not granted at the outset.
+    const registerSystemRequest = new RegisterSystemRequestBuilder()
+        .withId(systemId)
+        .withVendor(`0192:${systemOwner}`)
+        .withName({
+            "en": systemName,
+            "nb": systemName,
+            "nn": systemName
+        })
+        .withDescription({
+            "en": "This is auto generated by an integration test. Some data is randomized, but some is not - like this description",
+            "nb": "Integrasjonstest. Noe er randomisert her, men mye blir likt.",
+            "nn": "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt."
+        })
+        .withRights([...grantedRights, ...requestedRights])
+        .withClientId([clientId])
+        .withVisibility(false)
+        .withAllowedRedirectUrls([redirectUrl])
+        .build();
+
+    group("As a vendor, I can ask an existing system user for more rights", function () {
+        let systemUserId;
+
+        group("Give the customer a system user to change", function () {
+            SystemRegister.VendorCreate(systemRegisterClient, registerSystemRequest);
+
+            const createRequest = new CreateRequestSystemUserBuilder()
+                .withExternalRef(externalRef)
+                .withSystemId(systemId)
+                .withPartyOrgNo(customer.orgNo)
+                .withRights(grantedRights)
+                .withRedirectUrl(redirectUrl)
+                .build();
+
+            const createdRequest = RequestSystemUser.VendorCreate(vendorRequestSystemUserClient, createRequest);
+
+            SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
+                systemId,
+                partyOrgNo: customer.orgNo,
+                externalRef,
+            });
+
+            if (createdRequest === null) {
+                return;
+            }
+
+            const approved = RequestSystemUser.Approve(
+                approverRequestSystemUserClient,
+                customer.partyId,
+                createdRequest.id,
+            );
+
+            SystemUserRequestDomainChecks.CheckRequestApproved(approved);
+
+            const systemUser = SystemUser.GetByExternalId(systemUserClient, {
+                clientId,
+                systemProviderOrgNo: systemOwner,
+                systemUserOwnerOrgNo: customer.orgNo,
+                externalRef,
+            });
+
+            systemUserId = systemUser?.id;
+        });
+
+        group("Asking for nothing needs no change", function () {
+            if (systemUserId === undefined) {
+                return;
+            }
+
+            const emptyChangeRequest = new ChangeRequestSystemUserBuilder()
+                .withRedirectUrl(redirectUrl)
+                .build();
+
+            const changeRequest = ChangeRequestSystemUser.VendorCreate(
+                vendorChangeRequestClient,
+                emptyChangeRequest,
+                uuidv4(),
+                systemUserId,
+            );
+
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "NoChangeNeeded");
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestIsEmpty(changeRequest);
+        });
+
+        let changeRequestId;
+
+        group("Ask for a right the system user does not have", function () {
+            if (systemUserId === undefined) {
+                return;
+            }
+
+            const request = new ChangeRequestSystemUserBuilder()
+                .withRequiredRights(requestedRights)
+                .withRedirectUrl(redirectUrl)
+                .build();
+
+            const changeRequest = ChangeRequestSystemUser.VendorCreate(
+                vendorChangeRequestClient,
+                request,
+                uuidv4(),
+                systemUserId,
+            );
+
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestCreated(changeRequest, {
+                systemId,
+                partyOrgNo: customer.orgNo,
+                systemUserId,
+            });
+
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequest, requestedRights);
+
+            changeRequestId = changeRequest?.id;
+        });
+
+        group("The customer approves the change", function () {
+            if (changeRequestId === undefined) {
+                return;
+            }
+
+            const approved = ChangeRequestSystemUser.Approve(
+                approverChangeRequestClient,
+                customer.partyId,
+                changeRequestId,
+            );
+
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestApproved(approved);
+
+            const changeRequest = ChangeRequestSystemUser.VendorGet(vendorChangeRequestClient, changeRequestId);
+
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "Accepted");
+        });
+    });
+}
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../common-imports.js";

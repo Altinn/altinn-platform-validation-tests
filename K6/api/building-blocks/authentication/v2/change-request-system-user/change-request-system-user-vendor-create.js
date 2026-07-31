@@ -29,11 +29,12 @@ export function ChangeRequestSystemUserVendorCreate(
     /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;
 
+    // A new change request answers 201. The API answers 200 when there is nothing to
+    // change, and when the correlation id already refers to a change request. Both are
+    // successful, so the status the caller cares about is asserted in the domain checks.
     const succeed = check(res, {
-        "ChangeRequestSystemUserVendorCreate - status code is 200": (r) =>
-            r.status === 200,
-        "ChangeRequestSystemUserVendorCreate - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "ChangeRequestSystemUserVendorCreate - status code is 200 or 201": (r) =>
+            r.status === 200 || r.status === 201,
     });
 
     if (!succeed) {

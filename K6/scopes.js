@@ -80,6 +80,9 @@ export const AltinnScopes = {
         },
         CONSENT: {
             READ: "altinn:maskinporten/consent.read"
+        },
+        SYSTEMUSER: {
+            READ: "altinn:maskinporten/systemuser.read"
         }
     },
 
