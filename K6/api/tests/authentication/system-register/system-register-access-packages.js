@@ -1,8 +1,9 @@
 import { check, group } from "k6";
 
 import { SystemRegisterApiClient } from "../../../../clients/authentication/index.js";
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenGeneratorOptions, uuidv4 } from "../../../../common-imports.js";
+import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateNewSystem, DeleteSystem, UpdateVendorAccessPackages } from "../../../building-blocks/authentication/system-register/index.js";
 
 export function setup() {
@@ -27,8 +28,16 @@ function defaultObject() {
 }
 
 export default function () {
-    const options = new MaskinportenTokenGeneratorOptions();
-    options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemregister.write altinn:authentication/systemuser.request.read altinn:authentication/systemregister.admin");
+    const scopes = CreateScopeString([
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.ADMIN
+
+    ]);
+    const options = new MaskinportenTokenBuilder()
+        .withScopes(scopes)
+        .build();
 
     const tokenGenerator
         = new MaskinportenAccessTokenGenerator(options);

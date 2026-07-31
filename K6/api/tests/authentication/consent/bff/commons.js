@@ -1,8 +1,9 @@
 import http from "k6/http";
 
 import { BffAccessManagementApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /*
 * The users in this list have been selected based on the number of consent requests they have.
@@ -73,10 +74,14 @@ let personalTokenGenerator = undefined;
  */
 export function getClients() {
     if (accessManagementApiClient == undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
@@ -95,13 +100,16 @@ export function getClients() {
 * These options are used by the token generator to create a token that can be used to authenticate the user when making requests to the API.
 */
 export function getTokenOpts(userId, partyuuid) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "altinn:portal/enduser");
-    tokenOpts.set("userId", userId);
-    tokenOpts.set("partyuuid", partyuuid);
-    return tokenOpts;
+    const scopes = CreateScopeString([
+        AltinnScopes.PORTAL.ENDUSER
+    ]);
+    return new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withUserId(userId)
+        .withPartyUuid(partyuuid)
+        .build();
 }
 
 /*
