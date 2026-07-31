@@ -1,0 +1,143 @@
+/**
+ * @typedef {object} UserProfile
+ * @property {number} userId
+ * @property {string|null} userUuid
+ * @property {string|null} userName
+ * @property {string|null} externalIdentity
+ * @property {boolean} isReserved
+ * @property {string|null} phoneNumber
+ * @property {string|null} email
+ * @property {number} partyId
+ * @property {Party} party
+ * @property {UserType} userType
+ * @property {ProfileSettingPreference} profileSettingPreference
+ */
+
+/**
+ * @typedef {0|1|2|3|4|5|6} UserType
+ */
+
+/**
+ * @typedef {object} Party
+ * @property {number} partyId
+ * @property {string|null} partyUuid
+ * @property {PartyType} partyTypeName
+ * @property {string|null} orgNumber
+ * @property {string|null} ssn
+ * @property {string|null} unitType
+ * @property {string|null} name
+ * @property {boolean} isDeleted
+ * @property {boolean} onlyHierarchyElementWithNoAccess
+ * @property {Person|null} person
+ * @property {Organization|null} organization
+ * @property {Party[]|null} childParties
+ * @property {string|null} lastChangedInAltinn
+ * @property {string|null} lastChangedInExternalRegister
+ */
+
+/**
+ * @typedef {1|2|3|4|5} PartyType
+ */
+
+/**
+ * @typedef {object} Person
+ * @property {string|null} ssn
+ * @property {string|null} name
+ * @property {string|null} firstName
+ * @property {string|null} middleName
+ * @property {string|null} lastName
+ * @property {string|null} telephoneNumber
+ * @property {string|null} mobileNumber
+ * @property {string|null} mailingAddress
+ * @property {string|null} mailingPostalCode
+ * @property {string|null} mailingPostalCity
+ * @property {string|null} addressMunicipalNumber
+ * @property {string|null} addressMunicipalName
+ * @property {string|null} addressStreetName
+ * @property {string|null} addressHouseNumber
+ * @property {string|null} addressHouseLetter
+ * @property {string|null} addressPostalCode
+ * @property {string|null} addressCity
+ * @property {string|null} dateOfDeath
+ */
+
+/**
+ * @typedef {object} Organization
+ * @property {string|null} [orgNumber]
+ * @property {string|null} [name]
+ * @property {string|null} [unitType]
+ * @property {string|null} [telephoneNumber]
+ * @property {string|null} [mobileNumber]
+ * @property {string|null} [faxNumber]
+ * @property {string|null} [eMailAddress]
+ * @property {string|null} [internetAddress]
+ * @property {string|null} [mailingAddress]
+ * @property {string|null} [mailingPostalCode]
+ * @property {string|null} [mailingPostalCity]
+ * @property {string|null} [businessAddress]
+ * @property {string|null} [businessPostalCode]
+ * @property {string|null} [businessPostalCity]
+ * @property {string|null} [unitStatus]
+ */
+
+/**
+ * @typedef {object} ProfileSettingPreference
+ * @property {string|null} languageType
+ * @property {string|null} language
+ * @property {number} preSelectedPartyId
+ * @property {boolean} doNotPromptForParty
+ * @property {string|null} preselectedPartyUuid
+ * @property {boolean} showClientUnits
+ * @property {boolean} shouldShowSubEntities
+ * @property {boolean} shouldShowDeletedEntities
+ */
+
+/**
+ * @typedef {object} ProfileSettingPutRequest
+ * @property {string|null} languageType
+ * @property {number} preSelectedPartyId
+ * @property {boolean} doNotPromptForParty
+ * @property {boolean} showClientUnits
+ * @property {boolean} shouldShowSubEntities
+ * @property {boolean} shouldShowDeletedEntities
+ * @property {string} language
+ * @property {string|null} preselectedPartyUuid
+ */
+
+/**
+ * @typedef {object} ProfileSettingsPatchRequest
+ * @property {string|null} language
+ * @property {boolean|null} doNotPromptForParty
+ * @property {GuidNullableOptional|null} preselectedPartyUuid
+ * @property {boolean|null} showClientUnits
+ * @property {boolean|null} shouldShowSubEntities
+ * @property {boolean|null} shouldShowDeletedEntities
+ */
+
+/**
+ * @typedef {object} GuidNullableOptional
+ * @property {boolean} hasValue
+ * @property {string|null} value
+ */
+
+/**
+ * @typedef {object} ProfileSettingPutRequestBuilderOptions
+ * @property {string|null} [languageType]
+ * @property {number} [preSelectedPartyId]
+ * @property {boolean} doNotPromptForParty
+ * @property {boolean} showClientUnits
+ * @property {boolean} shouldShowSubEntities
+ * @property {boolean} shouldShowDeletedEntities
+ * @property {string} language
+ * @property {string|null} [preselectedPartyUuid]
+ */
+
+/**
+ * @typedef {object} ProfileSettingsPatchRequestBuilderOptions
+ * @property {string|null} [language]
+ * @property {boolean|null} [doNotPromptForParty]
+ * @property {string|null} [preselectedPartyUuid]
+ * @property {boolean|null} [showClientUnits]
+ * @property {boolean|null} [shouldShowSubEntities]
+ * @property {boolean|null} [shouldShowDeletedEntities]
+ */

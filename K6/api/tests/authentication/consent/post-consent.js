@@ -10,8 +10,7 @@ import {
 } from "../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../helpers.js";
 import {
-    ConsentScope,
-    MaskinportenConsentScope,
+    AltinnScopes,
 } from "../../../../scopes.js";
 import {
     ApproveConsent,
@@ -107,7 +106,7 @@ let consenterTokenGenerator = undefined;
 function getClients() {
     if (consenteeApiClient == undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.WRITE)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, AltinnScopes.CONSENTREQUESTS.WRITE)
         );
 
         consenteeApiClient = new ConsentApiClient(
@@ -128,7 +127,7 @@ function getClients() {
         const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
             getEnterpriseBaseTokenOpts(
                 __ENV.ENVIRONMENT,
-                MaskinportenConsentScope.LOOKUP
+                AltinnScopes.MASKINPORTEN.CONSENT.READ
             )
         );
 
@@ -177,7 +176,7 @@ export default function (data) {
     const person = randomItem(data.persons);
 
     consenteeTokenGenerator.setTokenGeneratorOptions(
-        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.WRITE)
+        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, AltinnScopes.CONSENTREQUESTS.WRITE)
     );
     consenterTokenGenerator.setTokenGeneratorOptions(
         getPersonalTokenOpts(__ENV.ENVIRONMENT, person.partyUuid)
