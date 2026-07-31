@@ -5,6 +5,10 @@ import { SystemRegisterClient } from "../../../../../clients/authentication/v2/i
 /**
  * Retrieves default rights for a system.
  *
+ * Requires the `altinn:portal/enduser` scope. A Maskinporten token on the
+ * systemregister scopes gets a 403 here; for the rights a vendor registered, use
+ * SystemRegisterVendorGetById instead.
+ *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
  * @param {boolean|null} [useOldFormatForApp] Whether to use old app format.

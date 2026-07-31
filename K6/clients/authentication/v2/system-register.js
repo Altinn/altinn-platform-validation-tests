@@ -281,6 +281,10 @@ class SystemRegisterClient {
     /**
      * Retrieves default rights for a system.
      *
+     * Requires the `altinn:portal/enduser` scope. A Maskinporten token on the
+     * systemregister scopes gets a 403 here; the rights a vendor registered are on
+     * {@link SystemRegisterClient#SystemRegisterVendorGetById} instead.
+     *
      * @param {string} systemId System identifier.
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
@@ -320,6 +324,10 @@ class SystemRegisterClient {
 
     /**
      * Retrieves default access packages for a system.
+     *
+     * Requires the `altinn:portal/enduser` scope. A Maskinporten token on the
+     * systemregister scopes gets a 403 here; the access packages a vendor registered
+     * are on {@link SystemRegisterClient#SystemRegisterVendorGetById} instead.
      *
      * @param {string} systemId System identifier.
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
