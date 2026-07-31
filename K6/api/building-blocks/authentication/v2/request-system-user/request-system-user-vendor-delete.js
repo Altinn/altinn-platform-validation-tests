@@ -10,12 +10,12 @@ import { RequestSystemUserClient } from "../../../../../clients/authentication/v
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
-export function DeleteRequestSystemUser(
+export function RequestSystemUserVendorDelete(
     requestSystemUserClient,
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.DeleteRequestSystemUser(
+    const res = requestSystemUserClient.RequestSystemUserVendorDelete(
         requestId,
         labels,
     );
@@ -24,9 +24,9 @@ export function DeleteRequestSystemUser(
     let requestResponse = null;
 
     const succeed = check(res, {
-        "DeleteRequestSystemUser - status code is 200": (r) =>
+        "RequestSystemUserVendorDelete - status code is 200": (r) =>
             r.status === 200,
-        "DeleteRequestSystemUser - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorDelete - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +37,7 @@ export function DeleteRequestSystemUser(
     }
 
     check(res, {
-        "DeleteRequestSystemUser - body is valid": (r) => {
+        "RequestSystemUserVendorDelete - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

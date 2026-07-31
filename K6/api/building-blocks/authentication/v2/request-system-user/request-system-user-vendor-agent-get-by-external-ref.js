@@ -3,30 +3,36 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Creates a new system user request.
+ * Retrieves an agent system user request by external reference.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {CreateRequestSystemUser} request Request model.
+ * @param {string} systemId System identifier.
+ * @param {string} orgNo Organization number.
+ * @param {string} externalRef External reference.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponse|null} Request response.
+ * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
-export function CreateRequestSystemUser(
+export function RequestSystemUserVendorAgentGetByExternalRef(
     requestSystemUserClient,
-    request,
+    systemId,
+    orgNo,
+    externalRef,
     labels = null,
 ) {
-    const res = requestSystemUserClient.CreateRequestSystemUser(
-        request,
+    const res = requestSystemUserClient.RequestSystemUserVendorAgentGetByExternalRef(
+        systemId,
+        orgNo,
+        externalRef,
         labels,
     );
 
-    /** @type {RequestSystemResponse|null} */
+    /** @type {AgentRequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "CreateRequestSystemUser - status code is 200": (r) =>
+        "RequestSystemUserVendorAgentGetByExternalRef - status code is 200": (r) =>
             r.status === 200,
-        "CreateRequestSystemUser - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorAgentGetByExternalRef - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +43,7 @@ export function CreateRequestSystemUser(
     }
 
     check(res, {
-        "CreateRequestSystemUser - body is valid": (r) => {
+        "RequestSystemUserVendorAgentGetByExternalRef - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

@@ -10,12 +10,12 @@ import { RequestSystemUserClient } from "../../../../../clients/authentication/v
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
-export function CreateAgentRequestSystemUser(
+export function RequestSystemUserVendorAgentCreate(
     requestSystemUserClient,
     request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.CreateAgentRequestSystemUser(
+    const res = requestSystemUserClient.RequestSystemUserVendorAgentCreate(
         request,
         labels,
     );
@@ -24,10 +24,10 @@ export function CreateAgentRequestSystemUser(
     let requestResponse = null;
 
     const succeed = check(res, {
-        "CreateAgentRequestSystemUser - status code is 200": (r) =>
-            r.status === 200,
-        "CreateAgentRequestSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "RequestSystemUserVendorAgentCreate - status code is 201": (r) =>
+            r.status === 201,
+        "RequestSystemUserVendorAgentCreate - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
 
     if (!succeed) {
@@ -37,7 +37,7 @@ export function CreateAgentRequestSystemUser(
     }
 
     check(res, {
-        "CreateAgentRequestSystemUser - body is valid": (r) => {
+        "RequestSystemUserVendorAgentCreate - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

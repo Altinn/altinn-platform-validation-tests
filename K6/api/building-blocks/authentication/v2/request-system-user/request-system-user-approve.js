@@ -3,43 +3,44 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves a system user request by id.
+ * Approves a system user request.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
+ * @param {string} partyId Party the request was made for.
  * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponse|null} Request response.
+ * @returns {boolean} Whether the request was approved.
  */
-export function GetRequestSystemUser(
+export function RequestSystemUserApprove(
     requestSystemUserClient,
+    partyId,
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.GetRequestSystemUser(
+    const res = requestSystemUserClient.RequestSystemUserApprove(
+        partyId,
         requestId,
         labels,
     );
 
-    /** @type {RequestSystemResponse|null} */
-    let requestResponse = null;
-
     const succeed = check(res, {
-        "GetRequestSystemUser - status code is 200": (r) =>
-            r.status === 200,
-        "GetRequestSystemUser - status text is 200 OK": (r) =>
+        "RequestSystemUserApprove - status code is 200": (r) => r.status === 200,
+        "RequestSystemUserApprove - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return requestResponse;
+        return false;
     }
 
+    let approved = false;
+
     check(res, {
-        "GetRequestSystemUser - body is valid": (r) => {
+        "RequestSystemUserApprove - body is valid": (r) => {
             try {
-                requestResponse = JSON.parse(r.body);
+                approved = JSON.parse(r.body) === true;
 
                 return true;
             } catch (err) {
@@ -51,5 +52,5 @@ export function GetRequestSystemUser(
         },
     });
 
-    return requestResponse;
+    return approved;
 }
