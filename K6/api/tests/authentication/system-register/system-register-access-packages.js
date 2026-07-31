@@ -75,9 +75,6 @@ export default async function () {
             "nb": "Integrasjonstest. Noe er randomisert her, men mye blir likt.",
             "nn": "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt."
         })
-        // Access packages are what this test is about, but the register wants a rights
-        // array, and the builder leaves it null unless it is set.
-        // .withRights([])
         .withAccessPackages(accessPackages.map((accessPackage) => accessPackage.urn))
         .build();
 
@@ -91,27 +88,36 @@ export default async function () {
     ];
 
     group("System Register Access Packages", function () {
-        // POST /vendor - register a system with one access package
-        SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+        group("Register a system with one access package", function () {
+            // POST /vendor
+            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+        });
 
-        // GET /{systemId}/accesspackages - as consumers see them, not the vendor
-        // view, so these reads go on the enduser token
-        const registeredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
+        group("An end user gets the access packages of the system", function () {
+            // GET /{systemId}/accesspackages - as consumers see them, not the vendor
+            // view, so this read goes on the enduser token
+            const registeredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
+            SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
+        });
 
-        // PUT /vendor/{systemId}/accesspackages - replaces the whole set
-        const updateResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
+        group("Replace the access packages on the system", function () {
+            const updateResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdateAccessPackages");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdateAccessPackages");
 
-        const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
+            const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
+            SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
+        });
 
-        // DELETE /vendor/{systemId} - removes the system and cleans up after the run
-        const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+        group("Delete the system", function () {
+            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+        });
     });
 }
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../common-imports.js";

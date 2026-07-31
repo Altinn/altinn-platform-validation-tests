@@ -114,70 +114,80 @@ export default async function () {
         { "urn": "urn:altinn:accesspackage:krav-og-utlegg" },
     ];
 
-    group("System Register CRUD Operations", function () {
-        // POST /vendor - register the system
-        SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+    group("Integration Tests for System Register CRUD Operations as a System Vendor (Visma, Tripletex etc)", function () {
+        group("Register a new system", function () {
+            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+        });
 
-        // GET /vendor - the new system shows up in the vendor's listing
-        const vendorSystems = SystemRegister.VendorGet(systemRegisterClient);
+        group("Make sure the system is registered", function () {
+            const vendorSystems = SystemRegister.VendorGet(systemRegisterClient);
 
-        SystemRegisterDomainChecks.CheckSystemId(vendorSystems, systemId);
+            SystemRegisterDomainChecks.CheckSystemId(vendorSystems, systemId);
 
-        // GET /vendor/{systemId} - and can be read on its own
-        const registeredSystemResponse = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const registeredSystemResponse = SystemRegister.VendorGetById(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckSystemIdInVendorGetById(registeredSystemResponse, systemId);
+            SystemRegisterDomainChecks.CheckSystemIdInVendorGetById(registeredSystemResponse, systemId);
+        });
 
-        // PUT /vendor/{systemId} - update the system itself, here the description
-        const updateResult = SystemRegister.VendorUpdate(systemRegisterClient, systemId, updatedRequestBody);
+        group("Update the system", function () {
+            const updateResult = SystemRegister.VendorUpdate(systemRegisterClient, systemId, updatedRequestBody);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdate");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdate");
 
-        const updatedSystem = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const updatedSystem = SystemRegister.VendorGetById(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckSystemDescription(updatedSystem, updatedDescription);
+            SystemRegisterDomainChecks.CheckSystemDescription(updatedSystem, updatedDescription);
+        });
 
-        // PUT /vendor/{systemId}/rights - replaces the rights on the system
-        const updateRightsResult = SystemRegister.VendorUpdateRights(systemRegisterClient, systemId, updatedRights);
+        group("Replace the rights on the system", function () {
+            const updateRightsResult = SystemRegister.VendorUpdateRights(systemRegisterClient, systemId, updatedRights);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "VendorUpdateRights");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "VendorUpdateRights");
 
-        const systemWithUpdatedRights = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const systemWithUpdatedRights = SystemRegister.VendorGetById(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckSystemRights(systemWithUpdatedRights, updatedRights);
+            SystemRegisterDomainChecks.CheckSystemRights(systemWithUpdatedRights, updatedRights);
+        });
 
-        // PUT /vendor/{systemId}/accesspackages - replaces the access packages
-        const updateAccessPackagesResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
+        group("Replace the access packages on the system", function () {
+            const updateAccessPackagesResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "VendorUpdateAccessPackages");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "VendorUpdateAccessPackages");
 
-        const systemWithUpdatedAccessPackages = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const systemWithUpdatedAccessPackages = SystemRegister.VendorGetById(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckSystemAccessPackages(systemWithUpdatedAccessPackages, updatedAccessPackages);
+            SystemRegisterDomainChecks.CheckSystemAccessPackages(systemWithUpdatedAccessPackages, updatedAccessPackages);
+        });
 
-        // DELETE /vendor/{systemId} - removes the system and cleans up after the run
-        const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+        group("Delete the system", function () {
+            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+        });
 
-        // A deleted system is still readable by id, only flagged as deleted. The
-        // non-vendor endpoint returns 200 either way, so it cannot tell us this.
-        const deletedSystem = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+        group("The deleted system is gone", function () {
+            const deletedSystem = SystemRegister.VendorGetById(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckSystemIsDeleted(deletedSystem);
+            SystemRegisterDomainChecks.CheckSystemIsDeleted(deletedSystem);
 
-        const remainingVendorSystems = SystemRegister.VendorGet(systemRegisterClient);
+            const remainingVendorSystems = SystemRegister.VendorGet(systemRegisterClient);
 
-        SystemRegisterDomainChecks.CheckSystemIdIsAbsent(remainingVendorSystems, systemId);
+            SystemRegisterDomainChecks.CheckSystemIdIsAbsent(remainingVendorSystems, systemId);
+        });
 
-        const changeLog = SystemRegister.VendorGetChangeLog(systemRegisterClient, systemId);
+        group("Every change was written to the change log", function () {
+            const changeLog = SystemRegister.VendorGetChangeLog(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckSystemChangeLog(changeLog, [
-            "create",
-            "update",
-            "rightsupdate",
-            "accesspackageupdate",
-            "delete",
-        ]);
+            SystemRegisterDomainChecks.CheckSystemChangeLog(changeLog, [
+                "create",
+                "update",
+                "rightsupdate",
+                "accesspackageupdate",
+                "delete",
+            ]);
+        });
     });
 }
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../common-imports.js";

@@ -96,18 +96,26 @@ export default async function () {
         .build();
 
     group("System Register Rights", function () {
-        // POST /vendor - register a system with two rights
-        SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+        group("Register a system with two rights", function () {
+            // POST /vendor
+            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+        });
 
-        // GET /{systemId}/rights - the rights as consumers see them, not the vendor
-        // view, so this one goes on the enduser token
-        const registeredRights = SystemRegister.GetRights(enduserSystemRegisterClient, systemId);
+        group("An end user gets the rights of the system", function () {
+            // GET /{systemId}/rights - the rights as consumers see them, not the
+            // vendor view, so this one goes on the enduser token
+            const registeredRights = SystemRegister.GetRights(enduserSystemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
+            SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
+        });
 
-        // DELETE /vendor/{systemId} - removes the system and cleans up after the run
-        const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+        group("Delete the system", function () {
+            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
 
-        SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+        });
     });
 }
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../common-imports.js";
