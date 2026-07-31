@@ -1,9 +1,10 @@
 
-import { AuthorizedPartiesClient } from "../../../../../clients/authorization/index.js";
+import { AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties-request.builder.js";
+import { AuthorizedPartiesClient, AuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { GetAuthorizedParties } from "../../../../building-blocks/authorization/authorized-parties/index.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { endUserLabels, endUsers } from "./end-users.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
@@ -79,18 +80,21 @@ function getClients() {
 export default function () {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(endUsers, randomize);
-    const randomizeOrgCodes = true;
-    const queryParams = {
-        includeAltinn3: "true",
-        includeAltinn2: "true",
-        includeAccessPackages: "true",
-        orgCode: getItemFromList(orgCodes, randomizeOrgCodes),
-    };
+
+    const request = new AuthorizedPartiesRequestBuilder()
+        .withPerson(userParty.pid)
+        .build();
+
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn3(true)
+        .includeAltinn2(true)
+        .includeAccessPackages(true)
+        .withOrgCode(getItemFromList(orgCodes, true))
+        .build();
 
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:person:identifier-no",
-        userParty.pid,
+        request,
         queryParams,
         null,
         { unique_id: userParty.label },
