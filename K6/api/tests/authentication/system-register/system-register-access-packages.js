@@ -27,7 +27,7 @@ function defaultObject() {
     return [name, allowedRedirectUrls, clientId, vendorId, systemId, description, [], accessPackages]; // [] would be rights, which I removed here
 }
 
-export default function () {
+export default async function () {
     const scopes = CreateScopeString([
         AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
         AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
@@ -42,13 +42,16 @@ export default function () {
     const tokenGenerator
         = new MaskinportenAccessTokenGenerator(options);
 
+    // Signing the grant goes through SubtleCrypto, so the token has to be fetched
+    // before the client starts asking for it.
+    await tokenGenerator.prepare();
+
     const systemRegisterClient
         = new SystemRegisterApiClient(__ENV.BASE_URL, tokenGenerator);
 
     const [name, allowedRedirectUrls, clientId, vendorId, systemId, description, rights, accessPackages] = defaultObject();
 
     group("System Register Access Packages Workflow", function () {
-        console.log("CreateNewSystem");
         let res = CreateNewSystem(systemRegisterClient, vendorId, name, clientId, description, rights, allowedRedirectUrls, accessPackages);
         check(res, {
             "CreateNewSystem - Creating a new System returns an ID": (r) => {
@@ -83,7 +86,6 @@ export default function () {
             }
         });
 
-        console.log("DeleteSystem");
         res = DeleteSystem(systemRegisterClient, systemId);
         check(res, {
             "DeleteSystem - Body contains succeeded: true": (r) => {

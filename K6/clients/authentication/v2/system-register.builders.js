@@ -1,5 +1,3 @@
-import { AccessPackage } from "../../../clients/authentication/v2/types.js";
-
 class RegisterSystemRequestBuilder {
     constructor() {
         /** @type {RegisterSystemRequest} */

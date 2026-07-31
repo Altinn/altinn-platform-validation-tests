@@ -65,6 +65,11 @@ class SystemRegisterClient {
     /**
      * Retrieves all registered systems.
      *
+     * Requires the `altinn:portal/enduser` scope. This is the listing the frontend
+     * uses; to list the systems belonging to a vendor, use
+     * {@link SystemRegisterClient#SystemRegisterVendorGet} instead, which goes on the
+     * systemregister scopes the rest of this client uses.
+     *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
@@ -138,11 +143,10 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-     SystemRegisterVendorCreate(request, labels = null) {
+    SystemRegisterVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor`;
-        console.log(url);
 
         let tags = {
             endpoint: url,

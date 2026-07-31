@@ -36,7 +36,7 @@ export function setup() {
     }
 }
 
-export default function () {
+export default async function () {
     const ORG = "ttd";
     // Maskinporten takes the requested scopes space-separated in the grant.
     const scopes = CreateScopeString[
@@ -71,12 +71,16 @@ export default function () {
         });
     });
 
-    group("Maskinporten token", () => {
-        const generator = new MaskinportenAccessTokenGenerator(
-            new MaskinportenTokenBuilder().withScopes(scopes).build(),
-        );
+    const maskinportenGenerator = new MaskinportenAccessTokenGenerator(
+        new MaskinportenTokenBuilder().withScopes(scopes).build(),
+    );
 
-        check(generator.getToken(), {
+    // Awaited outside the group; the grant is signed with SubtleCrypto, and group()
+    // takes a synchronous callback.
+    await maskinportenGenerator.prepare();
+
+    group("Maskinporten token", () => {
+        check(maskinportenGenerator.getToken(), {
             "got a maskinporten token": (token) => token.length > 0,
         });
     });
