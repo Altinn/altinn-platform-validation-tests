@@ -16,7 +16,7 @@
  * Pagination: cursor based, exposed as a `links.next` URL carrying an opaque
  * `continuationToken`; the page size is server-controlled (not configurable).
  * Response shape: { "links": { "next": <url|null> }, "data": [ ... ] }.
- * Requires an org token with scope ConsentScope.READ.
+ * Requires an org token with scope AltinnScopes.CONSENTREQUESTS.READ.
  * Docs {@link https://docs.altinn.studio/en/authorization/guides/system-vendor/consent/events/}
  */
 
@@ -29,7 +29,7 @@ import {
 import { randomItem } from "../../../../common-imports.js";
 import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../helpers.js";
-import { ConsentScope } from "../../../../scopes.js";
+import { AltinnScopes } from "../../../../scopes.js";
 import { GetConsentRequestEvents } from "../../../building-blocks/authentication/consent/index.js";
 import {
     extractNextUrl,
@@ -71,7 +71,7 @@ let tokenGenerator = undefined;
 function getClients() {
     if (consentApiClient == undefined) {
         tokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, ConsentScope.READ)
+            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, AltinnScopes.CONSENTREQUESTS.READ)
         );
 
         consentApiClient = new ConsentApiClient(
@@ -94,7 +94,7 @@ export default function (orgs) {
     // Pick a random organization from the list that holds the generated consents.
     const org = randomItem(orgs);
     tokenGenerator.setTokenGeneratorOptions(
-        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, ConsentScope.READ)
+        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, AltinnScopes.CONSENTREQUESTS.READ)
     );
 
     // No query parameters: walk every page of events for the organization.
