@@ -45,28 +45,34 @@ export default async function () {
         AltinnScopes.CONSENTREQUESTS.WRITE
     ];
 
-    group("Platform token", () => {
-        const generator = new PlatformTokenGenerator(
-            new PlatformTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .build(),
-        );
+    // Every generator is prepared the same way, and prepare is awaited outside the
+    // groups since group() takes a synchronous callback.
+    const platformGenerator = new PlatformTokenGenerator(
+        new PlatformTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .build(),
+    );
 
-        check(generator.getToken(), {
+    await platformGenerator.prepare();
+
+    group("Platform token", () => {
+        check(platformGenerator.getToken(), {
             "got a platform token": (token) => token.length > 0,
         });
     });
 
-    group("Enterprise token", () => {
-        const generator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withOrganization(ORG)
-                .withScopes(scopes)
-                .build(),
-        );
+    const enterpriseGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withOrganization(ORG)
+            .withScopes(scopes)
+            .build(),
+    );
 
-        check(generator.getToken(), {
+    await enterpriseGenerator.prepare();
+
+    group("Enterprise token", () => {
+        check(enterpriseGenerator.getToken(), {
             "got an enterprise token": (token) => token.length > 0,
         });
     });
@@ -75,8 +81,6 @@ export default async function () {
         new MaskinportenTokenBuilder().withScopes(scopes).build(),
     );
 
-    // Awaited outside the group; the grant is signed with SubtleCrypto, and group()
-    // takes a synchronous callback.
     await maskinportenGenerator.prepare();
 
     group("Maskinporten token", () => {

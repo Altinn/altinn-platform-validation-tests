@@ -102,16 +102,14 @@ function CheckSystemDescription(registeredSystemResponse, expectedDescription) {
 }
 
 /**
- * Checks that the rights on a system contain all the expected rights.
+ * Compares two lists of rights on action and resource values, since the API may
+ * return additional or reordered fields.
  *
- * Rights are compared on action and resource values, since the API may return
- * additional or reordered fields.
- *
- * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
- * @param {Right[]} expectedRights - The rights the system is expected to have.
- * @returns {boolean} True if all expected rights are present, false otherwise.
+ * @param {Right[]} rights - The rights returned by the API.
+ * @param {Right[]} expectedRights - The rights expected.
+ * @returns {Right[]} The expected rights that are missing from the returned ones.
  */
-function CheckSystemRights(registeredSystemResponse, expectedRights) {
+function missingRights(rights, expectedRights) {
     const rightKey = (right) => {
         const resources = (right.resource ?? [])
             .map((resource) => `${resource.id}:${resource.value}`)
@@ -120,19 +118,66 @@ function CheckSystemRights(registeredSystemResponse, expectedRights) {
         return `${right.action ?? ""}|${resources.join(",")}`;
     };
 
+    const actualKeys = (rights ?? []).map(rightKey);
+
+    return expectedRights.filter((right) => !actualKeys.includes(rightKey(right)));
+}
+
+/**
+ * Returns the sorted urns of a list of access packages.
+ *
+ * @param {AccessPackage[]} accessPackages - The access packages to read urns from.
+ * @returns {string[]} The urns, sorted.
+ */
+function accessPackageUrns(accessPackages) {
+    return (accessPackages ?? [])
+        .map((accessPackage) => accessPackage.urn)
+        .sort();
+}
+
+/**
+ * Checks that the rights on a system contain all the expected rights.
+ *
+ * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
+ * @param {Right[]} expectedRights - The rights the system is expected to have.
+ * @returns {boolean} True if all expected rights are present, false otherwise.
+ */
+function CheckSystemRights(registeredSystemResponse, expectedRights) {
     const actualRights = registeredSystemResponse?.rights ?? [];
-    const actualKeys = actualRights.map(rightKey);
-    const missingRights = expectedRights.filter(
-        (right) => !actualKeys.includes(rightKey(right)),
-    );
+    const missing = missingRights(actualRights, expectedRights);
 
     const success = check(registeredSystemResponse, {
-        "CheckSystemRights - System has all expected rights": () => missingRights.length === 0,
+        "CheckSystemRights - System has all expected rights": () => missing.length === 0,
     });
 
     if (!success) {
-        console.error(`CheckSystemRights - missing rights: ${JSON.stringify(missingRights)}`);
+        console.error(`CheckSystemRights - missing rights: ${JSON.stringify(missing)}`);
         console.error(`CheckSystemRights - rights returned: ${JSON.stringify(actualRights)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that a list of rights contains all the expected rights.
+ *
+ * For the `/{systemId}/rights` endpoint, which returns the rights on their own rather
+ * than as part of a system.
+ *
+ * @param {Right[]} rights - The rights returned by the API.
+ * @param {Right[]} expectedRights - The rights expected.
+ * @returns {boolean} True if all expected rights are present, false otherwise.
+ */
+function CheckRights(rights, expectedRights) {
+    const missing = missingRights(rights, expectedRights);
+
+    const success = check(rights, {
+        "CheckRights - All expected rights are returned": () => missing.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckRights - missing rights: ${JSON.stringify(missing)}`);
+        console.error(`CheckRights - rights returned: ${JSON.stringify(rights)}`);
     }
 
     return success;
@@ -146,12 +191,8 @@ function CheckSystemRights(registeredSystemResponse, expectedRights) {
  * @returns {boolean} True if the access packages match, false otherwise.
  */
 function CheckSystemAccessPackages(registeredSystemResponse, expectedAccessPackages) {
-    const urns = (accessPackages) => (accessPackages ?? [])
-        .map((accessPackage) => accessPackage.urn)
-        .sort();
-
-    const expectedUrns = urns(expectedAccessPackages);
-    const actualUrns = urns(registeredSystemResponse?.accessPackages);
+    const expectedUrns = accessPackageUrns(expectedAccessPackages);
+    const actualUrns = accessPackageUrns(registeredSystemResponse?.accessPackages);
 
     const success = check(registeredSystemResponse, {
         "CheckSystemAccessPackages - System has the expected access packages": () =>
@@ -162,6 +203,34 @@ function CheckSystemAccessPackages(registeredSystemResponse, expectedAccessPacka
     if (!success) {
         console.error(`CheckSystemAccessPackages - expected urns: ${JSON.stringify(expectedUrns)}`);
         console.error(`CheckSystemAccessPackages - got urns: ${JSON.stringify(actualUrns)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that a list of access packages is exactly the expected one.
+ *
+ * For the `/{systemId}/accesspackages` endpoint, which returns the access packages on
+ * their own rather than as part of a system.
+ *
+ * @param {AccessPackage[]} accessPackages - The access packages returned by the API.
+ * @param {AccessPackage[]} expectedAccessPackages - The access packages expected.
+ * @returns {boolean} True if the access packages match, false otherwise.
+ */
+function CheckAccessPackages(accessPackages, expectedAccessPackages) {
+    const expectedUrns = accessPackageUrns(expectedAccessPackages);
+    const actualUrns = accessPackageUrns(accessPackages);
+
+    const success = check(accessPackages, {
+        "CheckAccessPackages - The expected access packages are returned": () =>
+            expectedUrns.length === actualUrns.length &&
+            expectedUrns.every((urn, index) => urn === actualUrns[index]),
+    });
+
+    if (!success) {
+        console.error(`CheckAccessPackages - expected urns: ${JSON.stringify(expectedUrns)}`);
+        console.error(`CheckAccessPackages - got urns: ${JSON.stringify(actualUrns)}`);
     }
 
     return success;
@@ -255,5 +324,7 @@ export const SystemRegisterDomainChecks = {
     CheckUpdateSucceeded,
     CheckSystemDescription,
     CheckSystemRights,
+    CheckRights,
     CheckSystemAccessPackages,
+    CheckAccessPackages,
 };

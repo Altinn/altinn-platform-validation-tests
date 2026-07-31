@@ -92,6 +92,21 @@ class BaseTokenGenerator {
     }
 
     /**
+     * Makes sure a token is available to {@link getToken}.
+     *
+     * These generators fetch on demand, so this only warms the cache. It exists so
+     * every generator can be prepared the same way, no matter whether fetching its
+     * token happens to be asynchronous. See MaskinportenAccessTokenGenerator, which
+     * signs its grant with SubtleCrypto and has no synchronous path.
+     *
+     * @returns {Promise<string>} The token, as returned by the endpoint.
+     * @throws {Error} If the endpoint does not answer 200.
+     */
+    async prepare() {
+        return this.getToken();
+    }
+
+    /**
      * Returns a token for the current options, cached per option set.
      *
      * @returns {string} The token, as returned by the endpoint.
