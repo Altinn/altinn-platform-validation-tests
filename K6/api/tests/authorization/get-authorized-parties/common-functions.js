@@ -1,9 +1,10 @@
 import http from "k6/http";
 
-import { AuthorizedPartiesClient } from "../../../../clients/authorization/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../common-imports.js";
+import { AuthorizedPartiesClient } from "../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * @type {AuthorizedPartiesClient | undefined}
@@ -22,11 +23,15 @@ let authorizedPartiesClient = undefined;
  * @returns {[AuthorizedPartiesClient]} The initialized API client.
  */
 export function getClients() {
+    const scopes = CreateScopeString([
+        AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.RESOURCEOWNER
+    ]);
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.resourceowner");
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
 

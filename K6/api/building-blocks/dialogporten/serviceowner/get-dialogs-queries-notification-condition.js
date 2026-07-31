@@ -9,7 +9,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param { string } activityType TODO: description
  * @param { string } transmissionId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns (string | ArrayBuffer | null)
+ * @returns {V1ServiceOwnerDialogsQueriesNotificationCondition_NotificationCondition|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogsQueriesNotificationCondition(
     serviceOwnerApiClient,
@@ -27,18 +27,34 @@ export function GetDialogsQueriesNotificationCondition(
         labels
     );
 
+    /** @type {V1ServiceOwnerDialogsQueriesNotificationCondition_NotificationCondition|null} */
+    let notificationCondition = null;
+
     const success = check(res, {
         "GetDialogsQueriesNotificationCondition - status code MUST be 200": (res) => res.status == 200,
-        "GetDialogsQueriesNotificationCondition - body is not empty": (r) => {
-            const res_body = JSON.parse(r.body);
-            return res_body !== null && res_body !== undefined;
-        }
     });
 
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return notificationCondition;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogsQueriesNotificationCondition - body is not empty": (r) => {
+            try {
+                notificationCondition = JSON.parse(r.body);
+
+                return notificationCondition !== null && notificationCondition !== undefined;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return notificationCondition;
 }

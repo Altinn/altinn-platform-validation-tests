@@ -11,7 +11,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * @param {string} serviceOwner - the service owner for the dialog. an organization nunber (9 digits)
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @param noTransmissionsActivities TODO: description
- * @returns response body of the request
+ * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateDialog(
     serviceOwnerApiClient,
@@ -29,6 +29,9 @@ export function CreateDialog(
         noTransmissionsActivities,
     );
 
+    /** @type {string|null} */
+    let dialogId = null;
+
     const success = check(res, {
         "CreateDialog - status code MUST be 201": (res) => res.status == 201,
     });
@@ -36,9 +39,26 @@ export function CreateDialog(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return dialogId;
     }
 
-    return res.body;
+    check(res, {
+        "CreateDialog - body is valid": (r) => {
+            try {
+                dialogId = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return dialogId;
 }
 
 /**
@@ -47,7 +67,7 @@ export function CreateDialog(
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns response body of the request
+ * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateTransmission(
     serviceOwnerApiClient,
@@ -59,6 +79,9 @@ export function CreateTransmission(
         labels,
     );
 
+    /** @type {string|null} */
+    let transmissionId = null;
+
     const success = check(res, {
         "CreateTransmission - status code MUST be 201": (res) => res.status == 201,
     });
@@ -66,9 +89,26 @@ export function CreateTransmission(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return transmissionId;
     }
 
-    return res.body;
+    check(res, {
+        "CreateTransmission - body is valid": (r) => {
+            try {
+                transmissionId = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return transmissionId;
 }
 
 /**
@@ -77,7 +117,7 @@ export function CreateTransmission(
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {uuidv7} dialogId - the id of the dialog to create the activity for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns TODO: description
+ * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateActivity(
     serviceOwnerApiClient,
@@ -89,6 +129,9 @@ export function CreateActivity(
         labels,
     );
 
+    /** @type {string|null} */
+    let activityId = null;
+
     const success = check(res, {
         "CreateActivity - status code MUST be 201": (res) => res.status == 201,
     });
@@ -96,7 +139,24 @@ export function CreateActivity(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return activityId;
     }
 
-    return res.body;
+    check(res, {
+        "CreateActivity - body is valid": (r) => {
+            try {
+                activityId = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return activityId;
 }

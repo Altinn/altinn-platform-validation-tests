@@ -158,7 +158,7 @@ export default function (data) {
             false,
             `Dialog created for instance delegation test with resource ${resource}`,
         );
-        dialogId = JSON.parse(resp);
+        dialogId = resp;
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));

@@ -8,7 +8,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get transmissions for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns response body of the request
+ * @returns {V1EndUserDialogsQueriesSearchTransmissions_Transmission[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogTransmissions(
     enduserApiClient,
@@ -20,6 +20,9 @@ export function GetDialogTransmissions(
         labels,
     );
 
+    /** @type {V1EndUserDialogsQueriesSearchTransmissions_Transmission[]} */
+    let transmissions = [];
+
     const success = check(res, {
         "GetDialogTransmissions - status code MUST be 200": (res) => res.status == 200,
     });
@@ -27,9 +30,26 @@ export function GetDialogTransmissions(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return transmissions;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogTransmissions - body is valid": (r) => {
+            try {
+                transmissions = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return transmissions;
 }
 
 /**
@@ -40,7 +60,7 @@ export function GetDialogTransmissions(
  * param {string} transmissionId - id of the transmission to get
  * @param transmissionId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns response body of the request
+ * @returns {V1EndUserDialogsQueriesGetTransmission_Transmission|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogTransmission(
     enduserApiClient,
@@ -54,6 +74,9 @@ export function GetDialogTransmission(
         labels,
     );
 
+    /** @type {V1EndUserDialogsQueriesGetTransmission_Transmission|null} */
+    let transmission = null;
+
     const success = check(res, {
         "GetDialogTransmission - status code MUST be 200": (res) => res.status == 200,
     });
@@ -61,7 +84,24 @@ export function GetDialogTransmission(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return transmission;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogTransmission - body is valid": (r) => {
+            try {
+                transmission = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return transmission;
 }

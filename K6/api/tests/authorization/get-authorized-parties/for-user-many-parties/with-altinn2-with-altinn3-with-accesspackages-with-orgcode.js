@@ -1,8 +1,10 @@
 
-import { AuthorizedPartiesClient } from "../../../../../clients/authorization/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions } from "../../../../../common-imports.js";
+import { AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties-request.builder.js";
+import { AuthorizedPartiesClient, AuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
-import { GetAuthorizedParties } from "../../../../building-blocks/authorization/authorized-parties/index.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { endUserLabels, endUsers } from "./end-users.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "false") === "true";
@@ -55,10 +57,14 @@ export function setup() {
  */
 function getClients() {
     if (authorizedPartiesClient == undefined) {
-        const tokenOpts = new EnterpriseTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:accessmanagement/authorizedparties.admin");
+        const scopes = CreateScopeString([
+            AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.ADMIN
+        ]);
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
 
@@ -74,18 +80,21 @@ function getClients() {
 export default function () {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(endUsers, randomize);
-    const randomizeOrgCodes = true;
-    const queryParams = {
-        includeAltinn3: "true",
-        includeAltinn2: "true",
-        includeAccessPackages: "true",
-        orgCode: getItemFromList(orgCodes, randomizeOrgCodes),
-    };
+
+    const request = new AuthorizedPartiesRequestBuilder()
+        .withPerson(userParty.pid)
+        .build();
+
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn3(true)
+        .includeAltinn2(true)
+        .includeAccessPackages(true)
+        .withOrgCode(getItemFromList(orgCodes, true))
+        .build();
 
     GetAuthorizedParties(
         authorizedPartiesClient,
-        "urn:altinn:person:identifier-no",
-        userParty.pid,
+        request,
         queryParams,
         null,
         { unique_id: userParty.label },

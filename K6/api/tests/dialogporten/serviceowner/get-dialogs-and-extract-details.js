@@ -51,11 +51,11 @@ export default function (data) {
         queryParams,
         getDialogslabel,
     );
-    drilldown(serviceOwnerApiClient, JSON.parse(res));
+    drilldown(serviceOwnerApiClient, res);
 }
 
 function drilldown(serviceOwnerApiClient, dialogs) {
-    if (!dialogs.items?.length) {
+    if (!dialogs?.items?.length) {
         console.log("No dialogs found, skipping GetDialog");
         return;
     }
@@ -76,12 +76,11 @@ function drilldown(serviceOwnerApiClient, dialogs) {
 }
 
 function getActivities(serviceOwnerApiClient, dialogId) {
-    const res = GetDialogActivities(
+    const activities = GetDialogActivities(
         serviceOwnerApiClient,
         dialogId,
         getDialogActivitiesLabel,
     );
-    const activities = JSON.parse(res);
     if (activities.length > 0) {
         GetDialogActivity(
             serviceOwnerApiClient,
@@ -93,12 +92,11 @@ function getActivities(serviceOwnerApiClient, dialogId) {
 }
 
 function getTransmissions(serviceOwnerApiClient, dialogId) {
-    const res = GetDialogTransmissions(
+    const transmissions = GetDialogTransmissions(
         serviceOwnerApiClient,
         dialogId,
         getDialogTransmissionsLabel,
     );
-    const transmissions = JSON.parse(res);
     if (transmissions.length > 0) {
         GetDialogTransmission(
             serviceOwnerApiClient,
@@ -110,12 +108,11 @@ function getTransmissions(serviceOwnerApiClient, dialogId) {
 }
 
 function getSeenLogs(serviceOwnerApiClient, dialogId) {
-    const res = GetDialogSeenLogs(
+    const seenLogs = GetDialogSeenLogs(
         serviceOwnerApiClient,
         dialogId,
         getDialogSeenLogsLabel,
     );
-    const seenLogs = JSON.parse(res);
     if (seenLogs.length > 0) {
         GetDialogSeenLog(
             serviceOwnerApiClient,
