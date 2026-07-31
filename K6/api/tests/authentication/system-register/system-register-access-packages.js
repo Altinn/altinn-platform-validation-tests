@@ -83,11 +83,11 @@ export default async function () {
 
     // Disjoint from the set above, so the check also catches an update that adds to
     // the access packages instead of replacing them. The register rejects packages it
-    // does not know or that are not delegable, so these are kept to ones in use by the
-    // other system register tests.
+    // does not know or that are not delegable.
     const updatedAccessPackages = [
         { "urn": "urn:altinn:accesspackage:forretningsforer-eiendom" },
         { "urn": "urn:altinn:accesspackage:jordbruk" },
+        { "urn": "urn:altinn:accesspackage:sjofart" },
     ];
 
     group("System Register Access Packages", function () {
