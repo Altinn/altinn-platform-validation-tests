@@ -6,7 +6,7 @@ import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } fr
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemRegisterDomainChecks } from "../../../domain-checks/system-register.js";
+import { SystemRegisterDomainChecks } from "../../../domain-checks/authentication/system-register.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);

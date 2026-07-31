@@ -18,8 +18,8 @@ import { ChangeRequestSystemUser } from "../../../building-blocks/authentication
 import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
 import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
 import { SystemUser } from "../../../building-blocks/authentication/v2/system-user/index.js";
-import { ChangeRequestSystemUserDomainChecks } from "../../../domain-checks/change-request-system-user.js";
-import { SystemUserRequestDomainChecks } from "../../../domain-checks/system-user-request.js";
+import { ChangeRequestSystemUserDomainChecks } from "../../../domain-checks/authentication/change-request-system-user.js";
+import { SystemUserRequestDomainChecks } from "../../../domain-checks/authentication/system-user-request.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

@@ -1,0 +1,99 @@
+import { check } from "k6";
+
+/**
+ * Checks that a paginated response has the fields the pagination relies on.
+ *
+ * @param {{data: unknown[], links: object}} paginated - The paginated response.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if the response is shaped as expected, false otherwise.
+ */
+function CheckPaginatedShape(paginated, operation) {
+    const success = check(paginated, {
+        [`CheckPaginatedShape - ${operation} returns data and links`]: (response) => {
+            return response !== null &&
+                Array.isArray(response.data) &&
+                response.links !== null &&
+                response.links !== undefined;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckPaginatedShape - ${operation} response was not shaped as expected: ${JSON.stringify(paginated)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that a paginated response holds at least one item.
+ *
+ * @param {{data: unknown[]}} paginated - The paginated response.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if the response holds items, false otherwise.
+ */
+function CheckPaginatedNotEmpty(paginated, operation) {
+    const success = check(paginated, {
+        [`CheckPaginatedNotEmpty - ${operation} returns at least one item`]: (response) => {
+            return Array.isArray(response?.data) && response.data.length > 0;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckPaginatedNotEmpty - ${operation} returned no items, so there is nothing to page through`);
+        console.error(`CheckPaginatedNotEmpty - response: ${JSON.stringify(paginated)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that more than the first page was returned.
+ *
+ * @param {number} pages - Number of pages fetched, including the first one.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if more than one page was returned, false otherwise.
+ */
+function CheckMultiplePages(pages, operation) {
+    const success = check(pages, {
+        [`CheckMultiplePages - ${operation} returns more than one page`]: (count) => count > 1,
+    });
+
+    if (!success) {
+        console.error(`CheckMultiplePages - ${operation} returned ${pages} page(s), expected more than one`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that every item in a paginated response belongs to the system that was asked
+ * for. Works for anything keyed on `systemId`, such as system users and their requests.
+ *
+ * @param {{data: Array<{systemId: string}>}} paginated - The paginated response.
+ * @param {string} expectedSystemId - The system the items were asked for.
+ * @param {string} itemName - What the items are, used in the check name and logs.
+ * @returns {boolean} True if every item belongs to the system, false otherwise.
+ */
+function CheckItemsBelongToSystem(paginated, expectedSystemId, itemName) {
+    const items = paginated?.data ?? [];
+    const foreign = items.filter((item) => item.systemId !== expectedSystemId);
+
+    const success = check(paginated, {
+        [`CheckItemsBelongToSystem - Every ${itemName} belongs to the expected system`]: () =>
+            items.length > 0 && foreign.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckItemsBelongToSystem - expected every ${itemName} to have systemId '${expectedSystemId}'`);
+        console.error(`CheckItemsBelongToSystem - system ids for other systems: ${JSON.stringify(foreign.map((item) => item.systemId))}`);
+    }
+
+    return success;
+}
+
+export const PaginationDomainChecks = {
+    CheckPaginatedShape,
+    CheckPaginatedNotEmpty,
+    CheckMultiplePages,
+    CheckItemsBelongToSystem,
+};

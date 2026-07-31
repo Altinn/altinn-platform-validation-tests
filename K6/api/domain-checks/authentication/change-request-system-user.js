@@ -1,28 +1,7 @@
 import { check } from "k6";
 
-import { ChangeRequestResponse } from "../../clients/authentication/v2/types.js";
-
-/**
- * Compares two lists of rights on action and resource values, since the API may
- * return additional or reordered fields.
- *
- * @param {Right[]} rights - The rights returned by the API.
- * @param {Right[]} expectedRights - The rights expected.
- * @returns {Right[]} The expected rights that are missing from the returned ones.
- */
-function missingRights(rights, expectedRights) {
-    const rightKey = (right) => {
-        const resources = (right.resource ?? [])
-            .map((resource) => `${resource.id}:${resource.value}`)
-            .sort();
-
-        return `${right.action ?? ""}|${resources.join(",")}`;
-    };
-
-    const actualKeys = (rights ?? []).map(rightKey);
-
-    return expectedRights.filter((right) => !actualKeys.includes(rightKey(right)));
-}
+import { ChangeRequestResponse } from "../../../clients/authentication/v2/types.js";
+import { missingRights } from "../common/rights.js";
 
 /**
  * Checks that a change request was created for the expected system user and holds the

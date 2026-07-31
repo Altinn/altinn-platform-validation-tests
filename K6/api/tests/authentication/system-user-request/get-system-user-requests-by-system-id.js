@@ -6,7 +6,7 @@ import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
-import { SystemUserRequestDomainChecks } from "../../../domain-checks/system-user-request.js";
+import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -44,9 +44,9 @@ export default function () {
         group("Fetch the first page of system user requests", function () {
             firstPage = RequestSystemUser.VendorGetBySystem(requestSystemUserClient, systemId);
 
-            SystemUserRequestDomainChecks.CheckPaginatedShape(firstPage, "VendorGetBySystem");
-            SystemUserRequestDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");
-            SystemUserRequestDomainChecks.CheckRequestsBelongToSystem(firstPage, systemId);
+            PaginationDomainChecks.CheckPaginatedShape(firstPage, "VendorGetBySystem");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");
+            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, systemId, "system user request");
         });
 
         group("Follow the next-link pagination", function () {
@@ -57,7 +57,7 @@ export default function () {
                 additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
             }
 
-            SystemUserRequestDomainChecks.CheckMultiplePages(1 + additionalPages, "VendorGetBySystem");
+            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "VendorGetBySystem");
         });
     });
 }

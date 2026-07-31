@@ -1,14 +1,12 @@
-import { check, fail, group } from "k6";
+import { group } from "k6";
 
-import { SystemUserApiClient } from "../../../../clients/authentication/index.js";
+import { SystemUserClient } from "../../../../clients/authentication/v2/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { GetSystemUsersBySystemId } from "../../../building-blocks/authentication/system-user/index.js";
-import {
-    extractNextUrl,
-    followNextUrlPagination,
-} from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { SystemUser } from "../../../building-blocks/authentication/v2/system-user/index.js";
+import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -16,75 +14,54 @@ export function setup() {
 }
 
 /**
- * Test: System Users By SystemId (vendor) + pagination.
+ * Test: System users by system id (vendor) and pagination.
  *
- * Ensures that paginated access to system users by systemId (vendor endpoint) works correctly through APIM.
+ * Ensures that paginated access to system users by systemId works through APIM.
  */
 export default function () {
-    group(
-        "Scenario: As a vendor, I can list system users by system id and follow pagination.",
-        () => {
-            const systemOwnerOrgNo = "312605031";
-            const systemId = "312605031_Virksomhetsbruker";
+    const systemOwnerOrgNo = "312605031";
+    const systemId = "312605031_Virksomhetsbruker";
 
-            const scopes = CreateScopeString([
-                AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
-            ]);
-            const vendorTokenOptions = new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(scopes)
-                .withOrganizationNumber(systemOwnerOrgNo)
-                .build();
+    // The vendor endpoint sits behind the system register scope, not a system user one.
+    const scopes = CreateScopeString([
+        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
+    ]);
 
-            const vendorTokenGenerator = new EnterpriseTokenGenerator(
-                vendorTokenOptions,
-            );
-            const systemUserApiClient = new SystemUserApiClient(
-                __ENV.BASE_URL,
-                vendorTokenGenerator,
-            );
+    const options = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withOrganizationNumber(systemOwnerOrgNo)
+        .build();
 
-            let firstBody;
-            let firstJson;
-            group(
-                "Step: System users by system id - Fetch the first page of system users.",
-                () => {
-                    firstBody = GetSystemUsersBySystemId(systemUserApiClient, systemId);
-                    if (typeof firstBody !== "string" || firstBody.length === 0) {
-                        fail("The response body is empty or missing.");
-                    }
-                    firstJson = JSON.parse(firstBody);
+    const tokenGenerator = new EnterpriseTokenGenerator(options);
 
-                    const ok = check(firstJson, {
-                        "The response has a 'data' field.": (r) => "data" in r,
-                        "The response has a 'links' field.": (r) => "links" in r,
-                        "The response body is not empty.": (r) => r.data.length > 0,
-                    });
-                    if (!ok) {
-                        fail("Expected to find system users, but found none");
-                    }
-                },
-            );
+    const systemUserClient
+        = new SystemUserClient(__ENV.BASE_URL, tokenGenerator);
 
-            group(
-                "Step: System users by system id - Follow the next-link pagination (links.next).",
-                () => {
-                    const token = vendorTokenGenerator.getToken();
-                    const nextUrl = extractNextUrl(firstJson);
-                    if (!nextUrl) {
-                        fail("Couldn't find next URL on first page for system users");
-                    }
-                    const additionalPages = followNextUrlPagination(token, nextUrl);
-                    const pages = 1 + additionalPages;
-                    check(pages, {
-                        "System users by system id: More than one page is returned.": (p) =>
-                            p > 1,
-                    });
-                },
-            );
-        },
-    );
+    group("As a vendor, I can list system users by system id and follow pagination", function () {
+        let firstPage;
+
+        group("Fetch the first page of system users", function () {
+            firstPage = SystemUser.VendorGetBySystem(systemUserClient, systemId);
+
+            PaginationDomainChecks.CheckPaginatedShape(firstPage, "VendorGetBySystem");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");
+            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, systemId, "system user");
+        });
+
+        group("Follow the next-link pagination", function () {
+            const nextUrl = extractNextUrl(firstPage);
+
+            let additionalPages = 0;
+            if (nextUrl !== null) {
+                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
+            }
+
+            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "VendorGetBySystem");
+        });
+    });
 }
 
+// add the custom reporting for this test to the default summary
 export { handleSummary } from "../../../../common-imports.js";

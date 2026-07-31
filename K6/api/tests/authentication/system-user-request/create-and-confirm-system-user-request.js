@@ -10,7 +10,7 @@ import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
 import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemUserRequestDomainChecks } from "../../../domain-checks/system-user-request.js";
+import { SystemUserRequestDomainChecks } from "../../../domain-checks/authentication/system-user-request.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
