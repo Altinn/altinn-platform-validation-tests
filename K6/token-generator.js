@@ -92,6 +92,22 @@ class BaseTokenGenerator {
     }
 
     /**
+     * Makes sure a token is cached for the current options.
+     *
+     * These generators fetch synchronously, so this just delegates to
+     * {@link getToken}. It exists so callers can hold any generator to the same
+     * contract, await ensureToken once and then read getToken inline. See
+     * MaskinportenAccessTokenGenerator, which signs its grant with SubtleCrypto and
+     * therefore has no synchronous way to obtain a token.
+     *
+     * @returns {Promise<string>} The token, as returned by the endpoint.
+     * @throws {Error} If the endpoint does not answer 200.
+     */
+    async ensureToken() {
+        return this.getToken();
+    }
+
+    /**
      * Returns a token for the current options, cached per option set.
      *
      * @returns {string} The token, as returned by the endpoint.

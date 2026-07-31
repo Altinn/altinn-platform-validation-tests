@@ -19,10 +19,10 @@ const TAGS = {
     SystemRegisterVendorDelete: {
         action: "system-register-vendor-delete",
     },
-    SystemRegisterGetRights: {
+    SystemRegisterGetRightsFrontend: {
         action: "system-register-get-rights",
     },
-    SystemRegisterGetAccessPackages: {
+    SystemRegisterGetAccessPackagesFrontend: {
         action: "system-register-get-access-packages",
     },
     SystemRegisterVendorUpdateRights: {
@@ -50,7 +50,7 @@ class SystemRegisterClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/systemregister";
+        this.BASE_PATH = "/authentication/api/v1/systemregister";
 
         /**
          * Fully-qualified API path.
@@ -64,6 +64,8 @@ class SystemRegisterClient {
 
     /**
      * Retrieves all registered systems.
+     *
+     * Requires the `altinn:portal/enduser` scope.
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -276,13 +278,15 @@ class SystemRegisterClient {
     /**
      * Retrieves default rights for a system.
      *
+     * Requires the `altinn:portal/enduser` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGetRights(systemId, useOldFormatForApp = null, labels = null) {
+    SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         let url = `${this.FULL_PATH}/${systemId}/rights`;
@@ -294,7 +298,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetRights.action,
+            action: TAGS.SystemRegisterGetRightsFrontend.action,
         };
 
         if (labels !== null) {
@@ -316,13 +320,15 @@ class SystemRegisterClient {
     /**
      * Retrieves default access packages for a system.
      *
+     * Requires the `altinn:portal/enduser` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGetAccessPackages(
+    SystemRegisterGetAccessPackagesFrontend(
         systemId,
         useOldFormatForApp = null,
         labels = null,
@@ -338,7 +344,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetAccessPackages.action,
+            action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
         };
 
         if (labels !== null) {

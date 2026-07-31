@@ -3,46 +3,48 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves default access packages for a system.
+ * Retrieves default rights for a system.
+ *
+ * Requires the `altinn:portal/enduser` scope.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
  * @param {boolean|null} [useOldFormatForApp] Whether to use old app format.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AccessPackage[]|null} Access packages.
+ * @returns {Right[]|null} Rights.
  */
-export function SystemRegisterGetAccessPackages(
+export function SystemRegisterGetRightsFrontend(
     systemRegisterClient,
     systemId,
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGetAccessPackages(
+    const res = systemRegisterClient.SystemRegisterGetRightsFrontend(
         systemId,
         useOldFormatForApp,
         labels,
     );
 
-    /** @type {AccessPackage[]|null} */
-    let accessPackages = null;
+    /** @type {Right[]|null} */
+    let rights = null;
 
     const succeed = check(res, {
-        "SystemRegisterGetAccessPackages - status code is 200": (r) =>
+        "SystemRegisterGetRightsFrontend - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterGetAccessPackages - status text is 200 OK": (r) =>
+        "SystemRegisterGetRightsFrontend - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return accessPackages;
+        return rights;
     }
 
     check(res, {
-        "SystemRegisterGetAccessPackages - body is valid": (r) => {
+        "SystemRegisterGetRightsFrontend - body is valid": (r) => {
             try {
-                accessPackages = JSON.parse(r.body);
+                rights = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -54,5 +56,5 @@ export function SystemRegisterGetAccessPackages(
         },
     });
 
-    return accessPackages;
+    return rights;
 }

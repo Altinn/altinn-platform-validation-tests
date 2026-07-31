@@ -5,6 +5,8 @@ import { SystemRegisterClient } from "../../../../../clients/authentication/v2/i
 /**
  * Retrieves all registered systems.
  *
+ * Requires the `altinn:portal/enduser` scope.
+ *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RegisteredSystemDTO[]|null} Registered systems.

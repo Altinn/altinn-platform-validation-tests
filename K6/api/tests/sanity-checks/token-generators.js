@@ -36,7 +36,7 @@ export function setup() {
     }
 }
 
-export default function () {
+export default async function () {
     const ORG = "ttd";
     // Maskinporten takes the requested scopes space-separated in the grant.
     const scopes = CreateScopeString[
@@ -45,38 +45,46 @@ export default function () {
         AltinnScopes.CONSENTREQUESTS.WRITE
     ];
 
-    group("Platform token", () => {
-        const generator = new PlatformTokenGenerator(
-            new PlatformTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .build(),
-        );
+    // Every generator is set up the same way. ensureToken is awaited outside the
+    // groups, since group() takes a synchronous callback.
+    const platformGenerator = new PlatformTokenGenerator(
+        new PlatformTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .build(),
+    );
 
-        check(generator.getToken(), {
+    await platformGenerator.ensureToken();
+
+    group("Platform token", () => {
+        check(platformGenerator.getToken(), {
             "got a platform token": (token) => token.length > 0,
         });
     });
 
-    group("Enterprise token", () => {
-        const generator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withOrganization(ORG)
-                .withScopes(scopes)
-                .build(),
-        );
+    const enterpriseGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withOrganization(ORG)
+            .withScopes(scopes)
+            .build(),
+    );
 
-        check(generator.getToken(), {
+    await enterpriseGenerator.ensureToken();
+
+    group("Enterprise token", () => {
+        check(enterpriseGenerator.getToken(), {
             "got an enterprise token": (token) => token.length > 0,
         });
     });
 
-    group("Maskinporten token", () => {
-        const generator = new MaskinportenAccessTokenGenerator(
-            new MaskinportenTokenBuilder().withScopes(scopes).build(),
-        );
+    const maskinportenGenerator = new MaskinportenAccessTokenGenerator(
+        new MaskinportenTokenBuilder().withScopes(scopes).build(),
+    );
 
-        check(generator.getToken(), {
+    await maskinportenGenerator.ensureToken();
+
+    group("Maskinporten token", () => {
+        check(maskinportenGenerator.getToken(), {
             "got a maskinporten token": (token) => token.length > 0,
         });
     });
