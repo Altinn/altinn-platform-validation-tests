@@ -159,7 +159,7 @@ export class MaskinportenAccessTokenGenerator {
      *
      * @returns {Promise<string>} A Maskinporten access token.
      */
-    async prepare() {
+    async ensureToken() {
         const scopes = this.tokenGeneratorOptions.scopes;
         const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
         const cached = this.#cache.get(cacheKey);
@@ -196,7 +196,7 @@ export class MaskinportenAccessTokenGenerator {
         if (!cached || cached.expiresAt <= Date.now()) {
             throw new Error(
                 `No valid Maskinporten token cached for scopes '${scopes}'. ` +
-                "Await generator.prepare() before using the generator; signing the " +
+                "Await generator.ensureToken() before using the generator; signing the " +
                 "grant is asynchronous.",
             );
         }

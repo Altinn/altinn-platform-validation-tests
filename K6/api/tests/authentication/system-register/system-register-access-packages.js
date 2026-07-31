@@ -27,7 +27,7 @@ export default async function () {
 
     // Signing the grant goes through SubtleCrypto, so the token has to be fetched
     // before the client starts asking for it.
-    await tokenGenerator.prepare();
+    await tokenGenerator.ensureToken();
 
     const systemRegisterClient
         = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);

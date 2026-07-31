@@ -45,15 +45,15 @@ export default async function () {
         AltinnScopes.CONSENTREQUESTS.WRITE
     ];
 
-    // Every generator is prepared the same way, and prepare is awaited outside the
-    // groups since group() takes a synchronous callback.
+    // Every generator is set up the same way. ensureToken is awaited outside the
+    // groups, since group() takes a synchronous callback.
     const platformGenerator = new PlatformTokenGenerator(
         new PlatformTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .build(),
     );
 
-    await platformGenerator.prepare();
+    await platformGenerator.ensureToken();
 
     group("Platform token", () => {
         check(platformGenerator.getToken(), {
@@ -69,7 +69,7 @@ export default async function () {
             .build(),
     );
 
-    await enterpriseGenerator.prepare();
+    await enterpriseGenerator.ensureToken();
 
     group("Enterprise token", () => {
         check(enterpriseGenerator.getToken(), {
@@ -81,7 +81,7 @@ export default async function () {
         new MaskinportenTokenBuilder().withScopes(scopes).build(),
     );
 
-    await maskinportenGenerator.prepare();
+    await maskinportenGenerator.ensureToken();
 
     group("Maskinporten token", () => {
         check(maskinportenGenerator.getToken(), {
