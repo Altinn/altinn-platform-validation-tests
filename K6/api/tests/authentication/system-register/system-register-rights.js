@@ -2,14 +2,16 @@ import { group } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
 import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
 import { SystemRegisterDomainChecks } from "../../../domain-checks/system-register.js";
 
+const ORG = "ttd";
+
 export function setup() {
-    requireEnv(["BASE_URL"]);
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
     return;
 }
 
@@ -31,6 +33,22 @@ export default async function () {
 
     const systemRegisterClient
         = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
+
+    // GET /{systemId}/rights answers 403 to a Maskinporten systemregister token; it
+    // wants the portal enduser scope. Registering and deleting the system still goes
+    // through the Maskinporten client above, so the test needs both.
+    const enduserTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withOrganization(ORG)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
+
+    await enduserTokenGenerator.ensureToken();
+
+    const enduserSystemRegisterClient
+        = new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator);
 
     const vendorId = 313175650;
     const systemName = `K6-rights-system-${uuidv4()}`;
@@ -80,8 +98,9 @@ export default async function () {
         // POST /vendor - register a system with two rights
         SystemRegister.VendorCreate(systemRegisterClient, requestBody);
 
-        // GET /{systemId}/rights - the rights as consumers see them, not the vendor view
-        const registeredRights = SystemRegister.GetRights(systemRegisterClient, systemId);
+        // GET /{systemId}/rights - the rights as consumers see them, not the vendor
+        // view, so this one goes on the enduser token
+        const registeredRights = SystemRegister.GetRights(enduserSystemRegisterClient, systemId);
 
         SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
 

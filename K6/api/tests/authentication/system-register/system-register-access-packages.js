@@ -2,14 +2,16 @@ import { group } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
 import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
 import { SystemRegisterDomainChecks } from "../../../domain-checks/system-register.js";
 
+const ORG = "ttd";
+
 export function setup() {
-    requireEnv(["BASE_URL"]);
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
     return;
 }
 
@@ -31,6 +33,22 @@ export default async function () {
 
     const systemRegisterClient
         = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
+
+    // GET /{systemId}/accesspackages wants the portal enduser scope, the same as the
+    // rights endpoint. Registering, updating and deleting the system still goes
+    // through the Maskinporten client above, so the test needs both.
+    const enduserTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withOrganization(ORG)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
+
+    await enduserTokenGenerator.ensureToken();
+
+    const enduserSystemRegisterClient
+        = new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator);
 
     const vendorId = 313175650;
     const systemName = `K6-access-packages-system-${uuidv4()}`;
@@ -79,8 +97,9 @@ export default async function () {
         // POST /vendor - register a system with one access package
         SystemRegister.VendorCreate(systemRegisterClient, requestBody);
 
-        // GET /{systemId}/accesspackages - as consumers see them, not the vendor view
-        const registeredAccessPackages = SystemRegister.GetAccessPackages(systemRegisterClient, systemId);
+        // GET /{systemId}/accesspackages - as consumers see them, not the vendor
+        // view, so these reads go on the enduser token
+        const registeredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
 
         SystemRegisterDomainChecks.CheckAccessPackages(
             registeredAccessPackages,
@@ -92,7 +111,7 @@ export default async function () {
 
         SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdateAccessPackages");
 
-        const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackages(systemRegisterClient, systemId);
+        const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackages(enduserSystemRegisterClient, systemId);
 
         SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
 
