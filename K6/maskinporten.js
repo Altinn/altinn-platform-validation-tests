@@ -17,15 +17,14 @@ const SIGNING_ALGORITHM = "RS256";
 const WEBCRYPTO_ALGORITHM = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
 
 /**
- * Strips the PEM armour and returns the DER bytes.
+ * Strips the PEM armour and returns the DER bytes, which is what
+ * `crypto.subtle.importKey` takes; it has no notion of PEM.
  *
  * @param {string} pem - A PEM encoded key.
  * @returns {ArrayBuffer} The DER encoded key.
  */
 function pemToDer(pem) {
-    return encoding.b64decode(
-        pem.replace(/-----[^-]+-----/g, "").replace(/\s+/g, ""),
-    );
+    return encoding.b64decode(pem.replace(/-----[^-]+-----|\s+/g, ""));
 }
 
 /**
