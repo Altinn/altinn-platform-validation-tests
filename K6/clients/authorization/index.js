@@ -1,4 +1,3 @@
-export { AuthorizedPartiesClient } from "./authorized-parties.js";
 export { BffAccessManagementApiClient } from "./bff-access-management.js";
 export { BffAccessPackageApiClient } from "./bff-access-package.js";
 export { BffClientDelegationsApiClient } from "./bff-client-delegations.js";

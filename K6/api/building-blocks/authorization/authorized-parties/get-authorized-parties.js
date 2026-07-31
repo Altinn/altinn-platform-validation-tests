@@ -1,7 +1,7 @@
 import { check } from "k6";
 
-import { AuthorizedPartiesQuery, AuthorizedPartiesRequest, AuthorizedPartiesResponse } from "../../../../clients/authorization/authorized-parties.types.js";
-import { AuthorizedPartiesClient } from "../../../../clients/authorization/index.js";
+import { AuthorizedPartiesClient } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.js";
+import { AuthorizedPartiesQuery, AuthorizedPartiesRequest, AuthorizedPartiesResponse } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 
 /**
  * Retrieves the parties the specified subject is authorized to represent.
