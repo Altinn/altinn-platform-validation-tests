@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { GetParties } from "../../../building-blocks/dialogporten/graphql/index.js";
@@ -69,14 +69,15 @@ export function getClient() {
  * @returns TODO: description
  */
 export function getDialogportenOpts(ssn = null) {
-    const tokenOpts = new PersonalTokenGeneratorOptions();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten");
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes("digdir:dialogporten");
+
     if (ssn !== null) {
-        tokenOpts.set("pid", ssn);
+        tokenOpts.withPid(ssn);
     }
-    return tokenOpts;
+    return tokenOpts.build();
 }
 
 /**
