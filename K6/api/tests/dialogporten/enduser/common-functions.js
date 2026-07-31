@@ -75,5 +75,5 @@ export function getDialogportenOpts(ssn = null) {
         tokenOpts.withPid(ssn);
 
     }
-    return tokenOpts;
+    return tokenOpts.build();
 }
