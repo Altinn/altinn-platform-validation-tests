@@ -89,27 +89,27 @@ export default async function () {
 
     group("System Register Access Packages", function () {
         group("Register a system with one access package", function () {
-            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+            SystemRegister.CreateRegisteredSystem(systemRegisterClient, requestBody);
         });
 
         group("An end user gets the access packages of the system", function () {
-            const registeredAccessPackages = SystemRegister.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
+            const registeredAccessPackages = SystemRegister.GetAccessPackagesForRegisteredSystem(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
         });
 
         group("Replace the access packages on the system", function () {
-            const updateResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
+            const updateResult = SystemRegister.UpdateAccessPackagesOnRegisteredSystem(systemRegisterClient, systemId, updatedAccessPackages);
 
             SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdateAccessPackages");
 
-            const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
+            const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackagesForRegisteredSystem(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+            const deleteResult = SystemRegister.SetDeleteOnRegisteredSystem(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
         });

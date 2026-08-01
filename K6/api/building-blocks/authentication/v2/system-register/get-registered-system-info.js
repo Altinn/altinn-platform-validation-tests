@@ -3,46 +3,43 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Updates rights on a registered system.
+ * Retrieves a registered system by id.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
- * @param {Right[]} rights Rights.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemRegisterUpdateResult|null} Update result.
+ * @returns {RegisteredSystemResponse|null} Registered system.
  */
-export function SystemRegisterVendorUpdateRights(
+export function GetRegisteredSystemInfo(
     systemRegisterClient,
     systemId,
-    rights,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorUpdateRights(
+    const res = systemRegisterClient.GetRegisteredSystemInfo(
         systemId,
-        rights,
         labels,
     );
 
-    /** @type {SystemRegisterUpdateResult|null} */
-    let result = null;
+    /** @type {RegisteredSystemResponse|null} */
+    let system = null;
 
     const succeed = check(res, {
-        "SystemRegisterVendorUpdateRights - status code is 200": (r) =>
+        "GetRegisteredSystemInfo - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorUpdateRights - status text is 200 OK": (r) =>
+        "GetRegisteredSystemInfo - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return result;
+        return system;
     }
 
     check(res, {
-        "SystemRegisterVendorUpdateRights - body is valid": (r) => {
+        "GetRegisteredSystemInfo - body is valid": (r) => {
             try {
-                result = JSON.parse(r.body);
+                system = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -54,5 +51,5 @@ export function SystemRegisterVendorUpdateRights(
         },
     });
 
-    return result;
+    return system;
 }

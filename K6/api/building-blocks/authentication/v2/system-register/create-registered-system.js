@@ -3,46 +3,43 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Updates a registered system.
+ * Creates a new registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
- * @param {string} systemId System identifier.
- * @param {RegisterSystemRequest} request Updated system model.
+ * @param {RegisterSystemRequest} request System registration request.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemRegisterUpdateResult|null} Update result.
+ * @returns {string|null} Created system identifier.
  */
-export function SystemRegisterVendorUpdate(
+export function CreateRegisteredSystem(
     systemRegisterClient,
-    systemId,
     request,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorUpdate(
-        systemId,
+    const res = systemRegisterClient.CreateRegisteredSystem(
         request,
         labels,
     );
 
-    /** @type {SystemRegisterUpdateResult|null} */
-    let result = null;
+    /** @type {string|null} */
+    let systemId = null;
 
     const succeed = check(res, {
-        "SystemRegisterVendorUpdate - status code is 200": (r) =>
+        "CreateRegisteredSystem - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorUpdate - status text is 200 OK": (r) =>
+        "CreateRegisteredSystem - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return result;
+        return systemId;
     }
 
     check(res, {
-        "SystemRegisterVendorUpdate - body is valid": (r) => {
+        "CreateRegisteredSystem - body is valid": (r) => {
             try {
-                result = JSON.parse(r.body);
+                systemId = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -54,5 +51,5 @@ export function SystemRegisterVendorUpdate(
         },
     });
 
-    return result;
+    return systemId;
 }

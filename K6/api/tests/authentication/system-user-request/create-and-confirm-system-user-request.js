@@ -84,7 +84,7 @@ export default function (data) {
 
     group("As a vendor, I can request a system user and have the customer approve it", function () {
         group("Register the system the request is made for", function () {
-            SystemRegister.VendorCreate(systemRegisterClient, registerSystemRequest);
+            SystemRegister.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
         });
 
         let requestId;
@@ -98,7 +98,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const createdRequest = RequestSystemUser.VendorCreate(vendorRequestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUser.CreateRequest(vendorRequestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
                 systemId,
@@ -131,7 +131,7 @@ export default function (data) {
             const approverRequestSystemUserClient
                 = new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator);
 
-            const approved = RequestSystemUser.Approve(
+            const approved = RequestSystemUser.ApproveSystemUserRequest(
                 approverRequestSystemUserClient,
                 customer.partyId,
                 requestId,
@@ -145,7 +145,7 @@ export default function (data) {
                 return;
             }
 
-            const request = RequestSystemUser.VendorGet(vendorRequestSystemUserClient, requestId);
+            const request = RequestSystemUser.GetRequestByGuid(vendorRequestSystemUserClient, requestId);
 
             SystemUserRequestDomainChecks.CheckRequestStatus(request, "Accepted");
         });

@@ -3,30 +3,36 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves a system user request by id.
+ * Retrieves an agent system user request by external reference.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {string} requestId Request identifier.
+ * @param {string} systemId System identifier.
+ * @param {string} orgNo Organization number.
+ * @param {string} externalRef External reference.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponse|null} Request response.
+ * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
-export function RequestSystemUserVendorGet(
+export function GetAgentRequestByExternalRef(
     requestSystemUserClient,
-    requestId,
+    systemId,
+    orgNo,
+    externalRef,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorGet(
-        requestId,
+    const res = requestSystemUserClient.GetAgentRequestByExternalRef(
+        systemId,
+        orgNo,
+        externalRef,
         labels,
     );
 
-    /** @type {RequestSystemResponse|null} */
+    /** @type {AgentRequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "RequestSystemUserVendorGet - status code is 200": (r) =>
+        "GetAgentRequestByExternalRef - status code is 200": (r) =>
             r.status === 200,
-        "RequestSystemUserVendorGet - status text is 200 OK": (r) =>
+        "GetAgentRequestByExternalRef - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +43,7 @@ export function RequestSystemUserVendorGet(
     }
 
     check(res, {
-        "RequestSystemUserVendorGet - body is valid": (r) => {
+        "GetAgentRequestByExternalRef - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

@@ -11,13 +11,13 @@ import { RequestSystemUserClient } from "../../../../../clients/authentication/v
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AgentRequestSystemResponsePaginated|null} Paginated agent request responses.
  */
-export function RequestSystemUserVendorAgentGetBySystem(
+export function GetAllAgentRequestsForVendor(
     requestSystemUserClient,
     systemId,
     token = null,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorAgentGetBySystem(
+    const res = requestSystemUserClient.GetAllAgentRequestsForVendor(
         systemId,
         token,
         labels,
@@ -27,9 +27,9 @@ export function RequestSystemUserVendorAgentGetBySystem(
     let requestResponses = null;
 
     const succeed = check(res, {
-        "RequestSystemUserVendorAgentGetBySystem - status code is 200": (r) =>
+        "GetAllAgentRequestsForVendor - status code is 200": (r) =>
             r.status === 200,
-        "RequestSystemUserVendorAgentGetBySystem - status text is 200 OK": (r) =>
+        "GetAllAgentRequestsForVendor - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -40,7 +40,7 @@ export function RequestSystemUserVendorAgentGetBySystem(
     }
 
     check(res, {
-        "RequestSystemUserVendorAgentGetBySystem - body is valid": (r) => {
+        "GetAllAgentRequestsForVendor - body is valid": (r) => {
             try {
                 requestResponses = JSON.parse(r.body);
 

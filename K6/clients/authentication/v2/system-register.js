@@ -1,38 +1,38 @@
 import http from "k6/http";
 
 const TAGS = {
-    SystemRegisterGet: {
-        action: "system-register-get",
+    GetListOfRegisteredSystems: {
+        action: "get-list-of-registered-systems",
     },
-    SystemRegisterVendorGet: {
-        action: "system-register-vendor-get",
+    GetListOfRegisteredSystemsForVendor: {
+        action: "get-list-of-registered-systems-for-vendor",
     },
-    SystemRegisterVendorCreate: {
-        action: "system-register-vendor-create",
+    CreateRegisteredSystem: {
+        action: "create-registered-system",
     },
-    SystemRegisterVendorGetById: {
-        action: "system-register-vendor-get-by-id",
+    GetRegisteredSystemInfo: {
+        action: "get-registered-system-info",
     },
-    SystemRegisterVendorUpdate: {
-        action: "system-register-vendor-update",
+    UpdateWholeRegisteredSystem: {
+        action: "update-whole-registered-system",
     },
-    SystemRegisterVendorDelete: {
-        action: "system-register-vendor-delete",
+    SetDeleteOnRegisteredSystem: {
+        action: "set-delete-on-registered-system",
     },
-    SystemRegisterGetRightsFrontend: {
-        action: "system-register-get-rights",
+    GetRightsForRegisteredSystem: {
+        action: "get-list-of-registered-systems-rights",
     },
-    SystemRegisterGetAccessPackagesFrontend: {
-        action: "system-register-get-access-packages",
+    GetAccessPackagesForRegisteredSystem: {
+        action: "get-list-of-registered-systems-access-packages",
     },
-    SystemRegisterVendorUpdateRights: {
-        action: "system-register-vendor-update-rights",
+    UpdateRightsOnRegisteredSystem: {
+        action: "update-rights-on-registered-system",
     },
-    SystemRegisterVendorUpdateAccessPackages: {
-        action: "system-register-vendor-update-access-packages",
+    UpdateAccessPackagesOnRegisteredSystem: {
+        action: "update-access-packages-on-registered-system",
     },
-    SystemRegisterVendorGetChangeLog: {
-        action: "system-register-vendor-get-change-log",
+    GetChangeLog: {
+        action: "get-change-log",
     },
 };
 
@@ -71,7 +71,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGet(labels = null) {
+    GetListOfRegisteredSystems(labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}`;
@@ -79,7 +79,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.SystemRegisterGet.action,
+            action: TAGS.GetListOfRegisteredSystems.action,
         };
 
         if (labels !== null) {
@@ -105,7 +105,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorGet(labels = null) {
+    GetListOfRegisteredSystemsForVendor(labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor`;
@@ -113,7 +113,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.SystemRegisterVendorGet.action,
+            action: TAGS.GetListOfRegisteredSystemsForVendor.action,
         };
 
         if (labels !== null) {
@@ -140,7 +140,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorCreate(request, labels = null) {
+    CreateRegisteredSystem(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor`;
@@ -148,7 +148,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.SystemRegisterVendorCreate.action,
+            action: TAGS.CreateRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -176,7 +176,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorGetById(systemId, labels = null) {
+    GetRegisteredSystemInfo(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
@@ -184,7 +184,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterVendorGetById.action,
+            action: TAGS.GetRegisteredSystemInfo.action,
         };
 
         if (labels !== null) {
@@ -212,7 +212,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorUpdate(systemId, request, labels = null) {
+    UpdateWholeRegisteredSystem(systemId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
@@ -220,7 +220,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterVendorUpdate.action,
+            action: TAGS.UpdateWholeRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -248,7 +248,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorDelete(systemId, labels = null) {
+    SetDeleteOnRegisteredSystem(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
@@ -256,7 +256,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterVendorDelete.action,
+            action: TAGS.SetDeleteOnRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -286,7 +286,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
+    GetRightsForRegisteredSystem(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         let url = `${this.FULL_PATH}/${systemId}/rights`;
@@ -298,7 +298,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetRightsFrontend.action,
+            action: TAGS.GetRightsForRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -328,7 +328,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterGetAccessPackagesFrontend(
+    GetAccessPackagesForRegisteredSystem(
         systemId,
         useOldFormatForApp = null,
         labels = null,
@@ -344,7 +344,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
+            action: TAGS.GetAccessPackagesForRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -372,7 +372,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorUpdateRights(systemId, rights, labels = null) {
+    UpdateRightsOnRegisteredSystem(systemId, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
@@ -380,7 +380,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}/rights`,
-            action: TAGS.SystemRegisterVendorUpdateRights.action,
+            action: TAGS.UpdateRightsOnRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -409,7 +409,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorUpdateAccessPackages(
+    UpdateAccessPackagesOnRegisteredSystem(
         systemId,
         accessPackages,
         labels = null,
@@ -421,7 +421,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
-            action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
+            action: TAGS.UpdateAccessPackagesOnRegisteredSystem.action,
         };
 
         if (labels !== null) {
@@ -449,7 +449,7 @@ class SystemRegisterClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    SystemRegisterVendorGetChangeLog(systemId, labels = null) {
+    GetChangeLog(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${systemId}/changelog`;
@@ -457,7 +457,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
-            action: TAGS.SystemRegisterVendorGetChangeLog.action,
+            action: TAGS.GetChangeLog.action,
         };
 
         if (labels !== null) {

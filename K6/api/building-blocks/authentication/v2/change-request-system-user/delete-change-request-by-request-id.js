@@ -3,36 +3,32 @@ import { check } from "k6";
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves change requests for a system.
+ * Deletes a change request by id.
  *
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
- * @param {string} systemId System identifier.
- * @param {GuidOpaque|null} [token] Optional continuation token.
+ * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {ChangeRequestResponsePaginated|null} Paginated change request response.
+ * @returns {ChangeRequestResponse|null} Change request response.
  */
-export function ChangeRequestSystemUserVendorGetBySystem(
+export function DeleteChangeRequestByRequestId(
     changeRequestSystemUserClient,
-    systemId,
-    token = null,
+    requestId,
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetBySystem(
-            systemId,
-            token,
+        changeRequestSystemUserClient.DeleteChangeRequestByRequestId(
+            requestId,
             labels,
         );
 
-    /** @type {ChangeRequestResponsePaginated|null} */
+    /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;
 
     const succeed = check(res, {
-        "ChangeRequestSystemUserVendorGetBySystem - status code is 200": (r) =>
+        "DeleteChangeRequestByRequestId - status code is 200": (r) =>
             r.status === 200,
-        "ChangeRequestSystemUserVendorGetBySystem - status text is 200 OK": (
-            r,
-        ) => r.status_text === "200 OK",
+        "DeleteChangeRequestByRequestId - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -42,7 +38,7 @@ export function ChangeRequestSystemUserVendorGetBySystem(
     }
 
     check(res, {
-        "ChangeRequestSystemUserVendorGetBySystem - body is valid": (r) => {
+        "DeleteChangeRequestByRequestId - body is valid": (r) => {
             try {
                 changeRequestResponse = JSON.parse(r.body);
 

@@ -130,7 +130,7 @@ export default function (data) {
         let systemUserId;
 
         group("Give the customer a system user to change", function () {
-            SystemRegister.VendorCreate(systemRegisterClient, registerSystemRequest);
+            SystemRegister.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
 
             const createRequest = new CreateRequestSystemUserBuilder()
                 .withExternalRef(externalRef)
@@ -140,7 +140,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const createdRequest = RequestSystemUser.VendorCreate(vendorRequestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUser.CreateRequest(vendorRequestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
                 systemId,
@@ -152,7 +152,7 @@ export default function (data) {
                 return;
             }
 
-            const approved = RequestSystemUser.Approve(
+            const approved = RequestSystemUser.ApproveSystemUserRequest(
                 approverRequestSystemUserClient,
                 customer.partyId,
                 createdRequest.id,
@@ -179,7 +179,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const changeRequest = ChangeRequestSystemUser.VendorCreate(
+            const changeRequest = ChangeRequestSystemUser.CreateChangeRequest(
                 vendorChangeRequestClient,
                 emptyChangeRequest,
                 uuidv4(),
@@ -202,7 +202,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const changeRequest = ChangeRequestSystemUser.VendorCreate(
+            const changeRequest = ChangeRequestSystemUser.CreateChangeRequest(
                 vendorChangeRequestClient,
                 request,
                 uuidv4(),
@@ -225,7 +225,7 @@ export default function (data) {
                 return;
             }
 
-            const approved = ChangeRequestSystemUser.Approve(
+            const approved = ChangeRequestSystemUser.ApproveSystemUserChangeRequest(
                 approverChangeRequestClient,
                 customer.partyId,
                 changeRequestId,
@@ -233,7 +233,7 @@ export default function (data) {
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestApproved(approved);
 
-            const changeRequest = ChangeRequestSystemUser.VendorGet(vendorChangeRequestClient, changeRequestId);
+            const changeRequest = ChangeRequestSystemUser.GetChangeRequestByGuid(vendorChangeRequestClient, changeRequestId);
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "Accepted");
         });

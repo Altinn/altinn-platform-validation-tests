@@ -3,31 +3,31 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Creates a new agent system user request.
+ * Deletes a system user request.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {CreateAgentRequestSystemUser} request Request model.
+ * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AgentRequestSystemResponse|null} Agent request response.
+ * @returns {RequestSystemResponse|null} Request response.
  */
-export function RequestSystemUserVendorAgentCreate(
+export function DeleteRequestByRequestId(
     requestSystemUserClient,
-    request,
+    requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorAgentCreate(
-        request,
+    const res = requestSystemUserClient.DeleteRequestByRequestId(
+        requestId,
         labels,
     );
 
-    /** @type {AgentRequestSystemResponse|null} */
+    /** @type {RequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "RequestSystemUserVendorAgentCreate - status code is 201": (r) =>
-            r.status === 201,
-        "RequestSystemUserVendorAgentCreate - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
+        "DeleteRequestByRequestId - status code is 200": (r) =>
+            r.status === 200,
+        "DeleteRequestByRequestId - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -37,7 +37,7 @@ export function RequestSystemUserVendorAgentCreate(
     }
 
     check(res, {
-        "RequestSystemUserVendorAgentCreate - body is valid": (r) => {
+        "DeleteRequestByRequestId - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

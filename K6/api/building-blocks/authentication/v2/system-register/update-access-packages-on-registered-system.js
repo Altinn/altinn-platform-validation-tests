@@ -3,20 +3,23 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Deletes a registered system.
+ * Updates access packages on a registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
+ * @param {AccessPackage[]} accessPackages Access packages.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemRegisterUpdateResult|null} Delete result.
+ * @returns {SystemRegisterUpdateResult|null} Update result.
  */
-export function SystemRegisterVendorDelete(
+export function UpdateAccessPackagesOnRegisteredSystem(
     systemRegisterClient,
     systemId,
+    accessPackages,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorDelete(
+    const res = systemRegisterClient.UpdateAccessPackagesOnRegisteredSystem(
         systemId,
+        accessPackages,
         labels,
     );
 
@@ -24,9 +27,9 @@ export function SystemRegisterVendorDelete(
     let result = null;
 
     const succeed = check(res, {
-        "SystemRegisterVendorDelete - status code is 200": (r) =>
+        "UpdateAccessPackagesOnRegisteredSystem - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorDelete - status text is 200 OK": (r) =>
+        "UpdateAccessPackagesOnRegisteredSystem - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +40,7 @@ export function SystemRegisterVendorDelete(
     }
 
     check(res, {
-        "SystemRegisterVendorDelete - body is valid": (r) => {
+        "UpdateAccessPackagesOnRegisteredSystem - body is valid": (r) => {
             try {
                 result = JSON.parse(r.body);
 

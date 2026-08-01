@@ -3,36 +3,30 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves a system user request by external reference.
+ * Retrieves an agent system user request by id.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {string} systemId System identifier.
- * @param {string} orgNo Organization number.
- * @param {string} externalRef External reference.
+ * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponse|null} Request response.
+ * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
-export function RequestSystemUserVendorGetByExternalRef(
+export function GetAgentSystemUserRequestByGuid(
     requestSystemUserClient,
-    systemId,
-    orgNo,
-    externalRef,
+    requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorGetByExternalRef(
-        systemId,
-        orgNo,
-        externalRef,
+    const res = requestSystemUserClient.GetAgentSystemUserRequestByGuid(
+        requestId,
         labels,
     );
 
-    /** @type {RequestSystemResponse|null} */
+    /** @type {AgentRequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "RequestSystemUserVendorGetByExternalRef - status code is 200": (r) =>
+        "GetAgentSystemUserRequestByGuid - status code is 200": (r) =>
             r.status === 200,
-        "RequestSystemUserVendorGetByExternalRef - status text is 200 OK": (r) =>
+        "GetAgentSystemUserRequestByGuid - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -43,7 +37,7 @@ export function RequestSystemUserVendorGetByExternalRef(
     }
 
     check(res, {
-        "RequestSystemUserVendorGetByExternalRef - body is valid": (r) => {
+        "GetAgentSystemUserRequestByGuid - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

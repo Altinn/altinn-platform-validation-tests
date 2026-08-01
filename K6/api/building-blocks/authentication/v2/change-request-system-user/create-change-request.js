@@ -12,14 +12,14 @@ import { ChangeRequestSystemUserClient } from "../../../../../clients/authentica
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponse|null} Change request response.
  */
-export function ChangeRequestSystemUserVendorCreate(
+export function CreateChangeRequest(
     changeRequestSystemUserClient,
     request,
     correlationId = null,
     systemUserId = null,
     labels = null,
 ) {
-    const res = changeRequestSystemUserClient.ChangeRequestSystemUserVendorCreate(
+    const res = changeRequestSystemUserClient.CreateChangeRequest(
         request,
         correlationId,
         systemUserId,
@@ -29,11 +29,11 @@ export function ChangeRequestSystemUserVendorCreate(
     /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;
 
-    // A new change request answers 201. The API answers 200 when there is nothing to
-    // change, and when the correlation id already refers to a change request. Both are
+    // A new change request answers 201. The API answers 200 when existing change request with same attributes exists,
+    // and when the correlation id already refers to a change request. Both are
     // successful, so the status the caller cares about is asserted in the domain checks.
     const succeed = check(res, {
-        "ChangeRequestSystemUserVendorCreate - status code is 200 or 201": (r) =>
+        "CreateChangeRequest - status code is 200 or 201": (r) =>
             r.status === 200 || r.status === 201,
     });
 
@@ -44,7 +44,7 @@ export function ChangeRequestSystemUserVendorCreate(
     }
 
     check(res, {
-        "ChangeRequestSystemUserVendorCreate - body is valid": (r) => {
+        "CreateChangeRequest - body is valid": (r) => {
             try {
                 changeRequestResponse = JSON.parse(r.body);
 

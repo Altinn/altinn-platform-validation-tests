@@ -3,38 +3,46 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves all vendor registered systems.
+ * Updates a registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
+ * @param {string} systemId System identifier.
+ * @param {RegisterSystemRequest} request Updated system model.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RegisteredSystemDTO[]|null} Registered systems.
+ * @returns {SystemRegisterUpdateResult|null} Update result.
  */
-export function SystemRegisterVendorGet(
+export function UpdateWholeRegisteredSystem(
     systemRegisterClient,
+    systemId,
+    request,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorGet(labels);
+    const res = systemRegisterClient.UpdateWholeRegisteredSystem(
+        systemId,
+        request,
+        labels,
+    );
 
-    /** @type {RegisteredSystemDTO[]|null} */
-    let systems = null;
+    /** @type {SystemRegisterUpdateResult|null} */
+    let result = null;
 
     const succeed = check(res, {
-        "SystemRegisterVendorGet - status code is 200": (r) =>
+        "UpdateWholeRegisteredSystem - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorGet - status text is 200 OK": (r) =>
+        "UpdateWholeRegisteredSystem - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return systems;
+        return result;
     }
 
     check(res, {
-        "SystemRegisterVendorGet - body is valid": (r) => {
+        "UpdateWholeRegisteredSystem - body is valid": (r) => {
             try {
-                systems = JSON.parse(r.body);
+                result = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -46,5 +54,5 @@ export function SystemRegisterVendorGet(
         },
     });
 
-    return systems;
+    return result;
 }

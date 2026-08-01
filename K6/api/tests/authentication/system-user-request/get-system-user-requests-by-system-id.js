@@ -42,7 +42,7 @@ export default function () {
         let firstPage;
 
         group("Fetch the first page of system user requests", function () {
-            firstPage = RequestSystemUser.VendorGetBySystem(requestSystemUserClient, systemId);
+            firstPage = RequestSystemUser.GetAllRequestsForVendor(requestSystemUserClient, systemId);
 
             PaginationDomainChecks.CheckPaginatedShape(firstPage, "VendorGetBySystem");
             PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");

@@ -3,39 +3,36 @@ import { check } from "k6";
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves a change request by external reference.
+ * Retrieves change requests for a system.
  *
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
  * @param {string} systemId System identifier.
- * @param {string} orgNo Organisation number.
- * @param {string} externalRef External reference.
+ * @param {GuidOpaque|null} [token] Optional continuation token.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {ChangeRequestResponse|null} Change request response.
+ * @returns {ChangeRequestResponsePaginated|null} Paginated change request response.
  */
-export function ChangeRequestSystemUserVendorGetByExternalRef(
+export function GetAllChangeRequestsForVendor(
     changeRequestSystemUserClient,
     systemId,
-    orgNo,
-    externalRef,
+    token = null,
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetByExternalRef(
+        changeRequestSystemUserClient.GetAllChangeRequestsForVendor(
             systemId,
-            orgNo,
-            externalRef,
+            token,
             labels,
         );
 
-    /** @type {ChangeRequestResponse|null} */
+    /** @type {ChangeRequestResponsePaginated|null} */
     let changeRequestResponse = null;
 
     const succeed = check(res, {
-        "ChangeRequestSystemUserVendorGetByExternalRef - status code is 200": (
+        "GetAllChangeRequestsForVendor - status code is 200": (r) =>
+            r.status === 200,
+        "GetAllChangeRequestsForVendor - status text is 200 OK": (
             r,
-        ) => r.status === 200,
-        "ChangeRequestSystemUserVendorGetByExternalRef - status text is 200 OK":
-            (r) => r.status_text === "200 OK",
+        ) => r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -45,7 +42,7 @@ export function ChangeRequestSystemUserVendorGetByExternalRef(
     }
 
     check(res, {
-        "ChangeRequestSystemUserVendorGetByExternalRef - body is valid": (r) => {
+        "GetAllChangeRequestsForVendor - body is valid": (r) => {
             try {
                 changeRequestResponse = JSON.parse(r.body);
 

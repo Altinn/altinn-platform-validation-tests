@@ -10,13 +10,13 @@ import { ChangeRequestSystemUserClient } from "../../../../../clients/authentica
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponse|null} Change request response.
  */
-export function ChangeRequestSystemUserVendorGet(
+export function GetChangeRequestByGuid(
     changeRequestSystemUserClient,
     requestId,
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGet(
+        changeRequestSystemUserClient.GetChangeRequestByGuid(
             requestId,
             labels,
         );
@@ -25,9 +25,9 @@ export function ChangeRequestSystemUserVendorGet(
     let changeRequestResponse = null;
 
     const succeed = check(res, {
-        "ChangeRequestSystemUserVendorGet - status code is 200": (r) =>
+        "GetChangeRequestByGuid - status code is 200": (r) =>
             r.status === 200,
-        "ChangeRequestSystemUserVendorGet - status text is 200 OK": (r) =>
+        "GetChangeRequestByGuid - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -38,7 +38,7 @@ export function ChangeRequestSystemUserVendorGet(
     }
 
     check(res, {
-        "ChangeRequestSystemUserVendorGet - body is valid": (r) => {
+        "GetChangeRequestByGuid - body is valid": (r) => {
             try {
                 changeRequestResponse = JSON.parse(r.body);
 

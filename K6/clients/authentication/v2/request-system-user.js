@@ -1,35 +1,35 @@
 import http from "k6/http";
 
 const TAGS = {
-    RequestSystemUserVendorCreate: {
-        action: "request-system-user-vendor-create",
+    CreateRequest: {
+        action: "create-request",
     },
-    RequestSystemUserVendorAgentCreate: {
-        action: "request-system-user-vendor-agent-create",
+    CreateAgentRequest: {
+        action: "create-agent-request",
     },
-    RequestSystemUserVendorGet: {
-        action: "request-system-user-vendor-get",
+    GetRequestByGuid: {
+        action: "get-request-by-guid",
     },
-    RequestSystemUserVendorDelete: {
-        action: "request-system-user-vendor-delete",
+    DeleteRequestByRequestId: {
+        action: "delete-request-by-request-id",
     },
-    RequestSystemUserVendorAgentGet: {
-        action: "request-system-user-vendor-agent-get",
+    GetAgentSystemUserRequestByGuid: {
+        action: "get-agent-system-user-request-by-guid",
     },
-    RequestSystemUserVendorGetByExternalRef: {
-        action: "request-system-user-vendor-get-by-external-ref",
+    GetRequestByExternalRef: {
+        action: "get-request-by-external-ref",
     },
-    RequestSystemUserVendorAgentGetByExternalRef: {
-        action: "request-system-user-vendor-agent-get-by-external-ref",
+    GetAgentRequestByExternalRef: {
+        action: "get-agent-request-by-external-ref",
     },
-    RequestSystemUserVendorGetBySystem: {
-        action: "request-system-user-vendor-get-by-system",
+    GetAllRequestsForVendor: {
+        action: "get-all-requests-for-vendor",
     },
-    RequestSystemUserVendorAgentGetBySystem: {
-        action: "request-system-user-vendor-agent-get-by-system",
+    GetAllAgentRequestsForVendor: {
+        action: "get-all-agent-requests-for-vendor",
     },
-    RequestSystemUserApprove: {
-        action: "request-system-user-approve",
+    ApproveSystemUserRequest: {
+        action: "approve-system-user-request",
     },
 };
 
@@ -80,7 +80,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorCreate(request, labels = null) {
+    CreateRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}`;
@@ -88,7 +88,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.RequestSystemUserVendorCreate.action,
+            action: TAGS.CreateRequest.action,
         };
 
         if (labels !== null) {
@@ -118,7 +118,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorAgentCreate(request, labels = null) {
+    CreateAgentRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/agent`;
@@ -126,7 +126,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.RequestSystemUserVendorAgentCreate.action,
+            action: TAGS.CreateAgentRequest.action,
         };
 
         if (labels !== null) {
@@ -156,7 +156,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorGet(requestId, labels = null) {
+    GetRequestByGuid(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/${encodeURIComponent(requestId)}`;
@@ -164,7 +164,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
-            action: TAGS.RequestSystemUserVendorGet.action,
+            action: TAGS.GetRequestByGuid.action,
         };
 
         if (labels !== null) {
@@ -193,7 +193,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorDelete(requestId, labels = null) {
+    DeleteRequestByRequestId(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/${encodeURIComponent(requestId)}`;
@@ -201,7 +201,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
-            action: TAGS.RequestSystemUserVendorDelete.action,
+            action: TAGS.DeleteRequestByRequestId.action,
         };
 
         if (labels !== null) {
@@ -230,7 +230,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorAgentGet(requestId, labels = null) {
+    GetAgentSystemUserRequestByGuid(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/agent/${encodeURIComponent(requestId)}`;
@@ -238,7 +238,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/agent/{encodeURIComponent(requestId)}`,
-            action: TAGS.RequestSystemUserVendorAgentGet.action,
+            action: TAGS.GetAgentSystemUserRequestByGuid.action,
         };
 
         if (labels !== null) {
@@ -269,7 +269,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorGetByExternalRef(
+    GetRequestByExternalRef(
         systemId,
         orgNo,
         externalRef,
@@ -282,7 +282,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
-            action: TAGS.RequestSystemUserVendorGetByExternalRef.action,
+            action: TAGS.GetRequestByExternalRef.action,
         };
 
         if (labels !== null) {
@@ -313,7 +313,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorAgentGetByExternalRef(
+    GetAgentRequestByExternalRef(
         systemId,
         orgNo,
         externalRef,
@@ -326,7 +326,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
-            action: TAGS.RequestSystemUserVendorAgentGetByExternalRef.action,
+            action: TAGS.GetAgentRequestByExternalRef.action,
         };
 
         if (labels !== null) {
@@ -356,7 +356,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorGetBySystem(systemId, token = null, labels = null) {
+    GetAllRequestsForVendor(systemId, token = null, labels = null) {
         const authToken = this.tokenGenerator.getToken();
 
         let url = `${this.FULL_PATH}/bysystem/${encodeURIComponent(systemId)}`;
@@ -368,7 +368,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/bysystem/{encodeURIComponent(systemId)}`,
-            action: TAGS.RequestSystemUserVendorGetBySystem.action,
+            action: TAGS.GetAllRequestsForVendor.action,
         };
 
         if (labels !== null) {
@@ -398,7 +398,7 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserVendorAgentGetBySystem(
+    GetAllAgentRequestsForVendor(
         systemId,
         token = null,
         labels = null,
@@ -414,7 +414,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/agent/bysystem/{encodeURIComponent(systemId)}`,
-            action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
+            action: TAGS.GetAllAgentRequestsForVendor.action,
         };
 
         if (labels !== null) {
@@ -444,15 +444,15 @@ class RequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RequestSystemUserApprove(partyId, requestId, labels = null) {
+    ApproveSystemUserRequest(partyId, requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.ENDUSER_FULL_PATH}/${encodeURIComponent(partyId)}/${encodeURIComponent(requestId)}/approve`;
 
         let tags = {
             endpoint: url,
-            name: `${this.ENDUSER_FULL_PATH}/{partyId}/{requestId}/approve`,
-            action: TAGS.RequestSystemUserApprove.action,
+            name: `${this.ENDUSER_FULL_PATH}/{party}/{requestId}/approve`,
+            action: TAGS.ApproveSystemUserRequest.action,
         };
 
         if (labels !== null) {

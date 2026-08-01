@@ -3,20 +3,20 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Deletes a system user request.
+ * Creates a new system user request.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {string} requestId Request identifier.
+ * @param {CreateRequestSystemUser} request Request model.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
-export function RequestSystemUserVendorDelete(
+export function CreateRequest(
     requestSystemUserClient,
-    requestId,
+    request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorDelete(
-        requestId,
+    const res = requestSystemUserClient.CreateRequest(
+        request,
         labels,
     );
 
@@ -24,10 +24,10 @@ export function RequestSystemUserVendorDelete(
     let requestResponse = null;
 
     const succeed = check(res, {
-        "RequestSystemUserVendorDelete - status code is 200": (r) =>
-            r.status === 200,
-        "RequestSystemUserVendorDelete - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "CreateRequest - status code is 201": (r) =>
+            r.status === 201,
+        "CreateRequest - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
 
     if (!succeed) {
@@ -37,7 +37,7 @@ export function RequestSystemUserVendorDelete(
     }
 
     check(res, {
-        "RequestSystemUserVendorDelete - body is valid": (r) => {
+        "CreateRequest - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

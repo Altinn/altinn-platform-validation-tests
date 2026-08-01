@@ -3,40 +3,43 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves all registered systems.
- *
- * Requires the `altinn:portal/enduser` scope.
+ * Retrieves the system change log.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
+ * @param {string} systemId System identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RegisteredSystemDTO[]|null} Registered systems.
+ * @returns {SystemChangeLog[]|null} Change log entries.
  */
-export function SystemRegisterGet(
+export function GetChangeLog(
     systemRegisterClient,
+    systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGet(labels);
+    const res = systemRegisterClient.GetChangeLog(
+        systemId,
+        labels,
+    );
 
-    /** @type {RegisteredSystemDTO[]|null} */
-    let systems = null;
+    /** @type {SystemChangeLog[]|null} */
+    let changeLog = null;
 
     const succeed = check(res, {
-        "SystemRegisterGet - status code is 200": (r) =>
+        "GetChangeLog - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterGet - status text is 200 OK": (r) =>
+        "GetChangeLog - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return systems;
+        return changeLog;
     }
 
     check(res, {
-        "SystemRegisterGet - body is valid": (r) => {
+        "GetChangeLog - body is valid": (r) => {
             try {
-                systems = JSON.parse(r.body);
+                changeLog = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -48,5 +51,5 @@ export function SystemRegisterGet(
         },
     });
 
-    return systems;
+    return changeLog;
 }

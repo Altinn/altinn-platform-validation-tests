@@ -3,43 +3,38 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves the system change log.
+ * Retrieves all vendor registered systems.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
- * @param {string} systemId System identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemChangeLog[]|null} Change log entries.
+ * @returns {RegisteredSystemDTO[]|null} Registered systems.
  */
-export function SystemRegisterVendorGetChangeLog(
+export function GetListOfRegisteredSystemsForVendor(
     systemRegisterClient,
-    systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorGetChangeLog(
-        systemId,
-        labels,
-    );
+    const res = systemRegisterClient.GetListOfRegisteredSystemsForVendor(labels);
 
-    /** @type {SystemChangeLog[]|null} */
-    let changeLog = null;
+    /** @type {RegisteredSystemDTO[]|null} */
+    let systems = null;
 
     const succeed = check(res, {
-        "SystemRegisterVendorGetChangeLog - status code is 200": (r) =>
+        "GetListOfRegisteredSystemsForVendor - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorGetChangeLog - status text is 200 OK": (r) =>
+        "GetListOfRegisteredSystemsForVendor - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return changeLog;
+        return systems;
     }
 
     check(res, {
-        "SystemRegisterVendorGetChangeLog - body is valid": (r) => {
+        "GetListOfRegisteredSystemsForVendor - body is valid": (r) => {
             try {
-                changeLog = JSON.parse(r.body);
+                systems = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -51,5 +46,5 @@ export function SystemRegisterVendorGetChangeLog(
         },
     });
 
-    return changeLog;
+    return systems;
 }

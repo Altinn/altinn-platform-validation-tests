@@ -3,30 +3,30 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Creates a new system user request.
+ * Creates a new agent system user request.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {CreateRequestSystemUser} request Request model.
+ * @param {CreateAgentRequestSystemUser} request Request model.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponse|null} Request response.
+ * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
-export function RequestSystemUserVendorCreate(
+export function CreateAgentRequest(
     requestSystemUserClient,
     request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorCreate(
+    const res = requestSystemUserClient.CreateAgentRequest(
         request,
         labels,
     );
 
-    /** @type {RequestSystemResponse|null} */
+    /** @type {AgentRequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "RequestSystemUserVendorCreate - status code is 201": (r) =>
+        "CreateAgentRequest - status code is 201": (r) =>
             r.status === 201,
-        "RequestSystemUserVendorCreate - status text is 201 Created": (r) =>
+        "CreateAgentRequest - status text is 201 Created": (r) =>
             r.status_text === "201 Created",
     });
 
@@ -37,7 +37,7 @@ export function RequestSystemUserVendorCreate(
     }
 
     check(res, {
-        "RequestSystemUserVendorCreate - body is valid": (r) => {
+        "CreateAgentRequest - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 
