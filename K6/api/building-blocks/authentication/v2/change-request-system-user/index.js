@@ -5,7 +5,7 @@ import { GetAllChangeRequestsForVendor } from "./get-all-change-requests-for-ven
 import { GetChangeRequestByExternalRef } from "./get-change-request-by-external-ref.js";
 import { GetChangeRequestByGuid } from "./get-change-request-by-guid.js";
 
-export const ChangeRequestSystemUser = {
+export const ChangeRequestSystemUserBuildingBlocks = {
     ApproveSystemUserChangeRequest,
     CreateChangeRequest,
     DeleteChangeRequestByRequestId,

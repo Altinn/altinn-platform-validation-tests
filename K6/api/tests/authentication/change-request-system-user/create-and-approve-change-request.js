@@ -14,10 +14,10 @@ import { RegisterSystemRequestBuilder } from "../../../../clients/authentication
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { ChangeRequestSystemUser } from "../../../building-blocks/authentication/v2/change-request-system-user/index.js";
-import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
-import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemUser } from "../../../building-blocks/authentication/v2/system-user/index.js";
+import { ChangeRequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/change-request-system-user/index.js";
+import { RequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
+import { SystemRegisterBuildingBlocks } from "../../../building-blocks/authentication/v2/system-register/index.js";
+import { SystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/system-user/index.js";
 import { ChangeRequestSystemUserDomainChecks } from "../../../domain-checks/authentication/change-request-system-user.js";
 import { SystemUserRequestDomainChecks } from "../../../domain-checks/authentication/system-user-request.js";
 
@@ -130,7 +130,7 @@ export default function (data) {
         let systemUserId;
 
         group("Give the customer a system user to change", function () {
-            SystemRegister.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
+            SystemRegisterBuildingBlocks.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
 
             const createRequest = new CreateRequestSystemUserBuilder()
                 .withExternalRef(externalRef)
@@ -140,7 +140,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const createdRequest = RequestSystemUser.CreateRequest(vendorRequestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(vendorRequestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
                 systemId,
@@ -152,7 +152,7 @@ export default function (data) {
                 return;
             }
 
-            const approved = RequestSystemUser.ApproveSystemUserRequest(
+            const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
                 approverRequestSystemUserClient,
                 customer.partyId,
                 createdRequest.id,
@@ -160,7 +160,7 @@ export default function (data) {
 
             SystemUserRequestDomainChecks.CheckRequestApproved(approved);
 
-            const systemUser = SystemUser.GetByExternalId(systemUserClient, {
+            const systemUser = SystemUserBuildingBlocks.GetByExternalId(systemUserClient, {
                 clientId,
                 systemProviderOrgNo: systemOwner,
                 systemUserOwnerOrgNo: customer.orgNo,
@@ -179,7 +179,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const changeRequest = ChangeRequestSystemUser.CreateChangeRequest(
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
                 vendorChangeRequestClient,
                 emptyChangeRequest,
                 uuidv4(),
@@ -202,7 +202,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const changeRequest = ChangeRequestSystemUser.CreateChangeRequest(
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
                 vendorChangeRequestClient,
                 request,
                 uuidv4(),
@@ -225,7 +225,7 @@ export default function (data) {
                 return;
             }
 
-            const approved = ChangeRequestSystemUser.ApproveSystemUserChangeRequest(
+            const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(
                 approverChangeRequestClient,
                 customer.partyId,
                 changeRequestId,
@@ -233,7 +233,7 @@ export default function (data) {
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestApproved(approved);
 
-            const changeRequest = ChangeRequestSystemUser.GetChangeRequestByGuid(vendorChangeRequestClient, changeRequestId);
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.GetChangeRequestByGuid(vendorChangeRequestClient, changeRequestId);
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "Accepted");
         });

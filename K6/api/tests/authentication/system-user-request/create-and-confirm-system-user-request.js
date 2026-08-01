@@ -8,8 +8,8 @@ import { RegisterSystemRequestBuilder } from "../../../../clients/authentication
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
-import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
+import { RequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
+import { SystemRegisterBuildingBlocks } from "../../../building-blocks/authentication/v2/system-register/index.js";
 import { SystemUserRequestDomainChecks } from "../../../domain-checks/authentication/system-user-request.js";
 
 export function setup() {
@@ -84,7 +84,7 @@ export default function (data) {
 
     group("As a vendor, I can request a system user and have the customer approve it", function () {
         group("Register the system the request is made for", function () {
-            SystemRegister.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
+            SystemRegisterBuildingBlocks.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
         });
 
         let requestId;
@@ -98,7 +98,7 @@ export default function (data) {
                 .withRedirectUrl(redirectUrl)
                 .build();
 
-            const createdRequest = RequestSystemUser.CreateRequest(vendorRequestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(vendorRequestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
                 systemId,
@@ -131,7 +131,7 @@ export default function (data) {
             const approverRequestSystemUserClient
                 = new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator);
 
-            const approved = RequestSystemUser.ApproveSystemUserRequest(
+            const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
                 approverRequestSystemUserClient,
                 customer.partyId,
                 requestId,
@@ -145,7 +145,7 @@ export default function (data) {
                 return;
             }
 
-            const request = RequestSystemUser.GetRequestByGuid(vendorRequestSystemUserClient, requestId);
+            const request = RequestSystemUserBuildingBlocks.GetRequestByGuid(vendorRequestSystemUserClient, requestId);
 
             SystemUserRequestDomainChecks.CheckRequestStatus(request, "Accepted");
         });

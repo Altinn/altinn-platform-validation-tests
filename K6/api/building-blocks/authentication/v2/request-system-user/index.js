@@ -9,7 +9,7 @@ import { GetAllRequestsForVendor } from "./get-all-requests-for-vendor.js";
 import { GetRequestByExternalRef } from "./get-request-by-external-ref.js";
 import { GetRequestByGuid } from "./get-request-by-guid.js";
 
-export const RequestSystemUser = {
+export const RequestSystemUserBuildingBlocks = {
     ApproveSystemUserRequest,
     CreateAgentRequest,
     CreateRequest,

@@ -4,7 +4,7 @@ import { SystemUserClient } from "../../../../clients/authentication/v2/index.js
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { SystemUser } from "../../../building-blocks/authentication/v2/system-user/index.js";
+import { SystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/system-user/index.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 
@@ -43,7 +43,7 @@ export default function () {
         let firstPage;
 
         group("Fetch the first page of system users", function () {
-            firstPage = SystemUser.VendorGetBySystem(systemUserClient, systemId);
+            firstPage = SystemUserBuildingBlocks.VendorGetBySystem(systemUserClient, systemId);
 
             PaginationDomainChecks.CheckPaginatedShape(firstPage, "VendorGetBySystem");
             PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");

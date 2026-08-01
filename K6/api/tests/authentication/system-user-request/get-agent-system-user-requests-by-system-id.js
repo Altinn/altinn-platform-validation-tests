@@ -4,7 +4,7 @@ import { RequestSystemUserClient } from "../../../../clients/authentication/v2/i
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { RequestSystemUser } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
+import { RequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 
@@ -42,15 +42,15 @@ export default function () {
         let firstPage;
 
         group("Fetch the first page of agent system user requests", function () {
-            firstPage = RequestSystemUser.GetAllAgentRequestsForVendor(requestSystemUserClient, systemId);
+            firstPage = RequestSystemUserBuildingBlocks.GetAllAgentRequestsForVendor(requestSystemUserClient, systemId);
 
-            PaginationDomainChecks.CheckPaginatedShape(firstPage, "VendorAgentGetBySystem");
-            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorAgentGetBySystem");
+            PaginationDomainChecks.CheckPaginatedShape(firstPage, "GetAllAgentRequestsForVendor");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "GetAllAgentRequestsForVendor");
             PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, systemId, "agent system user request");
         });
 
         group("Follow the next-link pagination", function () {
-            PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, "VendorAgentGetBySystem");
+            PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, "GetAllAgentRequestsForVendor");
 
             const nextUrl = extractNextUrl(firstPage);
 
@@ -59,7 +59,7 @@ export default function () {
                 additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
             }
 
-            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "VendorAgentGetBySystem");
+            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "GetAllAgentRequestsForVendor");
         });
     });
 }

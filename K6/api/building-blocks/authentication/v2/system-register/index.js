@@ -10,7 +10,7 @@ import { UpdateAccessPackagesOnRegisteredSystem } from "./update-access-packages
 import { UpdateRightsOnRegisteredSystem } from "./update-rights-on-registered-system.js";
 import { UpdateWholeRegisteredSystem } from "./update-whole-registered-system.js";
 
-export const SystemRegister = {
+export const SystemRegisterBuildingBlocks = {
     CreateRegisteredSystem,
     GetAccessPackagesForRegisteredSystem,
     GetChangeLog,

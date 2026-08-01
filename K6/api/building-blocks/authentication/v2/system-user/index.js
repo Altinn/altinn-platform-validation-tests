@@ -4,7 +4,7 @@ import { SystemUserUpdate } from "./update.js";
 import { SystemUserVendorGetByQuery } from "./vendor-get-by-query.js";
 import { SystemUserVendorGetBySystem } from "./vendor-get-by-system.js";
 
-export const SystemUser = {
+export const SystemUserBuildingBlocks = {
     GetByExternalId: SystemUserGetByExternalId,
     InternalStream: SystemUserInternalStream,
     Update: SystemUserUpdate,
