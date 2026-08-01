@@ -2,15 +2,10 @@ import { group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
-import { RequestSystemUserClient, SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
-import { CreateRequestSystemUserBuilder } from "../../../../clients/authentication/v2/request-system-user.builders.js";
-import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { RequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
-import { SystemRegisterBuildingBlocks } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemUserRequestDomainChecks } from "../../../domain-checks/authentication/system-user-request.js";
+import { CreateRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

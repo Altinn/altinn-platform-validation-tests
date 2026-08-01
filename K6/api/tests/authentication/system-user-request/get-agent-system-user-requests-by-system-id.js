@@ -1,10 +1,9 @@
 import { group } from "k6";
 
-import { RequestSystemUserClient } from "../../../../clients/authentication/v2/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { RequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
+import { RequestSystemUserBuildingBlocks, RequestSystemUserClient } from "../../../authentication-v2-imports.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 

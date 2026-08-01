@@ -1,12 +1,9 @@
 import { group } from "k6";
 
-import { SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
-import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { SystemRegisterBuildingBlocks } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemRegisterDomainChecks } from "../../../domain-checks/authentication/system-register.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-v2-imports.js";
 
 const ORG = "ttd";
 

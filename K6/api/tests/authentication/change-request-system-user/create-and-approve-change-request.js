@@ -2,24 +2,10 @@ import { group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
-import { ChangeRequestSystemUserBuilder } from "../../../../clients/authentication/v2/change-request-system-user.builders.js";
-import {
-    ChangeRequestSystemUserClient,
-    RequestSystemUserClient,
-    SystemRegisterClient,
-    SystemUserClient
-} from "../../../../clients/authentication/v2/index.js";
-import { CreateRequestSystemUserBuilder } from "../../../../clients/authentication/v2/request-system-user.builders.js";
-import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { ChangeRequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/change-request-system-user/index.js";
-import { RequestSystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/request-system-user/index.js";
-import { SystemRegisterBuildingBlocks } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemUserBuildingBlocks } from "../../../building-blocks/authentication/v2/system-user/index.js";
-import { ChangeRequestSystemUserDomainChecks } from "../../../domain-checks/authentication/change-request-system-user.js";
-import { SystemUserRequestDomainChecks } from "../../../domain-checks/authentication/system-user-request.js";
+import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserClient, ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
