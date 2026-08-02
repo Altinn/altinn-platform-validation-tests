@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { check, group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
@@ -105,7 +105,9 @@ export default function (data) {
         });
 
         group("Approve the request as the customer", function () {
-            if (requestId === undefined) {
+            if (!check(requestId, {
+                "Prerequisite - the system user request was created": (value) => value !== undefined && value !== null,
+            })) {
                 return;
             }
 
@@ -136,7 +138,9 @@ export default function (data) {
         });
 
         group("The approved request is accepted", function () {
-            if (requestId === undefined) {
+            if (!check(requestId, {
+                "Prerequisite - the system user request was created": (value) => value !== undefined && value !== null,
+            })) {
                 return;
             }
 

@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { check, group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
@@ -134,7 +134,9 @@ export default function (data) {
                 externalRef,
             });
 
-            if (createdRequest === null) {
+            if (!check(createdRequest, {
+                "Prerequisite - the system user request was created": (value) => value !== undefined && value !== null,
+            })) {
                 return;
             }
 
@@ -157,7 +159,9 @@ export default function (data) {
         });
 
         group("Asking for nothing needs no change", function () {
-            if (systemUserId === undefined) {
+            if (!check(systemUserId, {
+                "Prerequisite - the customer has a system user to change": (value) => value !== undefined && value !== null,
+            })) {
                 return;
             }
 
@@ -179,7 +183,9 @@ export default function (data) {
         let changeRequestId;
 
         group("Ask for a right the system user does not have", function () {
-            if (systemUserId === undefined) {
+            if (!check(systemUserId, {
+                "Prerequisite - the customer has a system user to change": (value) => value !== undefined && value !== null,
+            })) {
                 return;
             }
 
@@ -207,7 +213,9 @@ export default function (data) {
         });
 
         group("The customer approves the change", function () {
-            if (changeRequestId === undefined) {
+            if (!check(changeRequestId, {
+                "Prerequisite - a change request was created to approve": (value) => value !== undefined && value !== null,
+            })) {
                 return;
             }
 
