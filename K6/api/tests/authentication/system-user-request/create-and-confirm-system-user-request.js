@@ -106,9 +106,7 @@ export default function (data) {
         });
 
         group("Approve the request as the customer", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
-                return;
-            }
+            PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created");
 
             const approverScopes = CreateScopeString([
                 AltinnScopes.PORTAL.ENDUSER
@@ -137,9 +135,7 @@ export default function (data) {
         });
 
         group("The approved request is accepted", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
-                return;
-            }
+            PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created");
 
             const request = RequestSystemUserBuildingBlocks.GetRequestByGuid(vendorRequestSystemUserClient, requestId);
 

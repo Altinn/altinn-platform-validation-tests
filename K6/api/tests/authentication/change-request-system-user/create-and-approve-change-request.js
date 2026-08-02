@@ -135,14 +135,12 @@ export default function (data) {
                 externalRef,
             });
 
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created")) {
-                return;
-            }
+            PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created");
 
             const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
                 approverRequestSystemUserClient,
                 customer.partyId,
-                createdRequest.id,
+                createdRequest?.id,
             );
 
             SystemUserRequestDomainChecks.CheckRequestApproved(approved);
@@ -158,9 +156,7 @@ export default function (data) {
         });
 
         group("Asking for nothing needs no change", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
-                return;
-            }
+            PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change");
 
             const emptyChangeRequest = new ChangeRequestSystemUserBuilder()
                 .withRedirectUrl(redirectUrl)
@@ -180,9 +176,7 @@ export default function (data) {
         let changeRequestId;
 
         group("Ask for a right the system user does not have", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
-                return;
-            }
+            PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change");
 
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(requestedRights)
@@ -208,9 +202,7 @@ export default function (data) {
         });
 
         group("The customer approves the change", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to approve")) {
-                return;
-            }
+            PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to approve");
 
             const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(
                 approverChangeRequestClient,
