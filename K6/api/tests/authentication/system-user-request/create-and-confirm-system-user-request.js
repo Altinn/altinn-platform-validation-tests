@@ -1,4 +1,4 @@
-import { check, group } from "k6";
+import { group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
@@ -6,6 +6,7 @@ import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder,
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
+import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -105,9 +106,7 @@ export default function (data) {
         });
 
         group("Approve the request as the customer", function () {
-            if (!check(requestId, {
-                "Prerequisite - the system user request was created": (value) => value !== undefined && value !== null,
-            })) {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
                 return;
             }
 
@@ -138,9 +137,7 @@ export default function (data) {
         });
 
         group("The approved request is accepted", function () {
-            if (!check(requestId, {
-                "Prerequisite - the system user request was created": (value) => value !== undefined && value !== null,
-            })) {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
                 return;
             }
 

@@ -1,4 +1,4 @@
-import { check, group } from "k6";
+import { group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
@@ -6,6 +6,7 @@ import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder,
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserClient, ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
+import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -134,9 +135,7 @@ export default function (data) {
                 externalRef,
             });
 
-            if (!check(createdRequest, {
-                "Prerequisite - the system user request was created": (value) => value !== undefined && value !== null,
-            })) {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created")) {
                 return;
             }
 
@@ -159,9 +158,7 @@ export default function (data) {
         });
 
         group("Asking for nothing needs no change", function () {
-            if (!check(systemUserId, {
-                "Prerequisite - the customer has a system user to change": (value) => value !== undefined && value !== null,
-            })) {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
                 return;
             }
 
@@ -183,9 +180,7 @@ export default function (data) {
         let changeRequestId;
 
         group("Ask for a right the system user does not have", function () {
-            if (!check(systemUserId, {
-                "Prerequisite - the customer has a system user to change": (value) => value !== undefined && value !== null,
-            })) {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
                 return;
             }
 
@@ -213,9 +208,7 @@ export default function (data) {
         });
 
         group("The customer approves the change", function () {
-            if (!check(changeRequestId, {
-                "Prerequisite - a change request was created to approve": (value) => value !== undefined && value !== null,
-            })) {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to approve")) {
                 return;
             }
 
