@@ -1,4 +1,5 @@
 import { fail, group } from "k6";
+import http from "k6/http";
 
 import {
     ChangeRequestSystemUserClient,
@@ -8,7 +9,7 @@ import {
     SystemUserClient,
 } from "../../../clients/authentication/v2/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../common-imports.js";
-import { requireEnv } from "../../../helpers.js";
+import { parseCsvData, requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../authentication-v2-imports.js";
 import { PrerequisiteDomainChecks } from "../../domain-checks/common/prerequisite.js";
@@ -24,23 +25,6 @@ const SYSTEM_OWNER = "713431400";
 const REDIRECT_URL = "https://digdir.no";
 
 /**
- * The customers the system users are created for.
- *
- * Hardcoded rather than fetched, because these tests only run on at22 and the
- * customer csv there holds a single distinct row, repeated. Kept as a list so the
- * tests pick from it the way they would from fetched data, and so adding a
- * customer later is a change to this array and nothing else.
- */
-const CUSTOMERS = [
-    {
-        orgNo: "314250052",
-        partyId: "51243526",
-        userId: "20013183",
-        userPartyUuid: "68c5b8d2-3600-4a75-bcc8-32d3aa8680ee",
-    },
-];
-
-/**
  * @type {object | undefined}
  */
 let clients = undefined;
@@ -51,14 +35,22 @@ let clients = undefined;
 let approverTokenGenerator = undefined;
 
 /**
- * Validates the environment and hands the tests their data.
+ * Fetches the customers the system users are created for.
+ *
+ * Returned flat rather than segmented per VU, so a test picks from the whole list
+ * with getItemFromList, which walks it across iterations.
  *
  * @returns {object[]} The customers the tests act on behalf of.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    return CUSTOMERS;
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
+        { tags: { action: "fetch-test-data" } },
+    );
+
+    return parseCsvData(res.body);
 }
 
 /**
