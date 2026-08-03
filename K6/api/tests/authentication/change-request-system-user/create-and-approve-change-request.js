@@ -4,21 +4,14 @@ import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-v2-imports.js";
 import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
-import { createApprovedSystemUser, createSystemRegistration, fetchCustomers, getApproverTokenOpts, getClients, resourceRight } from "../commons.js";
+import { createApprovedSystemUser, createSystemRegistration, getApproverTokenOpts, getClients, resourceRight } from "../commons.js";
 
 const GRANTED_RESOURCE = "ttd-dialogporten-performance-test-01";
 const REQUESTED_RESOURCE = "authentication-e2e-test";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-/**
- * k6 setup stage. Runs once before the iterations.
- *
- * @returns {object[]} The customers this test acts on behalf of.
- */
-export function setup() {
-    return fetchCustomers();
-}
+export { setup } from "../commons.js";
 
 export default function (data) {
     const [clients, approverTokenGenerator] = getClients();

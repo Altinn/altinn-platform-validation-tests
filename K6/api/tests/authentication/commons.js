@@ -37,14 +37,12 @@ let approverTokenGenerator = undefined;
 /**
  * Fetches the customers the system users are created for.
  *
- * Call from a test's own setup, so the test file states that it has a setup stage
- * rather than re-exporting one. Returned flat rather than segmented per VU, so a
- * test picks from the whole list with getItemFromList, which walks it across
- * iterations.
+ * Returned flat rather than segmented per VU, so a test picks from the whole list
+ * with getItemFromList, which walks it across iterations.
  *
  * @returns {object[]} The customers the tests act on behalf of.
  */
-export function fetchCustomers() {
+export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
