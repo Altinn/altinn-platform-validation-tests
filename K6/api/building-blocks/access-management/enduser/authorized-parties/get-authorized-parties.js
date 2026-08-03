@@ -5,13 +5,13 @@ import { AuthorizedPartiesClient } from "../../../../../clients/access-managemen
 /**
  * Retrieves the parties the authenticated end user is authorized to represent.
  *
- * @param {AuthorizedPartiesClient|null} [authorizedPartiesClient]
+ * @param {AuthorizedPartiesClient|null} [authorizedPartiesClient] TODO: description
  * @param {AuthorizedPartiesQuery|null} [queryParams]
  * Optional query parameters. Prefer using
  * {@link AuthorizedPartiesQueryBuilder} to construct this object.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request tags.
- * @returns {AuthorizedPartyDtoListPaginatedResult}
+ * @returns {AuthorizedPartyDtoListPaginatedResult} TODO: description
  */
 export function GetAuthorizedParties(
     authorizedPartiesClient,
