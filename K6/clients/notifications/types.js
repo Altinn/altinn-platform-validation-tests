@@ -340,3 +340,4 @@
 
 export const NotificationReminderExt = undefined;
 export const RecipientOrganizationExt = undefined;
+export const DialogportenIdentifiersExt = undefined;
