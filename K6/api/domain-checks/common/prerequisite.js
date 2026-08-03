@@ -4,15 +4,13 @@ import { check } from "k6";
  * Checks that a value an earlier step was supposed to produce is actually there.
  *
  * Groups that depend on an earlier group used to open with a bare early return,
- * which reported a clean run when the prerequisite was missing. Call this instead,
- * and carry on regardless of the result: skipping the rest of the group would
- * change how many checks a run reports, and a run is only comparable to the one
- * before it if the count is fixed. The dependent steps then fail on their own
- * checks, which is the point.
+ * which reported a clean run when the prerequisite was missing. Call this instead
+ * and fail() on a false result, so the run stops at the step that actually broke
+ * rather than reporting a cascade of failures downstream of it.
  *
- * Callers must stay null safe for that to hold. Use optional chaining on anything
- * the missing value feeds into, so it degrades to undefined rather than throwing
- * and taking the whole iteration with it.
+ * The check has to stay. fail() on its own aborts the iteration but writes
+ * nothing to the summary and leaves the exit code at zero, so the failure is
+ * visible only in the logs. The check is what puts a line in the summary.
  *
  * @param {unknown} value - The value the earlier step should have produced.
  * @param {string} description - What the value is, used in the check name and logs.

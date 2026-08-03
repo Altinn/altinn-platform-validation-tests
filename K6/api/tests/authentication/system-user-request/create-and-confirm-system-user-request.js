@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 import { vu } from "k6/execution";
 import http from "k6/http";
 
@@ -106,7 +106,9 @@ export default function (data) {
         });
 
         group("Approve the request as the customer", function () {
-            PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created");
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
+                fail("missing prerequisite: the system user request was created");
+            }
 
             const approverScopes = CreateScopeString([
                 AltinnScopes.PORTAL.ENDUSER
@@ -135,7 +137,9 @@ export default function (data) {
         });
 
         group("The approved request is accepted", function () {
-            PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created");
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
+                fail("missing prerequisite: the system user request was created");
+            }
 
             const request = RequestSystemUserBuildingBlocks.GetRequestByGuid(vendorRequestSystemUserClient, requestId);
 
