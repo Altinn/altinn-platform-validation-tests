@@ -1,138 +1,54 @@
 import { fail, group } from "k6";
 import { vu } from "k6/execution";
-import http from "k6/http";
 
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserClient, ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
+import { uuidv4 } from "../../../../common-imports.js";
+import { AltinnScopes } from "../../../../scopes.js";
+import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
+import { createSystemUserTestContext, fetchCustomers, resourceRight } from "../../../fixtures/authentication/system-user.js";
+
+const GRANTED_RESOURCE = "ttd-dialogporten-performance-test-01";
+const REQUESTED_RESOURCE = "authentication-e2e-test";
 
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
-        { tags: { action: "fetch-test-data" } });
-    return parseCsvData(res.body);
+    return fetchCustomers();
 }
 
 export default function (data) {
     const customer = data[vu.idInTest - 1];
 
-    const systemOwner = "713431400";
-    const grantedResource = "ttd-dialogporten-performance-test-01";
-    const requestedResource = "authentication-e2e-test";
-    const redirectUrl = "https://digdir.no";
+    const grantedRights = [resourceRight(GRANTED_RESOURCE)];
+    const requestedRights = [resourceRight(REQUESTED_RESOURCE)];
 
-    const systemName = `changerequest${uuidv4()}`;
-    const systemId = `${systemOwner}_${systemName}`;
-    const clientId = uuidv4();
-    const externalRef = uuidv4();
-
-    const right = (resource) => {
-        return {
-            "resource": [
-                {
-                    "value": resource,
-                    "id": "urn:altinn:resource"
-                }
-            ]
-        };
-    };
-
-    const grantedRights = [right(grantedResource)];
-    const requestedRights = [right(requestedResource)];
-
-    const vendorScopes = CreateScopeString([
-        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
-        AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+    // Registered with both, so the change request can ask for a right the system
+    // user was not granted at the outset.
+    const test = createSystemUserTestContext(customer, {
+        systemNamePrefix: "changerequest",
+        registeredRights: [...grantedRights, ...requestedRights],
         // Looking the system user up by external id is behind its own scope.
-        AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
-        AltinnScopes.AUTHORIZATION.AUTHORIZE
-    ]);
-
-    const vendorTokenOptions = new EnterpriseTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .withScopes(vendorScopes)
-        .withOrganizationNumber(systemOwner)
-        .build();
-
-    const vendorTokenGenerator = new EnterpriseTokenGenerator(vendorTokenOptions);
-
-    const systemRegisterClient
-        = new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator);
-
-    const vendorRequestSystemUserClient
-        = new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator);
-
-    const systemUserClient
-        = new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator);
-
-    const vendorChangeRequestClient
-        = new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator);
-
-    const approverScopes = CreateScopeString([
-        AltinnScopes.PORTAL.ENDUSER
-    ]);
-
-    const approverTokenOptions = new PersonalTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .withScopes(approverScopes)
-        .withUserId(customer.userId)
-        .withPartyUuid(customer.userPartyUuid)
-        .build();
-
-    const approverTokenGenerator = new PersonalTokenGenerator(approverTokenOptions);
-
-    const approverRequestSystemUserClient
-        = new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator);
-
-    const approverChangeRequestClient
-        = new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator);
-
-    // The system is registered with both resources, so the change request can ask for a
-    // right the system user was not granted at the outset.
-    const registerSystemRequest = new RegisterSystemRequestBuilder()
-        .withId(systemId)
-        .withVendor(`0192:${systemOwner}`)
-        .withName({
-            "en": systemName,
-            "nb": systemName,
-            "nn": systemName
-        })
-        .withDescription({
-            "en": "This is auto generated by an integration test. Some data is randomized, but some is not - like this description",
-            "nb": "Integrasjonstest. Noe er randomisert her, men mye blir likt.",
-            "nn": "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt."
-        })
-        .withRights([...grantedRights, ...requestedRights])
-        .withClientId([clientId])
-        .withVisibility(false)
-        .withAllowedRedirectUrls([redirectUrl])
-        .build();
+        additionalVendorScopes: [AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ],
+    });
 
     group("As a vendor, I can ask an existing system user for more rights", function () {
         let systemUserId;
 
         group("Give the customer a system user to change", function () {
-            SystemRegisterBuildingBlocks.CreateRegisteredSystem(systemRegisterClient, registerSystemRequest);
+            SystemRegisterBuildingBlocks.CreateRegisteredSystem(test.vendor.systemRegisterClient, test.registerSystemRequest);
 
             const createRequest = new CreateRequestSystemUserBuilder()
-                .withExternalRef(externalRef)
-                .withSystemId(systemId)
+                .withExternalRef(test.externalRef)
+                .withSystemId(test.systemId)
                 .withPartyOrgNo(customer.orgNo)
                 .withRights(grantedRights)
-                .withRedirectUrl(redirectUrl)
+                .withRedirectUrl(test.redirectUrl)
                 .build();
 
-            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(vendorRequestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(test.vendor.requestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
-                systemId,
+                systemId: test.systemId,
                 partyOrgNo: customer.orgNo,
-                externalRef,
+                externalRef: test.externalRef,
             });
 
             if (!PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created")) {
@@ -140,18 +56,18 @@ export default function (data) {
             }
 
             const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
-                approverRequestSystemUserClient,
+                test.approver.requestSystemUserClient,
                 customer.partyId,
                 createdRequest?.id,
             );
 
             SystemUserRequestDomainChecks.CheckRequestApproved(approved);
 
-            const systemUser = SystemUserBuildingBlocks.GetByExternalId(systemUserClient, {
-                clientId,
-                systemProviderOrgNo: systemOwner,
+            const systemUser = SystemUserBuildingBlocks.GetByExternalId(test.vendor.systemUserClient, {
+                clientId: test.clientId,
+                systemProviderOrgNo: test.systemOwner,
                 systemUserOwnerOrgNo: customer.orgNo,
-                externalRef,
+                externalRef: test.externalRef,
             });
 
             systemUserId = systemUser?.id;
@@ -163,11 +79,11 @@ export default function (data) {
             }
 
             const emptyChangeRequest = new ChangeRequestSystemUserBuilder()
-                .withRedirectUrl(redirectUrl)
+                .withRedirectUrl(test.redirectUrl)
                 .build();
 
             const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
-                vendorChangeRequestClient,
+                test.vendor.changeRequestClient,
                 emptyChangeRequest,
                 uuidv4(),
                 systemUserId,
@@ -186,18 +102,18 @@ export default function (data) {
 
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(requestedRights)
-                .withRedirectUrl(redirectUrl)
+                .withRedirectUrl(test.redirectUrl)
                 .build();
 
             const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
-                vendorChangeRequestClient,
+                test.vendor.changeRequestClient,
                 request,
                 uuidv4(),
                 systemUserId,
             );
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestCreated(changeRequest, {
-                systemId,
+                systemId: test.systemId,
                 partyOrgNo: customer.orgNo,
                 systemUserId,
             });
@@ -213,14 +129,14 @@ export default function (data) {
             }
 
             const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(
-                approverChangeRequestClient,
+                test.approver.changeRequestClient,
                 customer.partyId,
                 changeRequestId,
             );
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestApproved(approved);
 
-            const changeRequest = ChangeRequestSystemUserBuildingBlocks.GetChangeRequestByGuid(vendorChangeRequestClient, changeRequestId);
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.GetChangeRequestByGuid(test.vendor.changeRequestClient, changeRequestId);
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "Accepted");
         });
