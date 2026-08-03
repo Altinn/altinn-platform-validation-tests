@@ -12,6 +12,17 @@ import { check } from "k6";
  * nothing to the summary and leaves the exit code at zero, so the failure is
  * visible only in the logs. The check is what puts a line in the summary.
  *
+ * Use fail() and not exec.test.abort(), even though abort is the only one of the
+ * two that returns a non-zero exit code. fail() ends the current iteration, abort
+ * tears down every VU. A test file here can be listed in both functional.yaml and
+ * breakpoint.yaml, and under a ramp one bad data row would end the whole run and
+ * take the breakpoint measurement with it, depending on which row a VU drew.
+ *
+ * That leaves the exit code at zero on a failed run, which is a real gap, but it
+ * belongs in a threshold on the checks metric rather than here. A threshold is
+ * evaluated over aggregate metrics at the end and behaves the same at 1 VU as at
+ * 300.
+ *
  * @param {unknown} value - The value the earlier step should have produced.
  * @param {string} description - What the value is, used in the check name and logs.
  * @returns {boolean} True if the value is present, false otherwise.
