@@ -9,10 +9,15 @@ import {
     SystemUserClient,
 } from "../../../../clients/authentication/v2/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
+
+/**
+ * Whether to pick a random customer rather than walk the list.
+ */
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
  * The vendor these tests act as. Owns the registered systems they create.
@@ -22,7 +27,7 @@ const SYSTEM_OWNER = "713431400";
 /**
  * Every system registered by these tests allows the same redirect url.
  */
-const REDIRECT_URL = "https://digdir.no";
+export const REDIRECT_URL = "https://digdir.no";
 
 /**
  * @type {object | undefined}
@@ -35,14 +40,19 @@ let clients = undefined;
 let approverTokenGenerator = undefined;
 
 /**
- * Fetches the customers the system users are created for.
+ * Creates system in system register, requests a system user for it and has the end user approve it.
+ * Call from a test's own setup, passing the rights that test cares about, so the
+ * test decides what the system user starts with and what is left for it to ask
+ * for. Returns only what it created. Clients cannot be returned at all, since k6
+ * serializes the setup result to JSON and the prototypes would not survive.
  *
- * Returned flat rather than segmented per VU, so a test picks from the whole list
- * with getItemFromList, which walks it across iterations.
- *
- * @returns {object[]} The customers the tests act on behalf of.
+ * @param {object} options - What the calling test needs arranged.
+ * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @param {Right[]} options.grantedRights - The rights the system user is granted up front.
+ * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
+ * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data.
  */
-export function setup() {
+export function arrangeApprovedSystemUser({ systemNamePrefix, grantedRights, registeredRights = grantedRights }) {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
@@ -50,7 +60,25 @@ export function setup() {
         { tags: { action: "fetch-test-data" } },
     );
 
-    return parseCsvData(res.body);
+    const customer = getItemFromList(parseCsvData(res.body), randomize);
+
+    const registration = createSystemRegistration({ systemNamePrefix, registeredRights });
+
+    // The approver acts as this customer, so its token has to be set before the
+    // arrange runs, not in the default function the way the test does it.
+    const [, approverTokenGenerator] = getClients();
+
+    approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
+
+    const systemUserId = createApprovedSystemUser(registration, customer, grantedRights);
+
+    return [
+        {
+            customer,
+            systemUserId,
+            systemId: registration.systemId,
+        },
+    ];
 }
 
 /**
@@ -134,7 +162,7 @@ export function getApproverTokenOpts(customer) {
  * Builds the right that grants access to a single resource.
  *
  * @param {string} resource - Resource identifier.
- * @returns {object} A right the system register and the requests understand.
+ * @returns {Right} A right the system register and the requests understand.
  */
 export function resourceRight(resource) {
     return {
@@ -156,7 +184,7 @@ export function resourceRight(resource) {
  *
  * @param {object} options - Test specific parts of the registration.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {object[]} options.registeredRights - Every right the system is registered with.
+ * @param {Right[]} options.registeredRights - Every right the system is registered with.
  * @returns {object} Identifiers and the registration payload.
  */
 export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
@@ -208,7 +236,7 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
  *
  * @param {object} registration - Registration from createSystemRegistration.
  * @param {object} customer - The customer the system user is created for.
- * @param {object[]} grantedRights - The rights the system user is granted up front.
+ * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @returns {string} Identifier of the approved system user.
  */
 export function createApprovedSystemUser(registration, customer, grantedRights) {

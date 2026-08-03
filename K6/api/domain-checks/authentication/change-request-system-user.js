@@ -110,6 +110,32 @@ function CheckChangeRequestIsEmpty(changeRequest) {
 }
 
 /**
+ * Checks that asking again returned the change request that already existed.
+ *
+ * A change request is idempotent on the correlation id, not on its contents: the
+ * same rights sent with a fresh correlation id creates a second change request,
+ * while reusing the correlation id answers with the first one.
+ *
+ * @param {ChangeRequestResponse} changeRequest - The change request returned by the second call.
+ * @param {string} expectedId - Id of the change request the first call created.
+ * @returns {boolean} True if the same change request came back, false otherwise.
+ */
+function CheckSameChangeRequest(changeRequest, expectedId) {
+    const success = check(changeRequest, {
+        "CheckSameChangeRequest - Asking again returned the existing change request": (request) => {
+            return request?.id === expectedId;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckSameChangeRequest - expected id '${expectedId}', got '${changeRequest?.id}'`);
+        console.error(`CheckSameChangeRequest - change request returned: ${JSON.stringify(changeRequest)}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that a change request was approved.
  *
  * @param {boolean} approved - Whether the approve call reported success.
@@ -132,5 +158,6 @@ export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestStatus,
     CheckChangeRequestRequiredRights,
     CheckChangeRequestIsEmpty,
+    CheckSameChangeRequest,
     CheckChangeRequestApproved,
 };

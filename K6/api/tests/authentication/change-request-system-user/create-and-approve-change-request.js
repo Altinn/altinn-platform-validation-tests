@@ -4,76 +4,102 @@ import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-v2-imports.js";
 import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
-import { createApprovedSystemUser, createSystemRegistration, getApproverTokenOpts, getClients, resourceRight } from "./commons.js";
-
-const GRANTED_RESOURCE = "ttd-dialogporten-performance-test-01";
-const REQUESTED_RESOURCE = "authentication-e2e-test";
+import { arrangeApprovedSystemUser, getApproverTokenOpts, getClients, REDIRECT_URL, resourceRight } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-export { setup } from "./commons.js";
+/**
+ * The rights the system user starts with.
+ *
+ * @type {Right[]}
+ */
+const GRANTED_RIGHTS = [resourceRight("ttd-dialogporten-performance-test-01")];
 
+/**
+ * The rights the change request asks for, which the system user does not have.
+ *
+ * @type {Right[]}
+ */
+const REQUESTED_RIGHTS = [resourceRight("authentication-e2e-test")];
+
+/**
+ * k6 setup stage. Arranges the system user this test changes.
+ *
+ * The system is registered with both sets, so the system user starts with the
+ * granted rights and the change request has something left to ask for.
+ *
+ * @returns {object[]} The system user to change, as a single item list.
+ */
+export function setup() {
+    return arrangeApprovedSystemUser({
+        systemNamePrefix: "changerequest",
+        grantedRights: GRANTED_RIGHTS,
+        registeredRights: [...GRANTED_RIGHTS, ...REQUESTED_RIGHTS],
+    });
+}
+
+/**
+ * Test: a vendor can ask for more rights on an existing system user.
+ *
+ * @param {object[]} data The arranged system users from setup.
+ */
 export default function (data) {
     const [clients, approverTokenGenerator] = getClients();
-    const customer = getItemFromList(data, randomize);
+    const systemUser = getItemFromList(data, randomize);
 
-    approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
-
-    const grantedRights = [resourceRight(GRANTED_RESOURCE)];
-    const requestedRights = [resourceRight(REQUESTED_RESOURCE)];
-
-    // Registered with both, so the change request can ask for a right the system
-    // user was not granted at the outset.
-    const registration = createSystemRegistration({
-        systemNamePrefix: "changerequest",
-        registeredRights: [...grantedRights, ...requestedRights],
-    });
-
-    const systemUserId = createApprovedSystemUser(registration, customer, grantedRights);
+    approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
 
     group("As a vendor, I can ask an existing system user for more rights", function () {
-        group("Asking for nothing needs no change", function () {
-
-            const emptyChangeRequest = new ChangeRequestSystemUserBuilder()
-                .withRedirectUrl(registration.redirectUrl)
-                .build();
-
-            const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
-                clients.vendor.changeRequestClient,
-                emptyChangeRequest,
-                uuidv4(),
-                systemUserId,
-            );
-
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "NoChangeNeeded");
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestIsEmpty(changeRequest);
-        });
-
         let changeRequestId;
+        const correlationId = uuidv4();
 
         group("Ask for a right the system user does not have", function () {
 
             const request = new ChangeRequestSystemUserBuilder()
-                .withRequiredRights(requestedRights)
-                .withRedirectUrl(registration.redirectUrl)
+                .withRequiredRights(REQUESTED_RIGHTS)
+                .withRedirectUrl(REDIRECT_URL)
                 .build();
 
             const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
                 clients.vendor.changeRequestClient,
                 request,
-                uuidv4(),
-                systemUserId,
+                correlationId,
+                systemUser.systemUserId,
+                null,
+                201,
             );
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestCreated(changeRequest, {
-                systemId: registration.systemId,
-                partyOrgNo: customer.orgNo,
-                systemUserId,
+                systemId: systemUser.systemId,
+                partyOrgNo: systemUser.customer.orgNo,
+                systemUserId: systemUser.systemUserId,
             });
 
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequest, requestedRights);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequest, REQUESTED_RIGHTS);
 
             changeRequestId = changeRequest?.id;
+        });
+
+        group("Asking again with the same correlation id returns the same change request", function () {
+            if (!PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to ask for again")) {
+                fail("missing prerequisite: a change request was created to ask for again");
+            }
+
+            const request = new ChangeRequestSystemUserBuilder()
+                .withRequiredRights(REQUESTED_RIGHTS)
+                .withRedirectUrl(REDIRECT_URL)
+                .build();
+
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
+                clients.vendor.changeRequestClient,
+                request,
+                correlationId,
+                systemUser.systemUserId,
+                null,
+                200,
+            );
+
+            ChangeRequestSystemUserDomainChecks.CheckSameChangeRequest(changeRequest, changeRequestId);
         });
 
         group("The customer approves the change", function () {
@@ -83,7 +109,7 @@ export default function (data) {
 
             const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(
                 clients.approver.changeRequestClient,
-                customer.partyId,
+                systemUser.customer.partyId,
                 changeRequestId,
             );
 

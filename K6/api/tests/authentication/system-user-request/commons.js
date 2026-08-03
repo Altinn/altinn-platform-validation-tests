@@ -125,7 +125,7 @@ export function getApproverTokenOpts(customer) {
  * Builds the right that grants access to a single resource.
  *
  * @param {string} resource - Resource identifier.
- * @returns {object} A right the system register and the requests understand.
+ * @returns {Right} A right the system register and the requests understand.
  */
 export function resourceRight(resource) {
     return {
@@ -147,7 +147,7 @@ export function resourceRight(resource) {
  *
  * @param {object} options - Test specific parts of the registration.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {object[]} options.registeredRights - Every right the system is registered with.
+ * @param {Right[]} options.registeredRights - Every right the system is registered with.
  * @returns {object} Identifiers and the registration payload.
  */
 export function createSystemRegistration({ systemNamePrefix, registeredRights }) {

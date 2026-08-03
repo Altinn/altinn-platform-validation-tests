@@ -10,6 +10,8 @@ import { ChangeRequestSystemUserClient } from "../../../../../clients/authentica
  * @param {string|null} [correlationId] Correlation identifier.
  * @param {string|null} [systemUserId] System user identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {number|null} [expectedStatus] Status the caller expects. Pass 201 for a new
+ * change request and 200 when reusing a correlation id, and leave it out to accept either.
  * @returns {ChangeRequestResponse|null} Change request response.
  */
 export function CreateChangeRequest(
@@ -18,6 +20,7 @@ export function CreateChangeRequest(
     correlationId = null,
     systemUserId = null,
     labels = null,
+    expectedStatus = null,
 ) {
     const res = changeRequestSystemUserClient.CreateChangeRequest(
         request,
@@ -29,12 +32,17 @@ export function CreateChangeRequest(
     /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;
 
-    // A new change request answers 201. The API answers 200 when existing change request with same attributes exists,
-    // and when the correlation id already refers to a change request. Both are
-    // successful, so the status the caller cares about is asserted in the domain checks.
+    // A new change request answers 201, and reusing a correlation id answers 200 with
+    // the change request that id already refers to. The same rights sent with a fresh
+    // correlation id is a new change request, not a repeat, so it answers 201.
+    // Both are successful, so a caller that does not care which passes no expectedStatus.
     const succeed = check(res, {
-        "CreateChangeRequest - status code is 200 or 201": (r) =>
-            r.status === 200 || r.status === 201,
+        [expectedStatus === null
+            ? "CreateChangeRequest - status code is 200 or 201"
+            : `CreateChangeRequest - status code is ${expectedStatus}`]: (r) =>
+            expectedStatus === null
+                ? r.status === 200 || r.status === 201
+                : r.status === expectedStatus,
     });
 
     if (!succeed) {

@@ -40,6 +40,8 @@ export default function (data) {
                 .withRedirectUrl(registration.redirectUrl)
                 .build();
 
+            const request = new CreateRequestSystemUserBuilder().withAccessPackages().build();
+
             const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(clients.vendor.requestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
