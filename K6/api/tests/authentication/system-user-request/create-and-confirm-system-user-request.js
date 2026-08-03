@@ -1,49 +1,51 @@
 import { fail, group } from "k6";
-import { vu } from "k6/execution";
 
-import { RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
-import { CreateRequestSystemUserBuilder } from "../../../authentication-v2-imports.js";
+import { getItemFromList } from "../../../../helpers.js";
+import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
-import { createSystemUserTestContext, fetchCustomers, resourceRight } from "../../../fixtures/authentication/system-user.js";
+import { createSystemRegistration, getApproverTokenOpts, getClients, resourceRight } from "../commons.js";
 
 const RESOURCE = "ttd-dialogporten-performance-test-01";
 
-export function setup() {
-    return fetchCustomers();
-}
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
+export { setup } from "../commons.js";
 
 export default function (data) {
-    const customer = data[vu.idInTest - 1];
+    const [clients, approverTokenGenerator] = getClients();
+    const customer = getItemFromList(data, randomize);
+
+    approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
     const rights = [resourceRight(RESOURCE)];
 
-    const test = createSystemUserTestContext(customer, {
+    const registration = createSystemRegistration({
         systemNamePrefix: "perftest",
         registeredRights: rights,
     });
 
     group("As a vendor, I can request a system user and have the customer approve it", function () {
         group("Register the system the request is made for", function () {
-            SystemRegisterBuildingBlocks.CreateRegisteredSystem(test.vendor.systemRegisterClient, test.registerSystemRequest);
+            SystemRegisterBuildingBlocks.CreateRegisteredSystem(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
         });
 
         let requestId;
 
         group("Create the system user request", function () {
             const createRequest = new CreateRequestSystemUserBuilder()
-                .withExternalRef(test.externalRef)
-                .withSystemId(test.systemId)
+                .withExternalRef(registration.externalRef)
+                .withSystemId(registration.systemId)
                 .withPartyOrgNo(customer.orgNo)
                 .withRights(rights)
-                .withRedirectUrl(test.redirectUrl)
+                .withRedirectUrl(registration.redirectUrl)
                 .build();
 
-            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(test.vendor.requestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(clients.vendor.requestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
-                systemId: test.systemId,
+                systemId: registration.systemId,
                 partyOrgNo: customer.orgNo,
-                externalRef: test.externalRef,
+                externalRef: registration.externalRef,
             });
 
             requestId = createdRequest?.id;
@@ -55,7 +57,7 @@ export default function (data) {
             }
 
             const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
-                test.approver.requestSystemUserClient,
+                clients.approver.requestSystemUserClient,
                 customer.partyId,
                 requestId,
             );
@@ -68,7 +70,7 @@ export default function (data) {
                 fail("missing prerequisite: the system user request was created");
             }
 
-            const request = RequestSystemUserBuildingBlocks.GetRequestByGuid(test.vendor.requestSystemUserClient, requestId);
+            const request = RequestSystemUserBuildingBlocks.GetRequestByGuid(clients.vendor.requestSystemUserClient, requestId);
 
             SystemUserRequestDomainChecks.CheckRequestStatus(request, "Accepted");
         });

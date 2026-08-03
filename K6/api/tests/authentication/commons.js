@@ -1,0 +1,274 @@
+import { fail, group } from "k6";
+
+import {
+    ChangeRequestSystemUserClient,
+    RegisterSystemRequestBuilder,
+    RequestSystemUserClient,
+    SystemRegisterClient,
+    SystemUserClient,
+} from "../../../clients/authentication/v2/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../common-imports.js";
+import { requireEnv } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../authentication-v2-imports.js";
+import { PrerequisiteDomainChecks } from "../../domain-checks/common/prerequisite.js";
+
+/**
+ * The vendor these tests act as. Owns the registered systems they create.
+ */
+const SYSTEM_OWNER = "713431400";
+
+/**
+ * Every system registered by these tests allows the same redirect url.
+ */
+const REDIRECT_URL = "https://digdir.no";
+
+/**
+ * The customers the system users are created for.
+ *
+ * Hardcoded rather than fetched, because these tests only run on at22 and the
+ * customer csv there holds a single distinct row, repeated. Kept as a list so the
+ * tests pick from it the way they would from fetched data, and so adding a
+ * customer later is a change to this array and nothing else.
+ */
+const CUSTOMERS = [
+    {
+        orgNo: "314250052",
+        partyId: "51243526",
+        userId: "20013183",
+        userPartyUuid: "68c5b8d2-3600-4a75-bcc8-32d3aa8680ee",
+    },
+];
+
+/**
+ * @type {object | undefined}
+ */
+let clients = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
+let approverTokenGenerator = undefined;
+
+/**
+ * Validates the environment and hands the tests their data.
+ *
+ * @returns {object[]} The customers the tests act on behalf of.
+ */
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+
+    return CUSTOMERS;
+}
+
+/**
+ * Creates and caches the clients these tests use.
+ *
+ * Built once per VU and reused across its iterations. The token generators cache
+ * tokens per instance, so building them per iteration refetches every token from
+ * the token generator service each time.
+ *
+ * The vendor token carries the union of the scopes these tests need, including
+ * the separate scope for looking a system user up by external id, so one cached
+ * enterprise token serves all of them.
+ *
+ * The approver token depends on which customer an iteration drew, so swap its
+ * options with setTokenGeneratorOptions and getApproverTokenOpts rather than
+ * building a new generator. The cache is keyed on the options, so each customer
+ * still gets its own cached token.
+ *
+ * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ */
+export function getClients() {
+    if (clients === undefined) {
+        const vendorScopes = CreateScopeString([
+            AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+            AltinnScopes.AUTHORIZATION.AUTHORIZE,
+            AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
+        ]);
+
+        const vendorTokenGenerator = new EnterpriseTokenGenerator(
+            new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(vendorScopes)
+                .withOrganizationNumber(SYSTEM_OWNER)
+                .build(),
+        );
+
+        approverTokenGenerator = new PersonalTokenGenerator(
+            new PersonalTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+                .build(),
+        );
+
+        clients = {
+            vendor: {
+                systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
+                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+                changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            },
+            approver: {
+                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+                changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+            },
+        };
+    }
+
+    return [clients, approverTokenGenerator];
+}
+
+/**
+ * Token options for approving on behalf of a customer.
+ *
+ * @param {object} customer - The customer this iteration acts on behalf of.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getApproverTokenOpts(customer) {
+    return new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+        .withUserId(customer.userId)
+        .withPartyUuid(customer.userPartyUuid)
+        .build();
+}
+
+/**
+ * Builds the right that grants access to a single resource.
+ *
+ * @param {string} resource - Resource identifier.
+ * @returns {object} A right the system register and the requests understand.
+ */
+export function resourceRight(resource) {
+    return {
+        resource: [
+            {
+                value: resource,
+                id: "urn:altinn:resource",
+            },
+        ],
+    };
+}
+
+/**
+ * Builds the identifiers and registration payload for one iteration.
+ *
+ * Everything here is unique per iteration, so unlike the clients it cannot be
+ * shared. The system is registered with every right in registeredRights, which
+ * lets a test grant a subset up front and ask for the rest later.
+ *
+ * @param {object} options - Test specific parts of the registration.
+ * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @param {object[]} options.registeredRights - Every right the system is registered with.
+ * @returns {object} Identifiers and the registration payload.
+ */
+export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
+    const systemName = `${systemNamePrefix}${uuidv4()}`;
+    const systemId = `${SYSTEM_OWNER}_${systemName}`;
+    const clientId = uuidv4();
+    const externalRef = uuidv4();
+
+    const registerSystemRequest = new RegisterSystemRequestBuilder()
+        .withId(systemId)
+        .withVendor(`0192:${SYSTEM_OWNER}`)
+        .withName({
+            en: systemName,
+            nb: systemName,
+            nn: systemName,
+        })
+        .withDescription({
+            en: "This is auto generated by an integration test. Some data is randomized, but some is not - like this description",
+            nb: "Integrasjonstest. Noe er randomisert her, men mye blir likt.",
+            nn: "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt.",
+        })
+        .withRights(registeredRights)
+        .withClientId([clientId])
+        .withVisibility(false)
+        .withAllowedRedirectUrls([REDIRECT_URL])
+        .build();
+
+    return {
+        systemOwner: SYSTEM_OWNER,
+        systemId,
+        systemName,
+        clientId,
+        externalRef,
+        redirectUrl: REDIRECT_URL,
+        registerSystemRequest,
+    };
+}
+
+/**
+ * Registers the system, requests a system user for it and has the customer approve it.
+ *
+ * This is the arrange step for tests about what you can do to an existing system
+ * user, so it stays out of those test files. The flow itself is the subject of
+ * create-and-confirm-system-user-request.js, which tests it directly.
+ *
+ * Keeps its own checks, so an arrange that breaks is visible and points at the
+ * step that broke rather than surfacing as a confusing failure later, and fails
+ * the iteration rather than letting the test carry on without a system user.
+ *
+ * @param {object} registration - Registration from createSystemRegistration.
+ * @param {object} customer - The customer the system user is created for.
+ * @param {object[]} grantedRights - The rights the system user is granted up front.
+ * @returns {string} Identifier of the approved system user.
+ */
+export function createApprovedSystemUser(registration, customer, grantedRights) {
+    const [apiClients] = getClients();
+
+    let systemUserId;
+
+    group("Arrange - the customer has an approved system user", function () {
+        SystemRegisterBuildingBlocks.CreateRegisteredSystem(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
+
+        const createRequest = new CreateRequestSystemUserBuilder()
+            .withExternalRef(registration.externalRef)
+            .withSystemId(registration.systemId)
+            .withPartyOrgNo(customer.orgNo)
+            .withRights(grantedRights)
+            .withRedirectUrl(registration.redirectUrl)
+            .build();
+
+        const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(apiClients.vendor.requestSystemUserClient, createRequest);
+
+        SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
+            systemId: registration.systemId,
+            partyOrgNo: customer.orgNo,
+            externalRef: registration.externalRef,
+        });
+
+        if (!PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created")) {
+            fail("missing prerequisite: the system user request was created");
+        }
+
+        const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
+            apiClients.approver.requestSystemUserClient,
+            customer.partyId,
+            createdRequest?.id,
+        );
+
+        SystemUserRequestDomainChecks.CheckRequestApproved(approved);
+
+        const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
+            clientId: registration.clientId,
+            systemProviderOrgNo: registration.systemOwner,
+            systemUserOwnerOrgNo: customer.orgNo,
+            externalRef: registration.externalRef,
+        });
+
+        systemUserId = systemUser?.id;
+
+        if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
+            fail("missing prerequisite: the customer has a system user to change");
+        }
+    });
+
+    return systemUserId;
+}
