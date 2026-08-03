@@ -1,18 +1,13 @@
-import { fail, group } from "k6";
 import http from "k6/http";
 
 import {
-    ChangeRequestSystemUserClient,
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
     SystemRegisterClient,
-    SystemUserClient,
-} from "../../../clients/authentication/v2/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../authentication-v2-imports.js";
-import { PrerequisiteDomainChecks } from "../../domain-checks/common/prerequisite.js";
+} from "../../../../clients/authentication/v2/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
+import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
  * The vendor these tests act as. Owns the registered systems they create.
@@ -54,15 +49,14 @@ export function setup() {
 }
 
 /**
- * Creates and caches the clients these tests use.
+ * Creates and caches the clients this test folder uses.
  *
  * Built once per VU and reused across its iterations. The token generators cache
  * tokens per instance, so building them per iteration refetches every token from
  * the token generator service each time.
  *
- * The vendor token carries the union of the scopes these tests need, including
- * the separate scope for looking a system user up by external id, so one cached
- * enterprise token serves all of them.
+ * The vendor token carries only the scopes this folder needs, so it does not ask
+ * for the system user lookup scope the change request tests use.
  *
  * The approver token depends on which customer an iteration drew, so swap its
  * options with setTokenGeneratorOptions and getApproverTokenOpts rather than
@@ -78,7 +72,6 @@ export function getClients() {
             AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
             AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
             AltinnScopes.AUTHORIZATION.AUTHORIZE,
-            AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
         ]);
 
         const vendorTokenGenerator = new EnterpriseTokenGenerator(
@@ -102,12 +95,9 @@ export function getClients() {
             vendor: {
                 systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
             },
             approver: {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
-                changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
             },
         };
     }
@@ -194,73 +184,4 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
         redirectUrl: REDIRECT_URL,
         registerSystemRequest,
     };
-}
-
-/**
- * Registers the system, requests a system user for it and has the customer approve it.
- *
- * This is the arrange step for tests about what you can do to an existing system
- * user, so it stays out of those test files. The flow itself is the subject of
- * create-and-confirm-system-user-request.js, which tests it directly.
- *
- * Keeps its own checks, so an arrange that breaks is visible and points at the
- * step that broke rather than surfacing as a confusing failure later, and fails
- * the iteration rather than letting the test carry on without a system user.
- *
- * @param {object} registration - Registration from createSystemRegistration.
- * @param {object} customer - The customer the system user is created for.
- * @param {object[]} grantedRights - The rights the system user is granted up front.
- * @returns {string} Identifier of the approved system user.
- */
-export function createApprovedSystemUser(registration, customer, grantedRights) {
-    const [apiClients] = getClients();
-
-    let systemUserId;
-
-    group("Arrange - the customer has an approved system user", function () {
-        SystemRegisterBuildingBlocks.CreateRegisteredSystem(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
-
-        const createRequest = new CreateRequestSystemUserBuilder()
-            .withExternalRef(registration.externalRef)
-            .withSystemId(registration.systemId)
-            .withPartyOrgNo(customer.orgNo)
-            .withRights(grantedRights)
-            .withRedirectUrl(registration.redirectUrl)
-            .build();
-
-        const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(apiClients.vendor.requestSystemUserClient, createRequest);
-
-        SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
-            systemId: registration.systemId,
-            partyOrgNo: customer.orgNo,
-            externalRef: registration.externalRef,
-        });
-
-        if (!PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created")) {
-            fail("missing prerequisite: the system user request was created");
-        }
-
-        const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
-            apiClients.approver.requestSystemUserClient,
-            customer.partyId,
-            createdRequest?.id,
-        );
-
-        SystemUserRequestDomainChecks.CheckRequestApproved(approved);
-
-        const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
-            clientId: registration.clientId,
-            systemProviderOrgNo: registration.systemOwner,
-            systemUserOwnerOrgNo: customer.orgNo,
-            externalRef: registration.externalRef,
-        });
-
-        systemUserId = systemUser?.id;
-
-        if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
-            fail("missing prerequisite: the customer has a system user to change");
-        }
-    });
-
-    return systemUserId;
 }
