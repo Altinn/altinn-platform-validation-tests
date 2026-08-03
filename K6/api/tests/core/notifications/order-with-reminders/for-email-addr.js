@@ -1,10 +1,10 @@
 import { check } from "k6";
 
-import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
+import { OrderClient } from "../../../../../clients/notifications/order/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
+import { OrderCreateOrder } from "../../../../building-blocks/notifications/order/index.js";
 
 const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-email-address.json"));
 
