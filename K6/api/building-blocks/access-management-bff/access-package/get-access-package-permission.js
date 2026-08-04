@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AccessPackageClient } from "../../../../../clients/access-management-bff/access-package/index.js";
+import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
 
 /**
  * Gets a single access package with the permissions behind it.

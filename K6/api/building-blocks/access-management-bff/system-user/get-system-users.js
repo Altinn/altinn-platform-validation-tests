@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserClient } from "../../../../../clients/access-management-bff/system-user/index.js";
+import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 
 /**
  * Gets the system users of an organisation.

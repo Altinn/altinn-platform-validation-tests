@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { DelegationExportClient } from "../../../../../clients/access-management-bff/delegation-export/index.js";
+import { DelegationExportClient } from "../../../../clients/access-management-bff/delegation-export/index.js";
 
 /**
  * Exports the delegations of a party as a spreadsheet.

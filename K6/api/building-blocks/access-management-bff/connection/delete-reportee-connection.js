@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ConnectionClient } from "../../../../../clients/access-management-bff/connection/index.js";
+import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 
 /**
  * Removes a connection between a reportee and a right holder.

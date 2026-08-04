@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { UserClient } from "../../../../../clients/access-management-bff/user/index.js";
+import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
 
 /**
  * Gets the actor list of the authenticated user in the Altinn 2 format.

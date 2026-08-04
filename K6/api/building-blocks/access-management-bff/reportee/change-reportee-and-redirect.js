@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ReporteeClient } from "../../../../../clients/access-management-bff/reportee/index.js";
+import { ReporteeClient } from "../../../../clients/access-management-bff/reportee/index.js";
 
 /**
  * Changes the reportee of the authenticated user and redirects onwards.

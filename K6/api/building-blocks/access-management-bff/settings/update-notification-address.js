@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SettingsClient } from "../../../../../clients/access-management-bff/settings/index.js";
+import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
 
 /**
  * Updates a notification address of an organisation.

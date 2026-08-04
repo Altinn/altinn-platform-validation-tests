@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AccessPackageClient } from "../../../../../clients/access-management-bff/access-package/index.js";
+import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
 
 /**
  * Gets the access packages delegated between two parties.

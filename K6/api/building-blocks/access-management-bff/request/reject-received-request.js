@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RequestClient } from "../../../../../clients/access-management-bff/request/index.js";
+import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
 
 /**
  * Rejects an access request a party has received.

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserChangeRequestClient } from "../../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
 
 /**
  * Gets a system user change request.

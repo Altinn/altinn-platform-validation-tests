@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { UserClient } from "../../../../../clients/access-management-bff/user/index.js";
+import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
 
 /**
  * Updates whether deleted entities are shown for the authenticated user.

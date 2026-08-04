@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RoleClient } from "../../../../../clients/access-management-bff/role/index.js";
+import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
 
 /**
  * Gets the resources a role grants access to.

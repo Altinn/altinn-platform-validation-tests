@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserClient } from "../../../../../clients/access-management-bff/system-user/index.js";
+import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 
 /**
  * Deletes a system user of an organisation.

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { MaskinportenClient } from "../../../../../clients/access-management-bff/maskinporten/index.js";
+import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
 
 /**
  * Gets the Maskinporten suppliers of a party.

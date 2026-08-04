@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SelfIdentifiedUserClient } from "../../../../../clients/access-management-bff/self-identified-user/index.js";
+import { SelfIdentifiedUserClient } from "../../../../clients/access-management-bff/self-identified-user/index.js";
 
 /**
  * Starts password recovery for a self identified Altinn 2 account.

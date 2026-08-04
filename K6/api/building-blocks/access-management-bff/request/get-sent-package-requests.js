@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RequestClient } from "../../../../../clients/access-management-bff/request/index.js";
+import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
 
 /**
  * Gets the access package requests a party has sent.

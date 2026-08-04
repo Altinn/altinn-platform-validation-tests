@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ResourceClient } from "../../../../../clients/access-management-bff/resource/index.js";
+import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
 
 /**
  * Gets a single resource.

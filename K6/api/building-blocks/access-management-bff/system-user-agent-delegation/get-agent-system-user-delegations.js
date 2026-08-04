@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserAgentDelegationClient } from "../../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
 
 /**
  * Gets the customers delegated to an agent system user.

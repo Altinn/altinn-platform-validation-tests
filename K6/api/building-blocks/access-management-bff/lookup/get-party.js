@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { LookupClient } from "../../../../../clients/access-management-bff/lookup/index.js";
+import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
 
 /**
  * Looks up a party by party UUID.

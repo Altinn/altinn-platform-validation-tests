@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { InstanceClient } from "../../../../../clients/access-management-bff/instance/index.js";
+import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
 
 /**
  * Gets the rights a party holds on an instance.

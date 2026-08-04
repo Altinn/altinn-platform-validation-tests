@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AltinnCdnClient } from "../../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
 
 /**
  * Gets the organisation data the Altinn CDN publishes, keyed by org code.

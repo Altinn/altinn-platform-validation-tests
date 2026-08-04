@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ConnectionClient } from "../../../../../clients/access-management-bff/connection/index.js";
+import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 
 /**
  * Gets the connections of a party in a simplified form.

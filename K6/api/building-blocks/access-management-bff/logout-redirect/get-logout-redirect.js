@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { LogoutRedirectClient } from "../../../../../clients/access-management-bff/logout-redirect/index.js";
+import { LogoutRedirectClient } from "../../../../clients/access-management-bff/logout-redirect/index.js";
 
 /**
  * Gets the logout redirect target.

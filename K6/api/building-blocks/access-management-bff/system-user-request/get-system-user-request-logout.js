@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserRequestClient } from "../../../../../clients/access-management-bff/system-user-request/index.js";
+import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 
 /**
  * Gets the logout redirect for a system user request.

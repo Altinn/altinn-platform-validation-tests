@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ClientDelegationsClient } from "../../../../../clients/access-management-bff/client-delegations/index.js";
+import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
 
 /**
  * Gets the resources delegated to an agent, per client.

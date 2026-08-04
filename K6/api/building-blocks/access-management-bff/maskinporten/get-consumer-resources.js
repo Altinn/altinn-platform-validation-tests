@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { MaskinportenClient } from "../../../../../clients/access-management-bff/maskinporten/index.js";
+import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
 
 /**
  * Gets the resources the Maskinporten consumers of a party hold.

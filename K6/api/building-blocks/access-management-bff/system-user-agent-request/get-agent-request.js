@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserAgentRequestClient } from "../../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
 
 /**
  * Gets an agent system user request.

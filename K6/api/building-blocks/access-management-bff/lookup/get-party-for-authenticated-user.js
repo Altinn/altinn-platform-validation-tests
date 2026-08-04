@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { LookupClient } from "../../../../../clients/access-management-bff/lookup/index.js";
+import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
 
 /**
  * Gets the party of the authenticated user.

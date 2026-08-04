@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ConsentClient } from "../../../../../clients/access-management-bff/consent/index.js";
+import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 
 /**
  * Gets the consent log of a party.

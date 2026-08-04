@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { InstanceClient } from "../../../../../clients/access-management-bff/instance/index.js";
+import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
 
 /**
  * Checks which rights on an instance the authenticated user can delegate.

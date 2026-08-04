@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { IdPortenAuthorizationClient } from "../../../../../clients/access-management-bff/idporten-authorization/index.js";
+import { IdPortenAuthorizationClient } from "../../../../clients/access-management-bff/idporten-authorization/index.js";
 
 /**
  * Deletes an ID-porten authorization.

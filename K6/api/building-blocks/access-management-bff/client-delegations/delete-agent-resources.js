@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ClientDelegationsClient } from "../../../../../clients/access-management-bff/client-delegations/index.js";
+import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
 
 /**
  * Revokes resources on a client from an agent.

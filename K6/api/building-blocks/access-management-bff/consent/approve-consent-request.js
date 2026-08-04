@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ConsentClient } from "../../../../../clients/access-management-bff/consent/index.js";
+import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 
 /**
  * Approves a consent request.

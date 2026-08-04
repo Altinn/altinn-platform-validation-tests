@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemRegisterClient } from "../../../../../clients/access-management-bff/system-register/index.js";
+import { SystemRegisterClient } from "../../../../clients/access-management-bff/system-register/index.js";
 
 /**
  * Gets the systems in the system register.

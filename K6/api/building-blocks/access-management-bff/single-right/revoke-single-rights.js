@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SingleRightClient } from "../../../../../clients/access-management-bff/single-right/index.js";
+import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
 
 /**
  * Revokes all rights a party holds on a resource.

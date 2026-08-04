@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AuthenticationClient } from "../../../../../clients/access-management-bff/authentication/index.js";
+import { AuthenticationClient } from "../../../../clients/access-management-bff/authentication/index.js";
 
 /**
  * Refreshes the authentication cookie of the authenticated user.
