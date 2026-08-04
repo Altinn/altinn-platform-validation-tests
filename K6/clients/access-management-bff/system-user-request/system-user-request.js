@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetSystemUserRequest: {
+    GetRequestByRequestId: {
         action: "get-system-user-request",
     },
     ApproveSystemUserRequest: {
@@ -13,7 +13,7 @@ const TAGS = {
     EscalateSystemUserRequest: {
         action: "escalate-system-user-request",
     },
-    GetSystemUserRequestLogout: {
+    Logout: {
         action: "get-system-user-request-logout",
     },
 };
@@ -56,7 +56,7 @@ class SystemUserRequestClient {
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetSystemUserRequest(requestId, labels = null) {
+    GetRequestByRequestId(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/${requestId}`);
@@ -64,7 +64,7 @@ class SystemUserRequestClient {
         let tags = {
             endpoint: `${this.FULL_PATH}/${requestId}`,
             name: `${this.FULL_PATH}/{requestId}`,
-            action: TAGS.GetSystemUserRequest.action,
+            action: TAGS.GetRequestByRequestId.action,
         };
 
         if (labels !== null) {
@@ -213,7 +213,7 @@ class SystemUserRequestClient {
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetSystemUserRequestLogout(requestId, labels = null) {
+    Logout(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/${requestId}/logout`);
@@ -221,7 +221,7 @@ class SystemUserRequestClient {
         let tags = {
             endpoint: `${this.FULL_PATH}/${requestId}/logout`,
             name: `${this.FULL_PATH}/{requestId}/logout`,
-            action: TAGS.GetSystemUserRequestLogout.action,
+            action: TAGS.Logout.action,
         };
 
         if (labels !== null) {

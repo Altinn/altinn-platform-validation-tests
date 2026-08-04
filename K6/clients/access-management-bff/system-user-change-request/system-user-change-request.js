@@ -1,16 +1,16 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetChangeRequest: {
+    GetChangeRequestByRequestId: {
         action: "get-change-request",
     },
-    ApproveChangeRequest: {
+    ApproveSystemUserChangeRequest: {
         action: "approve-change-request",
     },
-    RejectChangeRequest: {
+    RejectSystemUserChangeRequest: {
         action: "reject-change-request",
     },
-    GetChangeRequestLogout: {
+    Logout: {
         action: "get-change-request-logout",
     },
 };
@@ -53,7 +53,7 @@ class SystemUserChangeRequestClient {
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetChangeRequest(changeRequestId, labels = null) {
+    GetChangeRequestByRequestId(changeRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/${changeRequestId}`);
@@ -61,7 +61,7 @@ class SystemUserChangeRequestClient {
         let tags = {
             endpoint: `${this.FULL_PATH}/${changeRequestId}`,
             name: `${this.FULL_PATH}/{changeRequestId}`,
-            action: TAGS.GetChangeRequest.action,
+            action: TAGS.GetChangeRequestByRequestId.action,
         };
 
         if (labels !== null) {
@@ -88,7 +88,7 @@ class SystemUserChangeRequestClient {
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    ApproveChangeRequest(partyId, changeRequestId, labels = null) {
+    ApproveSystemUserChangeRequest(partyId, changeRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(
@@ -98,7 +98,7 @@ class SystemUserChangeRequestClient {
         let tags = {
             endpoint: `${this.FULL_PATH}/${partyId}/${changeRequestId}/approve`,
             name: `${this.FULL_PATH}/{partyId}/{changeRequestId}/approve`,
-            action: TAGS.ApproveChangeRequest.action,
+            action: TAGS.ApproveSystemUserChangeRequest.action,
         };
 
         if (labels !== null) {
@@ -129,7 +129,7 @@ class SystemUserChangeRequestClient {
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RejectChangeRequest(partyId, changeRequestId, labels = null) {
+    RejectSystemUserChangeRequest(partyId, changeRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(
@@ -139,7 +139,7 @@ class SystemUserChangeRequestClient {
         let tags = {
             endpoint: `${this.FULL_PATH}/${partyId}/${changeRequestId}/reject`,
             name: `${this.FULL_PATH}/{partyId}/{changeRequestId}/reject`,
-            action: TAGS.RejectChangeRequest.action,
+            action: TAGS.RejectSystemUserChangeRequest.action,
         };
 
         if (labels !== null) {
@@ -169,7 +169,7 @@ class SystemUserChangeRequestClient {
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetChangeRequestLogout(changeRequestId, labels = null) {
+    Logout(changeRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/${changeRequestId}/logout`);
@@ -177,7 +177,7 @@ class SystemUserChangeRequestClient {
         let tags = {
             endpoint: `${this.FULL_PATH}/${changeRequestId}/logout`,
             name: `${this.FULL_PATH}/{changeRequestId}/logout`,
-            action: TAGS.GetChangeRequestLogout.action,
+            action: TAGS.Logout.action,
         };
 
         if (labels !== null) {

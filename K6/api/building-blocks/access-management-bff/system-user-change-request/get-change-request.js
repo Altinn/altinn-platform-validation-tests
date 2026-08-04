@@ -17,7 +17,7 @@ export function GetChangeRequest(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.GetChangeRequest(
+    const res = systemUserChangeRequestClient.GetChangeRequestByRequestId(
         changeRequestId,
         labels,
     );
