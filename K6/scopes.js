@@ -46,8 +46,11 @@ export const AltinnScopes = {
     },
 
     AUTHORIZATION: {
-        ADMIN: "altinn:authorization/authorize.admin",
-        AUTHORIZE: "altinn:authorization/authorize",
+
+        AUTHORIZE: {
+            ADMIN: "altinn:authorization/authorize.admin",
+            DEFAULT: "altinn:authorization/authorize",
+        },
 
         DELEGATIONS: {
             READ: "altinn:delegations.read",
