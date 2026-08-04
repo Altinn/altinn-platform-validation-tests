@@ -3,7 +3,7 @@ import { fail, group } from "k6";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-v2-imports.js";
-import { arrangeApprovedSystemUser, getApproverTokenOpts, getClients, REDIRECT_URL, resourceRight } from "./commons.js";
+import { accessPackage, arrangeApprovedSystemUser, findAccessPackages, getApproverTokenOpts, getClients, REDIRECT_URL, resourceRight } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -30,10 +30,15 @@ const REQUESTED_RIGHTS = [resourceRight("authentication-e2e-test")];
  * @returns {object[]} The system user to change, as a single item list.
  */
 export function setup() {
+    // Two packages, so the change request can give one up and ask for the other.
+    const [grantedPackage, requestedPackage] = findAccessPackages(2);
+
     return arrangeApprovedSystemUser({
         systemNamePrefix: "changerequest",
         grantedRights: GRANTED_RIGHTS,
         registeredRights: [...GRANTED_RIGHTS, ...REQUESTED_RIGHTS],
+        grantedAccessPackages: [grantedPackage],
+        registeredAccessPackages: [grantedPackage, requestedPackage],
     });
 }
 
@@ -48,6 +53,13 @@ export default function (data) {
 
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
 
+    // The system user has the first package and not the second, so the change request
+    // gives up what it has and asks for what it does not.
+    const removedAccessPackages = systemUser.grantedAccessPackages.map(accessPackage);
+    const addedAccessPackages = systemUser.registeredAccessPackages
+        .filter((urn) => !systemUser.grantedAccessPackages.includes(urn))
+        .map(accessPackage);
+
     group("As a vendor, I can ask an existing system user for more rights", function () {
         let changeRequestId;
         const correlationId = uuidv4();
@@ -56,6 +68,8 @@ export default function (data) {
 
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(REQUESTED_RIGHTS)
+                .withRequiredAccessPackages(addedAccessPackages)
+                .withUnwantedAccessPackages(removedAccessPackages)
                 .withRedirectUrl(REDIRECT_URL)
                 .build();
 
@@ -70,6 +84,8 @@ export default function (data) {
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUser.systemUserId);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestConfirmUrl(changeRequestResponse);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequestResponse, REQUESTED_RIGHTS);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredAccessPackages(changeRequestResponse, addedAccessPackages);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestUnwantedAccessPackages(changeRequestResponse, removedAccessPackages);
 
             changeRequestId = changeRequestResponse?.id;
         });
@@ -81,6 +97,8 @@ export default function (data) {
 
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(REQUESTED_RIGHTS)
+                .withRequiredAccessPackages(addedAccessPackages)
+                .withUnwantedAccessPackages(removedAccessPackages)
                 .withRedirectUrl(REDIRECT_URL)
                 .build();
 

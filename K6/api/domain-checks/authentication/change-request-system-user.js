@@ -118,6 +118,54 @@ function CheckSameChangeRequest(changeRequest, expectedId) {
 }
 
 /**
+ * Checks that a change request asks for the expected access packages.
+ *
+ * @param {ChangeRequestResponse} changeRequest - The change request to check.
+ * @param {AccessPackage[]} expectedAccessPackages - The access packages the change request should ask for.
+ * @returns {boolean} True if all of them are asked for, false otherwise.
+ */
+function CheckChangeRequestRequiredAccessPackages(changeRequest, expectedAccessPackages) {
+    const actual = (changeRequest?.requiredAccessPackages ?? []).map((found) => found.urn);
+    const missing = expectedAccessPackages.map((expected) => expected.urn).filter((urn) => !actual.includes(urn));
+
+    const success = check(changeRequest, {
+        "CheckChangeRequestRequiredAccessPackages - Change request requires all expected access packages": () =>
+            missing.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestRequiredAccessPackages - missing access packages: ${JSON.stringify(missing)}`);
+        console.error(`CheckChangeRequestRequiredAccessPackages - access packages returned: ${JSON.stringify(actual)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that a change request gives up the expected access packages.
+ *
+ * @param {ChangeRequestResponse} changeRequest - The change request to check.
+ * @param {AccessPackage[]} expectedAccessPackages - The access packages the change request should give up.
+ * @returns {boolean} True if all of them are given up, false otherwise.
+ */
+function CheckChangeRequestUnwantedAccessPackages(changeRequest, expectedAccessPackages) {
+    const actual = (changeRequest?.unwantedAccessPackages ?? []).map((found) => found.urn);
+    const missing = expectedAccessPackages.map((expected) => expected.urn).filter((urn) => !actual.includes(urn));
+
+    const success = check(changeRequest, {
+        "CheckChangeRequestUnwantedAccessPackages - Change request gives up all expected access packages": () =>
+            missing.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestUnwantedAccessPackages - missing access packages: ${JSON.stringify(missing)}`);
+        console.error(`CheckChangeRequestUnwantedAccessPackages - access packages returned: ${JSON.stringify(actual)}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that an earlier step produced a change request to act on.
  *
  * A group that needs one cannot say anything useful without it, so a caller that
@@ -183,6 +231,8 @@ export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestConfirmUrl,
     CheckChangeRequestStatus,
     CheckChangeRequestRequiredRights,
+    CheckChangeRequestRequiredAccessPackages,
+    CheckChangeRequestUnwantedAccessPackages,
     CheckSameChangeRequest,
     CheckChangeRequestId,
     CheckSystemUserToChange,

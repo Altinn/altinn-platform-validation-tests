@@ -1,6 +1,7 @@
 import { fail, group } from "k6";
 import http from "k6/http";
 
+import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
 import {
     ChangeRequestSystemUserClient,
     RegisterSystemRequestBuilder,
@@ -12,6 +13,7 @@ import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder,
 import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
+import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -49,9 +51,17 @@ let approverTokenGenerator = undefined;
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
  * @param {Right[]} options.grantedRights - The rights the system user is granted up front.
  * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
- * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data.
+ * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
+ * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
+ * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does.
  */
-export function arrangeApprovedSystemUser({ systemNamePrefix, grantedRights, registeredRights = grantedRights }) {
+export function arrangeApprovedSystemUser({
+    systemNamePrefix,
+    grantedRights,
+    registeredRights = grantedRights,
+    grantedAccessPackages = [],
+    registeredAccessPackages = grantedAccessPackages,
+}) {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const res = http.get(
@@ -61,7 +71,7 @@ export function arrangeApprovedSystemUser({ systemNamePrefix, grantedRights, reg
 
     const customer = getItemFromList(parseCsvData(res.body), randomize);
 
-    const registration = createSystemRegistration({ systemNamePrefix, registeredRights });
+    const registration = createSystemRegistration({ systemNamePrefix, registeredRights, registeredAccessPackages });
 
     // The approver acts as this customer, so its token has to be set before the
     // arrange runs, not in the default function the way the test does it.
@@ -69,12 +79,14 @@ export function arrangeApprovedSystemUser({ systemNamePrefix, grantedRights, reg
 
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
-    const systemUserId = createApprovedSystemUser(registration, customer, grantedRights);
+    const systemUserId = createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages);
 
     return [
         {
             customer,
             systemUserId,
+            grantedAccessPackages,
+            registeredAccessPackages,
         },
     ];
 }
@@ -129,6 +141,7 @@ export function getClients() {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
                 changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
                 systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+                packagesClient: new PackagesClient(__ENV.BASE_URL, vendorTokenGenerator),
             },
             approver: {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
@@ -154,6 +167,48 @@ export function getApproverTokenOpts(customer) {
         .withUserId(customer.userId)
         .withPartyUuid(customer.userPartyUuid)
         .build();
+}
+
+/**
+ * Wraps an access package urn the way the requests expect it.
+ *
+ * The system register takes bare urns, while the requests and change requests take
+ * objects, so this is only needed for the latter two.
+ *
+ * @param {string} urn - Access package urn.
+ * @returns {AccessPackage} The access package.
+ */
+export function accessPackage(urn) {
+    return { urn };
+}
+
+/**
+ * Finds access packages a system can be registered with and a system user granted.
+ *
+ * Searching rather than hardcoding urns, so the test keeps working when the
+ * package catalogue changes. Only packages that are both delegable and assignable
+ * can be handed to a system user, so the rest are filtered out. The list is sorted
+ * before slicing, so two runs pick the same packages and a failure is reproducible.
+ *
+ * @param {number} count - How many packages the caller needs.
+ * @returns {string[]} That many access package urns.
+ */
+export function findAccessPackages(count) {
+    const [apiClients] = getClients();
+
+    const results = PackagesSearch(apiClients.vendor.packagesClient, { term: "" }) ?? [];
+
+    const urns = results
+        .map((result) => result.object)
+        .filter((found) => found?.urn && found.isDelegable && found.isAssignable)
+        .map((found) => found.urn)
+        .sort();
+
+    if (urns.length < count) {
+        fail(`missing prerequisite: needed ${count} delegable access packages, found ${urns.length}`);
+    }
+
+    return urns.slice(0, count);
 }
 
 /**
@@ -183,9 +238,10 @@ export function resourceRight(resource) {
  * @param {object} options - Test specific parts of the registration.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
+ * @param {string[]} options.registeredAccessPackages - Urns of every access package the system is registered with.
  * @returns {object} Identifiers and the registration payload.
  */
-function createSystemRegistration({ systemNamePrefix, registeredRights }) {
+function createSystemRegistration({ systemNamePrefix, registeredRights, registeredAccessPackages }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;
     const systemId = `${SYSTEM_OWNER}_${systemName}`;
     const clientId = uuidv4();
@@ -205,6 +261,7 @@ function createSystemRegistration({ systemNamePrefix, registeredRights }) {
             nn: "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt.",
         })
         .withRights(registeredRights)
+        .withAccessPackages(registeredAccessPackages)
         .withClientId([clientId])
         .withVisibility(false)
         .withAllowedRedirectUrls([REDIRECT_URL])
@@ -235,9 +292,10 @@ function createSystemRegistration({ systemNamePrefix, registeredRights }) {
  * @param {object} registration - Registration from createSystemRegistration.
  * @param {object} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
+ * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
  * @returns {string} Identifier of the approved system user.
  */
-function createApprovedSystemUser(registration, customer, grantedRights) {
+function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
     const [apiClients] = getClients();
 
     let systemUserId;
@@ -250,6 +308,7 @@ function createApprovedSystemUser(registration, customer, grantedRights) {
             .withSystemId(registration.systemId)
             .withPartyOrgNo(customer.orgNo)
             .withRights(grantedRights)
+            .withAccessPackages(grantedAccessPackages.map(accessPackage))
             .withRedirectUrl(registration.redirectUrl)
             .build();
 
