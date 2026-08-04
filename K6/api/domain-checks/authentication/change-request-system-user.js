@@ -92,37 +92,6 @@ function CheckChangeRequestRequiredRights(changeRequest, expectedRights) {
 }
 
 /**
- * Checks that a change request holds no rights or access packages on either side.
- *
- * For the case where the vendor asks for nothing, which the API answers without
- * creating a change request at all.
- *
- * @param {ChangeRequestResponse} changeRequest - The change request to check.
- * @returns {boolean} True if all four sets are empty, false otherwise.
- */
-function CheckChangeRequestIsEmpty(changeRequest) {
-    const sets = [
-        "requiredRights",
-        "unwantedRights",
-        "requiredAccessPackages",
-        "unwantedAccessPackages",
-    ];
-
-    const nonEmpty = sets.filter((set) => (changeRequest?.[set] ?? []).length > 0);
-
-    const success = check(changeRequest, {
-        "CheckChangeRequestIsEmpty - Change request asks for nothing": () => nonEmpty.length === 0,
-    });
-
-    if (!success) {
-        console.error(`CheckChangeRequestIsEmpty - sets that were not empty: ${JSON.stringify(nonEmpty)}`);
-        console.error(`CheckChangeRequestIsEmpty - change request returned: ${JSON.stringify(changeRequest)}`);
-    }
-
-    return success;
-}
-
-/**
  * Checks that asking again returned the change request that already existed.
  *
  * A change request is idempotent on the correlation id, not on its contents: the
@@ -214,7 +183,6 @@ export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestConfirmUrl,
     CheckChangeRequestStatus,
     CheckChangeRequestRequiredRights,
-    CheckChangeRequestIsEmpty,
     CheckSameChangeRequest,
     CheckChangeRequestId,
     CheckSystemUserToChange,

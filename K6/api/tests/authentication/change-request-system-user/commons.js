@@ -176,7 +176,7 @@ export function resourceRight(resource) {
 /**
  * Builds the identifiers and registration payload for one iteration.
  *
- * Everything here is unique per iteration, so unlike the clients it cannot be
+ * Every identifier here is generated fresh, so unlike the clients it cannot be
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
@@ -185,7 +185,7 @@ export function resourceRight(resource) {
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
  * @returns {object} Identifiers and the registration payload.
  */
-export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
+function createSystemRegistration({ systemNamePrefix, registeredRights }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;
     const systemId = `${SYSTEM_OWNER}_${systemName}`;
     const clientId = uuidv4();
@@ -237,7 +237,7 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @returns {string} Identifier of the approved system user.
  */
-export function createApprovedSystemUser(registration, customer, grantedRights) {
+function createApprovedSystemUser(registration, customer, grantedRights) {
     const [apiClients] = getClients();
 
     let systemUserId;
