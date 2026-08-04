@@ -1,9 +1,9 @@
 import http from "k6/http";
 
-import { ConnectionsClient } from "../../../../clients/access-management/enduser/connections/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /**
  * @type {ConnectionsApiClient | undefined}

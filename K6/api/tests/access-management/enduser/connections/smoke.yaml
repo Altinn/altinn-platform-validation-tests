@@ -1,5 +1,5 @@
 namespace: authorization
-base_dir: K6/api/tests/authorization/connections/
+base_dir: K6/api/tests/access-management/enduser/connections
 test_definitions:
   - test_file: get-connections-to.js
     env_file: common.env
