@@ -3,7 +3,8 @@ import { fail, group } from "k6";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-v2-imports.js";
-import { accessPackage, arrangeApprovedSystemUser, findAccessPackages, getApproverTokenOpts, getClients, REDIRECT_URL, resourceRight } from "./commons.js";
+import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
+import { accessPackage, arrangeApprovedSystemUser, findAccessPackages, getApproverTokenOpts, getClients, REDIRECT_URL, resource } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -12,14 +13,14 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
  *
  * @type {Right[]}
  */
-const GRANTED_RIGHTS = [resourceRight("ttd-dialogporten-performance-test-01")];
+const GRANTED_RIGHTS = [resource("ttd-dialogporten-performance-test-01")];
 
 /**
  * The rights the change request asks for, which the system user does not have.
  *
  * @type {Right[]}
  */
-const REQUESTED_RIGHTS = [resourceRight("authentication-e2e-test")];
+const REQUESTED_RIGHTS = [resource("authentication-e2e-test")];
 
 /**
  * k6 setup stage. Arranges the system user this test changes.
@@ -118,8 +119,8 @@ export default function (data) {
                 fail("A change request must be created to approve");
             }
 
-            const approved = ChangeRequestSystemUserBuildingBlocks.Approve(
-                clients.approver.changeRequestClient,
+            const approved = ApproveChangeRequest(
+                clients.approver.bffChangeRequestClient,
                 systemUser.customer.partyId,
                 changeRequestId,
             );

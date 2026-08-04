@@ -2,6 +2,7 @@ import { fail, group } from "k6";
 import http from "k6/http";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
+import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
 import {
     ChangeRequestSystemUserClient,
     RegisterSystemRequestBuilder,
@@ -62,7 +63,7 @@ export function arrangeApprovedSystemUser({
     grantedAccessPackages = [],
     registeredAccessPackages = grantedAccessPackages,
 }) {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
@@ -146,6 +147,10 @@ export function getClients() {
             approver: {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
                 changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+
+                // Approving is what the customer does in the portal, so it goes through
+                // the bff rather than the authentication api the vendor calls.
+                bffChangeRequestClient: new SystemUserChangeRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }
@@ -190,8 +195,8 @@ export function accessPackage(urn) {
  * can be handed to a system user, so the rest are filtered out. The list is sorted
  * before slicing, so two runs pick the same packages and a failure is reproducible.
  *
- * @param {number} count - How many packages the caller needs.
- * @returns {string[]} That many access package urns.
+ * @param {number} count - How many packages the caller wants
+ * @returns {string[]} The access package urns.
  */
 export function findAccessPackages(count) {
     const [apiClients] = getClients();
@@ -217,7 +222,7 @@ export function findAccessPackages(count) {
  * @param {string} resource - Resource identifier.
  * @returns {Right} A right the system register and the requests understand.
  */
-export function resourceRight(resource) {
+export function resource(resource) {
     return {
         resource: [
             {
