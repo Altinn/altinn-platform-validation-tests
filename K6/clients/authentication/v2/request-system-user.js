@@ -28,9 +28,6 @@ const TAGS = {
     RequestSystemUserVendorAgentGetBySystem: {
         action: "request-system-user-vendor-agent-get-by-system",
     },
-    RequestSystemUserApprove: {
-        action: "request-system-user-approve",
-    },
 };
 
 class RequestSystemUserClient {
@@ -428,45 +425,6 @@ class RequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Approves a system user request on behalf of the party it was made for.
-     *
-     * Requires the `altinn:portal/enduser` scope.
-     *
-     * @param {string} partyId Party the request was made for.
-     * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
-     */
-    RequestSystemUserApprove(partyId, requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.ENDUSER_FULL_PATH}/${encodeURIComponent(partyId)}/${encodeURIComponent(requestId)}/approve`;
-
-        let tags = {
-            endpoint: url,
-            name: `${this.ENDUSER_FULL_PATH}/{party}/{requestId}/approve`,
-            action: TAGS.RequestSystemUserApprove.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
                 Accept: "application/json",
             },
         });

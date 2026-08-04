@@ -2,6 +2,7 @@ import { fail, group } from "k6";
 
 import { getItemFromList } from "../../../../helpers.js";
 import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
+import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 import { createSystemRegistration, getApproverTokenOpts, getClients, resourceRight } from "./commons.js";
 
 const RESOURCE = "ttd-dialogporten-performance-test-01";
@@ -57,8 +58,8 @@ export default function (data) {
                 fail("missing prerequisite: the system user request was created");
             }
 
-            const approved = RequestSystemUserBuildingBlocks.Approve(
-                clients.approver.requestSystemUserClient,
+            const approved = ApproveSystemUserRequest(
+                clients.approver.bffRequestClient,
                 customer.partyId,
                 requestId,
             );

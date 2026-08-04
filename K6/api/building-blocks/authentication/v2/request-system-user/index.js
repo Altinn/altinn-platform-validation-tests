@@ -1,4 +1,3 @@
-import { RequestSystemUserApprove } from "./request-system-user-approve.js";
 import { RequestSystemUserVendorAgentCreate } from "./request-system-user-vendor-agent-create.js";
 import { RequestSystemUserVendorAgentGet } from "./request-system-user-vendor-agent-get.js";
 import { RequestSystemUserVendorAgentGetByExternalRef } from "./request-system-user-vendor-agent-get-by-external-ref.js";
@@ -10,7 +9,6 @@ import { RequestSystemUserVendorGetByExternalRef } from "./request-system-user-v
 import { RequestSystemUserVendorGetBySystem } from "./request-system-user-vendor-get-by-system.js";
 
 export const RequestSystemUserBuildingBlocks = {
-    Approve: RequestSystemUserApprove,
     VendorAgentCreate: RequestSystemUserVendorAgentCreate,
     VendorAgentGet: RequestSystemUserVendorAgentGet,
     VendorAgentGetByExternalRef: RequestSystemUserVendorAgentGetByExternalRef,

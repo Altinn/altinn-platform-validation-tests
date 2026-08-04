@@ -16,9 +16,6 @@ const TAGS = {
     ChangeRequestSystemUserVendorGetBySystem: {
         action: "change-request-system-user-vendor-get-by-system",
     },
-    ChangeRequestSystemUserApprove: {
-        action: "change-request-system-user-approve",
-    },
 };
 
 class ChangeRequestSystemUserClient {
@@ -269,45 +266,6 @@ class ChangeRequestSystemUserClient {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Approves a change request on behalf of the party it was made for.
-     *
-     * Requires the `altinn:portal/enduser` scope.
-     *
-     * @param {string} partyId Party the change request was made for.
-     * @param {string} requestId Change request identifier.
-     * @param {{[key: string]: string}} [labels]
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
-     */
-    ChangeRequestSystemUserApprove(partyId, requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(partyId)}/${encodeURIComponent(requestId)}/approve`;
-
-        let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{party}/{requestId}/approve`,
-            action: TAGS.ChangeRequestSystemUserApprove.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
                 Accept: "application/json",
             },
         });

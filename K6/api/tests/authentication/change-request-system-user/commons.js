@@ -3,6 +3,7 @@ import http from "k6/http";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
     ChangeRequestSystemUserClient,
     RegisterSystemRequestBuilder,
@@ -15,6 +16,7 @@ import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.j
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
+import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -151,6 +153,7 @@ export function getClients() {
                 // Approving is what the customer does in the portal, so it goes through
                 // the bff rather than the authentication api the vendor calls.
                 bffChangeRequestClient: new SystemUserChangeRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+                bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }
@@ -329,8 +332,8 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             fail("missing prerequisite: the system user request was created");
         }
 
-        const approved = RequestSystemUserBuildingBlocks.Approve(
-            apiClients.approver.requestSystemUserClient,
+        const approved = ApproveSystemUserRequest(
+            apiClients.approver.bffRequestClient,
             customer.partyId,
             createdRequest?.id,
         );

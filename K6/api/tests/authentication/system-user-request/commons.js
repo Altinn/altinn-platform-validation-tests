@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
@@ -38,7 +39,7 @@ let approverTokenGenerator = undefined;
  * @returns {object[]} The customers the tests act on behalf of.
  */
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
@@ -98,6 +99,10 @@ export function getClients() {
             },
             approver: {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+
+                // Approving is what the customer does in the portal, so it goes through
+                // the bff rather than the authentication api the vendor calls.
+                bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }
