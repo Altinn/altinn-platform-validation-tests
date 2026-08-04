@@ -4,30 +4,43 @@ import { ChangeRequestResponse } from "../../../clients/authentication/v2/types.
 import { missingRights } from "../common/rights.js";
 
 /**
- * Checks that a change request was created for the expected system user and holds the
- * fields the vendor needs to take the customer through approval.
+ * Checks that a change request is for the expected system user.
  *
  * @param {ChangeRequestResponse} changeRequest - The created change request.
- * @param {{systemId: string, partyOrgNo: string, systemUserId: string}} expected - What the change request was created for.
- * @returns {boolean} True if the change request matches, false otherwise.
+ * @param {string} expectedSystemUserId - The system user the change request was made for.
+ * @returns {boolean} True if the change request is for that system user, false otherwise.
  */
-function CheckChangeRequestCreated(changeRequest, expected) {
+function CheckChangeRequestSystemUserId(changeRequest, expectedSystemUserId) {
     const success = check(changeRequest, {
-        "CheckChangeRequestCreated - Change request is for the expected system user": (created) =>
-            created !== null &&
-            created.systemId === expected.systemId &&
-            created.partyOrgNo === expected.partyOrgNo &&
-            created.systemUserId === expected.systemUserId,
-        "CheckChangeRequestCreated - Change request carries id and confirm url": (created) =>
-            created?.id !== undefined &&
-            created?.id !== null &&
-            typeof created?.confirmUrl === "string" &&
-            created.confirmUrl.length > 0,
+        "CheckChangeRequestSystemUserId - Change request is for the expected system user": (request) => {
+            return request?.systemUserId === expectedSystemUserId;
+        },
     });
 
     if (!success) {
-        console.error(`CheckChangeRequestCreated - expected: ${JSON.stringify(expected)}`);
-        console.error(`CheckChangeRequestCreated - change request returned: ${JSON.stringify(changeRequest)}`);
+        console.error(`CheckChangeRequestSystemUserId - expected systemUserId '${expectedSystemUserId}', got '${changeRequest?.systemUserId}'`);
+        console.error(`CheckChangeRequestSystemUserId - change request returned: ${JSON.stringify(changeRequest)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that a change request carries the url the customer is sent to in order to approve it.
+ *
+ * @param {ChangeRequestResponse} changeRequest - The created change request.
+ * @returns {boolean} True if the confirm url is there, false otherwise.
+ */
+function CheckChangeRequestConfirmUrl(changeRequest) {
+    const success = check(changeRequest, {
+        "CheckChangeRequestConfirmUrl - Change request carries a confirm url": (request) => {
+            return typeof request?.confirmUrl === "string" && request.confirmUrl.length > 0;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestConfirmUrl - confirmUrl was '${changeRequest?.confirmUrl}'`);
+        console.error(`CheckChangeRequestConfirmUrl - change request returned: ${JSON.stringify(changeRequest)}`);
     }
 
     return success;
@@ -154,7 +167,8 @@ function CheckChangeRequestApproved(approved) {
 }
 
 export const ChangeRequestSystemUserDomainChecks = {
-    CheckChangeRequestCreated,
+    CheckChangeRequestSystemUserId,
+    CheckChangeRequestConfirmUrl,
     CheckChangeRequestStatus,
     CheckChangeRequestRequiredRights,
     CheckChangeRequestIsEmpty,

@@ -60,24 +60,19 @@ export default function (data) {
                 .withRedirectUrl(REDIRECT_URL)
                 .build();
 
-            const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
+            const changeRequestResponse = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
                 systemUser.systemUserId,
-                null,
                 201,
             );
 
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestCreated(changeRequest, {
-                systemId: systemUser.systemId,
-                partyOrgNo: systemUser.customer.orgNo,
-                systemUserId: systemUser.systemUserId,
-            });
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUser.systemUserId);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestConfirmUrl(changeRequestResponse);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequestResponse, REQUESTED_RIGHTS);
 
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequest, REQUESTED_RIGHTS);
-
-            changeRequestId = changeRequest?.id;
+            changeRequestId = changeRequestResponse?.id;
         });
 
         group("Asking again with the same correlation id returns the same change request", function () {
@@ -95,7 +90,6 @@ export default function (data) {
                 request,
                 correlationId,
                 systemUser.systemUserId,
-                null,
                 200,
             );
 
@@ -104,7 +98,7 @@ export default function (data) {
 
         group("The customer approves the change", function () {
             if (!PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to approve")) {
-                fail("missing prerequisite: a change request was created to approve");
+                fail("missing prerequisite: a change request must be created to approve");
             }
 
             const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(

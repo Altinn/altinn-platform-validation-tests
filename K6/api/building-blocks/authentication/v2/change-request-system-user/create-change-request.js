@@ -9,9 +9,9 @@ import { ChangeRequestSystemUserClient } from "../../../../../clients/authentica
  * @param {ChangeRequestSystemUser} request Change request payload.
  * @param {string|null} [correlationId] Correlation identifier.
  * @param {string|null} [systemUserId] System user identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @param {number|null} [expectedStatus] Status the caller expects. Pass 201 for a new
  * change request and 200 when reusing a correlation id, and leave it out to accept either.
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponse|null} Change request response.
  */
 export function CreateChangeRequest(
@@ -19,8 +19,8 @@ export function CreateChangeRequest(
     request,
     correlationId = null,
     systemUserId = null,
-    labels = null,
     expectedStatus = null,
+    labels = null,
 ) {
     const res = changeRequestSystemUserClient.CreateChangeRequest(
         request,

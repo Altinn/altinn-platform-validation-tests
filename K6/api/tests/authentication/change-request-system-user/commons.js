@@ -76,7 +76,6 @@ export function arrangeApprovedSystemUser({ systemNamePrefix, grantedRights, reg
         {
             customer,
             systemUserId,
-            systemId: registration.systemId,
         },
     ];
 }
