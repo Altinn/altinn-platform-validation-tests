@@ -22,7 +22,7 @@ export function ChangeRequestSystemUserVendorCreate(
     expectedStatus = null,
     labels = null,
 ) {
-    const res = changeRequestSystemUserClient.CreateChangeRequest(
+    const res = changeRequestSystemUserClient.ChangeRequestSystemUserVendorCreate(
         request,
         correlationId,
         systemUserId,

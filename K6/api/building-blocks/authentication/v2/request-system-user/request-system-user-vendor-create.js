@@ -15,7 +15,7 @@ export function RequestSystemUserVendorCreate(
     request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.CreateRequest(
+    const res = requestSystemUserClient.RequestSystemUserVendorCreate(
         request,
         labels,
     );

@@ -20,7 +20,7 @@ export function ChangeRequestSystemUserVendorGetByExternalRef(
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.GetChangeRequestByExternalRef(
+        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetByExternalRef(
             systemId,
             orgNo,
             externalRef,

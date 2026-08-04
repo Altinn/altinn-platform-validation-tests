@@ -15,7 +15,7 @@ export function SystemRegisterVendorDelete(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.SetDeleteOnRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterVendorDelete(
         systemId,
         labels,
     );

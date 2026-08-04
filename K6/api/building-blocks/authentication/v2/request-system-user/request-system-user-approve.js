@@ -17,7 +17,7 @@ export function RequestSystemUserApprove(
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.ApproveSystemUserRequest(
+    const res = requestSystemUserClient.RequestSystemUserApprove(
         partyId,
         requestId,
         labels,

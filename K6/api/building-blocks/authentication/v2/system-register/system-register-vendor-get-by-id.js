@@ -15,7 +15,7 @@ export function SystemRegisterVendorGetById(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetRegisteredSystemInfo(
+    const res = systemRegisterClient.SystemRegisterVendorGetById(
         systemId,
         labels,
     );

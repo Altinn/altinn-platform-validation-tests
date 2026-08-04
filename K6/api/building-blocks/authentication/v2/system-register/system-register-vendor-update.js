@@ -17,7 +17,7 @@ export function SystemRegisterVendorUpdate(
     request,
     labels = null,
 ) {
-    const res = systemRegisterClient.UpdateWholeRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterVendorUpdate(
         systemId,
         request,
         labels,

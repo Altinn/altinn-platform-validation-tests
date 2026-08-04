@@ -17,7 +17,7 @@ export function RequestSystemUserVendorGetBySystem(
     token = null,
     labels = null,
 ) {
-    const res = requestSystemUserClient.GetAllRequestsForVendor(
+    const res = requestSystemUserClient.RequestSystemUserVendorGetBySystem(
         systemId,
         token,
         labels,

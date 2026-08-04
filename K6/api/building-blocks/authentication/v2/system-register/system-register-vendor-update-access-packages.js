@@ -17,7 +17,7 @@ export function SystemRegisterVendorUpdateAccessPackages(
     accessPackages,
     labels = null,
 ) {
-    const res = systemRegisterClient.UpdateAccessPackagesOnRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterVendorUpdateAccessPackages(
         systemId,
         accessPackages,
         labels,

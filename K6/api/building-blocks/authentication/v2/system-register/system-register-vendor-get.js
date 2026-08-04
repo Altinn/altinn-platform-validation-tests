@@ -13,7 +13,7 @@ export function SystemRegisterVendorGet(
     systemRegisterClient,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetListOfRegisteredSystemsForVendor(labels);
+    const res = systemRegisterClient.SystemRegisterVendorGet(labels);
 
     /** @type {RegisteredSystemDTO[]|null} */
     let systems = null;

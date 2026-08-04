@@ -15,7 +15,7 @@ export function SystemRegisterVendorGetChangeLog(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetChangeLog(
+    const res = systemRegisterClient.SystemRegisterVendorGetChangeLog(
         systemId,
         labels,
     );

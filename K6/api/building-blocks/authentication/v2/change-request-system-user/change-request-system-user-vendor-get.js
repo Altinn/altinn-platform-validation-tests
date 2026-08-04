@@ -16,7 +16,7 @@ export function ChangeRequestSystemUserVendorGet(
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.GetChangeRequestByGuid(
+        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGet(
             requestId,
             labels,
         );

@@ -15,7 +15,7 @@ export function RequestSystemUserVendorDelete(
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.DeleteRequestByRequestId(
+    const res = requestSystemUserClient.RequestSystemUserVendorDelete(
         requestId,
         labels,
     );

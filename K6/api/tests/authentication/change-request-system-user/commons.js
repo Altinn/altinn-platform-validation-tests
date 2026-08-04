@@ -114,7 +114,7 @@ export function getClients() {
             AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
             AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
             AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
-            AltinnScopes.AUTHORIZATION.AUTHORIZE,
+            AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
             AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
         ]);
 

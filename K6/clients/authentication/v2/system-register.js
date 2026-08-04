@@ -79,7 +79,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.GetListOfRegisteredSystems.action,
+            action: TAGS.SystemRegisterGet.action,
         };
 
         if (labels !== null) {
@@ -113,7 +113,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.GetListOfRegisteredSystemsForVendor.action,
+            action: TAGS.SystemRegisterVendorGet.action,
         };
 
         if (labels !== null) {
@@ -148,7 +148,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.CreateRegisteredSystem.action,
+            action: TAGS.SystemRegisterVendorCreate.action,
         };
 
         if (labels !== null) {
@@ -184,7 +184,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.GetRegisteredSystemInfo.action,
+            action: TAGS.SystemRegisterVendorGetById.action,
         };
 
         if (labels !== null) {
@@ -220,7 +220,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.UpdateWholeRegisteredSystem.action,
+            action: TAGS.SystemRegisterVendorUpdate.action,
         };
 
         if (labels !== null) {
@@ -256,7 +256,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SetDeleteOnRegisteredSystem.action,
+            action: TAGS.SystemRegisterVendorDelete.action,
         };
 
         if (labels !== null) {
@@ -298,7 +298,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.GetRightsForRegisteredSystem.action,
+            action: TAGS.SystemRegisterGetRightsFrontend.action,
         };
 
         if (labels !== null) {
@@ -344,7 +344,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.GetAccessPackagesForRegisteredSystem.action,
+            action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
         };
 
         if (labels !== null) {
@@ -380,7 +380,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}/rights`,
-            action: TAGS.UpdateRightsOnRegisteredSystem.action,
+            action: TAGS.SystemRegisterVendorUpdateRights.action,
         };
 
         if (labels !== null) {
@@ -421,7 +421,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
-            action: TAGS.UpdateAccessPackagesOnRegisteredSystem.action,
+            action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
         };
 
         if (labels !== null) {
@@ -457,7 +457,7 @@ class SystemRegisterClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
-            action: TAGS.GetChangeLog.action,
+            action: TAGS.SystemRegisterVendorGetChangeLog.action,
         };
 
         if (labels !== null) {

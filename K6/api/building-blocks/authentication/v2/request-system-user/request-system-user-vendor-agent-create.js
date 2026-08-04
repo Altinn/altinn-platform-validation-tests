@@ -15,7 +15,7 @@ export function RequestSystemUserVendorAgentCreate(
     request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.CreateAgentRequest(
+    const res = requestSystemUserClient.RequestSystemUserVendorAgentCreate(
         request,
         labels,
     );

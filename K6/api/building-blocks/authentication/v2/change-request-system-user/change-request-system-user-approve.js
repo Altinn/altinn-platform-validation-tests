@@ -17,7 +17,7 @@ export function ChangeRequestSystemUserApprove(
     requestId,
     labels = null,
 ) {
-    const res = changeRequestSystemUserClient.ApproveSystemUserChangeRequest(
+    const res = changeRequestSystemUserClient.ChangeRequestSystemUserApprove(
         partyId,
         requestId,
         labels,

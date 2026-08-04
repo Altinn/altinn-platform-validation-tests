@@ -88,7 +88,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.CreateRequest.action,
+            action: TAGS.RequestSystemUserVendorCreate.action,
         };
 
         if (labels !== null) {
@@ -126,7 +126,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.CreateAgentRequest.action,
+            action: TAGS.RequestSystemUserVendorAgentCreate.action,
         };
 
         if (labels !== null) {
@@ -164,7 +164,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
-            action: TAGS.GetRequestByGuid.action,
+            action: TAGS.RequestSystemUserVendorGet.action,
         };
 
         if (labels !== null) {
@@ -201,7 +201,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
-            action: TAGS.DeleteRequestByRequestId.action,
+            action: TAGS.RequestSystemUserVendorDelete.action,
         };
 
         if (labels !== null) {
@@ -238,7 +238,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/agent/{encodeURIComponent(requestId)}`,
-            action: TAGS.GetAgentSystemUserRequestByGuid.action,
+            action: TAGS.RequestSystemUserVendorAgentGet.action,
         };
 
         if (labels !== null) {
@@ -282,7 +282,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
-            action: TAGS.GetRequestByExternalRef.action,
+            action: TAGS.RequestSystemUserVendorGetByExternalRef.action,
         };
 
         if (labels !== null) {
@@ -326,7 +326,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
-            action: TAGS.GetAgentRequestByExternalRef.action,
+            action: TAGS.RequestSystemUserVendorAgentGetByExternalRef.action,
         };
 
         if (labels !== null) {
@@ -368,7 +368,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/bysystem/{encodeURIComponent(systemId)}`,
-            action: TAGS.GetAllRequestsForVendor.action,
+            action: TAGS.RequestSystemUserVendorGetBySystem.action,
         };
 
         if (labels !== null) {
@@ -414,7 +414,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/agent/bysystem/{encodeURIComponent(systemId)}`,
-            action: TAGS.GetAllAgentRequestsForVendor.action,
+            action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
         };
 
         if (labels !== null) {
@@ -452,7 +452,7 @@ class RequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.ENDUSER_FULL_PATH}/{party}/{requestId}/approve`,
-            action: TAGS.ApproveSystemUserRequest.action,
+            action: TAGS.RequestSystemUserApprove.action,
         };
 
         if (labels !== null) {

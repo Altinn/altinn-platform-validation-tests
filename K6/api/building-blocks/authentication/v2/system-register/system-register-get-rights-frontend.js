@@ -19,7 +19,7 @@ export function SystemRegisterGetRightsFrontend(
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetRightsForRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterGetRightsFrontend(
         systemId,
         useOldFormatForApp,
         labels,

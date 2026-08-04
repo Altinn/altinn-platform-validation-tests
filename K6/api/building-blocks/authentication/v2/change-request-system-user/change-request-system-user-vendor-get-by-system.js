@@ -18,7 +18,7 @@ export function ChangeRequestSystemUserVendorGetBySystem(
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.GetAllChangeRequestsForVendor(
+        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetBySystem(
             systemId,
             token,
             labels,

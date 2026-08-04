@@ -90,7 +90,7 @@ class ChangeRequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: url,
-            action: TAGS.CreateChangeRequest.action,
+            action: TAGS.ChangeRequestSystemUserVendorCreate.action,
         };
 
         if (labels !== null) {
@@ -128,7 +128,7 @@ class ChangeRequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{requestId}`,
-            action: TAGS.GetChangeRequestByGuid.action,
+            action: TAGS.ChangeRequestSystemUserVendorGet.action,
         };
 
         if (labels !== null) {
@@ -165,7 +165,7 @@ class ChangeRequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/{requestId}`,
-            action: TAGS.DeleteChangeRequestByRequestId.action,
+            action: TAGS.ChangeRequestSystemUserVendorDelete.action,
         };
 
         if (labels !== null) {
@@ -209,7 +209,7 @@ class ChangeRequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            action: TAGS.GetChangeRequestByExternalRef.action,
+            action: TAGS.ChangeRequestSystemUserVendorGetByExternalRef.action,
         };
 
         if (labels !== null) {
@@ -255,7 +255,7 @@ class ChangeRequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
-            action: TAGS.GetAllChangeRequestsForVendor.action,
+            action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
         };
 
         if (labels !== null) {
@@ -293,7 +293,7 @@ class ChangeRequestSystemUserClient {
         let tags = {
             endpoint: url,
             name: `${this.FULL_PATH}/{party}/{requestId}/approve`,
-            action: TAGS.ApproveSystemUserChangeRequest.action,
+            action: TAGS.ChangeRequestSystemUserApprove.action,
         };
 
         if (labels !== null) {

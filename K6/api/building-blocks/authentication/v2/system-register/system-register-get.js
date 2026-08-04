@@ -15,7 +15,7 @@ export function SystemRegisterGet(
     systemRegisterClient,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetListOfRegisteredSystems(labels);
+    const res = systemRegisterClient.SystemRegisterGet(labels);
 
     /** @type {RegisteredSystemDTO[]|null} */
     let systems = null;

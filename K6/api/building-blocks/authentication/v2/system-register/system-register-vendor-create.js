@@ -15,7 +15,7 @@ export function SystemRegisterVendorCreate(
     request,
     labels = null,
 ) {
-    const res = systemRegisterClient.CreateRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterVendorCreate(
         request,
         labels,
     );

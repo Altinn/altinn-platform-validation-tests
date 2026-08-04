@@ -15,7 +15,7 @@ export function RequestSystemUserVendorAgentGet(
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.GetAgentSystemUserRequestByGuid(
+    const res = requestSystemUserClient.RequestSystemUserVendorAgentGet(
         requestId,
         labels,
     );

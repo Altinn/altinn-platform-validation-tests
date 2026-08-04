@@ -19,7 +19,7 @@ export function SystemRegisterGetAccessPackagesFrontend(
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetAccessPackagesForRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterGetAccessPackagesFrontend(
         systemId,
         useOldFormatForApp,
         labels,

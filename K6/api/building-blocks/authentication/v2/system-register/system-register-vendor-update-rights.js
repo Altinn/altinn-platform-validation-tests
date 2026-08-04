@@ -17,7 +17,7 @@ export function SystemRegisterVendorUpdateRights(
     rights,
     labels = null,
 ) {
-    const res = systemRegisterClient.UpdateRightsOnRegisteredSystem(
+    const res = systemRegisterClient.SystemRegisterVendorUpdateRights(
         systemId,
         rights,
         labels,
