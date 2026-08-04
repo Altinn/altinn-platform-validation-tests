@@ -1,23 +1,23 @@
-import { ApproveSystemUserRequest } from "./approve-system-user-request.js";
-import { CreateAgentRequest } from "./create-agent-request.js";
-import { CreateRequest } from "./create-request.js";
-import { DeleteRequestByRequestId } from "./delete-request-by-request-id.js";
-import { GetAgentRequestByExternalRef } from "./get-agent-request-by-external-ref.js";
-import { GetAgentSystemUserRequestByGuid } from "./get-agent-system-user-request-by-guid.js";
-import { GetAllAgentRequestsForVendor } from "./get-all-agent-requests-for-vendor.js";
-import { GetAllRequestsForVendor } from "./get-all-requests-for-vendor.js";
-import { GetRequestByExternalRef } from "./get-request-by-external-ref.js";
-import { GetRequestByGuid } from "./get-request-by-guid.js";
+import { RequestSystemUserApprove } from "./request-system-user-approve.js";
+import { RequestSystemUserVendorAgentCreate } from "./request-system-user-vendor-agent-create.js";
+import { RequestSystemUserVendorAgentGet } from "./request-system-user-vendor-agent-get.js";
+import { RequestSystemUserVendorAgentGetByExternalRef } from "./request-system-user-vendor-agent-get-by-external-ref.js";
+import { RequestSystemUserVendorAgentGetBySystem } from "./request-system-user-vendor-agent-get-by-system.js";
+import { RequestSystemUserVendorCreate } from "./request-system-user-vendor-create.js";
+import { RequestSystemUserVendorDelete } from "./request-system-user-vendor-delete.js";
+import { RequestSystemUserVendorGet } from "./request-system-user-vendor-get.js";
+import { RequestSystemUserVendorGetByExternalRef } from "./request-system-user-vendor-get-by-external-ref.js";
+import { RequestSystemUserVendorGetBySystem } from "./request-system-user-vendor-get-by-system.js";
 
 export const RequestSystemUserBuildingBlocks = {
-    ApproveSystemUserRequest,
-    CreateAgentRequest,
-    CreateRequest,
-    DeleteRequestByRequestId,
-    GetAgentRequestByExternalRef,
-    GetAgentSystemUserRequestByGuid,
-    GetAllAgentRequestsForVendor,
-    GetAllRequestsForVendor,
-    GetRequestByExternalRef,
-    GetRequestByGuid,
+    Approve: RequestSystemUserApprove,
+    VendorAgentCreate: RequestSystemUserVendorAgentCreate,
+    VendorAgentGet: RequestSystemUserVendorAgentGet,
+    VendorAgentGetByExternalRef: RequestSystemUserVendorAgentGetByExternalRef,
+    VendorAgentGetBySystem: RequestSystemUserVendorAgentGetBySystem,
+    VendorCreate: RequestSystemUserVendorCreate,
+    VendorDelete: RequestSystemUserVendorDelete,
+    VendorGet: RequestSystemUserVendorGet,
+    VendorGetByExternalRef: RequestSystemUserVendorGetByExternalRef,
+    VendorGetBySystem: RequestSystemUserVendorGetBySystem,
 };

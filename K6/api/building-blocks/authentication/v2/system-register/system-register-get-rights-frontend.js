@@ -3,46 +3,48 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Updates rights on a registered system.
+ * Retrieves default rights for a system.
+ *
+ * Requires the `altinn:portal/enduser` scope.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
- * @param {Right[]} rights Rights.
+ * @param {boolean|null} [useOldFormatForApp] Whether to use old app format.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemRegisterUpdateResult|null} Update result.
+ * @returns {Right[]|null} Rights.
  */
-export function UpdateRightsOnRegisteredSystem(
+export function SystemRegisterGetRightsFrontend(
     systemRegisterClient,
     systemId,
-    rights,
+    useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.UpdateRightsOnRegisteredSystem(
+    const res = systemRegisterClient.GetRightsForRegisteredSystem(
         systemId,
-        rights,
+        useOldFormatForApp,
         labels,
     );
 
-    /** @type {SystemRegisterUpdateResult|null} */
-    let result = null;
+    /** @type {Right[]|null} */
+    let rights = null;
 
     const succeed = check(res, {
-        "UpdateRightsOnRegisteredSystem - status code is 200": (r) =>
+        "SystemRegisterGetRightsFrontend - status code is 200": (r) =>
             r.status === 200,
-        "UpdateRightsOnRegisteredSystem - status text is 200 OK": (r) =>
+        "SystemRegisterGetRightsFrontend - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return result;
+        return rights;
     }
 
     check(res, {
-        "UpdateRightsOnRegisteredSystem - body is valid": (r) => {
+        "SystemRegisterGetRightsFrontend - body is valid": (r) => {
             try {
-                result = JSON.parse(r.body);
+                rights = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -54,5 +56,5 @@ export function UpdateRightsOnRegisteredSystem(
         },
     });
 
-    return result;
+    return rights;
 }

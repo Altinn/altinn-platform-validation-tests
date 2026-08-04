@@ -10,7 +10,7 @@ import { RequestSystemUserClient } from "../../../../../clients/authentication/v
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
-export function DeleteRequestByRequestId(
+export function RequestSystemUserVendorDelete(
     requestSystemUserClient,
     requestId,
     labels = null,
@@ -24,9 +24,9 @@ export function DeleteRequestByRequestId(
     let requestResponse = null;
 
     const succeed = check(res, {
-        "DeleteRequestByRequestId - status code is 200": (r) =>
+        "RequestSystemUserVendorDelete - status code is 200": (r) =>
             r.status === 200,
-        "DeleteRequestByRequestId - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorDelete - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +37,7 @@ export function DeleteRequestByRequestId(
     }
 
     check(res, {
-        "DeleteRequestByRequestId - body is valid": (r) => {
+        "RequestSystemUserVendorDelete - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

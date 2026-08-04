@@ -3,32 +3,36 @@ import { check } from "k6";
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves a change request by id.
+ * Retrieves change requests for a system.
  *
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
- * @param {string} requestId Request identifier.
+ * @param {string} systemId System identifier.
+ * @param {GuidOpaque|null} [token] Optional continuation token.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {ChangeRequestResponse|null} Change request response.
+ * @returns {ChangeRequestResponsePaginated|null} Paginated change request response.
  */
-export function GetChangeRequestByGuid(
+export function ChangeRequestSystemUserVendorGetBySystem(
     changeRequestSystemUserClient,
-    requestId,
+    systemId,
+    token = null,
     labels = null,
 ) {
     const res =
-        changeRequestSystemUserClient.GetChangeRequestByGuid(
-            requestId,
+        changeRequestSystemUserClient.GetAllChangeRequestsForVendor(
+            systemId,
+            token,
             labels,
         );
 
-    /** @type {ChangeRequestResponse|null} */
+    /** @type {ChangeRequestResponsePaginated|null} */
     let changeRequestResponse = null;
 
     const succeed = check(res, {
-        "GetChangeRequestByGuid - status code is 200": (r) =>
+        "ChangeRequestSystemUserVendorGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "GetChangeRequestByGuid - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "ChangeRequestSystemUserVendorGetBySystem - status text is 200 OK": (
+            r,
+        ) => r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -38,7 +42,7 @@ export function GetChangeRequestByGuid(
     }
 
     check(res, {
-        "GetChangeRequestByGuid - body is valid": (r) => {
+        "ChangeRequestSystemUserVendorGetBySystem - body is valid": (r) => {
             try {
                 changeRequestResponse = JSON.parse(r.body);
 

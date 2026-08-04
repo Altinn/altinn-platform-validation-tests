@@ -3,44 +3,44 @@ import { check } from "k6";
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Approves a change request for a system user.
+ * Deletes a change request by id.
  *
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
- * @param {string} partyId Party the change request was made for.
- * @param {string} requestId Change request identifier.
+ * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {boolean} Whether the change request was approved.
+ * @returns {ChangeRequestResponse|null} Change request response.
  */
-export function ApproveSystemUserChangeRequest(
+export function ChangeRequestSystemUserVendorDelete(
     changeRequestSystemUserClient,
-    partyId,
     requestId,
     labels = null,
 ) {
-    const res = changeRequestSystemUserClient.ApproveSystemUserChangeRequest(
-        partyId,
-        requestId,
-        labels,
-    );
+    const res =
+        changeRequestSystemUserClient.DeleteChangeRequestByRequestId(
+            requestId,
+            labels,
+        );
+
+    /** @type {ChangeRequestResponse|null} */
+    let changeRequestResponse = null;
 
     const succeed = check(res, {
-        "ApproveSystemUserChangeRequest - status code is 200": (r) => r.status === 200,
-        "ApproveSystemUserChangeRequest - status text is 200 OK": (r) =>
+        "ChangeRequestSystemUserVendorDelete - status code is 200": (r) =>
+            r.status === 200,
+        "ChangeRequestSystemUserVendorDelete - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return false;
+        return changeRequestResponse;
     }
 
-    let approved = false;
-
     check(res, {
-        "ApproveSystemUserChangeRequest - body is valid": (r) => {
+        "ChangeRequestSystemUserVendorDelete - body is valid": (r) => {
             try {
-                approved = JSON.parse(r.body) === true;
+                changeRequestResponse = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -52,5 +52,5 @@ export function ApproveSystemUserChangeRequest(
         },
     });
 
-    return approved;
+    return changeRequestResponse;
 }

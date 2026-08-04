@@ -1,15 +1,15 @@
-import { ApproveSystemUserChangeRequest } from "./approve-system-user-change-request.js";
-import { CreateChangeRequest } from "./create-change-request.js";
-import { DeleteChangeRequestByRequestId } from "./delete-change-request-by-request-id.js";
-import { GetAllChangeRequestsForVendor } from "./get-all-change-requests-for-vendor.js";
-import { GetChangeRequestByExternalRef } from "./get-change-request-by-external-ref.js";
-import { GetChangeRequestByGuid } from "./get-change-request-by-guid.js";
+import { ChangeRequestSystemUserApprove } from "./change-request-system-user-approve.js";
+import { ChangeRequestSystemUserVendorCreate } from "./change-request-system-user-vendor-create.js";
+import { ChangeRequestSystemUserVendorDelete } from "./change-request-system-user-vendor-delete.js";
+import { ChangeRequestSystemUserVendorGet } from "./change-request-system-user-vendor-get.js";
+import { ChangeRequestSystemUserVendorGetByExternalRef } from "./change-request-system-user-vendor-get-by-external-ref.js";
+import { ChangeRequestSystemUserVendorGetBySystem } from "./change-request-system-user-vendor-get-by-system.js";
 
 export const ChangeRequestSystemUserBuildingBlocks = {
-    ApproveSystemUserChangeRequest,
-    CreateChangeRequest,
-    DeleteChangeRequestByRequestId,
-    GetAllChangeRequestsForVendor,
-    GetChangeRequestByExternalRef,
-    GetChangeRequestByGuid,
+    Approve: ChangeRequestSystemUserApprove,
+    VendorCreate: ChangeRequestSystemUserVendorCreate,
+    VendorDelete: ChangeRequestSystemUserVendorDelete,
+    VendorGet: ChangeRequestSystemUserVendorGet,
+    VendorGetByExternalRef: ChangeRequestSystemUserVendorGetByExternalRef,
+    VendorGetBySystem: ChangeRequestSystemUserVendorGetBySystem,
 };

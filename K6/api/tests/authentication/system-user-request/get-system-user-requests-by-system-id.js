@@ -41,15 +41,15 @@ export default function () {
         let firstPage;
 
         group("Fetch the first page of system user requests", function () {
-            firstPage = RequestSystemUserBuildingBlocks.GetAllRequestsForVendor(requestSystemUserClient, systemId);
+            firstPage = RequestSystemUserBuildingBlocks.VendorGetBySystem(requestSystemUserClient, systemId);
 
-            PaginationDomainChecks.CheckPaginatedShape(firstPage, "GetAllRequestsForVendor");
-            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "GetAllRequestsForVendor");
+            PaginationDomainChecks.CheckPaginatedShape(firstPage, "RequestSystemUserVendorGetBySystem");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "RequestSystemUserVendorGetBySystem");
             PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, systemId, "system user request");
         });
 
         group("Follow the next-link pagination", function () {
-            PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, "GetAllRequestsForVendor");
+            PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, "RequestSystemUserVendorGetBySystem");
 
             const nextUrl = extractNextUrl(firstPage);
 
@@ -58,7 +58,7 @@ export default function () {
                 additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
             }
 
-            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "GetAllRequestsForVendor");
+            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "RequestSystemUserVendorGetBySystem");
         });
     });
 }

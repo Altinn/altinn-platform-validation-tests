@@ -3,20 +3,20 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Creates a new system user request.
+ * Retrieves a system user request by id.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {CreateRequestSystemUser} request Request model.
+ * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
-export function CreateRequest(
+export function RequestSystemUserVendorGet(
     requestSystemUserClient,
-    request,
+    requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.CreateRequest(
-        request,
+    const res = requestSystemUserClient.GetRequestByGuid(
+        requestId,
         labels,
     );
 
@@ -24,10 +24,10 @@ export function CreateRequest(
     let requestResponse = null;
 
     const succeed = check(res, {
-        "CreateRequest - status code is 201": (r) =>
-            r.status === 201,
-        "CreateRequest - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
+        "RequestSystemUserVendorGet - status code is 200": (r) =>
+            r.status === 200,
+        "RequestSystemUserVendorGet - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -37,7 +37,7 @@ export function CreateRequest(
     }
 
     check(res, {
-        "CreateRequest - body is valid": (r) => {
+        "RequestSystemUserVendorGet - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

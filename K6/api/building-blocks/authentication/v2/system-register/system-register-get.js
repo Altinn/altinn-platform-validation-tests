@@ -3,43 +3,40 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Creates a new registered system.
+ * Retrieves all registered systems.
+ *
+ * Requires the `altinn:portal/enduser` scope.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
- * @param {RegisterSystemRequest} request System registration request.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {string|null} Created system identifier.
+ * @returns {RegisteredSystemDTO[]|null} Registered systems.
  */
-export function CreateRegisteredSystem(
+export function SystemRegisterGet(
     systemRegisterClient,
-    request,
     labels = null,
 ) {
-    const res = systemRegisterClient.CreateRegisteredSystem(
-        request,
-        labels,
-    );
+    const res = systemRegisterClient.GetListOfRegisteredSystems(labels);
 
-    /** @type {string|null} */
-    let systemId = null;
+    /** @type {RegisteredSystemDTO[]|null} */
+    let systems = null;
 
     const succeed = check(res, {
-        "CreateRegisteredSystem - status code is 200": (r) =>
+        "SystemRegisterGet - status code is 200": (r) =>
             r.status === 200,
-        "CreateRegisteredSystem - status text is 200 OK": (r) =>
+        "SystemRegisterGet - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return systemId;
+        return systems;
     }
 
     check(res, {
-        "CreateRegisteredSystem - body is valid": (r) => {
+        "SystemRegisterGet - body is valid": (r) => {
             try {
-                systemId = JSON.parse(r.body);
+                systems = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -51,5 +48,5 @@ export function CreateRegisteredSystem(
         },
     });
 
-    return systemId;
+    return systems;
 }

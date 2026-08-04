@@ -3,37 +3,31 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves an agent system user request by external reference.
+ * Creates a new system user request.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {string} systemId System identifier.
- * @param {string} orgNo Organization number.
- * @param {string} externalRef External reference.
+ * @param {CreateRequestSystemUser} request Request model.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AgentRequestSystemResponse|null} Agent request response.
+ * @returns {RequestSystemResponse|null} Request response.
  */
-export function GetAgentRequestByExternalRef(
+export function RequestSystemUserVendorCreate(
     requestSystemUserClient,
-    systemId,
-    orgNo,
-    externalRef,
+    request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.GetAgentRequestByExternalRef(
-        systemId,
-        orgNo,
-        externalRef,
+    const res = requestSystemUserClient.CreateRequest(
+        request,
         labels,
     );
 
-    /** @type {AgentRequestSystemResponse|null} */
+    /** @type {RequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "GetAgentRequestByExternalRef - status code is 200": (r) =>
-            r.status === 200,
-        "GetAgentRequestByExternalRef - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "RequestSystemUserVendorCreate - status code is 201": (r) =>
+            r.status === 201,
+        "RequestSystemUserVendorCreate - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
 
     if (!succeed) {
@@ -43,7 +37,7 @@ export function GetAgentRequestByExternalRef(
     }
 
     check(res, {
-        "GetAgentRequestByExternalRef - body is valid": (r) => {
+        "RequestSystemUserVendorCreate - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

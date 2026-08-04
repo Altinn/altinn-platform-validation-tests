@@ -3,48 +3,43 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves default rights for a system.
- *
- * Requires the `altinn:portal/enduser` scope.
+ * Creates a new registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
- * @param {string} systemId System identifier.
- * @param {boolean|null} [useOldFormatForApp] Whether to use old app format.
+ * @param {RegisterSystemRequest} request System registration request.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {Right[]|null} Rights.
+ * @returns {string|null} Created system identifier.
  */
-export function GetRightsForRegisteredSystem(
+export function SystemRegisterVendorCreate(
     systemRegisterClient,
-    systemId,
-    useOldFormatForApp = null,
+    request,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetRightsForRegisteredSystem(
-        systemId,
-        useOldFormatForApp,
+    const res = systemRegisterClient.CreateRegisteredSystem(
+        request,
         labels,
     );
 
-    /** @type {Right[]|null} */
-    let rights = null;
+    /** @type {string|null} */
+    let systemId = null;
 
     const succeed = check(res, {
-        "GetRightsForRegisteredSystem - status code is 200": (r) =>
+        "SystemRegisterVendorCreate - status code is 200": (r) =>
             r.status === 200,
-        "GetRightsForRegisteredSystem - status text is 200 OK": (r) =>
+        "SystemRegisterVendorCreate - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return rights;
+        return systemId;
     }
 
     check(res, {
-        "GetRightsForRegisteredSystem - body is valid": (r) => {
+        "SystemRegisterVendorCreate - body is valid": (r) => {
             try {
-                rights = JSON.parse(r.body);
+                systemId = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -56,5 +51,5 @@ export function GetRightsForRegisteredSystem(
         },
     });
 
-    return rights;
+    return systemId;
 }

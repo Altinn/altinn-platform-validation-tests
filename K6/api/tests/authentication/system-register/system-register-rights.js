@@ -95,21 +95,21 @@ export default async function () {
     group("System Register Rights", function () {
         group("Register a system with two rights", function () {
             // POST /vendor
-            SystemRegisterBuildingBlocks.CreateRegisteredSystem(systemRegisterClient, requestBody);
+            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("An end user gets the rights of the system", function () {
             // GET /{systemId}/rights - the rights as consumers see them, not the
             // vendor view, so this one goes on the enduser token
-            const registeredRights = SystemRegisterBuildingBlocks.GetRightsForRegisteredSystem(enduserSystemRegisterClient, systemId);
+            const registeredRights = SystemRegisterBuildingBlocks.GetRightsFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegisterBuildingBlocks.SetDeleteOnRegisteredSystem(systemRegisterClient, systemId);
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SetDeleteOnRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
     });
 }

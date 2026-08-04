@@ -73,7 +73,7 @@ export default function (data) {
                 .withRedirectUrl(REDIRECT_URL)
                 .build();
 
-            const changeRequestResponse = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
+            const changeRequestResponse = ChangeRequestSystemUserBuildingBlocks.VendorCreate(
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
@@ -102,7 +102,7 @@ export default function (data) {
                 .withRedirectUrl(REDIRECT_URL)
                 .build();
 
-            const changeRequest = ChangeRequestSystemUserBuildingBlocks.CreateChangeRequest(
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.VendorCreate(
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
@@ -118,7 +118,7 @@ export default function (data) {
                 fail("A change request must be created to approve");
             }
 
-            const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(
+            const approved = ChangeRequestSystemUserBuildingBlocks.Approve(
                 clients.approver.changeRequestClient,
                 systemUser.customer.partyId,
                 changeRequestId,
@@ -126,7 +126,7 @@ export default function (data) {
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestApproved(approved);
 
-            const changeRequest = ChangeRequestSystemUserBuildingBlocks.GetChangeRequestByGuid(clients.vendor.changeRequestClient, changeRequestId);
+            const changeRequest = ChangeRequestSystemUserBuildingBlocks.VendorGet(clients.vendor.changeRequestClient, changeRequestId);
 
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequest, "Accepted");
         });

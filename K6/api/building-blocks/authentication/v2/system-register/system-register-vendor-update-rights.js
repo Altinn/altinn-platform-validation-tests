@@ -3,48 +3,46 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves default access packages for a system.
- *
- * Requires the `altinn:portal/enduser` scope.
+ * Updates rights on a registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
- * @param {boolean|null} [useOldFormatForApp] Whether to use old app format.
+ * @param {Right[]} rights Rights.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AccessPackage[]|null} Access packages.
+ * @returns {SystemRegisterUpdateResult|null} Update result.
  */
-export function GetAccessPackagesForRegisteredSystem(
+export function SystemRegisterVendorUpdateRights(
     systemRegisterClient,
     systemId,
-    useOldFormatForApp = null,
+    rights,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetAccessPackagesForRegisteredSystem(
+    const res = systemRegisterClient.UpdateRightsOnRegisteredSystem(
         systemId,
-        useOldFormatForApp,
+        rights,
         labels,
     );
 
-    /** @type {AccessPackage[]|null} */
-    let accessPackages = null;
+    /** @type {SystemRegisterUpdateResult|null} */
+    let result = null;
 
     const succeed = check(res, {
-        "GetAccessPackagesForRegisteredSystem - status code is 200": (r) =>
+        "SystemRegisterVendorUpdateRights - status code is 200": (r) =>
             r.status === 200,
-        "GetAccessPackagesForRegisteredSystem - status text is 200 OK": (r) =>
+        "SystemRegisterVendorUpdateRights - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return accessPackages;
+        return result;
     }
 
     check(res, {
-        "GetAccessPackagesForRegisteredSystem - body is valid": (r) => {
+        "SystemRegisterVendorUpdateRights - body is valid": (r) => {
             try {
-                accessPackages = JSON.parse(r.body);
+                result = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -56,5 +54,5 @@ export function GetAccessPackagesForRegisteredSystem(
         },
     });
 
-    return accessPackages;
+    return result;
 }

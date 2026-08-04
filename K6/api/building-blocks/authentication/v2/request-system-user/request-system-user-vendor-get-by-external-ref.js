@@ -3,20 +3,26 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves a system user request by id.
+ * Retrieves a system user request by external reference.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
- * @param {string} requestId Request identifier.
+ * @param {string} systemId System identifier.
+ * @param {string} orgNo Organization number.
+ * @param {string} externalRef External reference.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
-export function GetRequestByGuid(
+export function RequestSystemUserVendorGetByExternalRef(
     requestSystemUserClient,
-    requestId,
+    systemId,
+    orgNo,
+    externalRef,
     labels = null,
 ) {
-    const res = requestSystemUserClient.GetRequestByGuid(
-        requestId,
+    const res = requestSystemUserClient.GetRequestByExternalRef(
+        systemId,
+        orgNo,
+        externalRef,
         labels,
     );
 
@@ -24,9 +30,9 @@ export function GetRequestByGuid(
     let requestResponse = null;
 
     const succeed = check(res, {
-        "GetRequestByGuid - status code is 200": (r) =>
+        "RequestSystemUserVendorGetByExternalRef - status code is 200": (r) =>
             r.status === 200,
-        "GetRequestByGuid - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorGetByExternalRef - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +43,7 @@ export function GetRequestByGuid(
     }
 
     check(res, {
-        "GetRequestByGuid - body is valid": (r) => {
+        "RequestSystemUserVendorGetByExternalRef - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

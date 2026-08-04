@@ -11,7 +11,7 @@ import { RequestSystemUserClient } from "../../../../../clients/authentication/v
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the request was approved.
  */
-export function ApproveSystemUserRequest(
+export function RequestSystemUserApprove(
     requestSystemUserClient,
     partyId,
     requestId,
@@ -24,8 +24,8 @@ export function ApproveSystemUserRequest(
     );
 
     const succeed = check(res, {
-        "ApproveSystemUserRequest - status code is 200": (r) => r.status === 200,
-        "ApproveSystemUserRequest - status text is 200 OK": (r) =>
+        "RequestSystemUserApprove - status code is 200": (r) => r.status === 200,
+        "RequestSystemUserApprove - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -38,7 +38,7 @@ export function ApproveSystemUserRequest(
     let approved = false;
 
     check(res, {
-        "ApproveSystemUserRequest - body is valid": (r) => {
+        "RequestSystemUserApprove - body is valid": (r) => {
             try {
                 approved = JSON.parse(r.body) === true;
 

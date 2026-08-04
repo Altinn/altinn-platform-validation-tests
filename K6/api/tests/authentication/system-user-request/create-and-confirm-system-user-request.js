@@ -25,7 +25,7 @@ export default function (data) {
 
     group("As a vendor, I can request a system user and have the customer approve it", function () {
         group("Register the system the request is made for", function () {
-            SystemRegisterBuildingBlocks.CreateRegisteredSystem(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
+            SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
         });
 
         let requestId;
@@ -41,7 +41,7 @@ export default function (data) {
 
             const request = new CreateRequestSystemUserBuilder().withAccessPackages().build();
 
-            const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(clients.vendor.requestSystemUserClient, createRequest);
+            const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(clients.vendor.requestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
                 systemId: registration.systemId,
@@ -57,7 +57,7 @@ export default function (data) {
                 fail("missing prerequisite: the system user request was created");
             }
 
-            const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
+            const approved = RequestSystemUserBuildingBlocks.Approve(
                 clients.approver.requestSystemUserClient,
                 customer.partyId,
                 requestId,
@@ -71,7 +71,7 @@ export default function (data) {
                 fail("missing prerequisite: the system user request was created");
             }
 
-            const request = RequestSystemUserBuildingBlocks.GetRequestByGuid(clients.vendor.requestSystemUserClient, requestId);
+            const request = RequestSystemUserBuildingBlocks.VendorGet(clients.vendor.requestSystemUserClient, requestId);
 
             SystemUserRequestDomainChecks.CheckRequestStatus(request, "Accepted");
         });

@@ -86,29 +86,29 @@ export default async function () {
 
     group("System Register Access Packages", function () {
         group("Register a system with one access package", function () {
-            SystemRegisterBuildingBlocks.CreateRegisteredSystem(systemRegisterClient, requestBody);
+            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("An end user gets the access packages of the system", function () {
-            const registeredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesForRegisteredSystem(enduserSystemRegisterClient, systemId);
+            const registeredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
         });
 
         group("Replace the access packages on the system", function () {
-            const updateResult = SystemRegisterBuildingBlocks.UpdateAccessPackagesOnRegisteredSystem(systemRegisterClient, systemId, updatedAccessPackages);
+            const updateResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "UpdateAccessPackagesOnRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdateAccessPackages");
 
-            const updatedRegisteredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesForRegisteredSystem(enduserSystemRegisterClient, systemId);
+            const updatedRegisteredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegisterBuildingBlocks.SetDeleteOnRegisteredSystem(systemRegisterClient, systemId);
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SetDeleteOnRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
     });
 }

@@ -3,43 +3,46 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves the system change log.
+ * Updates access packages on a registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
+ * @param {AccessPackage[]} accessPackages Access packages.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemChangeLog[]|null} Change log entries.
+ * @returns {SystemRegisterUpdateResult|null} Update result.
  */
-export function GetChangeLog(
+export function SystemRegisterVendorUpdateAccessPackages(
     systemRegisterClient,
     systemId,
+    accessPackages,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetChangeLog(
+    const res = systemRegisterClient.UpdateAccessPackagesOnRegisteredSystem(
         systemId,
+        accessPackages,
         labels,
     );
 
-    /** @type {SystemChangeLog[]|null} */
-    let changeLog = null;
+    /** @type {SystemRegisterUpdateResult|null} */
+    let result = null;
 
     const succeed = check(res, {
-        "GetChangeLog - status code is 200": (r) =>
+        "SystemRegisterVendorUpdateAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "GetChangeLog - status text is 200 OK": (r) =>
+        "SystemRegisterVendorUpdateAccessPackages - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return changeLog;
+        return result;
     }
 
     check(res, {
-        "GetChangeLog - body is valid": (r) => {
+        "SystemRegisterVendorUpdateAccessPackages - body is valid": (r) => {
             try {
-                changeLog = JSON.parse(r.body);
+                result = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -51,5 +54,5 @@ export function GetChangeLog(
         },
     });
 
-    return changeLog;
+    return result;
 }

@@ -113,67 +113,67 @@ export default async function () {
 
     group("Integration Tests for System Register CRUD Operations as a System Vendor (Visma, Tripletex etc)", function () {
         group("Register a new system", function () {
-            SystemRegisterBuildingBlocks.CreateRegisteredSystem(systemRegisterClient, requestBody);
+            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("Make sure the system is registered", function () {
-            const vendorSystems = SystemRegisterBuildingBlocks.GetListOfRegisteredSystemsForVendor(systemRegisterClient);
+            const vendorSystems = SystemRegisterBuildingBlocks.VendorGet(systemRegisterClient);
 
             SystemRegisterDomainChecks.CheckSystemId(vendorSystems, systemId);
 
-            const registeredSystemResponse = SystemRegisterBuildingBlocks.GetRegisteredSystemInfo(systemRegisterClient, systemId);
+            const registeredSystemResponse = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemIdInVendorGetById(registeredSystemResponse, systemId);
         });
 
         group("Update the system", function () {
-            const updateResult = SystemRegisterBuildingBlocks.UpdateWholeRegisteredSystem(systemRegisterClient, systemId, updatedRequestBody);
+            const updateResult = SystemRegisterBuildingBlocks.VendorUpdate(systemRegisterClient, systemId, updatedRequestBody);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "UpdateWholeRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdate");
 
-            const updatedSystem = SystemRegisterBuildingBlocks.GetRegisteredSystemInfo(systemRegisterClient, systemId);
+            const updatedSystem = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemDescription(updatedSystem, updatedDescription);
         });
 
         group("Replace the rights on the system", function () {
-            const updateRightsResult = SystemRegisterBuildingBlocks.UpdateRightsOnRegisteredSystem(systemRegisterClient, systemId, updatedRights);
+            const updateRightsResult = SystemRegisterBuildingBlocks.VendorUpdateRights(systemRegisterClient, systemId, updatedRights);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "UpdateRightsOnRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "SystemRegisterVendorUpdateRights");
 
-            const systemWithUpdatedRights = SystemRegisterBuildingBlocks.GetRegisteredSystemInfo(systemRegisterClient, systemId);
+            const systemWithUpdatedRights = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemRights(systemWithUpdatedRights, updatedRights);
         });
 
         group("Replace the access packages on the system", function () {
-            const updateAccessPackagesResult = SystemRegisterBuildingBlocks.UpdateAccessPackagesOnRegisteredSystem(systemRegisterClient, systemId, updatedAccessPackages);
+            const updateAccessPackagesResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "UpdateAccessPackagesOnRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "SystemRegisterVendorUpdateAccessPackages");
 
-            const systemWithUpdatedAccessPackages = SystemRegisterBuildingBlocks.GetRegisteredSystemInfo(systemRegisterClient, systemId);
+            const systemWithUpdatedAccessPackages = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemAccessPackages(systemWithUpdatedAccessPackages, updatedAccessPackages);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegisterBuildingBlocks.SetDeleteOnRegisteredSystem(systemRegisterClient, systemId);
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SetDeleteOnRegisteredSystem");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
 
         group("The deleted system is gone", function () {
-            const deletedSystem = SystemRegisterBuildingBlocks.GetRegisteredSystemInfo(systemRegisterClient, systemId);
+            const deletedSystem = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemIsDeleted(deletedSystem);
 
-            const remainingVendorSystems = SystemRegisterBuildingBlocks.GetListOfRegisteredSystemsForVendor(systemRegisterClient);
+            const remainingVendorSystems = SystemRegisterBuildingBlocks.VendorGet(systemRegisterClient);
 
             SystemRegisterDomainChecks.CheckSystemIdIsAbsent(remainingVendorSystems, systemId);
         });
 
         group("Every change was written to the change log", function () {
-            const changeLog = SystemRegisterBuildingBlocks.GetChangeLog(systemRegisterClient, systemId);
+            const changeLog = SystemRegisterBuildingBlocks.VendorGetChangeLog(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemChangeLog(changeLog, [
                 "create",

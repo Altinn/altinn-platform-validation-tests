@@ -3,20 +3,23 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Deletes a registered system.
+ * Updates a registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
+ * @param {RegisterSystemRequest} request Updated system model.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {SystemRegisterUpdateResult|null} Delete result.
+ * @returns {SystemRegisterUpdateResult|null} Update result.
  */
-export function SetDeleteOnRegisteredSystem(
+export function SystemRegisterVendorUpdate(
     systemRegisterClient,
     systemId,
+    request,
     labels = null,
 ) {
-    const res = systemRegisterClient.SetDeleteOnRegisteredSystem(
+    const res = systemRegisterClient.UpdateWholeRegisteredSystem(
         systemId,
+        request,
         labels,
     );
 
@@ -24,9 +27,9 @@ export function SetDeleteOnRegisteredSystem(
     let result = null;
 
     const succeed = check(res, {
-        "SetDeleteOnRegisteredSystem - status code is 200": (r) =>
+        "SystemRegisterVendorUpdate - status code is 200": (r) =>
             r.status === 200,
-        "SetDeleteOnRegisteredSystem - status text is 200 OK": (r) =>
+        "SystemRegisterVendorUpdate - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +40,7 @@ export function SetDeleteOnRegisteredSystem(
     }
 
     check(res, {
-        "SetDeleteOnRegisteredSystem - body is valid": (r) => {
+        "SystemRegisterVendorUpdate - body is valid": (r) => {
             try {
                 result = JSON.parse(r.body);
 

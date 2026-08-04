@@ -301,7 +301,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
     let systemUserId;
 
     group("Arrange - the customer has an approved system user", function () {
-        SystemRegisterBuildingBlocks.CreateRegisteredSystem(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
+        SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         const createRequest = new CreateRequestSystemUserBuilder()
             .withExternalRef(registration.externalRef)
@@ -312,7 +312,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             .withRedirectUrl(registration.redirectUrl)
             .build();
 
-        const createdRequest = RequestSystemUserBuildingBlocks.CreateRequest(apiClients.vendor.requestSystemUserClient, createRequest);
+        const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(apiClients.vendor.requestSystemUserClient, createRequest);
 
         SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
             systemId: registration.systemId,
@@ -324,7 +324,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             fail("missing prerequisite: the system user request was created");
         }
 
-        const approved = RequestSystemUserBuildingBlocks.ApproveSystemUserRequest(
+        const approved = RequestSystemUserBuildingBlocks.Approve(
             apiClients.approver.requestSystemUserClient,
             customer.partyId,
             createdRequest?.id,

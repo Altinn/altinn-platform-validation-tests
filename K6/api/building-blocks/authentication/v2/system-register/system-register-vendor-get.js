@@ -9,7 +9,7 @@ import { SystemRegisterClient } from "../../../../../clients/authentication/v2/i
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {RegisteredSystemDTO[]|null} Registered systems.
  */
-export function GetListOfRegisteredSystemsForVendor(
+export function SystemRegisterVendorGet(
     systemRegisterClient,
     labels = null,
 ) {
@@ -19,9 +19,9 @@ export function GetListOfRegisteredSystemsForVendor(
     let systems = null;
 
     const succeed = check(res, {
-        "GetListOfRegisteredSystemsForVendor - status code is 200": (r) =>
+        "SystemRegisterVendorGet - status code is 200": (r) =>
             r.status === 200,
-        "GetListOfRegisteredSystemsForVendor - status text is 200 OK": (r) =>
+        "SystemRegisterVendorGet - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -32,7 +32,7 @@ export function GetListOfRegisteredSystemsForVendor(
     }
 
     check(res, {
-        "GetListOfRegisteredSystemsForVendor - body is valid": (r) => {
+        "SystemRegisterVendorGet - body is valid": (r) => {
             try {
                 systems = JSON.parse(r.body);
 

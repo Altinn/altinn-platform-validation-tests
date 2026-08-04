@@ -11,7 +11,7 @@ import { RequestSystemUserClient } from "../../../../../clients/authentication/v
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AgentRequestSystemResponsePaginated|null} Paginated agent request responses.
  */
-export function GetAllAgentRequestsForVendor(
+export function RequestSystemUserVendorAgentGetBySystem(
     requestSystemUserClient,
     systemId,
     token = null,
@@ -27,9 +27,9 @@ export function GetAllAgentRequestsForVendor(
     let requestResponses = null;
 
     const succeed = check(res, {
-        "GetAllAgentRequestsForVendor - status code is 200": (r) =>
+        "RequestSystemUserVendorAgentGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "GetAllAgentRequestsForVendor - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorAgentGetBySystem - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -40,7 +40,7 @@ export function GetAllAgentRequestsForVendor(
     }
 
     check(res, {
-        "GetAllAgentRequestsForVendor - body is valid": (r) => {
+        "RequestSystemUserVendorAgentGetBySystem - body is valid": (r) => {
             try {
                 requestResponses = JSON.parse(r.body);
 

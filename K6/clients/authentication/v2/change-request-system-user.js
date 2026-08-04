@@ -1,23 +1,23 @@
 import http from "k6/http";
 
 const TAGS = {
-    CreateChangeRequest: {
-        action: "create-change-request",
+    ChangeRequestSystemUserVendorCreate: {
+        action: "change-request-system-user-vendor-create",
     },
-    GetChangeRequestByGuid: {
-        action: "get-change-request-by-guid",
+    ChangeRequestSystemUserVendorGet: {
+        action: "change-request-system-user-vendor-get",
     },
-    DeleteChangeRequestByRequestId: {
-        action: "delete-change-request-by-request-id",
+    ChangeRequestSystemUserVendorDelete: {
+        action: "change-request-system-user-vendor-delete",
     },
-    GetChangeRequestByExternalRef: {
-        action: "get-change-request-by-external-ref",
+    ChangeRequestSystemUserVendorGetByExternalRef: {
+        action: "change-request-system-user-vendor-get-by-external-ref",
     },
-    GetAllChangeRequestsForVendor: {
-        action: "get-all-change-requests-for-vendor",
+    ChangeRequestSystemUserVendorGetBySystem: {
+        action: "change-request-system-user-vendor-get-by-system",
     },
-    ApproveSystemUserChangeRequest: {
-        action: "approve-system-user-change-request",
+    ChangeRequestSystemUserApprove: {
+        action: "change-request-system-user-approve",
     },
 };
 
@@ -59,7 +59,7 @@ class ChangeRequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    CreateChangeRequest(
+    ChangeRequestSystemUserVendorCreate(
         request,
         correlationId = null,
         systemUserId = null,
@@ -120,7 +120,7 @@ class ChangeRequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetChangeRequestByGuid(requestId, labels = null) {
+    ChangeRequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${requestId}`;
@@ -157,7 +157,7 @@ class ChangeRequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    DeleteChangeRequestByRequestId(requestId, labels = null) {
+    ChangeRequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/vendor/${requestId}`;
@@ -196,7 +196,7 @@ class ChangeRequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetChangeRequestByExternalRef(
+    ChangeRequestSystemUserVendorGetByExternalRef(
         systemId,
         orgNo,
         externalRef,
@@ -239,7 +239,7 @@ class ChangeRequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetAllChangeRequestsForVendor(
+    ChangeRequestSystemUserVendorGetBySystem(
         systemId,
         token = null,
         labels = null,
@@ -285,7 +285,7 @@ class ChangeRequestSystemUserClient {
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    ApproveSystemUserChangeRequest(partyId, requestId, labels = null) {
+    ChangeRequestSystemUserApprove(partyId, requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = `${this.FULL_PATH}/${encodeURIComponent(partyId)}/${encodeURIComponent(requestId)}/approve`;

@@ -14,7 +14,7 @@ import { ChangeRequestSystemUserClient } from "../../../../../clients/authentica
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponse|null} Change request response.
  */
-export function CreateChangeRequest(
+export function ChangeRequestSystemUserVendorCreate(
     changeRequestSystemUserClient,
     request,
     correlationId = null,
@@ -38,8 +38,8 @@ export function CreateChangeRequest(
     // Both are successful, so a caller that does not care which passes no expectedStatus.
     const succeed = check(res, {
         [expectedStatus === null
-            ? "CreateChangeRequest - status code is 200 or 201"
-            : `CreateChangeRequest - status code is ${expectedStatus}`]: (r) =>
+            ? "ChangeRequestSystemUserVendorCreate - status code is 200 or 201"
+            : `ChangeRequestSystemUserVendorCreate - status code is ${expectedStatus}`]: (r) =>
             expectedStatus === null
                 ? r.status === 200 || r.status === 201
                 : r.status === expectedStatus,
@@ -52,7 +52,7 @@ export function CreateChangeRequest(
     }
 
     check(res, {
-        "CreateChangeRequest - body is valid": (r) => {
+        "ChangeRequestSystemUserVendorCreate - body is valid": (r) => {
             try {
                 changeRequestResponse = JSON.parse(r.body);
 

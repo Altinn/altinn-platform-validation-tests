@@ -3,40 +3,43 @@ import { check } from "k6";
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves all registered systems.
- *
- * Requires the `altinn:portal/enduser` scope.
+ * Deletes a registered system.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
+ * @param {string} systemId System identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RegisteredSystemDTO[]|null} Registered systems.
+ * @returns {SystemRegisterUpdateResult|null} Delete result.
  */
-export function GetListOfRegisteredSystems(
+export function SystemRegisterVendorDelete(
     systemRegisterClient,
+    systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetListOfRegisteredSystems(labels);
+    const res = systemRegisterClient.SetDeleteOnRegisteredSystem(
+        systemId,
+        labels,
+    );
 
-    /** @type {RegisteredSystemDTO[]|null} */
-    let systems = null;
+    /** @type {SystemRegisterUpdateResult|null} */
+    let result = null;
 
     const succeed = check(res, {
-        "GetListOfRegisteredSystems - status code is 200": (r) =>
+        "SystemRegisterVendorDelete - status code is 200": (r) =>
             r.status === 200,
-        "GetListOfRegisteredSystems - status text is 200 OK": (r) =>
+        "SystemRegisterVendorDelete - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return systems;
+        return result;
     }
 
     check(res, {
-        "GetListOfRegisteredSystems - body is valid": (r) => {
+        "SystemRegisterVendorDelete - body is valid": (r) => {
             try {
-                systems = JSON.parse(r.body);
+                result = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -48,5 +51,5 @@ export function GetListOfRegisteredSystems(
         },
     });
 
-    return systems;
+    return result;
 }
