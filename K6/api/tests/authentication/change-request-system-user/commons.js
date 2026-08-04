@@ -11,8 +11,7 @@ import {
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
-import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
+import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -262,7 +261,7 @@ export function createApprovedSystemUser(registration, customer, grantedRights) 
             externalRef: registration.externalRef,
         });
 
-        if (!PrerequisiteDomainChecks.CheckPrerequisite(createdRequest, "the system user request was created")) {
+        if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
             fail("missing prerequisite: the system user request was created");
         }
 
@@ -283,7 +282,7 @@ export function createApprovedSystemUser(registration, customer, grantedRights) 
 
         systemUserId = systemUser?.id;
 
-        if (!PrerequisiteDomainChecks.CheckPrerequisite(systemUserId, "the customer has a system user to change")) {
+        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
             fail("missing prerequisite: the customer has a system user to change");
         }
     });

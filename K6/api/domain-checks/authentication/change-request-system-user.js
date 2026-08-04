@@ -149,6 +149,49 @@ function CheckSameChangeRequest(changeRequest, expectedId) {
 }
 
 /**
+ * Checks that an earlier step produced a change request to act on.
+ *
+ * A group that needs one cannot say anything useful without it, so a caller that
+ * gets false back should fail() and stop the run at the step that broke.
+ *
+ * @param {string|undefined} changeRequestId - The change request id the earlier step should have produced.
+ * @returns {boolean} True if there is a change request to act on, false otherwise.
+ */
+function CheckChangeRequestId(changeRequestId) {
+    const success = check(changeRequestId, {
+        "CheckChangeRequestId - An earlier step produced a change request": (id) => {
+            return id !== null && id !== undefined;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestId - expected a change request id from an earlier step, got ${JSON.stringify(changeRequestId)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the customer has a system user for a change request to act on.
+ *
+ * @param {string|undefined} systemUserId - The system user the arrange step should have produced.
+ * @returns {boolean} True if there is a system user to change, false otherwise.
+ */
+function CheckSystemUserToChange(systemUserId) {
+    const success = check(systemUserId, {
+        "CheckSystemUserToChange - The customer has a system user to change": (id) => {
+            return id !== null && id !== undefined;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckSystemUserToChange - expected a system user id from the arrange step, got ${JSON.stringify(systemUserId)}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that a change request was approved.
  *
  * @param {boolean} approved - Whether the approve call reported success.
@@ -173,5 +216,7 @@ export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestRequiredRights,
     CheckChangeRequestIsEmpty,
     CheckSameChangeRequest,
+    CheckChangeRequestId,
+    CheckSystemUserToChange,
     CheckChangeRequestApproved,
 };

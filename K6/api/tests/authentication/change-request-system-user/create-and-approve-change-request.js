@@ -3,7 +3,6 @@ import { fail, group } from "k6";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-v2-imports.js";
-import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
 import { arrangeApprovedSystemUser, getApproverTokenOpts, getClients, REDIRECT_URL, resourceRight } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -76,7 +75,7 @@ export default function (data) {
         });
 
         group("Asking again with the same correlation id returns the same change request", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to ask for again")) {
+            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestId(changeRequestId)) {
                 fail("missing prerequisite: a change request was created to ask for again");
             }
 
@@ -97,8 +96,8 @@ export default function (data) {
         });
 
         group("The customer approves the change", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(changeRequestId, "a change request was created to approve")) {
-                fail("missing prerequisite: a change request must be created to approve");
+            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestId(changeRequestId)) {
+                fail("A change request must be created to approve");
             }
 
             const approved = ChangeRequestSystemUserBuildingBlocks.ApproveSystemUserChangeRequest(

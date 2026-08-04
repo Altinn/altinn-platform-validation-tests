@@ -55,6 +55,29 @@ function CheckRequestStatus(request, expectedStatus) {
 }
 
 /**
+ * Checks that an earlier step produced a system user request to act on.
+ *
+ * A group that needs one cannot say anything useful without it, so a caller that
+ * gets false back should fail() and stop the run at the step that broke.
+ *
+ * @param {string|undefined} requestId - The request id the earlier step should have produced.
+ * @returns {boolean} True if there is a request to act on, false otherwise.
+ */
+function CheckRequestId(requestId) {
+    const success = check(requestId, {
+        "CheckRequestId - An earlier step produced a system user request": (id) => {
+            return id !== null && id !== undefined;
+        },
+    });
+
+    if (!success) {
+        console.error(`CheckRequestId - expected a request id from an earlier step, got ${JSON.stringify(requestId)}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that a request was approved.
  *
  * @param {boolean} approved - Whether the approve call reported success.
@@ -76,4 +99,5 @@ export const SystemUserRequestDomainChecks = {
     CheckRequestCreated,
     CheckRequestStatus,
     CheckRequestApproved,
+    CheckRequestId,
 };

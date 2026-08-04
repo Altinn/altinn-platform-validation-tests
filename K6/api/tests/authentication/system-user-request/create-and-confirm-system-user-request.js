@@ -2,7 +2,6 @@ import { fail, group } from "k6";
 
 import { getItemFromList } from "../../../../helpers.js";
 import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
-import { PrerequisiteDomainChecks } from "../../../domain-checks/common/prerequisite.js";
 import { createSystemRegistration, getApproverTokenOpts, getClients, resourceRight } from "./commons.js";
 
 const RESOURCE = "ttd-dialogporten-performance-test-01";
@@ -54,7 +53,7 @@ export default function (data) {
         });
 
         group("Approve the request as the customer", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
+            if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
                 fail("missing prerequisite: the system user request was created");
             }
 
@@ -68,7 +67,7 @@ export default function (data) {
         });
 
         group("The approved request is accepted", function () {
-            if (!PrerequisiteDomainChecks.CheckPrerequisite(requestId, "the system user request was created")) {
+            if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
                 fail("missing prerequisite: the system user request was created");
             }
 
