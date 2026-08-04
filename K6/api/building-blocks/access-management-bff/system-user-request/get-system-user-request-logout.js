@@ -17,7 +17,7 @@ export function GetSystemUserRequestLogout(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.Logout(
+    const res = systemUserRequestClient.GetSystemUserRequestLogout(
         requestId,
         labels,
     );

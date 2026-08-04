@@ -18,7 +18,7 @@ export function RejectChangeRequest(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.RejectSystemUserChangeRequest(
+    const res = systemUserChangeRequestClient.RejectChangeRequest(
         partyId,
         changeRequestId,
         labels,

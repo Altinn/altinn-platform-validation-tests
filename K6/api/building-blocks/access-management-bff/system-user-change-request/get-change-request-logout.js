@@ -17,7 +17,7 @@ export function GetChangeRequestLogout(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.Logout(
+    const res = systemUserChangeRequestClient.GetChangeRequestLogout(
         changeRequestId,
         labels,
     );

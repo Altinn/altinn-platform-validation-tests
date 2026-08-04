@@ -17,7 +17,7 @@ export function GetSystemUserRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.GetRequestByRequestId(
+    const res = systemUserRequestClient.GetSystemUserRequest(
         requestId,
         labels,
     );
