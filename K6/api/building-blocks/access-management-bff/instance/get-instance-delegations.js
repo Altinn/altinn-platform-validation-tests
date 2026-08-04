@@ -1,0 +1,54 @@
+import { check } from "k6";
+
+import { InstanceClient } from "../../../../../clients/access-management-bff/instance/index.js";
+
+/**
+ * Gets the instances delegated between two parties.
+ *
+ * @param {InstanceClient} instanceClient Client for the instance delegation
+ * endpoints.
+ * @param {GetInstanceDelegationsQuery|null} [queryParams] Optional query
+ * parameters. Use {@link GetInstanceDelegationsQueryBuilder}.
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @returns {Array<InstanceDelegation>|null} The instance delegations.
+ */
+export function GetInstanceDelegations(
+    instanceClient,
+    queryParams = null,
+    labels = null,
+) {
+    const res = instanceClient.GetInstanceDelegations(queryParams, labels);
+
+    /** @type {Array<InstanceDelegation>|null} */
+    let instanceDelegations = null;
+
+    const succeed = check(res, {
+        "GetInstanceDelegations - status code is 200": (r) =>
+            r.status === 200,
+        "GetInstanceDelegations - status text is 200 OK": (r) =>
+            r.status_text === "200 OK",
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return instanceDelegations;
+    }
+
+    check(res, {
+        "GetInstanceDelegations - body is valid": (r) => {
+            try {
+                instanceDelegations = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return instanceDelegations;
+}
