@@ -1,6 +1,13 @@
 export const DigDirScopes = {
     DIALOGPORTEN: {
-        NOCONSENT: "digdir:dialogporten.noconsent"
+        DEFAULT: "digdir:dialogporten",
+        NOCONSENT: "digdir:dialogporten.noconsent",
+        SERVICEPROVIDER: {
+            DEFAULT: "digdir:dialogporten.serviceprovider",
+            SEARCH: "digdir:dialogporten.serviceprovider.search",
+            CORRESPONDENCE: "digdir:dialogporten.serviceprovider.correspondence",
+            CHANGFETRANSMISSIONS: "digdir:dialogporten.serviceprovider.changetransmissions"
+        }
     }
 };
 
