@@ -5,8 +5,30 @@ export const DigDirScopes = {
 };
 
 export const AltinnScopes = {
-    ENDUSER: "altinn:enduser",
+    APPDEPLOY: "altinn:appdeploy",
+
+    ENDUSER: {
+        DEFAULT: "altinn:enduser",
+
+        CONSENTREQUESTS: {
+            READ: "altinn:enduser/consentrequests.read",
+            WRITE: "altinn:enduser/consentrequests.write"
+        }
+    },
+
     ENDUSERNOCONSENT: "altinn:endusernoconsent",
+
+    BROKER: {
+        READ: "altinn:broker.read",
+        WRITE: "altinn:broker.write"
+    },
+
+    BROKERSERVICE: {
+        READ: "altinn:brokerservice.read",
+        WRITE: "altinn:brokerservice.write"
+    },
+
+    ENTERPRISEBROKERSERVICE: "altinn:enterprisebrokerservice",
 
     CONSENTREQUESTS: {
         READ: "altinn:consentrequests.read",
@@ -16,6 +38,13 @@ export const AltinnScopes = {
     CONSENTTOKENS: {
         READ: "altinn:consenttokens.read",
         WRITE: "altinn:consenttokens.write"
+    },
+
+    CONSENTTOKENS: "altinn:consenttokens",
+
+    CORRESPONDENCE: {
+        READ: "altinn:correspondence.read",
+        WRITE: "altinn:correspondence.write"
     },
 
     DELEGATIONREQUESTS: {
@@ -34,6 +63,7 @@ export const AltinnScopes = {
             READ: "altinn:authentication/systemregister.read",
             ADMIN: "altinn:authentication/systemregister.admin"
         },
+
         SYSTEMUSER: {
             REQUEST: {
                 READ: "altinn:authentication/systemuser.request.read",
@@ -48,6 +78,7 @@ export const AltinnScopes = {
                 WRITE: "altinn:accessmanagement/enduser:requests.write"
             }
         },
+
         AUTHORIZEDPARTIES: {
             RESOURCEOWNER: "altinn:accessmanagement/authorizedparties.resourceowner",
             ADMIN: "altinn:accessmanagement/authorizedparties.admin"
@@ -73,11 +104,20 @@ export const AltinnScopes = {
             WRITE: "altinn:delegations.write"
         }
     },
-
     MASKINPORTEN: {
         DELEGATIONS: {
+            DEFAULT: "altinn:maskinporten/delegations",
             ADMIN: "altinn:maskinporten/delegations.admin"
         },
+
+        DELEGATIONSCHEMES: {
+            READ: "altinn:maskinporten/delegationschemes.read",
+            WRITE: "altinn:maskinporten/delegationschemes.write",
+            EDIT: "altinn:maskinporten/delegationschemes.edit",
+            DELETE: "altinn:maskinporten/delegationschemes.delete",
+            ADMIN: "altinn:maskinporten/delegationschemes.admin"
+        },
+
         CONSENT: {
             READ: "altinn:maskinporten/consent.read"
         }
@@ -108,14 +148,32 @@ export const AltinnScopes = {
         WRITE: "altinn:instances.write"
     },
 
-    BROKERSERVICE: {
-        READ: "altinn:brokerservice.read",
-        WRITE: "altinn:brokerservice.write"
+    DATAALTINNNO: {
+        DEFAULT: "altinn:dataaltinnno",
+
+        ADVREGBULK: "altinn:dataaltinnno/advregbulk",
+        ADVREGPERSON: "altinn:dataaltinnno/advregperson",
+        ADVREGVERIFIKASJON: "altinn:dataaltinnno/advregverifikasjon",
+
+        DIHE: "altinn:dataaltinnno/dihe",
+        EBEVIS: "altinn:dataaltinnno/ebevis",
+
+        OED: "altinn:dataaltinnno/oed",
+        REELLE: "altinn:dataaltinnno/reelle",
+        TILDA: "altinn:dataaltinnno/tilda"
     },
 
     REGISTER: {
         PARTYLOOKUP: {
             ADMIN: "altinn:register/partylookup.admin"
+        }
+    },
+
+    RESOURCEREGISTRY: {
+        RESOURCE: {
+            READ: "altinn:resourceregistry/resource.read",
+            WRITE: "altinn:resourceregistry/resource.write",
+            ADMIN: "altinn:resourceregistry/resource.admin"
         }
     },
 
@@ -142,12 +200,20 @@ export const AltinnScopes = {
             WRITE: "altinn:serviceowner/delegationrequests.write"
         },
 
+        DELEGATIONS: {
+            WRITE: "altinn:serviceowner/delegations.write"
+        },
+
+        INSTANCES: {
+            READ: "altinn:serviceowner/instances.read",
+            WRITE: "altinn:serviceowner/instances.write"
+        },
+
         NOTIFICATIONS: {
             READ: "altinn:serviceowner/notifications.read",
             CREATE: "altinn:serviceowner/notifications.create"
         }
     },
-
     SYSTEM: {
         NOTIFICATIONS: {
             CONDITION: {
