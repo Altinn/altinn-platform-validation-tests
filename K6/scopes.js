@@ -7,7 +7,7 @@ export const DigDirScopes = {
         SERVICEPROVIDER: {
             DEFAULT: "digdir:dialogporten.serviceprovider",
 
-            CHANGFETRANSMISSIONS: "digdir:dialogporten.serviceprovider.changetransmissions",
+            CHANGETRANSMISSIONS: "digdir:dialogporten.serviceprovider.changetransmissions",
             CORRESPONDENCE: "digdir:dialogporten.serviceprovider.correspondence",
             SEARCH: "digdir:dialogporten.serviceprovider.search"
         }
