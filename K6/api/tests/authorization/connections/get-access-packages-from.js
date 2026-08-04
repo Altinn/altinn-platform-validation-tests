@@ -2,7 +2,7 @@ import exec from "k6/execution";
 
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { PersonalTokenGenerator } from "../../../../token-generator.js";
-import { GetAccessPackages } from "../../../building-blocks/authorization/connections/index.js";
+import { EndUserBuildingBlocks } from "../../../building-blocks/access-management/enduser/index.js";
 import { getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
@@ -29,9 +29,10 @@ export default function (testData) {
         from: party.orgUuid
     };
 
-    GetAccessPackages(
+    EndUserBuildingBlocks.Connections.GetAccessPackages(
         connectionsApiClient,
         queryParamsFrom,
+        null,
         getAccessPackagesFromLabel
     );
 }

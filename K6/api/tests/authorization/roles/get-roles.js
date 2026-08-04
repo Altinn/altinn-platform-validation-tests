@@ -1,7 +1,7 @@
-import { RolesApiClient } from "../../../../clients/authorization/index.js";
+import { RolesClient } from "../../../../clients/access-management/metadata/roles/index.js";
 import { getOptions } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { GetRoles } from "../../../building-blocks/authorization/roles/index.js";
+import { MetadataBuildingBlocks } from "../../../building-blocks/access-management/metadata/index.js";
 
 const labels = { step: "getRoles" };
 
@@ -33,7 +33,7 @@ export function setup() {
  */
 function getClients() {
     if (rolesApiClient == undefined) {
-        rolesApiClient = new RolesApiClient(__ENV.BASE_URL);
+        rolesApiClient = new RolesClient(__ENV.BASE_URL);
     }
 
     return [rolesApiClient];
@@ -47,5 +47,5 @@ function getClients() {
 export default function () {
     const [rolesApiClient] = getClients();
 
-    GetRoles(rolesApiClient, labels);
+    MetadataBuildingBlocks.Roles.GetRoles(rolesApiClient, labels);
 }

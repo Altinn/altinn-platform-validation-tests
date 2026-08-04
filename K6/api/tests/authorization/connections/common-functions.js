@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { ConnectionsApiClient } from "../../../../clients/authorization/index.js";
+import { ConnectionsClient } from "../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
@@ -22,13 +22,12 @@ let tokenGenerator = undefined;
  * The same {@link PersonalTokenGenerator} and
  * {@link ConnectionsApiClient} instances are reused on subsequent calls.
  *
- * @param {boolean} [bff=false] - Whether to configure the client for BFF endpoints.
  * @returns {[
  * ConnectionsApiClient,
  * PersonalTokenGenerator
  * ]} The initialized API client and token generator.
  */
-export function getClients(bff = false) {
+export function getClients() {
     if (tokenGenerator == undefined) {
         const scopes = CreateScopeString([
             AltinnScopes.PDP.AUTHORIZE.ENDUSER
@@ -42,10 +41,9 @@ export function getClients(bff = false) {
     }
 
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsApiClient(
+        connectionsApiClient = new ConnectionsClient(
             __ENV.BASE_URL,
             tokenGenerator,
-            bff
         );
     }
 
