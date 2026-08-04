@@ -1,0 +1,21 @@
+export {
+    CreateAgentAccessPackagesQueryBuilder,
+    CreateAgentQueryBuilder,
+    CreateAgentResourcesQueryBuilder,
+    DelegationBatchInputDtoBuilder,
+    DeleteAgentAccessPackagesQueryBuilder,
+    DeleteAgentQueryBuilder,
+    DeleteAgentResourcesQueryBuilder,
+    DeleteMyClientProvidersQueryBuilder,
+    DeleteMyClientResourcesQueryBuilder,
+    DeleteMyClientsQueryBuilder,
+    GetAgentAccessPackagesQueryBuilder,
+    GetAgentResourcesQueryBuilder,
+    GetAgentsQueryBuilder,
+    GetClientAccessPackagesQueryBuilder,
+    GetClientResourcesQueryBuilder,
+    GetClientsQueryBuilder,
+    GetMyClientsQueryBuilder,
+    ResourceDelegationBatchInputDtoBuilder,
+} from "./client-delegations.builders.js";
+export { ClientDelegationsClient } from "./client-delegations.js";
