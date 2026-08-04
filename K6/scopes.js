@@ -1,18 +1,114 @@
 export const DigDirScopes = {
     DIALOGPORTEN: {
         DEFAULT: "digdir:dialogporten",
+
         NOCONSENT: "digdir:dialogporten.noconsent",
+
         SERVICEPROVIDER: {
             DEFAULT: "digdir:dialogporten.serviceprovider",
-            SEARCH: "digdir:dialogporten.serviceprovider.search",
+
+            CHANGFETRANSMISSIONS: "digdir:dialogporten.serviceprovider.changetransmissions",
             CORRESPONDENCE: "digdir:dialogporten.serviceprovider.correspondence",
-            CHANGFETRANSMISSIONS: "digdir:dialogporten.serviceprovider.changetransmissions"
+            SEARCH: "digdir:dialogporten.serviceprovider.search"
         }
     }
 };
 
 export const AltinnScopes = {
+    ACCESSMANAGEMENT: {
+        AUTHORIZEDPARTIES: {
+            ADMIN: "altinn:accessmanagement/authorizedparties.admin",
+            RESOURCEOWNER: "altinn:accessmanagement/authorizedparties.resourceowner"
+        },
+
+        ENDUSER: {
+            REQUESTS: {
+                WRITE: "altinn:accessmanagement/enduser:requests.write"
+            }
+        }
+    },
+
     APPDEPLOY: "altinn:appdeploy",
+
+    AUTHENTICATION: {
+        SYSTEMREGISTER: {
+            ADMIN: "altinn:authentication/systemregister.admin",
+            READ: "altinn:authentication/systemregister.read",
+            WRITE: "altinn:authentication/systemregister.write"
+        },
+
+        SYSTEMUSER: {
+            REQUEST: {
+                READ: "altinn:authentication/systemuser.request.read",
+                WRITE: "altinn:authentication/systemuser.request.write"
+            }
+        }
+    },
+
+    AUTHORIZATION: {
+        ADMIN: "altinn:authorization/authorize.admin",
+        AUTHORIZE: "altinn:authorization/authorize",
+
+        DELEGATIONS: {
+            READ: "altinn:delegations.read",
+            WRITE: "altinn:delegations.write"
+        },
+
+        ROLEDEFINITIONS: {
+            READ: "altinn:roledefinitions.read",
+            WRITE: "altinn:roledefinitions.write"
+        },
+
+        ROLESANDRIGHTS: {
+            READ: "altinn:rolesandrights.read",
+            WRITE: "altinn:rolesandrights.write"
+        }
+    },
+
+    BROKER: {
+        READ: "altinn:broker.read",
+        WRITE: "altinn:broker.write"
+    },
+
+    BROKERSERVICE: {
+        READ: "altinn:brokerservice.read",
+        WRITE: "altinn:brokerservice.write"
+    },
+
+    CONSENTREQUESTS: {
+        READ: "altinn:consentrequests.read",
+        WRITE: "altinn:consentrequests.write"
+    },
+
+    CONSENTTOKENS: {
+        DEFAULT: "altinn:consenttokens",
+
+        READ: "altinn:consenttokens.read",
+        WRITE: "altinn:consenttokens.write"
+    },
+
+    CORRESPONDENCE: {
+        READ: "altinn:correspondence.read",
+        WRITE: "altinn:correspondence.write"
+    },
+
+    DATAALTINNNO: {
+        DEFAULT: "altinn:dataaltinnno",
+
+        ADVREGBULK: "altinn:dataaltinnno/advregbulk",
+        ADVREGPERSON: "altinn:dataaltinnno/advregperson",
+        ADVREGVERIFIKASJON: "altinn:dataaltinnno/advregverifikasjon",
+        DIHE: "altinn:dataaltinnno/dihe",
+        EBEVIS: "altinn:dataaltinnno/ebevis",
+        OED: "altinn:dataaltinnno/oed",
+        REELLE: "altinn:dataaltinnno/reelle",
+        TILDA: "altinn:dataaltinnno/tilda"
+    },
+
+    DELEGATIONREQUESTS: {
+        READ: "altinn:delegationrequests.read",
+        WRITE: "altinn:delegationrequests.write"
+    },
 
     ENDUSER: {
         DEFAULT: "altinn:enduser",
@@ -25,113 +121,39 @@ export const AltinnScopes = {
 
     ENDUSERNOCONSENT: "altinn:endusernoconsent",
 
-    BROKER: {
-        READ: "altinn:broker.read",
-        WRITE: "altinn:broker.write"
-    },
-
-    BROKERSERVICE: {
-        READ: "altinn:brokerservice.read",
-        WRITE: "altinn:brokerservice.write"
-    },
-
     ENTERPRISEBROKERSERVICE: "altinn:enterprisebrokerservice",
-
-    CONSENTREQUESTS: {
-        READ: "altinn:consentrequests.read",
-        WRITE: "altinn:consentrequests.write"
-    },
-
-    CONSENTTOKENS: {
-        READ: "altinn:consenttokens.read",
-        WRITE: "altinn:consenttokens.write"
-    },
-
-    CONSENTTOKENS: "altinn:consenttokens",
-
-    CORRESPONDENCE: {
-        READ: "altinn:correspondence.read",
-        WRITE: "altinn:correspondence.write"
-    },
-
-    DELEGATIONREQUESTS: {
-        READ: "altinn:delegationrequests.read",
-        WRITE: "altinn:delegationrequests.write"
-    },
 
     ENTERPRISEUSERS: {
         READ: "altinn:enterpriseusers.read",
         WRITE: "altinn:enterpriseusers.write"
     },
 
-    AUTHENTICATION: {
-        SYSTEMREGISTER: {
-            WRITE: "altinn:authentication/systemregister.write",
-            READ: "altinn:authentication/systemregister.read",
-            ADMIN: "altinn:authentication/systemregister.admin"
-        },
-
-        SYSTEMUSER: {
-            REQUEST: {
-                READ: "altinn:authentication/systemuser.request.read",
-                WRITE: "altinn:authentication/systemuser.request.write"
-            }
-        }
+    INSTANCES: {
+        META: "altinn:instances.meta",
+        READ: "altinn:instances.read",
+        WRITE: "altinn:instances.write"
     },
 
-    ACCESSMANAGEMENT: {
-        ENDUSER: {
-            REQUESTS: {
-                WRITE: "altinn:accessmanagement/enduser:requests.write"
-            }
-        },
+    LOOKUP: "altinn:lookup",
 
-        AUTHORIZEDPARTIES: {
-            RESOURCEOWNER: "altinn:accessmanagement/authorizedparties.resourceowner",
-            ADMIN: "altinn:accessmanagement/authorizedparties.admin"
-        }
-    },
-
-    AUTHORIZATION: {
-        AUTHORIZE: "altinn:authorization/authorize",
-        ADMIN: "altinn:authorization/authorize.admin",
-
-        ROLESANDRIGHTS: {
-            READ: "altinn:rolesandrights.read",
-            WRITE: "altinn:rolesandrights.write"
-        },
-
-        ROLEDEFINITIONS: {
-            READ: "altinn:roledefinitions.read",
-            WRITE: "altinn:roledefinitions.write"
-        },
-
-        DELEGATIONS: {
-            READ: "altinn:delegations.read",
-            WRITE: "altinn:delegations.write"
-        }
-    },
     MASKINPORTEN: {
+        CONSENT: {
+            READ: "altinn:maskinporten/consent.read"
+        },
+
         DELEGATIONS: {
             DEFAULT: "altinn:maskinporten/delegations",
+
             ADMIN: "altinn:maskinporten/delegations.admin"
         },
 
         DELEGATIONSCHEMES: {
-            READ: "altinn:maskinporten/delegationschemes.read",
-            WRITE: "altinn:maskinporten/delegationschemes.write",
-            EDIT: "altinn:maskinporten/delegationschemes.edit",
+            ADMIN: "altinn:maskinporten/delegationschemes.admin",
             DELETE: "altinn:maskinporten/delegationschemes.delete",
-            ADMIN: "altinn:maskinporten/delegationschemes.admin"
-        },
-
-        CONSENT: {
-            READ: "altinn:maskinporten/consent.read"
+            EDIT: "altinn:maskinporten/delegationschemes.edit",
+            READ: "altinn:maskinporten/delegationschemes.read",
+            WRITE: "altinn:maskinporten/delegationschemes.write"
         }
-    },
-
-    PORTAL: {
-        ENDUSER: "altinn:portal/enduser"
     },
 
     PDP: {
@@ -140,34 +162,13 @@ export const AltinnScopes = {
         }
     },
 
+    PORTAL: {
+        ENDUSER: "altinn:portal/enduser"
+    },
+
     PROFILES: {
         READ: "altinn:profiles.read",
         WRITE: "altinn:profiles.write"
-    },
-
-    LOOKUP: "altinn:lookup",
-
-    REPORTEES: "altinn:reportees",
-
-    INSTANCES: {
-        META: "altinn:instances.meta",
-        READ: "altinn:instances.read",
-        WRITE: "altinn:instances.write"
-    },
-
-    DATAALTINNNO: {
-        DEFAULT: "altinn:dataaltinnno",
-
-        ADVREGBULK: "altinn:dataaltinnno/advregbulk",
-        ADVREGPERSON: "altinn:dataaltinnno/advregperson",
-        ADVREGVERIFIKASJON: "altinn:dataaltinnno/advregverifikasjon",
-
-        DIHE: "altinn:dataaltinnno/dihe",
-        EBEVIS: "altinn:dataaltinnno/ebevis",
-
-        OED: "altinn:dataaltinnno/oed",
-        REELLE: "altinn:dataaltinnno/reelle",
-        TILDA: "altinn:dataaltinnno/tilda"
     },
 
     REGISTER: {
@@ -176,29 +177,18 @@ export const AltinnScopes = {
         }
     },
 
+    REPORTEES: "altinn:reportees",
+
     RESOURCEREGISTRY: {
         RESOURCE: {
+            ADMIN: "altinn:resourceregistry/resource.admin",
             READ: "altinn:resourceregistry/resource.read",
-            WRITE: "altinn:resourceregistry/resource.write",
-            ADMIN: "altinn:resourceregistry/resource.admin"
+            WRITE: "altinn:resourceregistry/resource.write"
         }
     },
 
     SERVICEOWNER: {
         DEFAULT: "altinn:serviceowner",
-
-        ORGANIZATIONS: "altinn:serviceowner/organizations",
-
-        REPORTEES: "altinn:serviceowner/reportees",
-
-        ROLESANDRIGHTS: "altinn:serviceowner/rolesandrights",
-
-        EVENTS: "altinn:serviceowner/events",
-
-        SRR: {
-            READ: "altinn:serviceowner/srr.read",
-            WRITE: "altinn:serviceowner/srr.write"
-        },
 
         CONSENTS: "altinn:serviceowner/consents",
 
@@ -211,16 +201,30 @@ export const AltinnScopes = {
             WRITE: "altinn:serviceowner/delegations.write"
         },
 
+        EVENTS: "altinn:serviceowner/events",
+
         INSTANCES: {
             READ: "altinn:serviceowner/instances.read",
             WRITE: "altinn:serviceowner/instances.write"
         },
 
         NOTIFICATIONS: {
-            READ: "altinn:serviceowner/notifications.read",
-            CREATE: "altinn:serviceowner/notifications.create"
+            CREATE: "altinn:serviceowner/notifications.create",
+            READ: "altinn:serviceowner/notifications.read"
+        },
+
+        ORGANIZATIONS: "altinn:serviceowner/organizations",
+
+        REPORTEES: "altinn:serviceowner/reportees",
+
+        ROLESANDRIGHTS: "altinn:serviceowner/rolesandrights",
+
+        SRR: {
+            READ: "altinn:serviceowner/srr.read",
+            WRITE: "altinn:serviceowner/srr.write"
         }
     },
+
     SYSTEM: {
         NOTIFICATIONS: {
             CONDITION: {
