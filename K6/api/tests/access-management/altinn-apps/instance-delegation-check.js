@@ -1,7 +1,8 @@
-import { check, group } from "k6";
+import { group } from "k6";
 
 import { getOptions, requireEnv } from "../../../../helpers.js";
 import { CheckResourceDelegation, GetDelegations } from "../../../building-blocks/access-management/altinn-apps/index.js";
+import { AltinnAppsDomainChecks } from "../../../domain-checks/access-management/altinn-apps.js";
 import { EXPECTED_DELEGABLE_RIGHT_KEYS, getClients, getEmptyTokenClient, getWrongAppClient, INSTANCE_ID, RESOURCE_ID } from "./commons.js";
 
 const checkDelegationLabel = { step: "Delegation check as the app that owns the resource" };
@@ -45,21 +46,7 @@ export default function () {
                 checkDelegationLabel,
             );
 
-            const asExpected = check(result, {
-                "delegation check returned rights": (r) => (r?.data ?? []).length > 0,
-                "every expected right is Delegable": (r) =>
-                    EXPECTED_DELEGABLE_RIGHT_KEYS.every((rightKey) =>
-                        (r?.data ?? []).some(
-                            (item) => item.rightKey === rightKey && item.status === "Delegable",
-                        ),
-                    ),
-            });
-
-            if (!asExpected) {
-                console.log(
-                    `delegation check statuses: ${JSON.stringify((result?.data ?? []).map((item) => ({ rightKey: item.rightKey, status: item.status })))}`,
-                );
-            }
+            AltinnAppsDomainChecks.CheckDelegableRights(result, EXPECTED_DELEGABLE_RIGHT_KEYS);
         });
 
         group("Read the delegations already on the instance", function () {
@@ -70,11 +57,7 @@ export default function () {
                 getDelegationsLabel,
             );
 
-            // An instance with nothing delegated on it still answers 200 with an
-            // empty data array, so this only checks the shape.
-            check(delegations, {
-                "get delegations returned a data array": (d) => Array.isArray(d?.data),
-            });
+            AltinnAppsDomainChecks.CheckDelegationsShape(delegations);
         });
     });
 
@@ -90,15 +73,7 @@ export default function () {
                 emptyTokenLabel,
             );
 
-            const unauthorized = check(res, {
-                "empty platform access token is 401": (r) => r.status === 401,
-                "empty platform access token returns no body": (r) => !r.body,
-            });
-
-            if (!unauthorized) {
-                console.log(res.status);
-                console.log(res.body);
-            }
+            AltinnAppsDomainChecks.CheckPlatformAccessTokenRejected(res);
         });
 
         group("Another app gets an answer, but an empty one", function () {
@@ -119,16 +94,7 @@ export default function () {
                 wrongAppLabel,
             );
 
-            const silentlyEmpty = check(res, {
-                "wrong app in the platform access token is 200": (r) => r.status === 200,
-                "wrong app in the platform access token returns no rights": (r) =>
-                    (JSON.parse(r.body)?.data ?? []).length === 0,
-            });
-
-            if (!silentlyEmpty) {
-                console.log(res.status);
-                console.log(res.body);
-            }
+            AltinnAppsDomainChecks.CheckNoRightsForOtherApp(res);
         });
     });
 }
