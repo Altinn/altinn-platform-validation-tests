@@ -1,5 +1,5 @@
 namespace: authentication
-base_dir: K6/api/tests/authentication/consent/
+base_dir: K6/api/tests/access-management/consent/
 test_definitions:
   - test_file: post-consent.js
     contexts:
