@@ -1,7 +1,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { DelegationExportClient as BffDelegationExportClient } from "../../../clients/access-management-bff/delegation-export/index.js";
+import { DelegationExportClient, GetDelegationExportQueryBuilder } from "../../../clients/access-management-bff/delegation-export/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
@@ -20,8 +20,8 @@ export const options = getOptions(
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {BffDelegationExportClient | undefined} */
-let accessManagementApiClient = undefined;
+/** @type {DelegationExportClient | undefined} */
+let delegationExportApiClient = undefined;
 
 /**
  * Creates and caches API clients used by the scenario.
@@ -30,7 +30,7 @@ let accessManagementApiClient = undefined;
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- * BffDelegationExportClient,
+ * DelegationExportClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -48,16 +48,16 @@ function getClients() {
 
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
-    if (accessManagementApiClient == undefined) {
-        accessManagementApiClient = new BffDelegationExportClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+    if (delegationExportApiClient == undefined) {
+        delegationExportApiClient = new DelegationExportClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
-    return [accessManagementApiClient, tokenGenerator];
+    return [delegationExportApiClient, tokenGenerator];
 }
 
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Organizations to export delegations for, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -94,15 +94,15 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param segmentedData TODO: description
+ * @param {object[][]} segmentedData Organizations to export delegations for, one slice per VU.
  */
 export default function (segmentedData) {
-    const [accessManagementApiClient, tokenGenerator] = getClients();
+    const [delegationExportApiClient, tokenGenerator] = getClients();
     const user = getItemFromList(segmentedData[exec.vu.idInTest - 1], randomize);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(user.userId, user.partyUuid));
-    const queryParams = {
-        partyUuid: user.orgUuid,
-        includeSubunits: true,
-    };
-    GetDelegationExport(accessManagementApiClient, queryParams, label);
+    const queryParams = new GetDelegationExportQueryBuilder()
+        .withPartyUuid(user.orgUuid)
+        .withIncludeSubunits(true)
+        .build();
+    GetDelegationExport(delegationExportApiClient, queryParams, label);
 }

@@ -11,9 +11,19 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
-import { ClientDelegationsClient as BffClientDelegationsApiClient } from "../../../clients/access-management-bff/client-delegations/index.js";
-import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
+import {
+    AccessPackageClient,
+    GetAccessPackageDelegationCheckQueryBuilder,
+} from "../../../clients/access-management-bff/access-package/index.js";
+import {
+    ClientDelegationsClient,
+    GetAgentsQueryBuilder,
+    GetClientsQueryBuilder,
+} from "../../../clients/access-management-bff/client-delegations/index.js";
+import {
+    ConnectionClient,
+    GetRightHoldersQueryBuilder,
+} from "../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
@@ -26,10 +36,10 @@ import { getTokenOpts } from "./commons.js";
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 const groupLabelValue = "Open client administration";
 
-const getConnectionsLabel = { step: `1. ${BffConnectionsApiClient.TAGS.GetRightHolders.action}` };
-const getAgentsLabel = { step: `2. ${BffClientDelegationsApiClient.TAGS.GetAgents.action}` };
-const getClientsLabel = { step: `3. ${BffClientDelegationsApiClient.TAGS.GetClients.action}` };
-const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.GetAccessPackageDelegationCheck.action}` };
+const getConnectionsLabel = { step: `1. ${ConnectionClient.TAGS.GetRightHolders.action}` };
+const getAgentsLabel = { step: `2. ${ClientDelegationsClient.TAGS.GetAgents.action}` };
+const getClientsLabel = { step: `3. ${ClientDelegationsClient.TAGS.GetClients.action}` };
+const getDelegationCheckLabel = { step: `4. ${AccessPackageClient.TAGS.GetAccessPackageDelegationCheck.action}` };
 
 /**
  * Whether test data should be randomized.
@@ -43,11 +53,11 @@ const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : t
 // clients to use
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {BffClientDelegationsApiClient | undefined} */
+/** @type {ClientDelegationsClient | undefined} */
 let clientDelegationsApiClient = undefined;
-/** @type {BffConnectionsApiClient | undefined} */
+/** @type {ConnectionClient | undefined} */
 let connectionsApiClient = undefined;
-/** @type {BffAccessPackageApiClient | undefined} */
+/** @type {AccessPackageClient | undefined} */
 let accessPackageApiClient = undefined;
 
 // get k6 options
@@ -56,7 +66,7 @@ export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClien
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -75,9 +85,9 @@ export function setup() {
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- * BffConnectionsApiClient,
- * BffClientDelegationsApiClient,
- * BffAccessPackageApiClient,
+ * ConnectionClient,
+ * ClientDelegationsClient,
+ * AccessPackageClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -95,13 +105,13 @@ function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (clientDelegationsApiClient == undefined) {
-        clientDelegationsApiClient = new BffClientDelegationsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        clientDelegationsApiClient = new ClientDelegationsClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     return [connectionsApiClient, clientDelegationsApiClient, accessPackageApiClient, tokenGenerator];
 }
@@ -109,7 +119,7 @@ function getClients() {
 /**
  * Main function executed by each VU.
  *
- * @param testData TODO: description
+ * @param {object[][]} testData Organizations with a party uuid, one slice per VU.
  */
 export default function (testData) {
     // connectionsApiClient for bff
@@ -121,19 +131,37 @@ export default function (testData) {
 
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(groupLabelValue, function () {
-        const connectionsQueryParams = {
-            party: testObject.partyUuid,
-            from: testObject.orgUuid,
-            to: testObject.partyUuid,
-            includeClientDelegations: true,
-            includeAgentConnections: true
-        };
-        GetRightHolders(connectionsApiClient, connectionsQueryParams, getConnectionsLabel);
-        const queryParams = {
-            party: testObject.orgUuid,
-        };
-        GetAgents(clientDelegationsApiClient, queryParams, getAgentsLabel);
-        GetClients(clientDelegationsApiClient, queryParams, getClientsLabel);
-        GetAccessPackageDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationCheckLabel);
+        GetRightHolders(
+            connectionsApiClient,
+            new GetRightHoldersQueryBuilder()
+                .withParty(testObject.partyUuid)
+                .withFrom(testObject.orgUuid)
+                .withTo(testObject.partyUuid)
+                .withIncludeClientDelegations(true)
+                .withIncludeAgentConnections(true)
+                .build(),
+            getConnectionsLabel,
+        );
+        GetAgents(
+            clientDelegationsApiClient,
+            new GetAgentsQueryBuilder()
+                .withParty(testObject.orgUuid)
+                .build(),
+            getAgentsLabel,
+        );
+        GetClients(
+            clientDelegationsApiClient,
+            new GetClientsQueryBuilder()
+                .withParty(testObject.orgUuid)
+                .build(),
+            getClientsLabel,
+        );
+        GetAccessPackageDelegationCheck(
+            bffAccessPackageApiClient,
+            new GetAccessPackageDelegationCheckQueryBuilder()
+                .withParty(testObject.orgUuid)
+                .build(),
+            getDelegationCheckLabel,
+        );
     });
 }

@@ -2,8 +2,16 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
-import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
+import {
+    AccessPackageClient,
+    CreateAccessPackageDelegationQueryBuilder,
+    DeleteAccessPackageDelegationQueryBuilder,
+} from "../../../clients/access-management-bff/access-package/index.js";
+import {
+    ConnectionClient,
+    DeleteReporteeConnectionQueryBuilder,
+    GetRightHoldersQueryBuilder,
+} from "../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString, } from "../../../scopes.js";
@@ -35,9 +43,9 @@ const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : t
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {BffConnectionsApiClient | undefined} */
+/** @type {ConnectionClient | undefined} */
 let connectionsApiClient = undefined;
-/** @type {BffAccessPackageApiClient | undefined} */
+/** @type {AccessPackageClient | undefined} */
 let accessPackageApiClient = undefined;
 
 // get k6 options
@@ -58,8 +66,8 @@ export const options = getOptions([
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- * BffConnectionsApiClient,
- * BffAccessPackageApiClient,
+ * ConnectionClient,
+ * AccessPackageClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -77,10 +85,10 @@ function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     return [connectionsApiClient, accessPackageApiClient, tokenGenerator];
 }
@@ -88,7 +96,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Users to delegate between, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -102,7 +110,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param segmentedData TODO: description
+ * @param {object[][]} segmentedData Users to delegate between, one slice per VU.
  */
 export default function (segmentedData) {
     const [connectionsApiClient, accessPackageApiClient, tokenGenerator] = getClients();
@@ -119,38 +127,62 @@ export default function (segmentedData) {
         CreateRightHolder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
         getRightHolders(connectionsApiClient, from);
         getRightHoldersWithoutTo(connectionsApiClient, from);
-        CreateAccessPackageDelegation(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageLabel);
-        DeleteAccessPackageDelegation(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageDeleteLabel);
-        DeleteReporteeConnection(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
+        CreateAccessPackageDelegation(
+            accessPackageApiClient,
+            new CreateAccessPackageDelegationQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .withPackageId(accessPackage.id)
+                .build(),
+            accessPackageLabel,
+        );
+        DeleteAccessPackageDelegation(
+            accessPackageApiClient,
+            new DeleteAccessPackageDelegationQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .withPackageId(accessPackage.id)
+                .build(),
+            accessPackageDeleteLabel,
+        );
+        DeleteReporteeConnection(
+            connectionsApiClient,
+            new DeleteReporteeConnectionQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            deleteRightholderConnectionLabel,
+        );
     });
 }
 
 function getRightHolders(connectionsApiClient, party) {
-    const queryParamsTo = {
-        party: party.partyUuid,
-        from: party.partyUuid,
-        to: party.partyUuid,
-        includeClientDelegations: true,
-        includeAgentConnections: true,
-    };
     const respBody = GetRightHolders(
         connectionsApiClient,
-        queryParamsTo,
+        new GetRightHoldersQueryBuilder()
+            .withParty(party.partyUuid)
+            .withFrom(party.partyUuid)
+            .withTo(party.partyUuid)
+            .withIncludeClientDelegations(true)
+            .withIncludeAgentConnections(true)
+            .build(),
         getRightholdersToLabel
     );
     return respBody;
 }
 
 function getRightHoldersWithoutTo(connectionsApiClient, party) {
-    const queryParamsTo = {
-        party: party.partyUuid,
-        from: party.partyUuid,
-        includeClientDelegations: true,
-        includeAgentConnections: true,
-    };
     const respBody = GetRightHolders(
         connectionsApiClient,
-        queryParamsTo,
+        new GetRightHoldersQueryBuilder()
+            .withParty(party.partyUuid)
+            .withFrom(party.partyUuid)
+            .withIncludeClientDelegations(true)
+            .withIncludeAgentConnections(true)
+            .build(),
         getRightholdersWithoutToLabel
     );
     return respBody;
