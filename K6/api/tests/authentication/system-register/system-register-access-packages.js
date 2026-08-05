@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
@@ -86,7 +86,13 @@ export default async function () {
 
     group("System Register Access Packages", function () {
         group("Register a system with one access package", function () {
-            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+
+            // The groups below read, update and delete this system by id, so there is
+            // nothing to assert on if the registration failed.
+            if (createdSystemId === null) {
+                fail("cannot continue: registering the system did not return a system id");
+            }
         });
 
         group("An end user gets the access packages of the system", function () {
@@ -98,7 +104,11 @@ export default async function () {
         group("Replace the access packages on the system", function () {
             const updateResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdateAccessPackages");
+            // Reading the packages back says nothing about the update unless the
+            // update itself went through.
+            if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdateAccessPackages")) {
+                fail("cannot verify the access packages: replacing them did not report success");
+            }
 
             const updatedRegisteredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 

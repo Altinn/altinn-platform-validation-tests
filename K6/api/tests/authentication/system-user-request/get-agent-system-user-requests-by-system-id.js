@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { requireEnv } from "../../../../helpers.js";
 import { RequestSystemUserBuildingBlocks } from "../../../authentication-v2-imports.js";
@@ -25,7 +25,13 @@ export default function () {
         group("Fetch the first page of agent system user requests", function () {
             firstPage = RequestSystemUserBuildingBlocks.VendorAgentGetBySystem(requestSystemUserClient, PAGINATION_SYSTEM_ID);
 
-            PaginationDomainChecks.CheckPaginatedShape(firstPage, "RequestSystemUserVendorAgentGetBySystem");
+            // Following next links needs a page to follow them from, so a first page
+            // that is missing or shaped wrong ends the iteration here rather than
+            // failing every check below on the same cause.
+            if (!PaginationDomainChecks.CheckPaginatedShape(firstPage, "RequestSystemUserVendorAgentGetBySystem")) {
+                fail("cannot follow pagination: the first page of agent system user requests is not a paginated response");
+            }
+
             PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "RequestSystemUserVendorAgentGetBySystem");
             PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, PAGINATION_SYSTEM_ID, "agent system user request");
         });

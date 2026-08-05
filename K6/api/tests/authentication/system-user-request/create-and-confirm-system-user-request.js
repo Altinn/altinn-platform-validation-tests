@@ -26,7 +26,13 @@ export default function (data) {
 
     group("As a vendor, I can request a system user and have the customer approve it", function () {
         group("Register the system the request is made for", function () {
-            SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
+
+            // A system user request against a system that was never registered is
+            // rejected, so the rest of the test would only measure that.
+            if (createdSystemId === null) {
+                fail("cannot request a system user: registering the system did not return a system id");
+            }
         });
 
         let requestId;

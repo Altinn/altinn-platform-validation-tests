@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
@@ -95,7 +95,11 @@ export default async function () {
     group("System Register Rights", function () {
         group("Register a system with two rights", function () {
             // POST /vendor
-            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+
+            if (createdSystemId === null) {
+                fail("cannot continue: registering the system did not return a system id");
+            }
         });
 
         group("An end user gets the rights of the system", function () {
