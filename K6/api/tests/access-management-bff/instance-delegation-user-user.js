@@ -5,8 +5,8 @@ import http from "k6/http";
 import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../../clients/dialogporten/graphql/index.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { GetAccessPackageDelegationCheck } from "../../building-blocks/access-management-bff/access-package/index.js";
+import { GetOrgData, } from "../../building-blocks/access-management-bff/altinn-cdn/index.js";
 import { DeleteAgentAccessPackages, } from "../../building-blocks/access-management-bff/client-delegations/index.js";
-//import { GetOrganizationData, } from "../../building-blocks/access-management-bff/client-delegations/index.js";
 import { GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
 import { GetActiveConsents } from "../../building-blocks/access-management-bff/consent/index.js";
 import { GetInstanceDelegationCheck } from "../../building-blocks/access-management-bff/instance/index.js";
@@ -180,7 +180,7 @@ export default function (data) {
         GetIsClientAdmin(userApiClient, { party: from.partyUuid }, getIsClientAdminLabel);
         GetActorListOld(userApiClient, getActorListOldLabel);
         GetFavorites(userApiClient, getActorListFavoritesLabel);
-        //GetOrganizationData(accessManagementApiClient, {}, getOrganizationDataLabel);
+        GetOrgData(accessManagementApiClient, {}, getOrganizationDataLabel);
         GetIsInstanceAdmin(userApiClient, { party: from.partyUuid }, getIsInstanceAdminLabel);
         GetInstanceDelegations(accessManagementApiClient, { party: from.partyUuid, from: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceLabel);
         GetActiveConsents(accessManagementApiClient, from.partyUuid, getActiveConsentLabel);

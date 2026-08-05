@@ -6,6 +6,7 @@ import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../..//building-blocks/dialogporten/graphql/index.js";
 import { GetAccessPackageDelegationCheck } from "../../building-blocks/access-management-bff//access-package/index.js";
+import { GetOrgData } from "../../building-blocks/access-management-bff/altinn-cdn/index.js";
 import { GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
 import { GetActiveConsents } from "../../building-blocks/access-management-bff/consent/index.js";
 import { GetInstanceDelegationCheck } from "../../building-blocks/access-management-bff/instance/index.js";
@@ -15,7 +16,6 @@ import { GetParty } from "../../building-blocks/access-management-bff/lookup/ind
 import { GetResource } from "../../building-blocks/access-management-bff/resource/index.js";
 import { GetRolePermissions } from "../../building-blocks/access-management-bff/role/index.js";
 import { GetRightsMeta } from "../../building-blocks/access-management-bff/single-right/index.js";
-import { /*GetOrganizationData*/ } from "../../building-blocks/access-management-bff/system-user/index.js";
 import { GetPendingSystemUsers } from "../../building-blocks/access-management-bff/system-user/index.js";
 import { GetActorList, GetActorListOld, GetIsAdmin, GetIsClientAdmin, GetIsCompanyProfileAdmin, GetIsInstanceAdmin, GetReportee, GetUserProfile } from "../../building-blocks/access-management-bff/user/index.js";
 import { CreateDialog } from "../../building-blocks/dialogporten/serviceowner/index.js";
@@ -175,7 +175,7 @@ export default function (data) {
         GetActorListOld(userApiClient, getActorListOldLabel);
         GetActorList(userApiClient, getActorListFavoritesLabel);
         GetRolePermissions(accessManagementApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel);
-        //GetOrganizationData(accessManagementApiClient, {}, getOrganizationDataLabel);
+        GetOrgData(accessManagementApiClient, {}, getOrganizationDataLabel);
         GetIsInstanceAdmin(userApiClient, { party: from.orgUuid }, getIsInstanceAdminLabel);
         GetInstanceDelegations(accessManagementApiClient, { party: from.partyUuid, from: from.partyUuid, resource: resource, instance: `urn:altinn:dialog-id:${dialogId}` }, getDelegatedInstancesForResourceLabel);
         GetActiveConsents(accessManagementApiClient, from.orgUuid, getActiveConsentLabel);

@@ -12,8 +12,8 @@ import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { GetAccessPackageDelegations } from "../../building-blocks/access-management-bff/access-package/index.js";
 import { GetAccessPackageDelegationCheck, SearchAccessPackages } from "../../building-blocks/access-management-bff/access-package/index.js";
 import {
-//GetOrganizationData,
-} from "../../building-blocks/access-management-bff/client-delegations/index.js";
+    GetOrgData,
+} from "../../building-blocks/access-management-bff/altinn-cdn/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
 import { GetResourceOwners, SearchResources } from "../../building-blocks/access-management-bff/resource/index.js";
 import { GetRolePermissions, } from "../../building-blocks/access-management-bff/role/index.js";
@@ -261,7 +261,7 @@ export default function (segmentedData) {
         SearchAccessPackages(userApiClient, { searchString: "", typeName: "organisasjon" }, searchAccessPackagesLabel);
         SearchResources(userApiClient, { Page: 1, ResultsPerPage: 7, searchString: "", includeA2Services: false }, searchResourcesLabel);
         GetResourceOwners(userApiClient, { undefined }, getResourceOwnersLabel);
-        //GetOrganizationData(userApiClient, {}, getOrganizationDataLabel);
+        GetOrgData(userApiClient, {}, getOrganizationDataLabel);
     });
 
     // Part 2.
