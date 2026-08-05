@@ -677,7 +677,14 @@ class ResourceClient {
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     ResourceUpdated(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run as a healthcheck in prod.
+        const headers = { Accept: "application/json" };
+        const token = this.tokenGenerator?.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
 
         let url = `${this.FULL_PATH}/updated`;
 
@@ -703,7 +710,8 @@ class ResourceClient {
 
         let tags = {
             endpoint: url,
-            name: url,
+            // The query stays out of the name tag, or metrics get one series per value.
+            name: `${this.FULL_PATH}/updated`,
             action: TAGS.ResourceUpdated.action,
         };
 
@@ -716,10 +724,7 @@ class ResourceClient {
 
         return http.get(url, {
             tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
+            headers,
         });
     }
 

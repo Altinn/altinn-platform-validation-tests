@@ -3,33 +3,33 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Retrieves system user requests by system.
+ * Retrieves agent system user requests by system.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {string} systemId System identifier.
  * @param {GuidOpaque|null} [token] Continuation token.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponsePaginated|null} Paginated request responses.
+ * @returns {AgentRequestSystemResponsePaginated|null} Paginated agent request responses.
  */
-export function GetRequestSystemUsersBySystem(
+export function RequestSystemUserVendorAgentGetBySystem(
     requestSystemUserClient,
     systemId,
     token = null,
     labels = null,
 ) {
-    const res = requestSystemUserClient.GetRequestSystemUsersBySystem(
+    const res = requestSystemUserClient.RequestSystemUserVendorAgentGetBySystem(
         systemId,
         token,
         labels,
     );
 
-    /** @type {RequestSystemResponsePaginated|null} */
+    /** @type {AgentRequestSystemResponsePaginated|null} */
     let requestResponses = null;
 
     const succeed = check(res, {
-        "GetRequestSystemUsersBySystem - status code is 200": (r) =>
+        "RequestSystemUserVendorAgentGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "GetRequestSystemUsersBySystem - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorAgentGetBySystem - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -40,7 +40,7 @@ export function GetRequestSystemUsersBySystem(
     }
 
     check(res, {
-        "GetRequestSystemUsersBySystem - body is valid": (r) => {
+        "RequestSystemUserVendorAgentGetBySystem - body is valid": (r) => {
             try {
                 requestResponses = JSON.parse(r.body);
 

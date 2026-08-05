@@ -10,7 +10,7 @@ import { SystemRegisterVendorUpdate } from "./system-register-vendor-update.js";
 import { SystemRegisterVendorUpdateAccessPackages } from "./system-register-vendor-update-access-packages.js";
 import { SystemRegisterVendorUpdateRights } from "./system-register-vendor-update-rights.js";
 
-export const SystemRegister = {
+export const SystemRegisterBuildingBlocks = {
     Get: SystemRegisterGet,
     GetAccessPackagesFrontend: SystemRegisterGetAccessPackagesFrontend,
     GetRightsFrontend: SystemRegisterGetRightsFrontend,

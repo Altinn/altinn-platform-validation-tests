@@ -1,12 +1,9 @@
 import { group } from "k6";
 
-import { SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
-import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
 import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemRegisterDomainChecks } from "../../../domain-checks/system-register.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-v2-imports.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -116,67 +113,67 @@ export default async function () {
 
     group("Integration Tests for System Register CRUD Operations as a System Vendor (Visma, Tripletex etc)", function () {
         group("Register a new system", function () {
-            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("Make sure the system is registered", function () {
-            const vendorSystems = SystemRegister.VendorGet(systemRegisterClient);
+            const vendorSystems = SystemRegisterBuildingBlocks.VendorGet(systemRegisterClient);
 
             SystemRegisterDomainChecks.CheckSystemId(vendorSystems, systemId);
 
-            const registeredSystemResponse = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const registeredSystemResponse = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemIdInVendorGetById(registeredSystemResponse, systemId);
         });
 
         group("Update the system", function () {
-            const updateResult = SystemRegister.VendorUpdate(systemRegisterClient, systemId, updatedRequestBody);
+            const updateResult = SystemRegisterBuildingBlocks.VendorUpdate(systemRegisterClient, systemId, updatedRequestBody);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdate");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdate");
 
-            const updatedSystem = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const updatedSystem = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemDescription(updatedSystem, updatedDescription);
         });
 
         group("Replace the rights on the system", function () {
-            const updateRightsResult = SystemRegister.VendorUpdateRights(systemRegisterClient, systemId, updatedRights);
+            const updateRightsResult = SystemRegisterBuildingBlocks.VendorUpdateRights(systemRegisterClient, systemId, updatedRights);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "VendorUpdateRights");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "SystemRegisterVendorUpdateRights");
 
-            const systemWithUpdatedRights = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const systemWithUpdatedRights = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemRights(systemWithUpdatedRights, updatedRights);
         });
 
         group("Replace the access packages on the system", function () {
-            const updateAccessPackagesResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
+            const updateAccessPackagesResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "VendorUpdateAccessPackages");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "SystemRegisterVendorUpdateAccessPackages");
 
-            const systemWithUpdatedAccessPackages = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const systemWithUpdatedAccessPackages = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemAccessPackages(systemWithUpdatedAccessPackages, updatedAccessPackages);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
 
         group("The deleted system is gone", function () {
-            const deletedSystem = SystemRegister.VendorGetById(systemRegisterClient, systemId);
+            const deletedSystem = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemIsDeleted(deletedSystem);
 
-            const remainingVendorSystems = SystemRegister.VendorGet(systemRegisterClient);
+            const remainingVendorSystems = SystemRegisterBuildingBlocks.VendorGet(systemRegisterClient);
 
             SystemRegisterDomainChecks.CheckSystemIdIsAbsent(remainingVendorSystems, systemId);
         });
 
         group("Every change was written to the change log", function () {
-            const changeLog = SystemRegister.VendorGetChangeLog(systemRegisterClient, systemId);
+            const changeLog = SystemRegisterBuildingBlocks.VendorGetChangeLog(systemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckSystemChangeLog(changeLog, [
                 "create",
