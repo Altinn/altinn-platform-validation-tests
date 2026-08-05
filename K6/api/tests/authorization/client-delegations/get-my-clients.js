@@ -64,10 +64,18 @@ export default function () {
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.uuid));
     GetMyClients(
         clientDelegationsApiClient,
+        null,
+        null,
         { unique_id: party.label },
     );
 }
 
+/**
+ * Builds enduser personal-token options for the given party.
+ *
+ * @param {string} uuid Party uuid of the end user.
+ * @returns map of token options
+ */
 function getTokenOpts(uuid) {
     const scopes = CreateScopeString([
         AltinnScopes.PORTAL.ENDUSER
