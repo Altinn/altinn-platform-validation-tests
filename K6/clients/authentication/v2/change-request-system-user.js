@@ -32,7 +32,7 @@ class ChangeRequestSystemUserClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/systemuser/changerequest";
+        this.BASE_PATH = "/authentication/api/v1/systemuser/changerequest";
 
         /**
          * Fully-qualified API path.
@@ -46,6 +46,8 @@ class ChangeRequestSystemUserClient {
 
     /**
      * Creates a change request for a system user.
+     *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {ChangeRequestSystemUser} request Change request payload.
      * @param {string|null} correlationId Correlation identifier.
@@ -108,6 +110,8 @@ class ChangeRequestSystemUserClient {
     /**
      * Retrieves a change request by id.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -143,6 +147,8 @@ class ChangeRequestSystemUserClient {
     /**
      * Deletes a change request by id.
      *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
+     *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -177,6 +183,8 @@ class ChangeRequestSystemUserClient {
 
     /**
      * Retrieves a change request by external reference.
+     *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organisation number.
@@ -220,6 +228,8 @@ class ChangeRequestSystemUserClient {
     /**
      * Retrieves change requests for a system.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
@@ -241,7 +251,7 @@ class ChangeRequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+            name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
             action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
         };
 

@@ -1,6 +1,6 @@
 {
-  authentication: {
-    'K6/api/tests/authentication/consent/breakpoint.yaml': {
+  'access-management': {
+    'K6/api/tests/access-management/consent/breakpoint.yaml': {
       '0 08 * * 1': 'yt01-post-consent-break',  // At 08:00 on Monday.
     },
   },

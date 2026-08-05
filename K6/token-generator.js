@@ -328,10 +328,15 @@ export class EnterpriseTokenBuilder {
 /**
  * Platform token builder.
  *
- * `withEnvironment` → `env`, `withApplication` → `app`, `withTtl` → `ttl`.
+ * `withEnvironment` → `env`, `withApplication` → `app`,
+ * `withOrganization` → `org`, `withTtl` → `ttl`.
  *
  * Starts out with `app` and `ttl` from the statics below. Unlike the personal
  * and enterprise builders it does not default `env` — pass it explicitly.
+ *
+ * `org` sets the issuer of the token. Leave it out and the token generator uses
+ * its own default issuer. Set it for APIs that read the calling app out of the
+ * token, since they build the identifier as `app_{issuer}_{app}`.
  */
 export class PlatformTokenBuilder {
     static defaultApp = "k6-e2e-tests";
@@ -351,6 +356,11 @@ export class PlatformTokenBuilder {
 
     withApplication(application) {
         this.options.app = application;
+        return this;
+    }
+
+    withOrganization(organization) {
+        this.options.org = organization;
         return this;
     }
 

@@ -1,12 +1,9 @@
 import { group } from "k6";
 
-import { SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
-import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemRegisterDomainChecks } from "../../../domain-checks/system-register.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-v2-imports.js";
 
 const ORG = "ttd";
 
@@ -89,29 +86,29 @@ export default async function () {
 
     group("System Register Access Packages", function () {
         group("Register a system with one access package", function () {
-            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("An end user gets the access packages of the system", function () {
-            const registeredAccessPackages = SystemRegister.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
+            const registeredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
         });
 
         group("Replace the access packages on the system", function () {
-            const updateResult = SystemRegister.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
+            const updateResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "VendorUpdateAccessPackages");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdateAccessPackages");
 
-            const updatedRegisteredAccessPackages = SystemRegister.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
+            const updatedRegisteredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
     });
 }

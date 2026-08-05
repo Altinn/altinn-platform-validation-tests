@@ -47,6 +47,8 @@ class SystemUserClient {
     /**
      * Finds a SystemUser by external id.
      *
+     * Requires the `altinn:maskinporten/systemuser.read` scope.
+     *
      * @param {object} query Query parameters, with the keys "system-id" and "external-ref".
      * @param {string} [query.clientId] See the client method.
      * @param {string} [query.systemProviderOrgNo] See the client method.
@@ -91,8 +93,8 @@ class SystemUserClient {
             }
         }
 
+        // The query stays out of the name tag, or metrics get one series per value.
         params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {
@@ -106,6 +108,8 @@ class SystemUserClient {
 
     /**
      * Updates an existing SystemUser.
+     *
+     * Requires the `altinn:portal/enduser` scope.
      *
      * @param {SystemUserUpdateDto} request Updated SystemUser.
      * @param {{[key: string]: string}} [labels]
@@ -142,6 +146,8 @@ class SystemUserClient {
 
     /**
      * Retrieves a SystemUser by vendor query.
+     *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {object} query Query parameters.
      * @param {string} [query.orgno] See the client method.
@@ -184,8 +190,8 @@ class SystemUserClient {
             }
         }
 
+        // The query stays out of the name tag, or metrics get one series per value.
         params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {
@@ -200,6 +206,8 @@ class SystemUserClient {
     /**
      * Retrieves SystemUsers for a vendor system.
      *
+     * Requires the `altinn:authentication/systemregister.write` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {object} [query] Query parameters.
      * @param {Int64Opaque} [query.token] Continuation token.
@@ -210,12 +218,12 @@ class SystemUserClient {
     SystemUserVendorGetBySystem(systemId, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
+        let url = `${this.FULL_PATH}/vendor/bysystem/${encodeURIComponent(systemId)}`;
 
         const params = {
             tags: {
                 endpoint: url,
-                name: url,
+                name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
                 action: TAGS.SystemUserVendorGetBySystem.action,
             },
             headers: {
@@ -246,8 +254,8 @@ class SystemUserClient {
             }
         }
 
+        // The query stays out of the name tag, or metrics get one series per value.
         params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {
@@ -261,6 +269,8 @@ class SystemUserClient {
 
     /**
      * Retrieves SystemUsers for internal streaming.
+     *
+     * Requires the `altinn:authentication/systemuser.admin` scope.
      *
      * @param {object} [query] Query parameters.
      * @param {Int64Opaque} [query.token] Continuation token.
@@ -307,8 +317,8 @@ class SystemUserClient {
             }
         }
 
+        // The query stays out of the name tag, or metrics get one series per value.
         params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {

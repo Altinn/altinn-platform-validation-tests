@@ -1,12 +1,9 @@
 import { group } from "k6";
 
-import { SystemRegisterClient } from "../../../../clients/authentication/v2/index.js";
-import { RegisterSystemRequestBuilder } from "../../../../clients/authentication/v2/system-register.builders.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { SystemRegister } from "../../../building-blocks/authentication/v2/system-register/index.js";
-import { SystemRegisterDomainChecks } from "../../../domain-checks/system-register.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-v2-imports.js";
 
 const ORG = "ttd";
 
@@ -98,21 +95,21 @@ export default async function () {
     group("System Register Rights", function () {
         group("Register a system with two rights", function () {
             // POST /vendor
-            SystemRegister.VendorCreate(systemRegisterClient, requestBody);
+            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
         });
 
         group("An end user gets the rights of the system", function () {
             // GET /{systemId}/rights - the rights as consumers see them, not the
             // vendor view, so this one goes on the enduser token
-            const registeredRights = SystemRegister.GetRightsFrontend(enduserSystemRegisterClient, systemId);
+            const registeredRights = SystemRegisterBuildingBlocks.GetRightsFrontend(enduserSystemRegisterClient, systemId);
 
             SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
         });
 
         group("Delete the system", function () {
-            const deleteResult = SystemRegister.VendorDelete(systemRegisterClient, systemId);
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "VendorDelete");
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
     });
 }
