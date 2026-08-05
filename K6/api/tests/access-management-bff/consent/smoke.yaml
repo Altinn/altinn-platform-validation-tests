@@ -1,5 +1,5 @@
 namespace: authentication
-base_dir: K6/api/tests/authentication/consent/bff
+base_dir: K6/api/tests/access-management-bff/consent
 test_definitions:
   - test_scope: consent-bff
     test_file: consent-log-worst-case.js

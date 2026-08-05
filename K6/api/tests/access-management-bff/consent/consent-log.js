@@ -1,9 +1,9 @@
 import exec from "k6/execution";
 
-import { randomItem } from "../../../../../common-imports.js";
-import { getOptions } from "../../../../../helpers.js";
-import { GetConsentLog } from "../../../../building-blocks/access-management-bff/consent/index.js";
-import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
+import { randomItem } from "../../../../common-imports.js";
+import { getOptions } from "../../../../helpers.js";
+import { GetConsentLog } from "../../../building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../domain-checks/access-management/consent.js";
 import { getClients, getTokenOpts } from "./commons.js";
 
 export { setup } from "./commons.js";
@@ -34,4 +34,4 @@ export default function (data) {
 }
 
 // add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../../common-imports.js";
+export { handleSummary } from "../../../../common-imports.js";

@@ -1,9 +1,9 @@
 import http from "k6/http";
 
-import { ConsentClient } from "../../../../../clients/access-management-bff/consent/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
+import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /*
 * The users in this list have been selected based on the number of consent requests they have.
