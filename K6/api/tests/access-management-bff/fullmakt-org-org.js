@@ -2,15 +2,43 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
-import { ClientDelegationsClient as BffClientDelegationsApiClient } from "../../../clients/access-management-bff/client-delegations/index.js";
-import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
+import {
+    AccessPackageClient,
+    CreateAccessPackageDelegationQueryBuilder,
+    DeleteAccessPackageDelegationQueryBuilder,
+    GetAccessPackagePermissionQueryBuilder,
+} from "../../../clients/access-management-bff/access-package/index.js";
+import {
+    ClientDelegationsClient,
+    CreateAgentAccessPackagesQueryBuilder,
+    CreateAgentQueryBuilder,
+    DelegationBatchInputDtoBuilder,
+    DeleteAgentAccessPackagesQueryBuilder,
+    DeleteAgentQueryBuilder,
+    GetAgentAccessPackagesQueryBuilder,
+    GetAgentsQueryBuilder,
+    GetClientAccessPackagesQueryBuilder,
+    GetClientsQueryBuilder,
+} from "../../../clients/access-management-bff/client-delegations/index.js";
+import {
+    ConnectionClient,
+    DeleteReporteeConnectionQueryBuilder,
+    GetRightHoldersQueryBuilder,
+} from "../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { GetAccessPackages, } from "../../building-blocks/access-management/enduser/connections/index.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../building-blocks/access-management-bff/access-package/index.js";
-import { CreateAgent, CreateAgentAccessPackages, DeleteAgent, GetAgents, GetClients } from "../../building-blocks/access-management-bff/client-delegations/index.js";
+import {
+    CreateAgent,
+    CreateAgentAccessPackages,
+    DeleteAgent,
+    DeleteAgentAccessPackages,
+    GetAgentAccessPackages,
+    GetAgents,
+    GetClientAccessPackages,
+    GetClients,
+} from "../../building-blocks/access-management-bff/client-delegations/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
 import { getTokenOpts } from "./commons.js";
 import { accessPackagesForOrgs as accessPackages } from "./custom-data.js";
@@ -81,11 +109,11 @@ export const options = getOptions(
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {BffConnectionsApiClient | undefined} */
+/** @type {ConnectionClient | undefined} */
 let connectionsApiClient = undefined;
-/** @type {BffAccessPackageApiClient | undefined} */
+/** @type {AccessPackageClient | undefined} */
 let accessPackageApiClient = undefined;
-/** @type {BffClientDelegationsApiClient | undefined} */
+/** @type {ClientDelegationsClient | undefined} */
 let clientDelegationsApiClient = undefined;
 
 /**
@@ -95,9 +123,9 @@ let clientDelegationsApiClient = undefined;
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- * BffConnectionsApiClient,
- * BffAccessPackageApiClient,
- * BffClientDelegationsApiClient,
+ * ConnectionClient,
+ * AccessPackageClient,
+ * ClientDelegationsClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -115,13 +143,13 @@ function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     if (clientDelegationsApiClient == undefined) {
-        clientDelegationsApiClient = new BffClientDelegationsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        clientDelegationsApiClient = new ClientDelegationsClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     return [connectionsApiClient, accessPackageApiClient, clientDelegationsApiClient, tokenGenerator];
 }
@@ -129,7 +157,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Organizations and a user to act as agent, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -143,7 +171,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param segmentedData TODO: description
+ * @param {object[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
  */
 export default function (segmentedData) {
     // testdata. [0] contains segmented user data for each VU, [1] contains access packages
@@ -158,67 +186,180 @@ export default function (segmentedData) {
 
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(fullmaktGroup, function () {
-        GetAccessPackagePermission(accessPackageApiClient, accessPackage.id, { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
+        GetAccessPackagePermission(
+            accessPackageApiClient,
+            accessPackage.id,
+            new GetAccessPackagePermissionQueryBuilder()
+                .withParty(from.orgUuid)
+                .withFrom(from.orgUuid)
+                .build(),
+            getPermissionsLabel,
+        );
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1b);
         // TODO: add this to test: `https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
         CreateRightHolder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         getRightHolders(connectionsApiClient, from, to, getRightholdersToLabel1e);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1f);
-        CreateAccessPackageDelegation(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationLabel);
+        CreateAccessPackageDelegation(
+            accessPackageApiClient,
+            new CreateAccessPackageDelegationQueryBuilder()
+                .withParty(from.orgUuid)
+                .withFrom(from.orgUuid)
+                .withTo(to.orgUuid)
+                .withPackageId(accessPackage.id)
+                .build(),
+            postDelegationLabel,
+        );
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(to.userId, to.partyUuid));
 
     group(addUserGroup, function () {
-        CreateAgent(clientDelegationsApiClient, { party: to.orgUuid }, user.ssn, user.lastName, postAgentsLabel);
-        GetAgents(clientDelegationsApiClient, { party: to.orgUuid }, getAgentsLabel);
-        GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, getAccessPackagesLabel);
-        GetClients(clientDelegationsApiClient, { party: to.orgUuid }, getClientsLabel);
+        CreateAgent(
+            clientDelegationsApiClient,
+            new CreateAgentQueryBuilder()
+                .withParty(to.orgUuid)
+                .withTo(user.partyUuid)
+                .build(),
+            postAgentsLabel,
+        );
+        GetAgents(
+            clientDelegationsApiClient,
+            new GetAgentsQueryBuilder()
+                .withParty(to.orgUuid)
+                .build(),
+            getAgentsLabel,
+        );
+        GetAgentAccessPackages(
+            clientDelegationsApiClient,
+            new GetAgentAccessPackagesQueryBuilder()
+                .withParty(to.orgUuid)
+                .withTo(user.partyUuid)
+                .build(),
+            getAccessPackagesLabel,
+        );
+        GetClients(
+            clientDelegationsApiClient,
+            new GetClientsQueryBuilder()
+                .withParty(to.orgUuid)
+                .build(),
+            getClientsLabel,
+        );
         getRightHolders(connectionsApiClient, to, user, getRightholdersToLabel2e);
     });
 
     group(clientDelegationGroup, function () {
-        GetRightHolders(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
-        CreateAgentAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
-        GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid }, getAccessPackagesLabel3c);
+        GetRightHolders(
+            connectionsApiClient,
+            new GetRightHoldersQueryBuilder()
+                .withParty(to.orgUuid)
+                .withFrom(from.orgUuid)
+                .withTo(to.orgUuid)
+                .withIncludeClientDelegations(true)
+                .withIncludeAgentConnections(true)
+                .build(),
+            getRightholdersToLabel3a,
+        );
+        CreateAgentAccessPackages(
+            clientDelegationsApiClient,
+            new CreateAgentAccessPackagesQueryBuilder()
+                .withParty(to.orgUuid)
+                .withFrom(from.orgUuid)
+                .withTo(user.partyUuid)
+                .build(),
+            buildAccessPackageBatch(accessPackage.accessPackage),
+            postAccessPackageLabel,
+        );
+        GetClientAccessPackages(
+            clientDelegationsApiClient,
+            new GetClientAccessPackagesQueryBuilder()
+                .withParty(to.orgUuid)
+                .withFrom(from.orgUuid)
+                .build(),
+            getAccessPackagesLabel3c,
+        );
     });
 
     group(cleanupGroup, function () {
-        DeleteAccessPackageDelegation(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, deleteClientDelegationLabel);
-        DeleteAgent(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, deleteAgentsLabel);
+        DeleteAgentAccessPackages(
+            clientDelegationsApiClient,
+            new DeleteAgentAccessPackagesQueryBuilder()
+                .withParty(to.orgUuid)
+                .withFrom(from.orgUuid)
+                .withTo(user.partyUuid)
+                .build(),
+            buildAccessPackageBatch(accessPackage.accessPackage),
+            deleteClientDelegationLabel,
+        );
+        DeleteAgent(
+            clientDelegationsApiClient,
+            new DeleteAgentQueryBuilder()
+                .withParty(to.orgUuid)
+                .withTo(user.partyUuid)
+                .build(),
+            deleteAgentsLabel,
+        );
         tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-        DeleteAccessPackageDelegation(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackageLabel);
-        DeleteReporteeConnection(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
+        DeleteAccessPackageDelegation(
+            accessPackageApiClient,
+            new DeleteAccessPackageDelegationQueryBuilder()
+                .withParty(from.orgUuid)
+                .withFrom(from.orgUuid)
+                .withTo(to.orgUuid)
+                .withPackageId(accessPackage.id)
+                .build(),
+            deleteAccessPackageLabel,
+        );
+        DeleteReporteeConnection(
+            connectionsApiClient,
+            new DeleteReporteeConnectionQueryBuilder()
+                .withParty(from.orgUuid)
+                .withFrom(from.orgUuid)
+                .withTo(to.orgUuid)
+                .build(),
+            deleteRightholderConnectionLabel,
+        );
     });
 
 }
 
+/**
+ * Builds the delegation body for an access package, delegated for the
+ * rettighetshaver role.
+ *
+ * @param {string} accessPackage Access package name, without the urn prefix.
+ * @returns {DelegationBatchInputDto} The delegation body.
+ */
+function buildAccessPackageBatch(accessPackage) {
+    return new DelegationBatchInputDtoBuilder()
+        .addPermission("rettighetshaver", [`urn:altinn:accesspackage:${accessPackage}`])
+        .build();
+}
+
 function getRightHolders(connectionsApiClient, from, to, labels) {
-    const queryParamsTo = {
-        party: from.orgUuid,
-        from: from.orgUuid,
-        to: to.partyUuid,
-        includeClientDelegations: true,
-        includeAgentConnections: true,
-    };
     const respBody = GetRightHolders(
         connectionsApiClient,
-        queryParamsTo,
+        new GetRightHoldersQueryBuilder()
+            .withParty(from.orgUuid)
+            .withFrom(from.orgUuid)
+            .withTo(to.partyUuid)
+            .withIncludeClientDelegations(true)
+            .withIncludeAgentConnections(true)
+            .build(),
         labels
     );
     return respBody;
 }
 
 function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
-    const queryParamsTo = {
-        party: party.orgUuid,
-        from: party.orgUuid,
-        includeClientDelegations: true,
-        includeAgentConnections: true,
-    };
     const respBody = GetRightHolders(
         connectionsApiClient,
-        queryParamsTo,
+        new GetRightHoldersQueryBuilder()
+            .withParty(party.orgUuid)
+            .withFrom(party.orgUuid)
+            .withIncludeClientDelegations(true)
+            .withIncludeAgentConnections(true)
+            .build(),
         labels,
     );
     return respBody;
