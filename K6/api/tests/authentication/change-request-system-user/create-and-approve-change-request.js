@@ -93,7 +93,7 @@ export default function (data) {
 
         group("Asking again with the same correlation id returns the same change request", function () {
             if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestId(changeRequestId)) {
-                fail("missing prerequisite: a change request was created to ask for again");
+                fail("cannot ask again with the same correlation id: the first change request returned no id to compare against");
             }
 
             const request = new ChangeRequestSystemUserBuilder()
@@ -116,7 +116,7 @@ export default function (data) {
 
         group("The customer approves the change", function () {
             if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestId(changeRequestId)) {
-                fail("A change request must be created to approve");
+                fail("cannot approve: no change request was created to approve");
             }
 
             const approved = ApproveChangeRequest(

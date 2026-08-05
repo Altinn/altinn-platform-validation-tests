@@ -55,7 +55,7 @@ export default function (data) {
 
         group("Approve the request as the customer", function () {
             if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
-                fail("missing prerequisite: the system user request was created");
+                fail("cannot approve: creating the system user request returned no id");
             }
 
             const approved = ApproveSystemUserRequest(
@@ -69,7 +69,7 @@ export default function (data) {
 
         group("The approved request is accepted", function () {
             if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
-                fail("missing prerequisite: the system user request was created");
+                fail("cannot check the status: creating the system user request returned no id");
             }
 
             const request = RequestSystemUserBuildingBlocks.VendorGet(clients.vendor.requestSystemUserClient, requestId);

@@ -213,7 +213,7 @@ export function findAccessPackages(count) {
         .sort();
 
     if (urns.length < count) {
-        fail(`missing prerequisite: needed ${count} delegable access packages, found ${urns.length}`);
+        fail(`cannot arrange a system user: needed ${count} delegable access packages, the environment has ${urns.length}`);
     }
 
     return urns.slice(0, count);
@@ -329,7 +329,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         });
 
         if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
-            fail("missing prerequisite: the system user request was created");
+            fail("cannot arrange a system user: creating the system user request returned no id");
         }
 
         const approved = ApproveSystemUserRequest(
@@ -350,7 +350,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         systemUserId = systemUser?.id;
 
         if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
-            fail("missing prerequisite: the customer has a system user to change");
+            fail("cannot arrange a system user: the lookup by external ref returned no system user");
         }
     });
 
