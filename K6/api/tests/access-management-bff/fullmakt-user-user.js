@@ -9,6 +9,7 @@ import {
 } from "../../../clients/access-management-bff/access-package/index.js";
 import {
     ConnectionClient,
+    CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
@@ -124,7 +125,14 @@ export default function (segmentedData) {
 
     // // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(groupLabel, function () {
-        CreateRightHolder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
+        CreateRightHolder(
+            connectionsApiClient,
+            from.partyUuid,
+            new CreateRightHolderQueryBuilder()
+                .withRightholderPartyUuid(to.partyUuid)
+                .build(),
+            postRightholderLabel,
+        );
         getRightHolders(connectionsApiClient, from);
         getRightHoldersWithoutTo(connectionsApiClient, from);
         CreateAccessPackageDelegation(

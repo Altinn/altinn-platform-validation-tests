@@ -9,6 +9,7 @@ import {
 } from "../../../clients/access-management-bff/access-package/index.js";
 import {
     ConnectionClient,
+    CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
@@ -269,7 +270,14 @@ export default function (segmentedData) {
     // Part 1.
     // Add user to auser,
     group(addUserGroup.group, function () {
-        CreateRightHolder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
+        CreateRightHolder(
+            connectionsApiClient,
+            from.partyUuid,
+            new CreateRightHolderQueryBuilder()
+                .withRightholderPartyUuid(to.partyUuid)
+                .build(),
+            postRightholderLabel,
+        );
         GetRightHolders(
             connectionsApiClient,
             new GetRightHoldersQueryBuilder()

@@ -22,6 +22,7 @@ import {
 } from "../../../clients/access-management-bff/client-delegations/index.js";
 import {
     ConnectionClient,
+    CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
@@ -197,7 +198,14 @@ export default function (segmentedData) {
         );
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1b);
         // TODO: add this to test: `https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
-        CreateRightHolder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
+        CreateRightHolder(
+            connectionsApiClient,
+            from.orgUuid,
+            new CreateRightHolderQueryBuilder()
+                .withRightholderPartyUuid(to.orgUuid)
+                .build(),
+            postRightholderLabel,
+        );
         getRightHolders(connectionsApiClient, from, to, getRightholdersToLabel1e);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1f);
         CreateAccessPackageDelegation(

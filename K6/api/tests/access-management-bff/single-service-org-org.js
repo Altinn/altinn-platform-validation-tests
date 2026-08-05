@@ -10,6 +10,7 @@ import {
 import { AltinnCdnClient } from "../../../clients/access-management-bff/altinn-cdn/index.js";
 import {
     ConnectionClient,
+    CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
@@ -290,7 +291,14 @@ export default function (segmentedData) {
     // Part 1.
     // Add organization as user to another organization,
     group(addUserGroup.group, function () {
-        CreateRightHolder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
+        CreateRightHolder(
+            connectionsApiClient,
+            from.orgUuid,
+            new CreateRightHolderQueryBuilder()
+                .withRightholderPartyUuid(to.orgUuid)
+                .build(),
+            postRightholderLabel,
+        );
         GetRightHolders(
             connectionsApiClient,
             new GetRightHoldersQueryBuilder()
