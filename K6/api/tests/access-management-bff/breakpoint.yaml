@@ -1,5 +1,5 @@
 namespace: authorization
-base_dir: K6/api/tests/authorization/access-management/bff
+base_dir: K6/api/tests/access-management-bff
 test_definitions:
   - test_scope: access-management-bff
     test_file: client-admin.js

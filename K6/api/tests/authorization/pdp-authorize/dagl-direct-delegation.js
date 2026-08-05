@@ -1,7 +1,7 @@
 import exec from "k6/execution";
 
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { PdpAuthorizeDagl } from "../../../building-blocks/authorization/pdp-authorize/index.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
 import { getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
@@ -28,7 +28,7 @@ export default function (testData) {
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-    PdpAuthorizeDagl(
+    AuthorizePost(
         pdpAuthorizeClient,
         party.ssn,
         party.orgno,

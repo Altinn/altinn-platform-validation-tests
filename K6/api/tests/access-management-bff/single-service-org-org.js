@@ -2,27 +2,27 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessManagementApiClient, BffAccessPackageApiClient, BffConnectionsApiClient, BffSingleRightApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { GetDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
+import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
+import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
+import { SingleRightClient as BffSingleRightApiClient } from "../../../clients/access-management-bff/single-right/index.js";
+import { UserClient as BffUserClient } from "../../../clients/access-management-bff/user/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { GetAccessPackageDelegations } from "../../building-blocks/access-management-bff/access-package/index.js";
+import { GetAccessPackageDelegationCheck, SearchAccessPackages } from "../../building-blocks/access-management-bff/access-package/index.js";
 import {
-    GetDelegatedResources,
-    GetDelegatedRightsForResource,
-    GetDelegationCheck,
-    GetIsHovedAdmin,
-    GetOrganizationData,
-    GetResourceOwners,
-    GetRightsMeta,
-    GetRoleMeta,
-    GetRolePermissions,
-    PostSingleRight,
-    RevokeSingleRight,
-    SearchAccessPackages,
-    SearchResources,
-} from "../../../../building-blocks/authorization/client-delegations/index.js";
-import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authorization/connections/index.js";
+//GetOrganizationData,
+} from "../../building-blocks/access-management-bff/client-delegations/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
+import { GetResourceOwners, SearchResources } from "../../building-blocks/access-management-bff/resource/index.js";
+import { GetRolePermissions, } from "../../building-blocks/access-management-bff/role/index.js";
+import { GetRoles, } from "../../building-blocks/access-management-bff/role/index.js";
+import { RevokeSingleRights } from "../../building-blocks/access-management-bff/single-right/index.js";
+import { DelegateSingleRights } from "../../building-blocks/access-management-bff/single-right/index.js";
+import { GetRightsMeta } from "../../building-blocks/access-management-bff/single-right/index.js";
+import { GetResourceRights } from "../../building-blocks/access-management-bff/single-right/index.js";
+import { GetIsHovedadmin } from "../../building-blocks/access-management-bff/user/index.js";
 import { getFromTo, getTokenOpts, } from "./commons.js";
 import { resourcesForOrg as resources } from "./custom-data.js";
 
@@ -135,7 +135,7 @@ let accessPackageApiClient = undefined;
 let singleRightsApiClient = undefined;
 
 /**
- * @type {BffAccessManagementApiClient | undefined}
+ * @type {BffUserClient | undefined}
  */
 let userApiClient = undefined;
 
@@ -149,7 +149,7 @@ let userApiClient = undefined;
  * BffConnectionsApiClient,
  * BffAccessPackageApiClient,
  * BffSingleRightApiClient,
- * BffAccessManagementApiClient,
+ * BffUserClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -179,7 +179,7 @@ function getClients() {
     }
 
     if (userApiClient == undefined) {
-        userApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        userApiClient = new BffUserClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
 
     return [
@@ -223,14 +223,14 @@ export default function (segmentedData) {
     // Part 1.
     // Add organization as user to another organization,
     group(addUserGroup.group, function () {
-        PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
+        CreateRightHolder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         let queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
         };
-        GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1a);
+        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1a);
         queryParams = {
             party: from.partyUuid,
             from: from.orgUuid,
@@ -238,14 +238,14 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1c);
+        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1c);
         queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
         };
-        GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1d);
+        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1d);
         queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
@@ -253,15 +253,15 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetConnections(connectionsApiClient, queryParams, getRightholdersLabel1e);
-        GetIsHovedAdmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminLabel);
+        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1e);
+        GetIsHovedadmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminLabel);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel);
-        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel);
-        GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel);
+        GetAccessPackageDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel);
+        GetResourceRights(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel);
         SearchAccessPackages(userApiClient, { searchString: "", typeName: "organisasjon" }, searchAccessPackagesLabel);
         SearchResources(userApiClient, { Page: 1, ResultsPerPage: 7, searchString: "", includeA2Services: false }, searchResourcesLabel);
         GetResourceOwners(userApiClient, { undefined }, getResourceOwnersLabel);
-        GetOrganizationData(userApiClient, {}, getOrganizationDataLabel);
+        //GetOrganizationData(userApiClient, {}, getOrganizationDataLabel);
     });
 
     // Part 2.
@@ -269,37 +269,37 @@ export default function (segmentedData) {
     group(resourceDelegationGroup.group, function () {
         SearchAccessPackages(userApiClient, { searchString: resource.searchTerm, typeName: "organisasjon" }, searchAccessPackagesLabel2a);
         const rightsMeta = GetRightsMeta(userApiClient, { resource: resource.resourceId }, getRightsMetadataLabel2b);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel);
-        PostSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationLabel);
-        GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel2d);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel2e);
-        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2f);
+        GetAccessPackageDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel);
+        DelegateSingleRights(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationLabel);
+        GetResourceRights(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel2d);
+        GetAccessPackageDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel2e);
+        GetResourceRights(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2f);
     });
 
     // Part 3.
     // Revoke the delegated resource and verify that the delegation has been removed,
     // then clean up by deleting the rightholder connection between the organizations and verify deletion
     group(cleanupGroup.group, function () {
-        RevokeSingleRight(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
-        GetDelegatedResources(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel3b);
-        GetDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel3c);
-        GetDelegatedRightsForResource(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getRolePermissionsLabel);
+        RevokeSingleRights(singleRightsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
+        GetResourceRights(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegatedResourcesLabel3b);
+        GetAccessPackageDelegationCheck(singleRightsApiClient, { from: from.orgUuid, resource: resource.resourceId }, getDelegationCheckLabel3c);
+        GetResourceRights(userApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, resourceId: resource.resourceId }, getRolePermissionsLabel);
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel3d);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3e);
-        GetRoleMeta(userApiClient, {}, getRoleMetaLabel3f);
-        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3g);
-        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
+        GetRoles(userApiClient, {}, getRoleMetaLabel3f);
+        GetAccessPackageDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3g);
+        DeleteReporteeConnection(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.orgUuid, to: from.partyUuid }, getRolePermissionsLabel3i);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel3j);
-        GetRoleMeta(userApiClient, {}, getRoleMetaLabel3k);
-        GetDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3l);
+        GetRoles(userApiClient, {}, getRoleMetaLabel3k);
+        GetAccessPackageDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel3l);
         let queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
         };
-        GetConnections(connectionsApiClient, queryParams, getRightholdersLabel3m);
+        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel3m);
     });
 
 }

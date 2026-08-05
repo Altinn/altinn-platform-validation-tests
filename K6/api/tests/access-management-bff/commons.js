@@ -1,17 +1,9 @@
 
 import http from "k6/http";
 
-import {
-} from "../../../../../clients/access-management-bff/";
-import {
-    //BffAccessManagementApiClient,
-    ConnectionClient
-    //BffUserApiClient
-} from "../../../clients/access-management-bff/connection/index.js";
-import {
-    //BffAccessManagementApiClient,
-    UserClient
-} from "../../../clients/access-management-bff/user/index.js";
+import { AccessPackageClient } from "../../../clients/access-management-bff/access-package/index.js";
+import { ConnectionClient } from "../../../clients/access-management-bff/connection/index.js";
+import { UserClient } from "../../../clients/access-management-bff/user/index.js";
 import { GraphqlClient } from "../../../clients/dialogporten/graphql/index.js";
 import { ServiceOwnerApiClient } from "../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
@@ -25,8 +17,6 @@ export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "tr
 let serviceOwnerApiClient = undefined;
 /** @type {UserClient | undefined} */
 let userApiClient = undefined;
-/** @type {BffAccessManagementApiClient | undefined} */
-let accessManagementApiClient = undefined;
 /** @type {ConnectionClient | undefined} */
 let bffConnectionsApiClient = undefined;
 /** @type {AccessPackageClient | undefined} */
@@ -35,6 +25,8 @@ let bffAccessPackageApiClient = undefined;
 let graphqlClient = undefined;
 /** @type {PersonalTokenGenerator | undefined} */
 let personalTokenGenerator = undefined;
+
+let accessManagementApiClient = undefined;
 
 /**
  * Creates and caches the API clients used by the test.
@@ -49,7 +41,6 @@ let personalTokenGenerator = undefined;
  * @returns {[
  * ServiceOwnerApiClient,
  * BffUserApiClient,
- * BffAccessManagementApiClient,
  * BffConnectionsApiClient,
  * BffAccessPackageApiClient,
  * GraphqlClient,
@@ -81,7 +72,8 @@ export function getClients(serviceOwnerOrgNo) {
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
         userApiClient = new UserClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
-        accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        // accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        accessManagementApiClient = undefined;
         bffConnectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         bffAccessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         graphqlClient = new GraphqlClient(__ENV.BASE_URL, personalTokenGenerator);

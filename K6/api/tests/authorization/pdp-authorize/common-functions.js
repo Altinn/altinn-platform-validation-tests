@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { PdpAuthorizeClient } from "../../../../clients/authorization/index.js";
+import { AuthorizeClient } from "../../../../clients/authorization/v2/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
@@ -44,7 +44,7 @@ export function getClients() {
     }
 
     if (pdpAuthorizeClient == undefined) {
-        pdpAuthorizeClient = new PdpAuthorizeClient(
+        pdpAuthorizeClient = new AuthorizeClient(
             __ENV.BASE_URL,
             tokenGenerator
         );

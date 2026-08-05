@@ -1,11 +1,11 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { MaskinportenSchemaApiClient } from "../../../../clients/authorization/index.js";
+import { MaskinportenClient } from "../../../../clients/access-management/resource-owner/maskinporten/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { GetDelegations } from "../../../building-blocks/authorization/maskinporten-schema/index.js";
+import { GetMaskinportenDelegations } from "../../../building-blocks/access-management/resource-owner/maskinporten/index.js";
 
 // Labels for different actions
 const getMaskinportenSchemaLabel1 = { step: "1. Get maskinportenSchema supplierOrg as query param" };
@@ -26,9 +26,9 @@ const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : t
 let tokenGenerator = undefined;
 
 /**
- * @type {MaskinportenSchemaApiClient | undefined}
+ * @type {MaskinportenClient | undefined}
  */
-let maskinportenSchemaApiClient = undefined;
+let maskinportenClient = undefined;
 
 const scopes = [
     "altinn:consentrequests.read",
@@ -92,7 +92,7 @@ export default function (data) {
     const segmentedData = data;
     const maskinportenSchemaApiClient = getClients();
     const [queryParams, label] = getQueryParams(segmentedData[exec.vu.idInTest - 1]);
-    GetDelegations(maskinportenSchemaApiClient, queryParams, label);
+    GetMaskinportenDelegations(maskinportenSchemaApiClient, queryParams, label);
 }
 
 /**
@@ -101,9 +101,9 @@ export default function (data) {
  *
  * The client uses an enterprise token with the
  * `altinn:maskinporten/delegations.admin` scope. The same
- * {@link MaskinportenSchemaApiClient} instance is reused on subsequent calls.
+ * {@link MaskinportenClient} instance is reused on subsequent calls.
  *
- * @returns {MaskinportenSchemaApiClient} The initialized API client.
+ * @returns {MaskinportenClient} The initialized API client.
  */
 function getClients() {
     if (tokenGenerator == undefined) {
@@ -119,14 +119,14 @@ function getClients() {
         tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
     }
 
-    if (maskinportenSchemaApiClient == undefined) {
-        maskinportenSchemaApiClient = new MaskinportenSchemaApiClient(
+    if (maskinportenClient == undefined) {
+        maskinportenClient = new MaskinportenClient(
             __ENV.BASE_URL,
             tokenGenerator
         );
     }
 
-    return maskinportenSchemaApiClient;
+    return maskinportenClient;
 }
 
 function getQueryParams(list) {

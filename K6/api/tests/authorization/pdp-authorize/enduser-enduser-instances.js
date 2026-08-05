@@ -8,7 +8,7 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { PdpAuthorizeUserInstance } from "../../../building-blocks/authorization/pdp-authorize/index.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
 import { getClients } from "./common-functions.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
@@ -38,7 +38,7 @@ export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-    PdpAuthorizeUserInstance(
+    AuthorizePost(
         pdpAuthorizeClient,
         party.tossn,
         party.fromssn,

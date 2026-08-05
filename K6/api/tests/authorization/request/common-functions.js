@@ -1,14 +1,16 @@
 import http from "k6/http";
 
-import { ConnectionsApiClient, MetaApiClient, RequestApiClient } from "../../../../clients/authorization/index.js";
+import { ConnectionsClient, } from "../../../../clients/access-management/enduser/connections/index.js";
+import { RequestClient } from "../../../../clients/access-management/enduser/request/index.js";
+import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { GetAccessPackagesExport } from "../../../building-blocks/authorization/meta/index.js";
+import { PackagesExport } from "../../../building-blocks/access-management/metadata/packages/index.js";
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {ConnectionsApiClient | undefined} */
+/** @type {ConnectionsClient | undefined} */
 let connectionsApiClient = undefined;
 /** @type {RequestApiClient | undefined} */
 let requestApiClient = undefined;
@@ -57,8 +59,8 @@ const EXCLUDED_PACKAGES = [
  * @returns {string[]} valid access package URNs
  */
 function fetchAssignablePackages() {
-    const metaApiClient = new MetaApiClient(__ENV.BASE_URL);
-    const groups = GetAccessPackagesExport(metaApiClient, { action: "fetch-access-packages" });
+    const metaApiClient = new PackagesClient(__ENV.BASE_URL);
+    const groups = PackagesExport(metaApiClient, { action: "fetch-access-packages" });
 
     const urns = [];
     for (const group of groups) {
@@ -79,17 +81,17 @@ function fetchAssignablePackages() {
  * {@link PersonalTokenGenerator} instance is reused and reconfigured per user
  * via {@link setEnduserOpts}, so all clients pick up the active user's token.
  *
- * @returns {[ConnectionsApiClient, RequestApiClient, PersonalTokenGenerator]} TODO: description
+ * @returns {[ConnectionsClient, RequestApiClient, PersonalTokenGenerator]} TODO: description
  */
 export function getClients() {
     if (tokenGenerator === undefined) {
         tokenGenerator = new PersonalTokenGenerator(getEnduserOpts());
     }
     if (connectionsApiClient === undefined) {
-        connectionsApiClient = new ConnectionsApiClient(__ENV.BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionsClient(__ENV.BASE_URL, tokenGenerator);
     }
     if (requestApiClient === undefined) {
-        requestApiClient = new RequestApiClient(__ENV.BASE_URL, tokenGenerator);
+        requestApiClient = new RequestClient(__ENV.BASE_URL, tokenGenerator);
     }
     return [connectionsApiClient, requestApiClient, tokenGenerator];
 }

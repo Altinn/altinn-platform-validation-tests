@@ -1,8 +1,8 @@
-import { ClientDelegationsApiClient } from "../../../../clients/authorization/client-delegations.js";
+import { ClientDelegationClient } from "../../../../clients/access-management/enduser/client-delegation/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { GetMyClients } from "../../../building-blocks/authorization/client-delegations/index.js";
+import { GetMyClients } from "../../../building-blocks/access-management/enduser/client-delegation/index.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
@@ -30,7 +30,7 @@ const endUsers = endUsersByEnvironment[environment] || [];
 const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel]; // TODO: This should be an object, not an array
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {ClientDelegationsApiClient | undefined} */
+/** @type {ClientDelegationClient | undefined} */
 let clientDelegationsApiClient = undefined;
 
 // get k6 options
@@ -58,7 +58,7 @@ export default function () {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (clientDelegationsApiClient === undefined) {
-        clientDelegationsApiClient = new ClientDelegationsApiClient(__ENV.BASE_URL, tokenGenerator);
+        clientDelegationsApiClient = new ClientDelegationClient(__ENV.BASE_URL, tokenGenerator);
     }
     const party = getItemFromList(endUsers, false);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.uuid));

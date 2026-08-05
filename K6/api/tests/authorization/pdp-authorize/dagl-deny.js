@@ -2,7 +2,7 @@ import exec from "k6/execution";
 
 import { randomIntBetween } from "../../../../common-imports.js";
 import { getOptions, pickUnique } from "../../../../helpers.js";
-import { PdpAuthorizeDagl } from "../../../building-blocks/authorization/pdp-authorize/index.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
 import { getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
@@ -29,7 +29,7 @@ export default function (testData) {
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
     const action = randomIntBetween(0, 1) === 0 ? "read" : "write";
     const expectedResponse = "NotApplicable";
-    PdpAuthorizeDagl(
+    AuthorizePost(
         pdpAuthorizeClient,
         party.ssn,
         org.orgno,

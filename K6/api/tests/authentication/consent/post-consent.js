@@ -1,7 +1,7 @@
-import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import {
-    BffAccessManagementApiClient,
-} from "../../../../clients/authorization/index.js";
+    ConsentClient as BffAccessManagementApiClient,
+} from "../../../../clients/access-management-bff/consent/index.js";
+import { ConsentApiClient } from "../../../../clients/authentication/index.js";
 import {
     EnterpriseTokenGenerator,
     PersonalTokenGenerator,
@@ -12,12 +12,12 @@ import { getOptions, requireEnv } from "../../../../helpers.js";
 import {
     AltinnScopes,
 } from "../../../../scopes.js";
+import { GetConsentLog } from "../../../building-blocks/access-management-bff/consent/index.js";
 import {
     ApproveConsent,
     LookupConsent,
     RequestConsent,
 } from "../../../building-blocks/authentication/consent/index.js";
-import { GetConsentLog } from "../../../building-blocks/authorization/client-delegations/access-management.js";
 import {
     consentValidTo,
     getConsenteeOrgs,

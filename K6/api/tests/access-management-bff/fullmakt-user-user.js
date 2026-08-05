@@ -2,13 +2,13 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessPackageApiClient, BffConnectionsApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { requireEnv } from "../../../../../helpers.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
-import { AltinnScopes, CreateScopeString, } from "../../../../../scopes.js";
-import { DeleteDelegations, PostDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
-import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authorization/connections/index.js";
+import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
+import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString, } from "../../../scopes.js";
+import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation } from "../../building-blocks/access-management-bff/access-package/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
 import { getFromTo, getTokenOpts } from "./commons.js";
 import { accessPackagesForUsers as accessPackages } from "./custom-data.js";
 
@@ -116,12 +116,12 @@ export default function (segmentedData) {
 
     // // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(groupLabel, function () {
-        PostRightholder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
+        CreateRightHolder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
         getRightHolders(connectionsApiClient, from);
         getRightHoldersWithoutTo(connectionsApiClient, from);
-        PostDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageLabel);
-        DeleteDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageDeleteLabel);
-        DeleteRightholder(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
+        CreateAccessPackageDelegation(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageLabel);
+        DeleteAccessPackageDelegation(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, packageId: accessPackage.id }, accessPackageDeleteLabel);
+        DeleteReporteeConnection(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
     });
 }
 
@@ -133,7 +133,7 @@ function getRightHolders(connectionsApiClient, party) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetConnections(
+    const respBody = GetSimplifiedConnections(
         connectionsApiClient,
         queryParamsTo,
         getRightholdersToLabel
@@ -148,7 +148,7 @@ function getRightHoldersWithoutTo(connectionsApiClient, party) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetConnections(
+    const respBody = GetSimplifiedConnections(
         connectionsApiClient,
         queryParamsTo,
         getRightholdersWithoutToLabel

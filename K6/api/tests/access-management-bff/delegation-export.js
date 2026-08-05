@@ -1,11 +1,11 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessManagementApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { DelegationExport } from "../../../../building-blocks/authorization/client-delegations/index.js";
+import { DelegationExportClient as BffDelegationExportClient } from "../../../clients/access-management-bff/delegation-export/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { GetDelegationExport } from "../../building-blocks/access-management-bff/delegation-export/index.js";
 import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
@@ -20,7 +20,7 @@ export const options = getOptions(
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
-/** @type {BffAccessManagementApiClient | undefined} */
+/** @type {BffDelegationExportClient | undefined} */
 let accessManagementApiClient = undefined;
 
 /**
@@ -30,7 +30,7 @@ let accessManagementApiClient = undefined;
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- * BffAccessManagementApiClient,
+ * BffDelegationExportClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -49,7 +49,7 @@ function getClients() {
         tokenGenerator = new PersonalTokenGenerator(tokenOpts);
     }
     if (accessManagementApiClient == undefined) {
-        accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        accessManagementApiClient = new BffDelegationExportClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
     return [accessManagementApiClient, tokenGenerator];
 }
@@ -104,5 +104,5 @@ export default function (segmentedData) {
         partyUuid: user.orgUuid,
         includeSubunits: true,
     };
-    DelegationExport(accessManagementApiClient, queryParams, label);
+    GetDelegationExport(accessManagementApiClient, queryParams, label);
 }

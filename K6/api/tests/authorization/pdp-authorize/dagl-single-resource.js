@@ -5,7 +5,7 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { PdpAuthorizeDagl } from "../../../building-blocks/authorization/pdp-authorize/index.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
 import { getClients } from "./common-functions.js";
 
 // Labels for different actions
@@ -34,7 +34,7 @@ export default function (testData) {
     const [pdpAuthorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-    PdpAuthorizeDagl(
+    AuthorizePost(
         pdpAuthorizeClient,
         party.ssn,
         party.orgno,

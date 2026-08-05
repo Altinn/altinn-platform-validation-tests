@@ -49,3 +49,5 @@
  * @property {Array<RequestDto>|null} data
  * @property {PaginatedResultLinks|null} links
  */
+
+export const RequestStatus = undefined;

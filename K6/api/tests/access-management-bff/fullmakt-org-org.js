@@ -2,22 +2,16 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authorization/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../../helpers.js";
-import { pickUnique, requireEnv } from "../../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { DeleteDelegations, GetPermission, PostDelegations } from "../../../../building-blocks/authorization/access-package/delegate.js";
-import {
-    DeleteAccessPackages,
-    DeleteAgents,
-    GetAccessPackages,
-    GetAgents,
-    GetClients,
-    PostAccessPackages,
-    PostAgents
-} from "../../../../building-blocks/authorization/client-delegations/index.js";
-import { DeleteRightholder, GetConnections, PostRightholder } from "../../../../building-blocks/authorization/connections/index.js";
+import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
+import { ClientDelegationsClient as BffClientDelegationsApiClient } from "../../../clients/access-management-bff/client-delegations/index.js";
+import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { GetAccessPackages, } from "../../building-blocks/access-management/enduser/connections/index.js";
+import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../building-blocks/access-management-bff/access-package/index.js";
+import { CreateAgent, CreateAgentAccessPackages, DeleteAgent, GetAgents, GetClients } from "../../building-blocks/access-management-bff/client-delegations/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
 import { getTokenOpts } from "./commons.js";
 import { accessPackagesForOrgs as accessPackages } from "./custom-data.js";
 
@@ -164,19 +158,19 @@ export default function (segmentedData) {
 
     // perform test actions; connect users, get rightholders with and without to parameter, delegate access package, delete delegation
     group(fullmaktGroup, function () {
-        GetPermission(accessPackageApiClient, accessPackage.id, { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
+        GetAccessPackagePermission(accessPackageApiClient, accessPackage.id, { from: from.orgUuid, party: from.orgUuid }, getPermissionsLabel);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1b);
         // TODO: add this to test: `https://am.ui.at23.altinn.cloud/accessmanagement/api/v1/lookup/org/${from.orgNo}`
-        PostRightholder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
+        CreateRightHolder(connectionsApiClient, from.orgUuid, to.orgUuid, null, postRightholderLabel);
         getRightHolders(connectionsApiClient, from, to, getRightholdersToLabel1e);
         getRightHoldersWithoutTo(connectionsApiClient, from, getRightholdersWithoutToLabel1f);
-        PostDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationLabel);
+        CreateAccessPackageDelegation(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, postDelegationLabel);
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(to.userId, to.partyUuid));
 
     group(addUserGroup, function () {
-        PostAgents(clientDelegationsApiClient, { party: to.orgUuid }, user.ssn, user.lastName, postAgentsLabel);
+        CreateAgent(clientDelegationsApiClient, { party: to.orgUuid }, user.ssn, user.lastName, postAgentsLabel);
         GetAgents(clientDelegationsApiClient, { party: to.orgUuid }, getAgentsLabel);
         GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, getAccessPackagesLabel);
         GetClients(clientDelegationsApiClient, { party: to.orgUuid }, getClientsLabel);
@@ -184,17 +178,17 @@ export default function (segmentedData) {
     });
 
     group(clientDelegationGroup, function () {
-        GetConnections(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
-        PostAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
+        GetSimplifiedConnections(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
+        CreateAgentAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
         GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid }, getAccessPackagesLabel3c);
     });
 
     group(cleanupGroup, function () {
-        DeleteAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, deleteClientDelegationLabel);
-        DeleteAgents(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, deleteAgentsLabel);
+        DeleteAccessPackageDelegation(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, deleteClientDelegationLabel);
+        DeleteAgent(clientDelegationsApiClient, { party: to.orgUuid, to: user.partyUuid }, deleteAgentsLabel);
         tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-        DeleteDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackageLabel);
-        DeleteRightholder(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
+        DeleteAccessPackageDelegation(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid, packageId: accessPackage.id }, deleteAccessPackageLabel);
+        DeleteReporteeConnection(connectionsApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, deleteRightholderConnectionLabel);
     });
 
 }
@@ -207,7 +201,7 @@ function getRightHolders(connectionsApiClient, from, to, labels) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetConnections(
+    const respBody = GetSimplifiedConnections(
         connectionsApiClient,
         queryParamsTo,
         labels
@@ -222,7 +216,7 @@ function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetConnections(
+    const respBody = GetSimplifiedConnections(
         connectionsApiClient,
         queryParamsTo,
         labels,

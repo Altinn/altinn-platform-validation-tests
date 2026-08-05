@@ -11,23 +11,25 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { BffAccessPackageApiClient, BffClientDelegationsApiClient, BffConnectionsApiClient } from "../../../../../clients/authorization/index.js";
+import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
+import { ClientDelegationsClient as BffClientDelegationsApiClient } from "../../../clients/access-management-bff/client-delegations/index.js";
+import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { GetDelegationCheck } from "../../../../building-blocks/authorization/access-package/delegate.js";
-import { GetAgents, GetClients } from "../../../../building-blocks/authorization/client-delegations/index.js";
-import { GetConnections } from "../../../../building-blocks/authorization/connections/index.js";
+import { GetAccessPackageDelegationCheck } from "../../building-blocks/access-management-bff/access-package/index.js";
+import { GetAgents, GetClients } from "../../building-blocks/access-management-bff/client-delegations/index.js";
+import { GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
 import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 const groupLabelValue = "Open client administration";
 
-const getConnectionsLabel = { step: `1. ${BffConnectionsApiClient.TAGS.GetConnections.action}` };
+const getConnectionsLabel = { step: `1. ${BffConnectionsApiClient.TAGS.GetSimplifiedConnections.action}` };
 const getAgentsLabel = { step: `2. ${BffClientDelegationsApiClient.TAGS.GetAgents.action}` };
 const getClientsLabel = { step: `3. ${BffClientDelegationsApiClient.TAGS.GetClients.action}` };
-const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.GetDelegationCheck.action}` };
+const getDelegationCheckLabel = { step: `4. ${BffAccessPackageApiClient.TAGS.GetAccessPackageDelegationCheck.action}` };
 
 /**
  * Whether test data should be randomized.
@@ -126,12 +128,12 @@ export default function (testData) {
             includeClientDelegations: true,
             includeAgentConnections: true
         };
-        GetConnections(connectionsApiClient, connectionsQueryParams, getConnectionsLabel);
+        GetSimplifiedConnections(connectionsApiClient, connectionsQueryParams, getConnectionsLabel);
         const queryParams = {
             party: testObject.orgUuid,
         };
         GetAgents(clientDelegationsApiClient, queryParams, getAgentsLabel);
         GetClients(clientDelegationsApiClient, queryParams, getClientsLabel);
-        GetDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationCheckLabel);
+        GetAccessPackageDelegationCheck(bffAccessPackageApiClient, queryParams, getDelegationCheckLabel);
     });
 }
