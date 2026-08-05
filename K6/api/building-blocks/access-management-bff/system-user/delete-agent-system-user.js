@@ -30,11 +30,13 @@ export function DeleteAgentSystemUser(
 
     let deleted = false;
 
+    // The delete is accepted rather than performed, so the answer is 202 with no
+    // body. Asserting 200 here made every delete look like a failure.
     const succeed = check(res, {
-        "DeleteAgentSystemUser - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteAgentSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteAgentSystemUser - status code is 202": (r) =>
+            r.status === 202,
+        "DeleteAgentSystemUser - status text is 202 Accepted": (r) =>
+            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {

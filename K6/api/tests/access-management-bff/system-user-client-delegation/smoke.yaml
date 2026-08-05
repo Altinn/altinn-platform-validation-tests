@@ -1,0 +1,13 @@
+# Deliberately not access-management-bff: namespace becomes the Kubernetes
+# namespace of the generated CronJob, and only the namespaces in
+# Altinn/altinn-platform altinn-monitor-test-rg/k6_tests_rg_rbac.tf exist.
+# access-management-bff is not one of them yet, so changing this breaks the
+# scheduled runs until it is added there.
+namespace: authentication
+base_dir: K6/api/tests/access-management-bff/system-user-client-delegation/
+test_definitions:
+  - test_file: delegate-all-clients.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02

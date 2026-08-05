@@ -1,0 +1,9 @@
+# See smoke.yaml for why namespace does not follow the folder.
+namespace: authentication
+base_dir: K6/api/tests/access-management-bff/system-user-client-delegation/
+test_definitions:
+  - test_scope: system-user-client-delegation
+    test_file: delegate-all-clients.js
+    config_file: "conf.json"
+    contexts:
+      - environment: yt01
