@@ -52,4 +52,59 @@ class MaskinportenDelegationsQueryBuilder {
     }
 }
 
-export { MaskinportenDelegationsQueryBuilder };
+/**
+ * Builder for the body of a consent lookup.
+ *
+ * All three fields are required. The lookup identifies a consent by who it is
+ * from, who it is to and its id, so leaving one out is not a narrower lookup, it
+ * is a different consent.
+ */
+class ConsentLookupRequestBuilder {
+    constructor() {
+        this.request = {
+            id: null,
+            from: null,
+            to: null,
+        };
+    }
+
+    /**
+     * @param {string} id Consent UUID.
+     * @returns {ConsentLookupRequestBuilder} This builder, for chaining.
+     */
+    withId(id) {
+        this.request.id = id;
+        return this;
+    }
+
+    /**
+     * @param {string} from Party urn the consent was given by, e.g.
+     * urn:altinn:person:identifier-no:12345678901.
+     * @returns {ConsentLookupRequestBuilder} This builder, for chaining.
+     */
+    withFrom(from) {
+        this.request.from = from;
+        return this;
+    }
+
+    /**
+     * @param {string} to Party urn the consent was given to, e.g.
+     * urn:altinn:organization:identifier-no:123456789.
+     * @returns {ConsentLookupRequestBuilder} This builder, for chaining.
+     */
+    withTo(to) {
+        this.request.to = to;
+        return this;
+    }
+
+    /**
+     * Builds the request body.
+     *
+     * @returns {ConsentLookupRequest} The built request.
+     */
+    build() {
+        return this.request;
+    }
+}
+
+export { ConsentLookupRequestBuilder, MaskinportenDelegationsQueryBuilder };
