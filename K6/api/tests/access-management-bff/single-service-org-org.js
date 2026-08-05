@@ -341,7 +341,7 @@ export default function (segmentedData) {
                 .build(),
             getRightholdersLabel1e,
         );
-        GetIsHovedadmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminLabel);
+        GetIsHovedadmin(userApiClient, getIsHovedAdminLabel);
         GetRolePermissions(
             roleApiClient,
             new GetRolePermissionsQueryBuilder()

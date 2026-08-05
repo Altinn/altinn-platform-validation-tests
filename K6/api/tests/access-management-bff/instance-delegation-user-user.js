@@ -196,15 +196,15 @@ export default function (data) {
     // Call every bff endpoint that the browser uses when navigating from arbeidsflate/del og gi tilgang
     group(group1Label, function () {
         GetPartyForAuthenticatedUser(lookupApiClient, getLookupPartyUserLabel);
-        GetIsCompanyProfileAdmin(userApiClient, { party: from.partyUuid }, getIsCompanyProfileAdminLabel);
+        GetIsCompanyProfileAdmin(userApiClient, getIsCompanyProfileAdminLabel);
         GetReportee(userApiClient, from.partyUuid, getReporteeLabel);
         GetUserProfile(userApiClient, getProfileLabel);
-        GetIsAdmin(userApiClient, { party: from.partyUuid }, getIsAdminLabel);
-        GetIsClientAdmin(userApiClient, { party: from.partyUuid }, getIsClientAdminLabel);
+        GetIsAdmin(userApiClient, getIsAdminLabel);
+        GetIsClientAdmin(userApiClient, getIsClientAdminLabel);
         GetActorListOld(userApiClient, getActorListOldLabel);
         GetFavorites(userApiClient, getActorListFavoritesLabel);
         GetOrgData(altinnCdnApiClient, getOrganizationDataLabel);
-        GetIsInstanceAdmin(userApiClient, { party: from.partyUuid }, getIsInstanceAdminLabel);
+        GetIsInstanceAdmin(userApiClient, getIsInstanceAdminLabel);
         GetInstanceDelegations(
             instanceApiClient,
             new GetInstanceDelegationsQueryBuilder()
