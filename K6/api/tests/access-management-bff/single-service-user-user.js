@@ -2,23 +2,45 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { AccessPackageClient as BffAccessPackageApiClient } from "../../../clients/access-management-bff/access-package/index.js";
-import { ConnectionClient as BffConnectionsApiClient } from "../../../clients/access-management-bff/connection/index.js";
-import { SingleRightClient as BffSingleRightApiClient } from "../../../clients/access-management-bff/single-right/index.js";
-import { UserClient as BffUserClient } from "../../../clients/access-management-bff/user/index.js";
+import {
+    AccessPackageClient,
+    GetAccessPackageDelegationsQueryBuilder,
+    SearchAccessPackagesQueryBuilder,
+} from "../../../clients/access-management-bff/access-package/index.js";
+import {
+    ConnectionClient,
+    DeleteReporteeConnectionQueryBuilder,
+    GetRightHoldersQueryBuilder,
+} from "../../../clients/access-management-bff/connection/index.js";
+import {
+    ResourceClient,
+    SearchResourcesQueryBuilder,
+} from "../../../clients/access-management-bff/resource/index.js";
+import {
+    GetRolePermissionsQueryBuilder,
+    RoleClient,
+} from "../../../clients/access-management-bff/role/index.js";
+import {
+    DelegateSingleRightsQueryBuilder,
+    GetResourceDelegationsQueryBuilder,
+    GetResourceRightsQueryBuilder,
+    GetRightsMetaQueryBuilder,
+    GetSingleRightDelegationCheckQueryBuilder,
+    RevokeSingleRightsQueryBuilder,
+    SingleRightClient,
+} from "../../../clients/access-management-bff/single-right/index.js";
+import { UserClient } from "../../../clients/access-management-bff/user/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { GetAccessPackageDelegations } from "../../building-blocks/access-management-bff/access-package/index.js";
-import {
-    GetAccessPackageDelegationCheck,
-} from "../../building-blocks/access-management-bff/access-package/index.js";
 import { SearchAccessPackages } from "../../building-blocks/access-management-bff/access-package/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
 import { GetResourceOwners } from "../../building-blocks/access-management-bff/resource/index.js";
 import { SearchResources } from "../../building-blocks/access-management-bff/resource/index.js";
 import { GetRoles } from "../../building-blocks/access-management-bff/role/index.js";
 import { GetRolePermissions } from "../../building-blocks/access-management-bff/role/index.js";
+import { GetSingleRightDelegationCheck } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetResourceRights } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetResourceDelegations } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetRightsMeta } from "../../building-blocks/access-management-bff/single-right/index.js";
@@ -113,24 +135,34 @@ export const options = getOptions(
 let tokenGenerator = undefined;
 
 /**
- * @type {BffConnectionsApiClient | undefined}
+ * @type {ConnectionClient | undefined}
  */
 let connectionsApiClient = undefined;
 
 /**
- * @type {BffAccessPackageApiClient | undefined}
+ * @type {AccessPackageClient | undefined}
  */
 let accessPackageApiClient = undefined;
 
 /**
- * @type {BffSingleRightApiClient | undefined}
+ * @type {SingleRightClient | undefined}
  */
 let singleRightsApiClient = undefined;
 
 /**
- * @type {BffUserClient | undefined}
+ * @type {UserClient | undefined}
  */
 let userApiClient = undefined;
+
+/**
+ * @type {RoleClient | undefined}
+ */
+let roleApiClient = undefined;
+
+/**
+ * @type {ResourceClient | undefined}
+ */
+let resourceApiClient = undefined;
 
 /**
  * Creates and caches the API clients used by the test.
@@ -139,10 +171,12 @@ let userApiClient = undefined;
  * Existing instances are reused on subsequent calls.
  *
  * @returns {[
- * BffConnectionsApiClient,
- * BffAccessPackageApiClient,
- * BffSingleRightApiClient,
- * BffUserClient,
+ * ConnectionClient,
+ * AccessPackageClient,
+ * SingleRightClient,
+ * UserClient,
+ * RoleClient,
+ * ResourceClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -161,19 +195,27 @@ function getClients() {
     }
 
     if (connectionsApiClient == undefined) {
-        connectionsApiClient = new BffConnectionsApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
 
     if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new BffAccessPackageApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
 
     if (singleRightsApiClient == undefined) {
-        singleRightsApiClient = new BffSingleRightApiClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        singleRightsApiClient = new SingleRightClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
 
     if (userApiClient == undefined) {
-        userApiClient = new BffUserClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+        userApiClient = new UserClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+    }
+
+    if (roleApiClient == undefined) {
+        roleApiClient = new RoleClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
+    }
+
+    if (resourceApiClient == undefined) {
+        resourceApiClient = new ResourceClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
 
     return [
@@ -181,6 +223,8 @@ function getClients() {
         accessPackageApiClient,
         singleRightsApiClient,
         userApiClient,
+        roleApiClient,
+        resourceApiClient,
         tokenGenerator,
     ];
 }
@@ -188,7 +232,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Users to delegate between, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -202,10 +246,18 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param segmentedData TODO: description
+ * @param {object[][]} segmentedData Users to delegate between, one slice per VU.
  */
 export default function (segmentedData) {
-    const [connectionsApiClient, accessPackageApiClient, singleRightsApiClient, userApiClient, tokenGenerator] = getClients();
+    const [
+        connectionsApiClient,
+        accessPackageApiClient,
+        singleRightsApiClient,
+        userApiClient,
+        roleApiClient,
+        resourceApiClient,
+        tokenGenerator,
+    ] = getClients();
 
     // Get from and to users and resource for the current iteration
     const { from, to } = getFromTo(segmentedData[exec.vu.idInTest - 1]);
@@ -218,83 +270,246 @@ export default function (segmentedData) {
     // Add user to auser,
     group(addUserGroup.group, function () {
         CreateRightHolder(connectionsApiClient, from.partyUuid, to.ssn, to.lastName, postRightholderLabel);
-        let queryParams = {
-            party: from.partyUuid,
-            from: from.partyUuid,
-            to: from.partyUuid,
-            includeClientDelegations: true,
-            includeAgentConnections: true,
-        };
-        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1a);
-        queryParams = {
-            party: from.partyUuid,
-            from: from.partyUuid,
-            includeClientDelegations: true,
-            includeAgentConnections: true,
-        };
-        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1c);
-        queryParams = {
-            party: from.partyUuid,
-            from: from.partyUuid,
-            to: to.partyUuid,
-            includeClientDelegations: true,
-            includeAgentConnections: true,
-        };
-        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1d);
+        GetRightHolders(
+            connectionsApiClient,
+            new GetRightHoldersQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(from.partyUuid)
+                .withIncludeClientDelegations(true)
+                .withIncludeAgentConnections(true)
+                .build(),
+            getRightholdersLabel1a,
+        );
+        GetRightHolders(
+            connectionsApiClient,
+            new GetRightHoldersQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withIncludeClientDelegations(true)
+                .withIncludeAgentConnections(true)
+                .build(),
+            getRightholdersLabel1c,
+        );
+        GetRightHolders(
+            connectionsApiClient,
+            new GetRightHoldersQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .withIncludeClientDelegations(true)
+                .withIncludeAgentConnections(true)
+                .build(),
+            getRightholdersLabel1d,
+        );
         GetIsHovedadmin(userApiClient, { party: from.partyUuid }, getIsHovedAdminLabel);
-        GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getRolePermissionsLabel);
-        GetAccessPackageDelegations(accessPackageApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getDelegationsLabel);
-        GetResourceDelegations(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getDelegatedResourcesLabel);
-        SearchAccessPackages(userApiClient, { searchString: "", typeName: "person" }, searchAccessPackagesLabel);
-        SearchResources(userApiClient, { Page: 1, ResultsPerPage: 7, searchString: "", includeA2Services: false }, searchResourcesLabel);
-        GetResourceOwners(userApiClient, { undefined }, getResourceOwnersLabel);
+        GetRolePermissions(
+            roleApiClient,
+            new GetRolePermissionsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getRolePermissionsLabel,
+        );
+        GetAccessPackageDelegations(
+            accessPackageApiClient,
+            new GetAccessPackageDelegationsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getDelegationsLabel,
+        );
+        GetResourceDelegations(
+            singleRightsApiClient,
+            new GetResourceDelegationsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getDelegatedResourcesLabel,
+        );
+        SearchAccessPackages(
+            accessPackageApiClient,
+            new SearchAccessPackagesQueryBuilder()
+                .withSearchString("")
+                .withTypeName("person")
+                .build(),
+            searchAccessPackagesLabel,
+        );
+        SearchResources(
+            resourceApiClient,
+            new SearchResourcesQueryBuilder()
+                .withPage(1)
+                .withResultsPerPage(7)
+                .withSearchString("")
+                .withIncludeA2Services(false)
+                .build(),
+            searchResourcesLabel,
+        );
+        GetResourceOwners(resourceApiClient, null, getResourceOwnersLabel);
     });
 
     // Part 2.
     // Delegate a single resource to the added user and verify delegation
     group(resourceDelegationGroup.group, function () {
-        SearchAccessPackages(userApiClient, { searchString: resource.searchTerm, typeName: "person" }, searchAccessPackagesLabel2a);
-        const rightsMeta = GetRightsMeta(userApiClient, { resource: resource.resourceId }, getRightsMetadataLabel2b);
-        GetAccessPackageDelegationCheck(singleRightsApiClient, { from: from.partyUuid, resource: resource.resourceId }, getDelegationCheckLabel);
-        DelegateSingleRights(singleRightsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid, resourceId: resource.resourceId }, getRights(rightsMeta), postDelegationLabel);
-        GetResourceDelegations(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegatedResourcesLabel2e);
-        GetAccessPackageDelegationCheck(singleRightsApiClient, { from: from.partyUuid, resource: resource.resourceId }, getDelegationCheckLabel2f);
-        GetResourceRights(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid, resourceId: resource.resourceId }, getDelegatedRightsForResourceLabel2g);
+        SearchAccessPackages(
+            accessPackageApiClient,
+            new SearchAccessPackagesQueryBuilder()
+                .withSearchString(resource.searchTerm)
+                .withTypeName("person")
+                .build(),
+            searchAccessPackagesLabel2a,
+        );
+        const rightsMeta = GetRightsMeta(
+            singleRightsApiClient,
+            new GetRightsMetaQueryBuilder()
+                .withResource(resource.resourceId)
+                .build(),
+            getRightsMetadataLabel2b,
+        );
+        GetSingleRightDelegationCheck(
+            singleRightsApiClient,
+            new GetSingleRightDelegationCheckQueryBuilder()
+                .withFrom(from.partyUuid)
+                .withResource(resource.resourceId)
+                .build(),
+            getDelegationCheckLabel,
+        );
+        DelegateSingleRights(
+            singleRightsApiClient,
+            new DelegateSingleRightsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .withResourceId(resource.resourceId)
+                .build(),
+            getRights(rightsMeta),
+            postDelegationLabel,
+        );
+        GetResourceDelegations(
+            singleRightsApiClient,
+            new GetResourceDelegationsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getDelegatedResourcesLabel2e,
+        );
+        GetSingleRightDelegationCheck(
+            singleRightsApiClient,
+            new GetSingleRightDelegationCheckQueryBuilder()
+                .withFrom(from.partyUuid)
+                .withResource(resource.resourceId)
+                .build(),
+            getDelegationCheckLabel2f,
+        );
+        GetResourceRights(
+            singleRightsApiClient,
+            new GetResourceRightsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .withResourceId(resource.resourceId)
+                .build(),
+            getDelegatedRightsForResourceLabel2g,
+        );
     });
 
     // Part 3.
     // Revoke the delegated resource and verify that the delegation has been removed,
     // then clean up by deleting the rightholder connection between the users and verify deletion
     group(cleanupGroup.group, function () {
-        RevokeSingleRights(singleRightsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid, resourceId: resource.resourceId }, revokeSingleRightLabel);
-        GetResourceDelegations(userApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegatedResourcesLabel3b);
-        GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getRolePermissionsLabel3d);
-        GetRoles(userApiClient, {}, getRoleMetaLabel3f);
-        GetAccessPackageDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegationsLabel3g);
-        DeleteReporteeConnection(connectionsApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, deleteRightholderConnectionLabel);
-        GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getRolePermissionsLabel3j);
-        GetRoles(userApiClient, {}, getRoleMetaLabel3k);
-        GetAccessPackageDelegations(accessPackageApiClient, { party: from.partyUuid, to: to.partyUuid, from: from.partyUuid }, getDelegationsLabel3l);
-        let queryParams = {
-            party: from.partyUuid,
-            from: from.partyUuid,
-            includeClientDelegations: true,
-            includeAgentConnections: true,
-        };
-        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel3m);
+        RevokeSingleRights(
+            singleRightsApiClient,
+            new RevokeSingleRightsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .withResourceId(resource.resourceId)
+                .build(),
+            revokeSingleRightLabel,
+        );
+        GetResourceDelegations(
+            singleRightsApiClient,
+            new GetResourceDelegationsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getDelegatedResourcesLabel3b,
+        );
+        GetRolePermissions(
+            roleApiClient,
+            new GetRolePermissionsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getRolePermissionsLabel3d,
+        );
+        GetRoles(roleApiClient, getRoleMetaLabel3f);
+        GetAccessPackageDelegations(
+            accessPackageApiClient,
+            new GetAccessPackageDelegationsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getDelegationsLabel3g,
+        );
+        DeleteReporteeConnection(
+            connectionsApiClient,
+            new DeleteReporteeConnectionQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            deleteRightholderConnectionLabel,
+        );
+        GetRolePermissions(
+            roleApiClient,
+            new GetRolePermissionsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getRolePermissionsLabel3j,
+        );
+        GetRoles(roleApiClient, getRoleMetaLabel3k);
+        GetAccessPackageDelegations(
+            accessPackageApiClient,
+            new GetAccessPackageDelegationsQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withTo(to.partyUuid)
+                .build(),
+            getDelegationsLabel3l,
+        );
+        GetRightHolders(
+            connectionsApiClient,
+            new GetRightHoldersQueryBuilder()
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
+                .withIncludeClientDelegations(true)
+                .withIncludeAgentConnections(true)
+                .build(),
+            getRightholdersLabel3m,
+        );
     });
 }
 
 /**
  * Helper function to extract rights from rights metadata response
  *
- * @param rightsMeta TODO: description
+ * @param {Array<Right>} rightsMeta The rights the resource defines, as returned
+ * by GetRightsMeta.
  * @returns list of rights
  */
 function getRights(rightsMeta) {
-    const jsonResp = JSON.parse(rightsMeta);
     const rights = [];
-    for (const right of jsonResp) {
+    for (const right of rightsMeta) {
         rights.push(right.key);
     }
     return rights;
