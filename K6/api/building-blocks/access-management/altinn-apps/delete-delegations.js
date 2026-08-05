@@ -15,7 +15,6 @@ import { AppsInstanceDelegationClient } from "../../../../clients/access-managem
  * @param {string} instanceId Instance identifier.
  * @param {string} [expectedStatus] Expected revoke status for every right,
  * e.g. Revoked or NotRevoked. Only checked when set.
- * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AppsInstanceRevokeResponseDtoPaginated|null} Revocation result.
  */
@@ -24,13 +23,11 @@ export function DeleteDelegations(
     resourceId,
     instanceId,
     expectedStatus = null,
-    platformAccessToken = null,
     labels = null,
 ) {
     const res = appsInstanceDelegationClient.DeleteDelegations(
         resourceId,
         instanceId,
-        platformAccessToken,
         labels,
     );
 

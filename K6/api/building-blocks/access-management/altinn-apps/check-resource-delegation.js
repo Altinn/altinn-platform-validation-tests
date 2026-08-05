@@ -15,7 +15,6 @@ import { AppsInstanceDelegationClient } from "../../../../clients/access-managem
  * @param {string} instanceId Instance identifier.
  * @param {string} [expectedStatus] Expected delegable status for every result,
  * e.g. Delegable or NotDelegable. Only checked when set.
- * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
  * @returns {ResourceRightDelegationCheckResultDtoPaginated|null} Delegation check results.
  */
@@ -24,13 +23,11 @@ export function CheckResourceDelegation(
     resourceId,
     instanceId,
     expectedStatus = null,
-    platformAccessToken = null,
     labels = null,
 ) {
     const res = appsInstanceDelegationClient.CheckResourceDelegation(
         resourceId,
         instanceId,
-        platformAccessToken,
         labels,
     );
 

@@ -13,7 +13,6 @@ import { AppsInstanceDelegationClient } from "../../../../clients/access-managem
  * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
- * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
  * @returns {AppsInstanceDelegationResponseDtoPaginated|null} Delegations response.
  */
@@ -21,13 +20,11 @@ export function GetDelegations(
     appsInstanceDelegationClient,
     resourceId,
     instanceId,
-    platformAccessToken = null,
     labels = null,
 ) {
     const res = appsInstanceDelegationClient.GetDelegations(
         resourceId,
         instanceId,
-        platformAccessToken,
         labels,
     );
 

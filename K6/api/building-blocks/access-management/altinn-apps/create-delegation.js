@@ -17,7 +17,6 @@ import { AppsInstanceDelegationClient } from "../../../../clients/access-managem
  * @param {AppsInstanceDelegationRequestDto} request Delegation request.
  * @param {string} [expectedStatus] Expected status for every delegated right,
  * e.g. Delegated or NotDelegated. Only checked when set.
- * @param {string} [platformAccessToken] Platform access token.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
  * @returns {AppsInstanceDelegationResponseDto|null} Delegation response.
  */
@@ -27,14 +26,12 @@ export function CreateDelegation(
     instanceId,
     request,
     expectedStatus = null,
-    platformAccessToken = null,
     labels = null,
 ) {
     const res = appsInstanceDelegationClient.CreateDelegation(
         resourceId,
         instanceId,
         request,
-        platformAccessToken,
         labels,
     );
 

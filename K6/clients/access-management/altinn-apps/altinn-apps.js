@@ -43,12 +43,21 @@ class AppsInstanceDelegationClient {
     /**
      * Creates a client for the Apps Instance Delegation API.
      *
+     * These endpoints take no user or organization token. The only credential is
+     * a platform access token in the PlatformAccessToken header, so the token
+     * generator has to be a PlatformTokenGenerator. Access Management reads the
+     * issuer and the app claim out of that token and treats app_{issuer}_{app}
+     * as the party performing the delegation, then checks it against the
+     * resource in the path. Build the token with the org and app that own the
+     * resource under test, otherwise the call is turned away no matter how valid
+     * the token is.
+     *
      * @param {string} baseUrl API base URL.
-     * @param {*} tokenGenerator Token generator used for authenticated requests.
+     * @param {*} tokenGenerator Platform token generator, org and app matching the resource.
      */
     constructor(baseUrl, tokenGenerator) {
         /**
-         * Generates authentication tokens.
+         * Generates the platform access token the API authenticates on.
          */
         this.tokenGenerator = tokenGenerator;
 
@@ -79,14 +88,12 @@ class AppsInstanceDelegationClient {
      *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
-     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     CheckResourceDelegation(
         resourceId,
         instanceId,
-        platformAccessToken = null,
         labels = null,
     ) {
         const url = new URL(
@@ -107,13 +114,9 @@ class AppsInstanceDelegationClient {
         }
 
         const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            PlatformAccessToken: this.tokenGenerator.getToken(),
             Accept: "application/json",
         };
-
-        if (platformAccessToken !== null) {
-            headers.PlatformAccessToken = `${platformAccessToken}`;
-        }
 
         return http.get(url, {
             tags,
@@ -129,7 +132,6 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Delegation request.
-     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
@@ -137,7 +139,6 @@ class AppsInstanceDelegationClient {
         resourceId,
         instanceId,
         request,
-        platformAccessToken = null,
         labels = null,
     ) {
         const url = new URL(
@@ -158,14 +159,10 @@ class AppsInstanceDelegationClient {
         }
 
         const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            PlatformAccessToken: this.tokenGenerator.getToken(),
             Accept: "application/json",
             "Content-Type": "application/json",
         };
-
-        if (platformAccessToken !== null) {
-            headers.PlatformAccessToken = `${platformAccessToken}`;
-        }
 
         return http.post(
             url,
@@ -184,14 +181,12 @@ class AppsInstanceDelegationClient {
      *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
-     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     GetDelegations(
         resourceId,
         instanceId,
-        platformAccessToken = null,
         labels = null,
     ) {
         const url = new URL(
@@ -212,13 +207,9 @@ class AppsInstanceDelegationClient {
         }
 
         const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            PlatformAccessToken: this.tokenGenerator.getToken(),
             Accept: "application/json",
         };
-
-        if (platformAccessToken !== null) {
-            headers.PlatformAccessToken = `${platformAccessToken}`;
-        }
 
         return http.get(url, {
             tags,
@@ -237,7 +228,6 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Revoke request.
-     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
@@ -245,7 +235,6 @@ class AppsInstanceDelegationClient {
         resourceId,
         instanceId,
         request,
-        platformAccessToken = null,
         labels = null,
     ) {
         const url = new URL(
@@ -266,14 +255,10 @@ class AppsInstanceDelegationClient {
         }
 
         const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            PlatformAccessToken: this.tokenGenerator.getToken(),
             Accept: "application/json",
             "Content-Type": "application/json",
         };
-
-        if (platformAccessToken !== null) {
-            headers.PlatformAccessToken = `${platformAccessToken}`;
-        }
 
         return http.post(
             url,
@@ -292,14 +277,12 @@ class AppsInstanceDelegationClient {
      *
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
-     * @param {string|null} platformAccessToken Optional platform access token.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
     DeleteDelegations(
         resourceId,
         instanceId,
-        platformAccessToken = null,
         labels = null,
     ) {
         const url = new URL(
@@ -320,13 +303,9 @@ class AppsInstanceDelegationClient {
         }
 
         const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
+            PlatformAccessToken: this.tokenGenerator.getToken(),
             Accept: "application/json",
         };
-
-        if (platformAccessToken !== null) {
-            headers.PlatformAccessToken = `${platformAccessToken}`;
-        }
 
         return http.del(
             url,
