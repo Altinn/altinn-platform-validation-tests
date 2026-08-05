@@ -309,7 +309,11 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
     let systemUserId;
 
     group("Arrange - the customer has an approved system user", function () {
-        SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
+        const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
+
+        if (createdSystemId === null) {
+            fail("cannot arrange a system user: registering the system did not return a system id");
+        }
 
         const createRequest = new CreateRequestSystemUserBuilder()
             .withExternalRef(registration.externalRef)
