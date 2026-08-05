@@ -12,7 +12,7 @@ import { PackagesExport } from "../../../building-blocks/access-management/metad
 let tokenGenerator = undefined;
 /** @type {ConnectionsClient | undefined} */
 let connectionsApiClient = undefined;
-/** @type {RequestApiClient | undefined} */
+/** @type {RequestClient | undefined} */
 let requestApiClient = undefined;
 
 /**
@@ -81,7 +81,8 @@ function fetchAssignablePackages() {
  * {@link PersonalTokenGenerator} instance is reused and reconfigured per user
  * via {@link setEnduserOpts}, so all clients pick up the active user's token.
  *
- * @returns {[ConnectionsClient, RequestApiClient, PersonalTokenGenerator]} TODO: description
+ * @returns {[ConnectionsClient, RequestClient, PersonalTokenGenerator]} Tuple
+ * containing the Connections client, the Request client and the token generator.
  */
 export function getClients() {
     if (tokenGenerator === undefined) {
@@ -101,7 +102,7 @@ export function getClients() {
  *
  * @param {string=} pid - the user's national identity number
  * @param {string=} partyUuid - the user's party uuid
- * @returns {Map} TODO: description
+ * @returns {Map} Token generator options for the given user.
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {
     const scopes = CreateScopeString([

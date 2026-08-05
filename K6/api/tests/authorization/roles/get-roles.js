@@ -6,7 +6,7 @@ import { MetadataBuildingBlocks } from "../../../building-blocks/access-manageme
 const labels = { step: "getRoles" };
 
 /**
- * @type {RolesApiClient | undefined}
+ * @type {RolesClient | undefined}
  */
 let rolesApiClient = undefined;
 
@@ -27,9 +27,9 @@ export function setup() {
 /**
  * Creates and caches the client used to interact with the Roles API.
  *
- * The same {@link RolesApiClient} instance is reused across iterations.
+ * The same {@link RolesClient} instance is reused across iterations.
  *
- * @returns {[RolesApiClient]} Tuple containing the Roles API client.
+ * @returns {[RolesClient]} Tuple containing the Roles API client.
  */
 function getClients() {
     if (rolesApiClient == undefined) {

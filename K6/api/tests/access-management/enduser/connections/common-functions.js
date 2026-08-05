@@ -6,7 +6,7 @@ import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /**
- * @type {ConnectionsApiClient | undefined}
+ * @type {ConnectionsClient | undefined}
  */
 let connectionsApiClient = undefined;
 
@@ -20,10 +20,10 @@ let tokenGenerator = undefined;
  * `/enduser/connections` API.
  *
  * The same {@link PersonalTokenGenerator} and
- * {@link ConnectionsApiClient} instances are reused on subsequent calls.
+ * {@link ConnectionsClient} instances are reused on subsequent calls.
  *
  * @returns {[
- * ConnectionsApiClient,
+ * ConnectionsClient,
  * PersonalTokenGenerator
  * ]} The initialized API client and token generator.
  */
@@ -53,7 +53,7 @@ export function getClients() {
 /**
  * Function to get token options map.
  *
- * @param userId TODO: description
+ * @param {string} userId - the user's id
  * @returns map of token options
  */
 export function getTokenOpts(userId) {
@@ -73,7 +73,7 @@ export function getTokenOpts(userId) {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

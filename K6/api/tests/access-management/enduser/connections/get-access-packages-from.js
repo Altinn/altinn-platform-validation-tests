@@ -1,5 +1,6 @@
 import exec from "k6/execution";
 
+import { GetAccessPackagesQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { PersonalTokenGenerator } from "../../../../../token-generator.js";
 import { EndUserBuildingBlocks } from "../../../../building-blocks/access-management/enduser/index.js";
@@ -17,17 +18,17 @@ export const options = getOptions([getAccessPackagesFromLabel, tokenGeneratorLab
 /**
  * Main function executed by each VU.
  *
- * @param testData TODO: description
+ * @param {object[][]} testData Organizations with a party uuid, one slice per VU.
  */
 export default function (testData) {
     const [connectionsApiClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.userId));
 
-    const queryParamsFrom = {
-        party: party.orgUuid,
-        from: party.orgUuid
-    };
+    const queryParamsFrom = new GetAccessPackagesQueryBuilder()
+        .withParty(party.orgUuid)
+        .withFrom(party.orgUuid)
+        .build();
 
     EndUserBuildingBlocks.Connections.GetAccessPackages(
         connectionsApiClient,

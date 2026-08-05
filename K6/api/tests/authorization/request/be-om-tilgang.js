@@ -21,6 +21,7 @@
 
 import { check, group } from "k6";
 
+import { CreateConnectionQueryBuilder } from "../../../../clients/access-management/enduser/connections/index.js";
 import { ReceivedRequestsQueryBuilder, RequestStatus } from "../../../../clients/access-management/enduser/request/index.js";
 import { getItemFromList, getOptions, pickUnique } from "../../../../helpers.js";
 import { CreateConnection } from "../../../building-blocks/access-management/enduser/connections/index.js";
@@ -54,8 +55,10 @@ export default function (data) {
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
         CreateConnection(
             connectionsApiClient,
-            { party: b.orgUuid, from: b.orgUuid },
-            { personidentifier: a.pid, lastName: a.lastName },
+            new CreateConnectionQueryBuilder()
+                .withParty(b.orgUuid)
+                .build(),
+            { personIdentifier: a.pid, lastName: a.lastName },
             addAssignmentLabel,
         );
 
@@ -77,11 +80,13 @@ export default function (data) {
                 .withParty(b.orgUuid)
                 .withStatus(RequestStatus.Pending)
                 .build(),
+            null,
+            null,
             getReceivedLabel,
         );
 
         // Verifiser at forespørselen fra steg 2 faktisk er blant de mottatte.
-        const receivedRequest = received.data.find((r) => r.id === request.id);
+        const receivedRequest = received.find((r) => r.id === request.id);
         check(receivedRequest, {
             "Received contains the created request": (r) => r !== undefined,
         });
