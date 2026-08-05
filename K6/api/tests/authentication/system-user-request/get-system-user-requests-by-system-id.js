@@ -1,14 +1,10 @@
-import { check, fail, group } from "k6";
+import { group } from "k6";
 
-import { SystemUserRequestApiClient } from "../../../../clients/authentication/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { GetSystemUserRequestsBySystemId } from "../../../building-blocks/authentication/system-user-request/index.js";
-import {
-    extractNextUrl,
-    followNextUrlPagination,
-} from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { RequestSystemUserBuildingBlocks } from "../../../authentication-v2-imports.js";
+import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
+import { getPaginationClients, PAGINATION_SYSTEM_ID } from "./commons.js";
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -16,84 +12,38 @@ export function setup() {
 }
 
 /**
- * Test: System User Requests By SystemId (vendor) + pagination.
+ * Test: System user requests by system id (vendor) and pagination.
  *
- * Ensures that paginated access to system user requests by systemId (vendor endpoint) works correctly through APIM.
+ * Ensures that paginated access to system user requests by systemId works through APIM.
  */
 export default function () {
-    group(
-        "Scenario: As a vendor, I can list system user requests by system id and follow pagination.",
-        () => {
-            const systemOwnerOrgNo = "312605031";
-            const systemId = "312605031_Virksomhetsbruker";
+    const [requestSystemUserClient, tokenGenerator] = getPaginationClients();
 
-            const scopes = CreateScopeString([
-                AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ
-            ]);
-            const vendorTokenOptions = new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(scopes)
-                .withOrganizationNumber(systemOwnerOrgNo)
-                .build();
+    group("As a vendor, I can list system user requests by system id and follow pagination", function () {
+        let firstPage;
 
-            const vendorTokenGenerator = new EnterpriseTokenGenerator(
-                vendorTokenOptions,
-            );
-            const systemUserRequestApiClient = new SystemUserRequestApiClient(
-                __ENV.BASE_URL,
-                vendorTokenGenerator,
-            );
+        group("Fetch the first page of system user requests", function () {
+            firstPage = RequestSystemUserBuildingBlocks.VendorGetBySystem(requestSystemUserClient, PAGINATION_SYSTEM_ID);
 
-            let firstBody;
-            let firstJson;
-            group(
-                "Step: System user requests by system id - Fetch the first page of system user requests.",
-                () => {
-                    firstBody = GetSystemUserRequestsBySystemId(
-                        systemUserRequestApiClient,
-                        systemId,
-                    );
+            PaginationDomainChecks.CheckPaginatedShape(firstPage, "RequestSystemUserVendorGetBySystem");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "RequestSystemUserVendorGetBySystem");
+            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, PAGINATION_SYSTEM_ID, "system user request");
+        });
 
-                    if (typeof firstBody !== "string" || firstBody.length === 0) {
-                        fail("The response body is empty or missing.");
-                    }
-                    firstJson = JSON.parse(firstBody);
+        group("Follow the next-link pagination", function () {
+            PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, "RequestSystemUserVendorGetBySystem");
 
-                    const ok = check(firstJson, {
-                        "The response has a 'data' field.": (r) => "data" in r,
-                        "The response has a 'links' field.": (r) => "links" in r,
-                        "The response body is not empty.": (r) => r.data.length > 0,
-                    });
-                    if (!ok) {
-                        fail("Expected to find system user requests, but found none");
-                    }
-                },
-            );
+            const nextUrl = extractNextUrl(firstPage);
 
-            group(
-                "Step: System user requests by system id - Follow the next-link pagination (links.next).",
-                () => {
-                    const nextUrl = extractNextUrl(firstJson);
-                    if (!nextUrl) {
-                        fail(
-                            "Couldn't find next URL on first page for system user requests",
-                        );
-                    }
-                    const additionalPages = followNextUrlPagination(
-                        vendorTokenGenerator.getToken(),
-                        nextUrl,
-                    );
+            let additionalPages = 0;
+            if (nextUrl !== null) {
+                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
+            }
 
-                    const pages = 1 + additionalPages;
-                    check(pages, {
-                        "System user requests by system id: More than one page is returned.":
-                            (p) => p > 1,
-                    });
-                },
-            );
-        },
-    );
+            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "RequestSystemUserVendorGetBySystem");
+        });
+    });
 }
 
+// add the custom reporting for this test to the default summary
 export { handleSummary } from "../../../../common-imports.js";

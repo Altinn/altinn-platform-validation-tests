@@ -156,6 +156,10 @@ export const AltinnScopes = {
             EDIT: "altinn:maskinporten/delegationschemes.edit",
             READ: "altinn:maskinporten/delegationschemes.read",
             WRITE: "altinn:maskinporten/delegationschemes.write"
+        },
+
+        SYSTEMUSER: {
+            READ: "altinn:maskinporten/systemuser.read"
         }
     },
 

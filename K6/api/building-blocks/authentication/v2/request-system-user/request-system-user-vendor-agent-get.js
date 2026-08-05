@@ -3,30 +3,30 @@ import { check } from "k6";
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
 
 /**
- * Deletes a system user request.
+ * Retrieves an agent system user request by id.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RequestSystemResponse|null} Request response.
+ * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
-export function DeleteRequestSystemUser(
+export function RequestSystemUserVendorAgentGet(
     requestSystemUserClient,
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.DeleteRequestSystemUser(
+    const res = requestSystemUserClient.RequestSystemUserVendorAgentGet(
         requestId,
         labels,
     );
 
-    /** @type {RequestSystemResponse|null} */
+    /** @type {AgentRequestSystemResponse|null} */
     let requestResponse = null;
 
     const succeed = check(res, {
-        "DeleteRequestSystemUser - status code is 200": (r) =>
+        "RequestSystemUserVendorAgentGet - status code is 200": (r) =>
             r.status === 200,
-        "DeleteRequestSystemUser - status text is 200 OK": (r) =>
+        "RequestSystemUserVendorAgentGet - status text is 200 OK": (r) =>
             r.status_text === "200 OK",
     });
 
@@ -37,7 +37,7 @@ export function DeleteRequestSystemUser(
     }
 
     check(res, {
-        "DeleteRequestSystemUser - body is valid": (r) => {
+        "RequestSystemUserVendorAgentGet - body is valid": (r) => {
             try {
                 requestResponse = JSON.parse(r.body);
 

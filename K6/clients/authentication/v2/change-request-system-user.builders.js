@@ -1,10 +1,12 @@
 class ChangeRequestSystemUserBuilder {
     constructor() {
+        // The API requires all four sets to be present, so they default to empty
+        // rather than null. Leaving all four empty means no change is needed.
         this.request = {
-            requiredRights: null,
-            unwantedRights: null,
-            requiredAccessPackages: null,
-            unwantedAccessPackages: null,
+            requiredRights: [],
+            unwantedRights: [],
+            requiredAccessPackages: [],
+            unwantedAccessPackages: [],
             redirectUrl: null,
         };
     }
@@ -15,7 +17,7 @@ class ChangeRequestSystemUserBuilder {
      * @param {Right[]} rights Rights to add.
      * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
-    WithRequiredRights(rights) {
+    withRequiredRights(rights) {
         this.request.requiredRights = rights;
 
         return this;
@@ -27,7 +29,7 @@ class ChangeRequestSystemUserBuilder {
      * @param {Right[]} rights Rights to remove.
      * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
-    WithUnwantedRights(rights) {
+    withUnwantedRights(rights) {
         this.request.unwantedRights = rights;
 
         return this;
@@ -39,7 +41,7 @@ class ChangeRequestSystemUserBuilder {
      * @param {AccessPackage[]} accessPackages Access packages to add.
      * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
-    WithRequiredAccessPackages(accessPackages) {
+    withRequiredAccessPackages(accessPackages) {
         this.request.requiredAccessPackages = accessPackages;
 
         return this;
@@ -51,7 +53,7 @@ class ChangeRequestSystemUserBuilder {
      * @param {AccessPackage[]} accessPackages Access packages to remove.
      * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
-    WithUnwantedAccessPackages(accessPackages) {
+    withUnwantedAccessPackages(accessPackages) {
         this.request.unwantedAccessPackages = accessPackages;
 
         return this;
@@ -63,7 +65,7 @@ class ChangeRequestSystemUserBuilder {
      * @param {string} redirectUrl Redirect URL.
      * @returns {ChangeRequestSystemUserBuilder} This builder, for chaining.
      */
-    WithRedirectUrl(redirectUrl) {
+    withRedirectUrl(redirectUrl) {
         this.request.redirectUrl = redirectUrl;
 
         return this;
@@ -74,7 +76,7 @@ class ChangeRequestSystemUserBuilder {
      *
      * @returns {ChangeRequestSystemUser} The built payload.
      */
-    Build() {
+    build() {
         return this.request;
     }
 }
