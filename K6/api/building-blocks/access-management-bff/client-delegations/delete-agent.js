@@ -22,10 +22,10 @@ export function DeleteAgent(
     let removed = false;
 
     const succeed = check(res, {
-        "DeleteAgent - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteAgent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteAgent - status code is 204": (r) =>
+            r.status === 204,
+        "DeleteAgent - status text is 204 No Content": (r) =>
+            r.status_text === "204 No Content",
     });
 
     if (!succeed) {
