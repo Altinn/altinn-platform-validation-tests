@@ -50,17 +50,6 @@ class RequestSystemUserClient {
          * Fully-qualified API path.
          */
         this.FULL_PATH = `${baseUrl}${this.BASE_PATH}`;
-
-        /**
-         * Base API path for the end user operations, which sit beside the
-         * vendor path rather than under it.
-         */
-        this.ENDUSER_BASE_PATH = "/authentication/api/v1/systemuser/request";
-
-        /**
-         * Fully-qualified API path for the end user operations.
-         */
-        this.ENDUSER_FULL_PATH = `${baseUrl}${this.ENDUSER_BASE_PATH}`;
     }
 
     static get TAGS() {
