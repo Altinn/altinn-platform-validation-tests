@@ -69,10 +69,14 @@ export const ACCESS_PACKAGES_BY_ORG_TYPE = {
  * Test data folder, one file per environment.
  *
  * K6/testdata/access-management/client-delegation/<env>.csv
- * header: orgNo,partyId,partyUuid,userId,userPartyUuid,ssn,orgType
+ * header: orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
+ *
+ * Pointed at this branch rather than main, since the csv files land with this
+ * test. Switch refs/heads/add-agent-system-user-client-delegation-test to
+ * refs/heads/main when it is merged.
  */
 const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/access-management/client-delegation";
+    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/add-agent-system-user-client-delegation-test/K6/testdata/access-management/client-delegation";
 
 /**
  * @type {object | undefined}
