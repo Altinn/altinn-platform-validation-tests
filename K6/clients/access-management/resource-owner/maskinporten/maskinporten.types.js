@@ -22,3 +22,19 @@
  * @property {string|null} created ISO date-time the delegation was created.
  * @property {string|null} resourceid Resource identifier.
  */
+
+/**
+ * Body of a consent lookup.
+ *
+ * Use {@link ConsentLookupRequestBuilder} to construct this object.
+ *
+ * @typedef {object} ConsentLookupRequest
+ * @property {string} id Consent UUID.
+ * @property {string} from Party urn the consent was given by.
+ * @property {string} to Party urn the consent was given to.
+ */
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here. Only the typedefs that are actually
+// imported get one, so add to this as they are needed rather than up front.
+export const ConsentLookupRequest = undefined;

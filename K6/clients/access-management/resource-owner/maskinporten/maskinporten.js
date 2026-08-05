@@ -4,6 +4,9 @@ const TAGS = {
     GetMaskinportenDelegations: {
         action: "get-maskinporten-delegations",
     },
+    LookupConsent: {
+        action: "lookup-consent",
+    },
 };
 
 class MaskinportenClient {
@@ -91,6 +94,55 @@ class MaskinportenClient {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                ...(this.subscriptionKey !== null && {
+                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
+                }),
+            },
+        });
+    }
+
+    /**
+     * Looks up a consent.
+     *
+     * This is the endpoint Maskinporten itself calls to look up a consent before
+     * it hands out a consent token, so calling it is how a test covers what a
+     * consumer would get.
+     *
+     * Requires an organization token with the `altinn:maskinporten/consent.read`
+     * scope.
+     *
+     * @param {ConsentLookupRequest} request Consent to look up. Prefer using
+     * {@link ConsentLookupRequestBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    LookupConsent(request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        // The trailing slash is part of the route. Without it the request is
+        // redirected, and the redirect drops the Authorization header.
+        const url = new URL(`${this.FULL_PATH}/consent/lookup/`);
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/consent/lookup/`,
+            name: `${this.FULL_PATH}/consent/lookup/`,
+            action: TAGS.LookupConsent.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url.toString(), JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
                 Accept: "application/json",
                 ...(this.subscriptionKey !== null && {
                     "Ocp-Apim-Subscription-Key": this.subscriptionKey,

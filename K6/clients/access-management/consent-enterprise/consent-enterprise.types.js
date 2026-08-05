@@ -121,3 +121,8 @@
  * @property {Array<string>} [query.eventType] Event type filters.
  * @property {string} [query.consentRequestId] Consent request UUID filter.
  */
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here. Only the typedefs that are actually
+// imported get one, so add to this as they are needed rather than up front.
+export const ConsentRequestDetailsDto = undefined;

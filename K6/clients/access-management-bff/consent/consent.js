@@ -32,6 +32,10 @@ const TAGS = {
 
 /**
  * Client for the consent endpoints of the Access Management BFF API.
+ *
+ * Every endpoint here is called on behalf of the person handling the consent, so
+ * they all take a personal token with the `altinn:portal/enduser` scope. The
+ * scope is repeated on each method, since that is where a caller looks for it.
  */
 class ConsentClient {
     /**
@@ -62,6 +66,8 @@ class ConsentClient {
 
     /**
      * Gets a consent request.
+     *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -96,6 +102,8 @@ class ConsentClient {
 
     /**
      * Approves a consent request.
+     *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
      * @param {ApproveConsentContext|null} [body] Context for the approval. Prefer
@@ -140,6 +148,8 @@ class ConsentClient {
     /**
      * Rejects a consent request.
      *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
+     *
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
@@ -179,6 +189,8 @@ class ConsentClient {
 
     /**
      * Gets the number of consent requests a party has.
+     *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} party Party UUID.
      * @param {GetConsentCountQuery|null} [query] Optional query parameters. Prefer
@@ -230,6 +242,8 @@ class ConsentClient {
     /**
      * Gets the active consents of a party.
      *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
+     *
      * @param {string} party Party UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
@@ -263,6 +277,8 @@ class ConsentClient {
 
     /**
      * Gets the consent log of a party.
+     *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} party Party UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -298,6 +314,8 @@ class ConsentClient {
     /**
      * Gets a single consent.
      *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
+     *
      * @param {string} consentId Consent UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
@@ -331,6 +349,8 @@ class ConsentClient {
 
     /**
      * Revokes a consent.
+     *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentId Consent UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -369,6 +389,8 @@ class ConsentClient {
 
     /**
      * Gets the logout redirect for a consent request.
+     *
+     * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.

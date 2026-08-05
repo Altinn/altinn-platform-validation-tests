@@ -41,6 +41,8 @@ class EnterpriseClient {
     /**
      * Creates a consent request.
      *
+     * Requires an organization token with the `altinn:consentrequests.write` scope.
+     *
      * @param {ConsentRequestDto} request Consent request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -77,6 +79,8 @@ class EnterpriseClient {
     /**
      * Gets a consent request.
      *
+     * Requires an organization token with the `altinn:consentrequests.read` scope.
+     *
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -111,6 +115,8 @@ class EnterpriseClient {
 
     /**
      * Gets consent request events.
+     *
+     * Requires an organization token with the `altinn:consentrequests.read` scope.
      *
      * @param {ConsentRequestEventsQueryBuilder | object} [query]
      * Optional query parameters.

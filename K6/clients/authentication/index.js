@@ -1,7 +1,5 @@
+// What is left here is the register surface, which the register tests use. The
+// system register, system user and system user request clients have moved to v2/,
+// and the consent clients to access-management/ and access-management-bff/.
 export { RegisterLookupClient } from "../register/lookup.js";
-export { ConsentApiClient } from "./consent.js";
-export { ConsentEventType, ConsentRequestEventsQueryBuilder } from "./consent-request-events-query-builder.js";
 export { RegisterApiClient } from "./register.js";
-export { SystemRegisterApiClient } from "./system-register.js";
-export { SystemUserApiClient } from "./system-user.js";
-export { SystemUserRequestApiClient } from "./system-user-request.js";

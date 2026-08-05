@@ -23,11 +23,14 @@ export function EnterpriseCreateConsentRequest(
     /** @type {ConsentRequestDetailsDto|null} */
     let consentRequest = null;
 
+    // The swagger the client was generated from says 200, but the API answers 201
+    // Created. The old consent tests asserted 201 and passed, so 201 is what this
+    // waits for.
     const succeed = check(res, {
-        "EnterpriseCreateConsentRequest - status code is 200": (r) =>
-            r.status === 200,
-        "EnterpriseCreateConsentRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "EnterpriseCreateConsentRequest - status code is 201": (r) =>
+            r.status === 201,
+        "EnterpriseCreateConsentRequest - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
 
     if (!succeed) {
