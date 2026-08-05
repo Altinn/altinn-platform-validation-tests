@@ -1,3 +1,7 @@
+# Deliberately not access-management: namespace becomes the Kubernetes namespace of
+# the generated CronJob, and only the namespaces in Altinn/altinn-platform
+# altinn-monitor-test-rg/k6_tests_rg_rbac.tf exist. access-management is not one
+# of them yet, so changing this breaks the scheduled runs until it is added there.
 namespace: authentication
 base_dir: K6/api/tests/access-management/consent/
 test_definitions:
