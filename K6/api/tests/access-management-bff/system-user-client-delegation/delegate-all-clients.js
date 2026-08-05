@@ -1,17 +1,19 @@
 import { group } from "k6";
+import exec from "k6/execution";
 
 import { DeleteAgentSystemUserQueryBuilder } from "../../../../clients/access-management-bff/system-user/index.js";
 import {
     AgentDelegationRequestFEBuilder,
     CreateAgentSystemUserDelegationQueryBuilder,
     GetAgentSystemUserCustomersQueryBuilder,
+    GetAgentSystemUserDelegationsQueryBuilder,
 } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
-import { randomItem } from "../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../helpers.js";
 import { DeleteAgentSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import {
     CreateAgentSystemUserDelegation,
     GetAgentSystemUserCustomers,
+    GetAgentSystemUserDelegations,
 } from "../../../building-blocks/access-management-bff/system-user-agent-delegation/index.js";
 import { ClientDelegationDomainChecks } from "../../../domain-checks/access-management/system-user-client-delegation.js";
 import {
@@ -23,10 +25,11 @@ import {
 } from "./commons.js";
 
 const getCustomersLabel = { step: "Get the clients the facilitator can delegate" };
+const getDelegationsLabel = { step: "Get the clients already delegated" };
 const delegateClientLabel = { step: "Delegate one client to the agent system user" };
 
 export const options = {
-    ...getOptions([getCustomersLabel, delegateClientLabel]),
+    ...getOptions([getCustomersLabel, getDelegationsLabel, delegateClientLabel]),
 
     // The arrange registers a system and then walks every facilitator through an
     // agent request, an approval and a lookup, so it needs far longer than the
@@ -51,9 +54,11 @@ export function setup() {
 /**
  * Test: delegating a facilitator's whole client list to its agent system user.
  *
- * One iteration draws one facilitator, reads the clients it may delegate and
+ * Each VU acts as one facilitator, reads the clients it may still delegate and
  * delegates them one by one, which is what a regnskapsfører, revisor or
- * forretningsfører does after taking a system into use.
+ * forretningsfører does after taking a system into use. The access management ui
+ * sends five at a time; this deliberately does not copy that, and turns the VU
+ * count up instead to find where the endpoint gives way.
  *
  * yt01 delegates the whole list, since that is the load the environment exists to
  * measure. Everywhere else it stops at MAX_CLIENTS_TO_DELEGATE, so a facilitator
@@ -70,7 +75,13 @@ export default function (systemUsers) {
 
     const [apiClients, tokenGenerator] = getClients();
 
-    const { facilitator, systemUserGuid } = randomItem(systemUsers);
+    // One facilitator per VU, by VU index, so a VU keeps its own agent system user
+    // across iterations and raising the VU count spreads the load over more
+    // facilitators. Deliberately not segmentData: it hands empty slices to every
+    // VU past the length of the test data, which is exactly where a load test is
+    // headed. Modulo instead lets VUs share facilitators once there are more VUs
+    // than facilitators.
+    const { facilitator, systemUserGuid } = systemUsers[(exec.vu.idInTest - 1) % systemUsers.length];
 
     tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
@@ -94,7 +105,27 @@ export default function (systemUsers) {
                 return;
             }
 
-            clients = customers;
+            // Skip the ones already delegated, the way the ui does before it starts
+            // adding. Without this a second iteration on the same facilitator, or a
+            // rerun against the same environment, would re-send delegations that
+            // already exist.
+            const existing = GetAgentSystemUserDelegations(
+                apiClients.facilitator.agentDelegationClient,
+                facilitator.partyId,
+                systemUserGuid,
+                new GetAgentSystemUserDelegationsQueryBuilder()
+                    .withPartyUuid(facilitator.orgUuid)
+                    .build(),
+                getDelegationsLabel,
+            ) ?? [];
+
+            const alreadyDelegated = new Set(existing.map((delegation) => delegation.customerId));
+
+            clients = customers.filter((customer) => !alreadyDelegated.has(customer.id));
+
+            if (clients.length < customers.length) {
+                console.log(`facilitator ${facilitator.orgNo} already had ${customers.length - clients.length} of ${customers.length} clients delegated`);
+            }
         });
 
         group("Delegate every client to the agent system user", function () {
@@ -179,6 +210,3 @@ export function teardown(systemUsers) {
 
     console.log(`teardown - deleted ${deleted} of ${systemUsers.length} agent system users`);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";
