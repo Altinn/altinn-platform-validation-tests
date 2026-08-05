@@ -33,3 +33,10 @@
  * @property {string} from Party urn the consent was given by.
  * @property {string} to Party urn the consent was given to.
  */
+
+// Runtime stubs for the typedefs above, the way v2/types.js does it. A typedef on
+// its own is invisible to an importer, so a file documenting one of these has
+// nothing to import and no editor can follow the name back here.
+export const ConsentLookupRequest = undefined;
+export const MaskinportenDelegation = undefined;
+export const MaskinportenDelegationsQuery = undefined;

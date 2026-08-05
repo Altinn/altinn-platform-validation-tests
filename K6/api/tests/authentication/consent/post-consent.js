@@ -11,10 +11,9 @@ import {
     CONSENT_RESOURCE,
     createConsentLookupRequest,
     createConsentRequest,
-    getConsenteeClient,
+    getClients,
     getConsenteeOrgs,
     getConsenteeTokenOpts,
-    getConsenterClient,
     getConsenterPersons,
     getConsenterTokenOpts,
     getLookupClient,
@@ -59,8 +58,7 @@ export function setup() {
  * @param {{orgs: object[], persons: object[]}} data Consentee organizations and consenter persons.
  */
 export default function (data) {
-    const [consenteeClient, consenteeTokenGenerator] = getConsenteeClient();
-    const [consenterClient, consenterTokenGenerator] = getConsenterClient();
+    const [clients, consenteeTokenGenerator, consenterTokenGenerator] = getClients();
     const lookupClient = getLookupClient();
 
     const org = randomItem(data.orgs);
@@ -80,7 +78,7 @@ export default function (data) {
             const consentRequest = createConsentRequest({ consentId, from, to });
 
             const createdRequest = EnterpriseCreateConsentRequest(
-                consenteeClient,
+                clients.consentee.enterpriseClient,
                 consentRequest,
                 requestConsentLabel,
             );
@@ -93,7 +91,7 @@ export default function (data) {
 
         group("Approve the consent as the person it was asked of", function () {
             if (!ConsentDomainChecks.CheckConsentRequestId(consentRequestId)) {
-                fail("cannot approve: creating the consent request returned no id");
+                fail("Cannot approve: creating the consent request returned no id");
             }
 
             const context = new ApproveConsentContextBuilder()
@@ -101,7 +99,7 @@ export default function (data) {
                 .build();
 
             const approved = ApproveConsentRequest(
-                consenterClient,
+                clients.consenter.consentClient,
                 consentRequestId,
                 context,
                 approveConsentLabel,
@@ -112,11 +110,11 @@ export default function (data) {
 
         group("The approved consent request is accepted", function () {
             if (!ConsentDomainChecks.CheckConsentRequestId(consentRequestId)) {
-                fail("cannot check the status: creating the consent request returned no id");
+                fail("Cannot check the status: creating the consent request returned no id");
             }
 
             const consentRequest = EnterpriseGetConsentRequest(
-                consenteeClient,
+                clients.consentee.enterpriseClient,
                 consentRequestId,
                 getConsentRequestLabel,
             );
@@ -126,7 +124,7 @@ export default function (data) {
 
         group("The consent shows up in the log of the person who gave it", function () {
             const log = GetConsentLog(
-                consenterClient,
+                clients.consenter.consentClient,
                 person.partyUuid,
                 getConsentLogLabel,
             );

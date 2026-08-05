@@ -121,3 +121,22 @@
  * @property {Array<string>} [query.eventType] Event type filters.
  * @property {string} [query.consentRequestId] Consent request UUID filter.
  */
+
+// Runtime stubs for the typedefs above, the way v2/types.js does it. A typedef on
+// its own is invisible to an importer, so a file documenting one of these has
+// nothing to import and no editor can follow the name back here. The two builder
+// typedefs are left out on purpose, since those names belong to the real classes in
+// consent-enterprise.builders.js.
+export const ConsentPortalViewMode = undefined;
+export const ConsentRequestDetailsDto = undefined;
+export const ConsentRequestDto = undefined;
+export const ConsentRequestEventDto = undefined;
+export const ConsentRequestEventType = undefined;
+export const ConsentRequestStatusType = undefined;
+export const ConsentResourceAttributeDto = undefined;
+export const ConsentRightDto = undefined;
+export const ConsentStatusChangeDto = undefined;
+export const ConsentStatusChangeDtoPaginatedResult = undefined;
+export const NullableOfConsentPortalViewMode = undefined;
+export const PaginatedResultLinks = undefined;
+export const ProblemDetails = undefined;

@@ -9,10 +9,9 @@ import { ApproveConsentRequest } from "../../../../building-blocks/access-manage
 import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
 import {
     createConsentRequest,
-    getConsenteeClient,
+    getClients,
     getConsenteeOrgs,
     getConsenteeTokenOpts,
-    getConsenterClient,
     getConsenterPersons,
     getConsenterTokenOpts,
     organizationUrn,
@@ -75,8 +74,7 @@ export function setup() {
  * @param {Array<{consentId: string, pid: string, orgNo: string, partyUuid: string}>} rows The consents planned in setup.
  */
 export default function (rows) {
-    const [consenteeClient, consenteeTokenGenerator] = getConsenteeClient();
-    const [consenterClient, consenterTokenGenerator] = getConsenterClient();
+    const [clients, consenteeTokenGenerator, consenterTokenGenerator] = getClients();
 
     // One iteration per planned row, so every row is generated exactly once.
     const row = rows[exec.scenario.iterationInTest];
@@ -90,19 +88,19 @@ export default function (rows) {
 
         const consentRequest = createConsentRequest({ consentId: row.consentId, from, to });
 
-        const createdRequest = EnterpriseCreateConsentRequest(consenteeClient, consentRequest);
+        const createdRequest = EnterpriseCreateConsentRequest(clients.consentee.enterpriseClient, consentRequest);
 
         ConsentDomainChecks.CheckConsentRequestCreated(createdRequest, { id: row.consentId, from, to });
 
         if (!ConsentDomainChecks.CheckConsentRequestId(createdRequest?.id)) {
-            fail("cannot approve: creating the consent request returned no id");
+            fail("Cannot approve: creating the consent request returned no id");
         }
 
         const context = new ApproveConsentContextBuilder()
             .withLanguage("nb")
             .build();
 
-        const approved = ApproveConsentRequest(consenterClient, createdRequest.id, context);
+        const approved = ApproveConsentRequest(clients.consenter.consentClient, createdRequest.id, context);
 
         ConsentDomainChecks.CheckConsentApproved(approved);
     });

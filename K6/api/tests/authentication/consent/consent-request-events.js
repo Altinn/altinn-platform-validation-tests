@@ -6,7 +6,7 @@ import { getOptions, requireEnv } from "../../../../helpers.js";
 import { EnterpriseGetConsentRequestEvents } from "../../../building-blocks/access-management/consent-enterprise/index.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
-import { getConsenteeClient, getConsenteeOrgs, getConsenteeTokenOpts } from "./commons.js";
+import { getConsenteeOrgs, getEventsClient, getEventsTokenOpts } from "./commons.js";
 
 const getConsentRequestEventsLabel = { step: "Get Consent Request Events" };
 
@@ -31,11 +31,11 @@ export function setup() {
  * @param {object[]} orgs Consentee organizations to read events for.
  */
 export default function (orgs) {
-    const [consenteeClient, consenteeTokenGenerator] = getConsenteeClient();
+    const [eventsClient, eventsTokenGenerator] = getEventsClient();
 
     const org = randomItem(orgs);
 
-    consenteeTokenGenerator.setTokenGeneratorOptions(getConsenteeTokenOpts(org.orgNo));
+    eventsTokenGenerator.setTokenGeneratorOptions(getEventsTokenOpts(org.orgNo));
 
     group("As an organization, I can read my consent request events and follow pagination", function () {
         let firstPage;
@@ -45,7 +45,7 @@ export default function (orgs) {
             const query = new ConsentRequestEventsQueryBuilder().Build();
 
             firstPage = EnterpriseGetConsentRequestEvents(
-                consenteeClient,
+                eventsClient,
                 query,
                 getConsentRequestEventsLabel,
             );
@@ -60,7 +60,7 @@ export default function (orgs) {
             let additionalPages = 0;
             if (nextUrl !== null) {
                 additionalPages = followNextUrlPagination(
-                    consenteeTokenGenerator.getToken(),
+                    eventsTokenGenerator.getToken(),
                     nextUrl,
                     MAX_PAGES,
                     getConsentRequestEventsLabel,

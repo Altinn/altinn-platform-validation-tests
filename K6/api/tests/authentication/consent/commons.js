@@ -32,9 +32,9 @@ export const CONSENT_RESOURCE = "samtykke-performance-test";
 const REDIRECT_URL = "https://altinn.no";
 
 /**
- * @type {EnterpriseClient | undefined}
+ * @type {object | undefined}
  */
-let consenteeClient = undefined;
+let clients = undefined;
 
 /**
  * @type {EnterpriseTokenGenerator | undefined}
@@ -42,14 +42,19 @@ let consenteeClient = undefined;
 let consenteeTokenGenerator = undefined;
 
 /**
- * @type {ConsentClient | undefined}
- */
-let consenterClient = undefined;
-
-/**
  * @type {PersonalTokenGenerator | undefined}
  */
 let consenterTokenGenerator = undefined;
+
+/**
+ * @type {EnterpriseClient | undefined}
+ */
+let eventsClient = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let eventsTokenGenerator = undefined;
 
 /**
  * @type {MaskinportenClient | undefined}
@@ -100,54 +105,72 @@ export function getLookupConsents(env) {
 }
 
 /**
- * Creates and caches the client for acting as the organization a consent is given
- * to.
+ * Creates and caches the clients the consent lifecycle uses.
  *
  * Built once per VU and reused across its iterations. The token generators cache
  * tokens per instance, so building them per iteration refetches every token from
  * the token generator service each time.
  *
- * The organization changes per iteration, so its options are swapped with
- * setTokenGeneratorOptions rather than by building a new generator. The cache is
- * keyed on the options, so each organization still gets its own cached token.
+ * Both identities change per iteration, unlike the system user tests where only
+ * the approver does: the consentee is the organization the consent is given to and
+ * the consenter is the person giving it. Both are swapped with
+ * setTokenGeneratorOptions rather than by building new generators, so both
+ * generators come back. The cache is keyed on the options, so each identity still
+ * gets its own cached token.
  *
- * The token carries the read scope alongside the write scope, which is what lets
- * a test confirm the consent request it made was accepted.
+ * The consentee token carries the read scope alongside the write scope, which is
+ * what lets a test confirm the consent request it made was accepted.
  *
- * @returns {[EnterpriseClient, EnterpriseTokenGenerator]} The client, and the generator whose organization is swapped per iteration.
+ * Handling a consent request is what the person does in the portal, so it goes
+ * through the bff rather than the enterprise api the organization calls.
+ *
+ * @returns {[object, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
-export function getConsenteeClient() {
-    if (consenteeClient === undefined) {
+export function getClients() {
+    if (clients === undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
             getConsenteeTokenOpts(),
         );
 
-        consenteeClient = new EnterpriseClient(__ENV.BASE_URL, consenteeTokenGenerator);
-    }
-
-    return [consenteeClient, consenteeTokenGenerator];
-}
-
-/**
- * Creates and caches the client for acting as the person giving a consent.
- *
- * Handling a consent request is what the person does in the portal, so it goes
- * through the bff rather than the enterprise api the organization calls. That is
- * a different host, which is why this needs AM_UI_BASE_URL and the consentee
- * client does not.
- *
- * @returns {[ConsentClient, PersonalTokenGenerator]} The client, and the generator whose person is swapped per iteration.
- */
-export function getConsenterClient() {
-    if (consenterClient === undefined) {
         consenterTokenGenerator = new PersonalTokenGenerator(
             getConsenterTokenOpts(),
         );
 
-        consenterClient = new ConsentClient(__ENV.AM_UI_BASE_URL, consenterTokenGenerator);
+        clients = {
+            consentee: {
+                enterpriseClient: new EnterpriseClient(__ENV.BASE_URL, consenteeTokenGenerator),
+            },
+            consenter: {
+                consentClient: new ConsentClient(__ENV.AM_UI_BASE_URL, consenterTokenGenerator),
+            },
+        };
     }
 
-    return [consenterClient, consenterTokenGenerator];
+    return [clients, consenteeTokenGenerator, consenterTokenGenerator];
+}
+
+/**
+ * Creates and caches the client the events test reads with.
+ *
+ * A narrower token than getClients: that test only reads the events of an existing
+ * organization, so it asks for nothing beyond the read scope. Keeping it apart also
+ * keeps the events test off AM_UI_BASE_URL, which it has no use for.
+ *
+ * Cached at module scope, so a VU builds it once and keeps the token it fetched
+ * rather than refetching on every iteration.
+ *
+ * @returns {[EnterpriseClient, EnterpriseTokenGenerator]} The client, and the generator whose organization is swapped per iteration.
+ */
+export function getEventsClient() {
+    if (eventsClient === undefined) {
+        eventsTokenGenerator = new EnterpriseTokenGenerator(
+            getEventsTokenOpts(),
+        );
+
+        eventsClient = new EnterpriseClient(__ENV.BASE_URL, eventsTokenGenerator);
+    }
+
+    return [eventsClient, eventsTokenGenerator];
 }
 
 /**
@@ -195,6 +218,28 @@ export function getConsenteeTokenOpts(orgNo = undefined) {
             AltinnScopes.CONSENTREQUESTS.WRITE,
             AltinnScopes.CONSENTREQUESTS.READ,
         ]));
+
+    if (orgNo !== undefined) {
+        builder.withOrganizationNumber(orgNo);
+    }
+
+    return builder.build();
+}
+
+/**
+ * Token options for reading the events of an organization.
+ *
+ * Called without an organization number to build the generator, and with one per
+ * iteration to point it at the organization that iteration drew.
+ *
+ * @param {string} [orgNo] - The organization, or undefined to leave the token without one.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getEventsTokenOpts(orgNo = undefined) {
+    const builder = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(CreateScopeString([AltinnScopes.CONSENTREQUESTS.READ]));
 
     if (orgNo !== undefined) {
         builder.withOrganizationNumber(orgNo);

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { ConsentLookupRequest } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 
 /**
  * Looks up a consent.

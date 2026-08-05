@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { ConsentRequestDetailsDto } from "../../../clients/access-management/consent-enterprise/consent-enterprise.types.js";
+
 /**
  * Checks that a created consent request echoes what it was asked for and carries
  * the fields the consentee needs to take the consenter through approval.
