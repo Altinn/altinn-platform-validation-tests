@@ -1,27 +1,37 @@
-/**
- * This test is designed to retrieve the consent log for a user in a more realistic scenario, where the users are randomly selected from a larger pool of users.
- */
 import exec from "k6/execution";
 
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
-import { GetConsentLog } from "../../../../building-blocks/authorization/client-delegations/index.js";
+import { GetConsentLog } from "../../../../building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
 import { getClients, getTokenOpts } from "./commons.js";
 
 export { setup } from "./commons.js";
 
 const getConsentLogLabel = { step: "Get consent log for user" };
 
-export const options = getOptions([getConsentLogLabel],);
+export const options = getOptions([getConsentLogLabel]);
 
-/*
-* The default function for the K6 test, which retrieves the consent log for a user.
-* This function is executed for each iteration of the test, and it uses a predefined set of users to simulate the retrieval process.
-* For each iteration, it randomly selects a user from the predefined list, generates a token for that user, and then calls the GetConsentLog function to retrieve the consent log.
-*/
+/**
+ * Test: reading the consent log as a user drawn from the whole pool.
+ *
+ * The realistic counterpart to consent-log-worst-case.js, which reads as the users
+ * with the most consent requests. Here the user is drawn at random from this VU's
+ * slice, so the numbers say what the endpoint costs for an ordinary user.
+ *
+ * @param {object[][]} data Users, one slice per VU.
+ */
 export default function (data) {
-    const [accessManagementApiClient, tokenGenerator] = getClients();
+    const [consentClient, tokenGenerator] = getClients();
+
     const from = randomItem(data[exec.vu.idInTest - 1]);
+
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-    GetConsentLog(accessManagementApiClient, from.partyUuid, getConsentLogLabel);
+
+    const log = GetConsentLog(consentClient, from.partyUuid, getConsentLogLabel);
+
+    ConsentDomainChecks.CheckConsentResponse(log, "GetConsentLog");
 }
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../../common-imports.js";

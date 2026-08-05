@@ -1,44 +1,48 @@
-import { ConsentApiClient } from "../../../../clients/authentication/index.js";
-import {
-    BffAccessManagementApiClient,
-} from "../../../../clients/authorization/index.js";
-import {
-    EnterpriseTokenGenerator,
-    PersonalTokenGenerator,
-    randomItem,
-    uuidv4,
-} from "../../../../common-imports.js";
-import { getOptions, requireEnv } from "../../../../helpers.js";
-import {
-    AltinnScopes,
-} from "../../../../scopes.js";
-import {
-    ApproveConsent,
-    LookupConsent,
-    RequestConsent,
-} from "../../../building-blocks/authentication/consent/index.js";
-import { GetConsentLog } from "../../../building-blocks/authorization/client-delegations/access-management.js";
-import {
-    consentValidTo,
-    getConsenteeOrgs,
-    getConsenterPersons,
-    getEnterpriseBaseTokenOpts,
-    getEnterpriseTokenOpts,
-    getPersonalBaseTokenOpts,
-    getPersonalTokenOpts,
-} from "./consent-commons.js";
+import { fail, group } from "k6";
 
-// Labels for the different steps in the consent process, used for tagging requests in K6.
+import { ApproveConsentContextBuilder } from "../../../../clients/access-management-bff/consent/index.js";
+import { randomItem, uuidv4 } from "../../../../common-imports.js";
+import { getOptions, requireEnv } from "../../../../helpers.js";
+import { EnterpriseCreateConsentRequest, EnterpriseGetConsentRequest } from "../../../building-blocks/access-management/consent-enterprise/index.js";
+import { LookupConsent } from "../../../building-blocks/access-management/resource-owner/maskinporten/index.js";
+import { ApproveConsentRequest, GetConsentLog } from "../../../building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../domain-checks/access-management/consent.js";
+import {
+    CONSENT_RESOURCE,
+    createConsentLookupRequest,
+    createConsentRequest,
+    getConsenteeClient,
+    getConsenteeOrgs,
+    getConsenteeTokenOpts,
+    getConsenterClient,
+    getConsenterPersons,
+    getConsenterTokenOpts,
+    getLookupClient,
+    organizationUrn,
+    personUrn,
+} from "./commons.js";
+
+// Labels for the steps of the consent lifecycle, so each one gets its own numbers
+// in the summary.
 const requestConsentLabel = { step: "Request Consent" };
 const approveConsentLabel = { step: "Approve Consent" };
+const getConsentRequestLabel = { step: "Get Consent Request" };
 const getConsentLogLabel = { step: "Get Consent Log" };
 const lookupConsentLabel = { step: "Lookup Consent" };
 
-export const options = getOptions([requestConsentLabel, approveConsentLabel, getConsentLogLabel, lookupConsentLabel]);
+export const options = getOptions([
+    requestConsentLabel,
+    approveConsentLabel,
+    getConsentRequestLabel,
+    getConsentLogLabel,
+    lookupConsentLabel,
+]);
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
+
     const env = __ENV.ENVIRONMENT;
+
     return {
         orgs: getConsenteeOrgs(env),
         persons: getConsenterPersons(env),
@@ -46,166 +50,99 @@ export function setup() {
 }
 
 /**
- * @type {ConsentApiClient | undefined}
+ * Test: the consent lifecycle, from an organization asking for a consent to
+ * Maskinporten looking the granted consent up.
+ *
+ * The organization and the person are drawn per iteration, so the consents spread
+ * across the whole test data set rather than piling up on one pair.
+ *
+ * @param {{orgs: object[], persons: object[]}} data Consentee organizations and consenter persons.
  */
-let consenteeApiClient = undefined;
-
-/**
- * @type {ConsentApiClient | undefined}
- */
-let consenterApiClient = undefined;
-
-/**
- * Used for Maskinporten consent lookup operations and lazily initialized on
- * first use.
- *
- * @type {ConsentApiClient | undefined}
- */
-let consentLookupApiClient = undefined;
-
-/**
- * @type {BffAccessManagementApiClient | undefined}
- */
-let accessManagementApiClient = undefined;
-
-/**
- * Shared enterprise token generator for the consentee.
- *
- * Lazily initialized on first use.
- *
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let consenteeTokenGenerator = undefined;
-
-/**
- * Shared personal token generator for the consenter.
- *
- * Lazily initialized on first use.
- *
- * @type {PersonalTokenGenerator | undefined}
- */
-let consenterTokenGenerator = undefined;
-
-/**
- * Creates and caches the API clients used by the test.
- *
- * The consentee client uses an enterprise token with the consent write scope,
- * the consenter client and access management client share a personal token,
- * and the consent lookup client uses a dedicated enterprise token for
- * Maskinporten consent lookup operations.
- *
- * Existing client instances are reused on subsequent calls.
- *
- * @returns {[
- * ConsentApiClient,
- * ConsentApiClient,
- * ConsentApiClient,
- * BffAccessManagementApiClient
- * ]} The initialized API clients.
- */
-function getClients() {
-    if (consenteeApiClient == undefined) {
-        consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, AltinnScopes.CONSENTREQUESTS.WRITE)
-        );
-
-        consenteeApiClient = new ConsentApiClient(
-            __ENV.BASE_URL,
-            consenteeTokenGenerator
-        );
-
-        consenterTokenGenerator = new PersonalTokenGenerator(
-            getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
-        );
-
-        consenterApiClient = new ConsentApiClient(
-            __ENV.BASE_URL,
-            consenterTokenGenerator
-        );
-
-        // Maskinporten uses this endpoint to look up consent before fetching the token.
-        const consentLookupTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(
-                __ENV.ENVIRONMENT,
-                AltinnScopes.MASKINPORTEN.CONSENT.READ
-            )
-        );
-
-        consentLookupApiClient = new ConsentApiClient(
-            __ENV.BASE_URL,
-            consentLookupTokenGenerator
-        );
-
-        accessManagementApiClient = new BffAccessManagementApiClient(
-            __ENV.AM_UI_BASE_URL,
-            consenterTokenGenerator
-        );
-    }
-
-    return [
-        consenteeApiClient,
-        consenterApiClient,
-        consentLookupApiClient,
-        accessManagementApiClient,
-    ];
-}
-
-function consentRights() {
-    return [
-        {
-            action: ["consent"],
-            resource: [
-                { type: "urn:altinn:resource", value: "samtykke-performance-test" },
-            ],
-            metaData: { inntektsaar: "2026" },
-        },
-    ];
-}
-
 export default function (data) {
-    const [
-        consenteeApiClient,
-        consenterApiClient,
-        consentLookupApiClient,
-        accessManagementApiClient,
-    ] = getClients();
+    const [consenteeClient, consenteeTokenGenerator] = getConsenteeClient();
+    const [consenterClient, consenterTokenGenerator] = getConsenterClient();
+    const lookupClient = getLookupClient();
 
-    // Pick a random consentee org and consenter person for this iteration so
-    // consents spread across all organizations and persons.
     const org = randomItem(data.orgs);
     const person = randomItem(data.persons);
 
-    consenteeTokenGenerator.setTokenGeneratorOptions(
-        getEnterpriseTokenOpts(__ENV.ENVIRONMENT, org.orgNo, AltinnScopes.CONSENTREQUESTS.WRITE)
-    );
-    consenterTokenGenerator.setTokenGeneratorOptions(
-        getPersonalTokenOpts(__ENV.ENVIRONMENT, person.partyUuid)
-    );
+    consenteeTokenGenerator.setTokenGeneratorOptions(getConsenteeTokenOpts(org.orgNo));
+    consenterTokenGenerator.setTokenGeneratorOptions(getConsenterTokenOpts(person.partyUuid));
 
-    const id = uuidv4();
-    const personIdentifierNo = `urn:altinn:person:identifier-no:${person.ssn}`;
-    const orgIdentifierNo = `urn:altinn:organization:identifier-no:${org.orgNo}`;
+    const consentId = uuidv4();
+    const from = personUrn(person.ssn);
+    const to = organizationUrn(org.orgNo);
 
-    RequestConsent(
-        consenteeApiClient,
-        id,
-        personIdentifierNo,
-        orgIdentifierNo,
-        consentValidTo(),
-        consentRights(),
-        "https://altinn.no",
-        requestConsentLabel
-    );
+    group("As an organization, I can ask a person for a consent and use it once it is granted", function () {
+        let consentRequestId;
 
-    ApproveConsent(consenterApiClient, id, approveConsentLabel);
+        group("Request the consent", function () {
+            const consentRequest = createConsentRequest({ consentId, from, to });
 
-    GetConsentLog(accessManagementApiClient, person.partyUuid, getConsentLogLabel);
+            const createdRequest = EnterpriseCreateConsentRequest(
+                consenteeClient,
+                consentRequest,
+                requestConsentLabel,
+            );
 
-    LookupConsent(
-        consentLookupApiClient,
-        id,
-        personIdentifierNo,
-        orgIdentifierNo,
-        lookupConsentLabel
-    );
+            ConsentDomainChecks.CheckConsentRequestCreated(createdRequest, { id: consentId, from, to });
+            ConsentDomainChecks.CheckConsentRights(createdRequest, [CONSENT_RESOURCE]);
+
+            consentRequestId = createdRequest?.id;
+        });
+
+        group("Approve the consent as the person it was asked of", function () {
+            if (!ConsentDomainChecks.CheckConsentRequestId(consentRequestId)) {
+                fail("cannot approve: creating the consent request returned no id");
+            }
+
+            const context = new ApproveConsentContextBuilder()
+                .withLanguage("nb")
+                .build();
+
+            const approved = ApproveConsentRequest(
+                consenterClient,
+                consentRequestId,
+                context,
+                approveConsentLabel,
+            );
+
+            ConsentDomainChecks.CheckConsentApproved(approved);
+        });
+
+        group("The approved consent request is accepted", function () {
+            if (!ConsentDomainChecks.CheckConsentRequestId(consentRequestId)) {
+                fail("cannot check the status: creating the consent request returned no id");
+            }
+
+            const consentRequest = EnterpriseGetConsentRequest(
+                consenteeClient,
+                consentRequestId,
+                getConsentRequestLabel,
+            );
+
+            ConsentDomainChecks.CheckConsentRequestStatus(consentRequest, "Accepted");
+        });
+
+        group("The consent shows up in the log of the person who gave it", function () {
+            const log = GetConsentLog(
+                consenterClient,
+                person.partyUuid,
+                getConsentLogLabel,
+            );
+
+            ConsentDomainChecks.CheckConsentResponse(log, "GetConsentLog");
+        });
+
+        group("Maskinporten can look the granted consent up", function () {
+            const lookupRequest = createConsentLookupRequest({ consentId, from, to });
+
+            const consent = LookupConsent(lookupClient, lookupRequest, lookupConsentLabel);
+
+            ConsentDomainChecks.CheckConsentResponse(consent, "LookupConsent");
+        });
+    });
 }
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../common-imports.js";

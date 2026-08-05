@@ -19,5 +19,3 @@ test_definitions:
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
-            - name: LOOKUPS
-              value: 500 # No clue what makes sense here

@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { BffAccessManagementApiClient } from "../../../../../clients/authorization/index.js";
+import { ConsentClient } from "../../../../../clients/access-management-bff/consent/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
@@ -49,80 +49,75 @@ export const worst_case_users = [
 ];
 
 /**
- * @type {BffAccessManagementApiClient | undefined}
+ * @type {ConsentClient | undefined}
  */
-let accessManagementApiClient = undefined;
+let consentClient = undefined;
 
 /**
  * @type {PersonalTokenGenerator | undefined}
  */
-let personalTokenGenerator = undefined;
+let tokenGenerator = undefined;
 
 /**
- * Creates and caches the clients used by the test.
+ * Creates and caches the client these tests read with.
  *
- * The same {@link PersonalTokenGenerator} and
- * {@link BffAccessManagementApiClient} instances are reused on subsequent
- * calls. The token generator is updated with the correct user and party for
- * each iteration, while the API client remains stateless and can safely be
- * reused.
+ * Built once per VU and reused across its iterations. The client is stateless, so
+ * only the token generator carries anything that changes: the user an iteration
+ * reads as, swapped with setTokenGeneratorOptions and getTokenOpts. The cache is
+ * keyed on the options, so each user still gets its own cached token.
  *
- * @returns {[
- * BffAccessManagementApiClient,
- * PersonalTokenGenerator
- * ]} The initialized API client and token generator.
+ * @returns {[ConsentClient, PersonalTokenGenerator]} The client, and the generator whose user is swapped per iteration.
  */
 export function getClients() {
-    if (accessManagementApiClient == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
-
-        personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
-
-        accessManagementApiClient = new BffAccessManagementApiClient(
-            __ENV.AM_UI_BASE_URL,
-            personalTokenGenerator
+    if (consentClient === undefined) {
+        tokenGenerator = new PersonalTokenGenerator(
+            new PersonalTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+                .build(),
         );
+
+        consentClient = new ConsentClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
     }
 
-    return [accessManagementApiClient, personalTokenGenerator];
+    return [consentClient, tokenGenerator];
 }
 
-/*
-* Function to generate token options for a given user and party.
-* The options include the environment, time to live (ttl), scopes, userId, and partyuuid.
-* These options are used by the token generator to create a token that can be used to authenticate the user when making requests to the API.
-*/
-export function getTokenOpts(userId, partyuuid) {
-    const scopes = CreateScopeString([
-        AltinnScopes.PORTAL.ENDUSER
-    ]);
+/**
+ * Token options for reading as one of the users.
+ *
+ * @param {string} userId - The user the iteration reads as.
+ * @param {string} partyUuid - The party that user reads for.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getTokenOpts(userId, partyUuid) {
     return new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes(scopes)
+        .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
         .withUserId(userId)
-        .withPartyUuid(partyuuid)
+        .withPartyUuid(partyUuid)
         .build();
 }
 
-/*
-* The setup function is called once before the test starts and is used to prepare the data for the test.
-* It retrieves the users for the current environment from a CSV file, segments the data based on the number of virtual users (VUs) in the test, and returns the segmented data.
-* This allows us to distribute the users across the VUs, ensuring that each VU has a subset of the users to work with during the test.
-* The CSV file is expected to have the same format as the worst_case_users array, with columns for userId, partyUuid, and label.
-*/
+/**
+ * Fetches the users these tests read as, one slice per VU.
+ *
+ * Segmented rather than flat, so two VUs do not spend the run reading for the same
+ * user and measuring a warm cache.
+ *
+ * @returns {object[][]} The users, one slice per VU.
+ */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
+
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
-    return segmentedData;
+
+    const res = http.get(
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
+        { tags: { action: "fetch-test-data" } },
+    );
+
+    return segmentData(parseCsvData(res.body), numberOfVUs);
 }

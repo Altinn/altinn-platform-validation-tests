@@ -1,29 +1,25 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 import exec from "k6/execution";
 
-import { ConsentApiClient } from "../../../../../clients/authentication/index.js";
+import { ApproveConsentContextBuilder } from "../../../../../clients/access-management-bff/consent/index.js";
 import { randomItem, uuidv4 } from "../../../../../common-imports.js";
-import {
-    EnterpriseTokenGenerator,
-    PersonalTokenGenerator,
-} from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
-import { AltinnScopes } from "../../../../../scopes.js";
+import { EnterpriseCreateConsentRequest } from "../../../../building-blocks/access-management/consent-enterprise/index.js";
+import { ApproveConsentRequest } from "../../../../building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
 import {
-    ApproveConsent,
-    RequestConsent,
-} from "../../../../building-blocks/authentication/consent/index.js";
-import {
-    consentValidTo,
+    createConsentRequest,
+    getConsenteeClient,
     getConsenteeOrgs,
+    getConsenteeTokenOpts,
+    getConsenterClient,
     getConsenterPersons,
-    getEnterpriseBaseTokenOpts,
-    getEnterpriseTokenOpts,
-    getPersonalBaseTokenOpts,
-    getPersonalTokenOpts,
-} from "../consent-commons.js";
+    getConsenterTokenOpts,
+    organizationUrn,
+    personUrn,
+} from "../commons.js";
 
-//How many rows you want to generate for the consent data
+// How many rows of consent data to generate.
 const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 20;
 
 export const options = {
@@ -37,46 +33,14 @@ export const options = {
     },
 };
 
-let consenteeClient;
-let consenterClient;
-let consenteeTokenGenerator;
-let consenterTokenGenerator;
-
-/*
- * Build the consentee (enterprise) and consenter (personal) clients once.
- * The token generators are module-level singletons whose identity (orgNo /
- * partyuuid) is set per iteration via setTokenGeneratorOptions.
+/**
+ * Plans one consent per iteration, so the default function can request and
+ * approve exactly the rows the teardown prints.
+ *
+ * @returns {Array<{consentId: string, pid: string, orgNo: string, partyUuid: string}>} The consents to generate.
  */
-function getClients() {
-    if (consenteeClient == undefined) {
-        consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getEnterpriseBaseTokenOpts(__ENV.ENVIRONMENT, AltinnScopes.CONSENTREQUESTS.WRITE)
-        );
-        consenteeClient = new ConsentApiClient(__ENV.BASE_URL, consenteeTokenGenerator);
-    }
-    if (consenterClient == undefined) {
-        consenterTokenGenerator = new PersonalTokenGenerator(
-            getPersonalBaseTokenOpts(__ENV.ENVIRONMENT)
-        );
-        consenterClient = new ConsentApiClient(__ENV.BASE_URL, consenterTokenGenerator);
-    }
-    return [consenteeClient, consenterClient];
-}
-
-function consentRights() {
-    return [
-        {
-            action: ["consent"],
-            resource: [
-                { type: "urn:altinn:resource", value: "samtykke-performance-test" },
-            ],
-            metaData: { inntektsaar: "2026" },
-        },
-    ];
-}
-
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     const env = __ENV.ENVIRONMENT;
     const orgs = getConsenteeOrgs(env);
@@ -84,7 +48,7 @@ export function setup() {
 
     const rows = [];
     for (let i = 0; i < LOOKUPS; i++) {
-        // Random consentee org + consenter person per row, so consents spread.
+        // Random organization and person per row, so the consents spread.
         const org = randomItem(orgs);
         const person = randomItem(persons);
 
@@ -95,41 +59,63 @@ export function setup() {
             partyUuid: person.partyUuid,
         });
     }
+
     console.log(`Setup complete: Planned ${rows.length} consent(s)`);
+
     return rows;
 }
 
+/**
+ * Generates the consents lookup.js reads.
+ *
+ * Not a test of anything on its own: it requests and approves one consent per
+ * iteration and the teardown prints them as csv. The checks are here so a run
+ * that silently produced nothing is not mistaken for one that produced data.
+ *
+ * @param {Array<{consentId: string, pid: string, orgNo: string, partyUuid: string}>} rows The consents planned in setup.
+ */
 export default function (rows) {
-    group("Request + approve consent and generate .csv data", () => {
-        const i = exec.scenario.iterationInTest;
-        const row = rows[i];
+    const [consenteeClient, consenteeTokenGenerator] = getConsenteeClient();
+    const [consenterClient, consenterTokenGenerator] = getConsenterClient();
 
-        const [consenteeClient, consenterClient] = getClients();
+    // One iteration per planned row, so every row is generated exactly once.
+    const row = rows[exec.scenario.iterationInTest];
 
-        consenteeTokenGenerator.setTokenGeneratorOptions(
-            getEnterpriseTokenOpts(__ENV.ENVIRONMENT, row.orgNo, AltinnScopes.CONSENTREQUESTS.WRITE)
-        );
-        consenterTokenGenerator.setTokenGeneratorOptions(
-            getPersonalTokenOpts(__ENV.ENVIRONMENT, row.partyUuid)
-        );
+    consenteeTokenGenerator.setTokenGeneratorOptions(getConsenteeTokenOpts(row.orgNo));
+    consenterTokenGenerator.setTokenGeneratorOptions(getConsenterTokenOpts(row.partyUuid));
 
-        const pidUrn = `urn:altinn:person:identifier-no:${row.pid}`;
-        const orgUrn = `urn:altinn:organization:identifier-no:${row.orgNo}`;
+    group("Request and approve a consent, so it can be looked up later", function () {
+        const from = personUrn(row.pid);
+        const to = organizationUrn(row.orgNo);
 
-        RequestConsent(
-            consenteeClient,
-            row.consentId,
-            pidUrn,
-            orgUrn,
-            consentValidTo(),
-            consentRights(),
-            "https://altinn.no"
-        );
+        const consentRequest = createConsentRequest({ consentId: row.consentId, from, to });
 
-        ApproveConsent(consenterClient, row.consentId);
+        const createdRequest = EnterpriseCreateConsentRequest(consenteeClient, consentRequest);
+
+        ConsentDomainChecks.CheckConsentRequestCreated(createdRequest, { id: row.consentId, from, to });
+
+        if (!ConsentDomainChecks.CheckConsentRequestId(createdRequest?.id)) {
+            fail("cannot approve: creating the consent request returned no id");
+        }
+
+        const context = new ApproveConsentContextBuilder()
+            .withLanguage("nb")
+            .build();
+
+        const approved = ApproveConsentRequest(consenterClient, createdRequest.id, context);
+
+        ConsentDomainChecks.CheckConsentApproved(approved);
     });
 }
 
+/**
+ * Prints the generated consents as the csv lookup.js reads.
+ *
+ * The output is copied into K6/testdata/authentication/consent/lookup/<env>.csv by
+ * hand, since a k6 run cannot write back to the repo.
+ *
+ * @param {Array<{consentId: string, pid: string, orgNo: string}>} rows The consents that were generated.
+ */
 export function teardown(rows) {
     let csv = "";
 

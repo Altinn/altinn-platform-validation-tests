@@ -1,28 +1,37 @@
-/**
- * This test is designed to retrieve the active consent for a user in a more realistic scenario, where the users are randomly selected from a larger pool of users.
- */
 import exec from "k6/execution";
 
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
-import { GetActiveConsent } from "../../../../building-blocks/authorization/client-delegations/index.js";
-import { getTokenOpts } from "../../../authorization/access-management/bff/commons.js";
-import { getClients } from "./commons.js";
+import { GetActiveConsents } from "../../../../building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
+import { getClients, getTokenOpts } from "./commons.js";
 
 export { setup } from "./commons.js";
 
 const getActiveConsentLabel = { step: "Get active consent for user" };
 
-export const options = getOptions([getActiveConsentLabel],);
+export const options = getOptions([getActiveConsentLabel]);
 
-/*
- * The default function for the K6 test, which retrieves the active consent for a user.
- * This function is executed for each iteration of the test, and it uses a predefined set of users to simulate the retrieval process.
- * For each iteration, it randomly selects a user from the predefined list, generates a token for that user, and then calls the GetActiveConsent function to retrieve the active consent.
+/**
+ * Test: reading the active consents as a user drawn from the whole pool.
+ *
+ * The realistic counterpart to consent-requests-worst-case.js, which reads as the
+ * users with the most consent requests. Here the user is drawn at random from this
+ * VU's slice, so the numbers say what the endpoint costs for an ordinary user.
+ *
+ * @param {object[][]} data Users, one slice per VU.
  */
 export default function (data) {
-    const [accessManagementApiClient, tokenGenerator] = getClients();
+    const [consentClient, tokenGenerator] = getClients();
+
     const from = randomItem(data[exec.vu.idInTest - 1]);
+
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-    GetActiveConsent(accessManagementApiClient, from.partyUuid, getActiveConsentLabel);
+
+    const activeConsents = GetActiveConsents(consentClient, from.partyUuid, getActiveConsentLabel);
+
+    ConsentDomainChecks.CheckConsentResponse(activeConsents, "GetActiveConsents");
 }
+
+// add the custom reporting for this test to the default summary
+export { handleSummary } from "../../../../../common-imports.js";

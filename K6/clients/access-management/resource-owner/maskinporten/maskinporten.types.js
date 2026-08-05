@@ -22,3 +22,14 @@
  * @property {string|null} created ISO date-time the delegation was created.
  * @property {string|null} resourceid Resource identifier.
  */
+
+/**
+ * Body of a consent lookup.
+ *
+ * Use {@link ConsentLookupRequestBuilder} to construct this object.
+ *
+ * @typedef {object} ConsentLookupRequest
+ * @property {string} id Consent UUID.
+ * @property {string} from Party urn the consent was given by.
+ * @property {string} to Party urn the consent was given to.
+ */
