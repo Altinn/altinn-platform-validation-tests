@@ -59,7 +59,10 @@ const EXCLUDED_PACKAGES = [
  * @returns {string[]} valid access package URNs
  */
 function fetchAssignablePackages() {
-    const metaApiClient = new PackagesClient(__ENV.BASE_URL);
+    const metaApiClient = new PackagesClient(
+        __ENV.BASE_URL,
+        new PersonalTokenGenerator(getEnduserOpts()),
+    );
     const groups = PackagesExport(metaApiClient, { action: "fetch-access-packages" });
 
     const urns = [];

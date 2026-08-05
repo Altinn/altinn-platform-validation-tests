@@ -78,7 +78,7 @@ export default function (data) {
             requestApiClient,
             new ReceivedRequestsQueryBuilder()
                 .withParty(b.orgUuid)
-                .withStatus(RequestStatus.Pending)
+                .withStatus([RequestStatus.Pending])
                 .build(),
             null,
             null,

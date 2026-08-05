@@ -1,6 +1,8 @@
 import { RolesClient } from "../../../../clients/access-management/metadata/roles/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getOptions } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { MetadataBuildingBlocks } from "../../../building-blocks/access-management/metadata/index.js";
 
 const labels = { step: "getRoles" };
@@ -9,6 +11,11 @@ const labels = { step: "getRoles" };
  * @type {RolesClient | undefined}
  */
 let rolesApiClient = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
+let tokenGenerator = undefined;
 
 export const options = getOptions([labels]);
 
@@ -32,8 +39,21 @@ export function setup() {
  * @returns {[RolesClient]} Tuple containing the Roles API client.
  */
 function getClients() {
+    if (tokenGenerator == undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.PORTAL.ENDUSER
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
+
+        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+    }
+
     if (rolesApiClient == undefined) {
-        rolesApiClient = new RolesClient(__ENV.BASE_URL);
+        rolesApiClient = new RolesClient(__ENV.BASE_URL, tokenGenerator);
     }
 
     return [rolesApiClient];
