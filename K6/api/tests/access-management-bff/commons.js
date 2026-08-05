@@ -2,7 +2,15 @@
 import http from "k6/http";
 
 import { AccessPackageClient } from "../../../clients/access-management-bff/access-package/index.js";
+import { AltinnCdnClient } from "../../../clients/access-management-bff/altinn-cdn/index.js";
 import { ConnectionClient } from "../../../clients/access-management-bff/connection/index.js";
+import { ConsentClient } from "../../../clients/access-management-bff/consent/index.js";
+import { InstanceClient, InstanceRightsDelegationDtoBuilder } from "../../../clients/access-management-bff/instance/index.js";
+import { LookupClient } from "../../../clients/access-management-bff/lookup/index.js";
+import { ResourceClient } from "../../../clients/access-management-bff/resource/index.js";
+import { RoleClient } from "../../../clients/access-management-bff/role/index.js";
+import { SingleRightClient } from "../../../clients/access-management-bff/single-right/index.js";
+import { SystemUserClient } from "../../../clients/access-management-bff/system-user/index.js";
 import { UserClient } from "../../../clients/access-management-bff/user/index.js";
 import { GraphqlClient } from "../../../clients/dialogporten/graphql/index.js";
 import { ServiceOwnerApiClient } from "../../../clients/dialogporten/serviceowner/index.js";
@@ -25,8 +33,22 @@ let bffAccessPackageApiClient = undefined;
 let graphqlClient = undefined;
 /** @type {PersonalTokenGenerator | undefined} */
 let personalTokenGenerator = undefined;
-
-let accessManagementApiClient = undefined;
+/** @type {LookupClient | undefined} */
+let lookupApiClient = undefined;
+/** @type {AltinnCdnClient | undefined} */
+let altinnCdnApiClient = undefined;
+/** @type {RoleClient | undefined} */
+let roleApiClient = undefined;
+/** @type {InstanceClient | undefined} */
+let instanceApiClient = undefined;
+/** @type {ConsentClient | undefined} */
+let consentApiClient = undefined;
+/** @type {SystemUserClient | undefined} */
+let systemUserApiClient = undefined;
+/** @type {ResourceClient | undefined} */
+let resourceApiClient = undefined;
+/** @type {SingleRightClient | undefined} */
+let singleRightApiClient = undefined;
 
 /**
  * Creates and caches the API clients used by the test.
@@ -37,15 +59,27 @@ let accessManagementApiClient = undefined;
  *
  * Existing client instances are reused on subsequent calls.
  *
+ * The Access Management BFF is split into one client per endpoint group, so the
+ * clients are returned in an object rather than a tuple. Destructure the ones
+ * the test needs.
+ *
  * @param {string} serviceOwnerOrgNo - Organization number used when generating the enterprise token.
- * @returns {[
- * ServiceOwnerApiClient,
- * BffUserApiClient,
- * BffConnectionsApiClient,
- * BffAccessPackageApiClient,
- * GraphqlClient,
- * PersonalTokenGenerator
- * ]} The initialized API clients and shared personal token generator.
+ * @returns {{
+ * serviceOwner: ServiceOwnerApiClient,
+ * user: UserClient,
+ * lookup: LookupClient,
+ * altinnCdn: AltinnCdnClient,
+ * role: RoleClient,
+ * instance: InstanceClient,
+ * consent: ConsentClient,
+ * systemUser: SystemUserClient,
+ * resource: ResourceClient,
+ * singleRight: SingleRightClient,
+ * connection: ConnectionClient,
+ * accessPackage: AccessPackageClient,
+ * graphql: GraphqlClient,
+ * tokenGenerator: PersonalTokenGenerator
+ * }} The initialized API clients and shared personal token generator.
  */
 export function getClients(serviceOwnerOrgNo) {
     if (serviceOwnerApiClient == undefined) {
@@ -72,21 +106,34 @@ export function getClients(serviceOwnerOrgNo) {
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
         userApiClient = new UserClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
-        // accessManagementApiClient = new BffAccessManagementApiClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
-        accessManagementApiClient = undefined;
+        lookupApiClient = new LookupClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        altinnCdnApiClient = new AltinnCdnClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        roleApiClient = new RoleClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        instanceApiClient = new InstanceClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        consentApiClient = new ConsentClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        systemUserApiClient = new SystemUserClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        resourceApiClient = new ResourceClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
+        singleRightApiClient = new SingleRightClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         bffConnectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         bffAccessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, personalTokenGenerator);
         graphqlClient = new GraphqlClient(__ENV.BASE_URL, personalTokenGenerator);
     }
-    return [
-        serviceOwnerApiClient,
-        userApiClient,
-        accessManagementApiClient,
-        bffConnectionsApiClient,
-        bffAccessPackageApiClient,
-        graphqlClient,
-        personalTokenGenerator
-    ];
+    return {
+        serviceOwner: serviceOwnerApiClient,
+        user: userApiClient,
+        lookup: lookupApiClient,
+        altinnCdn: altinnCdnApiClient,
+        role: roleApiClient,
+        instance: instanceApiClient,
+        consent: consentApiClient,
+        systemUser: systemUserApiClient,
+        resource: resourceApiClient,
+        singleRight: singleRightApiClient,
+        connection: bffConnectionsApiClient,
+        accessPackage: bffAccessPackageApiClient,
+        graphql: graphqlClient,
+        tokenGenerator: personalTokenGenerator,
+    };
 }
 
 // TODO: which one should be used here?
@@ -104,7 +151,7 @@ export function getTokenOpts(userId, partyuuid) {
 /**
  * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
  *
- * @param list TODO: description
+ * @param {object[]} list Organizations or users available to this VU.
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {
@@ -115,7 +162,7 @@ export function getFromTo(list) {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
@@ -140,16 +187,18 @@ export function getDialogportenOpts(ssn) {
  * Helper function to create the body for delegating rights for a resource and instance to another user,
  * based on the rights meta for the resource and the "to" user.
  *
- * @param { JSON } rightsMeta TODO: description
- * @param {*} to TODO: description
- * @returns TODO: description
+ * @param {Array<Right>} rightsMeta The rights the resource defines, as returned
+ * by GetRightsMeta.
+ * @param {object} to The user the rights are delegated to, with ssn and lastName.
+ * @returns {InstanceRightsDelegationDto} Body for delegating every right of the
+ * resource to that user.
  */
 export function getInstanceDelegationBody(rightsMeta, to) {
-    return {
-        to: {
+    return new InstanceRightsDelegationDtoBuilder()
+        .withTo({
             personIdentifier: to.ssn,
             lastName: to.lastName,
-        },
-        directRightKeys: rightsMeta.map((right) => right.key),
-    };
+        })
+        .withDirectRightKeys(rightsMeta.map((right) => right.key))
+        .build();
 }

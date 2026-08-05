@@ -14,7 +14,7 @@ import {
     GetAccessPackageDelegationCheck,
 } from "../../building-blocks/access-management-bff/access-package/index.js";
 import { SearchAccessPackages } from "../../building-blocks/access-management-bff/access-package/index.js";
-import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
 import { GetResourceOwners } from "../../building-blocks/access-management-bff/resource/index.js";
 import { SearchResources } from "../../building-blocks/access-management-bff/resource/index.js";
 import { GetRoles } from "../../building-blocks/access-management-bff/role/index.js";
@@ -225,14 +225,14 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1a);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1a);
         queryParams = {
             party: from.partyUuid,
             from: from.partyUuid,
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1c);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1c);
         queryParams = {
             party: from.partyUuid,
             from: from.partyUuid,
@@ -240,7 +240,7 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1d);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1d);
         GetIsHovedadmin(userApiClient, { party: from.partyUuid }, getIsHovedAdminLabel);
         GetRolePermissions(userApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getRolePermissionsLabel);
         GetAccessPackageDelegations(accessPackageApiClient, { party: from.partyUuid, from: from.partyUuid, to: to.partyUuid }, getDelegationsLabel);
@@ -281,7 +281,7 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel3m);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel3m);
     });
 }
 

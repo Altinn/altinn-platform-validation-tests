@@ -8,7 +8,7 @@ import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-im
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString, } from "../../../scopes.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation } from "../../building-blocks/access-management-bff/access-package/index.js";
-import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
 import { getFromTo, getTokenOpts } from "./commons.js";
 import { accessPackagesForUsers as accessPackages } from "./custom-data.js";
 
@@ -133,7 +133,7 @@ function getRightHolders(connectionsApiClient, party) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetSimplifiedConnections(
+    const respBody = GetRightHolders(
         connectionsApiClient,
         queryParamsTo,
         getRightholdersToLabel
@@ -148,7 +148,7 @@ function getRightHoldersWithoutTo(connectionsApiClient, party) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetSimplifiedConnections(
+    const respBody = GetRightHolders(
         connectionsApiClient,
         queryParamsTo,
         getRightholdersWithoutToLabel

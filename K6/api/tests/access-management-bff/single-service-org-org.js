@@ -14,7 +14,7 @@ import { GetAccessPackageDelegationCheck, SearchAccessPackages } from "../../bui
 import {
     GetOrgData,
 } from "../../building-blocks/access-management-bff/altinn-cdn/index.js";
-import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
 import { GetResourceOwners, SearchResources } from "../../building-blocks/access-management-bff/resource/index.js";
 import { GetRolePermissions, } from "../../building-blocks/access-management-bff/role/index.js";
 import { GetRoles, } from "../../building-blocks/access-management-bff/role/index.js";
@@ -230,7 +230,7 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: false,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1a);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1a);
         queryParams = {
             party: from.partyUuid,
             from: from.orgUuid,
@@ -238,14 +238,14 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1c);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1c);
         queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
             includeClientDelegations: true,
             includeAgentConnections: false,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1d);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1d);
         queryParams = {
             party: from.orgUuid,
             from: from.orgUuid,
@@ -253,7 +253,7 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: true,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel1e);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel1e);
         GetIsHovedadmin(userApiClient, { party: from.orgUuid }, getIsHovedAdminLabel);
         GetRolePermissions(userApiClient, { party: from.orgUuid, from: from.orgUuid, to: to.orgUuid }, getRolePermissionsLabel);
         GetAccessPackageDelegations(accessPackageApiClient, { party: from.orgUuid, to: to.orgUuid, from: from.orgUuid }, getDelegationsLabel);
@@ -299,7 +299,7 @@ export default function (segmentedData) {
             includeClientDelegations: true,
             includeAgentConnections: false,
         };
-        GetSimplifiedConnections(connectionsApiClient, queryParams, getRightholdersLabel3m);
+        GetRightHolders(connectionsApiClient, queryParams, getRightholdersLabel3m);
     });
 
 }

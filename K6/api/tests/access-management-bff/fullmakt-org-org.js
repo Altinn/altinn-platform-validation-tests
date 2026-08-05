@@ -11,7 +11,7 @@ import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { GetAccessPackages, } from "../../building-blocks/access-management/enduser/connections/index.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../building-blocks/access-management-bff/access-package/index.js";
 import { CreateAgent, CreateAgentAccessPackages, DeleteAgent, GetAgents, GetClients } from "../../building-blocks/access-management-bff/client-delegations/index.js";
-import { CreateRightHolder, DeleteReporteeConnection, GetSimplifiedConnections } from "../../building-blocks/access-management-bff/connection/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
 import { getTokenOpts } from "./commons.js";
 import { accessPackagesForOrgs as accessPackages } from "./custom-data.js";
 
@@ -178,7 +178,7 @@ export default function (segmentedData) {
     });
 
     group(clientDelegationGroup, function () {
-        GetSimplifiedConnections(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
+        GetRightHolders(connectionsApiClient, { party: to.orgUuid, from: from.orgUuid, to: to.orgUuid, includeClientDelegations: true, includeAgentConnections: true }, getRightholdersToLabel3a);
         CreateAgentAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid, to: user.partyUuid }, accessPackage.accessPackage, postAccessPackageLabel);
         GetAccessPackages(clientDelegationsApiClient, { party: to.orgUuid, from: from.orgUuid }, getAccessPackagesLabel3c);
     });
@@ -201,7 +201,7 @@ function getRightHolders(connectionsApiClient, from, to, labels) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetSimplifiedConnections(
+    const respBody = GetRightHolders(
         connectionsApiClient,
         queryParamsTo,
         labels
@@ -216,7 +216,7 @@ function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
         includeClientDelegations: true,
         includeAgentConnections: true,
     };
-    const respBody = GetSimplifiedConnections(
+    const respBody = GetRightHolders(
         connectionsApiClient,
         queryParamsTo,
         labels,
