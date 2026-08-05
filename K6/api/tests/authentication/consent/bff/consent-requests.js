@@ -5,8 +5,9 @@ import exec from "k6/execution";
 
 import { randomItem } from "../../../../../common-imports.js";
 import { getOptions } from "../../../../../helpers.js";
-import { GetActiveConsents } from "../../../../building-blocks/access-management-bff/consent/index.js";
-import { getClients, getTokenOpts } from "./commons.js";
+import { GetActiveConsent } from "../../../../building-blocks/authorization/client-delegations/index.js";
+import { getTokenOpts } from "../../../authorization/access-management/bff/commons.js";
+import { getClients } from "./commons.js";
 
 export { setup } from "./commons.js";
 
@@ -23,5 +24,5 @@ export default function (data) {
     const [accessManagementApiClient, tokenGenerator] = getClients();
     const from = randomItem(data[exec.vu.idInTest - 1]);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
-    GetActiveConsents(accessManagementApiClient, from.partyUuid, getActiveConsentLabel);
+    GetActiveConsent(accessManagementApiClient, from.partyUuid, getActiveConsentLabel);
 }
