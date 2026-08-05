@@ -21,6 +21,18 @@ export const RESOURCE_ID = `app_${ORG}_${APP}`;
 export const INSTANCE_ID = "b39a2326-9fff-4414-a209-61e6f9835564";
 
 /**
+ * The rights the app is expected to be able to delegate on the instance.
+ *
+ * Asserted rather than just logged because Access Management's own Bruno suite
+ * asserts these exact right keys against the same fixtures, so their pipeline
+ * already depends on them holding.
+ */
+export const EXPECTED_DELEGABLE_RIGHT_KEYS = [
+    `${RESOURCE_ID},task_1:read`,
+    `${RESOURCE_ID},task_1:sign`,
+];
+
+/**
  * @type {AppsInstanceDelegationClient | undefined}
  */
 let appsInstanceDelegationClient = undefined;

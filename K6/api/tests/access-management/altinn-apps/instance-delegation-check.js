@@ -2,7 +2,7 @@ import { check, group } from "k6";
 
 import { getOptions, requireEnv } from "../../../../helpers.js";
 import { CheckResourceDelegation, GetDelegations } from "../../../building-blocks/access-management/altinn-apps/index.js";
-import { getClients, getEmptyTokenClient, getWrongAppClient, INSTANCE_ID, RESOURCE_ID } from "./commons.js";
+import { EXPECTED_DELEGABLE_RIGHT_KEYS, getClients, getEmptyTokenClient, getWrongAppClient, INSTANCE_ID, RESOURCE_ID } from "./commons.js";
 
 const checkDelegationLabel = { step: "Delegation check as the app that owns the resource" };
 const getDelegationsLabel = { step: "Get delegations as the app that owns the resource" };
@@ -45,16 +45,19 @@ export default function () {
                 checkDelegationLabel,
             );
 
-            // Not asserting Delegable, since which rights are delegable is up to
-            // the app's policy in this environment. Log what came back so the run
-            // says something useful either way.
-            check(result, {
+            const asExpected = check(result, {
                 "delegation check returned rights": (r) => (r?.data ?? []).length > 0,
+                "every expected right is Delegable": (r) =>
+                    EXPECTED_DELEGABLE_RIGHT_KEYS.every((rightKey) =>
+                        (r?.data ?? []).some(
+                            (item) => item.rightKey === rightKey && item.status === "Delegable",
+                        ),
+                    ),
             });
 
-            if (result !== null) {
+            if (!asExpected) {
                 console.log(
-                    `delegation check statuses: ${JSON.stringify((result.data ?? []).map((item) => ({ rightKey: item.rightKey, status: item.status })))}`,
+                    `delegation check statuses: ${JSON.stringify((result?.data ?? []).map((item) => ({ rightKey: item.rightKey, status: item.status })))}`,
                 );
             }
         });
@@ -89,6 +92,7 @@ export default function () {
 
             const unauthorized = check(res, {
                 "empty platform access token is 401": (r) => r.status === 401,
+                "empty platform access token returns no body": (r) => !r.body,
             });
 
             if (!unauthorized) {
@@ -98,12 +102,17 @@ export default function () {
         });
 
         group("Another app gets an answer, but an empty one", function () {
-            // This does not fail loudly. Access Management answers 200 with an
-            // empty data array, the same shape as an app that simply has nothing
-            // delegable. A test that only checks the status code passes here
-            // while asserting nothing, which is why the org and app belong in
-            // the client's token generator and not in an optional argument that
-            // each call site can forget.
+            // Answering 200 with an empty data array is deliberate, not a bug.
+            // Access Management's own suite covers it twice, as
+            // PlatformAccessToken_OkEmpty for an app that does not exist and as
+            // AppWithoutDelegableRights_OkEmpty for a real app that owns nothing
+            // here, and expects 200 with empty data in both.
+            //
+            // The consequence is ours to handle: getting the org or app wrong
+            // looks exactly like having nothing to delegate, so a test that only
+            // checks the status code passes while asserting nothing. That is why
+            // the org and app belong in the client's token generator and not in
+            // an optional argument each call site can forget.
             const res = getWrongAppClient().CheckResourceDelegation(
                 RESOURCE_ID,
                 INSTANCE_ID,
