@@ -16,6 +16,16 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 const SYSTEM_OWNER = "713431400";
 
 /**
+ * The vendor whose existing system the pagination tests read from.
+ */
+export const PAGINATION_SYSTEM_OWNER = "312605031";
+
+/**
+ * The system the pagination tests page through.
+ */
+export const PAGINATION_SYSTEM_ID = "312605031_Virksomhetsbruker";
+
+/**
  * Every system registered by these tests allows the same redirect url.
  */
 const REDIRECT_URL = "https://digdir.no";
@@ -29,6 +39,16 @@ let clients = undefined;
  * @type {PersonalTokenGenerator | undefined}
  */
 let approverTokenGenerator = undefined;
+
+/**
+ * @type {RequestSystemUserClient | undefined}
+ */
+let paginationClient = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let paginationTokenGenerator = undefined;
 
 /**
  * Fetches the customers the system users are created for.
@@ -189,4 +209,33 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
         redirectUrl: REDIRECT_URL,
         registerSystemRequest,
     };
+}
+
+/**
+ * Creates and caches the client the pagination tests read with.
+ *
+ * A different vendor and a narrower scope than getClients: these tests only list
+ * requests for an existing system, so they read as that system's owner and ask
+ * for nothing beyond the read scope.
+ *
+ * Cached at module scope, so a VU builds it once and keeps the token it fetched
+ * rather than refetching on every iteration.
+ *
+ * @returns {[RequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
+ */
+export function getPaginationClients() {
+    if (paginationClient === undefined) {
+        paginationTokenGenerator = new EnterpriseTokenGenerator(
+            new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
+                .withOrganizationNumber(PAGINATION_SYSTEM_OWNER)
+                .build(),
+        );
+
+        paginationClient = new RequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator);
+    }
+
+    return [paginationClient, paginationTokenGenerator];
 }
