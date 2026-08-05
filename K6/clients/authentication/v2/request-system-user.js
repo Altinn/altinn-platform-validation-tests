@@ -44,7 +44,7 @@ class RequestSystemUserClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/systemuser/request/vendor";
+        this.BASE_PATH = "/authentication/api/v1/systemuser/request/vendor";
 
         /**
          * Fully-qualified API path.
@@ -58,6 +58,8 @@ class RequestSystemUserClient {
 
     /**
      * Creates a new system user request.
+     *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {CreateRequestSystemUser} request Request model.
      * @param {{[key: string]: string}} [labels]
@@ -95,6 +97,8 @@ class RequestSystemUserClient {
     /**
      * Creates a new agent system user request.
      *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
+     *
      * @param {CreateAgentRequestSystemUser} request Agent request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -131,6 +135,8 @@ class RequestSystemUserClient {
     /**
      * Retrieves a request system user status by id.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -165,6 +171,8 @@ class RequestSystemUserClient {
 
     /**
      * Deletes a system user request.
+     *
+     * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
@@ -201,6 +209,8 @@ class RequestSystemUserClient {
     /**
      * Retrieves an agent system user request status by id.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -235,6 +245,8 @@ class RequestSystemUserClient {
 
     /**
      * Retrieves a request system user by system id, organization number and external reference.
+     *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organization number.
@@ -278,6 +290,8 @@ class RequestSystemUserClient {
     /**
      * Retrieves an agent system user request by system id, organization number and external reference.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organization number.
      * @param {string} externalRef External reference.
@@ -320,6 +334,8 @@ class RequestSystemUserClient {
     /**
      * Retrieves all system user requests for a system.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
@@ -337,7 +353,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
+            name: `${this.FULL_PATH}/bysystem/{encodeURIComponent(systemId)}`,
             action: TAGS.RequestSystemUserVendorGetBySystem.action,
         };
 
@@ -360,6 +376,8 @@ class RequestSystemUserClient {
     /**
      * Retrieves all agent system user requests for a system.
      *
+     * Requires the `altinn:authentication/systemuser.request.read` scope.
+     *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
@@ -381,7 +399,7 @@ class RequestSystemUserClient {
 
         let tags = {
             endpoint: url,
-            name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
+            name: `${this.FULL_PATH}/agent/bysystem/{encodeURIComponent(systemId)}`,
             action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
         };
 

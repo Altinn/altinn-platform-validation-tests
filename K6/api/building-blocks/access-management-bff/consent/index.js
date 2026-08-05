@@ -1,0 +1,9 @@
+export { ApproveConsentRequest } from "./approve-consent-request.js";
+export { GetActiveConsents } from "./get-active-consents.js";
+export { GetConsent } from "./get-consent.js";
+export { GetConsentCount } from "./get-consent-count.js";
+export { GetConsentLog } from "./get-consent-log.js";
+export { GetConsentRequest } from "./get-consent-request.js";
+export { GetConsentRequestLogout } from "./get-consent-request-logout.js";
+export { RejectConsentRequest } from "./reject-consent-request.js";
+export { RevokeConsent } from "./revoke-consent.js";
