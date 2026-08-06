@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a system user request by external reference.
@@ -19,11 +20,15 @@ export function RequestSystemUserVendorGetByExternalRef(
     externalRef,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorGetByExternalRef(
-        systemId,
-        orgNo,
-        externalRef,
-        labels,
+    const res = withRetries(
+        () =>
+            requestSystemUserClient.RequestSystemUserVendorGetByExternalRef(
+                systemId,
+                orgNo,
+                externalRef,
+                labels,
+            ),
+        "RequestSystemUserVendorGetByExternalRef",
     );
 
     /** @type {RequestSystemResponse|null} */

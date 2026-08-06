@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Searches access packages.
@@ -15,7 +16,10 @@ export function PackagesSearch(
     query,
     labels = null,
 ) {
-    const res = packagesClient.PackagesSearch(query, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesSearch(query, labels),
+        "PackagesSearch",
+    );
 
     /** @type {Array<PackageDtoSearchObject>|null} */
     let packages = null;

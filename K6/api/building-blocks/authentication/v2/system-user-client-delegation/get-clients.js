@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets clients delegated to the specified system user.
@@ -15,9 +16,9 @@ export function GetClients(
     agent = null,
     labels = null,
 ) {
-    const res = systemUserClientDelegationClient.GetClients(
-        agent,
-        labels,
+    const res = withRetries(
+        () => systemUserClientDelegationClient.GetClients(agent, labels),
+        "GetClients",
     );
 
     /** @type {ClientInfoClientInfoPaginated|null} */

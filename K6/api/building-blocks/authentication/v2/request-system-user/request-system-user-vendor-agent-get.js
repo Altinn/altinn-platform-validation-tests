@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves an agent system user request by id.
@@ -15,9 +16,13 @@ export function RequestSystemUserVendorAgentGet(
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorAgentGet(
-        requestId,
-        labels,
+    const res = withRetries(
+        () =>
+            requestSystemUserClient.RequestSystemUserVendorAgentGet(
+                requestId,
+                labels,
+            ),
+        "RequestSystemUserVendorAgentGet",
     );
 
     /** @type {AgentRequestSystemResponse|null} */

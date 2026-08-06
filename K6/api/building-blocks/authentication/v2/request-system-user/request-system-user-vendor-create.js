@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a new system user request.
@@ -15,9 +16,13 @@ export function RequestSystemUserVendorCreate(
     request,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorCreate(
-        request,
-        labels,
+    const res = withRetries(
+        () =>
+            requestSystemUserClient.RequestSystemUserVendorCreate(
+                request,
+                labels,
+            ),
+        "RequestSystemUserVendorCreate",
     );
 
     /** @type {RequestSystemResponse|null} */

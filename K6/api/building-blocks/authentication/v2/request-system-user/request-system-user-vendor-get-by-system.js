@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves system user requests by system.
@@ -17,10 +18,14 @@ export function RequestSystemUserVendorGetBySystem(
     token = null,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorGetBySystem(
-        systemId,
-        token,
-        labels,
+    const res = withRetries(
+        () =>
+            requestSystemUserClient.RequestSystemUserVendorGetBySystem(
+                systemId,
+                token,
+                labels,
+            ),
+        "RequestSystemUserVendorGetBySystem",
     );
 
     /** @type {RequestSystemResponsePaginated|null} */
