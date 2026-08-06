@@ -3,10 +3,10 @@ import { check, fail } from "k6";
 import { OrdersApiClient } from "../../../../../clients/core/notifications/index.js";
 
 /**
- * @param {OrdersApiClient} ordersApiClient
- * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate
- * @param {string } sendersReference
- * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients
+ * @param {OrdersApiClient} ordersApiClient TODO: description
+ * @param { { subject: string, body: string, contentType: string, fromAddress: string } } emailTemplate TODO: description
+ * @param {string } sendersReference TODO: description
+ * @param {Array<{ emailAddress: string, mobileNumber: string, organizationNumber: string, nationalIdentityNumber: string, isReserved: boolean, }> } recipients TODO: description
  * @returns (string | ArrayBuffer | null)
  */
 export function PostEmailNotificationOrder(ordersApiClient, emailTemplate, sendersReference, recipients) {

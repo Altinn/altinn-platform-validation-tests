@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
-import { PersonalTokenGenerator } from "../../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { parseCsvData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
@@ -44,8 +44,8 @@ export function setup() {
  * using Dialogporten-specific options for authentication.
  *
  * @returns {[
- *   EnduserApiClient,
- *   PersonalTokenGenerator
+ * EnduserApiClient,
+ * PersonalTokenGenerator
  * ]} Tuple containing the API client and token generator.
  */
 export function getClient() {
@@ -63,16 +63,17 @@ export function getClient() {
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.
- * @param {*} ssn
- * @returns
+ *
+ * @param {*} ssn TODO: description
+ * @returns TODO: description
  */
 export function getDialogportenOpts(ssn = null) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten");
+    const tokenOpts = new PersonalTokenBuilder()
+        .withScopes("digdir:dialogporten");
+
     if (ssn !== null) {
-        tokenOpts.set("pid", ssn);
+        tokenOpts.withPid(ssn);
+
     }
-    return tokenOpts;
+    return tokenOpts.build();
 }

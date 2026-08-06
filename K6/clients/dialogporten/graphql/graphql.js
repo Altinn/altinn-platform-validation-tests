@@ -15,15 +15,15 @@ class GraphqlClient {
     /**
      *
      * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {*} tokenGenerator TODO: description
      */
     constructor(
         baseUrl,
         tokenGenerator
     ) {
         /**
-        * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-        */
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
         this.tokenGenerator = tokenGenerator;
         /**
          * @property {string} BASE_PATH The path to the api without host information
@@ -41,8 +41,9 @@ class GraphqlClient {
 
     /**
      * Get all dialogs based on variables
+     *
      * @param {DialogSearchVariablesBuilder} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetAllDialogsForParty(variables, labels = null) {
@@ -70,9 +71,10 @@ class GraphqlClient {
 
     /**
      * Get dialog by id
+     *
      * @param {DialogByIdVariablesBuilder} variables - the id of the dialog to get
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return response from the API
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns response from the API
      */
     GetDialogById(variables, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -96,11 +98,11 @@ class GraphqlClient {
     }
 
     /**
-    * Get parties for a user
-    *
-    * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-    * @return response from the API
-    * */
+     * Get parties for a user
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns response from the API
+     * */
     GetParties(labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
@@ -124,8 +126,9 @@ class GraphqlClient {
 
     /**
      * Get filtered service resources for a user
-     * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
-     * @return response from the API
+     *
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns response from the API
      */
     GetFilterServiceResources(labels = null) {
         const token = this.tokenGenerator.getToken();

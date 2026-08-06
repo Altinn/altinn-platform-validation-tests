@@ -2,7 +2,7 @@ import { check, group } from "k6";
 import http from "k6/http";
 
 import { RegisterLookupClient } from "../../../clients/authentication/index.js";
-import { PlatformTokenGenerator, PlatformTokenGeneratorOptions } from "../../../common-imports.js";
+import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
 
@@ -69,24 +69,25 @@ export function setup() {
 }
 
 export default function (usernames) {
-    const tokenOpts = new PlatformTokenGeneratorOptions();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
+    const tokenOpts = new PlatformTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .build();
 
     const token = new PlatformTokenGenerator(tokenOpts);
     const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
 
     /**
-   * This test requires a username that exists in Register:
-   * https://github.com/Altinn/altinn-register
-   * The username must correspond to a "self identified user" (i.e., a user with email login).
-   *
-   * If a valid username is not available, create a new self identified user at:
-   *   https://tt02.altinn.no/ui/Authentication/SelfIdentified
-   * Repeat this process for all relevant test environments: TT02, AT22 and AT23.
-   * Note: YT01 does not currently have a frontend for user creation.
-   * Username should be case insensitive.
-   */
+     * This test requires a username that exists in Register:
+     * https://github.com/Altinn/altinn-register
+     * The username must correspond to a "self identified user" (i.e., a user with email login).
+     *
+     * If a valid username is not available, create a new self identified user at:
+     * https://tt02.altinn.no/ui/Authentication/SelfIdentified
+     * Repeat this process for all relevant test environments: TT02, AT22 and AT23.
+     * Note: YT01 does not currently have a frontend for user creation.
+     * Username should be case insensitive.
+     */
 
     const user = getItemFromList(usernames, randomize);
 

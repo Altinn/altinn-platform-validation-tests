@@ -1,0 +1,58 @@
+import { check } from "k6";
+
+import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
+
+/**
+ * Creates a consent request.
+ *
+ * @param {EnterpriseClient} enterpriseClient Client for the Enterprise API.
+ * @param {ConsentRequestDto} request Consent request.
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @returns {ConsentRequestDetailsDto|null} Created consent request details.
+ */
+export function EnterpriseCreateConsentRequest(
+    enterpriseClient,
+    request,
+    labels = null,
+) {
+    const res = enterpriseClient.EnterpriseCreateConsentRequest(
+        request,
+        labels,
+    );
+
+    /** @type {ConsentRequestDetailsDto|null} */
+    let consentRequest = null;
+
+    // The swagger the client was generated from says 200, but the API answers 201
+    // Created. The old consent tests asserted 201 and passed, so 201 is what this
+    // waits for.
+    const succeed = check(res, {
+        "EnterpriseCreateConsentRequest - status code is 201": (r) =>
+            r.status === 201,
+        "EnterpriseCreateConsentRequest - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
+    });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return consentRequest;
+    }
+
+    check(res, {
+        "EnterpriseCreateConsentRequest - body is valid": (r) => {
+            try {
+                consentRequest = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return consentRequest;
+}

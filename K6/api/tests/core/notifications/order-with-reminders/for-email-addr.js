@@ -1,8 +1,9 @@
 import { check } from "k6";
 
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
-import { EnterpriseTokenGenerator, EnterpriseTokenGeneratorOptions, uuidv4 } from "../../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
 
 const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-email-address.json"));
@@ -17,13 +18,14 @@ export function setup() {
 
 function getClients() {
     if (tokenGenerator == null || ordersApiClient == null) {
-        console.log("Configuring Clients");
-        const options = new EnterpriseTokenGeneratorOptions();
-        options.set("env", __ENV.ENVIRONMENT);
-        options.set("ttl", 3600);
-        options.set("scopes", "altinn:serviceowner/notifications.create");
-        options.set("org", "ttd");
-        options.set("orgNo", "991825827");
+        const scopes = CreateScopeString([
+            AltinnScopes.SERVICEOWNER.NOTIFICATIONS.CREATE
+        ]);
+        const options = new EnterpriseTokenBuilder()
+            .withScopes(scopes)
+            .withOrganization("ttd")
+            .withOrganizationNumber("991825827")
+            .build();
 
         tokenGenerator
             = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd);

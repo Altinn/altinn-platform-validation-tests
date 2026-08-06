@@ -2,8 +2,9 @@ import { check, group } from "k6";
 import http from "k6/http";
 
 import { RegisterApiClient } from "../../../clients/authentication/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     AddRevisorRoleToErForOrg,
     GetRevisorCustomerIdentifiersForParty,
@@ -12,6 +13,11 @@ import {
 
 /**
  * @file add-rm-revisor-role-for-client.js
+ * @requires ENV.ENVIRONMENT - Target environment (e.g. tt02, yt01, at22, at23)
+ * @requires ENV.BASE_URL - Base URL for the Register API
+ * @requires ENV.REGISTER_SUBSCRIPTION_KEY - Subscription key for the Register API
+ * @requires ENV.SOAP_ER_USERNAME - Username for the ER SOAP API
+ * @requires ENV.SOAP_ER_PASSWORD - Password for the ER SOAP API
  * @description Verifies that role changes in ER (Enhetsregisteret / Brønnøysundregisteret)
  * are correctly propagated to Altinn's internal Register component.
  *
@@ -19,12 +25,6 @@ import {
  * organization via the ER SOAP API, then verifying that Altinn Register reflects the
  * removal. The role is subsequently re-added to leave the system in its original state
  * and verifying that it's present again in the Register
- *
- * @requires ENV.ENVIRONMENT - Target environment (e.g. tt02, yt01, at22, at23)
- * @requires ENV.BASE_URL - Base URL for the Register API
- * @requires ENV.REGISTER_SUBSCRIPTION_KEY - Subscription key for the Register API
- * @requires ENV.SOAP_ER_USERNAME - Username for the ER SOAP API
- * @requires ENV.SOAP_ER_PASSWORD - Password for the ER SOAP API
  */
 
 export function setup() {
@@ -44,11 +44,15 @@ export function setup() {
 export default function (facilitatorList) {
     const facilitator = getItemFromList(facilitatorList);
     group("Remove org from ER and make sure it's reflected in Register", () => {
-        const options = new PersonalTokenGeneratorOptions();
-        options.set("env", __ENV.ENVIRONMENT);
-        options.set("ttl", 3600);
-        options.set("scopes", "altinn:register/partylookup.admin");
-        options.set("pid", 22877497392);
+        const scopes = CreateScopeString([
+            AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN
+        ]);
+        const options = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .withPid(22877497392)
+            .build();
 
         const tokenGenerator = new PersonalTokenGenerator(options);
 

@@ -5,7 +5,8 @@
 
 /**
  * Get dialog by id
- * @param {uuidv7} id
+ *
+ * @param variables TODO: description
  * @returns graphql query to get dialog by id
  */
 export function getDialogById(variables) {
@@ -205,8 +206,9 @@ export function getDialogById(variables) {
 
 /**
  * Get all dialogs for party
+ *
  * @param {DialogSearchVariablesBuilder} variables - variables for the search query, built using the DialogSearchVariablesBuilder class
- * returns graphql query to get all dialogs for party
+ * @returns graphql query to get all dialogs for party
  */
 export function getAllDialogsForParties(variables) {
     const q = {

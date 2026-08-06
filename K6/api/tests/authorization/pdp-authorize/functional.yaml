@@ -1,0 +1,65 @@
+namespace: authorization
+base_dir: K6/api/tests/authorization/pdp-authorize/
+test_definitions:
+  - test_file: enduser.js
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl-direct-delegation.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+
+  - test_file: dagl-deny.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl-single-resource.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: enduser-enduser-instances.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: org-enduser-instances.js
+    env_file: common.env
+    contexts:
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01

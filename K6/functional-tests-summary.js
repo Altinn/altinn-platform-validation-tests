@@ -1,5 +1,5 @@
 /**
-/**
+ * /**
  * Summary for functional E2E k6 scripts.
  *
  * Docs: https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/

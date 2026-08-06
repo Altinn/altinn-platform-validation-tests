@@ -3,13 +3,13 @@ import { check } from "k6";
 import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
 
 /**
- * @param {OrdersV2ApiClient} ordersApiClient
- * @param {string } idempotencyId
- * @param {string } sendersReference
- * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation
- * @param {string } requestedSendTime
- * @param {Object } recipient
- * @param {Array<Object> } reminders
+ * @param {OrdersV2ApiClient} ordersApiClient TODO: description
+ * @param {string } idempotencyId TODO: description
+ * @param {string } sendersReference TODO: description
+ * @param { {dialogId: string, transmissionId: string} } dialogportenAssociation TODO: description
+ * @param {string } requestedSendTime TODO: description
+ * @param {object} recipient TODO: description
+ * @param {Array<object>} reminders TODO: description
  * @returns (string | ArrayBuffer | null)
  */
 export function PostNotificationOrderV2(

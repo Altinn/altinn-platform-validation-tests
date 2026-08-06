@@ -57,6 +57,8 @@ const endUsersByEnvironment = {
  * The generated cookies are used to authenticate the users when they access the "arbeidsflate" page during the test,
  * making use of idporten not necessary since the token is generated directly and set as a cookie for the domain.
  * This allows us to simulate real user interactions without needing to go through the login process.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     const users = endUsersByEnvironment[environment];
@@ -106,7 +108,8 @@ function getOptions() {
 
 /**
  * The default function is the main entry point for the test and is called for each iteration.
- * @param {} data
+ *
+ * @param {} data TODO: description
  */
 export default async function (data) {
     const testData = getItemFromList(data);
@@ -144,10 +147,11 @@ export default async function (data) {
 
 /**
  * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
- * @param {} page
- * @param {*} trend
- * @param {*} labels
- * @returns
+ *
+ * @param {} page TODO: description
+ * @param {*} trend TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export async function selectAllEnterprises(page, trend, labels) {
     const startTime = new Date();

@@ -4,10 +4,11 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 
 /**
  * Function to get dialog context label log
- * @param {EnduserApiClient} enduserApiClient
+ *
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get context label log for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {V1EndUserEndUserContextQueriesSearchLabelAssignmentLog_LabelAssignmentLog[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogContextLabelLog(
     enduserApiClient,
@@ -19,6 +20,9 @@ export function GetDialogContextLabelLog(
         labels,
     );
 
+    /** @type {V1EndUserEndUserContextQueriesSearchLabelAssignmentLog_LabelAssignmentLog[]} */
+    let labelAssignmentLog = [];
+
     const success = check(res, {
         "GetDialogContextLabelLog - status code MUST be 200": (res) => res.status == 200,
     });
@@ -26,7 +30,24 @@ export function GetDialogContextLabelLog(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return labelAssignmentLog;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogContextLabelLog - body is valid": (r) => {
+            try {
+                labelAssignmentLog = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return labelAssignmentLog;
 }

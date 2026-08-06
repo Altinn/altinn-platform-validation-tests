@@ -5,9 +5,9 @@ import { requireEnv } from "../../helpers.js";
 
 export class ClientDelegationPage {
     /**
-    *
-    * @param {Page} page
-    */
+     *
+     * @param {Page} page TODO: description
+     */
     constructor(page) {
         requireEnv(["AM_UI_BASE_URL"]);
         this.page = page;
@@ -19,36 +19,36 @@ export class ClientDelegationPage {
         this.clientSearchBox = page.getByRole("searchbox", { name: "Søk etter kunde" });
     }
     /**
-    * @param {string} name
-    * @returns {Locator}
-    */
+     * @param {string} name TODO: description
+     * @returns {Locator} TODO: description
+     */
     systemUserLink(name) {
         return this.page.getByRole("link", { name });
     }
     /**
-    * @param {string} name
-    * @returns {Locator}
-    */
+     * @param {string} name TODO: description
+     * @returns {Locator} TODO: description
+     */
     addCustomerButtonByName(name) {
         return this.page.getByRole("button", { name: `Legg til ${name}` });
     }
     /**
-    * @param {string} name
-    * @returns {Locator}
-    */
+     * @param {string} name TODO: description
+     * @returns {Locator} TODO: description
+     */
     removeCustomerButtonByName(name) {
         return this.page.getByRole("button", { name: `Fjern ${name} fra systemtilgang` });
     }
     /**
-    * @param {string} text
-    * @returns {Locator}
-    */
+     * @param {string} text TODO: description
+     * @returns {Locator} TODO: description
+     */
     confirmationText(text) {
         return this.page.getByText(text);
     }
     /**
-    * @param {string} accessPackage
-    */
+     * @param {string} accessPackage TODO: description
+     */
     async confirmAndCreateSystemUser(accessPackage) {
         const button = this.page.getByRole("button", { name: accessPackage });
         expect(button).toBeVisible();
@@ -57,8 +57,8 @@ export class ClientDelegationPage {
     }
 
     /**
-    * @param {string} accessPackage
-    */
+     * @param {string} accessPackage TODO: description
+     */
     async openAccessPackage(accessPackage) {
         const button = this.page.getByRole("button", { name: accessPackage });
         await expect(button).toBeHidden(); // the button was supposed to be visible but it's actually hidden
@@ -67,10 +67,10 @@ export class ClientDelegationPage {
     }
 
     /**
-    * @param {string} customerLabel
-    * @param {string} confirmationText
-    * @param {string} orgnummer
-    */
+     * @param {string} customerLabel TODO: description
+     * @param {string} confirmationText TODO: description
+     * @param {string} orgnummer TODO: description
+     */
     async addCustomer(
         customerLabel,
         confirmationText,
@@ -96,8 +96,8 @@ export class ClientDelegationPage {
         await this.confirmAndCloseButton.click();
     }
     /**
-    * @param {string} name
-    */
+     * @param {string} name TODO: description
+     */
     async removeCustomer(name) {
         // Open the modify customers modal
         await expect(this.modifyCustomersButton).toBeVisible();
@@ -119,8 +119,8 @@ export class ClientDelegationPage {
     }
 
     /**
-    * @param {string} name
-    */
+     * @param {string} name TODO: description
+     */
     async deleteSystemUser(name) {
         const deleteButton = this.deleteSystemAccessButtons.first();
         await expect(deleteButton).toBeVisible();

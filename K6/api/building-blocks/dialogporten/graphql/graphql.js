@@ -5,18 +5,22 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
 
 /**
  * Function to get all dialogs for a party
- * @param {GraphqlClient} graphqlClient
- * @param {*} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
- * @param {*} label
- * @returns
+ *
+ * @param {GraphqlClient} graphqlClient TODO: description
+ * @param variables TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
     const res = graphqlClient.GetAllDialogsForParty(variables, labels);
+
+    /** @type {object|null} */
+    let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
         "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetAllDialogsForParty - body is not empty": (r) => {
-            const res_body = JSON.parse(r.body);
+            res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     });
@@ -26,24 +30,28 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
         console.log(res.status_text);
         console.log(res.body);
     }
-    return res.body;
+    return res_body;
 }
 
 /**
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
- * @param {GraphqlClient} graphqlClient
+ *
+ * @param {GraphqlClient} graphqlClient TODO: description
  * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
- * @param {uuidv7} dialogId
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @returns
+ * @param {uuidv7} dialogId TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
     const res = graphqlClient.GetAllDialogsForParty(variables, labels);
+
+    /** @type {object|null} */
+    let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
         "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetAllDialogsForParty - body is not empty and dialogId is present": (r) => {
-            const res_body = JSON.parse(r.body);
+            res_body = JSON.parse(r.body);
             if (res_body === null || res_body === undefined) {
                 return false;
             }
@@ -65,24 +73,27 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
         console.log(res.status_text);
         console.log(res.body);
     }
-    return res.body;
+    return res_body;
 }
 
 /**
  * Function to get a dialog by id
- * @param {GraphqlClient} graphqlClient
- * @param {uuidv7} dialogId - id of the dialog to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return
  *
+ * @param {GraphqlClient} graphqlClient TODO: description
+ * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetDialogById(graphqlClient, dialogId, labels = null) {
     const res = graphqlClient.GetDialogById(dialogId, labels);
+
+    /** @type {object|null} */
+    let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
         "GetDialogById - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetDialogById - body is not empty": (r) => {
-            const res_body = JSON.parse(r.body);
+            res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     });
@@ -92,24 +103,27 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
         console.log(res.status_text);
         console.log(res.body);
     }
-    return res.body;
+    return res_body;
 }
 
 /**
  * Function to get a dialog by id and verify that the response contains the correct dialogId
- * @param {GraphqlClient} graphqlClient
- * @param {uuidv7} dialogId - id of the dialog to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return
  *
+ * @param {GraphqlClient} graphqlClient TODO: description
+ * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
     const res = graphqlClient.GetDialogById(dialogId, labels);
+
+    /** @type {object|null} */
+    let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
         "GetDialogById - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetDialogById - body is not empty and contains wanted dialog": (r) => {
-            const res_body = JSON.parse(r.body);
+            res_body = JSON.parse(r.body);
             if (res_body === null || res_body === undefined) {
                 return false;
             }
@@ -127,22 +141,26 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
         console.log(res.status_text);
         console.log(res.body);
     }
-    return res.body;
+    return res_body;
 }
 
 /**
  * Function to get parties for a user
- * @param {GraphqlClient} graphqlClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return
+ *
+ * @param {GraphqlClient} graphqlClient TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetParties(graphqlClient, labels = null) {
     const res = graphqlClient.GetParties(labels);
+
+    /** @type {object|null} */
+    let res_body = null;
     const succeed = check(res, {
         "GetParties - status code is 200": (r) => r.status === 200,
         "GetParties - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetParties - body is not empty": (r) => {
-            const res_body = JSON.parse(r.body);
+            res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     });
@@ -152,22 +170,26 @@ export function GetParties(graphqlClient, labels = null) {
         console.log(res.status_text);
         console.log(res.body);
     }
-    return res.body;
+    return res_body;
 }
 
 /**
  * Function to get filtered service resources for a user
- * @param {GraphqlClient} graphqlClient
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return
+ *
+ * @param {GraphqlClient} graphqlClient TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {
     const res = graphqlClient.GetFilterServiceResources(labels);
+
+    /** @type {object|null} */
+    let res_body = null;
     const succeed = check(res, {
         "GetFilteredServiceResources - status code is 200": (r) => r.status === 200,
         "GetFilteredServiceResources - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetFilteredServiceResources - body is not empty": (r) => {
-            const res_body = JSON.parse(r.body);
+            res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
         }
     });
@@ -177,5 +199,5 @@ export function GetFilterServiceResources(graphqlClient, labels = null) {
         console.log(res.status_text);
         console.log(res.body);
     }
-    return res.body;
+    return res_body;
 }

@@ -23,9 +23,10 @@ import exec from "k6/execution";
 import http from "k6/http";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
-import { PersonalTokenGenerator, PersonalTokenGeneratorOptions } from "../../../common-imports.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString, DigDirScopes } from "../../../scopes.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
 import { getInfoCloud } from "./commons.js";
 
@@ -44,6 +45,8 @@ export const options = getOptions([
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "INFO_CLOUD_URL"]);
@@ -57,6 +60,8 @@ export function setup() {
 
 /**
  * Main test function that runs for each VU, will run for each iteration. Calls the tree info portal api endpoints, same as a logged in user would do via the browser.
+ *
+ * @param data TODO: description
  */
 export default function (data) {
     const user = getItemFromList(data[exec.vu.idInTest - 1], randomize);
@@ -87,16 +92,20 @@ let personalTokenGenerator = undefined;
  * {@link PersonalTokenGenerator} instances are reused throughout the test.
  *
  * @returns {[
- *   InfoPortalApiClient,
- *   PersonalTokenGenerator
+ * InfoPortalApiClient,
+ * PersonalTokenGenerator
  * ]} Tuple containing the Info Portal API client and token generator.
  */
 function getClients() {
     if (infoPortalApiClient === undefined) {
-        const tokenOpts = new PersonalTokenGeneratorOptions();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
 
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
@@ -111,14 +120,23 @@ function getClients() {
 
 /**
  * Internal function to get token options for the personal token generator, takes the userId as a parameter to set the correct user for the token.
+ *
  * @param {string} userId - The userId to set in the token options
- * @return Map containing the token options
+ * @returns Map containing the token options
  */
 function getTokenOpts(userId) {
-    const tokenOpts = new PersonalTokenGeneratorOptions();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read");
-    tokenOpts.set("userId", userId);
+    const scopes = CreateScopeString([
+        DigDirScopes.DIALOGPORTEN.NOCONSENT,
+        "openid", // TODO: what is this supposed to be???
+        AltinnScopes.PORTAL.ENDUSER,
+        AltinnScopes.INSTANCES.READ
+
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withUserId(userId)
+        .build();
     return tokenOpts;
 }

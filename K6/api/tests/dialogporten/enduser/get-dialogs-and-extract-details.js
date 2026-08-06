@@ -59,11 +59,11 @@ export default function (data) {
         variables,
         getDialogslabel,
     );
-    drilldown(enduserApiClient, JSON.parse(res));
+    drilldown(enduserApiClient, res);
 }
 
 function drilldown(enduserApiClient, dialogs) {
-    if (!dialogs.items?.length) {
+    if (!dialogs?.items?.length) {
         console.log("No dialogs found, skipping GetDialog");
         return;
     }
@@ -81,12 +81,11 @@ function drilldown(enduserApiClient, dialogs) {
 }
 
 function getActivities(enduserApiClient, dialogId) {
-    const res = GetDialogActivities(
+    const activities = GetDialogActivities(
         enduserApiClient,
         dialogId,
         getDialogActivitiesLabel,
     );
-    const activities = JSON.parse(res);
     if (activities.length > 0) {
         GetDialogActivity(
             enduserApiClient,
@@ -98,12 +97,11 @@ function getActivities(enduserApiClient, dialogId) {
 }
 
 function getTransmissions(enduserApiClient, dialogId) {
-    const res = GetDialogTransmissions(
+    const transmissions = GetDialogTransmissions(
         enduserApiClient,
         dialogId,
         getDialogTransmissionsLabel,
     );
-    const transmissions = JSON.parse(res);
     if (transmissions.length > 0) {
         GetDialogTransmission(
             enduserApiClient,
@@ -115,12 +113,11 @@ function getTransmissions(enduserApiClient, dialogId) {
 }
 
 function getSeenLogs(enduserApiClient, dialogId) {
-    const res = GetDialogSeenLogs(
+    const seenLogs = GetDialogSeenLogs(
         enduserApiClient,
         dialogId,
         getDialogSeenLogsLabel,
     );
-    const seenLogs = JSON.parse(res);
     if (seenLogs.length > 0) {
         GetDialogSeenLog(
             enduserApiClient,

@@ -4,13 +4,17 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
 
 /**
  * Function to get dialogs
- * @param {EnduserApiClient} enduserApiClient
+ *
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} queryParams - query parameters for the request
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogs(enduserApiClient, queryParams, labels = null) {
     const res = enduserApiClient.GetDialogs(queryParams, labels);
+
+    /** @type {PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog|null} */
+    let dialogs = null;
 
     const success = check(res, {
         "GetDialogs - status code MUST be 200": (res) => res.status == 200,
@@ -19,20 +23,41 @@ export function GetDialogs(enduserApiClient, queryParams, labels = null) {
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return dialogs;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialogs - body is valid": (r) => {
+            try {
+                dialogs = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return dialogs;
 }
 
 /**
  * Function to get a dialog by id
- * @param {EnduserApiClient} enduserApiClient
+ *
+ * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {V1EndUserDialogsQueriesGet_Dialog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialog(enduserApiClient, dialogId, labels = null) {
     const res = enduserApiClient.GetDialog(dialogId, labels);
+
+    /** @type {V1EndUserDialogsQueriesGet_Dialog|null} */
+    let dialog = null;
 
     const success = check(res, {
         "GetDialog - status code MUST be 200": (res) => res.status == 200,
@@ -41,7 +66,24 @@ export function GetDialog(enduserApiClient, dialogId, labels = null) {
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return dialog;
     }
 
-    return res.body;
+    check(res, {
+        "GetDialog - body is valid": (r) => {
+            try {
+                dialog = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return dialog;
 }

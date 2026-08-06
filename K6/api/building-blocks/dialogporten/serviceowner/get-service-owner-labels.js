@@ -4,10 +4,11 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
 
 /**
  * Function to get serviceowner labels
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get labels for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetServiceOwnerLabels(
     serviceOwnerApiClient,
@@ -19,6 +20,9 @@ export function GetServiceOwnerLabels(
         labels,
     );
 
+    /** @type {V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel[]} */
+    let serviceOwnerLabels = [];
+
     const success = check(res, {
         "GetServiceOwnerLabels - status code MUST be 200": (res) => res.status == 200,
     });
@@ -26,7 +30,24 @@ export function GetServiceOwnerLabels(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return serviceOwnerLabels;
     }
 
-    return res.body;
+    check(res, {
+        "GetServiceOwnerLabels - body is valid": (r) => {
+            try {
+                serviceOwnerLabels = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return serviceOwnerLabels;
 }

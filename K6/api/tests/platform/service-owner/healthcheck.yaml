@@ -1,16 +1,17 @@
 namespace: platform
+base_dir: K6/api/tests/platform/service-owner/
 test_definitions:
-  - test_file: K6/api/tests/platform/service-owner/healthcheck.js
+  - test_file: healthcheck.js
     contexts:
       - environment: tt02
       - environment: prod
 
-  - test_file: K6/api/tests/platform/service-owner/ipv4-test.js
+  - test_file: ipv4-test.js
     contexts:
       - environment: tt02
       - environment: prod
 
-  - test_file: K6/api/tests/platform/service-owner/tls-valid.js
+  - test_file: tls-valid.js
     contexts:
       - environment: tt02
       - environment: prod
