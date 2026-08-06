@@ -4,14 +4,14 @@ import { GetAuthorizedParties } from "../../../building-blocks/access-management
 import { AuthorizedPartiesDomainChecks } from "../../../domain-checks/access-management/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Daglig leder B skal se hovedenhet A i lista
-// Prerequisuite: Daglig leder A delegerer Tilgangspakke og enkeltrettighet til Virksomhet B
+// Daglig leder A skal se person A i lista
+// Prerequisite: Person A delegerer enkeltrettigheter til hovedenhet B (navngiving må fikses, i praksis er det B)
 export default function (data) {
-    const dagligleder = data.testdata.authParties_hovedenhetB.dagligleder;
+    const dagligleder = data.testdata.authParties_hovedenhetA.dagligleder;
     let [authorizedPartiesClient] = getClients(dagligleder.userid, dagligleder.partyid, dagligleder.partyuuid, dagligleder.pid);
 
     const queryParams = new EndUserAuthorizedPartiesQueryBuilder()
-        .includePartiesViaKeyRoles(true)
+        .includeResources(true)
         .build();
 
     const authorizedParties = GetAuthorizedParties(authorizedPartiesClient, queryParams);
@@ -22,14 +22,16 @@ export default function (data) {
 
     const parties = authorizedParties.data ?? [];
 
-    // The hovedenhet reached through the key role, and its underenhet, are both expected
-    // in the response, neither of them holding any access.
-    const hovedenhet = data.testdata.authParties_hovedenhetA;
-    const underenhet = hovedenhet.authParties_underenhetA;
+    // Person A is expected in the response holding only the delegated resources,
+    // since that is the only thing the filter asks for.
+    const personA = data.testdata.authParties_personA;
 
-    AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, hovedenhet.partyuuid);
-    AuthorizedPartiesDomainChecks.CheckSubPartyIsPresent(parties, hovedenhet.partyuuid, underenhet.partyuuid);
-    AuthorizedPartiesDomainChecks.CheckPartyHasNoAccess(parties, hovedenhet.partyuuid);
-    AuthorizedPartiesDomainChecks.CheckPartyHasNoAccess(parties, underenhet.partyuuid);
+    AuthorizedPartiesDomainChecks.CheckPartyHasResources(parties, personA.partyuuid, [
+        "devtest_gar_bruno_accesslist",
+        "devtest_gar_bruno_accesslist_actionfilter",
+    ]);
+    AuthorizedPartiesDomainChecks.CheckPartyHasAccessPackages(parties, personA.partyuuid, []);
+    AuthorizedPartiesDomainChecks.CheckPartyHasRoles(parties, personA.partyuuid, []);
+    AuthorizedPartiesDomainChecks.CheckPartyHasInstances(parties, personA.partyuuid, []);
     AuthorizedPartiesDomainChecks.CheckNoDuplicateParties(parties);
 }

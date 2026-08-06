@@ -4,14 +4,14 @@ import { GetAuthorizedParties } from "../../../building-blocks/access-management
 import { AuthorizedPartiesDomainChecks } from "../../../domain-checks/access-management/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Daglig leder B skal se hovedenhet A i lista
-// Prerequisuite: Daglig leder A delegerer Tilgangspakke og enkeltrettighet til Virksomhet B
+// Person C skal se hovedenhet A i lista
+// Prerequisite: Hovedenhet A delegerer instanstilgang til person C
 export default function (data) {
-    const dagligleder = data.testdata.authParties_hovedenhetB.dagligleder;
-    let [authorizedPartiesClient] = getClients(dagligleder.userid, dagligleder.partyid, dagligleder.partyuuid, dagligleder.pid);
+    const personC = data.testdata.authParties_hovedenhetA.authParties_personC;
+    let [authorizedPartiesClient] = getClients(personC.userid, personC.partyid, personC.partyuuid, personC.pid);
 
     const queryParams = new EndUserAuthorizedPartiesQueryBuilder()
-        .includePartiesViaKeyRoles(true)
+        .includeInstances(true)
         .build();
 
     const authorizedParties = GetAuthorizedParties(authorizedPartiesClient, queryParams);
@@ -22,14 +22,24 @@ export default function (data) {
 
     const parties = authorizedParties.data ?? [];
 
-    // The hovedenhet reached through the key role, and its underenhet, are both expected
-    // in the response, neither of them holding any access.
+    // Hovedenhet A holds the delegated instance and nothing else, since that is the only
+    // thing the filter asks for. Its underenhet comes along without any access.
     const hovedenhet = data.testdata.authParties_hovedenhetA;
     const underenhet = hovedenhet.authParties_underenhetA;
 
     AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, hovedenhet.partyuuid);
     AuthorizedPartiesDomainChecks.CheckSubPartyIsPresent(parties, hovedenhet.partyuuid, underenhet.partyuuid);
-    AuthorizedPartiesDomainChecks.CheckPartyHasNoAccess(parties, hovedenhet.partyuuid);
+
+    AuthorizedPartiesDomainChecks.CheckPartyHasInstances(parties, hovedenhet.partyuuid, [
+        {
+            resourceId: "app_ttd_ttd-bruno-tilgangspakke-app",
+            instanceRef: data.testdata.instancer.personC_instansid,
+        },
+    ]);
+    AuthorizedPartiesDomainChecks.CheckPartyHasAccessPackages(parties, hovedenhet.partyuuid, []);
+    AuthorizedPartiesDomainChecks.CheckPartyHasResources(parties, hovedenhet.partyuuid, []);
+    AuthorizedPartiesDomainChecks.CheckPartyHasRoles(parties, hovedenhet.partyuuid, []);
+
     AuthorizedPartiesDomainChecks.CheckPartyHasNoAccess(parties, underenhet.partyuuid);
     AuthorizedPartiesDomainChecks.CheckNoDuplicateParties(parties);
 }
