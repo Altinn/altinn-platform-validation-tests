@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a registered system.
@@ -15,9 +16,9 @@ export function SystemRegisterVendorDelete(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorDelete(
-        systemId,
-        labels,
+    const res = withRetries(
+        () => systemRegisterClient.SystemRegisterVendorDelete(systemId, labels),
+        "SystemRegisterVendorDelete",
     );
 
     /** @type {SystemRegisterUpdateResult|null} */
