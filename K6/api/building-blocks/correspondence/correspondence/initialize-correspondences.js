@@ -21,7 +21,7 @@ export function InitializeCorrespondences(
     requestBody,
     labels = null,
 ) {
-    const res = correspondenceClient.InitializeCorrespondences(
+    const res = correspondenceClient.InitializeCorrespondence(
         requestBody,
         labels,
     );

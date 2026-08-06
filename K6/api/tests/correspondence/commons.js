@@ -37,7 +37,7 @@ export function getClients() {
             .build(),
     );
 
-    const correspondenceClient = new CorrespondenceClient(__ENV.ENVIRONMENT, vendorTokenGenerator);
+    const correspondenceClient = new CorrespondenceClient(__ENV.BASE_URL, vendorTokenGenerator);
 
     return [correspondenceClient];
 }
