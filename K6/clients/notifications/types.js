@@ -337,7 +337,3 @@
  * @typedef {object} InstantNotificationRecipientExt
  * @property {ShortMessageDeliveryDetailsExt} recipientSms
  */
-
-export const NotificationReminderExt = undefined;
-export const RecipientOrganizationExt = undefined;
-export const DialogportenIdentifiersExt = undefined;

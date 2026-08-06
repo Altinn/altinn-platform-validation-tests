@@ -8,6 +8,11 @@ let tokenGenerator = null;
 /** @type {OrderClient|null} */
 let ordersApiClient = null;
 
+/**
+ * Lazily creates the clients shared by the order-with-reminders tests.
+ *
+ * @returns {[OrderClient]} The Order API client.
+ */
 export function getClients() {
     const organizationName = "ttd";
     const orgNumber = "991825827";
@@ -18,7 +23,7 @@ export function getClients() {
         ]);
         const options = new EnterpriseTokenBuilder()
             .withScopes(scopes)
-            .withOrganization()
+            .withOrganization(organizationName)
             .withOrganizationNumber(orgNumber)
             .build();
 

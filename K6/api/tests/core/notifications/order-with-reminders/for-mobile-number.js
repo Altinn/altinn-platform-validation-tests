@@ -1,8 +1,12 @@
-
-import { NotificationOrderChainRequestExtBuilder, NotificationRecipientExtBuilder } from "../../../../../clients/notifications/order/orders.builders.js";
+import {
+    NotificationOrderChainRequestExtBuilder,
+    NotificationRecipientExtBuilder,
+    RecipientSmsExtBuilder,
+    SmsSendingOptionsExtBuilder
+} from "../../../../../clients/notifications/order/index.js";
 import { uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
-import { OrderCreateOrder } from "../../../../building-blocks/notifications/order/create-order.js";
+import { OrderCreateOrder } from "../../../../building-blocks/notifications/order/index.js";
 import { OrderDomainChecks } from "../../../../domain-checks/notifications/order.js";
 import { getClients } from "./common.js";
 
@@ -28,37 +32,51 @@ export default function () {
     const reminderSendersReference = `k6-reminder-${uniqueIdentifier}`;
     const phoneNumber = "+4799999999";
 
-    /** @type {NotificationReminderExt|null} */
-    let reminders = [
+    const recipient = new NotificationRecipientExtBuilder()
+        .WithRecipientSms(
+            new RecipientSmsExtBuilder()
+                .WithPhoneNumber(phoneNumber)
+                .WithSmsSettings(
+                    new SmsSendingOptionsExtBuilder()
+                        .WithSendingTimePolicy("Daytime")
+                        .WithBody("Dear user, please check your inbox for an important update. - Altinn Team")
+                        .Build()
+                )
+                .Build()
+        )
+        .Build();
+
+    /** @type {NotificationReminderExt[]} */
+    const reminders = [
         {
-            "delayDays": 1,
-            "sendersReference": reminderSendersReference,
-            "recipient": {
-                "recipientSms": {
-                    "phoneNumber": phoneNumber,
-                    "smsSettings": {
-                        "sendingTimePolicy": "Daytime",
-                        "body": "Reminder: please check your inbox for an important update. - Altinn Team"
-                    }
-                }
-            }
+            delayDays: 1,
+            sendersReference: reminderSendersReference,
+            recipient: new NotificationRecipientExtBuilder()
+                .WithRecipientSms(
+                    new RecipientSmsExtBuilder()
+                        .WithPhoneNumber(phoneNumber)
+                        .WithSmsSettings(
+                            new SmsSendingOptionsExtBuilder()
+                                .WithSendingTimePolicy("Daytime")
+                                .WithBody("Reminder: please check your inbox for an important update. - Altinn Team")
+                                .Build()
+                        )
+                        .Build()
+                )
+                .Build()
         }
     ];
 
-    const recipient = new NotificationRecipientExtBuilder()
-        .WithRecipientSms(phoneNumber)
-        .Build();
-
-    /** @type {NotificationOrderChainRequestExt|null} */
+    /** @type {NotificationOrderChainRequestExt} */
     const request = new NotificationOrderChainRequestExtBuilder()
         .WithIdempotencyId(uuidv4())
         .WithRequestedSendTime(requestedSendTime)
         .WithSendersReference(orderSendersReference)
         .WithRecipient(recipient)
-        .WithReminders()
+        .WithReminders(reminders)
         .Build();
 
-    let response = OrderCreateOrder(
+    const response = OrderCreateOrder(
         ordersApiClient,
         request
     );

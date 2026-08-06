@@ -1,6 +1,9 @@
-
-import { NotificationOrderChainRequestExtBuilder, NotificationRecipientExtBuilder } from "../../../../../clients/notifications/order/index.js";
-import { NotificationReminderExt } from "../../../../../clients/notifications/types.js";
+import {
+    EmailSendingOptionsExtBuilder,
+    NotificationOrderChainRequestExtBuilder,
+    NotificationRecipientExtBuilder,
+    RecipientEmailExtBuilder
+} from "../../../../../clients/notifications/order/index.js";
 import { uuidv4 } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 import { OrderCreateOrder } from "../../../../building-blocks/notifications/order/index.js";
@@ -21,7 +24,7 @@ export function setup() {
 
 export default function () {
 
-    let [ordersApiClient] = getClients();
+    const [ordersApiClient] = getClients();
 
     const uniqueIdentifier = uuidv4().substring(0, 8);
     const requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
@@ -29,34 +32,46 @@ export default function () {
     const reminderSendersReference = `k6-reminder-${uniqueIdentifier}`;
     const recipientEmail = "noreply@altinn.no";
 
-    /** @type {NotificationReminderExt|null} */
-    let reminders = [{
-        "delayDays": 1,
-        "recipient": {
-            "recipientEmail": {
-                "emailSettings": {
-                    "subject": "Important update",
-                    "body": "Dear user, please check your inbox for an important update. - Altinn Team",
-                    "emailAddress": recipientEmail
-                }
-            }
-        }
-    }];
-
-    const recipient = new NotificationRecipientExtBuilder()
-        .WithRecipientEmail(recipientEmail)
+    const emailSettings = new EmailSendingOptionsExtBuilder()
+        .WithSubject("Important update")
+        .WithBody("Dear user, please check your inbox for an important update. - Altinn Team")
         .Build();
 
-    /** @type {NotificationOrderChainRequestExt|null} */
+    const recipient = new NotificationRecipientExtBuilder()
+        .WithRecipientEmail(
+            new RecipientEmailExtBuilder()
+                .WithEmailAddress(recipientEmail)
+                .WithEmailSettings(emailSettings)
+                .Build()
+        )
+        .Build();
+
+    /** @type {NotificationReminderExt[]} */
+    const reminders = [
+        {
+            delayDays: 1,
+            sendersReference: reminderSendersReference,
+            recipient: new NotificationRecipientExtBuilder()
+                .WithRecipientEmail(
+                    new RecipientEmailExtBuilder()
+                        .WithEmailAddress(recipientEmail)
+                        .WithEmailSettings(emailSettings)
+                        .Build()
+                )
+                .Build()
+        }
+    ];
+
+    /** @type {NotificationOrderChainRequestExt} */
     const request = new NotificationOrderChainRequestExtBuilder()
         .WithIdempotencyId(uuidv4())
         .WithRequestedSendTime(requestedSendTime)
         .WithSendersReference(orderSendersReference)
         .WithRecipient(recipient)
-        .WithReminders()
+        .WithReminders(reminders)
         .Build();
 
-    let response = OrderCreateOrder(
+    const response = OrderCreateOrder(
         ordersApiClient,
         request
     );
