@@ -1,6 +1,7 @@
 // import building blocks
 import {InitializeCorrespondencesBuilder} from "../../../clients/correspondence/correspondence.builder.js";
 import { BaseCorrespondenceExt} from "../../../clients/correspondence/correspondence.types.js";
+import { requireEnv } from "../../../helpers.js";
 import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
 import { getClients } from "./commons.js";
 
@@ -9,7 +10,7 @@ import { getClients } from "./commons.js";
  */
 export function setup() {
     // Two packages, so the change request can give one up and ask for the other.
-
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
 }
 
 /**
@@ -18,6 +19,7 @@ export function setup() {
  * @param {object[]} data The arranged system users from setup.
  */
 export default function (data) {
+    
     const [correspondenceClient] = getClients();
 
     const resource_id = "bruno-correspondence";
@@ -74,6 +76,3 @@ export default function (data) {
     );
 
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";
