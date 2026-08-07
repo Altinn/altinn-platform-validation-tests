@@ -22,17 +22,11 @@ function assertLookupResult(parties, expectedUsername) {
 
     const party = parties[0];
 
-    // A self-identified user who logs in with an email has `epost:<email>` as its
-    // username and the bare email as its display name, which is what the idporten
-    // email test asserts from the other side. One created through the username
-    // form has the same value for both.
-    const expectedDisplayName = expectedUsername.replace(/^epost:/i, "");
-
     const okHard = check(party, {
         "partyType is self-identified-user": (p) =>
             p.partyType === "self-identified-user",
         "displayName matches testdata username": (p) =>
-            p.displayName === expectedDisplayName,
+            p.displayName === expectedUsername,
     });
 
     const okUserHard = check(party.user, {
