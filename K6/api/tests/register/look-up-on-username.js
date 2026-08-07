@@ -1,10 +1,9 @@
 import { check, fail, group } from "k6";
-import http from "k6/http";
 
-import { PartyUrnQueryBuilder, RegisterClient } from "../../../clients/register/index.js";
-import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
+import { PartyUrnQueryBuilder } from "../../../clients/register/index.js";
+import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
+import { getLookupClient, getUsernames } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { step: "test-lookup-on-username" };
@@ -41,25 +40,12 @@ function assertLookupResult(parties, expectedUsername) {
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT", "REGISTER_SUBSCRIPTION_KEY"]);
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } }
-    );
-    return parseCsvData(res.body);
+
+    return getUsernames(__ENV.ENVIRONMENT);
 }
 
 export default function (usernames) {
-    const tokenOpts = new PlatformTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .build();
-
-    const token = new PlatformTokenGenerator(tokenOpts);
-    const registerClient = new RegisterClient(
-        __ENV.BASE_URL,
-        token,
-        __ENV.REGISTER_SUBSCRIPTION_KEY,
-    );
+    const registerClient = getLookupClient();
 
     /**
      * This test requires a username that exists in Register:

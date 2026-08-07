@@ -1,18 +1,20 @@
 import { check, fail, group } from "k6";
-import http from "k6/http";
 
 import {
     CcrCustomerRoles,
     EnhetsregisteretClient,
     RegisterClient,
 } from "../../../clients/register/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getOptions, parseCsvData, requireEnv, retry } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { getItemFromList, getOptions, requireEnv, retry } from "../../../helpers.js";
 import {
     EnhetsregisteretBuildingBlocks,
     RegisterBuildingBlocks,
 } from "../../building-blocks/register/index.js";
+import {
+    getEnhetsregisteretClient,
+    getFacilitators,
+    getPartyLookupAdminClient,
+} from "./commons.js";
 
 /**
  * @file add-rm-ccr-role-for-client.js
@@ -53,33 +55,12 @@ export function setup() {
         "SOAP_ER_USERNAME",
     ]);
 
-    // Read from main on GitHub rather than from disk, the way the other tests do,
-    // so a branch-only edit to the file changes nothing until it is merged. The
-    // file holds ten facilitators per role, all verified to have customers in the
-    // environment when it was generated.
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/ccr-facilitators-${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } },
-    );
-
-    return parseCsvData(res.body);
+    return getFacilitators(__ENV.ENVIRONMENT);
 }
 
 export default function (facilitators) {
-    const options = new PersonalTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .withScopes(CreateScopeString([AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN]))
-        .withPid(22877497392)
-        .build();
-
-    const registerClient = new RegisterClient(
-        __ENV.BASE_URL,
-        new PersonalTokenGenerator(options),
-        __ENV.REGISTER_SUBSCRIPTION_KEY,
-    );
-
-    const enhetsregisteretClient = new EnhetsregisteretClient(__ENV.BASE_URL);
+    const registerClient = getPartyLookupAdminClient();
+    const enhetsregisteretClient = getEnhetsregisteretClient();
 
     // Each role is given its own turn even when an earlier one gave up, so one
     // broken role does not hide the state of the other two. The iteration still

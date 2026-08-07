@@ -1,9 +1,9 @@
 import { check, group } from "k6";
 
-import { PartyUrnQueryBuilder, RegisterClient } from "../../../clients/register/index.js";
-import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
+import { PartyUrnQueryBuilder } from "../../../clients/register/index.js";
 import { requireEnv } from "../../../helpers.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
+import { getLookupClient } from "./commons.js";
 
 const label = { step: "test-lookup-on-idporten-email" };
 
@@ -17,17 +17,7 @@ export function setup() {
 }
 
 export default function () {
-    const tokenOpts = new PlatformTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .build();
-
-    const token = new PlatformTokenGenerator(tokenOpts);
-    const registerClient = new RegisterClient(
-        __ENV.BASE_URL,
-        token,
-        __ENV.REGISTER_SUBSCRIPTION_KEY,
-    );
+    const registerClient = getLookupClient();
 
     group("Register: Look up party by idporten email", () => {
         const email = "test@mailinator.com";
