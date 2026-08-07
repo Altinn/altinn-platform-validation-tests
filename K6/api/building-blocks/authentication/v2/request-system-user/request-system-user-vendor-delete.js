@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a system user request.
@@ -15,9 +16,13 @@ export function RequestSystemUserVendorDelete(
     requestId,
     labels = null,
 ) {
-    const res = requestSystemUserClient.RequestSystemUserVendorDelete(
-        requestId,
-        labels,
+    const res = withRetries(
+        () =>
+            requestSystemUserClient.RequestSystemUserVendorDelete(
+                requestId,
+                labels,
+            ),
+        "RequestSystemUserVendorDelete",
     );
 
     /** @type {RequestSystemResponse|null} */

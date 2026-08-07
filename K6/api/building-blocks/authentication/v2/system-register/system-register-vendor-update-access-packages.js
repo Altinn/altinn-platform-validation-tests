@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Updates access packages on a registered system.
@@ -17,10 +18,14 @@ export function SystemRegisterVendorUpdateAccessPackages(
     accessPackages,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorUpdateAccessPackages(
-        systemId,
-        accessPackages,
-        labels,
+    const res = withRetries(
+        () =>
+            systemRegisterClient.SystemRegisterVendorUpdateAccessPackages(
+                systemId,
+                accessPackages,
+                labels,
+            ),
+        "SystemRegisterVendorUpdateAccessPackages",
     );
 
     /** @type {SystemRegisterUpdateResult|null} */

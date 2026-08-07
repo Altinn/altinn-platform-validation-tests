@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a SystemUser by vendor query.
@@ -16,9 +17,9 @@ export function SystemUserVendorGetByQuery(
     query = null,
     labels = null,
 ) {
-    const res = systemUserClient.SystemUserVendorGetByQuery(
-        query,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.SystemUserVendorGetByQuery(query, labels),
+        "SystemUserVendorGetByQuery",
     );
 
     /** @type {SystemUser|null} */

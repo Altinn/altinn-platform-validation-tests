@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves SystemUsers from the internal stream endpoint.
@@ -16,9 +17,9 @@ export function SystemUserInternalStream(
     query = null,
     labels = null,
 ) {
-    const res = systemUserClient.SystemUserInternalStream(
-        query,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.SystemUserInternalStream(query, labels),
+        "SystemUserInternalStream",
     );
 
     /** @type {SystemUserRegisterDTOItemStream|null} */

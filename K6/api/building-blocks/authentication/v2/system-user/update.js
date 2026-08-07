@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Updates an existing SystemUser.
@@ -16,9 +17,9 @@ export function SystemUserUpdate(
     request,
     labels = null,
 ) {
-    const res = systemUserClient.SystemUserUpdate(
-        request,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.SystemUserUpdate(request, labels),
+        "SystemUserUpdate",
     );
 
     return check(res, {

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves agent system users associated with the authenticated party.
@@ -15,9 +16,9 @@ export function GetAgents(
     party = null,
     labels = null,
 ) {
-    const res = systemUserClientDelegationClient.GetAgents(
-        party,
-        labels,
+    const res = withRetries(
+        () => systemUserClientDelegationClient.GetAgents(party, labels),
+        "GetAgents",
     );
 
     /** @type {SystemUser[]|null} */

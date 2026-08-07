@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a new registered system.
@@ -15,9 +16,9 @@ export function SystemRegisterVendorCreate(
     request,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorCreate(
-        request,
-        labels,
+    const res = withRetries(
+        () => systemRegisterClient.SystemRegisterVendorCreate(request, labels),
+        "SystemRegisterVendorCreate",
     );
 
     /** @type {string|null} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the system change log.
@@ -15,9 +16,13 @@ export function SystemRegisterVendorGetChangeLog(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorGetChangeLog(
-        systemId,
-        labels,
+    const res = withRetries(
+        () =>
+            systemRegisterClient.SystemRegisterVendorGetChangeLog(
+                systemId,
+                labels,
+            ),
+        "SystemRegisterVendorGetChangeLog",
     );
 
     /** @type {SystemChangeLog[]|null} */

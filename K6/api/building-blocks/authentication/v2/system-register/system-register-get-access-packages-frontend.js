@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves default access packages for a system.
@@ -19,10 +20,14 @@ export function SystemRegisterGetAccessPackagesFrontend(
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGetAccessPackagesFrontend(
-        systemId,
-        useOldFormatForApp,
-        labels,
+    const res = withRetries(
+        () =>
+            systemRegisterClient.SystemRegisterGetAccessPackagesFrontend(
+                systemId,
+                useOldFormatForApp,
+                labels,
+            ),
+        "SystemRegisterGetAccessPackagesFrontend",
     );
 
     /** @type {AccessPackage[]|null} */

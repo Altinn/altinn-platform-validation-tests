@@ -17,6 +17,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../../building-blocks/common/retry.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -67,9 +68,13 @@ export function arrangeApprovedSystemUser({
 }) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
-        { tags: { action: "fetch-test-data" } },
+    const res = withRetries(
+        () =>
+            http.get(
+                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
+                { tags: { action: "fetch-test-data" } },
+            ),
+        "fetch-test-data",
     );
 
     const customer = getItemFromList(parseCsvData(res.body), randomize);

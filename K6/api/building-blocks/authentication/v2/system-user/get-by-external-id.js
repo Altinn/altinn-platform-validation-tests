@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a SystemUser by external id information.
@@ -19,9 +20,9 @@ export function SystemUserGetByExternalId(
     query = null,
     labels = null,
 ) {
-    const res = systemUserClient.SystemUserGetByExternalId(
-        query,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.SystemUserGetByExternalId(query, labels),
+        "SystemUserGetByExternalId",
     );
 
     /** @type {SystemUser|null} */

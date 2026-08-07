@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a consent request.
@@ -15,9 +16,13 @@ export function EnterpriseGetConsentRequest(
     consentRequestId,
     labels = null,
 ) {
-    const res = enterpriseClient.EnterpriseGetConsentRequest(
-        consentRequestId,
-        labels,
+    const res = withRetries(
+        () =>
+            enterpriseClient.EnterpriseGetConsentRequest(
+                consentRequestId,
+                labels,
+            ),
+        "EnterpriseGetConsentRequest",
     );
 
     /** @type {ConsentRequestDetailsDto|null} */
