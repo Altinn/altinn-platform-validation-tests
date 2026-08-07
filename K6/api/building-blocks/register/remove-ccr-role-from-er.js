@@ -13,7 +13,8 @@ import { withRetries } from "../common/retry.js";
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} soapErUsername ER system user name.
  * @param {string} soapErPassword ER system user password.
- * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes.
+ * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes,
+ * e.g. "revisor".
  * @param {string} clientOrg Organization number of the organization losing a facilitator.
  * @param {string} facilitatorOrg Organization number of the facilitator.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.

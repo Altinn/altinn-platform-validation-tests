@@ -27,6 +27,10 @@ import {
  * reflects the removal. The role is subsequently re-added to leave the system in
  * its original state, verifying that it's present again in the Register.
  *
+ * A `ccrRole` is one of those ER roles, named after the endpoints that serve them
+ * and after ER's English name, the Central Coordinating Register: "revisor",
+ * "regnskapsforer" or "forretningsforer".
+ *
  * All three facilitator roles are covered by this one file. Every row of the test
  * data carries its role, so an iteration takes the role of the facilitator it drew
  * and the roles spread across iterations and VUs by themselves. The requests carry
@@ -71,7 +75,8 @@ export default function (facilitators) {
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
- * @param {string} ccrRole The role under test.
+ * @param {string} ccrRole The role under test, e.g. "revisor". One of
+ * CcrCustomerRoles: revisor, regnskapsforer or forretningsforer.
  * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
  */
 function addRemoveRoleForClient(
@@ -80,11 +85,9 @@ function addRemoveRoleForClient(
     ccrRole,
     facilitator,
 ) {
-    /** @type {string|null} */
-    let problem = null;
-
-    // CCR = enhetsregister-rolle
-    group(`Remove ${ccrRole} in ER and make sure Register reflects it`, () => {
+    // The role is in the group name, and it is one of the three rather than all of
+    // them, so a summary cannot be read as covering roles this iteration never drew.
+    group(`Remove the drawn role ${ccrRole} in ER and make sure Register reflects it`, () => {
         const facilitatorPartyUuid = facilitator.partyUuid;
         const facilitatorOrg = facilitator.org;
 
@@ -225,7 +228,7 @@ function retryUntilPropagated(testscenario) {
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} facilitatorPartyUuid The facilitator party UUID.
- * @param {string} ccrRole The role the customers have assigned.
+ * @param {string} ccrRole The role the customers have assigned, e.g. "revisor".
  * @returns {Array<string>|null} Organization numbers, or null when the call failed.
  */
 function customerOrganizationNumbers(

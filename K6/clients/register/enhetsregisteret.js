@@ -62,7 +62,8 @@ class EnhetsregisteretClient {
      *
      * @param {string} soapErUsername ER system user name.
      * @param {string} soapErPassword ER system user password.
-     * @param {string} ccrRole The role to assign, keyed as in ErRoleFieldTypes.
+     * @param {string} ccrRole The role to assign, keyed as in ErRoleFieldTypes,
+     * e.g. "revisor" for felttype REVI.
      * @param {string} clientOrg Organization number of the organization getting a facilitator.
      * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
@@ -136,7 +137,8 @@ class EnhetsregisteretClient {
      *
      * @param {string} soapErUsername ER system user name.
      * @param {string} soapErPassword ER system user password.
-     * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes.
+     * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes,
+     * e.g. "regnskapsforer" for felttype REGN.
      * @param {string} clientOrg Organization number of the organization losing a facilitator.
      * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.

@@ -168,7 +168,8 @@ class RegisterClient {
      * `altinn:register/partylookup.admin` scope.
      *
      * @param {string} partyUuid The party whose customers to get.
-     * @param {string} ccrRole The role the customers have assigned, from CcrCustomerRoles.
+     * @param {string} ccrRole The role the customers have assigned, from
+     * CcrCustomerRoles, e.g. "revisor".
      * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Body holds a Party list object.
@@ -224,7 +225,8 @@ class RegisterClient {
      * `altinn:register/partylookup.admin` scope.
      *
      * @param {string} partyUuid The party that assigned the role.
-     * @param {string} ccrRole The role that was assigned, from CcrHolderRoles.
+     * @param {string} ccrRole The role that was assigned, from CcrHolderRoles,
+     * e.g. "daglig-leder".
      * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Body holds a Party list object.
