@@ -1,15 +1,14 @@
 import { check, fail, group } from "k6";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
-import { getItemFromList, getOptions, requireEnv, retry } from "../../../helpers.js";
+import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
+import { EnhetsregisteretBuildingBlocks } from "../../building-blocks/register/index.js";
 import {
-    EnhetsregisteretBuildingBlocks,
-    RegisterBuildingBlocks,
-} from "../../building-blocks/register/index.js";
-import {
+    drawCustomerToMove,
     getEnhetsregisteretClient,
     getFacilitators,
     getPartyLookupAdminClient,
+    waitForRegister,
 } from "./commons.js";
 
 /**
@@ -85,47 +84,57 @@ function addRemoveRoleForClient(
     ccrRole,
     facilitator,
 ) {
+    const targetOrg = drawCustomerToMove(
+        registerClient,
+        ccrRole,
+        facilitator,
+        randomize,
+        label,
+    );
+
+    removeRoleAndWait(
+        registerClient,
+        enhetsregisteretClient,
+        ccrRole,
+        facilitator,
+        targetOrg,
+    );
+
+    addRoleBackAndWait(
+        registerClient,
+        enhetsregisteretClient,
+        ccrRole,
+        facilitator,
+        targetOrg,
+    );
+}
+
+/**
+ * Removes the role in ER and waits for Register to drop the customer.
+ *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
+ * @param {string} ccrRole The role under test, e.g. "revisor".
+ * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {string} targetOrg Organization number of the customer to remove.
+ */
+function removeRoleAndWait(
+    registerClient,
+    enhetsregisteretClient,
+    ccrRole,
+    facilitator,
+    targetOrg,
+) {
     // The role is in the group name, and it is one of the three rather than all of
     // them, so a summary cannot be read as covering roles this iteration never drew.
-    group(`Remove the drawn role ${ccrRole} in ER and make sure Register reflects it`, () => {
-        const facilitatorPartyUuid = facilitator.partyUuid;
-        const facilitatorOrg = facilitator.org;
-
-        // The customers are organizations, so the organization number is what ER
-        // takes and what the assertions below compare on.
-        const currentOrgs = customerOrganizationNumbers(
-            registerClient,
-            facilitatorPartyUuid,
-            ccrRole,
-        );
-
-        if (currentOrgs === null) {
-            fail(`cannot continue: reading the ${ccrRole} customers failed`);
-        }
-
-        console.log(
-            `Initial number of ${ccrRole} customers for ${facilitatorOrg}: ${currentOrgs.length}`,
-        );
-
-        if (currentOrgs.length === 0) {
-            fail(
-                `cannot continue: ${facilitatorOrg} has no ${ccrRole} customers to test with`,
-            );
-        }
-
-        // Drawn the same way as the facilitator, rather than always the first one.
-        // Two VUs that draw the same facilitator would otherwise target the same
-        // customer, and each would see the other's removal and add-back as its own.
-        const targetOrg = getItemFromList(currentOrgs, randomize);
-        console.log(`Picked target client organizationIdentifier: ${targetOrg}`);
-
+    group(`Remove the drawn role ${ccrRole} in ER and make sure Register drops it`, () => {
         const removed = EnhetsregisteretBuildingBlocks.RemoveCcrRoleFromEr(
             enhetsregisteretClient,
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
-            facilitatorOrg,
+            facilitator.org,
             label,
         );
 
@@ -135,41 +144,47 @@ function addRemoveRoleForClient(
             fail(`cannot continue: ER did not process removing ${ccrRole}`);
         }
 
-        let success = retry(
-            () => {
-                const orgs = customerOrganizationNumbers(
-                    registerClient,
-                    facilitatorPartyUuid,
-                    ccrRole,
-                );
-
-                // A failed read says nothing about the role, so keep waiting rather
-                // than read the empty result as the removal having gone through.
-                if (orgs === null) {
-                    return false;
-                }
-
-                const stillPresent = orgs.includes(targetOrg);
-                console.log(
-                    `[remove ${ccrRole}] Org ${targetOrg} is ${stillPresent ? "still" : "no longer"
-                    } in the list (${orgs.length})`,
-                );
-                return !stillPresent;
-            },
-            retryUntilPropagated(`remove ${ccrRole} role`),
+        const success = waitForRegister(
+            registerClient,
+            ccrRole,
+            facilitator,
+            targetOrg,
+            false,
+            `remove ${ccrRole} role`,
+            label,
         );
 
         check(success, {
             [`${ccrRole} role was successfully removed`]: (s) => s === true,
         });
+    });
+}
 
+/**
+ * Puts the role back in ER and waits for Register to have the customer again, so
+ * the environment is left as the test found it.
+ *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
+ * @param {string} ccrRole The role under test, e.g. "revisor".
+ * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {string} targetOrg Organization number of the customer to add back.
+ */
+function addRoleBackAndWait(
+    registerClient,
+    enhetsregisteretClient,
+    ccrRole,
+    facilitator,
+    targetOrg,
+) {
+    group(`Put the drawn role ${ccrRole} back in ER and make sure Register has it again`, () => {
         const addedBack = EnhetsregisteretBuildingBlocks.AddCcrRoleToEr(
             enhetsregisteretClient,
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
-            facilitatorOrg,
+            facilitator.org,
             label,
         );
 
@@ -177,30 +192,18 @@ function addRemoveRoleForClient(
         // picks a target from a list this one changed.
         if (!addedBack) {
             fail(
-                `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitatorOrg} as its ${ccrRole}`,
+                `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitator.org} as its ${ccrRole}`,
             );
         }
 
-        success = retry(
-            () => {
-                const orgs = customerOrganizationNumbers(
-                    registerClient,
-                    facilitatorPartyUuid,
-                    ccrRole,
-                );
-
-                if (orgs === null) {
-                    return false;
-                }
-
-                const nowPresent = orgs.includes(targetOrg);
-                console.log(
-                    `[add ${ccrRole}] Org ${targetOrg} is ${nowPresent ? "now" : "still not"
-                    } in the list (${orgs.length})`,
-                );
-                return nowPresent;
-            },
-            retryUntilPropagated(`add ${ccrRole} role back`),
+        const success = waitForRegister(
+            registerClient,
+            ccrRole,
+            facilitator,
+            targetOrg,
+            true,
+            `add ${ccrRole} role back`,
+            label,
         );
 
         check(success, {
@@ -209,49 +212,3 @@ function addRemoveRoleForClient(
     });
 }
 
-/**
- * Retry settings for waiting on a propagation. `retry` checks before it sleeps, so
- * a change that has already landed costs nothing, and short intervals only shorten
- * the overshoot. Two minutes of headroom for a propagation that normally takes
- * seconds.
- *
- * @param {string} testscenario Prefix used in log and check output.
- * @returns {{retries: number, intervalSeconds: number, testscenario: string}} Settings.
- */
-function retryUntilPropagated(testscenario) {
-    return {
-        retries: 24,
-        intervalSeconds: 5,
-        testscenario: testscenario,
-    };
-}
-
-/**
- * Organization numbers of the parties that have this facilitator in the given role.
- *
- * @param {RegisterClient} registerClient Client for the Register API.
- * @param {string} facilitatorPartyUuid The facilitator party UUID.
- * @param {string} ccrRole The role the customers have assigned, e.g. "revisor".
- * @returns {Array<string>|null} Organization numbers, or null when the call failed.
- */
-function customerOrganizationNumbers(
-    registerClient,
-    facilitatorPartyUuid,
-    ccrRole,
-) {
-    const customers = RegisterBuildingBlocks.GetCustomers(
-        registerClient,
-        facilitatorPartyUuid,
-        ccrRole,
-        // Only the organization number is compared on, and a facilitator can have
-        // thousands of customers, so ask for as little as possible.
-        ["org-id"],
-        label,
-    );
-
-    if (customers === null) {
-        return null;
-    }
-
-    return customers.map((customer) => customer.organizationIdentifier);
-}

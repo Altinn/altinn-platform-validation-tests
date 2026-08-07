@@ -1,3 +1,4 @@
+import { fail } from "k6";
 import http from "k6/http";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
@@ -7,8 +8,9 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
-import { parseCsvData } from "../../../helpers.js";
+import { getItemFromList, parseCsvData, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
 /**
  * Test data for the register tests, one file per environment.
@@ -48,11 +50,7 @@ let enhetsregisteretClient = undefined;
  * @returns {Array<{username: string}>} The usernames.
  */
 export function getUsernames(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/register-usernames-${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`register-usernames-${env}.csv`);
 }
 
 /**
@@ -65,11 +63,38 @@ export function getUsernames(env) {
  * @returns {Array<{partyUuid: string, org: string, role: string}>} The facilitators.
  */
 export function getFacilitators(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/ccr-facilitators-${env}.csv`, {
+    return fetchTestData(`ccr-facilitators-${env}.csv`);
+}
+
+/**
+ * Reads one of the test data files over HTTP.
+ *
+ * A missing file answers 404 with a body that parses into an empty list rather
+ * than into an error, and an empty list only surfaces later as an undefined row
+ * somewhere in the test. Renaming a file on a branch is enough to cause it, since
+ * the read is pinned to main, so the failure says which URL came up short.
+ *
+ * @param {string} filename File name under the test data directory.
+ * @returns {Array<object>} The parsed rows.
+ */
+function fetchTestData(filename) {
+    const url = `${TESTDATA_BASE_URL}/${filename}`;
+
+    const res = http.get(url, {
         tags: { action: "fetch-test-data" },
     });
 
-    return parseCsvData(res.body);
+    if (res.status !== 200) {
+        fail(`cannot read test data: ${url} answered ${res.status}`);
+    }
+
+    const rows = parseCsvData(res.body);
+
+    if (rows.length === 0) {
+        fail(`cannot read test data: ${url} holds no rows`);
+    }
+
+    return rows;
 }
 
 /**
@@ -150,4 +175,141 @@ export function getEnhetsregisteretClient() {
     }
 
     return enhetsregisteretClient;
+}
+
+/**
+ * Organization numbers of the parties that have this facilitator in the given role.
+ *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {string} facilitatorPartyUuid The facilitator party UUID.
+ * @param {string} ccrRole The role the customers have assigned, e.g. "revisor".
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @returns {Array<string>|null} Organization numbers, or null when the call failed.
+ */
+export function getCustomerOrganizationNumbers(
+    registerClient,
+    facilitatorPartyUuid,
+    ccrRole,
+    labels = null,
+) {
+    const customers = RegisterBuildingBlocks.GetCustomers(
+        registerClient,
+        facilitatorPartyUuid,
+        ccrRole,
+        // Only the organization number is compared on, and a facilitator can have
+        // thousands of customers, so ask for as little as possible.
+        ["org-id"],
+        labels,
+    );
+
+    if (customers === null) {
+        return null;
+    }
+
+    return customers.map((customer) => customer.organizationIdentifier);
+}
+
+/**
+ * Picks a customer to move in and out of a facilitator's list.
+ *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {string} ccrRole The role under test, e.g. "revisor".
+ * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {boolean} randomize Whether to draw at random rather than take the first.
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @returns {string} Organization number of the customer to move.
+ */
+export function drawCustomerToMove(
+    registerClient,
+    ccrRole,
+    facilitator,
+    randomize,
+    labels = null,
+) {
+    // The customers are organizations, so the organization number is what ER takes
+    // and what the assertions compare on.
+    const currentOrgs = getCustomerOrganizationNumbers(
+        registerClient,
+        facilitator.partyUuid,
+        ccrRole,
+        labels,
+    );
+
+    if (currentOrgs === null) {
+        fail(`cannot continue: reading the ${ccrRole} customers failed`);
+    }
+
+    console.log(
+        `Initial number of ${ccrRole} customers for ${facilitator.org}: ${currentOrgs.length}`,
+    );
+
+    if (currentOrgs.length === 0) {
+        fail(
+            `cannot continue: ${facilitator.org} has no ${ccrRole} customers to test with`,
+        );
+    }
+
+    // Drawn the same way as the facilitator, rather than always the first one. Two
+    // VUs that draw the same facilitator would otherwise target the same customer,
+    // and each would see the other's removal and add-back as its own.
+    const targetOrg = getItemFromList(currentOrgs, randomize);
+    console.log(`Picked target client organizationIdentifier: ${targetOrg}`);
+
+    return targetOrg;
+}
+
+/**
+ * Waits until Register agrees with a change just made in ER.
+ *
+ * `retry` checks before it sleeps, so a change that has already landed costs
+ * nothing, and short intervals only shorten the overshoot. Twenty-four tries five
+ * seconds apart is two minutes of headroom for a propagation that normally takes
+ * seconds.
+ *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {string} ccrRole The role under test, e.g. "revisor".
+ * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {string} targetOrg Organization number of the customer being moved.
+ * @param {boolean} expectPresent Whether the customer should end up in the list.
+ * @param {string} testscenario Prefix used in log and check output.
+ * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @returns {boolean} True once Register agrees, false if it never did.
+ */
+export function waitForRegister(
+    registerClient,
+    ccrRole,
+    facilitator,
+    targetOrg,
+    expectPresent,
+    testscenario,
+    labels = null,
+) {
+    return retry(
+        () => {
+            const orgs = getCustomerOrganizationNumbers(
+                registerClient,
+                facilitator.partyUuid,
+                ccrRole,
+                labels,
+            );
+
+            // A failed read says nothing about the role, so keep waiting rather than
+            // read the empty result as the change having gone through.
+            if (orgs === null) {
+                return false;
+            }
+
+            const present = orgs.includes(targetOrg);
+            console.log(
+                `[${testscenario}] Org ${targetOrg} is ${present ? "" : "not "}in the list (${orgs.length})`,
+            );
+
+            return present === expectPresent;
+        },
+        {
+            retries: 24,
+            intervalSeconds: 5,
+            testscenario: testscenario,
+        },
+    );
 }
