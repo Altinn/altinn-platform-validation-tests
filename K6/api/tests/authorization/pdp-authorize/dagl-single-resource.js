@@ -5,8 +5,8 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { PdpAuthorizeDagl } from "../../../building-blocks/authorization/pdp-authorize/index.js";
-import { getClients } from "./common-functions.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
+import { buildDaglRequest, getClients } from "./common-functions.js";
 
 // Labels for different actions
 const pdpAuthorizeLabel = { step: "PDP Authorize" };
@@ -17,7 +17,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 // Setup function to fetch test data and segment it for each VU. The CSV file should have columns: ssn, orgno, resourceid
 export function setup() {
-    requireEnv(["ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}-v2.csv`,
         { tags: { action: "fetch-test-data" } });
@@ -28,20 +28,16 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param testData TODO: description
+ * @param {object[][]} testData Single right delegations, one slice per VU.
  */
 export default function (testData) {
-    const [pdpAuthorizeClient, tokenGenerator] = getClients();
+    const [authorizeClient] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-    PdpAuthorizeDagl(
-        pdpAuthorizeClient,
-        party.ssn,
-        party.orgno,
-        party.resourceid,
-        action,
+    AuthorizePost(
+        authorizeClient,
+        buildDaglRequest(party.ssn, party.orgno, party.resourceid, action),
         expectedResponse,
-        __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
         label
     );
 }
@@ -50,8 +46,8 @@ export default function (testData) {
  * Function to randomly select action, label, and expected response.
  * 90% read with Permit, 10% sign with NotApplicable.
  *
- * @param denyLabel TODO: description
- * @param permitLabel TODO: description
+ * @param {{[key: string]: string}} denyLabel Label used for the requests that are expected to be denied.
+ * @param {{[key: string]: string}} permitLabel Label used for the requests that are expected to be permitted.
  * @returns {Array} [action, label, expectedResponse]
  */
 function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {

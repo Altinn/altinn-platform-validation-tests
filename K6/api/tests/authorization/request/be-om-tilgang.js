@@ -21,10 +21,11 @@
 
 import { check, group } from "k6";
 
-import { ReceivedRequestsParamsBuilder, RequestStatus } from "../../../../clients/authorization/index.js";
+import { CreateConnectionQueryBuilder } from "../../../../clients/access-management/enduser/connections/index.js";
+import { ReceivedRequestsQueryBuilder, RequestStatus } from "../../../../clients/access-management/enduser/request/index.js";
 import { getItemFromList, getOptions, pickUnique } from "../../../../helpers.js";
-import { PostConnection } from "../../../building-blocks/authorization/connections/index.js";
-import { Approve, GetReceived, PostPackage } from "../../../building-blocks/authorization/request/index.js";
+import { CreateConnection } from "../../../building-blocks/access-management/enduser/connections/index.js";
+import { ApproveReceivedRequest, CreatePackageRequest, GetReceivedRequests } from "../../../building-blocks/access-management/enduser/request/index.js";
 import { getClients, getEnduserOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
@@ -52,16 +53,18 @@ export default function (data) {
     group(groupLabel, function () {
         // Steg 1: Virksomhet B legger til Bruker A som connection (Bs token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
-        PostConnection(
+        CreateConnection(
             connectionsApiClient,
-            { party: b.orgUuid, from: b.orgUuid },
-            { personidentifier: a.pid, lastName: a.lastName },
+            new CreateConnectionQueryBuilder()
+                .withParty(b.orgUuid)
+                .build(),
+            { personIdentifier: a.pid, lastName: a.lastName },
             addAssignmentLabel,
         );
 
         // Steg 2: Bruker A ber om tilgangspakken for Virksomhet B (As token).
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
-        const request = PostPackage(
+        const request = CreatePackageRequest(
             requestApiClient,
             a.partyUuid,
             b.orgUuid,
@@ -71,24 +74,26 @@ export default function (data) {
 
         // Steg 3: Bruker B lister mottatte forespørsler og godkjenner den nye
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
-        const received = GetReceived(
+        const received = GetReceivedRequests(
             requestApiClient,
-            new ReceivedRequestsParamsBuilder()
+            new ReceivedRequestsQueryBuilder()
                 .withParty(b.orgUuid)
-                .withStatus(RequestStatus.Pending)
+                .withStatus([RequestStatus.Pending])
                 .build(),
+            null,
+            null,
             getReceivedLabel,
         );
 
         // Verifiser at forespørselen fra steg 2 faktisk er blant de mottatte.
-        const receivedRequest = received.data.find((r) => r.id === request.id);
+        const receivedRequest = received.find((r) => r.id === request.id);
         check(receivedRequest, {
             "Received contains the created request": (r) => r !== undefined,
         });
 
         // Steg 4: Bruker B godkjenner forespørselen på vegne av Virksomhet B.
         // Tom body ([]) godkjenner hele pakkeforespørselen; body-en brukes bare til godkjenning av enkeltrettigheter
-        Approve(
+        ApproveReceivedRequest(
             requestApiClient,
             b.orgUuid,
             receivedRequest.id,
