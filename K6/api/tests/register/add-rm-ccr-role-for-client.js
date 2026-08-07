@@ -113,7 +113,10 @@ function addRemoveRoleForClient(
             );
         }
 
-        const targetOrg = currentOrgs[0];
+        // Drawn the same way as the facilitator, rather than always the first one.
+        // Two VUs that draw the same facilitator would otherwise target the same
+        // customer, and each would see the other's removal and add-back as its own.
+        const targetOrg = getItemFromList(currentOrgs, randomize);
         console.log(`Picked target client organizationIdentifier: ${targetOrg}`);
 
         const removed = EnhetsregisteretBuildingBlocks.RemoveCcrRoleFromEr(
