@@ -65,11 +65,9 @@ export default function () {
                     "deletedAt is null": (p) => p.deletedAt === null,
                 });
 
-                const userFound = check(user, {
-                    "user.username is epost:<email>": (u) =>
-                        u?.username === `epost:${email}`,
-                });
-
+                // The username is not asserted here. It comes from the A2 profile,
+                // so an email user created in A3 has none, and look-up-on-username.js
+                // covers usernames against a legacy self-identified user anyway.
                 const okTypes = check(party, {
                     "partyUuid is a string": (p) => typeof p.partyUuid === "string",
                     "urn looks like an Altinn party URN": (p) =>
@@ -85,7 +83,7 @@ export default function () {
                     "user.userId is a number": (u) => typeof u?.userId === "number",
                 });
 
-                if (!okHard || !userFound || !okTypes || !okUserTypes) {
+                if (!okHard || !okTypes || !okUserTypes) {
                     console.log(JSON.stringify(party));
                 }
             },
