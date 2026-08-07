@@ -42,7 +42,7 @@ function assertLookupResult(parties, expectedUsername) {
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT", "REGISTER_SUBSCRIPTION_KEY"]);
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/rewrite-register-clients/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } }
     );
     return parseCsvData(res.body);
