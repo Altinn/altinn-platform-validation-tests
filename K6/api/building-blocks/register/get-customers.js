@@ -8,32 +8,37 @@ import {
 import { withRetries } from "../common/retry.js";
 
 /**
- * Gets the customers of an auditor: the parties that have assigned the `revisor`
- * role from Enhetsregisteret to the given party.
+ * Gets the customers of a party for one of its Enhetsregisteret roles: the
+ * parties that have assigned that role to it.
+ *
+ * The role is part of the check names, so a test that reads customers for more
+ * than one role can tell which of them failed.
  *
  * @param {RegisterClient} registerClient Client for the Register API.
- * @param {string} partyUuid The revisor party UUID.
+ * @param {string} partyUuid The party whose customers to get.
+ * @param {string} ccrRole The role the customers have assigned, from CcrCustomerRoles.
  * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {Array<Party>|null} The customer parties, or null on failure.
  */
-export function GetRevisorCustomers(
+export function GetCustomers(
     registerClient,
     partyUuid,
+    ccrRole,
     fields = null,
     labels = null,
 ) {
     const res = withRetries(
-        () => registerClient.GetRevisorCustomers(partyUuid, fields, labels),
-        "GetRevisorCustomers",
+        () => registerClient.GetCustomers(partyUuid, ccrRole, fields, labels),
+        `GetCustomers(${ccrRole})`,
     );
 
     /** @type {Array<Party>|null} */
     let customers = null;
 
     const succeed = check(res, {
-        "GetRevisorCustomers - status code is 200": (r) => r.status === 200,
-        "GetRevisorCustomers - status text is 200 OK": (r) =>
+        [`GetCustomers(${ccrRole}) - status code is 200`]: (r) => r.status === 200,
+        [`GetCustomers(${ccrRole}) - status text is 200 OK`]: (r) =>
             r.status_text === "200 OK",
     });
 
@@ -44,7 +49,7 @@ export function GetRevisorCustomers(
     }
 
     check(res, {
-        "GetRevisorCustomers - body is valid": (r) => {
+        [`GetCustomers(${ccrRole}) - body is valid`]: (r) => {
             try {
                 customers = JSON.parse(r.body).data ?? [];
 

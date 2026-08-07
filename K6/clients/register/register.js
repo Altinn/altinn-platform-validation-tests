@@ -4,9 +4,29 @@ const TAGS = {
     AccessManagementPartiesQuery: {
         action: "register-access-management-parties-query",
     },
-    GetRevisorCustomers: {
-        action: "register-get-revisor-customers",
+    GetCustomers: {
+        action: "register-get-customers",
     },
+};
+
+/**
+ * The roles from the Central Coordinating Register (Enhetsregisteret) that a
+ * party can hold on behalf of its customers, and that Register serves a customer
+ * list for. The values are the last path segment of the endpoint.
+ *
+ * Register has one endpoint per role rather than a role parameter, but they take
+ * the same arguments and answer with the same shape, so the client models them
+ * as one call. This object is the list of roles that call accepts.
+ *
+ * @readonly
+ */
+const CcrCustomerRoles = {
+    // Auditor.
+    REVISOR: "revisor",
+    // Accountant.
+    REGNSKAPSFORER: "regnskapsforer",
+    // Property manager.
+    FORRETNINGSFORER: "forretningsforer",
 };
 
 /**
@@ -113,22 +133,29 @@ class RegisterClient {
     }
 
     /**
-     * Gets the parties that have assigned the `revisor` role from the Central
-     * Coordinating Register (Enhetsregisteret) to a party, i.e. the customers of
-     * an auditor.
+     * Gets the customers of a party for one of its roles from the Central
+     * Coordinating Register (Enhetsregisteret): the parties that have assigned
+     * that role to this party. An auditor's customers are the organizations that
+     * have made it their `revisor`.
+     *
+     * Register exposes one endpoint per role. They take the same arguments and
+     * answer with the same shape, so the role is a parameter here rather than
+     * three near-identical methods. `ccrRole` goes into the path, so a value
+     * outside CcrCustomerRoles is a 404 rather than a validation error.
      *
      * Authenticated with a bearer token holding the
      * `altinn:register/partylookup.admin` scope.
      *
-     * @param {string} partyUuid The revisor party UUID.
+     * @param {string} partyUuid The party whose customers to get.
+     * @param {string} ccrRole The role the customers have assigned, from CcrCustomerRoles.
      * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Body holds a Party list object.
      */
-    GetRevisorCustomers(partyUuid, fields = null, labels = null) {
+    GetCustomers(partyUuid, ccrRole, fields = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const path = `${this.FULL_PATH}/internal/parties/${partyUuid}/customers/ccr/revisor`;
+        const path = `${this.FULL_PATH}/internal/parties/${partyUuid}/customers/ccr/${ccrRole}`;
 
         let url = path;
 
@@ -136,10 +163,13 @@ class RegisterClient {
             url += `?fields=${encodeURIComponent(fields.join(","))}`;
         }
 
+        // The role stays out of the name tag and gets its own, so the three roles
+        // share one endpoint in the metrics and can still be told apart.
         let tags = {
             endpoint: url,
-            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/revisor`,
-            action: TAGS.GetRevisorCustomers.action,
+            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
+            action: TAGS.GetCustomers.action,
+            ccrRole: ccrRole,
         };
 
         if (labels !== null) {
@@ -160,4 +190,4 @@ class RegisterClient {
     }
 }
 
-export { RegisterClient };
+export { CcrCustomerRoles, RegisterClient };

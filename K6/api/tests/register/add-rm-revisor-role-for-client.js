@@ -1,7 +1,7 @@
 import { check, fail, group } from "k6";
 import http from "k6/http";
 
-import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
+import { CcrCustomerRoles, EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
@@ -158,9 +158,10 @@ export default function (facilitatorList) {
  * @returns {Array<string>} Organization numbers, empty when the call failed.
  */
 function customerOrganizationNumbers(registerClient, facilitatorPartyUuid) {
-    const customers = RegisterBuildingBlocks.GetRevisorCustomers(
+    const customers = RegisterBuildingBlocks.GetCustomers(
         registerClient,
         facilitatorPartyUuid,
+        CcrCustomerRoles.REVISOR,
     );
 
     return (customers ?? []).map((customer) => customer.organizationIdentifier);

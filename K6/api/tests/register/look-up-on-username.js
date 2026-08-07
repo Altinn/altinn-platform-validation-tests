@@ -1,7 +1,7 @@
 import { check, fail, group } from "k6";
 import http from "k6/http";
 
-import { RegisterClient } from "../../../clients/register/index.js";
+import { PartyUrnQueryBuilder, RegisterClient } from "../../../clients/register/index.js";
 import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
@@ -81,7 +81,7 @@ export default function (usernames) {
     group("Look up username in Register", () => {
         const parties = RegisterBuildingBlocks.AccessManagementPartiesQuery(
             registerClient,
-            [`urn:altinn:party:username:${username}`],
+            new PartyUrnQueryBuilder().withUsername(username).build(),
             fields,
             label,
         );
@@ -95,7 +95,9 @@ export default function (usernames) {
             const uppercaseParties
                 = RegisterBuildingBlocks.AccessManagementPartiesQuery(
                     registerClient,
-                    [`urn:altinn:party:username:${usernameWithUpperCase}`],
+                    new PartyUrnQueryBuilder()
+                        .withUsername(usernameWithUpperCase)
+                        .build(),
                     fields,
                     label,
                 );

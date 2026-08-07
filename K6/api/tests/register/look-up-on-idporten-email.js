@@ -1,6 +1,6 @@
 import { check, group } from "k6";
 
-import { RegisterClient } from "../../../clients/register/index.js";
+import { PartyUrnQueryBuilder, RegisterClient } from "../../../clients/register/index.js";
 import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
 import { requireEnv } from "../../../helpers.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
@@ -35,7 +35,7 @@ export default function () {
 
         const parties = RegisterBuildingBlocks.AccessManagementPartiesQuery(
             registerClient,
-            [`urn:altinn:person:idporten-email:${email}`],
+            new PartyUrnQueryBuilder().withIdportenEmail(email).build(),
             fields,
             label,
         );
