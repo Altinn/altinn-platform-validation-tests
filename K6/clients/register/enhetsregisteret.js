@@ -164,7 +164,6 @@ class EnhetsregisteretClient {
                 "Content-Type": "text/xml",
                 SOAPAction:
                     "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"",
-                "X-Altinn-Register-Ccr": "Apply-In-A3",
             },
         });
     }
