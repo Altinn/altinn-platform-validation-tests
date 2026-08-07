@@ -75,6 +75,10 @@ export default function (facilitatorList) {
 
         console.log(`Initial number of revisor customers: ${currentOrgs.length}`);
 
+        if (currentOrgs === null) {
+            fail("cannot continue: reading the revisor customers failed");
+        }
+
         if (currentOrgs.length === 0) {
             fail("cannot continue: no revisor customers found to test with");
         }
@@ -84,7 +88,7 @@ export default function (facilitatorList) {
             `Picked target client organizationIdentifier for test: ${targetOrg}`,
         );
 
-        EnhetsregisteretBuildingBlocks.RemoveRevisorRoleFromEr(
+        const removed = EnhetsregisteretBuildingBlocks.RemoveRevisorRoleFromEr(
             enhetsregisteretClient,
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
@@ -92,12 +96,25 @@ export default function (facilitatorList) {
             facilitatorOrg,
         );
 
+        // Waiting for a propagation that was never started only spends ten retries
+        // to arrive at the failure ER already reported.
+        if (!removed) {
+            fail("cannot continue: ER did not process the role removal");
+        }
+
         let success = retry(
             () => {
                 const orgs = customerOrganizationNumbers(
                     registerClient,
                     facilitatorPartyUuidRevisor,
                 );
+
+                // A failed read says nothing about the role, so keep waiting rather
+                // than read the empty result as the removal having gone through.
+                if (orgs === null) {
+                    return false;
+                }
+
                 const stillPresent = orgs.includes(targetOrg);
                 console.log(
                     `[remove role] Org ${targetOrg} is ${stillPresent ? "still" : "no longer"
@@ -116,7 +133,7 @@ export default function (facilitatorList) {
             "Revisor role was successfully removed": (s) => s === true,
         });
 
-        EnhetsregisteretBuildingBlocks.AddRevisorRoleToEr(
+        const addedBack = EnhetsregisteretBuildingBlocks.AddRevisorRoleToEr(
             enhetsregisteretClient,
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
@@ -124,12 +141,25 @@ export default function (facilitatorList) {
             facilitatorOrg,
         );
 
+        // The role is left removed at this point, so say so loudly: the next run
+        // picks a target from a list this one changed.
+        if (!addedBack) {
+            fail(
+                `ER did not process putting the revisor role back, ${targetOrg} is left without ${facilitatorOrg} as its revisor`,
+            );
+        }
+
         success = retry(
             () => {
                 const orgs = customerOrganizationNumbers(
                     registerClient,
                     facilitatorPartyUuidRevisor,
                 );
+
+                if (orgs === null) {
+                    return false;
+                }
+
                 const nowPresent = orgs.includes(targetOrg);
                 console.log(
                     `[add role] Org ${targetOrg} is ${nowPresent ? "now" : "still not"
@@ -155,7 +185,7 @@ export default function (facilitatorList) {
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} facilitatorPartyUuid The revisor party UUID.
- * @returns {Array<string>} Organization numbers, empty when the call failed.
+ * @returns {Array<string>|null} Organization numbers, or null when the call failed.
  */
 function customerOrganizationNumbers(registerClient, facilitatorPartyUuid) {
     const customers = RegisterBuildingBlocks.GetCustomers(
@@ -164,5 +194,9 @@ function customerOrganizationNumbers(registerClient, facilitatorPartyUuid) {
         CcrCustomerRoles.REVISOR,
     );
 
-    return (customers ?? []).map((customer) => customer.organizationIdentifier);
+    if (customers === null) {
+        return null;
+    }
+
+    return customers.map((customer) => customer.organizationIdentifier);
 }

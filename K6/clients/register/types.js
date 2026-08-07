@@ -100,9 +100,12 @@
  */
 
 /**
- * A database record for a party, as served by the access-management party
- * query. Close to Party, but exposes the storage view: the owner of the party,
- * and historical user ids and usernames.
+ * A database record for a party. Close to Party, but exposes the storage view:
+ * the owner of the party, and historical user ids and usernames.
+ *
+ * The swagger has the access-management party query returning these, but at22
+ * answers with Party. Nothing in this repo reads a PartyRecord yet, so this
+ * typedef only describes the shape the spec documents.
  *
  * @typedef {object} PartyRecord
  * @property {string} [partyUuid]

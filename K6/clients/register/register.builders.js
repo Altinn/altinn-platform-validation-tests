@@ -143,10 +143,13 @@ class PartyUrnQueryBuilder {
     }
 
     /**
+     * A copy, so a builder that is reused after building does not reach back into
+     * the query that was already sent.
+     *
      * @returns {Array<string>} The URNs, in the order they were added.
      */
     build() {
-        return this.urns;
+        return [...this.urns];
     }
 }
 

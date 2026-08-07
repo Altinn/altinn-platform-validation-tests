@@ -113,7 +113,10 @@ class RegisterClient {
      * has to be asked for, so a caller that reads `user.username` has to include
      * `user` or `user.username` here.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Body holds a PartyRecord list object.
+     * @returns {http.RefinedResponse} Body holds a Party list object.
+     * Note that the swagger says PartyRecordListObject here, but at22 answers with
+     * the Party shape: it carries `urn` and a flat `user.usernames`, where a
+     * PartyRecord would carry `ownerUuid` and `usernames.currentValue`.
      */
     AccessManagementPartiesQuery(urns, fields = null, labels = null) {
         const token = this.tokenGenerator.getToken();
