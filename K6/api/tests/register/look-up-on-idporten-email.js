@@ -1,66 +1,43 @@
-import { check, fail, group } from "k6";
+import { check, group } from "k6";
 
-import { RegisterLookupClient } from "../../../clients/authentication/index.js";
-import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
+import { PartyUrnQueryBuilder } from "../../../clients/register/index.js";
 import { requireEnv } from "../../../helpers.js";
-import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
+import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
+import { getLookupClient } from "./commons.js";
 
-const label = "test-lookup-on-idporten-email";
+const label = { step: "test-lookup-on-idporten-email" };
 
 function isDateString(v) {
     return typeof v === "string" && !Number.isNaN(Date.parse(v));
 }
 
-function tryParseJson(str) {
-    try {
-        return JSON.parse(str);
-    } catch {
-        return null;
-    }
-}
-
 export function setup() {
-    requireEnv(["BASE_URL", "ENVIRONMENT"]);
+    requireEnv(["BASE_URL", "ENVIRONMENT", "REGISTER_SUBSCRIPTION_KEY"]);
     return;
 }
 
 export default function () {
-    const tokenOpts = new PlatformTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600);
-
-    const token = new PlatformTokenGenerator(tokenOpts);
-    const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
+    const registerClient = getLookupClient();
 
     group("Register: Look up party by idporten email", () => {
         const email = "test@mailinator.com";
-        const fields = "party,user";
+        const fields = ["party", "user"];
 
-        const requestBody = {
-            data: [`urn:altinn:person:idporten-email:${email}`],
-        };
-
-        const response = LookupPartiesInRegister(
-            registerLookupClient,
+        const parties = RegisterBuildingBlocks.AccessManagementPartiesQuery(
+            registerClient,
+            new PartyUrnQueryBuilder().withIdportenEmail(email).build(),
             fields,
-            requestBody,
             label,
         );
 
         group(
             "Register: Look up party by idporten email - verify response body",
             () => {
-                const body = tryParseJson(response.body);
-                if (body === null) {
-                    fail("Register lookup response is not valid JSON");
-                }
-
-                const party = body?.data?.[0];
+                const party = parties?.[0];
                 if (!party) {
                     check(null, {
-                        "Register lookup response contains a party in data[0]": () => false,
+                        "Register lookup found a party for the email": () => false,
                     });
-                    console.log(response.body);
                     return;
                 }
 
@@ -78,11 +55,9 @@ export default function () {
                     "deletedAt is null": (p) => p.deletedAt === null,
                 });
 
-                const userFound = check(user, {
-                    "user.username is epost:<email>": (u) =>
-                        u?.username === `epost:${email}`,
-                });
-
+                // The username is not asserted here. It comes from the A2 profile,
+                // so an email user created in A3 has none, and look-up-on-username.js
+                // covers usernames against a legacy self-identified user anyway.
                 const okTypes = check(party, {
                     "partyUuid is a string": (p) => typeof p.partyUuid === "string",
                     "urn looks like an Altinn party URN": (p) =>
@@ -98,8 +73,8 @@ export default function () {
                     "user.userId is a number": (u) => typeof u?.userId === "number",
                 });
 
-                if (!okHard || !userFound || !okTypes || !okUserTypes) {
-                    console.log(response.body);
+                if (!okHard || !okTypes || !okUserTypes) {
+                    console.log(JSON.stringify(party));
                 }
             },
         );
