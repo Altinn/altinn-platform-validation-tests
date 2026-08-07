@@ -116,6 +116,7 @@ function addRemoveRoleForClient(
     /** @type {string|null} */
     let problem = null;
 
+    // CCR = enhetsregister-rolle
     group(`Remove ${ccrRole} in ER and make sure Register reflects it`, () => {
         const facilitatorPartyUuid = facilitator.partyUuid;
         const facilitatorOrg = facilitator.org;
