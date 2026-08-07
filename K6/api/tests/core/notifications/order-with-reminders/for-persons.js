@@ -24,10 +24,7 @@ export function setup() {
     return;
 }
 
-export default function () {
-
-    const [ordersApiClient] = getClients();
-
+function generateDomainObjects() {
     const uniqueIdentifier = uuidv4().substring(0, 8);
     const requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
     const orderSendersReference = `k6-order-${uniqueIdentifier}`;
@@ -105,10 +102,16 @@ export default function () {
         .WithReminders(reminders)
         .Build();
 
-    const response = OrderCreateOrder(
-        ordersApiClient,
-        request
-    );
+    return [request, reminders];
+}
+
+export default function () {
+
+    const [ordersApiClient] = getClients();
+
+    const [request, reminders] = generateDomainObjects();
+
+    const response = OrderCreateOrder(ordersApiClient, request);
 
     OrderDomainChecks.CheckResponseContainsShipmentID(response);
     OrderDomainChecks.CheckResponseContainsNotificationOrderID(response);
