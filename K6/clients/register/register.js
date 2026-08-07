@@ -7,6 +7,9 @@ const TAGS = {
     GetCustomers: {
         action: "register-get-customers",
     },
+    GetRoleHolders: {
+        action: "register-get-role-holders",
+    },
 };
 
 /**
@@ -27,6 +30,21 @@ const CcrCustomerRoles = {
     REGNSKAPSFORER: "regnskapsforer",
     // Property manager.
     FORRETNINGSFORER: "forretningsforer",
+};
+
+/**
+ * The roles from Enhetsregisteret that Register serves a holder list for: the
+ * parties a given party has assigned the role to. The values are the last path
+ * segment of the endpoint.
+ *
+ * The relation runs the other way than for CcrCustomerRoles, which is why the
+ * holders live behind their own endpoint family and their own client method.
+ *
+ * @readonly
+ */
+const CcrHolderRoles = {
+    // General manager.
+    DAGLIG_LEDER: "daglig-leder",
 };
 
 /**
@@ -188,6 +206,60 @@ class RegisterClient {
             },
         });
     }
+
+    /**
+     * Gets the holders of one of a party's Enhetsregisteret roles: the parties it
+     * has assigned that role to. An organization's `daglig-leder` holders are the
+     * people it has made its general manager.
+     *
+     * This is the inverse of GetCustomers, where the role points at the party
+     * rather than away from it, and Register keeps it behind its own endpoint
+     * family. `ccrRole` goes into the path, so a value outside CcrHolderRoles is a
+     * 404 rather than a validation error.
+     *
+     * Authenticated with a bearer token holding the
+     * `altinn:register/partylookup.admin` scope.
+     *
+     * @param {string} partyUuid The party that assigned the role.
+     * @param {string} ccrRole The role that was assigned, from CcrHolderRoles.
+     * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
+     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse} Body holds a Party list object.
+     */
+    GetRoleHolders(partyUuid, ccrRole, fields = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const path = `${this.FULL_PATH}/internal/parties/${partyUuid}/holders/ccr/${ccrRole}`;
+
+        let url = path;
+
+        if (fields !== null) {
+            url += `?fields=${encodeURIComponent(fields.join(","))}`;
+        }
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
+            action: TAGS.GetRoleHolders.action,
+            ccrRole: ccrRole,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Ocp-Apim-Subscription-Key": this.subscriptionKey,
+                Accept: "application/json",
+            },
+        });
+    }
 }
 
-export { CcrCustomerRoles, RegisterClient };
+export { CcrCustomerRoles, CcrHolderRoles, RegisterClient };
