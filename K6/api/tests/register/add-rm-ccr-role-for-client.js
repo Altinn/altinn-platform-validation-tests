@@ -1,9 +1,13 @@
 import { check, fail, group } from "k6";
 import http from "k6/http";
 
-import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
+import {
+    CcrCustomerRoles,
+    EnhetsregisteretClient,
+    RegisterClient,
+} from "../../../clients/register/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     EnhetsregisteretBuildingBlocks,
@@ -11,30 +15,36 @@ import {
 } from "../../building-blocks/register/index.js";
 
 /**
- * The body shared by the three tests that check that a role change in ER
- * (Enhetsregisteret / Brønnøysundregistrene) reaches Altinn Register. One file per
- * role rather than one test looping all three, since a single role already takes
- * a few minutes of waiting for the propagation and a failure should name the role
- * it happened for.
- *
+ * @file add-rm-ccr-role-for-client.js
  * @requires ENV.ENVIRONMENT - Target environment (e.g. tt02, yt01, at22, at23)
  * @requires ENV.BASE_URL - Base URL for the Register API
  * @requires ENV.REGISTER_SUBSCRIPTION_KEY - Subscription key for the Register API
  * @requires ENV.SOAP_ER_USERNAME - Username for the ER SOAP API
  * @requires ENV.SOAP_ER_PASSWORD - Password for the ER SOAP API
+ * @description Verifies that role changes in ER (Enhetsregisteret / Brønnøysundregisteret)
+ * are correctly propagated to Altinn's internal Register component.
+ *
+ * The test simulates a real-world ER event by removing a facilitator role from a
+ * client organization via the ER SOAP API, then verifying that Altinn Register
+ * reflects the removal. The role is subsequently re-added to leave the system in
+ * its original state, verifying that it's present again in the Register.
+ *
+ * All three facilitator roles run in one file: propagation lands in seconds, and
+ * the requests carry the role in a `ccrRole` tag, so the roles can be told apart
+ * in the metrics without being told apart in the test files.
  */
 
-/**
- * Fetches the facilitators for one role. The file holds ten per role, all
- * verified to have customers in the environment when it was generated.
- *
- * Read from main on GitHub rather than from disk, the way the other tests do, so
- * a branch-only edit to the file changes nothing until it is merged.
- *
- * @param {string} ccrRole The role to pick facilitators for.
- * @returns {Array<{partyUuid: string, org: string, role: string}>} The facilitators.
- */
-export function fetchFacilitators(ccrRole) {
+const label = { step: "test-add-rm-ccr-role" };
+
+export const options = getOptions([label]);
+
+const ROLES = [
+    CcrCustomerRoles.REVISOR,
+    CcrCustomerRoles.REGNSKAPSFORER,
+    CcrCustomerRoles.FORRETNINGSFORER,
+];
+
+export function setup() {
     requireEnv([
         "BASE_URL",
         "ENVIRONMENT",
@@ -43,20 +53,62 @@ export function fetchFacilitators(ccrRole) {
         "SOAP_ER_USERNAME",
     ]);
 
+    // Read from main on GitHub rather than from disk, the way the other tests do,
+    // so a branch-only edit to the file changes nothing until it is merged. The
+    // file holds ten facilitators per role, all verified to have customers in the
+    // environment when it was generated.
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/ccr-facilitators-${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } },
     );
 
-    const facilitators = parseCsvData(res.body).filter(
-        (facilitator) => facilitator.role === ccrRole,
+    return parseCsvData(res.body);
+}
+
+export default function (facilitators) {
+    const options = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(CreateScopeString([AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN]))
+        .withPid(22877497392)
+        .build();
+
+    const registerClient = new RegisterClient(
+        __ENV.BASE_URL,
+        new PersonalTokenGenerator(options),
+        __ENV.REGISTER_SUBSCRIPTION_KEY,
     );
 
-    if (facilitators.length === 0) {
-        fail(`cannot continue: no ${ccrRole} facilitators in the test data`);
+    const enhetsregisteretClient = new EnhetsregisteretClient(__ENV.BASE_URL);
+
+    // Each role is given its own turn even when an earlier one gave up, so one
+    // broken role does not hide the state of the other two. The iteration still
+    // fails, once, after all three have been tried.
+    const failures = [];
+
+    for (const ccrRole of ROLES) {
+        const candidates = facilitators.filter((f) => f.role === ccrRole);
+
+        if (candidates.length === 0) {
+            failures.push(`no ${ccrRole} facilitators in the test data`);
+            continue;
+        }
+
+        const problem = addRemoveRoleForClient(
+            registerClient,
+            enhetsregisteretClient,
+            ccrRole,
+            getItemFromList(candidates),
+        );
+
+        if (problem !== null) {
+            failures.push(problem);
+        }
     }
 
-    return facilitators;
+    if (failures.length > 0) {
+        fail(failures.join("; "));
+    }
 }
 
 /**
@@ -64,34 +116,26 @@ export function fetchFacilitators(ccrRole) {
  * then puts it back and waits for Register to have it again.
  *
  * The role is removed from a customer the facilitator already has, so the test
- * leaves the environment as it found it. That also means a failure between the
- * two halves leaves a customer short of a facilitator, which the failure says.
+ * leaves the environment as it found it. That also means a failure between the two
+ * halves leaves a customer short of a facilitator, which the failure says.
  *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test.
- * @param {Array<{partyUuid: string, org: string}>} facilitators From fetchFacilitators.
- * @param {{[key: string]: string}} label Request label for this test.
+ * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @returns {string|null} What stopped it, or null when it ran to the end. Returned
+ * rather than failed on, so the caller can still give the other roles their turn.
  */
-export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
-    const facilitator = getItemFromList(facilitators);
+function addRemoveRoleForClient(
+    registerClient,
+    enhetsregisteretClient,
+    ccrRole,
+    facilitator,
+) {
+    /** @type {string|null} */
+    let problem = null;
 
     group(`Remove ${ccrRole} in ER and make sure Register reflects it`, () => {
-        const scopes = CreateScopeString([AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN]);
-
-        const options = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .withPid(22877497392)
-            .build();
-
-        const registerClient = new RegisterClient(
-            __ENV.BASE_URL,
-            new PersonalTokenGenerator(options),
-            __ENV.REGISTER_SUBSCRIPTION_KEY,
-        );
-
-        const enhetsregisteretClient = new EnhetsregisteretClient(__ENV.BASE_URL);
-
         const facilitatorPartyUuid = facilitator.partyUuid;
         const facilitatorOrg = facilitator.org;
 
@@ -101,11 +145,11 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
             registerClient,
             facilitatorPartyUuid,
             ccrRole,
-            label,
         );
 
         if (currentOrgs === null) {
-            fail(`cannot continue: reading the ${ccrRole} customers failed`);
+            problem = `reading the ${ccrRole} customers failed`;
+            return;
         }
 
         console.log(
@@ -113,9 +157,8 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
         );
 
         if (currentOrgs.length === 0) {
-            fail(
-                `cannot continue: ${facilitatorOrg} has no ${ccrRole} customers to test with`,
-            );
+            problem = `${facilitatorOrg} has no ${ccrRole} customers to test with`;
+            return;
         }
 
         const targetOrg = currentOrgs[0];
@@ -131,10 +174,11 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
             label,
         );
 
-        // Waiting for a propagation that was never started only spends ten retries
+        // Waiting for a propagation that was never started only spends the retries
         // to arrive at the failure ER already reported.
         if (!removed) {
-            fail(`cannot continue: ER did not process removing ${ccrRole}`);
+            problem = `ER did not process removing ${ccrRole}`;
+            return;
         }
 
         let success = retry(
@@ -143,7 +187,6 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
                     registerClient,
                     facilitatorPartyUuid,
                     ccrRole,
-                    label,
                 );
 
                 // A failed read says nothing about the role, so keep waiting rather
@@ -159,11 +202,7 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
                 );
                 return !stillPresent;
             },
-            {
-                retries: 10,
-                intervalSeconds: 20,
-                testscenario: `remove ${ccrRole} role`,
-            },
+            retryUntilPropagated(`remove ${ccrRole} role`),
         );
 
         check(success, {
@@ -183,9 +222,8 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
         // The role is left removed at this point, so say so loudly: the next run
         // picks a target from a list this one changed.
         if (!addedBack) {
-            fail(
-                `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitatorOrg} as its ${ccrRole}`,
-            );
+            problem = `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitatorOrg} as its ${ccrRole}`;
+            return;
         }
 
         success = retry(
@@ -194,7 +232,6 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
                     registerClient,
                     facilitatorPartyUuid,
                     ccrRole,
-                    label,
                 );
 
                 if (orgs === null) {
@@ -208,34 +245,46 @@ export function runAddRemoveCcrRoleForClient(ccrRole, facilitators, label) {
                 );
                 return nowPresent;
             },
-            {
-                retries: 10,
-                intervalSeconds: 30,
-                testscenario: `add ${ccrRole} role back`,
-            },
+            retryUntilPropagated(`add ${ccrRole} role back`),
         );
 
         check(success, {
             [`${ccrRole} role was successfully added back`]: (s) => s === true,
         });
     });
+
+    return problem;
 }
 
 /**
- * Organization numbers of the parties that have this facilitator in the given
- * role.
+ * Retry settings for waiting on a propagation. `retry` checks before it sleeps, so
+ * a change that has already landed costs nothing, and short intervals only shorten
+ * the overshoot. Two minutes of headroom for a propagation that normally takes
+ * seconds.
+ *
+ * @param {string} testscenario Prefix used in log and check output.
+ * @returns {{retries: number, intervalSeconds: number, testscenario: string}} Settings.
+ */
+function retryUntilPropagated(testscenario) {
+    return {
+        retries: 24,
+        intervalSeconds: 5,
+        testscenario: testscenario,
+    };
+}
+
+/**
+ * Organization numbers of the parties that have this facilitator in the given role.
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} facilitatorPartyUuid The facilitator party UUID.
  * @param {string} ccrRole The role the customers have assigned.
- * @param {{[key: string]: string}} label Request label for this test.
  * @returns {Array<string>|null} Organization numbers, or null when the call failed.
  */
 function customerOrganizationNumbers(
     registerClient,
     facilitatorPartyUuid,
     ccrRole,
-    label,
 ) {
     const customers = RegisterBuildingBlocks.GetCustomers(
         registerClient,
