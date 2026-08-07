@@ -1,8 +1,8 @@
 import { AccessManagementPartiesQuery } from "./access-management-parties-query.js";
-import { AddRevisorRoleToEr } from "./add-revisor-role-to-er.js";
+import { AddCcrRoleToEr } from "./add-ccr-role-to-er.js";
 import { GetCustomers } from "./get-customers.js";
 import { GetRoleHolders } from "./get-role-holders.js";
-import { RemoveRevisorRoleFromEr } from "./remove-revisor-role-from-er.js";
+import { RemoveCcrRoleFromEr } from "./remove-ccr-role-from-er.js";
 
 export const RegisterBuildingBlocks = {
     AccessManagementPartiesQuery: AccessManagementPartiesQuery,
@@ -14,6 +14,6 @@ export const RegisterBuildingBlocks = {
 // reason the tests touch it is to produce a role change and then assert that
 // Register picked it up.
 export const EnhetsregisteretBuildingBlocks = {
-    AddRevisorRoleToEr: AddRevisorRoleToEr,
-    RemoveRevisorRoleFromEr: RemoveRevisorRoleFromEr,
+    AddCcrRoleToEr: AddCcrRoleToEr,
+    RemoveCcrRoleFromEr: RemoveCcrRoleFromEr,
 };

@@ -1,8 +1,21 @@
 import http from "k6/http";
 
 const TAGS = {
-    AddRevisorRole: { action: "er-add-revisor-role" },
-    RemoveRevisorRole: { action: "er-remove-revisor-role" },
+    AddCcrRole: { action: "er-add-ccr-role" },
+    RemoveCcrRole: { action: "er-remove-ccr-role" },
+};
+
+/**
+ * The role codes ER uses in the `felttype` attribute of a change, keyed by the
+ * role name Register serves its customers under. This is the whole reason the
+ * client can take the role as a parameter: the batch is the same otherwise.
+ *
+ * @readonly
+ */
+const ErRoleFieldTypes = {
+    revisor: "REVI",
+    regnskapsforer: "REGN",
+    forretningsforer: "FFØR",
 };
 
 /**
@@ -14,9 +27,6 @@ const TAGS = {
  * produce the ER event whose propagation into Register they then assert on. It
  * lives next to the Register client because that is the only thing it is used
  * for.
- *
- * The `X-Altinn-Register-Ccr: Apply-In-A3` header is what makes the update land
- * in Altinn 3 rather than only in Altinn 2.
  *
  * Authenticated with the ER system user credentials, which go in the SOAP
  * envelope rather than in a header, so this client takes no token generator.
@@ -42,24 +52,38 @@ class EnhetsregisteretClient {
         return TAGS;
     }
 
+    static get ROLE_FIELD_TYPES() {
+        return ErRoleFieldTypes;
+    }
+
     /**
-     * Assigns the `revisor` role in ER, making the facilitator organization the
-     * auditor of the client organization.
+     * Assigns a role in ER, making the facilitator organization the revisor,
+     * regnskapsfører or forretningsfører of the client organization.
      *
      * @param {string} soapErUsername ER system user name.
      * @param {string} soapErPassword ER system user password.
-     * @param {string} clientOrg Organization number of the audited organization.
-     * @param {string} facilitatorOrg Organization number of the auditor.
+     * @param {string} ccrRole The role to assign, keyed as in ErRoleFieldTypes.
+     * @param {string} clientOrg Organization number of the organization getting a facilitator.
+     * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Body holds the ER batch response XML.
      */
-    AddRevisorRole(
+    AddCcrRole(
         soapErUsername,
         soapErPassword,
+        ccrRole,
         clientOrg,
         facilitatorOrg,
         labels = null,
     ) {
+        const fieldType = ErRoleFieldTypes[ccrRole];
+
+        if (fieldType === undefined) {
+            throw new Error(
+                `AddCcrRole: unknown role ${ccrRole}, expected one of ${Object.keys(ErRoleFieldTypes).join(", ")}`,
+            );
+        }
+
         // endringstype="N" is the new assignment. Everything else in the batch is
         // fixed test scaffolding: one unit, one change, sent as if from BRG.
         const body = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
@@ -72,7 +96,7 @@ class EnhetsregisteretClient {
 <batchAjourholdXML>
   <head avsender="BRG" dato="20170714" kjoerenr="00001" mottaker="ALT" type="A" />
   <enhet organisasjonsnummer="${clientOrg}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="N" datoFoedt="20210315" datoSistEndret="20210315">
-    <samendringer felttype="REVI" endringstype="N" type="K" data="D">
+    <samendringer felttype="${fieldType}" endringstype="N" type="K" data="D">
       <knytningOrganisasjonsnummer>${facilitatorOrg}</knytningOrganisasjonsnummer>
     </samendringer>
   </enhet>
@@ -85,7 +109,8 @@ class EnhetsregisteretClient {
         let tags = {
             endpoint: this.FULL_PATH,
             name: this.FULL_PATH,
-            action: TAGS.AddRevisorRole.action,
+            action: TAGS.AddCcrRole.action,
+            ccrRole: ccrRole,
         };
 
         if (labels !== null) {
@@ -101,29 +126,38 @@ class EnhetsregisteretClient {
                 "Content-Type": "text/xml",
                 SOAPAction:
                     "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"",
-                "X-Altinn-Register-Ccr": "Apply-In-A3",
             },
         });
     }
 
     /**
-     * Removes the `revisor` role in ER, so the facilitator organization is no
-     * longer the auditor of the client organization.
+     * Removes a role in ER, so the facilitator organization is no longer the
+     * revisor, regnskapsfører or forretningsfører of the client organization.
      *
      * @param {string} soapErUsername ER system user name.
      * @param {string} soapErPassword ER system user password.
-     * @param {string} clientOrg Organization number of the audited organization.
-     * @param {string} facilitatorOrg Organization number of the auditor.
+     * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes.
+     * @param {string} clientOrg Organization number of the organization losing a facilitator.
+     * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Body holds the ER batch response XML.
      */
-    RemoveRevisorRole(
+    RemoveCcrRole(
         soapErUsername,
         soapErPassword,
+        ccrRole,
         clientOrg,
         facilitatorOrg,
         labels = null,
     ) {
+        const fieldType = ErRoleFieldTypes[ccrRole];
+
+        if (fieldType === undefined) {
+            throw new Error(
+                `RemoveCcrRole: unknown role ${ccrRole}, expected one of ${Object.keys(ErRoleFieldTypes).join(", ")}`,
+            );
+        }
+
         // Same batch as the add, with endringstype="U" for the removal.
         const body = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
    <soapenv:Header/>
@@ -135,7 +169,7 @@ class EnhetsregisteretClient {
 <batchAjourholdXML>
   <head avsender="BRG" dato="20170714" kjoerenr="00001" mottaker="ALT" type="A" />
   <enhet organisasjonsnummer="${clientOrg}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="N" datoFoedt="20210315" datoSistEndret="20210315">
-    <samendringer felttype="REVI" endringstype="U" type="K" data="D">
+    <samendringer felttype="${fieldType}" endringstype="U" type="K" data="D">
       <knytningOrganisasjonsnummer>${facilitatorOrg}</knytningOrganisasjonsnummer>
     </samendringer>
   </enhet>
@@ -148,7 +182,8 @@ class EnhetsregisteretClient {
         let tags = {
             endpoint: this.FULL_PATH,
             name: this.FULL_PATH,
-            action: TAGS.RemoveRevisorRole.action,
+            action: TAGS.RemoveCcrRole.action,
+            ccrRole: ccrRole,
         };
 
         if (labels !== null) {
@@ -169,4 +204,4 @@ class EnhetsregisteretClient {
     }
 }
 
-export { EnhetsregisteretClient };
+export { EnhetsregisteretClient, ErRoleFieldTypes };

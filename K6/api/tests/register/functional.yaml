@@ -1,7 +1,42 @@
 namespace: authentication
 base_dir: K6/api/tests/register/
+# The three role tests are listed one by one rather than through run-all.js. Each
+# waits minutes for its ER change to reach Register, so running them as one test
+# would be one long job where the first failure hides the other two roles.
 test_definitions:
-  - test_file: run-all.js
+  - test_file: look-up-on-username.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - register-subscription-key-at22
+
+  - test_file: look-up-on-idporten-email.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - register-subscription-key-at22
+
+  - test_file: add-rm-revisor-role-for-client.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - soap-er-creds-at22
+            - authorization-subscription-key-at22
+            - register-subscription-key-at22
+
+  - test_file: add-rm-regnskapsforer-role-for-client.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - soap-er-creds-at22
+            - authorization-subscription-key-at22
+            - register-subscription-key-at22
+
+  - test_file: add-rm-forretningsforer-role-for-client.js
     contexts:
       - environment: at22
         test_run:
