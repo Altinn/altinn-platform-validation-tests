@@ -133,8 +133,9 @@ export function getLookupClient() {
  *
  * Those endpoints take a bearer token holding
  * `altinn:register/partylookup.admin`, which is what separates this client from
- * getLookupClient. The person the token is minted for does not matter, since the
- * scope is what grants the read.
+ * getLookupClient. The scope alone is what grants the read, so the token carries no
+ * pid: verified against at22, where the same call answers 200 with the scope and no
+ * person behind it, and 401 with a platform token that cannot carry the scope at all.
  *
  * @returns {RegisterClient} The client the customer and holder reads go through.
  */
@@ -147,7 +148,6 @@ export function getPartyLookupAdminClient() {
                 .withScopes(
                     CreateScopeString([AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN]),
                 )
-                .withPid(22877497392)
                 .build(),
         );
 
