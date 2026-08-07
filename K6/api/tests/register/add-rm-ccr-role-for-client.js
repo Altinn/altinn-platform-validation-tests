@@ -1,10 +1,6 @@
 import { check, fail, group } from "k6";
 
-import {
-    CcrCustomerRoles,
-    EnhetsregisteretClient,
-    RegisterClient,
-} from "../../../clients/register/index.js";
+import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import { getItemFromList, getOptions, requireEnv, retry } from "../../../helpers.js";
 import {
     EnhetsregisteretBuildingBlocks,
@@ -31,20 +27,16 @@ import {
  * reflects the removal. The role is subsequently re-added to leave the system in
  * its original state, verifying that it's present again in the Register.
  *
- * All three facilitator roles run in one file: propagation lands in seconds, and
- * the requests carry the role in a `ccrRole` tag, so the roles can be told apart
- * in the metrics without being told apart in the test files.
+ * All three facilitator roles are covered by this one file. Every row of the test
+ * data carries its role, so an iteration takes the role of the facilitator it drew
+ * and the roles spread across iterations and VUs by themselves. The requests carry
+ * the role in a `ccrRole` tag, so they stay apart in the metrics.
  */
 
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { step: "test-add-rm-ccr-role" };
 
 export const options = getOptions([label]);
-
-const ROLES = [
-    CcrCustomerRoles.REVISOR,
-    CcrCustomerRoles.REGNSKAPSFORER,
-    CcrCustomerRoles.FORRETNINGSFORER,
-];
 
 export function setup() {
     requireEnv([
@@ -59,37 +51,14 @@ export function setup() {
 }
 
 export default function (facilitators) {
-    const registerClient = getPartyLookupAdminClient();
-    const enhetsregisteretClient = getEnhetsregisteretClient();
+    const facilitator = getItemFromList(facilitators, randomize);
 
-    // Each role is given its own turn even when an earlier one gave up, so one
-    // broken role does not hide the state of the other two. The iteration still
-    // fails, once, after all three have been tried.
-    const failures = [];
-
-    for (const ccrRole of ROLES) {
-        const candidates = facilitators.filter((f) => f.role === ccrRole);
-
-        if (candidates.length === 0) {
-            failures.push(`no ${ccrRole} facilitators in the test data`);
-            continue;
-        }
-
-        const problem = addRemoveRoleForClient(
-            registerClient,
-            enhetsregisteretClient,
-            ccrRole,
-            getItemFromList(candidates),
-        );
-
-        if (problem !== null) {
-            failures.push(problem);
-        }
-    }
-
-    if (failures.length > 0) {
-        fail(failures.join("; "));
-    }
+    addRemoveRoleForClient(
+        getPartyLookupAdminClient(),
+        getEnhetsregisteretClient(),
+        facilitator.role,
+        facilitator,
+    );
 }
 
 /**
@@ -104,8 +73,6 @@ export default function (facilitators) {
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test.
  * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
- * @returns {string|null} What stopped it, or null when it ran to the end. Returned
- * rather than failed on, so the caller can still give the other roles their turn.
  */
 function addRemoveRoleForClient(
     registerClient,
@@ -130,8 +97,7 @@ function addRemoveRoleForClient(
         );
 
         if (currentOrgs === null) {
-            problem = `reading the ${ccrRole} customers failed`;
-            return;
+            fail(`cannot continue: reading the ${ccrRole} customers failed`);
         }
 
         console.log(
@@ -139,8 +105,9 @@ function addRemoveRoleForClient(
         );
 
         if (currentOrgs.length === 0) {
-            problem = `${facilitatorOrg} has no ${ccrRole} customers to test with`;
-            return;
+            fail(
+                `cannot continue: ${facilitatorOrg} has no ${ccrRole} customers to test with`,
+            );
         }
 
         const targetOrg = currentOrgs[0];
@@ -159,8 +126,7 @@ function addRemoveRoleForClient(
         // Waiting for a propagation that was never started only spends the retries
         // to arrive at the failure ER already reported.
         if (!removed) {
-            problem = `ER did not process removing ${ccrRole}`;
-            return;
+            fail(`cannot continue: ER did not process removing ${ccrRole}`);
         }
 
         let success = retry(
@@ -204,8 +170,9 @@ function addRemoveRoleForClient(
         // The role is left removed at this point, so say so loudly: the next run
         // picks a target from a list this one changed.
         if (!addedBack) {
-            problem = `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitatorOrg} as its ${ccrRole}`;
-            return;
+            fail(
+                `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitatorOrg} as its ${ccrRole}`,
+            );
         }
 
         success = retry(
@@ -234,8 +201,6 @@ function addRemoveRoleForClient(
             [`${ccrRole} role was successfully added back`]: (s) => s === true,
         });
     });
-
-    return problem;
 }
 
 /**
