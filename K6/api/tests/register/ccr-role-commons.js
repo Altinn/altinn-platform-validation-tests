@@ -44,7 +44,7 @@ export function fetchFacilitators(ccrRole) {
     ]);
 
     const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/ccr-facilitators-${__ENV.ENVIRONMENT}.csv`,
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/rewrite-register-clients/K6/testdata/register/ccr-facilitators-${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } },
     );
 
