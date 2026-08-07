@@ -1,14 +1,13 @@
-import { check, group } from "k6";
+import { check, fail, group } from "k6";
 import http from "k6/http";
 
-import { RegisterApiClient } from "../../../clients/authentication/index.js";
+import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
-    AddRevisorRoleToErForOrg,
-    GetRevisorCustomerIdentifiersForParty,
-    RemoveRevisorRoleFromEr,
+    EnhetsregisteretBuildingBlocks,
+    RegisterBuildingBlocks,
 } from "../../building-blocks/register/index.js";
 
 /**
@@ -56,24 +55,28 @@ export default function (facilitatorList) {
 
         const tokenGenerator = new PersonalTokenGenerator(options);
 
-        const registerApiClient = new RegisterApiClient(
+        const registerClient = new RegisterClient(
             __ENV.BASE_URL,
             tokenGenerator,
+            __ENV.REGISTER_SUBSCRIPTION_KEY,
         );
+
+        const enhetsregisteretClient = new EnhetsregisteretClient(__ENV.BASE_URL);
 
         const facilitatorPartyUuidRevisor = facilitator.partyUuid;
         const facilitatorOrg = facilitator.org;
 
-        const currentOrgs = GetRevisorCustomerIdentifiersForParty(
-            registerApiClient,
+        // The customers are organizations, so the organization number is what ER
+        // takes and what the assertions below compare on.
+        const currentOrgs = customerOrganizationNumbers(
+            registerClient,
             facilitatorPartyUuidRevisor,
-            __ENV.REGISTER_SUBSCRIPTION_KEY,
         );
 
         console.log(`Initial number of revisor customers: ${currentOrgs.length}`);
 
         if (currentOrgs.length === 0) {
-            throw new Error("No revisor customers found to test with.");
+            fail("cannot continue: no revisor customers found to test with");
         }
 
         const targetOrg = currentOrgs[0];
@@ -81,25 +84,19 @@ export default function (facilitatorList) {
             `Picked target client organizationIdentifier for test: ${targetOrg}`,
         );
 
-        let res = RemoveRevisorRoleFromEr(
-            registerApiClient,
+        EnhetsregisteretBuildingBlocks.RemoveRevisorRoleFromEr(
+            enhetsregisteretClient,
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
             targetOrg,
             facilitatorOrg,
         );
 
-        check(res.body, {
-            "RemoveRevisorRoleFromEr - Response contains status OK_ER_DATA_PROCESSED":
-                (r) => r.includes("status=\"OK_ER_DATA_PROCESSED\""),
-        });
-
         let success = retry(
             () => {
-                const orgs = GetRevisorCustomerIdentifiersForParty(
-                    registerApiClient,
+                const orgs = customerOrganizationNumbers(
+                    registerClient,
                     facilitatorPartyUuidRevisor,
-                    __ENV.REGISTER_SUBSCRIPTION_KEY,
                 );
                 const stillPresent = orgs.includes(targetOrg);
                 console.log(
@@ -119,32 +116,19 @@ export default function (facilitatorList) {
             "Revisor role was successfully removed": (s) => s === true,
         });
 
-        res = AddRevisorRoleToErForOrg(
-            registerApiClient,
+        EnhetsregisteretBuildingBlocks.AddRevisorRoleToEr(
+            enhetsregisteretClient,
             __ENV.SOAP_ER_USERNAME,
             __ENV.SOAP_ER_PASSWORD,
             targetOrg,
             facilitatorOrg,
         );
 
-        var outcome = check(res, {
-            //Add check for status code
-            "AddRevisorRoleToErForOrg - body is not empty": (r) =>
-                r.body && r.body.length > 0,
-            "AddRevisorRoleToErForOrg - response contains status OK_ER_DATA_PROCESSED":
-                (r) => r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
-        });
-        if (!outcome) {
-            console.error(res.status);
-            console.error(res.body);
-        }
-
         success = retry(
             () => {
-                const orgs = GetRevisorCustomerIdentifiersForParty(
-                    registerApiClient,
+                const orgs = customerOrganizationNumbers(
+                    registerClient,
                     facilitatorPartyUuidRevisor,
-                    __ENV.REGISTER_SUBSCRIPTION_KEY,
                 );
                 const nowPresent = orgs.includes(targetOrg);
                 console.log(
@@ -164,4 +148,20 @@ export default function (facilitatorList) {
             "Revisor role was successfully added back": (s) => s === true,
         });
     });
+}
+
+/**
+ * Organization numbers of the parties that have this facilitator as their revisor.
+ *
+ * @param {RegisterClient} registerClient Client for the Register API.
+ * @param {string} facilitatorPartyUuid The revisor party UUID.
+ * @returns {Array<string>} Organization numbers, empty when the call failed.
+ */
+function customerOrganizationNumbers(registerClient, facilitatorPartyUuid) {
+    const customers = RegisterBuildingBlocks.GetRevisorCustomers(
+        registerClient,
+        facilitatorPartyUuid,
+    );
+
+    return (customers ?? []).map((customer) => customer.organizationIdentifier);
 }

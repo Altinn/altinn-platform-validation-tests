@@ -4,8 +4,8 @@ import { EnhetsregisteretClient } from "../../../clients/register/index.js";
 import { withRetries } from "../common/retry.js";
 
 /**
- * Removes the `revisor` role in ER, so the facilitator organization is no longer
- * the auditor of the client organization.
+ * Assigns the `revisor` role in ER, making the facilitator organization the
+ * auditor of the client organization.
  *
  * ER answers with a batch report rather than an entity, and reports the outcome
  * of the batch inside a 200 response, so the status code alone says nothing.
@@ -18,7 +18,7 @@ import { withRetries } from "../common/retry.js";
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {boolean} Whether ER processed the batch.
  */
-export function RemoveRevisorRoleFromEr(
+export function AddRevisorRoleToEr(
     enhetsregisteretClient,
     soapErUsername,
     soapErPassword,
@@ -28,19 +28,19 @@ export function RemoveRevisorRoleFromEr(
 ) {
     const res = withRetries(
         () =>
-            enhetsregisteretClient.RemoveRevisorRole(
+            enhetsregisteretClient.AddRevisorRole(
                 soapErUsername,
                 soapErPassword,
                 clientOrg,
                 facilitatorOrg,
                 labels,
             ),
-        "RemoveRevisorRoleFromEr",
+        "AddRevisorRoleToEr",
     );
 
     const succeed = check(res, {
-        "RemoveRevisorRoleFromEr - status code is 200": (r) => r.status === 200,
-        "RemoveRevisorRoleFromEr - batch status is OK_ER_DATA_PROCESSED": (r) =>
+        "AddRevisorRoleToEr - status code is 200": (r) => r.status === 200,
+        "AddRevisorRoleToEr - batch status is OK_ER_DATA_PROCESSED": (r) =>
             typeof r.body === "string" &&
             r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
     });

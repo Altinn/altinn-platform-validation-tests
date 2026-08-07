@@ -1,46 +1,26 @@
-import { check, group } from "k6";
+import { check, fail, group } from "k6";
 import http from "k6/http";
 
-import { RegisterLookupClient } from "../../../clients/authentication/index.js";
+import { RegisterClient } from "../../../clients/register/index.js";
 import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
-import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
+import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { step: "test-lookup-on-username" };
 
 export const options = getOptions([label]);
 
-function tryParseJson(str) {
-    try {
-        return JSON.parse(str);
-    } catch {
-        return null;
-    }
-}
-
-function assertLookupResponse(response, expectedUsername) {
-    const body = tryParseJson(response.body);
-
-    let isValidJson = check(response, {
-        "Register lookup response is valid JSON": () => body !== null,
-    });
-    if (!isValidJson) {
-        console.log(response.body);
-        throw new Error("Register lookup response is not valid JSON");
-    }
-
-    const data = body.data;
-    const okShape = check(data, {
-        "Register lookup response has data array with 1 item": (d) =>
-            Array.isArray(d) && d.length === 1,
+function assertLookupResult(parties, expectedUsername) {
+    const okShape = check(parties, {
+        "Register lookup found exactly one party": (p) =>
+            Array.isArray(p) && p.length === 1,
     });
     if (!okShape) {
-        console.log(response.body);
-        throw new Error("Register lookup response shape was unexpected");
+        fail("Register lookup did not return a single party");
     }
 
-    const party = data[0];
+    const party = parties[0];
 
     const okHard = check(party, {
         "partyType is self-identified-user": (p) =>
@@ -55,12 +35,12 @@ function assertLookupResponse(response, expectedUsername) {
     });
 
     if (!(okHard && okUserHard)) {
-        console.log(response.body);
+        console.log(JSON.stringify(party));
     }
 }
 
 export function setup() {
-    requireEnv(["BASE_URL", "ENVIRONMENT"]);
+    requireEnv(["BASE_URL", "ENVIRONMENT", "REGISTER_SUBSCRIPTION_KEY"]);
     const res = http.get(
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register/register-usernames-${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } }
@@ -75,7 +55,11 @@ export default function (usernames) {
         .build();
 
     const token = new PlatformTokenGenerator(tokenOpts);
-    const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
+    const registerClient = new RegisterClient(
+        __ENV.BASE_URL,
+        token,
+        __ENV.REGISTER_SUBSCRIPTION_KEY,
+    );
 
     /**
      * This test requires a username that exists in Register:
@@ -92,38 +76,31 @@ export default function (usernames) {
     const user = getItemFromList(usernames, randomize);
 
     const username = user.username;
-    const fields = "person,party,user";
+    const fields = ["person", "party", "user"];
 
     group("Look up username in Register", () => {
-        const requestBody = {
-            data: [`urn:altinn:party:username:${username}`],
-        };
-
-        const response = LookupPartiesInRegister(
-            registerLookupClient,
+        const parties = RegisterBuildingBlocks.AccessManagementPartiesQuery(
+            registerClient,
+            [`urn:altinn:party:username:${username}`],
             fields,
-            requestBody,
             label,
         );
 
-        assertLookupResponse(response, username);
+        assertLookupResult(parties, username);
 
         group("Look up username in Register - case insensitivity", () => {
             // Uppercase the username if not already, to test case insensitivity
             const usernameWithUpperCase = username.toUpperCase();
 
-            const requestBody = {
-                data: [`urn:altinn:party:username:${usernameWithUpperCase}`],
-            };
+            const uppercaseParties
+                = RegisterBuildingBlocks.AccessManagementPartiesQuery(
+                    registerClient,
+                    [`urn:altinn:party:username:${usernameWithUpperCase}`],
+                    fields,
+                    label,
+                );
 
-            const response = LookupPartiesInRegister(
-                registerLookupClient,
-                fields,
-                requestBody,
-                label,
-            );
-
-            assertLookupResponse(response, username);
+            assertLookupResult(uppercaseParties, username);
         });
     });
 }
