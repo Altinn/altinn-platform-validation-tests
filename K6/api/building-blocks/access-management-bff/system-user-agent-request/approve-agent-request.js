@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Approves an agent system user request.
@@ -18,10 +19,14 @@ export function ApproveAgentRequest(
     agentRequestId,
     labels = null,
 ) {
-    const res = systemUserAgentRequestClient.ApproveAgentRequest(
-        partyId,
-        agentRequestId,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserAgentRequestClient.ApproveAgentRequest(
+                partyId,
+                agentRequestId,
+                labels,
+            ),
+        "ApproveAgentRequest",
     );
 
     let approved = false;
