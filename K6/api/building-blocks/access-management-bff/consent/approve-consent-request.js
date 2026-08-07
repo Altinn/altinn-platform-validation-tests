@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Approves a consent request.
@@ -18,10 +19,14 @@ export function ApproveConsentRequest(
     body = null,
     labels = null,
 ) {
-    const res = consentClient.ApproveConsentRequest(
-        consentRequestId,
-        body,
-        labels,
+    const res = withRetries(
+        () =>
+            consentClient.ApproveConsentRequest(
+                consentRequestId,
+                body,
+                labels,
+            ),
+        "ApproveConsentRequest",
     );
 
     let approved = false;
