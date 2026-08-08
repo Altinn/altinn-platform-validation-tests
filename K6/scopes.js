@@ -18,6 +18,7 @@ export const AltinnScopes = {
     ACCESSMANAGEMENT: {
         AUTHORIZEDPARTIES: {
             ADMIN: "altinn:accessmanagement/authorizedparties.admin",
+            DEFAULT: "altinn:accessmanagement/authorizedparties",
             RESOURCEOWNER: "altinn:accessmanagement/authorizedparties.resourceowner"
         },
 
