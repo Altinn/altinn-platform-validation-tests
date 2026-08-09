@@ -1,8 +1,9 @@
-import { check, fail, group } from "k6";
+import { fail, group } from "k6";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
 import { EnhetsregisteretBuildingBlocks } from "../../building-blocks/register/index.js";
+import { CcrRoleDomainChecks } from "../../domain-checks/register/ccr-role.js";
 import {
     drawCustomerToMove,
     getEnhetsregisteretClient,
@@ -144,7 +145,7 @@ function removeRoleAndWait(
             fail(`cannot continue: ER did not process removing ${ccrRole}`);
         }
 
-        const success = waitForRegister(
+        const propagated = waitForRegister(
             registerClient,
             ccrRole,
             facilitator,
@@ -154,9 +155,7 @@ function removeRoleAndWait(
             label,
         );
 
-        check(success, {
-            [`${ccrRole} role was successfully removed`]: (s) => s === true,
-        });
+        CcrRoleDomainChecks.CheckRoleRemoved(propagated, ccrRole);
     });
 }
 
@@ -196,7 +195,7 @@ function addRoleBackAndWait(
             );
         }
 
-        const success = waitForRegister(
+        const propagated = waitForRegister(
             registerClient,
             ccrRole,
             facilitator,
@@ -206,9 +205,7 @@ function addRoleBackAndWait(
             label,
         );
 
-        check(success, {
-            [`${ccrRole} role was successfully added back`]: (s) => s === true,
-        });
+        CcrRoleDomainChecks.CheckRoleAddedBack(propagated, ccrRole);
     });
 }
 

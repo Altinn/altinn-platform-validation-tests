@@ -1,8 +1,9 @@
-import { check, fail, group } from "k6";
+import { fail, group } from "k6";
 
 import { PartyUrnQueryBuilder } from "../../../clients/register/index.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
+import { PartyLookupDomainChecks } from "../../domain-checks/register/party-lookup.js";
 import { getLookupClient, getUsernames } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -11,31 +12,11 @@ const label = { step: "test-lookup-on-username" };
 export const options = getOptions([label]);
 
 function assertLookupResult(parties, expectedUsername) {
-    const okShape = check(parties, {
-        "Register lookup found exactly one party": (p) =>
-            Array.isArray(p) && p.length === 1,
-    });
-    if (!okShape) {
+    if (!PartyLookupDomainChecks.CheckSinglePartyFound(parties, `username '${expectedUsername}'`)) {
         fail("Register lookup did not return a single party");
     }
 
-    const party = parties[0];
-
-    const okHard = check(party, {
-        "partyType is self-identified-user": (p) =>
-            p.partyType === "self-identified-user",
-        "displayName matches testdata username": (p) =>
-            p.displayName === expectedUsername,
-    });
-
-    const okUserHard = check(party.user, {
-        "user.username matches testdata username": (u) =>
-            u?.username === expectedUsername,
-    });
-
-    if (!(okHard && okUserHard)) {
-        console.log(JSON.stringify(party));
-    }
+    PartyLookupDomainChecks.CheckPartyMatchesUsername(parties[0], expectedUsername);
 }
 
 export function setup() {

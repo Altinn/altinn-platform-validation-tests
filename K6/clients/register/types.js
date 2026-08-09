@@ -7,6 +7,11 @@
 // discriminated union on `partyType`. JSDoc has no union with a shared base, so
 // each variant is flattened into one typedef with the variant-specific fields
 // marked optional, and the discriminator says which of them are present.
+//
+// The enumerations at the bottom are the exception to "types from the Register
+// API": ErRoleFieldTypes belongs to the Enhetsregisteret SOAP service rather
+// than to Register. It lives here because the two are keyed on the same role
+// names, and a reader comparing them wants them side by side.
 
 /**
  * A unique reference to a party in the form of an URN. Register accepts several
@@ -151,6 +156,57 @@
  * @typedef {object} PartyUrnListObject
  * @property {Array<PartyUrn>} data The items.
  */
+
+/**
+ * The roles from the Central Coordinating Register (Enhetsregisteret) that a
+ * party can hold on behalf of its customers, and that Register serves a customer
+ * list for. The values are the last path segment of the endpoint.
+ *
+ * Register has one endpoint per role rather than a role parameter, but they take
+ * the same arguments and answer with the same shape, so the client models them
+ * as one call. This object is the list of roles that call accepts.
+ *
+ * @readonly
+ */
+export const CcrCustomerRoles = {
+    // Auditor.
+    REVISOR: "revisor",
+    // Accountant.
+    REGNSKAPSFORER: "regnskapsforer",
+    // Property manager.
+    FORRETNINGSFORER: "forretningsforer",
+};
+
+/**
+ * The roles from Enhetsregisteret that Register serves a holder list for: the
+ * parties a given party has assigned the role to. The values are the last path
+ * segment of the endpoint.
+ *
+ * The relation runs the other way than for CcrCustomerRoles, which is why the
+ * holders live behind their own endpoint family and their own client method.
+ *
+ * @readonly
+ */
+export const CcrHolderRoles = {
+    // General manager.
+    DAGLIG_LEDER: "daglig-leder",
+};
+
+/**
+ * The role codes ER uses in the `felttype` attribute of a change, keyed by the
+ * role name Register serves its customers under. This is the whole reason the
+ * client can take the role as a parameter: the batch is the same otherwise.
+ *
+ * The keys are the values of CcrCustomerRoles, which is what lets a test draw a
+ * role once and use it against both services.
+ *
+ * @readonly
+ */
+export const ErRoleFieldTypes = {
+    revisor: "REVI",
+    regnskapsforer: "REGN",
+    forretningsforer: "FFØR",
+};
 
 // Value exports so a building block can name the type it returns in an import
 // and have the JSDoc reference resolve. There is nothing to import at runtime.

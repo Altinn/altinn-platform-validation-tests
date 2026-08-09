@@ -13,41 +13,6 @@ const TAGS = {
 };
 
 /**
- * The roles from the Central Coordinating Register (Enhetsregisteret) that a
- * party can hold on behalf of its customers, and that Register serves a customer
- * list for. The values are the last path segment of the endpoint.
- *
- * Register has one endpoint per role rather than a role parameter, but they take
- * the same arguments and answer with the same shape, so the client models them
- * as one call. This object is the list of roles that call accepts.
- *
- * @readonly
- */
-const CcrCustomerRoles = {
-    // Auditor.
-    REVISOR: "revisor",
-    // Accountant.
-    REGNSKAPSFORER: "regnskapsforer",
-    // Property manager.
-    FORRETNINGSFORER: "forretningsforer",
-};
-
-/**
- * The roles from Enhetsregisteret that Register serves a holder list for: the
- * parties a given party has assigned the role to. The values are the last path
- * segment of the endpoint.
- *
- * The relation runs the other way than for CcrCustomerRoles, which is why the
- * holders live behind their own endpoint family and their own client method.
- *
- * @readonly
- */
-const CcrHolderRoles = {
-    // General manager.
-    DAGLIG_LEDER: "daglig-leder",
-};
-
-/**
  * Client for the Register API.
  *
  * Swagger: https://github.com/Altinn/altinn-register
@@ -267,4 +232,4 @@ class RegisterClient {
     }
 }
 
-export { CcrCustomerRoles, CcrHolderRoles, RegisterClient };
+export { RegisterClient };

@@ -1,21 +1,10 @@
 import http from "k6/http";
 
+import { ErRoleFieldTypes } from "./types.js";
+
 const TAGS = {
     AddCcrRole: { action: "er-add-ccr-role" },
     RemoveCcrRole: { action: "er-remove-ccr-role" },
-};
-
-/**
- * The role codes ER uses in the `felttype` attribute of a change, keyed by the
- * role name Register serves its customers under. This is the whole reason the
- * client can take the role as a parameter: the batch is the same otherwise.
- *
- * @readonly
- */
-const ErRoleFieldTypes = {
-    revisor: "REVI",
-    regnskapsforer: "REGN",
-    forretningsforer: "FFØR",
 };
 
 /**
@@ -206,4 +195,4 @@ class EnhetsregisteretClient {
     }
 }
 
-export { EnhetsregisteretClient, ErRoleFieldTypes };
+export { EnhetsregisteretClient };
