@@ -15,15 +15,19 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
 /**
  * Test data for the register tests, one file per environment.
  *
- * Read over HTTP from main rather than from disk, so a branch-only edit to a file
- * changes nothing until it is merged.
+ * Read over HTTP rather than from disk, so a branch-only edit to a file changes
+ * nothing until it is merged.
  *
  * K6/testdata/register/
  * - register-usernames-<env>.csv   (header: username)
  * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
+ *
+ * TODO: put back to refs/heads/main before merging. Pointed at the branch while
+ * organizations-<env>.csv only exists here, since main still has the revisor-only
+ * files under their old names. Running the role test against main answers 404.
  */
 const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register";
+    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/rewrite-register-clients/K6/testdata/register";
 
 /**
  * @type {RegisterClient | undefined}
