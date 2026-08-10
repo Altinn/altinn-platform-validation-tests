@@ -2,7 +2,7 @@ import { fail, group } from "k6";
 
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
-import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-v2-imports.js";
+import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
 import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
 import { accessPackage, arrangeApprovedSystemUser, findAccessPackages, getApproverTokenOpts, getClients, REDIRECT_URL, resource } from "./commons.js";
 

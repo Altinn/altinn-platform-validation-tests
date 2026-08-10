@@ -1,7 +1,7 @@
 import { check } from "k6";
 
-import { SystemRegisterClient } from "../../../../../clients/authentication/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { SystemRegisterClient } from "../../../../clients/authentication/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a new registered system.

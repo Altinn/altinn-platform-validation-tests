@@ -1,7 +1,7 @@
 import { check } from "k6";
 
-import { RequestSystemUserClient } from "../../../../../clients/authentication/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { RequestSystemUserClient } from "../../../../clients/authentication/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a system user request by external reference.

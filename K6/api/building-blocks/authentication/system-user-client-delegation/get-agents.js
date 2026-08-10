@@ -1,7 +1,7 @@
 import { check } from "k6";
 
-import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { SystemUserClientDelegationClient } from "../../../../clients/authentication/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves agent system users associated with the authenticated party.
