@@ -36,7 +36,7 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     let res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/enduser-get-authorized-parties-bruno-tests/K6/api/tests/access-management/enduser/testdata-${__ENV.ENVIRONMENT}.json`,
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main//K6/api/tests/access-management/enduser/testdata-${__ENV.ENVIRONMENT}.json`,
 
         { tags: { action: "fetch-test-data" } },
     );
@@ -44,7 +44,7 @@ export function setup() {
     const testdata = JSON.parse(res.body);
 
     res = http.get(
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/enduser-get-authorized-parties-bruno-tests/K6/api/tests/access-management/enduser/shared-testdata.json",
+        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main//K6/api/tests/access-management/enduser/shared-testdata.json",
         { tags: { action: "fetch-test-data" } },
     );
 
