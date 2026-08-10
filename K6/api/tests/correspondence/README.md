@@ -20,6 +20,23 @@ are reserved in KRR do not turn a performance run into an expected 422 result.
 The list endpoint is unpaginated, so detail and content follow-up calls are
 capped at 20 per iteration by default.
 
+## Validation scope
+
+Every scenario requires 100% successful k6 checks and 0% failed HTTP
+requests. The overview and content scenarios also require the selected
+recipient to have at least one correspondence; an empty dataset is a failed
+test rather than a successful no-op. Creation and read scenarios are separate
+test runs and are not ordered, so recipients used by the read scenarios must
+be seeded with correspondence data before those scenarios run.
+
+The scenarios validate the immediate API contracts represented by the five
+legacy performance scripts. They do not validate eventual publication,
+notification or reminder delivery, malware-scan completion, attachment
+download, or cleanup. The initialization payload intentionally omits
+notification and reminder configuration to keep scheduled validation runs
+free of those additional side effects. Add those as separate scenarios if
+their behavior or performance needs to be measured.
+
 ## Configuration
 
 The defaults support `at23`, `tt02`, and `yt01`. They can be overridden with:
@@ -42,4 +59,7 @@ environment.
 
 `smoke.yaml` and `functional.yaml` cover all five scenarios in all supported
 environments. `breakpoint.yaml` runs them in `yt01` with the standard ten-minute
-and 100-VU breakpoint settings.
+and 100-VU breakpoint settings. Functional runs execute one iteration, while
+smoke runs execute continuously with one VU for one minute. Creation and upload
+profiles therefore generate persistent data, and breakpoint runs do so at high
+volume. Start them only when that side effect is intended.

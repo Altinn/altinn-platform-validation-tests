@@ -1,18 +1,19 @@
 import { check, group } from "k6";
 
 import { handleSummary } from "../../../common-imports.js";
-import { getOptions } from "../../../helpers.js";
 import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
 import {
     buildInitializeCorrespondenceRequest,
+    getCorrespondenceOptions,
     getEndUser,
+    getExpectedRecipient,
     getPersonalSenderClient,
     setupCorrespondenceTestData,
 } from "./commons.js";
 
 const initializeLabel = { step: "Initialize correspondence" };
 
-export const options = getOptions([initializeLabel]);
+export const options = getCorrespondenceOptions([initializeLabel]);
 
 export function setup() {
     return setupCorrespondenceTestData();
@@ -25,6 +26,7 @@ export function setup() {
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers).ssn;
+    const expectedRecipient = getExpectedRecipient(recipient);
     const correspondenceClient = getPersonalSenderClient();
     const requestBody = buildInitializeCorrespondenceRequest(recipient);
 
@@ -47,6 +49,10 @@ export default function (endUsers) {
                     typeof response.correspondences?.[0]
                         ?.correspondenceId === "string" &&
                     response.correspondences[0].correspondenceId.length > 0,
+            "Initialize correspondence - expected recipient is returned":
+                (response) =>
+                    response.correspondences?.[0]?.recipient ===
+                    expectedRecipient,
         });
     });
 }

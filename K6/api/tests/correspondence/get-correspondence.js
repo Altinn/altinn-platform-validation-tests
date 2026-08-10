@@ -2,7 +2,6 @@ import { check, group } from "k6";
 
 import { CorrespondenceQueryBuilder } from "../../../clients/correspondence/index.js";
 import { handleSummary } from "../../../common-imports.js";
-import { getOptions } from "../../../helpers.js";
 import {
     GetCorrespondence,
     GetCorrespondenceContent,
@@ -10,10 +9,12 @@ import {
 } from "../../building-blocks/correspondence/correspondence/index.js";
 import { GetDialog } from "../../building-blocks/dialogporten/enduser/index.js";
 import {
+    getCorrespondenceOptions,
     getCorrespondenceTestConfiguration,
     getDialogportenClient,
     getDialogTokenCorrespondenceClient,
     getEndUser,
+    getExpectedRecipient,
     getRecipientClient,
     setupCorrespondenceTestData,
 } from "./commons.js";
@@ -23,7 +24,7 @@ const overviewLabel = { step: "Get correspondence overview for content" };
 const dialogLabel = { step: "Get Dialogporten dialog token" };
 const contentLabel = { step: "Get correspondence content" };
 
-export const options = getOptions([
+export const options = getCorrespondenceOptions([
     listLabel,
     overviewLabel,
     dialogLabel,
@@ -43,6 +44,7 @@ export function setup() {
 export default function (endUsers) {
     const configuration = getCorrespondenceTestConfiguration();
     const recipient = getEndUser(endUsers).ssn;
+    const expectedRecipient = getExpectedRecipient(recipient);
     const correspondenceClient = getRecipientClient(recipient);
     const dialogportenClient = getDialogportenClient(recipient);
     const query = new CorrespondenceQueryBuilder()
@@ -61,6 +63,15 @@ export default function (endUsers) {
         );
     });
 
+    const hasCorrespondences = check(correspondenceIds, {
+        "Correspondence content - at least one correspondence is available":
+            (ids) => ids.length > 0,
+    });
+
+    if (!hasCorrespondences) {
+        return;
+    }
+
     const selectedIds = correspondenceIds.slice(
         0,
         configuration.maxItemsPerIteration,
@@ -76,6 +87,17 @@ export default function (endUsers) {
                 overviewLabel,
             );
         });
+
+        const hasExpectedOverview = check(overview, {
+            "Correspondence content - expected recipient is returned":
+                (value) => value?.recipient === expectedRecipient,
+            "Correspondence content - expected resource is returned":
+                (value) => value?.resourceId === configuration.resourceId,
+        });
+
+        if (!hasExpectedOverview) {
+            continue;
+        }
 
         const dialogReference = overview?.externalReferences?.find(
             (reference) =>

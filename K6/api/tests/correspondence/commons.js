@@ -15,7 +15,7 @@ import {
     PersonalTokenGenerator,
     uuidv4,
 } from "../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../helpers.js";
+import { getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 import {
     AltinnScopes,
     CreateScopeString,
@@ -24,6 +24,46 @@ import {
 
 const DEFAULT_ATTACHMENT_SIZE_BYTES = 50 * 1024;
 const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
+
+/**
+ * Builds options for the Correspondence validation and performance tests.
+ *
+ * The shared getOptions helper creates tagged metrics for reporting, but its
+ * empty thresholds do not make failed checks or HTTP requests fail a k6 run.
+ * These scenarios only contain happy-path requests, so every check and HTTP
+ * request must succeed.
+ *
+ * @param {{ [key: string]: string }[]} labels Request labels.
+ * @returns {object} Strict k6 options for a Correspondence test.
+ */
+export function getCorrespondenceOptions(labels) {
+    const options = getOptions(labels);
+
+    options.thresholds.checks = ["rate>=1.0"];
+    options.thresholds.http_req_failed = ["rate<=0.0"];
+
+    return options;
+}
+
+/**
+ * Normalizes a recipient in the same way as the Correspondence API response.
+ * Test data normally contains bare national identity numbers, while response
+ * payloads return recipient URNs.
+ *
+ * @param {string} recipient Recipient identifier from the request.
+ * @returns {string} Expected recipient value in an API response.
+ */
+export function getExpectedRecipient(recipient) {
+    if (/^\d{11}$/.test(recipient)) {
+        return `urn:altinn:person:identifier-no:${recipient}`;
+    }
+
+    if (/^(0192:)?\d{9}$/.test(recipient)) {
+        return `urn:altinn:organization:identifier-no:${recipient.replace(/^0192:/, "")}`;
+    }
+
+    return recipient;
+}
 
 /**
  * Defaults migrated from the existing Correspondence performance test data.
