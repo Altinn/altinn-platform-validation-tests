@@ -1,0 +1,278 @@
+<testsuites id="" name="" tests="12" failures="1" skipped="0" errors="3" time="91.68614">
+<testsuite name="tests/native/test-cases/sso/innlogging-alle-flater.spec.ts" timestamp="2026-06-03T12:22:29.536Z" hostname="native" tests="4" failures="0" skipped="0" time="17.493" errors="1">
+<testcase name="Bruker er innlogget på alle flater etter innlogging fra arbeidsflate" classname="tests/native/test-cases/sso/innlogging-alle-flater.spec.ts" time="3.175">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-53666-innlogging-fra-arbeidsflate-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er innlogget på alle flater etter innlogging fra tilgangsstyring" classname="tests/native/test-cases/sso/innlogging-alle-flater.spec.ts" time="2.965">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/video.webm]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/error-context.md]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/trace.zip]]
+]]>
+</system-out>
+<error message="page.goto: net::ERR_ABORTED at https://info.at23.altinn.cloud/" type="Error">
+<![CDATA[  [native] › tests/native/test-cases/sso/innlogging-alle-flater.spec.ts:17:9 › Bruker er innlogget på alle flater etter innlogging fra tilgangsstyring › Bruker skal fortsatt være innlogget på andre områder
+
+    Error: page.goto: net::ERR_ABORTED at https://info.at23.altinn.cloud/
+    Call log:
+      - navigating to "https://info.at23.altinn.cloud/", waiting until "domcontentloaded"
+
+
+       at pages/infoportal/infoportalen.ts:34
+
+      32 |
+      33 |     async navigateTo() {
+    > 34 |         await this.page.goto(this.fullUrl, {
+         |                         ^
+      35 |             waitUntil: 'domcontentloaded'
+      36 |         });
+      37 |
+        at InfoPortalen.navigateTo (/tmp/altinn-platform-validation-tests/playwright/pages/infoportal/infoportalen.ts:34:25)
+        at SsoFlow.navigateToArea (/tmp/altinn-platform-validation-tests/playwright/flows/sso-flow.ts:58:41)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/innlogging-alle-flater.spec.ts:38:35
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/innlogging-alle-flater.spec.ts:34:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-test-cases-sso-innl-f62e2-logging-fra-tilgangsstyring-native/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</error>
+</testcase>
+<testcase name="Bruker er innlogget på alle flater etter innlogging fra infoportalen" classname="tests/native/test-cases/sso/innlogging-alle-flater.spec.ts" time="6.764">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-ae44a-innlogging-fra-infoportalen-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er innlogget på alle flater etter innlogging fra arbeidsflate-profil" classname="tests/native/test-cases/sso/innlogging-alle-flater.spec.ts" time="4.589">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-0f600-ing-fra-arbeidsflate-profil-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts" timestamp="2026-06-03T12:22:29.536Z" hostname="native" tests="4" failures="0" skipped="0" time="20.988" errors="1">
+<testcase name="Bruker forblir innlogget på alle flater etter refresh fra arbeidsflate" classname="tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts" time="4.344">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-36c27-er-refresh-fra-arbeidsflate-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker forblir innlogget på alle flater etter refresh fra tilgangsstyring" classname="tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts" time="4.413">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/video.webm]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/error-context.md]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/trace.zip]]
+]]>
+</system-out>
+<error message="page.reload: net::ERR_ABORTED; maybe frame was detached?" type="Error">
+<![CDATA[  [native] › tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts:17:9 › Bruker forblir innlogget på alle flater etter refresh fra tilgangsstyring › Bruker skal fortsatt være innlogget på andre områder også etter refresh
+
+    Error: page.reload: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - waiting for navigation until "load"
+
+
+       at flows/sso-flow.ts:66
+
+      64 |
+      65 |     async refresh() {
+    > 66 |         await this.page.reload();
+         |                         ^
+      67 |     }
+      68 |
+      69 |     async refreshWithGoto() {
+        at SsoFlow.refresh (/tmp/altinn-platform-validation-tests/playwright/flows/sso-flow.ts:66:25)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts:40:35
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts:34:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-test-cases-sso-innl-e873c-refresh-fra-tilgangsstyring-native/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</error>
+</testcase>
+<testcase name="Bruker forblir innlogget på alle flater etter refresh fra infoportalen" classname="tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts" time="7.232">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-c3b93-er-refresh-fra-infoportalen-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker forblir innlogget på alle flater etter refresh fra arbeidsflate-profil" classname="tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts" time="4.999">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-innl-70878-esh-fra-arbeidsflate-profil-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tests/native/test-cases/sso/utlogging-alle-flater.spec.ts" timestamp="2026-06-03T12:22:29.536Z" hostname="native" tests="4" failures="1" skipped="0" time="88.366" errors="1">
+<testcase name="Bruker logges ut av alle flater etter utlogging fra arbeidsflate" classname="tests/native/test-cases/sso/utlogging-alle-flater.spec.ts" time="7.696">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-bf135--utlogging-fra-arbeidsflate-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker logges ut av alle flater etter utlogging fra tilgangsstyring" classname="tests/native/test-cases/sso/utlogging-alle-flater.spec.ts" time="60.291">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/video.webm]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/error-context.md]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/trace.zip]]
+]]>
+</system-out>
+<error message="Test timeout of 60000ms exceeded." type="Error">
+<![CDATA[  [native] › tests/native/test-cases/sso/utlogging-alle-flater.spec.ts:17:9 › Bruker logges ut av alle flater etter utlogging fra tilgangsstyring › Bruker logger ut
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: /^(meny|menu)$/i })
+        - locator resolved to <button disabled title="Meny" type="button" data-variant="solid" data-color="company" aria-disabled="true" aria-expanded="false" class="ds-button _button_167in_1 _button_e58u8_3">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+          - waiting 100ms
+        108 × waiting for element to be visible, enabled and stable
+            - element is not enabled
+          - retrying click action
+            - waiting 500ms
+
+
+       at pages/menu-page.ts:9
+
+       7 |         await this.page.getByRole('button', {
+       8 |             name: /^(meny|menu)$/i,
+    >  9 |         }).click();
+         |            ^
+      10 |     }
+      11 |
+      12 |     async clickLoginButton() {
+        at MenuPage.clickMenuButton (/tmp/altinn-platform-validation-tests/playwright/pages/menu-page.ts:9:12)
+        at SsoFlow.logout (/tmp/altinn-platform-validation-tests/playwright/flows/sso-flow.ts:35:29)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/utlogging-alle-flater.spec.ts:33:35
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/utlogging-alle-flater.spec.ts:32:13
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-test-cases-sso-utlo-2b27f-logging-fra-tilgangsstyring-native/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</error>
+</testcase>
+<testcase name="Bruker logges ut av alle flater etter utlogging fra infoportalen" classname="tests/native/test-cases/sso/utlogging-alle-flater.spec.ts" time="13.429">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/video.webm]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/error-context.md]]
+
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/trace.zip]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [native] › tests/native/test-cases/sso/utlogging-alle-flater.spec.ts:17:9 › Bruker logges ut av alle flater etter utlogging fra infoportalen › Bruker logger ut
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: /logg ut|logout/i })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for getByRole('button', { name: /logg ut|logout/i })
+
+
+       at pages/menu-page.ts:23
+
+      21 |             name: /logg ut|logout/i,
+      22 |         });
+    > 23 |         await expect(logoutButton).toBeVisible({ timeout: 10000 });
+         |                                    ^
+      24 |         // klikk logout
+      25 |         await logoutButton.click();
+      26 |     }
+        at MenuPage.clickLogoutButton (/tmp/altinn-platform-validation-tests/playwright/pages/menu-page.ts:23:36)
+        at SsoFlow.logout (/tmp/altinn-platform-validation-tests/playwright/flows/sso-flow.ts:36:29)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/utlogging-alle-flater.spec.ts:33:17
+        at /tmp/altinn-platform-validation-tests/playwright/tests/native/test-cases/sso/utlogging-alle-flater.spec.ts:32:13
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-test-cases-sso-utlo-df58e--utlogging-fra-infoportalen-native/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+<testcase name="Bruker logges ut av alle flater etter utlogging fra arbeidsflate-profil" classname="tests/native/test-cases/sso/utlogging-alle-flater.spec.ts" time="6.95">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/native-test-cases-sso-utlo-0d341-ing-fra-arbeidsflate-profil-native/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

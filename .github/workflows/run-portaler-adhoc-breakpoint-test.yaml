@@ -16,6 +16,9 @@ on:
         description: "The test to run"
         options:
           - yt01-get-info-dot-altinn-dot-cloud-break
+          - yt01-get-info-dot-altinn-dot-cloud-skjemaoversikt-break
+          - yt01-get-info-dot-altinn-dot-cloud-sok-break
+          - yt01-get-info-dot-altinn-dot-cloud-starte-og-drive-break
           - yt01-get-infoportal-api-when-loggedin-break
 
       target_vus:
@@ -51,7 +54,7 @@ jobs:
     environment: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s
@@ -98,7 +101,7 @@ jobs:
           COMMAND_LINE_ARGS: ${{ inputs.commandLineArgs }}
 
       - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@a638d57d0b66f8977f364b321902801d11e75c15
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@ec383f5b2cafb06b2d760d14ae2d06f711d8e3e7
         with:
           config_file: "${{ inputs.configFilePath }}"
           command_line_args: ${{ env.COMMAND_LINE_ARGS }}

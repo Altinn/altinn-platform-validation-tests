@@ -1,0 +1,56 @@
+namespace: dialogporten
+base_dir: K6/api/tests/dialogporten/graphql/
+test_definitions:
+  - test_file: get-dialogs-for-enduser.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-dialogs-for-parties.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-dialogs-for-random-party.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-filter-service-resources.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-dialogs-for-enduser-serviceowner.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+      - environment: at23
+
+  - test_file: get-dialogs-for-parties-serviceowner.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: false
+      - environment: tt02
+      - environment: at23

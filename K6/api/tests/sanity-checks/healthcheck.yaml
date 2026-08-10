@@ -1,0 +1,9 @@
+namespace: sanity-checks
+base_dir: K6/api/tests/sanity-checks
+test_definitions:
+  - test_file: token-generators.js
+    contexts:
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client

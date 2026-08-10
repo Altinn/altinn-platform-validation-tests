@@ -1,0 +1,331 @@
+import http from "k6/http";
+
+const TAGS = {
+    AuthorizeEnduser: { action: "authorize-enduser" },
+    AuthorizeDagl: { action: "authorize-dagl" },
+    AuthorizeEnduserInstance: { action: "authorize-enduser-instance" },
+    AuthorizeOrganizationInstance: { action: "authorize-organization-instance" },
+};
+
+class PdpAuthorizeClient {
+    /**
+     *
+     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
+     * @param {*} tokenGenerator TODO: description
+     */
+    constructor(
+        baseUrl,
+        tokenGenerator
+    ) {
+        /**
+         * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
+         */
+        this.tokenGenerator = tokenGenerator;
+        /**
+         * @property {string} BASE_PATH The path to the api without host information
+         */
+        this.BASE_PATH = "/authorization/api/v1/authorize";
+        /**
+         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         */
+        this.FULL_PATH = baseUrl + this.BASE_PATH;
+
+    }
+
+    static get TAGS() {
+        return TAGS;
+    }
+
+    /**
+     * POST authorize enduser
+     * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
+     *
+     * @param {string} ssn - social security number
+     * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {string} action - e.g. read, write, sign*
+     * @param {string} subscriptionKey - subscription key for the API
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    AuthorizeEnduser(ssn, resourceId, action, subscriptionKey, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeEnduser.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
+            },
+        };
+
+        const body = this.#getEnduserBody(ssn, resourceId, action);
+        const res = http.post(url.toString(), JSON.stringify(body), params);
+        return res;
+    }
+
+    /**
+     * POST authorize DAGL
+     * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
+     *
+     * @param {string} ssn - social security number
+     * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {string} orgno - organization number
+     * @param {string} action - e.g. read, write, sign*
+     * @param {string} subscriptionKey - subscription key for the API
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    AuthorizeDagl(ssn, resourceId, orgno, action, subscriptionKey, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeDagl.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
+            },
+        };
+
+        const body = this.#getDaglBody(ssn, resourceId, orgno, action);
+        const res = http.post(url.toString(), JSON.stringify(body), params);
+        return res;
+    }
+
+    /**
+     * POST authorize enduser, check access to instance
+     * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
+     *
+     * @param {string} tossn - social security number of the user being given access
+     * @param {string} fromssn - social security number of the end user giving access
+     * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {string} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+     * @param {string} task - e.g. SigningTask_Founders
+     * @param {string} action - e.g. read, write, sign
+     * @param {string} subscriptionKey - subscription key for the API
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    AuthorizeEnduserInstance(tossn, fromssn, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeEnduserInstance.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
+            },
+        };
+
+        const body = this.#getBodyWithInstance(tossn, fromssn, null, resourceId, instanceId, task, action);
+        const res = http.post(url.toString(), JSON.stringify(body), params);
+        return res;
+    }
+
+    /**
+     * POST authorize enduser, check access to instance
+     * Docs {@link https://docs.altinn.studio/nb/api/authorization/spec/#/Decision/post_authorize}
+     *
+     * @param {string} tossn - social security number of the user being given access
+     * @param {string} fromorg - organization number of the organization giving access
+     * @param {string} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {string} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+     * @param {string} task - e.g. SigningTask_Founders
+     * @param {string} action - e.g. read, write, sign
+     * @param {string} subscriptionKey - subscription key for the API
+     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse
+     */
+    AuthorizeOrganizationInstance(tossn, fromorg, resourceId, instanceId, task, action, subscriptionKey, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = new URL(this.FULL_PATH);
+        let tags = {
+            endpoint: url.toString(),
+            action: TAGS.AuthorizeOrganizationInstance.action
+        };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+        const params = {
+            tags: tags,
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-type": "application/json",
+                "Ocp-Apim-Subscription-Key": subscriptionKey
+            },
+        };
+
+        const body = this.#getBodyWithInstance(tossn, null, fromorg, resourceId, instanceId, task, action);
+        const res = http.post(url.toString(), JSON.stringify(body), params);
+        return res;
+    }
+
+    /**
+     * get body for enduser authorization
+     *
+     * @param {*} ssn - social security number
+     * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} action - e.g. read, write, sign
+     * @returns body for authorize enduser
+     */
+    #getEnduserBody(ssn, resourceId, action) {
+        let body = this.#buildAuthorizeBody(resourceId, action);
+        body.Request.AccessSubject[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": ssn
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": ssn,
+                "DataType": "http://www.w3.org/2001/XMLSchema#string"
+            });
+        return body;
+    }
+
+    /**
+     * get body for enduser authorization
+     *
+     * @param {*} tossn - social security number of the user being given access
+     * @param {*} fromssn - social security number of the end user giving access. Set to null if access is given from org
+     * @param {*} fromorg - organization number of the organization giving access. Set to null if access is given from end user
+     * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} instanceId -e.g. urn:altinn:instance-id:56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+     * @param {*} task - e.g. SigningTask_Founders
+     * @param {*} action - e.g. read, write, sign
+     * @returns body for authorize enduser
+     */
+    #getBodyWithInstance(tossn, fromssn, fromorg, resourceId, instanceId, task, action) {
+        let body = this.#buildAuthorizeBody(resourceId, action);
+        body.Request.AccessSubject[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": tossn
+            });
+        if (fromssn) {
+            body.Request.Resource[0].Attribute.push(
+                {
+                    "AttributeId": "urn:altinn:person:identifier-no",
+                    "Value": fromssn,
+                });
+        }
+
+        if (fromorg) {
+            body.Request.Resource[0].Attribute.push(
+                {
+                    "AttributeId": "urn:altinn:organization:identifier-no",
+                    "Value": fromorg,
+                });
+        }
+
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:resource:instance-id",
+                "Value": instanceId,
+            });
+
+        if (task) {
+            body.Request.Resource[0].Attribute.push(
+                {
+                    "AttributeId": "urn:altinn:task",
+                    "Value": task,
+                });
+        }
+        return body;
+    }
+
+    /**
+     * get body for dagl authorization
+     *
+     * @param {*} ssn - social security number
+     * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} orgno - organization number
+     * @param {*} action - e.g. read, write, sign
+     * @returns body for authorize dagl
+     */
+    #getDaglBody(ssn, resourceId, orgno, action) {
+        let body = this.#buildAuthorizeBody(resourceId, action);
+        body.Request.AccessSubject[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:person:identifier-no",
+                "Value": ssn
+            });
+        body.Request.Resource[0].Attribute.push(
+            {
+                "AttributeId": "urn:altinn:organization:identifier-no",
+                "Value": orgno,
+                "DataType": "http://www.w3.org/2001/XMLSchema#string"
+            });
+        return body;
+    }
+
+    /**
+     * build base authorize body
+     *
+     * @param {*} resourceId - e.g. ttd-dialogporten-performance-test-02
+     * @param {*} action - e.g. read, write, sign
+     * @returns base body for authorize
+     */
+    #buildAuthorizeBody(resourceId, action) {
+        let body = {
+            "Request": {
+                "ReturnPolicyIdList": false,
+                "AccessSubject": [
+                    {
+                        "Attribute": [
+                        ]
+                    }
+                ],
+                "Action": [
+                    {
+                        "Attribute": [
+                            {
+                                "AttributeId": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                                "Value": action,
+                                "DataType": "http://www.w3.org/2001/XMLSchema#string"
+                            }
+                        ]
+                    }
+                ],
+                "Resource": [
+                    {
+                        "Attribute": [
+                            {
+                                "AttributeId": "urn:altinn:resource",
+                                "Value": resourceId
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+        return body;
+
+    }
+}
+
+export { PdpAuthorizeClient };

@@ -1,6 +1,8 @@
-import http from "k6/http";
 import { check } from "k6";
+import http from "k6/http";
+
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
+import { requireEnv } from "../../../../helpers.js";
 
 // https://grafana.com/docs/k6/latest/using-k6/k6-options/reference/#dns
 export const options = {
@@ -10,6 +12,7 @@ export const options = {
 };
 
 export function setup() {
+    requireEnv(["DEPLOY_ENV"]);
     const client = new AltinnCdnClient();
     const orgs = client.GetOrgs(__ENV.DEPLOY_ENV);
     let endpoints = [];

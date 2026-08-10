@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requireEnv } from "../../helpers.js";
+
 class AltinnCdnClient {
     /**
      *
@@ -8,14 +10,16 @@ class AltinnCdnClient {
     constructor(
         baseUrl = __ENV.ALTINN_CDN_BASE_URL
     ) {
+        requireEnv(["ALTINN_CDN_BASE_URL"]);
         this.BASE_URL = baseUrl;
     }
 
     /**
-    * GetOrgs
-    * @param {string} environment
-    * @returns A three digit list of orgs
-    */
+     * GetOrgs
+     *
+     * @param {string} environment TODO: description
+     * @returns A three digit list of orgs
+     */
     GetOrgs(environment = "all") {
         if (environment == "prod") {
             environment = "production";
@@ -23,7 +27,10 @@ class AltinnCdnClient {
         const orgs = [];
 
         const params = {
-            tags: { "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json" },
+            tags: {
+                "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json",
+                "action": "GetOrgs"
+            },
         };
 
         const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params);
@@ -50,8 +57,9 @@ class AltinnCdnClient {
 
     /**
      * GetBaseUrlForOrgInEnvironment
-     * @param {string} org
-     * @param {string} environment
+     *
+     * @param {string} org TODO: description
+     * @param {string} environment TODO: description
      * @returns The base URL for the particular org and environment
      */
     GetBaseUrlForOrgInEnvironment(org, environment = "tt02") {
@@ -65,8 +73,9 @@ class AltinnCdnClient {
     }
     /**
      * GetBaseUrlForOrgInEnvironment
-     * @param {string} org
-     * @param {string} environment
+     *
+     * @param {string} org TODO: description
+     * @param {string} environment TODO: description
      * @returns The domain for the particular org and environment
      */
     GetDomainForOrgAndEnvironment(org, environment = "tt02") {

@@ -1,45 +1,65 @@
 import http from "k6/http";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
-
-import { getItemFromList, getOptions, parseCsvData } from "../../../../helpers.js";
-
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`,
+        { tags: { action: "fetch-test-data" } });
     return parseCsvData(res.body);
 }
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const orgNos = ["713431400"];
 
-const label = { action: "should-send-notifications" };
+const label = { step: "should-send-notifications" };
 
 export const options = getOptions([label]);
 
+/**
+ * @type {ServiceOwnerApiClient | undefined}
+ */
 let serviceOwnerApiClient = undefined;
 
 /**
- * Function to set up and return clients to interact with the Service Owner Dialog API
+ * Creates and caches the client used to interact with the Service Owner Dialog API.
  *
- * @returns {Array} An array containing the AuthorizedPartiesClient instance
+ * The client uses an enterprise token with the
+ * `altinn:system/notifications.condition.check` scope and is configured for
+ * the `test` organization. The organization number is selected dynamically
+ * from the provided list.
+ *
+ * The same {@link ServiceOwnerApiClient} instance is reused across iterations.
+ *
+ * @returns {[ServiceOwnerApiClient]} Tuple containing the Service Owner API client.
  */
 export function getClients() {
-    if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:system/notifications.condition.check");
-        tokenOpts.set("org", "test");
-        tokenOpts.set("orgNo", getItemFromList(orgNos));
+    if (serviceOwnerApiClient === undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.SYSTEM.NOTIFICATIONS.CONDITION.CHECK
+        ]);
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .withOrganization("test")
+            .withOrganizationNumber(getItemFromList(orgNos))
+            .build();
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
+
+        serviceOwnerApiClient = new ServiceOwnerApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [serviceOwnerApiClient];
 }
-
-
 
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
