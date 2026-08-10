@@ -1,9 +1,9 @@
 import http from "k6/http";
 
-import { AuthorizedPartiesClient } from "../../../../clients/access-management/enduser/authorized-parties/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { AuthorizedPartiesClient } from "../../../../../clients/access-management/enduser/authorized-parties/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { requireEnv } from "../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /** @type {EnterpriseTokenGenerator|null} */
 let tokenGenerator = null;

@@ -1,10 +1,10 @@
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "../../../../../common-imports.js";
 export { setup } from "./common.js";
 import { group } from "k6";
 
-import { EndUserAuthorizedPartiesQueryBuilder } from "../../../../clients/access-management/enduser/authorized-parties/authorized-parties-query-builder.js";
-import { GetAuthorizedParties } from "../../../building-blocks/access-management/enduser/authorized-parties/get-authorized-parties.js";
-import { AuthorizedPartiesDomainChecks } from "../../../domain-checks/access-management/authorized-parties.js";
+import { EndUserAuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties-query-builder.js";
+import { GetAuthorizedParties } from "../../../../building-blocks/access-management/enduser/authorized-parties/get-authorized-parties.js";
+import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/authorized-parties.js";
 import { getClients } from "./common.js";
 
 // Person-A ---> Hovedenhet-A (P2H)
