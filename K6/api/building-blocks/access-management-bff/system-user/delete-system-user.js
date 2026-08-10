@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a system user of an organisation.
@@ -18,10 +19,14 @@ export function DeleteSystemUser(
     systemUserGuid,
     labels = null,
 ) {
-    const res = systemUserClient.DeleteSystemUser(
-        partyId,
-        systemUserGuid,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserClient.DeleteSystemUser(
+                partyId,
+                systemUserGuid,
+                labels,
+            ),
+        "DeleteSystemUser",
     );
 
     let deleted = false;

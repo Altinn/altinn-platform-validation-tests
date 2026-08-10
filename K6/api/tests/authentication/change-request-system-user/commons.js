@@ -32,6 +32,18 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const TESTDATA_URL = "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request";
 
 /**
+ * The scopes a vendor acts with. The system user lookup scope is what lets the
+ * arrange step find the system user it just had approved.
+ */
+const VENDOR_SCOPES = CreateScopeString([
+    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+    AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
+    AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
+]);
+
+/**
  * Every system registered by these tests allows the same redirect url.
  */
 export const REDIRECT_URL = "https://digdir.no";
@@ -45,6 +57,11 @@ let clients = undefined;
  * @type {PersonalTokenGenerator | undefined}
  */
 let approverTokenGenerator = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let vendorTokenGenerator = undefined;
 
 /**
  * Creates system in system register, requests a system user for it and has the end user approve it.
@@ -81,10 +98,11 @@ export function arrangeApprovedSystemUser({
 
     const registration = createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages });
 
-    // The approver acts as this customer, so its token has to be set before the
-    // arrange runs, not in the default function the way the test does it.
-    const [, approverTokenGenerator] = getClients(vendorOrgNo);
+    // Both tokens have to be set before the arrange runs, not in the default
+    // function the way the test does it.
+    const [, approverTokenGenerator, vendorTokenGenerator] = getClients();
 
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
     const systemUserId = createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages);
@@ -145,7 +163,7 @@ function fetchTestData(fileName) {
  * @param {object[]} systemUsers - What arrangeApprovedSystemUser returned.
  */
 export function cleanupSystemUsers(systemUsers) {
-    const [apiClients, tokenGenerator] = getClients(systemUsers?.[0]?.vendorOrgNo);
+    const [apiClients, tokenGenerator] = getClients();
 
     group("Cleanup - the customer deletes the system user", function () {
         for (const systemUser of systemUsers ?? []) {
@@ -166,30 +184,20 @@ export function cleanupSystemUsers(systemUsers) {
  * The vendor token adds the system user lookup scope, which the arrange step
  * needs to find the system user it just had approved.
  *
- * The approver token depends on which customer an iteration drew, so swap its
- * options with setTokenGeneratorOptions and getApproverTokenOpts rather than
- * building a new generator. The cache is keyed on the options, so each customer
- * still gets its own cached token.
+ * Neither token is built for anyone in particular. Who a run acts as is decided
+ * by swapping the generator options with setTokenGeneratorOptions, the vendor
+ * with getVendorTokenOpts and the approver with getApproverTokenOpts. The cache
+ * is keyed on the options, so each of them still gets its own cached token.
  *
- * @param {string} vendorOrgNo - Organisation number the vendor token is minted for. A run draws one vendor in setup and passes that same one back in everywhere, so the cached clients never go stale on it.
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
-export function getClients(vendorOrgNo) {
+export function getClients() {
     if (clients === undefined) {
-        const vendorScopes = CreateScopeString([
-            AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
-            AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
-            AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
-        ]);
-
-        const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes(vendorScopes)
-                .withOrganizationNumber(vendorOrgNo)
+                .withScopes(VENDOR_SCOPES)
                 .build(),
         );
 
@@ -222,7 +230,25 @@ export function getClients(vendorOrgNo) {
         };
     }
 
-    return [clients, approverTokenGenerator];
+    return [clients, approverTokenGenerator, vendorTokenGenerator];
+}
+
+/**
+ * Token options for acting as a vendor.
+ *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
+ * @param {string} vendorOrgNo - Organisation number of the vendor this run acts as.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getVendorTokenOpts(vendorOrgNo) {
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(VENDOR_SCOPES)
+        .withOrganizationNumber(vendorOrgNo)
+        .build();
 }
 
 /**
@@ -267,7 +293,9 @@ export function accessPackage(urn) {
  * @returns {string[]} The access package urns.
  */
 export function findAccessPackages(count, vendorOrgNo) {
-    const [apiClients] = getClients(vendorOrgNo);
+    const [apiClients, , vendorTokenGenerator] = getClients();
+
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
     const results = PackagesSearch(apiClients.vendor.packagesClient, { term: "" }) ?? [];
 
@@ -370,7 +398,7 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * @returns {string} Identifier of the approved system user.
  */
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
-    const [apiClients] = getClients(registration.systemOwner);
+    const [apiClients] = getClients();
 
     let systemUserId;
 

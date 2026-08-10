@@ -4,7 +4,7 @@ import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
 import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
-import { accessPackage, arrangeApprovedSystemUser, cleanupSystemUsers, findAccessPackages, getApproverTokenOpts, getClients, pickVendor, REDIRECT_URL, resource } from "./commons.js";
+import { accessPackage, arrangeApprovedSystemUser, cleanupSystemUsers, findAccessPackages, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL, resource } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -60,8 +60,9 @@ export function setup() {
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
-    const [clients, approverTokenGenerator] = getClients(systemUser.vendorOrgNo);
+    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
 
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
 
     // The system user has the first package and not the second, so the change request
