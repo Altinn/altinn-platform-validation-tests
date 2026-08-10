@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
 import { ConsentLookupRequest } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Looks up a consent.
@@ -16,7 +17,10 @@ import { ConsentLookupRequest } from "../../../../../clients/access-management/r
  * @returns {object|null} The looked up consent.
  */
 export function LookupConsent(maskinportenClient, request, labels = null) {
-    const res = maskinportenClient.LookupConsent(request, labels);
+    const res = withRetries(
+        () => maskinportenClient.LookupConsent(request, labels),
+        "LookupConsent",
+    );
 
     /** @type {object|null} */
     let consent = null;

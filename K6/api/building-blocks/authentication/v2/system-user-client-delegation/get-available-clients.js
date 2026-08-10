@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets clients who can delegate to the system user.
@@ -15,9 +16,13 @@ export function GetAvailableClients(
     agent = null,
     labels = null,
 ) {
-    const res = systemUserClientDelegationClient.GetAvailableClients(
-        agent,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserClientDelegationClient.GetAvailableClients(
+                agent,
+                labels,
+            ),
+        "GetAvailableClients",
     );
 
     /** @type {ClientInfoClientInfoPaginated|null} */

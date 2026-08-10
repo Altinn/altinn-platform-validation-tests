@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
@@ -113,23 +113,37 @@ export default async function () {
 
     group("Integration Tests for System Register CRUD Operations as a System Vendor (Visma, Tripletex etc)", function () {
         group("Register a new system", function () {
-            SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+
+            // Everything below reads, updates or deletes this system, so there is
+            // nothing left to test if it was never registered.
+            if (createdSystemId === null) {
+                fail("cannot continue: registering the system did not return a system id");
+            }
         });
 
         group("Make sure the system is registered", function () {
             const vendorSystems = SystemRegisterBuildingBlocks.VendorGet(systemRegisterClient);
 
-            SystemRegisterDomainChecks.CheckSystemId(vendorSystems, systemId);
+            if (!SystemRegisterDomainChecks.CheckSystemId(vendorSystems, systemId)) {
+                fail("cannot continue: the registered system is not among the vendor systems");
+            }
 
             const registeredSystemResponse = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckSystemIdInVendorGetById(registeredSystemResponse, systemId);
+            if (!SystemRegisterDomainChecks.CheckSystemIdInVendorGetById(registeredSystemResponse, systemId)) {
+                fail("cannot continue: the registered system cannot be read back by id");
+            }
         });
 
         group("Update the system", function () {
             const updateResult = SystemRegisterBuildingBlocks.VendorUpdate(systemRegisterClient, systemId, updatedRequestBody);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdate");
+            // Reading the description back only says something once the update went
+            // through, and the change log at the end counts on this change.
+            if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdate")) {
+                fail("cannot continue: updating the system did not report success");
+            }
 
             const updatedSystem = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
@@ -139,7 +153,9 @@ export default async function () {
         group("Replace the rights on the system", function () {
             const updateRightsResult = SystemRegisterBuildingBlocks.VendorUpdateRights(systemRegisterClient, systemId, updatedRights);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "SystemRegisterVendorUpdateRights");
+            if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(updateRightsResult, "SystemRegisterVendorUpdateRights")) {
+                fail("cannot continue: replacing the rights did not report success");
+            }
 
             const systemWithUpdatedRights = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
@@ -149,7 +165,9 @@ export default async function () {
         group("Replace the access packages on the system", function () {
             const updateAccessPackagesResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "SystemRegisterVendorUpdateAccessPackages");
+            if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(updateAccessPackagesResult, "SystemRegisterVendorUpdateAccessPackages")) {
+                fail("cannot continue: replacing the access packages did not report success");
+            }
 
             const systemWithUpdatedAccessPackages = SystemRegisterBuildingBlocks.VendorGetById(systemRegisterClient, systemId);
 
@@ -159,7 +177,9 @@ export default async function () {
         group("Delete the system", function () {
             const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
+            if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete")) {
+                fail("cannot continue: deleting the system did not report success");
+            }
         });
 
         group("The deleted system is gone", function () {

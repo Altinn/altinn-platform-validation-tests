@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets consent request events.
@@ -15,9 +16,13 @@ export function EnterpriseGetConsentRequestEvents(
     query,
     labels = null,
 ) {
-    const res = enterpriseClient.EnterpriseGetConsentRequestEvents(
-        query,
-        labels,
+    const res = withRetries(
+        () =>
+            enterpriseClient.EnterpriseGetConsentRequestEvents(
+                query,
+                labels,
+            ),
+        "EnterpriseGetConsentRequestEvents",
     );
 
     /** @type {ConsentStatusChangeDtoPaginatedResult|null} */

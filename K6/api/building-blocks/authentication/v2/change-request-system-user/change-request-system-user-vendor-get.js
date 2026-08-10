@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a change request by id.
@@ -15,11 +16,14 @@ export function ChangeRequestSystemUserVendorGet(
     requestId,
     labels = null,
 ) {
-    const res =
-        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGet(
-            requestId,
-            labels,
-        );
+    const res = withRetries(
+        () =>
+            changeRequestSystemUserClient.ChangeRequestSystemUserVendorGet(
+                requestId,
+                labels,
+            ),
+        "ChangeRequestSystemUserVendorGet",
+    );
 
     /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;

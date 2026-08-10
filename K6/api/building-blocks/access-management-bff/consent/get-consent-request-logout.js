@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the logout redirect for a consent request.
@@ -16,9 +17,13 @@ export function GetConsentRequestLogout(
     consentRequestId,
     labels = null,
 ) {
-    const res = consentClient.GetConsentRequestLogout(
-        consentRequestId,
-        labels,
+    const res = withRetries(
+        () =>
+            consentClient.GetConsentRequestLogout(
+                consentRequestId,
+                labels,
+            ),
+        "GetConsentRequestLogout",
     );
 
     const succeed = check(res, {

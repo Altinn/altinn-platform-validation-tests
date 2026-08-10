@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the consent log of a party.
@@ -12,7 +13,10 @@ import { ConsentClient } from "../../../../clients/access-management-bff/consent
  * for this response.
  */
 export function GetConsentLog(consentClient, party, labels = null) {
-    const res = consentClient.GetConsentLog(party, labels);
+    const res = withRetries(
+        () => consentClient.GetConsentLog(party, labels),
+        "GetConsentLog",
+    );
 
     /** @type {object|null} */
     let consentLog = null;
