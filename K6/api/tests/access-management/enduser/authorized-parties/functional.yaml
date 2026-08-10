@@ -2,41 +2,49 @@ namespace: access-management
 base_dir: K6/api/tests/access-management/enduser/authorized-parties/
 test_definitions:
   - test_file: dagl-a-faar-person-a-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: dagl-av-underenhet-faar-hovedenhet-a-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: dagl-b-faar-hovedenhet-a-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: dagl-b-faar-underenhet-c-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: dagl-c-faar-underenhet-d-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: person-a-faar-underenhet-d-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: person-b-faar-person-a-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
 
   - test_file: person-c-faar-hovedenhet-a-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
     contexts:
       - environment: at22
       - environment: tt02
