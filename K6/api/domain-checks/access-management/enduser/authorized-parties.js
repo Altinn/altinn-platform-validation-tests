@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AuthorizedPartyDto } from "../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
+import { AuthorizedPartyDto } from "../../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
 
 /**
  * Flattens a party hierarchy into a single list, parents before their subunits.

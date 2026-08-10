@@ -4,7 +4,7 @@ import { group } from "k6";
 
 import { EndUserAuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties-query-builder.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/enduser/authorized-parties/get-authorized-parties.js";
-import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/authorized-parties.js";
+import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/enduser/authorized-parties.js";
 import { getClients } from "./common.js";
 
 // Underenhet-D ---> Underenhet-C (U2U)
