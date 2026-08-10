@@ -1,13 +1,14 @@
 /**
-/**
+ * /**
  * Summary for functional E2E k6 scripts.
  *
  * Docs: https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/
  *
  */
 
-import postSlackMessage from "./slack.js";
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
+
+import postSlackMessage from "./slack.js";
 
 function collectGroupChecksLines(group, lines, onlyFailures = false) {
     const groupName = group?.name || "(Ikke tilknyttet group)";

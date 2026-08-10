@@ -1,0 +1,9 @@
+namespace: dialogporten
+base_dir: K6/api/tests/dialogporten/enduser
+test_definitions:
+  - test_file: get-dialogs-for-enduser.js
+    contexts:
+      - environment: at23
+  - test_file: get-dialogs-and-extract-details.js
+    contexts:
+      - environment: at23

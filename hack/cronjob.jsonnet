@@ -9,7 +9,7 @@ local cronJobName = std.asciiLower(
         std.strReplace(
           std.strReplace(
             input_config_file,
-            namespace + "/",
+            namespace + '/',
             ''
           ),
           './K6/browser/',
@@ -47,7 +47,7 @@ local cronjob = {
             containers: [
               {
                 name: 'generate-manifests',
-                image: 'ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.36',
+                image: 'ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.41',
                 command: [
                   '/bin/sh',
                 ],
@@ -73,11 +73,17 @@ local cronjob = {
 
 {
   [std.strReplace(
-    std.strReplace(
-      std.strReplace(
-      input_config_file,
-      ".yaml", ""),
-       "./", ""),
-      "/", "_" )
-      + '.json']: cronjob,
+     std.strReplace(
+       std.strReplace(
+         input_config_file,
+         '.yaml',
+         ''
+       ),
+       './',
+       ''
+     ),
+     '/',
+     '_'
+   )
+   + '.json']: cronjob,
 }

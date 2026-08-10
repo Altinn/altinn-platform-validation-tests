@@ -1,5 +1,19 @@
-import { getInfoCloud } from "./commons.js";
+import http from "k6/http";
+
 import { getOptions } from "../../../helpers.js";
+import { getInfoCloud, searchInfoCloud } from "./commons.js";
+
+export function setup() {
+    const response = http.get(
+        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt",
+        { tags: { action: "fetch-test-data" } }
+    );
+
+    return response.body
+        .split("\n")
+        .map(w => w.trim())
+        .filter(Boolean);
+}
 
 const rootLabel = { step: "get infocloud søk" };
 const authorizedPartiesLabel = { step: "authorizedParties" };
@@ -13,8 +27,9 @@ export const options = getOptions([
     currentLabel,
 ]);
 
-export default function () {
-    getInfoCloud("/sok/?q=test", rootLabel);
+export default function (words) {
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    searchInfoCloud(randomWord, rootLabel);
     getInfoCloud("/api/users/authorized-parties", authorizedPartiesLabel);
     getInfoCloud("/api/users/favorites", favoritesLabel);
     getInfoCloud("/api/users/current", currentLabel);

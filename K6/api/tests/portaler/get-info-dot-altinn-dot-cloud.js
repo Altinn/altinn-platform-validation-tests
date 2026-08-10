@@ -1,5 +1,5 @@
-import { getInfoCloud } from "./commons.js";
 import { getOptions } from "../../../helpers.js";
+import { getInfoCloud } from "./commons.js";
 
 const rootLabel = { step: "get infocloud" };
 const authorizedPartiesLabel = { step: "authorizedParties" };

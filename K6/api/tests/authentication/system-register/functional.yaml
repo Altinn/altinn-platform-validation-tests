@@ -1,31 +1,47 @@
 namespace: authentication
+base_dir: K6/api/tests/authentication/system-register/
 test_definitions:
-  - test_file: K6/api/tests/authentication/system-register/system-register-crud.js
+  - test_file: system-register-crud.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
         test_run:
           secrets:
-            - br-test.2025-07-03 # Needs renewal
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
 
-  - test_file: K6/api/tests/authentication/system-register/system-register-rights.js
+  - test_file: system-register-rights.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
         test_run:
           secrets:
-            - br-test.2025-07-03 # Needs renewal
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
 
-  - test_file: K6/api/tests/authentication/system-register/system-register-access-packages.js
+  - test_file: system-register-access-packages.js
     contexts:
       - environment: at22
-        test_type:
-          type: functional
-          enabled: false
         test_run:
           secrets:
-            - br-test.2025-07-03 # Needs renewal
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client

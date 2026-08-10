@@ -1,0 +1,58 @@
+
+import { AuthorizedPartiesQueryBuilder } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties-query.builder.js";
+import { AuthorizedPartiesRequestBuilder } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties-request.builder.js";
+import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { GetAuthorizedParties } from "../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
+import { getClients } from "./common-functions.js";
+
+export { setup } from "./common-functions.js";
+
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
+const label = { step: "getAuthorizedPartiesForUserAvgiverListe" };
+
+export const options = getOptions([label]);
+
+export default function (data) {
+    const [authorizedPartiesClient] = getClients();
+    const userParty = getItemFromList(data, randomize);
+
+    const request = new AuthorizedPartiesRequestBuilder()
+        .withPerson(userParty.ssn,)
+        .build();
+
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeAltinn2(true)
+        .includeAltinn3(true)
+        .includeRoles(false)
+        .includeAccessPackages(false)
+        .includeResources(false)
+        .includeInstances(false)
+        .build();
+
+    GetAuthorizedParties(
+        authorizedPartiesClient,
+        request,
+        queryParams,
+        label
+    );
+}
+
+// Header Avgiverliste/Aktørvelger:
+// includeAltinn2=true
+// includeAltinn3=true
+// includeRoles=false
+// includeAccessPackages=false
+// includeResources=false
+// includeInstances=false
+// uten partyFilter i body/query
+// Eksempel: https://platform.yt01.altinn.cloud/accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2=true&includeAltinn3=true&includeRoles=false&includeAccessPackages=false&includeResources=false&includeInstances=false
+// Dialogporten autorisasjon:
+// includeAltinn2=true
+// includeAltinn3=true
+// includeRoles=true
+// includeAccessPackages=true
+// includeResources=true
+// includeInstances=true
+// Med partyFilter i body/query
+// Her vil det vel være inntil 25 (?) parties basert på valg av filter i dialogporten

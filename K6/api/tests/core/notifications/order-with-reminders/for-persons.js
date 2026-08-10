@@ -1,65 +1,122 @@
-import { check } from "k6";
-import { EnterpriseTokenGenerator, uuidv4 } from "../../../../../common-imports.js";
-import { OrdersV2ApiClient } from "../../../../../clients/core/notifications/index.js";
-import { PostNotificationOrderV2 } from "../../../../building-blocks/core/notifications/orders/index.js";
+import {
+    EmailSendingOptionsExtBuilder,
+    NotificationOrderChainRequestExtBuilder,
+    NotificationRecipientExtBuilder,
+    RecipientPersonExtBuilder,
+    SmsSendingOptionsExtBuilder
+} from "../../../../../clients/notifications/order/index.js";
+import { uuidv4 } from "../../../../../common-imports.js";
+import { requireEnv } from "../../../../../helpers.js";
+import { OrderCreateOrder } from "../../../../building-blocks/notifications/order/index.js";
+import { OrderDomainChecks } from "../../../../domain-checks/notifications/order.js";
+import { getClients } from "./common.js";
 
-const testData = JSON.parse(open("../../../../../testdata/core/orders/order-with-reminders-for-persons.json"));
+export function setup() {
+    requireEnv(
+        [
+            "ENVIRONMENT",
+            "BASE_URL",
+            "ninRecipient",
+            "tokenGeneratorUserName",
+            "tokenGeneratorUserPwd"
+        ]
+    );
+    return;
+}
 
-export default function () {
-    const options = new Map();
-    options.set("env", __ENV.ENVIRONMENT);
-    options.set("ttl", 3600);
-    options.set("scopes", "altinn:serviceowner/notifications.create");
-    options.set("org", "ttd");
-    options.set("orgNo", "991825827");
-
-    const tokenGenerator
-        = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd);
-
-    const ordersApiClient
-        = new OrdersV2ApiClient(__ENV.BASE_URL, tokenGenerator);
-
-
+function generateDomainObjects() {
     const uniqueIdentifier = uuidv4().substring(0, 8);
-    testData.requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
-    testData.sendersReference = `k6-order-${uniqueIdentifier}`;
+    const requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future
+    const orderSendersReference = `k6-order-${uniqueIdentifier}`;
+    const reminderSendersReference = `k6-reminder-${uniqueIdentifier}`;
+    const nationalIdentityNumber = __ENV.ninRecipient;
 
-    // Set Dialogporten association
-    testData.dialogportenAssociation = {
+    /** @type {DialogportenIdentifiersExt} */
+    const dialogportenAssociation = {
         dialogId: uniqueIdentifier,
         transmissionId: uniqueIdentifier
     };
 
-    testData.recipient.recipientPerson.nationalIdentityNumber = __ENV.ninRecipient;
+    const recipient = new NotificationRecipientExtBuilder()
+        .WithRecipientPerson(
+            new RecipientPersonExtBuilder()
+                .WithNationalIdentityNumber(nationalIdentityNumber)
+                .WithIgnoreReservation(true)
+                .WithChannelSchema("EmailPreferred")
+                .WithSmsSettings(
+                    new SmsSendingOptionsExtBuilder()
+                        .WithSendingTimePolicy("Daytime")
+                        .WithBody("Dear $recipientName$, please check your email for an important update regarding your account $recipientNumber$. - Altinn Team")
+                        .Build()
+                )
+                .WithEmailSettings(
+                    new EmailSendingOptionsExtBuilder()
+                        .WithContentType("Html")
+                        .WithSendingTimePolicy("Anytime")
+                        .WithSubject("Important Update Regarding Your Account")
+                        .WithBody("Dear $recipientName$,\n\nWe wanted to inform you about an important update to your account $recipientNumber$. Please log in to your dashboard to review the changes.\n\nBest regards,\nAltinn Team")
+                        .Build()
+                )
+                .Build()
+        )
+        .Build();
 
+    /** @type {NotificationReminderExt[]} */
+    const reminders = [
+        {
+            delayDays: 15,
+            sendersReference: reminderSendersReference,
+            recipient: new NotificationRecipientExtBuilder()
+                .WithRecipientPerson(
+                    new RecipientPersonExtBuilder()
+                        .WithNationalIdentityNumber(nationalIdentityNumber)
+                        .WithIgnoreReservation(true)
+                        .WithChannelSchema("SmsPreferred")
+                        .WithSmsSettings(
+                            new SmsSendingOptionsExtBuilder()
+                                .WithSendingTimePolicy("Daytime")
+                                .WithBody("Dear $recipientName$, please check your email for an important update regarding your account $recipientNumber$. - Altinn Team")
+                                .Build()
+                        )
+                        .WithEmailSettings(
+                            new EmailSendingOptionsExtBuilder()
+                                .WithContentType("Html")
+                                .WithSendingTimePolicy("Anytime")
+                                .WithSubject("Important Update Regarding Your Account")
+                                .WithBody("Dear $recipientName$,\n\nWe wanted to inform you about an important update to your account $recipientNumber$. Please log in to your dashboard to review the changes.\n\nBest regards,\nAltinn Team")
+                                .Build()
+                        )
+                        .Build()
+                )
+                .Build()
+        }
+    ];
 
-    testData.reminders = testData.reminders.map(reminder => {
-        const updatedReminder = { ...reminder, sendersReference: `k6-reminder-${uuidv4().substring(0, 8)}` };
-        updatedReminder.recipient.recipientPerson.nationalIdentityNumber = __ENV.ninRecipient;
-        return updatedReminder;
-    });
+    /** @type {NotificationOrderChainRequestExt} */
+    const request = new NotificationOrderChainRequestExtBuilder()
+        .WithIdempotencyId(uuidv4())
+        .WithDialogportenAssociation(dialogportenAssociation)
+        .WithRequestedSendTime(requestedSendTime)
+        .WithSendersReference(orderSendersReference)
+        .WithRecipient(recipient)
+        .WithReminders(reminders)
+        .Build();
 
-    testData.idempotencyId = uuidv4();
+    return [request, reminders];
+}
 
-    let response = PostNotificationOrderV2(
-        ordersApiClient,
-        testData.idempotencyId,
-        testData.sendersReference,
-        testData.dialogportenAssociation,
-        testData.requestedSendTime,
-        testData.recipient,
-        testData.reminders
-    );
+export default function () {
 
-    const expectedReminderCount = testData.reminders.length;
-    response = JSON.parse(response);
-    const success = check(response, {
-        "Response contains shipment ID": () => typeof response.notification.shipmentId === "string" && response.notification.shipmentId.length > 0,
-        "Response contains notification order ID": () => typeof response.notificationOrderId === "string" && response.notificationOrderId.length > 0,
-        "Response includes reminders": () => Array.isArray(response.notification.reminders),
-        "Reminder count matches request": () => response.notification.reminders.length === expectedReminderCount,
-        "All reminders have shipment IDs": () => response.notification.reminders.length === 0 || response.notification.reminders.every(e => typeof e.shipmentId === "string" && e.shipmentId.length > 0)
-    });
+    const [ordersApiClient] = getClients();
 
+    const [request, reminders] = generateDomainObjects();
+
+    const response = OrderCreateOrder(ordersApiClient, request);
+
+    OrderDomainChecks.CheckResponseContainsShipmentID(response);
+    OrderDomainChecks.CheckResponseContainsNotificationOrderID(response);
+    OrderDomainChecks.CheckResponseContainsReminders(response);
+    OrderDomainChecks.CheckResponseRemindersCountMatchesRequests(response, reminders.length);
+    OrderDomainChecks.CheckResponseRemindersAllContainShipmentIDs(response);
 
 }

@@ -1,1 +1,0 @@
-export { PostDelegations, DeleteDelegations, GetDelegationCheck, GetPermission } from "./delegate.js";

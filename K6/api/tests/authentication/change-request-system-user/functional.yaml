@@ -1,0 +1,6 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/change-request-system-user
+test_definitions:
+  - test_file: create-and-approve-change-request.js
+    contexts:
+      - environment: at22

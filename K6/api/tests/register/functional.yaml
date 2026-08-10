@@ -6,6 +6,6 @@ test_definitions:
       - environment: at22
         test_run:
           secrets:
-            - soap-er-creds
+            - soap-er-creds-at22
             - authorization-subscription-key-at22
             - register-subscription-key-at22

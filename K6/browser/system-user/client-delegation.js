@@ -1,11 +1,16 @@
-import { browser } from "k6/browser";
 import { check, fail } from "k6";
-import { expect, EnterpriseTokenGenerator } from "../../common-imports.js";
-import { LoginPage, ClientDelegationPage } from "../pages/index.js";
-import { SystemUserRequestApiClient, SystemRegisterApiClient } from "../../clients/authentication/index.js";
-import { CreateNewSystem } from "../../api/building-blocks/authentication/system-register/index.js";
-import { CreateAgentSystemUserRequest } from "../../api/building-blocks/authentication/system-user-request/index.js";
+import { browser } from "k6/browser";
 
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient } from "../../api/authentication-v2-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, expect } from "../../common-imports.js";
+import { requireEnv } from "../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../scopes.js";
+import { ClientDelegationPage, LoginPage } from "../pages/index.js";
+
+export function setup() {
+    requireEnv(["AM_UI_BASE_URL", "BASE_URL", "ENVIRONMENT"]);
+    return;
+}
 
 export const options = {
     scenarios: {
@@ -88,14 +93,17 @@ export default async function () {
         };
 
         const allowedRedirectUrls = ["https://www.vg.no"];
+
+        // The system register takes bare urns and wraps them itself, while the
+        // agent request takes them already wrapped.
         const accessPackages = [
-            { urn: "urn:altinn:accesspackage:regnskapsforer-med-signeringsrettighet" },
-            { urn: "urn:altinn:accesspackage:regnskapsforer-uten-signeringsrettighet" },
-            { urn: "urn:altinn:accesspackage:regnskapsforer-lonn" },
-            { urn: "urn:altinn:accesspackage:ansvarlig-revisor" },
-            { urn: "urn:altinn:accesspackage:revisormedarbeider" },
-            { urn: "urn:altinn:accesspackage:skattegrunnlag" },
-            { urn: "urn:altinn:accesspackage:forretningsforer-eiendom" },
+            "urn:altinn:accesspackage:regnskapsforer-med-signeringsrettighet",
+            "urn:altinn:accesspackage:regnskapsforer-uten-signeringsrettighet",
+            "urn:altinn:accesspackage:regnskapsforer-lonn",
+            "urn:altinn:accesspackage:ansvarlig-revisor",
+            "urn:altinn:accesspackage:revisormedarbeider",
+            "urn:altinn:accesspackage:skattegrunnlag",
+            "urn:altinn:accesspackage:forretningsforer-eiendom",
         ];
 
         let user = testData[i].user;
@@ -106,33 +114,57 @@ export default async function () {
 
         const name = `k6browser-e2e-${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const options = new Map();
-        options.set("env", __ENV.ENVIRONMENT);
-        options.set("ttl", 3600);
-        options.set("scopes", "altinn:authentication/systemregister.write altinn:authentication/systemuser.request.write altinn:authentication/systemuser.request.read altinn:authorization/authorize altinn:resourceregistry/resource.admin altinn:register/partylookup.admin");
-        options.set("orgNo", "310547891");
+        const options = new EnterpriseTokenBuilder()
+            .withScopes(CreateScopeString([
+                AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+                AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+                AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+                AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
+                AltinnScopes.RESOURCEREGISTRY.RESOURCE.ADMIN,
+                AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN,
+            ]))
+            .withOrganizationNumber(vendorId)
+            .build();
 
         const tokenGenerator = new EnterpriseTokenGenerator(options);
 
-        const systemRegisterApiClient = new SystemRegisterApiClient(__ENV.BASE_URL, tokenGenerator);
-        const systemUserRequestApiClient = new SystemUserRequestApiClient(__ENV.BASE_URL, tokenGenerator);
-
-        let res = CreateNewSystem(
-            systemRegisterApiClient,
-            vendorId,
-            name,
-            clientId,
-            description,
-            [], // rights
-            allowedRedirectUrls,
-            accessPackages
-        );
+        const systemRegisterClient = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
+        const requestSystemUserClient = new RequestSystemUserClient(__ENV.BASE_URL, tokenGenerator);
 
         const systemId = `${vendorId}_${name}`;
 
+        const registerSystemRequest = new RegisterSystemRequestBuilder()
+            .withId(systemId)
+            .withVendor(`0192:${vendorId}`)
+            .withName({
+                en: name,
+                nb: name,
+                nn: name,
+            })
+            .withDescription(description)
+            .withRights([])
+            .withAccessPackages(accessPackages)
+            .withClientId([clientId])
+            .withVisibility(false)
+            .withAllowedRedirectUrls(allowedRedirectUrls)
+            .build();
+
+        SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, registerSystemRequest);
+
         const externalRef = `${Math.random().toString(36)}${Date.now()}`;
-        let response = CreateAgentSystemUserRequest(systemUserRequestApiClient, externalRef, systemId, user.org, [{ urn: `urn:altinn:accesspackage:${accessPackageApiName}` }]);
-        response = JSON.parse(response);
+
+        const agentRequest = new CreateAgentRequestSystemUserBuilder()
+            .withExternalRef(externalRef)
+            .withSystemId(systemId)
+            .withPartyOrgNo(user.org)
+            .withAccessPackages([{ urn: `urn:altinn:accesspackage:${accessPackageApiName}` }])
+            .build();
+
+        const response = RequestSystemUserBuildingBlocks.VendorAgentCreate(requestSystemUserClient, agentRequest);
+
+        if (response === null) {
+            fail("Cannot drive the browser flow: creating the agent system user request returned no response");
+        }
 
         const page = await browser.newPage();
         let success = true;

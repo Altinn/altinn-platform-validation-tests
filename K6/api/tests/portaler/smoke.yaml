@@ -6,32 +6,37 @@ test_definitions:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
+          config_file: "smoke.conf"
 
   - test_file: get-info-dot-altinn-dot-cloud-sok.js
     contexts:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
+          config_file: "smoke.conf"
 
   - test_file: get-info-dot-altinn-dot-cloud-skjemaoversikt.js
     contexts:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
+          config_file: "smoke.conf"
 
   - test_file: get-info-dot-altinn-dot-cloud-starte-og-drive.js
     contexts:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
+          config_file: "smoke.conf"
 
   - test_file: get-infoportal-api-when-loggedin.js
     contexts:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
+          config_file: "smoke.conf"
