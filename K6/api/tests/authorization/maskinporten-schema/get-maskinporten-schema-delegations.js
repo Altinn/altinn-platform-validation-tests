@@ -1,11 +1,11 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { MaskinportenSchemaApiClient } from "../../../../clients/authorization/index.js";
+import { MaskinportenClient, MaskinportenDelegationsQueryBuilder } from "../../../../clients/access-management/resource-owner/maskinporten/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { GetDelegations } from "../../../building-blocks/authorization/maskinporten-schema/index.js";
+import { GetMaskinportenDelegations } from "../../../building-blocks/access-management/resource-owner/maskinporten/index.js";
 
 // Labels for different actions
 const getMaskinportenSchemaLabel1 = { step: "1. Get maskinportenSchema supplierOrg as query param" };
@@ -26,9 +26,9 @@ const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : t
 let tokenGenerator = undefined;
 
 /**
- * @type {MaskinportenSchemaApiClient | undefined}
+ * @type {MaskinportenClient | undefined}
  */
-let maskinportenSchemaApiClient = undefined;
+let maskinportenClient = undefined;
 
 const scopes = [
     "altinn:consentrequests.read",
@@ -73,7 +73,7 @@ export const options = getOptions(
 /**
  * Setup function to segment data for VUs.
  *
- * @returns TODO: description
+ * @returns {object[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -92,7 +92,7 @@ export default function (data) {
     const segmentedData = data;
     const maskinportenSchemaApiClient = getClients();
     const [queryParams, label] = getQueryParams(segmentedData[exec.vu.idInTest - 1]);
-    GetDelegations(maskinportenSchemaApiClient, queryParams, label);
+    GetMaskinportenDelegations(maskinportenSchemaApiClient, queryParams, label);
 }
 
 /**
@@ -101,9 +101,9 @@ export default function (data) {
  *
  * The client uses an enterprise token with the
  * `altinn:maskinporten/delegations.admin` scope. The same
- * {@link MaskinportenSchemaApiClient} instance is reused on subsequent calls.
+ * {@link MaskinportenClient} instance is reused on subsequent calls.
  *
- * @returns {MaskinportenSchemaApiClient} The initialized API client.
+ * @returns {MaskinportenClient} The initialized API client.
  */
 function getClients() {
     if (tokenGenerator == undefined) {
@@ -119,63 +119,71 @@ function getClients() {
         tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
     }
 
-    if (maskinportenSchemaApiClient == undefined) {
-        maskinportenSchemaApiClient = new MaskinportenSchemaApiClient(
+    if (maskinportenClient == undefined) {
+        maskinportenClient = new MaskinportenClient(
             __ENV.BASE_URL,
             tokenGenerator
         );
     }
 
-    return maskinportenSchemaApiClient;
+    return maskinportenClient;
 }
 
+/**
+ * Picks one of the seven supported filter combinations at random and builds the
+ * matching query parameters.
+ *
+ * @param {object[]} list Organizations available to this VU.
+ * @returns {[MaskinportenDelegationsQuery, {[key: string]: string}]} The query
+ * parameters and the label describing the combination.
+ */
 function getQueryParams(list) {
-    const queryParams = {};
+    const queryParams = new MaskinportenDelegationsQueryBuilder();
     let supplierOrg = undefined;
     let label = "";
     const randomValue = randomIntBetween(0, 6);
     switch (randomValue) {
         case 0:
-            queryParams.supplierOrg = getOrganization(list, randomize).orgNo;
+            queryParams.withSupplierOrg(getOrganization(list, randomize).orgNo);
             label = getMaskinportenSchemaLabel1;
             break;
         case 1:
             supplierOrg = getOrganization(list, randomize);
-            queryParams.supplierOrg = supplierOrg.orgNo;
-            queryParams.consumerOrg = getOrganization(list, true, supplierOrg).orgNo;
+            queryParams.withSupplierOrg(supplierOrg.orgNo);
+            queryParams.withConsumerOrg(getOrganization(list, true, supplierOrg).orgNo);
             label = getMaskinportenSchemaLabel2;
             break;
         case 2:
             supplierOrg = getOrganization(list, randomize);
-            queryParams.supplierOrg = supplierOrg.orgNo;
-            queryParams.consumerOrg = getOrganization(list, true, supplierOrg).orgNo;
-            queryParams.scope = getItemFromList(scopes, true);
+            queryParams.withSupplierOrg(supplierOrg.orgNo);
+            queryParams.withConsumerOrg(getOrganization(list, true, supplierOrg).orgNo);
+            queryParams.withScope(getItemFromList(scopes, true));
             label = getMaskinportenSchemaLabel3;
             break;
         case 3:
-            queryParams.supplierOrg = getOrganization(list, randomize).orgNo;
-            queryParams.scope = getItemFromList(scopes, true);
+            queryParams.withSupplierOrg(getOrganization(list, randomize).orgNo);
+            queryParams.withScope(getItemFromList(scopes, true));
             label = getMaskinportenSchemaLabel4;
             break;
         case 4:
-            queryParams.consumerOrg = getOrganization(list, randomize).orgNo;
-            queryParams.scope = getItemFromList(scopes, true);
+            queryParams.withConsumerOrg(getOrganization(list, randomize).orgNo);
+            queryParams.withScope(getItemFromList(scopes, true));
             label = getMaskinportenSchemaLabel5;
             break;
         case 5:
-            queryParams.consumerOrg = getOrganization(list, randomize).orgNo;
+            queryParams.withConsumerOrg(getOrganization(list, randomize).orgNo);
             label = getMaskinportenSchemaLabel6;
             break;
         case 6:
-            queryParams.scope = getItemFromList(scopes, true);
+            queryParams.withScope(getItemFromList(scopes, true));
             label = getMaskinportenSchemaLabel7;
             break;
         default:
-            queryParams.supplierOrg = getOrganization(list, randomize).orgNo;
+            queryParams.withSupplierOrg(getOrganization(list, randomize).orgNo);
             label = getMaskinportenSchemaLabel1;
             break;
     }
-    return [queryParams, label];
+    return [queryParams.build(), label];
 }
 
 function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "" }) {

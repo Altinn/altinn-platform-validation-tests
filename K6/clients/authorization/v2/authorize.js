@@ -10,12 +10,23 @@ class AuthorizeClient {
     /**
      * @param {string} baseUrl Base URL.
      * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {string|null} [subscriptionKey]
+     * API management subscription key. The Swagger docs do not mention it
+     * because it is a gateway requirement rather than part of the API contract:
+     * everything under /authorization/api/v1 on platform.<env>.altinn.no and
+     * platform.<env>.altinn.cloud answers 401 without it. The header is omitted
+     * when this is not set, for hosts that do not go through API management.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator, subscriptionKey = null) {
         /**
          * Generates authentication tokens.
          */
         this.tokenGenerator = tokenGenerator;
+
+        /**
+         * API management subscription key, or null when not needed.
+         */
+        this.subscriptionKey = subscriptionKey;
 
         /**
          * Base API path.
@@ -66,6 +77,9 @@ class AuthorizeClient {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
                 Accept: "application/json",
+                ...(this.subscriptionKey !== null && {
+                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
+                }),
             },
         });
     }

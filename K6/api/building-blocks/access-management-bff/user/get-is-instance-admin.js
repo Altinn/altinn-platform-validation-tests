@@ -6,11 +6,12 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * Checks whether the authenticated user is an instance administrator.
  *
  * @param {UserClient} userClient Client for the user endpoints.
+ * @param {string} party Party UUID of the reportee.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {boolean|null} True if the user is an instance administrator.
  */
-export function GetIsInstanceAdmin(userClient, labels = null) {
-    const res = userClient.GetIsInstanceAdmin(labels);
+export function GetIsInstanceAdmin(userClient, party, labels = null) {
+    const res = userClient.GetIsInstanceAdmin(party, labels);
 
     /** @type {boolean|null} */
     let isInstanceAdmin = null;
