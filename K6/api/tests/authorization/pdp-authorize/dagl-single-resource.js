@@ -17,7 +17,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 
 // Setup function to fetch test data and segment it for each VU. The CSV file should have columns: ssn, orgno, resourceid
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/single-rights-${__ENV.ENVIRONMENT}-v2.csv`,
         { tags: { action: "fetch-test-data" } });

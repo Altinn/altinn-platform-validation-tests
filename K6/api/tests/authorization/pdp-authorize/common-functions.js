@@ -50,7 +50,11 @@ export function getClients() {
     }
 
     if (authorizeClient == undefined) {
-        authorizeClient = new AuthorizeClient(__ENV.BASE_URL, tokenGenerator);
+        authorizeClient = new AuthorizeClient(
+            __ENV.BASE_URL,
+            tokenGenerator,
+            __ENV.AUTHORIZATION_SUBSCRIPTION_KEY
+        );
     }
 
     return [authorizeClient, tokenGenerator];
@@ -255,7 +259,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
  * @returns {object[][]} Organizations with their daglig leder, one slice per VU.
  */
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } });
