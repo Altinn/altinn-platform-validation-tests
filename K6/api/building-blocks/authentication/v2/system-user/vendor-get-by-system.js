@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { SystemUserClient } from "../../../../../clients/authentication/index.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

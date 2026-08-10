@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/index.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -45,9 +45,9 @@ export function ChangeRequestSystemUserVendorCreate(
         [expectedStatus === null
             ? "ChangeRequestSystemUserVendorCreate - status code is 200 or 201"
             : `ChangeRequestSystemUserVendorCreate - status code is ${expectedStatus}`]: (r) =>
-            expectedStatus === null
-                ? r.status === 200 || r.status === 201
-                : r.status === expectedStatus,
+                expectedStatus === null
+                    ? r.status === 200 || r.status === 201
+                    : r.status === expectedStatus,
     });
 
     if (!succeed) {

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AuthorizeClient } from "../../../../../clients/authorization/v2/authorize.js";
+import { AuthorizeClient } from "../../../../../clients/authorization/authorize.js";
 
 /**
  * Authorizes an external XACML request.

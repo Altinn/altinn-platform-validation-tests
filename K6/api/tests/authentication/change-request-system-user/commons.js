@@ -10,7 +10,7 @@ import {
     RequestSystemUserClient,
     SystemRegisterClient,
     SystemUserClient,
-} from "../../../../clients/authentication/v2/index.js";
+} from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";

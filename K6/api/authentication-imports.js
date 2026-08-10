@@ -32,12 +32,12 @@ export {
     SystemRegisterClient,
     SystemUserClient,
     SystemUserClientDelegationClient,
-} from "../clients/authentication/v2/index.js";
-export { SystemUserUpdateDtoBuilder } from "../clients/authentication/v2/system-user.builders.js";
-export { ChangeRequestSystemUserBuildingBlocks } from "./building-blocks/authentication/v2/change-request-system-user/index.js";
-export { RequestSystemUserBuildingBlocks } from "./building-blocks/authentication/v2/request-system-user/index.js";
-export { SystemRegisterBuildingBlocks } from "./building-blocks/authentication/v2/system-register/index.js";
-export { SystemUserBuildingBlocks } from "./building-blocks/authentication/v2/system-user/index.js";
+} from "../clients/authentication/index.js";
+export { SystemUserUpdateDtoBuilder } from "../clients/authentication/system-user.builders.js";
+export { ChangeRequestSystemUserBuildingBlocks } from "./building-blocks/authentication/change-request-system-user/index.js";
+export { RequestSystemUserBuildingBlocks } from "./building-blocks/authentication/request-system-user/index.js";
+export { SystemRegisterBuildingBlocks } from "./building-blocks/authentication/system-register/index.js";
+export { SystemUserBuildingBlocks } from "./building-blocks/authentication/system-user/index.js";
 export { ChangeRequestSystemUserDomainChecks } from "./domain-checks/authentication/change-request-system-user.js";
 export { SystemRegisterDomainChecks } from "./domain-checks/authentication/system-register.js";
 export { SystemUserRequestDomainChecks } from "./domain-checks/authentication/system-user-request.js";

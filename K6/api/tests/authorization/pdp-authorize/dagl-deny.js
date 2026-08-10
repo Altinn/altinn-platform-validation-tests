@@ -2,7 +2,7 @@ import exec from "k6/execution";
 
 import { randomIntBetween } from "../../../../common-imports.js";
 import { getOptions, pickUnique } from "../../../../helpers.js";
-import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
 import { buildDaglRequest, getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
