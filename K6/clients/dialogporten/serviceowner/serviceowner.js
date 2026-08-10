@@ -672,7 +672,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
             name: this.FULL_PATH + "/dialogs/{dialogId}",
             action: TAGS.PutDialog.action,
         };
@@ -714,7 +714,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
             name: this.FULL_PATH + "/dialogs/{dialogId}",
             action: TAGS.PatchDialog.action,
         };
@@ -755,7 +755,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
             name: this.FULL_PATH + "/dialogs/{dialogId}",
             action: TAGS.DeleteDialog.action,
         };
@@ -797,7 +797,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
             name: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
             action: TAGS.PutTransmission.action,
         };
@@ -838,7 +838,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/purge`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/purge",
             name: this.FULL_PATH + "/dialogs/{dialogId}/actions/purge",
             action: TAGS.PurgeDialog.action,
         };
@@ -878,7 +878,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/restore`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/restore",
             name: this.FULL_PATH + "/dialogs/{dialogId}/actions/restore",
             action: TAGS.RestoreDialog.action,
         };
@@ -918,7 +918,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/freeze`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/freeze",
             name: this.FULL_PATH + "/dialogs/{dialogId}/actions/freeze",
             action: TAGS.FreezeDialog.action,
         };
@@ -959,7 +959,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
             name: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
             action: TAGS.PostServiceOwnerLabels.action,
         };
@@ -1001,7 +1001,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels/${label}`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels/{label}",
             name: this.FULL_PATH + "/dialogs/{dialogId}/context/labels/{label}",
             action: TAGS.DeleteServiceOwnerLabel.action,
         };
@@ -1047,7 +1047,7 @@ class ServiceOwnerApiClient {
         }
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/endusercontext/systemlabels",
             name: this.FULL_PATH + "/dialogs/{dialogId}/endusercontext/systemlabels",
             action: TAGS.PutEndUserContextSystemLabels.action,
         };
@@ -1092,7 +1092,7 @@ class ServiceOwnerApiClient {
         }
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset",
             name: this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset",
             action: TAGS.PostBulkSetSystemLabels.action,
         };

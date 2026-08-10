@@ -66,7 +66,7 @@ class ConnectionClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/${partyId}/rightholders`,
+            endpoint: `${this.FULL_PATH}/reportee/{partyId}/rightholders`,
             name: `${this.FULL_PATH}/reportee/{partyId}/rightholders`,
             action: TAGS.GetReporteeRightHolders.action,
         };
@@ -157,7 +157,7 @@ class ConnectionClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/${partyUuid}/rightholder/validateperson`,
+            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder/validateperson`,
             name: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder/validateperson`,
             action: TAGS.ValidatePerson.action,
         };
@@ -214,7 +214,7 @@ class ConnectionClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/${partyUuid}/rightholder`,
+            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder`,
             name: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder`,
             action: TAGS.CreateRightHolder.action,
         };

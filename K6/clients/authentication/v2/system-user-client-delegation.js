@@ -151,8 +151,8 @@ class SystemUserClientDelegationClient {
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/clients`,
+                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.DelegateClient.action,
             },
             headers: {
@@ -194,8 +194,8 @@ class SystemUserClientDelegationClient {
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/clients`,
+                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.RemoveClient.action,
             },
             headers: {

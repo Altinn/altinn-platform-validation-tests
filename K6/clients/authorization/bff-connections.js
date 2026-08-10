@@ -112,8 +112,8 @@ class BffConnectionsApiClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(`${this.FULL_PATH}/reportee/${from}/rightholder?rightholderPartyUuid=${to}`);
         let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`,
-            name: `${this.FULL_PATH}/reportee/from/rightholder?rightholderPartyUuid=to`,
+            endpoint: `${this.FULL_PATH}/reportee/{from}/rightholder`,
+            name: `${this.FULL_PATH}/reportee/{from}/rightholder`,
             action: TAGS.PostRightholderOrg.action
         };
         if (labels != null) {

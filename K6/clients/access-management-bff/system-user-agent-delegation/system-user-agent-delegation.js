@@ -92,7 +92,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/customers`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/customers`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/customers`,
             action: TAGS.GetAgentSystemUserCustomers.action,
         };
@@ -150,7 +150,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
             action: TAGS.GetAgentSystemUserDelegations.action,
         };
@@ -212,7 +212,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
             action: TAGS.CreateAgentSystemUserDelegation.action,
         };
@@ -278,7 +278,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation/${delegationId}`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation/{delegationId}`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation/{delegationId}`,
             action: TAGS.DeleteAgentSystemUserDelegation.action,
         };
@@ -341,7 +341,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
             action: TAGS.CreateAgentSystemUserSelfDelegation.action,
         };
@@ -404,7 +404,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
             action: TAGS.DeleteAgentSystemUserSelfDelegation.action,
         };
@@ -467,7 +467,7 @@ class SystemUserAgentDelegationClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
             action: TAGS.GetAgentSystemUserSelfDelegation.action,
         };

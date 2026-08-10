@@ -85,7 +85,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data`,
             action: TAGS.CreateData.action,
         };
@@ -118,7 +118,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
             action: TAGS.GetData.action,
         };
@@ -160,7 +160,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
             action: TAGS.UpdateData.action,
         };
@@ -198,7 +198,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
             action: TAGS.DeleteData.action,
         };
@@ -229,7 +229,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements`,
             action: TAGS.GetDataElements.action,
         };
@@ -262,7 +262,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}`,
             action: TAGS.UpdateDataElement.action,
         };
@@ -296,7 +296,7 @@ class DataClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}/filescanstatus`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}/filescanstatus`,
             action: TAGS.UpdateFileScanStatus.action,
         };

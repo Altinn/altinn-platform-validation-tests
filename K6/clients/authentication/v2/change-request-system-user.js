@@ -85,8 +85,8 @@ class ChangeRequestSystemUserClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/vendor`,
+            name: `${this.FULL_PATH}/vendor`,
             action: TAGS.ChangeRequestSystemUserVendorCreate.action,
         };
 
@@ -123,7 +123,7 @@ class ChangeRequestSystemUserClient {
         const url = `${this.FULL_PATH}/vendor/${requestId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{requestId}`,
             name: `${this.FULL_PATH}/vendor/{requestId}`,
             action: TAGS.ChangeRequestSystemUserVendorGet.action,
         };
@@ -160,7 +160,7 @@ class ChangeRequestSystemUserClient {
         const url = `${this.FULL_PATH}/vendor/${requestId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{requestId}`,
             name: `${this.FULL_PATH}/vendor/{requestId}`,
             action: TAGS.ChangeRequestSystemUserVendorDelete.action,
         };
@@ -204,7 +204,7 @@ class ChangeRequestSystemUserClient {
         const url = `${this.FULL_PATH}/vendor/byexternalref/${systemId}/${orgNo}/${externalRef}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
             name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
             action: TAGS.ChangeRequestSystemUserVendorGetByExternalRef.action,
         };
@@ -250,7 +250,7 @@ class ChangeRequestSystemUserClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
             name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
             action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
         };

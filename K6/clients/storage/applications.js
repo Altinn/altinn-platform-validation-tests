@@ -67,7 +67,7 @@ class ApplicationsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications`,
             name: `${this.FULL_PATH}/applications`,
             action: TAGS.GetApplications.action,
         };
@@ -100,7 +100,7 @@ class ApplicationsClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/applications`,
             name: `${this.FULL_PATH}/applications`,
             action: TAGS.CreateApplication.action,
         };
@@ -133,7 +133,7 @@ class ApplicationsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}`,
             name: `${this.FULL_PATH}/applications/{org}`,
             action: TAGS.GetApplicationsByOrg.action,
         };
@@ -162,7 +162,7 @@ class ApplicationsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
             name: `${this.FULL_PATH}/applications/{org}/{app}`,
             action: TAGS.GetApplication.action,
         };
@@ -192,7 +192,7 @@ class ApplicationsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
             name: `${this.FULL_PATH}/applications/{org}/{app}`,
             action: TAGS.UpdateApplication.action,
         };
@@ -233,7 +233,7 @@ class ApplicationsClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
             name: `${this.FULL_PATH}/applications/{org}/{app}`,
             action: TAGS.DeleteApplication.action,
         };
