@@ -1,14 +1,16 @@
 import { check } from "k6";
 
+import { EndUserAuthorizedPartiesQuery } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
+import { EndUserAuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties-query-builder.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/enduser/authorized-parties/index.js";
 
 /**
  * Retrieves the parties the authenticated end user is authorized to represent.
  *
  * @param {AuthorizedPartiesClient|null} [authorizedPartiesClient] TODO: description
- * @param {AuthorizedPartiesQuery|null} [queryParams]
+ * @param {EndUserAuthorizedPartiesQuery|null} [queryParams]
  * Optional query parameters. Prefer using
- * {@link AuthorizedPartiesQueryBuilder} to construct this object.
+ * {@link EndUserAuthorizedPartiesQueryBuilder} to construct this object.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request tags.
  * @returns {AuthorizedPartyDtoListPaginatedResult} TODO: description
