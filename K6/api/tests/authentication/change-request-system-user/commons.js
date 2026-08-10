@@ -2,6 +2,7 @@ import { fail, group } from "k6";
 import http from "k6/http";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
+import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
@@ -16,6 +17,7 @@ import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.j
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
+import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 import { withRetries } from "../../../building-blocks/common/retry.js";
 
@@ -106,6 +108,28 @@ export function arrangeApprovedSystemUser({
 }
 
 /**
+ * Deletes the system users a test arranged.
+ *
+ * Call from a test's teardown with what its setup returned, so a run does not
+ * leave a system user behind on the customer for every time it has run. Deleting
+ * is the customer's own action, so it goes through the bff with the approver
+ * token, which has to be swapped to the customer that owns each system user.
+ *
+ * @param {object[]} systemUsers - What arrangeApprovedSystemUser returned.
+ */
+export function cleanupSystemUsers(systemUsers) {
+    const [apiClients, tokenGenerator] = getClients();
+
+    group("Cleanup - the customer deletes the system user", function () {
+        for (const systemUser of systemUsers ?? []) {
+            tokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
+
+            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.partyId, systemUser.systemUserId);
+        }
+    });
+}
+
+/**
  * Creates and caches the clients this test folder uses.
  *
  * Built once per VU and reused across its iterations. The token generators cache
@@ -165,6 +189,7 @@ export function getClients() {
                 // the bff rather than the authentication api the vendor calls.
                 bffChangeRequestClient: new SystemUserChangeRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
                 bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }
@@ -353,7 +378,11 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             createdRequest?.id,
         );
 
-        SystemUserRequestDomainChecks.CheckRequestApproved(approved);
+        // Nothing to look up unless the request was approved, so stop here rather
+        // than let the lookup fail as a second, unrelated failure.
+        if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
+            fail("cannot arrange a system user: approving the system user request failed");
+        }
 
         const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
             clientId: registration.clientId,
