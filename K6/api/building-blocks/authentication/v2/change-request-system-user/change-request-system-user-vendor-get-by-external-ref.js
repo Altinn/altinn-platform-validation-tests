@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a change request by external reference.
@@ -19,13 +20,16 @@ export function ChangeRequestSystemUserVendorGetByExternalRef(
     externalRef,
     labels = null,
 ) {
-    const res =
-        changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetByExternalRef(
-            systemId,
-            orgNo,
-            externalRef,
-            labels,
-        );
+    const res = withRetries(
+        () =>
+            changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetByExternalRef(
+                systemId,
+                orgNo,
+                externalRef,
+                labels,
+            ),
+        "ChangeRequestSystemUserVendorGetByExternalRef",
+    );
 
     /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;

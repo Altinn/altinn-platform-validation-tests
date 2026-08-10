@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a consent.
@@ -11,7 +12,10 @@ import { ConsentClient } from "../../../../clients/access-management-bff/consent
  * @returns {boolean} True if the consent was revoked.
  */
 export function RevokeConsent(consentClient, consentId, labels = null) {
-    const res = consentClient.RevokeConsent(consentId, labels);
+    const res = withRetries(
+        () => consentClient.RevokeConsent(consentId, labels),
+        "RevokeConsent",
+    );
 
     let revoked = false;
 

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Updates a registered system.
@@ -17,10 +18,14 @@ export function SystemRegisterVendorUpdate(
     request,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorUpdate(
-        systemId,
-        request,
-        labels,
+    const res = withRetries(
+        () =>
+            systemRegisterClient.SystemRegisterVendorUpdate(
+                systemId,
+                request,
+                labels,
+            ),
+        "SystemRegisterVendorUpdate",
     );
 
     /** @type {SystemRegisterUpdateResult|null} */

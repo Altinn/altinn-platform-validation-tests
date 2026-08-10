@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves default rights for a system.
@@ -19,10 +20,14 @@ export function SystemRegisterGetRightsFrontend(
     useOldFormatForApp = null,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGetRightsFrontend(
-        systemId,
-        useOldFormatForApp,
-        labels,
+    const res = withRetries(
+        () =>
+            systemRegisterClient.SystemRegisterGetRightsFrontend(
+                systemId,
+                useOldFormatForApp,
+                labels,
+            ),
+        "SystemRegisterGetRightsFrontend",
     );
 
     /** @type {Right[]|null} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves all vendor registered systems.
@@ -13,7 +14,10 @@ export function SystemRegisterVendorGet(
     systemRegisterClient,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorGet(labels);
+    const res = withRetries(
+        () => systemRegisterClient.SystemRegisterVendorGet(labels),
+        "SystemRegisterVendorGet",
+    );
 
     /** @type {RegisteredSystemDTO[]|null} */
     let systems = null;

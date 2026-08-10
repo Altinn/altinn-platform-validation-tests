@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a change request by id.
@@ -15,11 +16,14 @@ export function ChangeRequestSystemUserVendorDelete(
     requestId,
     labels = null,
 ) {
-    const res =
-        changeRequestSystemUserClient.ChangeRequestSystemUserVendorDelete(
-            requestId,
-            labels,
-        );
+    const res = withRetries(
+        () =>
+            changeRequestSystemUserClient.ChangeRequestSystemUserVendorDelete(
+                requestId,
+                labels,
+            ),
+        "ChangeRequestSystemUserVendorDelete",
+    );
 
     /** @type {ChangeRequestResponse|null} */
     let changeRequestResponse = null;

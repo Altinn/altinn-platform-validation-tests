@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a registered system by id.
@@ -15,9 +16,9 @@ export function SystemRegisterVendorGetById(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterVendorGetById(
-        systemId,
-        labels,
+    const res = withRetries(
+        () => systemRegisterClient.SystemRegisterVendorGetById(systemId, labels),
+        "SystemRegisterVendorGetById",
     );
 
     /** @type {RegisteredSystemResponse|null} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves all registered systems.
@@ -15,7 +16,10 @@ export function SystemRegisterGet(
     systemRegisterClient,
     labels = null,
 ) {
-    const res = systemRegisterClient.SystemRegisterGet(labels);
+    const res = withRetries(
+        () => systemRegisterClient.SystemRegisterGet(labels),
+        "SystemRegisterGet",
+    );
 
     /** @type {RegisteredSystemDTO[]|null} */
     let systems = null;

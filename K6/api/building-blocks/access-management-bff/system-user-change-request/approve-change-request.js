@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Approves a system user change request.
@@ -18,10 +19,14 @@ export function ApproveChangeRequest(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.ApproveChangeRequest(
-        partyId,
-        changeRequestId,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserChangeRequestClient.ApproveChangeRequest(
+                partyId,
+                changeRequestId,
+                labels,
+            ),
+        "ApproveChangeRequest",
     );
 
     let approved = false;

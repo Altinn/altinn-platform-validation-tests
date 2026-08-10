@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClientDelegationClient } from "../../../../../clients/authentication/v2/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Removes a client from a system user.
@@ -17,10 +18,14 @@ export function RemoveClient(
     client,
     labels = null,
 ) {
-    const res = systemUserClientDelegationClient.RemoveClient(
-        agent,
-        client,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserClientDelegationClient.RemoveClient(
+                agent,
+                client,
+                labels,
+            ),
+        "RemoveClient",
     );
 
     /** @type {DelegationResponse[]|null} */
