@@ -1,106 +1,42 @@
-import { check, fail, group } from "k6";
+import { group } from "k6";
 
-import { RegisterLookupClient } from "../../../clients/authentication/index.js";
-import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../common-imports.js";
+import { PartyUrnQueryBuilder } from "../../../clients/register/index.js";
 import { requireEnv } from "../../../helpers.js";
-import { LookupPartiesInRegister } from "../../building-blocks/register/index.js";
+import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
+import { PartyLookupDomainChecks } from "../../domain-checks/register/party-lookup.js";
+import { getLookupClient } from "./commons.js";
 
-const label = "test-lookup-on-idporten-email";
-
-function isDateString(v) {
-    return typeof v === "string" && !Number.isNaN(Date.parse(v));
-}
-
-function tryParseJson(str) {
-    try {
-        return JSON.parse(str);
-    } catch {
-        return null;
-    }
-}
+const label = { step: "test-lookup-on-idporten-email" };
 
 export function setup() {
-    requireEnv(["BASE_URL", "ENVIRONMENT"]);
+    requireEnv(["BASE_URL", "ENVIRONMENT", "REGISTER_SUBSCRIPTION_KEY"]);
     return;
 }
 
 export default function () {
-    const tokenOpts = new PlatformTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600);
-
-    const token = new PlatformTokenGenerator(tokenOpts);
-    const registerLookupClient = new RegisterLookupClient(__ENV.BASE_URL, token);
+    const registerClient = getLookupClient();
 
     group("Register: Look up party by idporten email", () => {
         const email = "test@mailinator.com";
-        const fields = "party,user";
+        const fields = ["party", "user"];
 
-        const requestBody = {
-            data: [`urn:altinn:person:idporten-email:${email}`],
-        };
-
-        const response = LookupPartiesInRegister(
-            registerLookupClient,
+        const parties = RegisterBuildingBlocks.AccessManagementPartiesQuery(
+            registerClient,
+            new PartyUrnQueryBuilder().withIdportenEmail(email).build(),
             fields,
-            requestBody,
             label,
         );
 
         group(
             "Register: Look up party by idporten email - verify response body",
             () => {
-                const body = tryParseJson(response.body);
-                if (body === null) {
-                    fail("Register lookup response is not valid JSON");
-                }
-
-                const party = body?.data?.[0];
-                if (!party) {
-                    check(null, {
-                        "Register lookup response contains a party in data[0]": () => false,
-                    });
-                    console.log(response.body);
+                if (!PartyLookupDomainChecks.CheckSinglePartyFound(parties, `email '${email}'`)) {
                     return;
                 }
 
-                const user = party.user;
+                const party = parties[0];
 
-                // Hard asserts (common across envs)
-                const okHard = check(party, {
-                    "partyType is self-identified-user": (p) =>
-                        p.partyType === "self-identified-user",
-                    "email matches request": (p) => p.email === email,
-                    "externalUrn matches email URN": (p) =>
-                        p.externalUrn === `urn:altinn:person:idporten-email:${email}`,
-                    "displayName equals email": (p) => p.displayName === email,
-                    "isDeleted is false": (p) => p.isDeleted === false,
-                    "deletedAt is null": (p) => p.deletedAt === null,
-                });
-
-                const userFound = check(user, {
-                    "user.username is epost:<email>": (u) =>
-                        u?.username === `epost:${email}`,
-                });
-
-                const okTypes = check(party, {
-                    "partyUuid is a string": (p) => typeof p.partyUuid === "string",
-                    "urn looks like an Altinn party URN": (p) =>
-                        typeof p.urn === "string" && p.urn.startsWith("urn:altinn:party:"),
-                    "partyId is a number": (p) => typeof p.partyId === "number",
-                    "versionId is a number": (p) => typeof p.versionId === "number",
-                    "createdAt is a date string": (p) => isDateString(p.createdAt),
-                    "modifiedAt is a date string": (p) => isDateString(p.modifiedAt),
-                });
-
-                const okUserTypes = check(user, {
-                    "user is present": (u) => typeof u === "object" && u !== null,
-                    "user.userId is a number": (u) => typeof u?.userId === "number",
-                });
-
-                if (!okHard || !userFound || !okTypes || !okUserTypes) {
-                    console.log(response.body);
-                }
+                PartyLookupDomainChecks.CheckPartyMatchesIdportenEmail(party, email);
             },
         );
     });
