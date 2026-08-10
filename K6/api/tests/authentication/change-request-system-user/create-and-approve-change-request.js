@@ -11,16 +11,21 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 /**
  * The rights the system user starts with.
  *
+ * Both resources here are published in every environment the test runs in. The
+ * ones this test used to name were not: ttd-dialogporten-performance-test-01 is
+ * missing in at23 and authentication-e2e-test in yt01, so registering the system
+ * would have failed there.
+ *
  * @type {Right[]}
  */
-const GRANTED_RIGHTS = [resource("ttd-dialogporten-performance-test-01")];
+const GRANTED_RIGHTS = [resource("k6-instancedelegation-test")];
 
 /**
  * The rights the change request asks for, which the system user does not have.
  *
  * @type {Right[]}
  */
-const REQUESTED_RIGHTS = [resource("authentication-e2e-test")];
+const REQUESTED_RIGHTS = [resource("ttd-dialogporten-dummy")];
 
 /**
  * k6 setup stage. Arranges the system user this test changes.

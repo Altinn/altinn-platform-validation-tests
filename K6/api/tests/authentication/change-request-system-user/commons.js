@@ -68,10 +68,16 @@ export function arrangeApprovedSystemUser({
 }) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
+    // The end users are the ones who can approve for a company without anyone
+    // having delegated to them first, so daglig leder in an AS and innehaver in
+    // an ENK. Built per environment by `yarn tenor:endusers` in
+    // altinn-access-management-frontend, since Tenor holds the same synthetic
+    // companies everywhere while the Altinn ids differ per environment.
+
     const res = withRetries(
         () =>
             http.get(
-                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
+                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request/${__ENV.ENVIRONMENT}/end-users.csv`,
                 { tags: { action: "fetch-test-data" } },
             ),
         "fetch-test-data",
