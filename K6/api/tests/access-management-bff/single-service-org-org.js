@@ -24,6 +24,7 @@ import {
 } from "../../../clients/access-management-bff/role/index.js";
 import {
     DelegateSingleRightsQueryBuilder,
+    GetResourceDelegationsQueryBuilder,
     GetResourceRightsQueryBuilder,
     GetRightsMetaQueryBuilder,
     GetSingleRightDelegationCheckQueryBuilder,
@@ -46,6 +47,7 @@ import { GetRoles, } from "../../building-blocks/access-management-bff/role/inde
 import { RevokeSingleRights } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { DelegateSingleRights } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetRightsMeta } from "../../building-blocks/access-management-bff/single-right/index.js";
+import { GetResourceDelegations } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetResourceRights } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetSingleRightDelegationCheck } from "../../building-blocks/access-management-bff/single-right/index.js";
 import { GetIsHovedadmin } from "../../building-blocks/access-management-bff/user/index.js";
@@ -294,6 +296,7 @@ export default function (segmentedData) {
         CreateRightHolder(
             connectionsApiClient,
             from.orgUuid,
+            null,
             new CreateRightHolderQueryBuilder()
                 .withRightholderPartyUuid(to.orgUuid)
                 .build(),
@@ -341,7 +344,7 @@ export default function (segmentedData) {
                 .build(),
             getRightholdersLabel1e,
         );
-        GetIsHovedadmin(userApiClient, getIsHovedAdminLabel);
+        GetIsHovedadmin(userApiClient, from.orgUuid, getIsHovedAdminLabel);
         GetRolePermissions(
             roleApiClient,
             new GetRolePermissionsQueryBuilder()
@@ -360,9 +363,9 @@ export default function (segmentedData) {
                 .build(),
             getDelegationsLabel,
         );
-        GetResourceRights(
+        GetResourceDelegations(
             singleRightsApiClient,
-            new GetResourceRightsQueryBuilder()
+            new GetResourceDelegationsQueryBuilder()
                 .withParty(from.orgUuid)
                 .withFrom(from.orgUuid)
                 .withTo(to.orgUuid)
@@ -428,9 +431,9 @@ export default function (segmentedData) {
             getRights(rightsMeta),
             postDelegationLabel,
         );
-        GetResourceRights(
+        GetResourceDelegations(
             singleRightsApiClient,
-            new GetResourceRightsQueryBuilder()
+            new GetResourceDelegationsQueryBuilder()
                 .withParty(from.orgUuid)
                 .withFrom(from.orgUuid)
                 .withTo(to.orgUuid)
@@ -471,9 +474,9 @@ export default function (segmentedData) {
                 .build(),
             revokeSingleRightLabel,
         );
-        GetResourceRights(
+        GetResourceDelegations(
             singleRightsApiClient,
-            new GetResourceRightsQueryBuilder()
+            new GetResourceDelegationsQueryBuilder()
                 .withParty(from.orgUuid)
                 .withFrom(from.orgUuid)
                 .withTo(to.orgUuid)

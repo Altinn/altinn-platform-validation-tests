@@ -9,9 +9,9 @@ import {
 } from "../../../clients/access-management-bff/access-package/index.js";
 import {
     ConnectionClient,
-    CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
+    ValidatePersonInputBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
 import {
     ResourceClient,
@@ -273,9 +273,11 @@ export default function (segmentedData) {
         CreateRightHolder(
             connectionsApiClient,
             from.partyUuid,
-            new CreateRightHolderQueryBuilder()
-                .withRightholderPartyUuid(to.partyUuid)
+            new ValidatePersonInputBuilder()
+                .withPersonIdentifier(to.ssn)
+                .withLastName(to.lastName)
                 .build(),
+            null,
             postRightholderLabel,
         );
         GetRightHolders(
@@ -310,7 +312,7 @@ export default function (segmentedData) {
                 .build(),
             getRightholdersLabel1d,
         );
-        GetIsHovedadmin(userApiClient, getIsHovedAdminLabel);
+        GetIsHovedadmin(userApiClient, from.partyUuid, getIsHovedAdminLabel);
         GetRolePermissions(
             roleApiClient,
             new GetRolePermissionsQueryBuilder()

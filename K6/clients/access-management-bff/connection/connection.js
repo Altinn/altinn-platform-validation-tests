@@ -187,12 +187,16 @@ class ConnectionClient {
      * Adds a right holder to a reportee.
      *
      * @param {string} partyUuid Party UUID of the reportee.
+     * @param {ValidatePersonInput|null} [body] The person to add, when they are
+     * identified by national identity number instead of party UUID. Prefer using
+     * {@link ValidatePersonInputBuilder}. Either this or the rightholderPartyUuid
+     * query parameter must be given, not both.
      * @param {CreateRightHolderQuery|null} [query] Optional query parameters.
      * Prefer using {@link CreateRightHolderQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    CreateRightHolder(partyUuid, query = null, labels = null) {
+    CreateRightHolder(partyUuid, body = null, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(
@@ -228,11 +232,12 @@ class ConnectionClient {
 
         return http.post(
             url.toString(),
-            null,
+            body !== null ? JSON.stringify(body) : null,
             {
                 tags,
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                     Accept: "application/json",
                 },
             },

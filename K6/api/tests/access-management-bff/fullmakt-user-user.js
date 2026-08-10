@@ -9,9 +9,9 @@ import {
 } from "../../../clients/access-management-bff/access-package/index.js";
 import {
     ConnectionClient,
-    CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
+    ValidatePersonInputBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
@@ -128,9 +128,11 @@ export default function (segmentedData) {
         CreateRightHolder(
             connectionsApiClient,
             from.partyUuid,
-            new CreateRightHolderQueryBuilder()
-                .withRightholderPartyUuid(to.partyUuid)
+            new ValidatePersonInputBuilder()
+                .withPersonIdentifier(to.ssn)
+                .withLastName(to.lastName)
                 .build(),
+            null,
             postRightholderLabel,
         );
         getRightHolders(connectionsApiClient, from);

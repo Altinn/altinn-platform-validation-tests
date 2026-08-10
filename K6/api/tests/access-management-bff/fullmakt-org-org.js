@@ -25,6 +25,7 @@ import {
     CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
+    ValidatePersonInputBuilder,
 } from "../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
@@ -201,6 +202,7 @@ export default function (segmentedData) {
         CreateRightHolder(
             connectionsApiClient,
             from.orgUuid,
+            null,
             new CreateRightHolderQueryBuilder()
                 .withRightholderPartyUuid(to.orgUuid)
                 .build(),
@@ -225,9 +227,12 @@ export default function (segmentedData) {
     group(addUserGroup, function () {
         CreateAgent(
             clientDelegationsApiClient,
+            new ValidatePersonInputBuilder()
+                .withPersonIdentifier(user.ssn)
+                .withLastName(user.lastName)
+                .build(),
             new CreateAgentQueryBuilder()
                 .withParty(to.orgUuid)
-                .withTo(user.partyUuid)
                 .build(),
             postAgentsLabel,
         );
