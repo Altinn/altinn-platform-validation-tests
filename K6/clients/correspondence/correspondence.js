@@ -4,6 +4,9 @@ const TAGS = {
     InitializeCorrespondence: {
         action: "initialize-correspondence",
     },
+    UploadCorrespondences: {
+        action: "upload-correspondences",
+    },
     GetCorrespondences: {
         action: "get-correspondences",
     },
@@ -27,6 +30,9 @@ const TAGS = {
     },
     GetCorrespondenceDetails: {
         action: "get-correspondence-details",
+    },
+    GetCorrespondenceContent: {
+        action: "get-correspondence-content",
     },
 };
 
@@ -89,6 +95,47 @@ class CorrespondenceClient {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
+                },
+            },
+        );
+    }
+
+    /**
+     * Initializes correspondences and uploads new attachment data in one
+     * multipart request.
+     *
+     * Do not set Content-Type here. k6 adds the multipart boundary when the
+     * request body contains values created with http.file().
+     *
+     * @param {object} formData Multipart form fields and attachment data.
+     * @param {{[key:string]: string}|null} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    UploadCorrespondences(formData, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/upload`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/upload`,
+            action: TAGS.UploadCorrespondences.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(
+            url,
+            formData,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 },
             },
         );
@@ -418,6 +465,44 @@ class CorrespondenceClient {
                 tags,
                 headers: {
                     Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+    }
+
+    /**
+     * Gets the message body of a correspondence. This endpoint supports a
+     * Dialogporten dialog token through the configured token generator.
+     *
+     * @param {string} correspondenceId Correspondence UUID.
+     * @param {{[key:string]: string}|null} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    GetCorrespondenceContent(correspondenceId, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/${correspondenceId}/content`;
+
+        let tags = {
+            endpoint: url,
+            name: `${this.FULL_PATH}/{correspondenceId}/content`,
+            action: TAGS.GetCorrespondenceContent.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(
+            url,
+            {
+                tags,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "text/plain",
                 },
             },
         );

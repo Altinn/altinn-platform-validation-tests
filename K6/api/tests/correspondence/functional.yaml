@@ -1,0 +1,32 @@
+namespace: correspondence
+base_dir: K6/api/tests/correspondence/
+test_definitions:
+  - test_file: initialize-correspondence.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  - test_file: create-and-upload-correspondence.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  - test_file: create-and-upload-correspondence-single-user.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  - test_file: get-correspondence-overview.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  - test_file: get-correspondence.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
