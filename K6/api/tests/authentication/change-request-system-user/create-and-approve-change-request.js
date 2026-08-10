@@ -4,7 +4,7 @@ import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
 import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
-import { accessPackage, arrangeApprovedSystemUser, cleanupSystemUsers, findAccessPackages, getApproverTokenOpts, getClients, REDIRECT_URL, resource } from "./commons.js";
+import { accessPackage, arrangeApprovedSystemUser, cleanupSystemUsers, findAccessPackages, getApproverTokenOpts, getClients, pickVendor, REDIRECT_URL, resource } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -36,11 +36,16 @@ const REQUESTED_RIGHTS = [resource("ttd-dialogporten-dummy")];
  * @returns {object[]} The system user to change, as a single item list.
  */
 export function setup() {
+    // Drawn once here rather than per iteration, since the system belongs to the
+    // vendor that registered it and every iteration acts on that same system.
+    const vendorOrgNo = pickVendor();
+
     // Two packages, so the change request can give one up and ask for the other.
-    const [grantedPackage, requestedPackage] = findAccessPackages(2);
+    const [grantedPackage, requestedPackage] = findAccessPackages(2, vendorOrgNo);
 
     return arrangeApprovedSystemUser({
         systemNamePrefix: "changerequest",
+        vendorOrgNo,
         grantedRights: GRANTED_RIGHTS,
         registeredRights: [...GRANTED_RIGHTS, ...REQUESTED_RIGHTS],
         grantedAccessPackages: [grantedPackage],
@@ -54,8 +59,8 @@ export function setup() {
  * @param {object[]} data The arranged system users from setup.
  */
 export default function (data) {
-    const [clients, approverTokenGenerator] = getClients();
     const systemUser = getItemFromList(data, randomize);
+    const [clients, approverTokenGenerator] = getClients(systemUser.vendorOrgNo);
 
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
 
