@@ -50,21 +50,17 @@ export function getClients() {
     }
 
     if (authorizeClient == undefined) {
-        authorizeClient = new AuthorizeClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-            __ENV.AUTHORIZATION_SUBSCRIPTION_KEY
-        );
+        authorizeClient = new AuthorizeClient(__ENV.BASE_URL, tokenGenerator);
     }
 
     return [authorizeClient, tokenGenerator];
 }
 
 /**
- * Function to get token options map.
+ * Function to get token options.
  *
  * @param {string} ssn - social security number
- * @returns map of token options
+ * @returns {object} Token generator options for the given user.
  */
 export function getTokenOpts(ssn) {
     const scopes = CreateScopeString([
@@ -259,7 +255,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
  * @returns {object[][]} Organizations with their daglig leder, one slice per VU.
  */
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`,
         { tags: { action: "fetch-test-data" } });

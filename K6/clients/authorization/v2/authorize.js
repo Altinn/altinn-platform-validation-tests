@@ -10,20 +10,12 @@ class AuthorizeClient {
     /**
      * @param {string} baseUrl Base URL.
      * @param {*} tokenGenerator Generates bearer tokens.
-     * @param {string|null} [subscriptionKey]
-     * API management subscription key. It is only needed when the request goes
-     * through API management. The header is omitted when this is not set.
      */
-    constructor(baseUrl, tokenGenerator, subscriptionKey = null) {
+    constructor(baseUrl, tokenGenerator) {
         /**
          * Generates authentication tokens.
          */
         this.tokenGenerator = tokenGenerator;
-
-        /**
-         * API management subscription key, or null when not needed.
-         */
-        this.subscriptionKey = subscriptionKey;
 
         /**
          * Base API path.
@@ -74,9 +66,6 @@ class AuthorizeClient {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
                 Accept: "application/json",
-                ...(this.subscriptionKey !== null && {
-                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                }),
             },
         });
     }
