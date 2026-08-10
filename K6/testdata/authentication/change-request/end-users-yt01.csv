@@ -1,4 +1,4 @@
-orgNo,partyId,orgUuid,orgType,role,userId,userPartyUuid,userPid
+orgNo,orgPartyId,orgPartyUuid,orgType,role,userId,userPartyUuid,userPid
 313490114,62558531,89e1696a-5eb7-4930-a558-93590dd689ba,AS,dagligleder,4549835,e83381e6-957e-439f-89b7-d255f5539549,03874998779
 310678961,62024191,37efa282-5874-4dba-970f-f497cbec729a,AS,dagligleder,4538215,bfecd3fa-0825-46ac-8a13-ae0cecc52e04,20866198560
 213842412,61806105,31f19469-91cc-40ae-b46b-dd9b061a06dd,AS,dagligleder,4565564,86c81cf9-72b3-432e-9f38-57882263ba06,16836697573

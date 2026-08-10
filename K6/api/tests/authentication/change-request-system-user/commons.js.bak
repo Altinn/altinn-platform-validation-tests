@@ -29,7 +29,7 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 /**
  * Where the test data these tests draw from lives.
  */
-const TESTDATA_URL = "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/386-change-requests-all-environments/K6/testdata/authentication/change-request";
+const TESTDATA_URL = "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request";
 
 /**
  * Every system registered by these tests allows the same redirect url.
@@ -158,7 +158,7 @@ export function cleanupSystemUsers(systemUsers) {
 
             tokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
 
-            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.partyId, systemUser.systemUserId);
         }
     });
 }
@@ -419,7 +419,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
 
         const approved = ApproveSystemUserRequest(
             apiClients.approver.bffRequestClient,
-            customer.orgPartyId,
+            customer.partyId,
             createdRequest?.id,
         );
 
