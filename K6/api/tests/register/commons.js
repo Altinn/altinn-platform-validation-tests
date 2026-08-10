@@ -20,7 +20,7 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
  *
  * K6/testdata/register/
  * - register-usernames-<env>.csv   (header: username)
- * - ccr-facilitators-<env>.csv     (header: partyUuid,org,role)
+ * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
  */
 const TESTDATA_BASE_URL =
     "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register";
@@ -54,16 +54,19 @@ export function getUsernames(env) {
 }
 
 /**
- * Facilitators to read customers for, ten per Enhetsregisteret role. Every one of
- * them was verified to have customers in its environment when the file was
- * generated, since a facilitator without customers gives the role test nothing to
- * remove.
+ * Organizations that hold an Enhetsregisteret role on behalf of customers, ten
+ * per role. `type` is the role they hold, from CcrCustomerRoles, which is what
+ * lets the role test take an organization and the role it plays from the same
+ * row. Every one of them was verified to have customers in its environment when
+ * the file was generated, since an organization without customers gives the role
+ * test nothing to remove.
  *
  * @param {string} env - Environment, e.g. "tt02".
- * @returns {Array<{partyUuid: string, org: string, role: string}>} The facilitators.
+ * @returns {Array<{organizationUuid: string, organizationId: string, type: string}>}
+ * The organizations.
  */
-export function getFacilitators(env) {
-    return fetchTestData(`ccr-facilitators-${env}.csv`);
+export function getOrganizations(env) {
+    return fetchTestData(`organizations-${env}.csv`);
 }
 
 /**
@@ -178,25 +181,25 @@ export function getEnhetsregisteretClient() {
 }
 
 /**
- * Organization numbers of the parties that have this facilitator in the given role.
+ * Organization numbers of the customers that have this organization in the given role.
  *
  * @param {RegisterClient} registerClient Client for the Register API.
- * @param {string} facilitatorPartyUuid The facilitator party UUID.
+ * @param {string} organizationUuid The uuid of the organization holding the role.
  * @param {string} ccrRole The role the customers have assigned, e.g. "revisor".
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {Array<string>|null} Organization numbers, or null when the call failed.
  */
 export function getCustomerOrganizationNumbers(
     registerClient,
-    facilitatorPartyUuid,
+    organizationUuid,
     ccrRole,
     labels = null,
 ) {
     const customers = RegisterBuildingBlocks.GetCustomers(
         registerClient,
-        facilitatorPartyUuid,
+        organizationUuid,
         ccrRole,
-        // Only the organization number is compared on, and a facilitator can have
+        // Only the organization number is compared on, and an organization can have
         // thousands of customers, so ask for as little as possible.
         ["org-id"],
         labels,
@@ -210,11 +213,11 @@ export function getCustomerOrganizationNumbers(
 }
 
 /**
- * Picks a customer to move in and out of a facilitator's list.
+ * Picks a customer to move in and out of an organization's customer list.
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} ccrRole The role under test, e.g. "revisor".
- * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {boolean} randomize Whether to draw at random rather than take the first.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {string} Organization number of the customer to move.
@@ -222,7 +225,7 @@ export function getCustomerOrganizationNumbers(
 export function drawCustomerToMove(
     registerClient,
     ccrRole,
-    facilitator,
+    organization,
     randomize,
     labels = null,
 ) {
@@ -230,7 +233,7 @@ export function drawCustomerToMove(
     // and what the assertions compare on.
     const currentOrgs = getCustomerOrganizationNumbers(
         registerClient,
-        facilitator.partyUuid,
+        organization.organizationUuid,
         ccrRole,
         labels,
     );
@@ -240,17 +243,17 @@ export function drawCustomerToMove(
     }
 
     console.log(
-        `Initial number of ${ccrRole} customers for ${facilitator.org}: ${currentOrgs.length}`,
+        `Initial number of ${ccrRole} customers for ${organization.organizationId}: ${currentOrgs.length}`,
     );
 
     if (currentOrgs.length === 0) {
         fail(
-            `cannot continue: ${facilitator.org} has no ${ccrRole} customers to test with`,
+            `cannot continue: ${organization.organizationId} has no ${ccrRole} customers to test with`,
         );
     }
 
-    // Drawn the same way as the facilitator, rather than always the first one. Two
-    // VUs that draw the same facilitator would otherwise target the same customer,
+    // Drawn the same way as the organization, rather than always the first one. Two
+    // VUs that draw the same organization would otherwise target the same customer,
     // and each would see the other's removal and add-back as its own.
     const targetOrg = getItemFromList(currentOrgs, randomize);
     console.log(`Picked target client organizationIdentifier: ${targetOrg}`);
@@ -268,7 +271,7 @@ export function drawCustomerToMove(
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} ccrRole The role under test, e.g. "revisor".
- * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer being moved.
  * @param {boolean} expectPresent Whether the customer should end up in the list.
  * @param {string} testscenario Prefix used in log and check output.
@@ -278,7 +281,7 @@ export function drawCustomerToMove(
 export function waitForRegister(
     registerClient,
     ccrRole,
-    facilitator,
+    organization,
     targetOrg,
     expectPresent,
     testscenario,
@@ -288,7 +291,7 @@ export function waitForRegister(
         () => {
             const orgs = getCustomerOrganizationNumbers(
                 registerClient,
-                facilitator.partyUuid,
+                organization.organizationUuid,
                 ccrRole,
                 labels,
             );

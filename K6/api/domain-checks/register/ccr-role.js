@@ -31,7 +31,7 @@ function CheckRoleRemoved(propagated, ccrRole) {
  * Checks that Register lists the customer again after the role was put back in ER.
  *
  * This is the half that leaves the environment as the test found it, so a false
- * here means a customer is left short of a facilitator.
+ * here means a customer is left without the organization in that role.
  *
  * @param {boolean} propagated - Whether Register listed the customer again in time.
  * @param {string} ccrRole - The role under test, e.g. "revisor".

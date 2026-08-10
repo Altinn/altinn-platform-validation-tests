@@ -7,7 +7,7 @@ import { CcrRoleDomainChecks } from "../../domain-checks/register/ccr-role.js";
 import {
     drawCustomerToMove,
     getEnhetsregisteretClient,
-    getFacilitators,
+    getOrganizations,
     getPartyLookupAdminClient,
     waitForRegister,
 } from "./commons.js";
@@ -22,8 +22,8 @@ import {
  * @description Verifies that role changes in ER (Enhetsregisteret / Brønnøysundregisteret)
  * are correctly propagated to Altinn's internal Register component.
  *
- * The test simulates a real-world ER event by removing a facilitator role from a
- * client organization via the ER SOAP API, then verifying that Altinn Register
+ * The test simulates a real-world ER event by removing an organization's role over
+ * one of its customers via the ER SOAP API, then verifying that Altinn Register
  * reflects the removal. The role is subsequently re-added to leave the system in
  * its original state, verifying that it's present again in the Register.
  *
@@ -31,10 +31,11 @@ import {
  * and after ER's English name, the Central Coordinating Register: "revisor",
  * "regnskapsforer" or "forretningsforer".
  *
- * All three facilitator roles are covered by this one file. Every row of the test
- * data carries its role, so an iteration takes the role of the facilitator it drew
- * and the roles spread across iterations and VUs by themselves. The requests carry
- * the role in a `ccrRole` tag, so they stay apart in the metrics.
+ * All three roles are covered by this one file. Every row of the test data carries
+ * the role its organization holds in a `type` column, so an iteration takes the
+ * role of the organization it drew and the roles spread across iterations and VUs
+ * by themselves. The requests carry the role in a `ccrRole` tag, so they stay apart
+ * in the metrics.
  */
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -51,44 +52,45 @@ export function setup() {
         "SOAP_ER_USERNAME",
     ]);
 
-    return getFacilitators(__ENV.ENVIRONMENT);
+    return getOrganizations(__ENV.ENVIRONMENT);
 }
 
-export default function (facilitators) {
-    const facilitator = getItemFromList(facilitators, randomize);
+export default function (organizations) {
+    const organization = getItemFromList(organizations, randomize);
 
     addRemoveRoleForClient(
         getPartyLookupAdminClient(),
         getEnhetsregisteretClient(),
-        facilitator.role,
-        facilitator,
+        organization.type,
+        organization,
     );
 }
 
 /**
- * Removes one of a facilitator's customers in ER, waits for Register to drop it,
+ * Removes one of an organization's customers in ER, waits for Register to drop it,
  * then puts it back and waits for Register to have it again.
  *
- * The role is removed from a customer the facilitator already has, so the test
+ * The role is removed from a customer the organization already has, so the test
  * leaves the environment as it found it. That also means a failure between the two
- * halves leaves a customer short of a facilitator, which the failure says.
+ * halves leaves a customer without the organization in that role, which the
+ * failure says.
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test, e.g. "revisor". One of
  * CcrCustomerRoles: revisor, regnskapsforer or forretningsforer.
- * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  */
 function addRemoveRoleForClient(
     registerClient,
     enhetsregisteretClient,
     ccrRole,
-    facilitator,
+    organization,
 ) {
     const targetOrg = drawCustomerToMove(
         registerClient,
         ccrRole,
-        facilitator,
+        organization,
         randomize,
         label,
     );
@@ -97,7 +99,7 @@ function addRemoveRoleForClient(
         registerClient,
         enhetsregisteretClient,
         ccrRole,
-        facilitator,
+        organization,
         targetOrg,
     );
 
@@ -105,7 +107,7 @@ function addRemoveRoleForClient(
         registerClient,
         enhetsregisteretClient,
         ccrRole,
-        facilitator,
+        organization,
         targetOrg,
     );
 }
@@ -116,14 +118,14 @@ function addRemoveRoleForClient(
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test, e.g. "revisor".
- * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer to remove.
  */
 function removeRoleAndWait(
     registerClient,
     enhetsregisteretClient,
     ccrRole,
-    facilitator,
+    organization,
     targetOrg,
 ) {
     // The role is in the group name, and it is one of the three rather than all of
@@ -135,7 +137,7 @@ function removeRoleAndWait(
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
-            facilitator.org,
+            organization.organizationId,
             label,
         );
 
@@ -148,7 +150,7 @@ function removeRoleAndWait(
         const propagated = waitForRegister(
             registerClient,
             ccrRole,
-            facilitator,
+            organization,
             targetOrg,
             false,
             `remove ${ccrRole} role`,
@@ -166,14 +168,14 @@ function removeRoleAndWait(
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test, e.g. "revisor".
- * @param {{partyUuid: string, org: string}} facilitator The facilitator to use.
+ * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer to add back.
  */
 function addRoleBackAndWait(
     registerClient,
     enhetsregisteretClient,
     ccrRole,
-    facilitator,
+    organization,
     targetOrg,
 ) {
     group(`Put the drawn role ${ccrRole} back in ER and make sure Register has it again`, () => {
@@ -183,7 +185,7 @@ function addRoleBackAndWait(
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
-            facilitator.org,
+            organization.organizationId,
             label,
         );
 
@@ -191,14 +193,14 @@ function addRoleBackAndWait(
         // picks a target from a list this one changed.
         if (!addedBack) {
             fail(
-                `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${facilitator.org} as its ${ccrRole}`,
+                `ER did not process putting ${ccrRole} back, ${targetOrg} is left without ${organization.organizationId} as its ${ccrRole}`,
             );
         }
 
         const propagated = waitForRegister(
             registerClient,
             ccrRole,
-            facilitator,
+            organization,
             targetOrg,
             true,
             `add ${ccrRole} role back`,
