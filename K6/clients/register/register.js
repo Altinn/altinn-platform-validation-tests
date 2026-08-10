@@ -94,8 +94,10 @@ class RegisterClient {
             url += `?fields=${encodeURIComponent(fields.join(","))}`;
         }
 
+        // The path without the query string, so the requested fields do not each
+        // get their own timeseries.
         let tags = {
-            endpoint: url,
+            endpoint: path,
             name: path,
             action: TAGS.AccessManagementPartiesQuery.action,
         };
@@ -150,11 +152,14 @@ class RegisterClient {
             url += `?fields=${encodeURIComponent(fields.join(","))}`;
         }
 
-        // The role stays out of the name tag and gets its own, so the three roles
-        // share one endpoint in the metrics and can still be told apart.
+        // Both label tags keep the placeholders, so a party uuid, a role and a set
+        // of requested fields do not each get their own timeseries. The role is a
+        // tag of its own instead, which is three values rather than one per party.
+        const template = `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`;
+
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
+            endpoint: template,
+            name: template,
             action: TAGS.GetCustomers.action,
             ccrRole: ccrRole,
         };
@@ -207,9 +212,12 @@ class RegisterClient {
             url += `?fields=${encodeURIComponent(fields.join(","))}`;
         }
 
+        // Placeholders in both label tags, for the same reason as in GetCustomers.
+        const template = `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`;
+
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
+            endpoint: template,
+            name: template,
             action: TAGS.GetRoleHolders.action,
             ccrRole: ccrRole,
         };

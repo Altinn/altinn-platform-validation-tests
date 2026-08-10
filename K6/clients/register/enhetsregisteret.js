@@ -35,6 +35,12 @@ class EnhetsregisteretClient {
          * `federate=false` keeps it from being forwarded on.
          */
         this.FULL_PATH = `${baseUrl}${this.BASE_PATH}?record=false&federate=false`;
+
+        /**
+         * What the label tags carry: the path without the query string, matching how
+         * the Register client labels its own calls.
+         */
+        this.LABEL_PATH = `${baseUrl}${this.BASE_PATH}`;
     }
 
     static get TAGS() {
@@ -97,8 +103,8 @@ class EnhetsregisteretClient {
 </soapenv:Envelope>`;
 
         let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
+            endpoint: this.LABEL_PATH,
+            name: this.LABEL_PATH,
             action: TAGS.AddCcrRole.action,
             ccrRole: ccrRole,
         };
@@ -171,8 +177,8 @@ class EnhetsregisteretClient {
 </soapenv:Envelope>`;
 
         let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
+            endpoint: this.LABEL_PATH,
+            name: this.LABEL_PATH,
             action: TAGS.RemoveCcrRole.action,
             ccrRole: ccrRole,
         };
