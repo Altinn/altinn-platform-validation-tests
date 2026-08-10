@@ -21,5 +21,4 @@ export default function (data) {
     DaglAVUnderenhetFaarHovedenhetAIiAktoerlista(data);
     DaglBFaarUnderenhetCIiAktoerlista(data);
     PersonBFaarPersonAIiAktoerlista(data);
-
 }
