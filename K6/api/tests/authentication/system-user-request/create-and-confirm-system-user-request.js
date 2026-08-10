@@ -1,7 +1,7 @@
 import { fail, group } from "k6";
 
 import { getItemFromList } from "../../../../helpers.js";
-import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-v2-imports.js";
+import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 import { createSystemRegistration, getApproverTokenOpts, getClients, resourceRight } from "./commons.js";
 

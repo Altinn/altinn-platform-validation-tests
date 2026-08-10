@@ -2,7 +2,7 @@ import exec from "k6/execution";
 
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { PersonalTokenGenerator } from "../../../../token-generator.js";
-import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
 import { buildEnduserRequest, getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";

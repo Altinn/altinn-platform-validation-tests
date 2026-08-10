@@ -1,7 +1,7 @@
 import { check, fail } from "k6";
 import { browser } from "k6/browser";
 
-import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient } from "../../api/authentication-v2-imports.js";
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient } from "../../api/authentication-imports.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, expect } from "../../common-imports.js";
 import { requireEnv } from "../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../scopes.js";

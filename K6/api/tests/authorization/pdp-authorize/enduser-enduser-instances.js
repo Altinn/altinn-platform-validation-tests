@@ -8,7 +8,7 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
 import { buildInstanceRequest, getClients } from "./common-functions.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;

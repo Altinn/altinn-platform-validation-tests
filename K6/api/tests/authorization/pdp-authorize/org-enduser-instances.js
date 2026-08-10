@@ -7,7 +7,7 @@ import http from "k6/http";
 import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
-import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
 import { buildInstanceRequest, getClients } from "./common-functions.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;

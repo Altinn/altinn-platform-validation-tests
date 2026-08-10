@@ -1,7 +1,7 @@
 import exec from "k6/execution";
 
 import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { AuthorizePost } from "../../../building-blocks/authorization/v2/authorize/post.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
 import { buildDaglRequest, getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
