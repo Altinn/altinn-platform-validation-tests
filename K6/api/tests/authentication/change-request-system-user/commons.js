@@ -79,7 +79,7 @@ export function arrangeApprovedSystemUser({
     const res = withRetries(
         () =>
             http.get(
-                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request/${__ENV.ENVIRONMENT}/end-users.csv`,
+                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request/end-users-${__ENV.ENVIRONMENT}.csv`,
                 { tags: { action: "fetch-test-data" } },
             ),
         "fetch-test-data",
