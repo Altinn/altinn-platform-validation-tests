@@ -25,7 +25,7 @@ export function getClients(userId, partyId, partyUuid, pid) {
             .build();
 
         tokenGenerator
-            = new PersonalTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd);
+            = new PersonalTokenGenerator(options);
         authorizedPartiesClient
             = new AuthorizedPartiesClient(__ENV.BASE_URL, tokenGenerator);
     }
