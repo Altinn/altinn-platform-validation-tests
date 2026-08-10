@@ -1,7 +1,7 @@
 import { check } from "k6";
 
-import { ChangeRequestSystemUserClient } from "../../../../../clients/authentication/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { ChangeRequestSystemUserClient } from "../../../../clients/authentication/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a change request by id.

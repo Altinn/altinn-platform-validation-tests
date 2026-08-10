@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { DecisionClient } from "../../../../../clients/authorization/decision.js";
+import { DecisionClient } from "../../../../clients/authorization/decision.js";
 
 /**
  * Sends an internal XACML authorization request.

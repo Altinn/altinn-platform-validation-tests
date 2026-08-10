@@ -1,7 +1,7 @@
 import { check } from "k6";
 
-import { SystemUserClient } from "../../../../../clients/authentication/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { SystemUserClient } from "../../../../clients/authentication/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a SystemUser by external id information.
