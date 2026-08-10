@@ -162,6 +162,13 @@
  * party can hold on behalf of its customers, and that Register serves a customer
  * list for. The values are the last path segment of the endpoint.
  *
+ * These three are the whole list. Altinn establishes a client relationship, so
+ * that one organization can act for another, only for an organization registered
+ * in ER as the other's revisor, regnskapsfører or forretningsfører. Any other ER
+ * role, a daglig leder or a styremedlem for instance, says something about the
+ * organization itself rather than about who may act for whom, so it produces no
+ * customers to read here.
+ *
  * Register has one endpoint per role rather than a role parameter, but they take
  * the same arguments and answer with the same shape, so the client models them
  * as one call. This object is the list of roles that call accepts.

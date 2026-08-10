@@ -55,11 +55,17 @@ export function getUsernames(env) {
 
 /**
  * Organizations that hold an Enhetsregisteret role on behalf of customers, ten
- * per role. `type` is the role they hold, from CcrCustomerRoles, which is what
- * lets the role test take an organization and the role it plays from the same
- * row. Every one of them was verified to have customers in its environment when
- * the file was generated, since an organization without customers gives the role
- * test nothing to remove.
+ * per role.
+ *
+ * `type` is the role the organization holds, and there are only three of them:
+ * revisor, regnskapsforer and forretningsforer. Those are the ER roles Altinn
+ * turns into a client relationship, where one organization may act for another,
+ * so they are the only ones with customers to read. See CcrCustomerRoles.
+ *
+ * Keeping the role in the row is what lets the test take an organization and the
+ * role it plays from the same draw. Every organization was verified to have
+ * customers in its environment when the file was generated, since one without
+ * customers gives the role test nothing to remove.
  *
  * @param {string} env - Environment, e.g. "tt02".
  * @returns {Array<{organizationUuid: string, organizationId: string, type: string}>}
