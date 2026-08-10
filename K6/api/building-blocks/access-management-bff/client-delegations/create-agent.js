@@ -7,6 +7,9 @@ import { ClientDelegationsClient } from "../../../../clients/access-management-b
  *
  * @param {ClientDelegationsClient} clientDelegationsClient Client for the
  * client delegation endpoints.
+ * @param {ValidatePersonInput|null} [body] The person to add as agent, when
+ * they are identified by national identity number. Use
+ * {@link ValidatePersonInputBuilder}.
  * @param {CreateAgentQuery|null} [queryParams] Optional query parameters. Use
  * {@link CreateAgentQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
@@ -14,10 +17,11 @@ import { ClientDelegationsClient } from "../../../../clients/access-management-b
  */
 export function CreateAgent(
     clientDelegationsClient,
+    body = null,
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.CreateAgent(queryParams, labels);
+    const res = clientDelegationsClient.CreateAgent(body, queryParams, labels);
 
     /** @type {AssignmentDto|null} */
     let assignment = null;

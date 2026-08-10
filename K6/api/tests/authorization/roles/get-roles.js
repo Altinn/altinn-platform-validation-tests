@@ -1,14 +1,21 @@
-import { RolesApiClient } from "../../../../clients/authorization/index.js";
+import { RolesClient } from "../../../../clients/access-management/metadata/roles/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getOptions } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { GetRoles } from "../../../building-blocks/authorization/roles/index.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { MetadataBuildingBlocks } from "../../../building-blocks/access-management/metadata/index.js";
 
 const labels = { step: "getRoles" };
 
 /**
- * @type {RolesApiClient | undefined}
+ * @type {RolesClient | undefined}
  */
 let rolesApiClient = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
+let tokenGenerator = undefined;
 
 export const options = getOptions([labels]);
 
@@ -27,13 +34,26 @@ export function setup() {
 /**
  * Creates and caches the client used to interact with the Roles API.
  *
- * The same {@link RolesApiClient} instance is reused across iterations.
+ * The same {@link RolesClient} instance is reused across iterations.
  *
- * @returns {[RolesApiClient]} Tuple containing the Roles API client.
+ * @returns {[RolesClient]} Tuple containing the Roles API client.
  */
 function getClients() {
+    if (tokenGenerator == undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.PORTAL.ENDUSER
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
+
+        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+    }
+
     if (rolesApiClient == undefined) {
-        rolesApiClient = new RolesApiClient(__ENV.BASE_URL);
+        rolesApiClient = new RolesClient(__ENV.BASE_URL, tokenGenerator);
     }
 
     return [rolesApiClient];
@@ -47,5 +67,5 @@ function getClients() {
 export default function () {
     const [rolesApiClient] = getClients();
 
-    GetRoles(rolesApiClient, labels);
+    MetadataBuildingBlocks.Roles.GetRoles(rolesApiClient, labels);
 }

@@ -29,10 +29,10 @@ export function DeleteAgentAccessPackages(
     let revoked = false;
 
     const succeed = check(res, {
-        "DeleteAgentAccessPackages - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteAgentAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteAgentAccessPackages - status code is 204": (r) =>
+            r.status === 204,
+        "DeleteAgentAccessPackages - status text is 204 No Content": (r) =>
+            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

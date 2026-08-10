@@ -6,11 +6,12 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * Checks whether the authenticated user is a main administrator.
  *
  * @param {UserClient} userClient Client for the user endpoints.
+ * @param {string} party Party UUID of the reportee.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {boolean|null} True if the user is a main administrator.
  */
-export function GetIsHovedadmin(userClient, labels = null) {
-    const res = userClient.GetIsHovedadmin(labels);
+export function GetIsHovedadmin(userClient, party, labels = null) {
+    const res = userClient.GetIsHovedadmin(party, labels);
 
     /** @type {boolean|null} */
     let isHovedadmin = null;

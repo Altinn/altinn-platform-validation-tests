@@ -1347,6 +1347,7 @@ export {
     DeleteAccessPackageQueryBuilder,
     DeleteConnectionQueryBuilder,
     DeleteInstanceQueryBuilder,
+    DeleteResourceQueryBuilder,
     DeleteRoleQueryBuilder,
     GetAccessPackagesQueryBuilder,
     GetConnectionsQueryBuilder,
@@ -1357,6 +1358,7 @@ export {
     GetInstanceUsersQueryBuilder,
     GetResourceDelegationCheckQueryBuilder,
     GetResourceRightsQueryBuilder,
+    GetResourcesQueryBuilder,
     GetRolesQueryBuilder,
     UpdateInstanceRightsQueryBuilder,
     UpdateResourceRightsQueryBuilder

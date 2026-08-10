@@ -9,6 +9,8 @@ import { AuthorizeClient } from "../../../../../clients/authorization/v2/authori
  *
  * @param {AuthorizeClient} authorizeClient Client for the Authorize API.
  * @param {XacmlJsonRequestRootExternal} request Authorization request.
+ * @param {string} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
+ * or NotApplicable. The decision is only checked when this is set.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
  * @returns {XacmlJsonResponseExternal|null} Authorization response.
@@ -16,6 +18,7 @@ import { AuthorizeClient } from "../../../../../clients/authorization/v2/authori
 export function AuthorizePost(
     authorizeClient,
     request,
+    expectedDecision = null,
     labels = null,
 ) {
     const res = authorizeClient.AuthorizePost(
@@ -40,7 +43,7 @@ export function AuthorizePost(
         return response;
     }
 
-    check(res, {
+    const parsed = check(res, {
         "AuthorizePost - body is valid": (r) => {
             try {
                 response = JSON.parse(r.body);
@@ -54,6 +57,13 @@ export function AuthorizePost(
             }
         },
     });
+
+    if (parsed && expectedDecision !== null) {
+        check(response, {
+            [`AuthorizePost - decision is ${expectedDecision}`]: (b) =>
+                b?.response?.[0]?.decision === expectedDecision,
+        });
+    }
 
     return response;
 }
