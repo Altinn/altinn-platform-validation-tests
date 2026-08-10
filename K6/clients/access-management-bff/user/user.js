@@ -266,7 +266,7 @@ class UserClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             name: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             action: TAGS.CreateFavorite.action,
         };
@@ -306,7 +306,7 @@ class UserClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             name: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             action: TAGS.DeleteFavorite.action,
         };
@@ -344,7 +344,7 @@ class UserClient {
         const url = new URL(`${this.FULL_PATH}/reportee/${partyUuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}`,
             name: `${this.FULL_PATH}/reportee/{partyUuid}`,
             action: TAGS.GetReportee.action,
         };
@@ -378,7 +378,7 @@ class UserClient {
         const url = new URL(`${this.FULL_PATH}/reporteelist/${partyUuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reporteelist/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
             name: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
             action: TAGS.GetReporteeList.action,
         };

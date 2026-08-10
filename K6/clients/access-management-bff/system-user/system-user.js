@@ -70,7 +70,7 @@ class SystemUserClient {
         const url = new URL(`${this.FULL_PATH}/${partyId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}`,
+            endpoint: `${this.FULL_PATH}/{partyId}`,
             name: `${this.FULL_PATH}/{partyId}`,
             action: TAGS.GetSystemUsers.action,
         };
@@ -106,7 +106,7 @@ class SystemUserClient {
         const url = new URL(`${this.FULL_PATH}/${partyId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}`,
+            endpoint: `${this.FULL_PATH}/{partyId}`,
             name: `${this.FULL_PATH}/{partyId}`,
             action: TAGS.CreateSystemUser.action,
         };
@@ -146,7 +146,7 @@ class SystemUserClient {
         const url = new URL(`${this.FULL_PATH}/${partyId}/${systemUserGuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
             action: TAGS.GetSystemUser.action,
         };
@@ -181,7 +181,7 @@ class SystemUserClient {
         const url = new URL(`${this.FULL_PATH}/${partyId}/${systemUserGuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${systemUserGuid}`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
             name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
             action: TAGS.DeleteSystemUser.action,
         };
@@ -219,7 +219,7 @@ class SystemUserClient {
         const url = new URL(`${this.FULL_PATH}/agent/${partyId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/agent/${partyId}`,
+            endpoint: `${this.FULL_PATH}/agent/{partyId}`,
             name: `${this.FULL_PATH}/agent/{partyId}`,
             action: TAGS.GetAgentSystemUsers.action,
         };
@@ -256,7 +256,7 @@ class SystemUserClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/agent/${partyId}/${systemUserGuid}`,
+            endpoint: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
             name: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
             action: TAGS.GetAgentSystemUser.action,
         };
@@ -314,7 +314,7 @@ class SystemUserClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/agent/${partyId}/${systemUserGuid}`,
+            endpoint: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
             name: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
             action: TAGS.DeleteAgentSystemUser.action,
         };
@@ -352,7 +352,7 @@ class SystemUserClient {
         const url = new URL(`${this.FULL_PATH}/${partyUuid}/pending`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyUuid}/pending`,
+            endpoint: `${this.FULL_PATH}/{partyUuid}/pending`,
             name: `${this.FULL_PATH}/{partyUuid}/pending`,
             action: TAGS.GetPendingSystemUsers.action,
         };

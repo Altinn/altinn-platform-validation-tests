@@ -101,7 +101,7 @@ class AppsInstanceDelegationClient {
         ).toString();
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/app/delegationcheck/resource/{resourceId}/instance/{instanceId}`,
             name: `${this.FULL_PATH}/app/delegationcheck/resource/{resourceId}/instance/{instanceId}`,
             action: TAGS.CheckResourceDelegation.action,
         };
@@ -146,7 +146,7 @@ class AppsInstanceDelegationClient {
         ).toString();
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
             name: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
             action: TAGS.CreateDelegation.action,
         };
@@ -194,7 +194,7 @@ class AppsInstanceDelegationClient {
         ).toString();
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
             name: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
             action: TAGS.GetDelegations.action,
         };
@@ -242,7 +242,7 @@ class AppsInstanceDelegationClient {
         ).toString();
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
             name: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
             action: TAGS.RevokeDelegation.action,
         };
@@ -290,7 +290,7 @@ class AppsInstanceDelegationClient {
         ).toString();
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
             name: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
             action: TAGS.DeleteDelegations.action,
         };

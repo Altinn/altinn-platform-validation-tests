@@ -58,7 +58,7 @@ class ProcessClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process`,
             action: TAGS.UpdateProcessState.action,
         };
@@ -90,7 +90,7 @@ class ProcessClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/history`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/history`,
             action: TAGS.GetProcessHistory.action,
         };
@@ -122,7 +122,7 @@ class ProcessClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/instanceandevents`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/instanceandevents`,
             action: TAGS.UpdateProcessStateAndEvents.action,
         };

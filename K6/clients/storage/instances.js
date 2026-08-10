@@ -92,7 +92,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances`,
             name: `${this.FULL_PATH}/instances`,
             action: TAGS.QueryInstances.action,
         };
@@ -133,7 +133,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances`,
             name: `${this.FULL_PATH}/instances`,
             action: TAGS.CreateInstance.action,
         };
@@ -164,7 +164,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceGuid}`,
             action: TAGS.GetInstanceByGuid.action,
         };
@@ -195,7 +195,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
             action: TAGS.GetInstance.action,
         };
@@ -231,7 +231,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
             action: TAGS.DeleteInstance.action,
         };
@@ -262,7 +262,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/complete`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/complete`,
             action: TAGS.CompleteInstance.action,
         };
@@ -294,7 +294,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/datavalues`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/datavalues`,
             action: TAGS.UpdateDataValues.action,
         };
@@ -327,7 +327,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/presentationtexts`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/presentationtexts`,
             action: TAGS.UpdatePresentationTexts.action,
         };
@@ -364,7 +364,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/readstatus`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/readstatus`,
             action: TAGS.UpdateReadStatus.action,
         };
@@ -396,7 +396,7 @@ class InstancesClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/substatus`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/substatus`,
             action: TAGS.UpdateSubStatus.action,
         };

@@ -86,7 +86,7 @@ class IdPortenAuthorizationClient {
         const url = new URL(`${this.FULL_PATH}/${id}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${id}`,
+            endpoint: `${this.FULL_PATH}/{id}`,
             name: `${this.FULL_PATH}/{id}`,
             action: TAGS.DeleteIdPortenAuthorization.action,
         };

@@ -102,7 +102,7 @@ class AttachmentClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/upload`,
             name: `${this.FULL_PATH}/attachment/{attachmentId}/upload`,
             action: TAGS.UploadAttachment.action,
         };
@@ -136,7 +136,7 @@ class AttachmentClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}`,
             name: `${this.FULL_PATH}/attachment/{attachmentId}`,
             action: TAGS.GetAttachment.action,
         };
@@ -166,7 +166,7 @@ class AttachmentClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}`,
             name: `${this.FULL_PATH}/attachment/{attachmentId}`,
             action: TAGS.DeleteAttachment.action,
         };
@@ -196,7 +196,7 @@ class AttachmentClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/details`,
             name: `${this.FULL_PATH}/attachment/{attachmentId}/details`,
             action: TAGS.GetAttachmentDetails.action,
         };
@@ -226,7 +226,7 @@ class AttachmentClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/download`,
             name: `${this.FULL_PATH}/attachment/{attachmentId}/download`,
             action: TAGS.DownloadAttachment.action,
         };

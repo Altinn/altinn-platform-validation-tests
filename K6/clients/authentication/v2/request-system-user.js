@@ -148,8 +148,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(requestId)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
+            endpoint: `${this.FULL_PATH}/{requestId}`,
+            name: `${this.FULL_PATH}/{requestId}`,
             action: TAGS.RequestSystemUserVendorGet.action,
         };
 
@@ -185,8 +185,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(requestId)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(requestId)}`,
+            endpoint: `${this.FULL_PATH}/{requestId}`,
+            name: `${this.FULL_PATH}/{requestId}`,
             action: TAGS.RequestSystemUserVendorDelete.action,
         };
 
@@ -222,8 +222,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}/agent/${encodeURIComponent(requestId)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/agent/{encodeURIComponent(requestId)}`,
+            endpoint: `${this.FULL_PATH}/agent/{requestId}`,
+            name: `${this.FULL_PATH}/agent/{requestId}`,
             action: TAGS.RequestSystemUserVendorAgentGet.action,
         };
 
@@ -266,8 +266,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}/byexternalref/${encodeURIComponent(systemId)}/${encodeURIComponent(orgNo)}/${encodeURIComponent(externalRef)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
+            endpoint: `${this.FULL_PATH}/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+            name: `${this.FULL_PATH}/byexternalref/{systemId}/{orgNo}/{externalRef}`,
             action: TAGS.RequestSystemUserVendorGetByExternalRef.action,
         };
 
@@ -310,8 +310,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}/agent/byexternalref/${encodeURIComponent(systemId)}/${encodeURIComponent(orgNo)}/${encodeURIComponent(externalRef)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/agent/byexternalref/{encodeURIComponent(systemId)}/{encodeURIComponent(orgNo)}/{encodeURIComponent(externalRef)}`,
+            endpoint: `${this.FULL_PATH}/agent/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+            name: `${this.FULL_PATH}/agent/byexternalref/{systemId}/{orgNo}/{externalRef}`,
             action: TAGS.RequestSystemUserVendorAgentGetByExternalRef.action,
         };
 
@@ -352,8 +352,8 @@ class RequestSystemUserClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/bysystem/{encodeURIComponent(systemId)}`,
+            endpoint: `${this.FULL_PATH}/bysystem/{systemId}`,
+            name: `${this.FULL_PATH}/bysystem/{systemId}`,
             action: TAGS.RequestSystemUserVendorGetBySystem.action,
         };
 
@@ -398,8 +398,8 @@ class RequestSystemUserClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/agent/bysystem/{encodeURIComponent(systemId)}`,
+            endpoint: `${this.FULL_PATH}/agent/bysystem/{systemId}`,
+            name: `${this.FULL_PATH}/agent/bysystem/{systemId}`,
             action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
         };
 

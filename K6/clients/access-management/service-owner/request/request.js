@@ -95,7 +95,7 @@ class RequestClient {
         const url = `${this.FULL_PATH}/${id}/status`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}/status`,
             name: `${this.FULL_PATH}/{id}/status`,
             action: TAGS.RequestGetRequestStatus.action,
         };
@@ -130,7 +130,7 @@ class RequestClient {
         const url = `${this.FULL_PATH}/${id}/withdraw`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}/withdraw`,
             name: `${this.FULL_PATH}/{id}/withdraw`,
             action: TAGS.RequestWithdrawRequest.action,
         };

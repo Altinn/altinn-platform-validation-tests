@@ -161,7 +161,7 @@ class CorrespondenceClient {
         const url = `${this.FULL_PATH}/${correspondenceId}/purge`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/purge`,
             name: `${this.FULL_PATH}/{correspondenceId}/purge`,
             action: TAGS.PurgeCorrespondence.action,
         };
@@ -203,7 +203,7 @@ class CorrespondenceClient {
             `${this.FULL_PATH}/${correspondenceId}/attachment/${attachmentId}/download`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/attachment/{attachmentId}/download`,
             name: `${this.FULL_PATH}/{correspondenceId}/attachment/{attachmentId}/download`,
             action: TAGS.DownloadAttachment.action,
         };
@@ -242,7 +242,7 @@ class CorrespondenceClient {
             `${this.FULL_PATH}/${correspondenceId}/attachments/downloadall`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/attachments/downloadall`,
             name: `${this.FULL_PATH}/{correspondenceId}/attachments/downloadall`,
             action: TAGS.DownloadAllAttachments.action,
         };
@@ -281,7 +281,7 @@ class CorrespondenceClient {
             `${this.FULL_PATH}/${correspondenceId}/markasread`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/markasread`,
             name: `${this.FULL_PATH}/{correspondenceId}/markasread`,
             action: TAGS.MarkAsRead.action,
         };
@@ -321,7 +321,7 @@ class CorrespondenceClient {
             `${this.FULL_PATH}/${correspondenceId}/confirm`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/confirm`,
             name: `${this.FULL_PATH}/{correspondenceId}/confirm`,
             action: TAGS.ConfirmCorrespondence.action,
         };
@@ -361,7 +361,7 @@ class CorrespondenceClient {
             `${this.FULL_PATH}/${correspondenceId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}`,
             name: `${this.FULL_PATH}/{correspondenceId}`,
             action: TAGS.GetCorrespondence.action,
         };
@@ -400,7 +400,7 @@ class CorrespondenceClient {
             `${this.FULL_PATH}/${correspondenceId}/details`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/details`,
             name: `${this.FULL_PATH}/{correspondenceId}/details`,
             action: TAGS.GetCorrespondenceDetails.action,
         };

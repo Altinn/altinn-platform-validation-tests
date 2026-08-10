@@ -73,7 +73,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
             name: `${this.FULL_PATH}/{fileTransferId}`,
             action: TAGS.GetUploadOptions.action,
         };
@@ -117,7 +117,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
             name: `${this.FULL_PATH}/{fileTransferId}`,
             action: TAGS.CreatePartialUpload.action,
         };
@@ -161,7 +161,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
             name: `${this.FULL_PATH}/{fileTransferId}`,
             action: TAGS.GetUploadStatus.action,
         };
@@ -199,7 +199,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
             name: `${this.FULL_PATH}/{fileTransferId}`,
             action: TAGS.UploadChunk.action,
         };
@@ -237,7 +237,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
             name: `${this.FULL_PATH}/{fileTransferId}`,
             action: TAGS.DeleteUpload.action,
         };
@@ -274,7 +274,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
             name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
             action: TAGS.GetPartialUploadStatus.action,
         };
@@ -319,7 +319,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
             name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
             action: TAGS.UploadPartialChunk.action,
         };
@@ -358,7 +358,7 @@ class TusFileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
             name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
             action: TAGS.DeletePartialUpload.action,
         };

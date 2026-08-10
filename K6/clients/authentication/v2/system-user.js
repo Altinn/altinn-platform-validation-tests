@@ -222,7 +222,7 @@ class SystemUserClient {
 
         const params = {
             tags: {
-                endpoint: url,
+                endpoint: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
                 name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
                 action: TAGS.SystemUserVendorGetBySystem.action,
             },

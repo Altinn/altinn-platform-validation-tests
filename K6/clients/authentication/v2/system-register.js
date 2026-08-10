@@ -182,7 +182,7 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterVendorGetById.action,
         };
@@ -218,7 +218,7 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterVendorUpdate.action,
         };
@@ -254,7 +254,7 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor/${systemId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterVendorDelete.action,
         };
@@ -296,7 +296,7 @@ class SystemRegisterClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterGetRightsFrontend.action,
         };
@@ -342,7 +342,7 @@ class SystemRegisterClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
             name: `${this.FULL_PATH}/vendor/{systemId}`,
             action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
         };
@@ -378,7 +378,7 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}/rights`,
             name: `${this.FULL_PATH}/vendor/{systemId}/rights`,
             action: TAGS.SystemRegisterVendorUpdateRights.action,
         };
@@ -419,7 +419,7 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
             name: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
             action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
         };
@@ -455,7 +455,7 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor/${systemId}/changelog`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
             name: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
             action: TAGS.SystemRegisterVendorGetChangeLog.action,
         };

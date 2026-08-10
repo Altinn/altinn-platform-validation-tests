@@ -79,7 +79,7 @@ class ConsentClient {
         const url = new URL(`${this.FULL_PATH}/request/${consentRequestId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/request/${consentRequestId}`,
+            endpoint: `${this.FULL_PATH}/request/{consentRequestId}`,
             name: `${this.FULL_PATH}/request/{consentRequestId}`,
             action: TAGS.GetConsentRequest.action,
         };
@@ -119,7 +119,7 @@ class ConsentClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/request/${consentRequestId}/approve`,
+            endpoint: `${this.FULL_PATH}/request/{consentRequestId}/approve`,
             name: `${this.FULL_PATH}/request/{consentRequestId}/approve`,
             action: TAGS.ApproveConsentRequest.action,
         };
@@ -162,7 +162,7 @@ class ConsentClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/request/${consentRequestId}/reject`,
+            endpoint: `${this.FULL_PATH}/request/{consentRequestId}/reject`,
             name: `${this.FULL_PATH}/request/{consentRequestId}/reject`,
             action: TAGS.RejectConsentRequest.action,
         };
@@ -218,7 +218,7 @@ class ConsentClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/count/${party}`,
+            endpoint: `${this.FULL_PATH}/count/{party}`,
             name: `${this.FULL_PATH}/count/{party}`,
             action: TAGS.GetConsentCount.action,
         };
@@ -254,7 +254,7 @@ class ConsentClient {
         const url = new URL(`${this.FULL_PATH}/active/${party}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/active/${party}`,
+            endpoint: `${this.FULL_PATH}/active/{party}`,
             name: `${this.FULL_PATH}/active/{party}`,
             action: TAGS.GetActiveConsents.action,
         };
@@ -290,7 +290,7 @@ class ConsentClient {
         const url = new URL(`${this.FULL_PATH}/log/${party}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/log/${party}`,
+            endpoint: `${this.FULL_PATH}/log/{party}`,
             name: `${this.FULL_PATH}/log/{party}`,
             action: TAGS.GetConsentLog.action,
         };
@@ -326,7 +326,7 @@ class ConsentClient {
         const url = new URL(`${this.FULL_PATH}/${consentId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${consentId}`,
+            endpoint: `${this.FULL_PATH}/{consentId}`,
             name: `${this.FULL_PATH}/{consentId}`,
             action: TAGS.GetConsent.action,
         };
@@ -362,7 +362,7 @@ class ConsentClient {
         const url = new URL(`${this.FULL_PATH}/${consentId}/revoke`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${consentId}/revoke`,
+            endpoint: `${this.FULL_PATH}/{consentId}/revoke`,
             name: `${this.FULL_PATH}/{consentId}/revoke`,
             action: TAGS.RevokeConsent.action,
         };
@@ -404,7 +404,7 @@ class ConsentClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/request/${consentRequestId}/logout`,
+            endpoint: `${this.FULL_PATH}/request/{consentRequestId}/logout`,
             name: `${this.FULL_PATH}/request/{consentRequestId}/logout`,
             action: TAGS.GetConsentRequestLogout.action,
         };

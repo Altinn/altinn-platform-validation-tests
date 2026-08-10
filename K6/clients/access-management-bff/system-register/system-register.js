@@ -85,7 +85,7 @@ class SystemRegisterClient {
         const url = new URL(`${this.FULL_PATH}/rights/${systemId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/rights/${systemId}`,
+            endpoint: `${this.FULL_PATH}/rights/{systemId}`,
             name: `${this.FULL_PATH}/rights/{systemId}`,
             action: TAGS.GetRegisteredSystemRights.action,
         };
