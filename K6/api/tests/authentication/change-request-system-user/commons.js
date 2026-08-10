@@ -39,7 +39,6 @@ const VENDOR_SCOPES = CreateScopeString([
     AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
     AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
     AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
-    AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
     AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
 ]);
 
@@ -77,7 +76,7 @@ let vendorTokenGenerator = undefined;
  * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
  * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
  * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
- * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does.
+ * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
  */
 export function arrangeApprovedSystemUser({
     systemNamePrefix,
@@ -111,6 +110,7 @@ export function arrangeApprovedSystemUser({
         {
             customer,
             vendorOrgNo,
+            systemId: registration.systemId,
             systemUserId,
             grantedAccessPackages,
             registeredAccessPackages,
@@ -153,23 +153,28 @@ function fetchTestData(fileName) {
 }
 
 /**
- * Deletes the system users a test arranged.
+ * Removes what a test arranged.
  *
  * Call from a test's teardown with what its setup returned, so a run does not
- * leave a system user behind on the customer for every time it has run. Deleting
- * is the customer's own action, so it goes through the bff with the approver
- * token, which has to be swapped to the customer that owns each system user.
+ * leave a system user on the customer and a system in the register for every
+ * time it has run. Deleting the system user is the customer's own action, so it
+ * goes through the bff with the approver token, while the system belongs to the
+ * vendor that registered it. The system goes last, since it is what the system
+ * user is built on.
  *
- * @param {object[]} systemUsers - What arrangeApprovedSystemUser returned.
+ * @param {object[]} arranged - What arrangeApprovedSystemUser returned.
  */
-export function cleanupSystemUsers(systemUsers) {
-    const [apiClients, tokenGenerator] = getClients();
+export function cleanupArranged(arranged) {
+    const [apiClients, approverTokenGenerator, vendorTokenGenerator] = getClients();
 
-    group("Cleanup - the customer deletes the system user", function () {
-        for (const systemUser of systemUsers ?? []) {
-            tokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
+    group("Cleanup - the customer deletes the system user and the vendor its system", function () {
+        for (const systemUser of arranged ?? []) {
+            approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
+            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 
             DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+
+            SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
         }
     });
 }

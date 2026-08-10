@@ -4,7 +4,7 @@ import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
 import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
-import { accessPackage, arrangeApprovedSystemUser, cleanupSystemUsers, findAccessPackages, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL, resource } from "./commons.js";
+import { accessPackage, arrangeApprovedSystemUser, cleanupArranged, findAccessPackages, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL, resource } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -151,16 +151,17 @@ export default function (data) {
 }
 
 /**
- * k6 teardown stage. Deletes the system user this test changed.
+ * k6 teardown stage. Deletes the system user this test changed and the system
+ * it belongs to.
  *
- * Every iteration shares the one system user setup arranged, so it cannot be
- * deleted from the test itself without pulling it out from under the iterations
- * that follow.
+ * Every iteration shares the one system user setup arranged, so neither can be
+ * deleted from the test itself without pulling them out from under the
+ * iterations that follow.
  *
  * @param {object[]} data The arranged system users from setup.
  */
 export function teardown(data) {
-    cleanupSystemUsers(data);
+    cleanupArranged(data);
 }
 
 // add the custom reporting for this test to the default summary
