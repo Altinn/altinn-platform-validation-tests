@@ -42,13 +42,6 @@ export const REDIRECT_URL = "https://digdir.no";
 let clients = undefined;
 
 /**
- * The vendor the cached clients act as.
- *
- * @type {string | undefined}
- */
-let clientsVendorOrgNo = undefined;
-
-/**
  * @type {PersonalTokenGenerator | undefined}
  */
 let approverTokenGenerator = undefined;
@@ -152,10 +145,10 @@ function fetchTestData(fileName) {
  * @param {object[]} systemUsers - What arrangeApprovedSystemUser returned.
  */
 export function cleanupSystemUsers(systemUsers) {
+    const [apiClients, tokenGenerator] = getClients(systemUsers?.[0]?.vendorOrgNo);
+
     group("Cleanup - the customer deletes the system user", function () {
         for (const systemUser of systemUsers ?? []) {
-            const [apiClients, tokenGenerator] = getClients(systemUser.vendorOrgNo);
-
             tokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
 
             DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
@@ -178,19 +171,11 @@ export function cleanupSystemUsers(systemUsers) {
  * building a new generator. The cache is keyed on the options, so each customer
  * still gets its own cached token.
  *
- * @param {string} vendorOrgNo - Organisation number the vendor token is minted for. A run draws it once in setup and passes it back in, so every VU acts as the vendor that registered the system.
+ * @param {string} vendorOrgNo - Organisation number the vendor token is minted for. A run draws one vendor in setup and passes that same one back in everywhere, so the cached clients never go stale on it.
  * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
  */
 export function getClients(vendorOrgNo) {
-    // A VU that is handed a different vendor than the one it built its clients
-    // for has to rebuild them, or it keeps acting as the previous vendor.
-    if (clients !== undefined && clientsVendorOrgNo !== vendorOrgNo) {
-        clients = undefined;
-    }
-
     if (clients === undefined) {
-        clientsVendorOrgNo = vendorOrgNo;
-
         const vendorScopes = CreateScopeString([
             AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
             AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
