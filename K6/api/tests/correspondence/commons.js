@@ -1,43 +1,111 @@
 import { CorrespondenceClient } from "../../../clients/correspondence/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../common-imports.js";
+import {
+    PersonalTokenBuilder,
+    PersonalTokenGenerator,
+} from "../../../common-imports.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 
-// Import relevant types
-// import {} from "../../"
-
 /**
- * The organisation the correspondences are sent as.
- *
- * Correspondence works out the sender from the enterprise token rather than
- * from the payload, so the organisation number is not token trivia, it is the
- * sender identity. It has to be an organisation that is allowed to send on the
- * resource the test initializes against, otherwise initialization is rejected
- * before any of the assertions get a chance to run.
+ * Defaults migrated from the existing Correspondence performance test data.
+ * The resource and service owner differ between the regular test environments
+ * and YT01.
  */
-const SENDER_ORG_NO = "313154599";
+const TEST_CONFIGURATION = {
+    at23: {
+        resourceId: "bruno-correspondence",
+        serviceOwnerOrgNo: "991825827",
+        serviceOwnerRepresentativePid: "20827199746",
+    },
+    tt02: {
+        resourceId: "bruno-correspondence",
+        serviceOwnerOrgNo: "991825827",
+        serviceOwnerRepresentativePid: "20827199746",
+    },
+    yt01: {
+        resourceId: "ttd-dialogporten-automated-tests-correspondence",
+        serviceOwnerOrgNo: "713431400",
+        serviceOwnerRepresentativePid: "27080618048",
+    },
+};
 
 /**
- * Creates the client that sends correspondences as the vendor.
+ * Resolves environment-specific Correspondence test identities.
  *
- * Given `altinn:correspondence.write`, which covers initializing, purging and
- * the read-side calls the tests make afterwards on their own correspondences.
+ * The authenticated person represents the service owner. Correspondence then
+ * determines the actual sender from the owner of the selected resource in the
+ * Resource Registry.
  *
- * @returns {[CorrespondenceClient]} The correspondence client, as a single item
- * list so callers keep destructuring as more clients are added.
+ * @returns {{
+ * resourceId: string,
+ * recipient: string,
+ * serviceOwnerOrgNo: string,
+ * serviceOwnerRepresentativePid: string
+ * }} Test configuration for the active environment.
+ */
+export function getCorrespondenceTestConfiguration() {
+    const defaults = TEST_CONFIGURATION[__ENV.ENVIRONMENT] ?? {};
+    const configuration = {
+        resourceId: __ENV.CORRESPONDENCE_RESOURCE_ID ?? defaults.resourceId,
+        recipient: __ENV.CORRESPONDENCE_RECIPIENT ?? "14886498226",
+        serviceOwnerOrgNo:
+            __ENV.CORRESPONDENCE_SENDER_ORG_NO ?? defaults.serviceOwnerOrgNo,
+        serviceOwnerRepresentativePid:
+            __ENV.CORRESPONDENCE_SENDER_PID ??
+            defaults.serviceOwnerRepresentativePid,
+    };
+
+    const missing = Object.entries(configuration)
+        .filter(([, value]) => value === undefined || value === "")
+        .map(([name]) => name);
+
+    if (missing.length > 0) {
+        throw new Error(
+            `Missing Correspondence test configuration for ${__ENV.ENVIRONMENT}: ${missing.join(", ")}`,
+        );
+    }
+
+    return configuration;
+}
+
+/**
+ * Cached once per VU so the token generator can reuse its token.
+ *
+ * @type {CorrespondenceClient | undefined}
+ */
+let correspondenceClient = undefined;
+
+/**
+ * Creates the client used by a person representing the service owner.
+ *
+ * Given `altinn:correspondence.write`, which covers initialization.
+ *
+ * @returns {[CorrespondenceClient]} The correspondence client, as a single-item
+ * list so callers can keep destructuring if more clients are added.
  */
 export function getClients() {
-    const scopes = CreateScopeString( [AltinnScopes.CORRESPONDENCE.WRITE]);
+    if (correspondenceClient === undefined) {
+        const configuration = getCorrespondenceTestConfiguration();
+        const scopes = CreateScopeString([
+            AltinnScopes.CORRESPONDENCE.WRITE,
+        ]);
 
-    const vendorTokenGenerator = new EnterpriseTokenGenerator(
-        new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .withOrganizationNumber(SENDER_ORG_NO)
-            .build(),
-    );
+        const serviceOwnerTokenGenerator = new PersonalTokenGenerator(
+            new PersonalTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(scopes)
+                .withPid(configuration.serviceOwnerRepresentativePid)
+                .withConsumerOrganizationNumber(
+                    configuration.serviceOwnerOrgNo,
+                )
+                .build(),
+        );
 
-    const correspondenceClient = new CorrespondenceClient(__ENV.BASE_URL, vendorTokenGenerator);
+        correspondenceClient = new CorrespondenceClient(
+            __ENV.BASE_URL,
+            serviceOwnerTokenGenerator,
+        );
+    }
 
     return [correspondenceClient];
 }

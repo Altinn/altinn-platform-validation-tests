@@ -1,78 +1,72 @@
-// import building blocks
-import {InitializeCorrespondencesBuilder} from "../../../clients/correspondence/correspondence.builder.js";
-import { BaseCorrespondenceExt} from "../../../clients/correspondence/correspondence.types.js";
-import { requireEnv } from "../../../helpers.js";
-import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
-import { getClients } from "./commons.js";
+import { check, group } from "k6";
 
-/**
- * @returns {object[]} The system user to change, as a single item list.
- */
+import {
+    BaseCorrespondenceBuilder,
+    InitializeCorrespondencesBuilder,
+} from "../../../clients/correspondence/index.js";
+import { handleSummary, uuidv4 } from "../../../common-imports.js";
+import { getOptions, requireEnv } from "../../../helpers.js";
+import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
+import {
+    getClients,
+    getCorrespondenceTestConfiguration,
+} from "./commons.js";
+
+const initializeLabel = { step: "Initialize correspondence" };
+
+export const options = getOptions([initializeLabel]);
+
 export function setup() {
-    // Two packages, so the change request can give one up and ask for the other.
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    getCorrespondenceTestConfiguration();
 }
 
 /**
  * Test: initialize a correspondence
- *
- * @param {object[]} data The arranged system users from setup.
  */
-export default function (data) {
-    
+export default function () {
+    const configuration = getCorrespondenceTestConfiguration();
     const [correspondenceClient] = getClients();
 
-    const resource_id = "bruno-correspondence";
-    const sender = "0192:313154599";    
-
-    /** @type {BaseCorrespondenceExt|null} */
-    const correspondence = {
-        resourceId: resource_id,
-        sender: sender,
-        sendersReference: "1",
-        content: {
+    const correspondence = new BaseCorrespondenceBuilder()
+        .withResourceId(configuration.resourceId)
+        .withSendersReference(uuidv4())
+        .withContent({
             language: "nb",
-            messageTitle: "Meldingstittel",
-            messageSummary: "Ett sammendrag for meldingen",
-            messageBody: "# meldingsteksten. Som kan være plain text eller markdown ",
+            messageTitle: "k6 validation test",
+            messageSummary: "Correspondence initialized by a k6 test",
+            messageBody: "# Correspondence validation test",
             attachments: [],
-        },
-        visibleFrom: "2024-09-28T12:44:28.290518+00:00",
-        dueDateTime: "2025-05-29T13:31:28.290518+00:00",
-        externalReferences: [],
-        propertyList: {},
-        replyOptions: [
-            {
-                linkURL: "www.test.no",
-                linkText: "test",
-            },
-            {
-                linkURL: "test.no",
-                linkText: "test",
-            },
-        ],
-        notification: {
-            notificationTemplate: 0,
-            notificationChannel: 3,
-            SendReminder: true,
-            EmailBody: "Test av varsel",
-            EmailSubject: "Dette er innholdet i ett varsel",
-            SmsBody: "Dette er innholdet i ett testvarsel",
-            ReminderEmailBody: "Dette er test av revarsling ",
-            ReminderEmailSubject: "Test av revarsel",
-            ReminderSmsBody: "Dette er en test av revarslingl",
-        },
-        isReservable: true,
-    };
-
-    const requestBody = new InitializeCorrespondencesBuilder()
-        .withRecipients(["0192:123456789"])
-        .withCorrespondence(correspondence)
+        })
         .build();
 
-    const initializeResponse = InitializeCorrespondences(
-        correspondenceClient,
-        requestBody,
-    );
+    const requestBody = new InitializeCorrespondencesBuilder()
+        .withCorrespondence(correspondence)
+        .withRecipients([configuration.recipient])
+        .withIdempotentKey(uuidv4())
+        .build();
 
+    group("A service owner can initialize a correspondence", function () {
+        const initializeResponse = InitializeCorrespondences(
+            correspondenceClient,
+            requestBody,
+            initializeLabel,
+        );
+
+        if (initializeResponse === null) {
+            return;
+        }
+
+        check(initializeResponse, {
+            "Initialize correspondence - one correspondence is returned":
+                (response) => response.correspondences?.length === 1,
+            "Initialize correspondence - correspondence id is returned":
+                (response) =>
+                    typeof response.correspondences?.[0]
+                        ?.correspondenceId === "string" &&
+                    response.correspondences[0].correspondenceId.length > 0,
+        });
+    });
 }
+
+export { handleSummary };
