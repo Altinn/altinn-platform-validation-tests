@@ -7,13 +7,15 @@ import { RolesClient } from "../../../../../clients/access-management/metadata/r
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}} [query] Query parameters.
  * @returns {Array<RoleDto>|null} Roles.
  */
 export function RolesGetRoles(
     rolesClient,
+    query,
     labels = null,
 ) {
-    const res = rolesClient.RolesGetRoles(labels);
+    const res = rolesClient.RolesGetRoles(query, labels);
 
     /** @type {Array<RoleDto>|null} */
     let roles = null;
@@ -35,7 +37,7 @@ export function RolesGetRoles(
         "RolesGetRoles - body is valid": (r) => {
             try {
                 roles = JSON.parse(r.body);
-
+                
                 return true;
             } catch (err) {
                 console.log("Unable to parse response body");
