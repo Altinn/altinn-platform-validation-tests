@@ -50,45 +50,14 @@ class RolesClient {
     /**
      * Gets roles.
      *
-     * @param {object} [query] Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    RolesGetRoles(query, labels = null) {
+    RolesGetRoles(labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/meta/info/roles`;
-
-        if (query !== null) {
-            const params = [];
-
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
+        const url = `${this.FULL_PATH}/meta/info/roles`;
 
         let tags = {
             endpoint: url,
