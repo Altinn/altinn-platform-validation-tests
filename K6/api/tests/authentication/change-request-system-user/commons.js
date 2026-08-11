@@ -2,6 +2,7 @@ import { fail, group } from "k6";
 import http from "k6/http";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
+import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
@@ -16,6 +17,7 @@ import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.j
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
+import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 import { withRetries } from "../../../building-blocks/common/retry.js";
 
@@ -25,9 +27,20 @@ import { withRetries } from "../../../building-blocks/common/retry.js";
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
- * The vendor these tests act as. Owns the registered systems they create.
+ * Where the test data these tests draw from lives.
  */
-const SYSTEM_OWNER = "713431400";
+const TESTDATA_URL = "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request";
+
+/**
+ * The scopes a vendor acts with. The system user lookup scope is what lets the
+ * arrange step find the system user it just had approved.
+ */
+const VENDOR_SCOPES = CreateScopeString([
+    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+    AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
+]);
 
 /**
  * Every system registered by these tests allows the same redirect url.
@@ -45,6 +58,11 @@ let clients = undefined;
 let approverTokenGenerator = undefined;
 
 /**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let vendorTokenGenerator = undefined;
+
+/**
  * Creates system in system register, requests a system user for it and has the end user approve it.
  * Call from a test's own setup, passing the rights that test cares about, so the
  * test decides what the system user starts with and what is left for it to ask
@@ -53,14 +71,16 @@ let approverTokenGenerator = undefined;
  *
  * @param {object} options - What the calling test needs arranged.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @param {string} options.vendorOrgNo - Organisation number of the vendor to register the system as. Draw it with pickVendor.
  * @param {Right[]} options.grantedRights - The rights the system user is granted up front.
  * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
  * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
  * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
- * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does.
+ * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
  */
 export function arrangeApprovedSystemUser({
     systemNamePrefix,
+    vendorOrgNo,
     grantedRights,
     registeredRights = grantedRights,
     grantedAccessPackages = [],
@@ -68,23 +88,20 @@ export function arrangeApprovedSystemUser({
 }) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
-    const res = withRetries(
-        () =>
-            http.get(
-                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
-                { tags: { action: "fetch-test-data" } },
-            ),
-        "fetch-test-data",
-    );
+    // The end users are the ones who can approve for a company without anyone
+    // having delegated to them first, so daglig leder in an AS and innehaver in
+    // an ENK. Built per environment by `yarn tenor:endusers` in
+    // altinn-access-management-frontend, since Tenor holds the same synthetic
+    // companies everywhere while the Altinn ids differ per environment.
+    const customer = getItemFromList(fetchTestData(`end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
 
-    const customer = getItemFromList(parseCsvData(res.body), randomize);
+    const registration = createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages });
 
-    const registration = createSystemRegistration({ systemNamePrefix, registeredRights, registeredAccessPackages });
+    // Both tokens have to be set before the arrange runs, not in the default
+    // function the way the test does it.
+    const [, approverTokenGenerator, vendorTokenGenerator] = getClients();
 
-    // The approver acts as this customer, so its token has to be set before the
-    // arrange runs, not in the default function the way the test does it.
-    const [, approverTokenGenerator] = getClients();
-
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
     const systemUserId = createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages);
@@ -92,11 +109,74 @@ export function arrangeApprovedSystemUser({
     return [
         {
             customer,
+            vendorOrgNo,
+            systemId: registration.systemId,
             systemUserId,
             grantedAccessPackages,
             registeredAccessPackages,
         },
     ];
+}
+
+/**
+ * Draws the vendor a test registers its system as.
+ *
+ * The vendor used to be one hardcoded organisation, which meant a run only ever
+ * said something about that one. The list is plain synthetic organisations built
+ * by `yarn tenor:vendors` in altinn-access-management-frontend, and nothing is
+ * looked up for them, since the vendor is only ever the organisation the
+ * enterprise token is minted for. So unlike the end users it is not per
+ * environment.
+ *
+ * @returns {string} Organisation number of the vendor to act as.
+ */
+export function pickVendor() {
+    return getItemFromList(fetchTestData("vendors.csv"), randomize).orgNo;
+}
+
+/**
+ * Fetches one of this test folder's test data files.
+ *
+ * Read over http from main rather than with k6's open(), which the cloud runner
+ * cannot use, so a new file only takes effect once it is merged.
+ *
+ * @param {string} fileName - File name under the change-request test data folder.
+ * @returns {object[]} The rows, keyed by column name.
+ */
+function fetchTestData(fileName) {
+    const res = withRetries(
+        () => http.get(`${TESTDATA_URL}/${fileName}`, { tags: { action: "fetch-test-data" } }),
+        "fetch-test-data",
+    );
+
+    return parseCsvData(res.body);
+}
+
+/**
+ * Removes what a test arranged.
+ *
+ * Call from a test's teardown with what its setup returned, so a run does not
+ * leave a system user on the customer and a system in the register for every
+ * time it has run. Deleting the system user is the customer's own action, so it
+ * goes through the bff with the approver token, while the system belongs to the
+ * vendor that registered it. The system goes last, since it is what the system
+ * user is built on.
+ *
+ * @param {object[]} arranged - What arrangeApprovedSystemUser returned.
+ */
+export function cleanupArranged(arranged) {
+    const [apiClients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+
+    group("Cleanup - the customer deletes the system user and the vendor its system", function () {
+        for (const systemUser of arranged ?? []) {
+            approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
+            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
+
+            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+
+            SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
+        }
+    });
 }
 
 /**
@@ -109,29 +189,20 @@ export function arrangeApprovedSystemUser({
  * The vendor token adds the system user lookup scope, which the arrange step
  * needs to find the system user it just had approved.
  *
- * The approver token depends on which customer an iteration drew, so swap its
- * options with setTokenGeneratorOptions and getApproverTokenOpts rather than
- * building a new generator. The cache is keyed on the options, so each customer
- * still gets its own cached token.
+ * Neither token is built for anyone in particular. Who a run acts as is decided
+ * by swapping the generator options with setTokenGeneratorOptions, the vendor
+ * with getVendorTokenOpts and the approver with getApproverTokenOpts. The cache
+ * is keyed on the options, so each of them still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
-        const vendorScopes = CreateScopeString([
-            AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
-            AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
-            AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
-        ]);
-
-        const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes(vendorScopes)
-                .withOrganizationNumber(SYSTEM_OWNER)
+                .withScopes(VENDOR_SCOPES)
                 .build(),
         );
 
@@ -159,11 +230,30 @@ export function getClients() {
                 // the bff rather than the authentication api the vendor calls.
                 bffChangeRequestClient: new SystemUserChangeRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
                 bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }
 
-    return [clients, approverTokenGenerator];
+    return [clients, approverTokenGenerator, vendorTokenGenerator];
+}
+
+/**
+ * Token options for acting as a vendor.
+ *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
+ * @param {string} vendorOrgNo - Organisation number of the vendor this run acts as.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getVendorTokenOpts(vendorOrgNo) {
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(VENDOR_SCOPES)
+        .withOrganizationNumber(vendorOrgNo)
+        .build();
 }
 
 /**
@@ -204,10 +294,13 @@ export function accessPackage(urn) {
  * before slicing, so two runs pick the same packages and a failure is reproducible.
  *
  * @param {number} count - How many packages the caller wants
+ * @param {string} vendorOrgNo - Organisation number of the vendor to search as. Draw it with pickVendor.
  * @returns {string[]} The access package urns.
  */
-export function findAccessPackages(count) {
-    const [apiClients] = getClients();
+export function findAccessPackages(count, vendorOrgNo) {
+    const [apiClients, , vendorTokenGenerator] = getClients();
+
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
     const results = PackagesSearch(apiClients.vendor.packagesClient, { term: "" }) ?? [];
 
@@ -250,19 +343,20 @@ export function resource(resource) {
  *
  * @param {object} options - Test specific parts of the registration.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
  * @param {string[]} options.registeredAccessPackages - Urns of every access package the system is registered with.
  * @returns {object} Identifiers and the registration payload.
  */
-function createSystemRegistration({ systemNamePrefix, registeredRights, registeredAccessPackages }) {
+function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;
-    const systemId = `${SYSTEM_OWNER}_${systemName}`;
+    const systemId = `${vendorOrgNo}_${systemName}`;
     const clientId = uuidv4();
     const externalRef = uuidv4();
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()
         .withId(systemId)
-        .withVendor(`0192:${SYSTEM_OWNER}`)
+        .withVendor(`0192:${vendorOrgNo}`)
         .withName({
             en: systemName,
             nb: systemName,
@@ -281,7 +375,7 @@ function createSystemRegistration({ systemNamePrefix, registeredRights, register
         .build();
 
     return {
-        systemOwner: SYSTEM_OWNER,
+        systemOwner: vendorOrgNo,
         systemId,
         systemName,
         clientId,
@@ -343,11 +437,15 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
 
         const approved = ApproveSystemUserRequest(
             apiClients.approver.bffRequestClient,
-            customer.partyId,
+            customer.orgPartyId,
             createdRequest?.id,
         );
 
-        SystemUserRequestDomainChecks.CheckRequestApproved(approved);
+        // Nothing to look up unless the request was approved, so stop here rather
+        // than let the lookup fail as a second, unrelated failure.
+        if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
+            fail("cannot arrange a system user: approving the system user request failed");
+        }
 
         const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
             clientId: registration.clientId,
