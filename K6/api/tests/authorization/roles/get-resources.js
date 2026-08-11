@@ -1,6 +1,6 @@
 import { RolesClient } from "../../../../clients/access-management/metadata/roles/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { RolesGetRoleResourcesQueryBuilder } from "../../../../clients/access-management/metadata/roles/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getOptions } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
