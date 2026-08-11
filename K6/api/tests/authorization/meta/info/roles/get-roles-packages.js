@@ -1,10 +1,10 @@
-import { RolesClient } from "../../../../clients/access-management/metadata/roles/index.js";
-import { RolesGetRoleResourcesQueryBuilder } from "../../../../clients/access-management/metadata/roles/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getOptions } from "../../../../helpers.js";
-import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { MetadataBuildingBlocks } from "../../../building-blocks/access-management/metadata/index.js";
+import { RolesClient } from "../../../../../../clients/access-management/metadata/roles/index.js";
+import { RolesGetRolePackagesByIdQueryBuilder } from "../../../../../../clients/access-management/metadata/roles/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../../common-imports.js";
+import { getOptions } from "../../../../../../helpers.js";
+import { requireEnv } from "../../../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../../../scopes.js";
+import { MetadataBuildingBlocks } from "../../../../../building-blocks/access-management/metadata/index.js";
 
 const labels = { step: "getRoles" };
 
@@ -67,11 +67,11 @@ function getClients() {
  */
 export default function () {
     const [rolesApiClient] = getClients();
-
-    const query = new RolesGetRoleResourcesQueryBuilder()
-        .WithRole("daglig-leder")
-        .WithVariant("AS")
+    const query = new RolesGetRolePackagesByIdQueryBuilder()
+        .WithVariant("ENK")
         .Build();
 
-    MetadataBuildingBlocks.Roles.GetRoleResources(rolesApiClient, query, labels);
+    console.log("query: " + JSON.stringify(query));
+
+    MetadataBuildingBlocks.Roles.GetRolePackagesById(rolesApiClient, "f76b997a-9bd8-4f7b-899f-fcd85d35669f", query, labels);
 }
