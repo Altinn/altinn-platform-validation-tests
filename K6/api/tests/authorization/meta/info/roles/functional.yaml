@@ -1,5 +1,5 @@
 namespace: authorization
-base_dir: K6/api/tests/authorization/roles/
+base_dir: K6/api/tests/authorization/meta/info/roles/
 test_definitions:
   - test_file: get-roles.js
     contexts:
