@@ -50,6 +50,7 @@ class RolesClient {
     /**
      * Gets roles.
      *
+     * @param {object} [query] Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.

@@ -6,8 +6,8 @@ import { RolesClient } from "../../../../../clients/access-management/metadata/r
  * Gets roles.
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
+ * @param {object} [query] Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @param {{[key: string]: string}} [query] Query parameters.
  * @returns {Array<RoleDto>|null} Roles.
  */
 export function RolesGetRoles(
