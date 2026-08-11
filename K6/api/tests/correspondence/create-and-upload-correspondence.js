@@ -2,7 +2,8 @@ import { group } from "k6";
 
 import { handleSummary } from "../../../common-imports.js";
 import { UploadCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
-import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
+import { AttachmentDomainChecks } from "../../domain-checks/correspondence/attachment.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
 import {
     buildUploadCorrespondenceForm,
     getCorrespondenceOptions,
@@ -47,7 +48,7 @@ export default function (endUsers) {
                 uploadResponse,
                 [recipient],
             );
-            CorrespondenceDomainChecks.CheckAttachmentIds(uploadResponse, 1);
+            AttachmentDomainChecks.CheckAttachmentIds(uploadResponse, 1);
         },
     );
 }

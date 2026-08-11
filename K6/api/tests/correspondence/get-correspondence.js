@@ -8,7 +8,7 @@ import {
     GetCorrespondences,
 } from "../../building-blocks/correspondence/correspondence/index.js";
 import { GetDialog } from "../../building-blocks/dialogporten/enduser/index.js";
-import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
 import {
     getCorrespondenceOptions,
     getCorrespondenceTestConfiguration,

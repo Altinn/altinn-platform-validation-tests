@@ -182,7 +182,7 @@ export function setupCorrespondenceTestData() {
         "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/" +
         `K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`;
     const response = http.get(url, {
-        tags: { action: "fetch-correspondence-test-data" },
+        tags: { action: "fetch-test-data" },
     });
 
     const fetched = check(response, {

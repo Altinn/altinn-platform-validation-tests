@@ -2,7 +2,7 @@ import { group } from "k6";
 
 import { handleSummary } from "../../../common-imports.js";
 import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
-import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
 import {
     buildInitializeCorrespondenceRequest,
     getCorrespondenceOptions,

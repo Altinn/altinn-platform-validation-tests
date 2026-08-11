@@ -6,7 +6,7 @@ import {
     GetCorrespondence,
     GetCorrespondences,
 } from "../../building-blocks/correspondence/correspondence/index.js";
-import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
 import {
     getCorrespondenceOptions,
     getCorrespondenceTestConfiguration,
