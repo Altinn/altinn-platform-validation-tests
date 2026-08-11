@@ -34,6 +34,8 @@ export default defineConfig([
       quotes: 2,
       "no-undef": 2,
 
+      "no-trailing-spaces": "error",
+
       "unused-imports/no-unused-imports": "error",
 
       "simple-import-sort/imports": "error",
