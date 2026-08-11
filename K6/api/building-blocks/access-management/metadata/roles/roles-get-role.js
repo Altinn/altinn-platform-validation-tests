@@ -37,7 +37,6 @@ export function RolesGetRole(
         "RolesGetRole - body is valid": (r) => {
             try {
                 role = JSON.parse(r.body);
-
                 return true;
             } catch (err) {
                 console.log("Unable to parse response body");
