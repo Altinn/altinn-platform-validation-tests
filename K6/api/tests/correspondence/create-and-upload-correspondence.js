@@ -1,13 +1,13 @@
-import { check, group } from "k6";
+import { group } from "k6";
 
 import { handleSummary } from "../../../common-imports.js";
 import { UploadCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
 import {
     buildUploadCorrespondenceForm,
     getCorrespondenceOptions,
     getEndUser,
     getEnterpriseSenderClient,
-    getExpectedRecipient,
     setupCorrespondenceTestData,
 } from "./commons.js";
 
@@ -27,7 +27,6 @@ export function setup() {
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers).ssn;
-    const expectedRecipient = getExpectedRecipient(recipient);
     const correspondenceClient = getEnterpriseSenderClient();
     const formData = buildUploadCorrespondenceForm(recipient);
 
@@ -44,25 +43,11 @@ export default function (endUsers) {
                 return;
             }
 
-            check(uploadResponse, {
-                "Upload correspondence - one correspondence is returned":
-                    (response) => response.correspondences?.length === 1,
-                "Upload correspondence - correspondence id is returned":
-                    (response) =>
-                        typeof response.correspondences?.[0]
-                            ?.correspondenceId === "string" &&
-                        response.correspondences[0].correspondenceId.length > 0,
-                "Upload correspondence - expected recipient is returned":
-                    (response) =>
-                        response.correspondences?.[0]?.recipient ===
-                        expectedRecipient,
-                "Upload correspondence - one attachment id is returned":
-                    (response) => response.attachmentIds?.length === 1,
-                "Upload correspondence - attachment id is returned":
-                    (response) =>
-                        typeof response.attachmentIds?.[0] === "string" &&
-                        response.attachmentIds[0].length > 0,
-            });
+            CorrespondenceDomainChecks.CheckInitializedCorrespondences(
+                uploadResponse,
+                [recipient],
+            );
+            CorrespondenceDomainChecks.CheckAttachmentIds(uploadResponse, 1);
         },
     );
 }

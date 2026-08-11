@@ -1,12 +1,12 @@
-import { check, group } from "k6";
+import { group } from "k6";
 
 import { handleSummary } from "../../../common-imports.js";
 import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
 import {
     buildInitializeCorrespondenceRequest,
     getCorrespondenceOptions,
     getEndUser,
-    getExpectedRecipient,
     getPersonalSenderClient,
     setupCorrespondenceTestData,
 } from "./commons.js";
@@ -26,7 +26,6 @@ export function setup() {
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers).ssn;
-    const expectedRecipient = getExpectedRecipient(recipient);
     const correspondenceClient = getPersonalSenderClient();
     const requestBody = buildInitializeCorrespondenceRequest(recipient);
 
@@ -41,19 +40,10 @@ export default function (endUsers) {
             return;
         }
 
-        check(initializeResponse, {
-            "Initialize correspondence - one correspondence is returned":
-                (response) => response.correspondences?.length === 1,
-            "Initialize correspondence - correspondence id is returned":
-                (response) =>
-                    typeof response.correspondences?.[0]
-                        ?.correspondenceId === "string" &&
-                    response.correspondences[0].correspondenceId.length > 0,
-            "Initialize correspondence - expected recipient is returned":
-                (response) =>
-                    response.correspondences?.[0]?.recipient ===
-                    expectedRecipient,
-        });
+        CorrespondenceDomainChecks.CheckInitializedCorrespondences(
+            initializeResponse,
+            [recipient],
+        );
     });
 }
 

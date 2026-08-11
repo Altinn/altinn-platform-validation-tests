@@ -46,26 +46,6 @@ export function getCorrespondenceOptions(labels) {
 }
 
 /**
- * Normalizes a recipient in the same way as the Correspondence API response.
- * Test data normally contains bare national identity numbers, while response
- * payloads return recipient URNs.
- *
- * @param {string} recipient Recipient identifier from the request.
- * @returns {string} Expected recipient value in an API response.
- */
-export function getExpectedRecipient(recipient) {
-    if (/^\d{11}$/.test(recipient)) {
-        return `urn:altinn:person:identifier-no:${recipient}`;
-    }
-
-    if (/^(0192:)?\d{9}$/.test(recipient)) {
-        return `urn:altinn:organization:identifier-no:${recipient.replace(/^0192:/, "")}`;
-    }
-
-    return recipient;
-}
-
-/**
  * Defaults migrated from the existing Correspondence performance test data.
  * The YT01 resource differs because the old resource is not a Correspondence
  * service and cannot authorize these calls.

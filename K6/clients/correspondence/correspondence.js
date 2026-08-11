@@ -484,7 +484,7 @@ class CorrespondenceClient {
         const url = `${this.FULL_PATH}/${correspondenceId}/content`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{correspondenceId}/content`,
             name: `${this.FULL_PATH}/{correspondenceId}/content`,
             action: TAGS.GetCorrespondenceContent.action,
         };

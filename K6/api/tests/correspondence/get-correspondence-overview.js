@@ -1,4 +1,4 @@
-import { check, group } from "k6";
+import { group } from "k6";
 
 import { CorrespondenceQueryBuilder } from "../../../clients/correspondence/index.js";
 import { handleSummary } from "../../../common-imports.js";
@@ -6,11 +6,11 @@ import {
     GetCorrespondence,
     GetCorrespondences,
 } from "../../building-blocks/correspondence/correspondence/index.js";
+import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence.js";
 import {
     getCorrespondenceOptions,
     getCorrespondenceTestConfiguration,
     getEndUser,
-    getExpectedRecipient,
     getRecipientClient,
     setupCorrespondenceTestData,
 } from "./commons.js";
@@ -33,7 +33,6 @@ export function setup() {
 export default function (endUsers) {
     const configuration = getCorrespondenceTestConfiguration();
     const recipient = getEndUser(endUsers).ssn;
-    const expectedRecipient = getExpectedRecipient(recipient);
     const correspondenceClient = getRecipientClient(recipient);
     const query = new CorrespondenceQueryBuilder()
         .withResourceId(configuration.resourceId)
@@ -51,12 +50,9 @@ export default function (endUsers) {
         );
     });
 
-    const hasCorrespondences = check(correspondenceIds, {
-        "Correspondence overview - at least one correspondence is available":
-            (ids) => ids.length > 0,
-    });
-
-    if (!hasCorrespondences) {
+    if (
+        !CorrespondenceDomainChecks.CheckCorrespondenceIds(correspondenceIds)
+    ) {
         return;
     }
 
@@ -73,13 +69,11 @@ export default function (endUsers) {
                 overviewLabel,
             );
 
-            check(overview, {
-                "Correspondence overview - expected recipient is returned":
-                    (value) => value?.recipient === expectedRecipient,
-                "Correspondence overview - expected resource is returned":
-                    (value) =>
-                        value?.resourceId === configuration.resourceId,
-            });
+            CorrespondenceDomainChecks.CheckCorrespondenceOverview(
+                overview,
+                recipient,
+                configuration.resourceId,
+            );
         }
     });
 }
