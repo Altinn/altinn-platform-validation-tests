@@ -1,7 +1,0 @@
-namespace: authorization
-base_dir: K6/api/tests/authorization/meta/info/roles/
-test_definitions:
-  - test_file: get-roles.js
-    env_file: common.env
-    contexts:
-      - environment: yt01
