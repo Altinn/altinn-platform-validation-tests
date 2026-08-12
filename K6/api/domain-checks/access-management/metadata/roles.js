@@ -5,18 +5,20 @@ import { check } from "k6";
  */
 
 /**
- * @param {RoleDto[]} roles
- * @param {string} id
- * @returns {RoleDto|undefined}
+ * Finds a role with the specified id in the provided roles array.
+ *
+ * @param {RoleDto[]} roles - Array of roles to search.
+ * @param {string} id - The id of the role to find.
+ * @returns {RoleDto|undefined} - The role with the specified id, or undefined if not found.
  */
 function FindRole(roles, id) {
     return (roles ?? []).find((role) => role.id === id);
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected id.
+ * @returns {boolean} True if the role has the expected id.
  */
 function CheckRoleId(role, expected) {
     const success = check(role, {
@@ -31,9 +33,9 @@ function CheckRoleId(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected name.
+ * @returns {boolean} True if the role has the expected name.
  */
 function CheckRoleName(role, expected) {
     const success = check(role, {
@@ -48,9 +50,9 @@ function CheckRoleName(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected code.
+ * @returns {boolean} True if the role has the expected code.
  */
 function CheckRoleCode(role, expected) {
     const success = check(role, {
@@ -65,9 +67,9 @@ function CheckRoleCode(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {boolean} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {boolean} expected - Expected isKeyRole value.
+ * @returns {boolean} True if the role has the expected isKeyRole value.
  */
 function CheckRoleIsKeyRole(role, expected) {
     const success = check(role, {
@@ -82,9 +84,9 @@ function CheckRoleIsKeyRole(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected URN.
+ * @returns {boolean} True if the role has the expected URN.
  */
 function CheckRoleUrn(role, expected) {
     const success = check(role, {
@@ -99,9 +101,9 @@ function CheckRoleUrn(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected legacy role code.
+ * @returns {boolean} True if the role has the expected legacy role code.
  */
 function CheckRoleLegacyRoleCode(role, expected) {
     const success = check(role, {
@@ -116,9 +118,9 @@ function CheckRoleLegacyRoleCode(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected legacy URN.
+ * @returns {boolean} True if the role has the expected legacy URN.
  */
 function CheckRoleLegacyUrn(role, expected) {
     const success = check(role, {
@@ -133,9 +135,9 @@ function CheckRoleLegacyUrn(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected provider code.
+ * @returns {boolean} True if the role has the expected provider code.
  */
 function CheckRoleProviderCode(role, expected) {
     const success = check(role, {
@@ -150,9 +152,9 @@ function CheckRoleProviderCode(role, expected) {
 }
 
 /**
- * @param {RoleDto} role
- * @param {string} expected
- * @returns {boolean}
+ * @param {RoleDto} role - The role to check.
+ * @param {string} expected - Expected provider name.
+ * @returns {boolean} True if the role has the expected provider name.
  */
 function CheckRoleProviderName(role, expected) {
     const success = check(role, {
