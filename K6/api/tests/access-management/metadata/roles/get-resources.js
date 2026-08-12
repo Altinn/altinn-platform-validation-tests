@@ -1,7 +1,8 @@
+export { handleSummary } from "../../../../../common-imports.js";
 import { RolesGetRoleResourcesQueryBuilder } from "../../../../../clients/access-management/metadata/roles/index.js";
 import { getOptions } from "../../../../../helpers.js";
 import { MetadataBuildingBlocks } from "../../../../building-blocks/access-management/metadata/index.js";
-import { getClients, setup } from "./common.js";
+import { getClients, setup } from "../common.js";
 
 export { setup };
 
