@@ -15,8 +15,6 @@ export function setup() {
         [
             "ENVIRONMENT",
             "BASE_URL",
-            "tokenGeneratorUserName",
-            "tokenGeneratorUserPwd"
         ]
     );
     return;

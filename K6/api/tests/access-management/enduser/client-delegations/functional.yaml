@@ -1,0 +1,6 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/client-delegations
+test_definitions:
+  - test_file: get-my-clients.js
+    contexts:
+      - environment: yt01

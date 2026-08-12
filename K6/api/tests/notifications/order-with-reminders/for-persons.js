@@ -17,8 +17,6 @@ export function setup() {
             "ENVIRONMENT",
             "BASE_URL",
             "ninRecipient",
-            "tokenGeneratorUserName",
-            "tokenGeneratorUserPwd"
         ]
     );
     return;

@@ -18,8 +18,6 @@ export function setup() {
             "BASE_URL",
             "orgNoRecipient",
             "resourceId",
-            "tokenGeneratorUserName",
-            "tokenGeneratorUserPwd"
         ]
     );
     return;

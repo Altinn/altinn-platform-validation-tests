@@ -28,7 +28,7 @@ export function getClients() {
             .build();
 
         tokenGenerator
-            = new EnterpriseTokenGenerator(options, __ENV.tokenGeneratorUserName, __ENV.tokenGeneratorUserPwd);
+            = new EnterpriseTokenGenerator(options);
         ordersApiClient
             = new OrderClient(__ENV.BASE_URL, tokenGenerator);
     }
