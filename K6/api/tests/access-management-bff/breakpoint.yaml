@@ -1,4 +1,4 @@
-namespace: authorization
+namespace: access-management-bff
 base_dir: K6/api/tests/access-management-bff
 test_definitions:
   - test_scope: access-management-bff
