@@ -24,7 +24,7 @@ export default function () {
 
     const expectedPackages = [{ id: "2f176732-b1e9-449b-9918-090d1fa986f6", name: "Ansvarlig revisor", urn: "urn:altinn:accesspackage:ansvarlig-revisor", areaName: "Fullmakter for revisor", areaUrn: "accesspackage:area:fullmakter_for_revisor", typeName: "Organisasjon" }, { id: "96120c32-389d-46eb-8212-0a6540540c25", name: "Revisormedarbeider", urn: "urn:altinn:accesspackage:revisormedarbeider", areaName: "Fullmakter for revisor", areaUrn: "accesspackage:area:fullmakter_for_revisor", typeName: "Organisasjon" }];
 
-    const packages = MetadataBuildingBlocks.Roles.GetRolePackagesById(rolesApiClient, "f76b997a-9bd8-4f7b-899f-fcd85d35669f", query, labels);
+    const packageDtos = MetadataBuildingBlocks.Roles.GetRolePackagesById(rolesApiClient, "f76b997a-9bd8-4f7b-899f-fcd85d35669f", query, labels);
 
     expectedPackages.forEach(({ id }) => {
         const pkg = PackagesDomainChecks.FindPackage(packages, id);

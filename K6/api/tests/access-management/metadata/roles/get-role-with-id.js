@@ -16,8 +16,8 @@ export const options = getOptions([labels]);
 export default function () {
     const [rolesApiClient] = getClients();
 
-    const response = MetadataBuildingBlocks.Roles.GetRole(rolesApiClient, "18baa914-ac43-4663-9fa4-6f5760dc68eb", labels);
-    const role = RolesDomainChecks.FindRole(response, "18baa914-ac43-4663-9fa4-6f5760dc68eb");
+    const roleDtos = MetadataBuildingBlocks.Roles.GetRole(rolesApiClient, "18baa914-ac43-4663-9fa4-6f5760dc68eb", labels);
+    const role = RolesDomainChecks.FindRole(roleDtos, "18baa914-ac43-4663-9fa4-6f5760dc68eb");
 
     RolesDomainChecks.CheckRoleId(role, "18baa914-ac43-4663-9fa4-6f5760dc68eb", labels);
     RolesDomainChecks.CheckRoleName(role, "Deltaker delt ansvar");
