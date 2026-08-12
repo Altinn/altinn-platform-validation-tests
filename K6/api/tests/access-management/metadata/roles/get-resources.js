@@ -2,7 +2,7 @@ import { RolesClient, RolesGetRoleResourcesQueryBuilder } from "../../../../../c
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { MetadataBuildingBlocks } from "../../../../../building-blocks/access-management/metadata/index.js";
+import { MetadataBuildingBlocks } from "../../../../building-blocks/access-management/metadata/index.js";
 
 const labels = { step: "getRoles" };
 
