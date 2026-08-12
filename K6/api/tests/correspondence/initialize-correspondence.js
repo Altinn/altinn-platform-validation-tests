@@ -7,7 +7,7 @@ import {
     buildInitializeCorrespondenceRequest,
     getCorrespondenceOptions,
     getEndUser,
-    getPersonalSenderClient,
+    getEnterpriseSenderClient,
     setupCorrespondenceTestData,
 } from "./commons.js";
 
@@ -26,7 +26,7 @@ export function setup() {
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers).ssn;
-    const correspondenceClient = getPersonalSenderClient();
+    const correspondenceClient = getEnterpriseSenderClient();
     const requestBody = buildInitializeCorrespondenceRequest(recipient);
 
     group("A service owner can initialize a correspondence", function () {

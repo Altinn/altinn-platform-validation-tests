@@ -55,19 +55,16 @@ const TEST_CONFIGURATION = {
         resourceId: "bruno-correspondence",
         serviceOwnerOrg: "digdir",
         serviceOwnerOrgNo: "991825827",
-        serviceOwnerRepresentativePid: "20827199746",
     },
     tt02: {
         resourceId: "bruno-correspondence",
         serviceOwnerOrg: "digdir",
         serviceOwnerOrgNo: "991825827",
-        serviceOwnerRepresentativePid: "20827199746",
     },
     yt01: {
         resourceId: "ttd-dialogporten-automated-tests-correspondence",
         serviceOwnerOrg: "ttd",
         serviceOwnerOrgNo: "713431400",
-        serviceOwnerRepresentativePid: "27080618048",
     },
 };
 
@@ -106,7 +103,6 @@ function parsePositiveInteger(value, defaultValue, name) {
  * recipientOverride: string|undefined,
  * serviceOwnerOrg: string,
  * serviceOwnerOrgNo: string,
- * serviceOwnerRepresentativePid: string,
  * ignoreReservation: boolean,
  * attachmentSizeBytes: number,
  * maxItemsPerIteration: number
@@ -121,9 +117,6 @@ export function getCorrespondenceTestConfiguration() {
             __ENV.CORRESPONDENCE_SENDER_ORG ?? defaults.serviceOwnerOrg,
         serviceOwnerOrgNo:
             __ENV.CORRESPONDENCE_SENDER_ORG_NO ?? defaults.serviceOwnerOrgNo,
-        serviceOwnerRepresentativePid:
-            __ENV.CORRESPONDENCE_SENDER_PID ??
-            defaults.serviceOwnerRepresentativePid,
         // Performance tests need a successful creation even when a synthetic
         // person is registered as reserved in KRR.
         ignoreReservation: parseBoolean(
@@ -148,8 +141,6 @@ export function getCorrespondenceTestConfiguration() {
         resourceId: configuration.resourceId,
         serviceOwnerOrg: configuration.serviceOwnerOrg,
         serviceOwnerOrgNo: configuration.serviceOwnerOrgNo,
-        serviceOwnerRepresentativePid:
-            configuration.serviceOwnerRepresentativePid,
     };
     const missing = Object.entries(requiredConfiguration)
         .filter(([, value]) => value === undefined || value === "")
@@ -165,22 +156,30 @@ export function getCorrespondenceTestConfiguration() {
 }
 
 /**
- * Fetches the shared Dialogporten end-user data used by the migrated tests.
- * CORRESPONDENCE_RECIPIENT can replace the dataset for an ad-hoc run.
+ * @typedef {object} CorrespondenceTestUser
+ * @property {string} ssn
+ * @property {string} userId
+ * @property {string} userPartyId
+ * @property {string} partyUuid
+ */
+
+/**
+ * Fetches users with the complete Altinn identity required by PDP. A token
+ * generated with only a PID lacks the user and party claims needed to resolve
+ * the PRIV role in environments based on imported test data.
  *
- * @returns {Array<{ssn: string, orgno?: string}>} End users for the environment.
+ * CORRESPONDENCE_RECIPIENT can select one user from the dataset for an ad-hoc
+ * run.
+ *
+ * @returns {Array<CorrespondenceTestUser>} End users for the environment.
  */
 export function setupCorrespondenceTestData() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const configuration = getCorrespondenceTestConfiguration();
 
-    if (configuration.recipientOverride !== undefined) {
-        return [{ ssn: configuration.recipientOverride }];
-    }
-
     const url =
         "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/" +
-        `K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`;
+        `K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`;
     const response = http.get(url, {
         tags: { action: "fetch-test-data" },
     });
@@ -196,11 +195,32 @@ export function setupCorrespondenceTestData() {
         );
     }
 
-    const endUsers = parseCsvData(response.body).filter((item) => item.ssn);
+    const seenSsns = new Set();
+    let endUsers = parseCsvData(response.body).filter((item) => {
+        const hasCompleteIdentity =
+            item.ssn &&
+            item.userId &&
+            item.userPartyId &&
+            item.partyUuid;
+        const isUnique = !seenSsns.has(item.ssn);
+
+        if (hasCompleteIdentity && isUnique) {
+            seenSsns.add(item.ssn);
+            return true;
+        }
+
+        return false;
+    });
+
+    if (configuration.recipientOverride !== undefined) {
+        endUsers = endUsers.filter(
+            (item) => item.ssn === configuration.recipientOverride,
+        );
+    }
 
     if (endUsers.length === 0) {
         throw new Error(
-            `Correspondence test data for ${__ENV.ENVIRONMENT} contains no SSNs`,
+            `Correspondence test data for ${__ENV.ENVIRONMENT} contains no complete identities matching the configuration`,
         );
     }
 
@@ -210,9 +230,9 @@ export function setupCorrespondenceTestData() {
 /**
  * Selects a stable end user for the current VU and iteration.
  *
- * @param {Array<{ssn: string}>} endUsers Test data returned from setup.
+ * @param {Array<CorrespondenceTestUser>} endUsers Test data returned from setup.
  * @param {boolean} [singleUser=false] Always select the first user.
- * @returns {{ssn: string}} Selected end user.
+ * @returns {CorrespondenceTestUser} Selected end user.
  */
 export function getEndUser(endUsers, singleUser = false) {
     if (!Array.isArray(endUsers) || endUsers.length === 0) {
@@ -231,44 +251,11 @@ export function getEndUser(endUsers, singleUser = false) {
     return endUsers[index];
 }
 
-let personalSenderClient;
 let enterpriseSenderClient;
 let recipientClient;
 let recipientTokenGenerator;
 let dialogportenClient;
 let dialogportenTokenGenerator;
-
-/**
- * Returns the client used by a person representing the service owner.
- *
- * @returns {CorrespondenceClient} Cached personal sender client.
- */
-export function getPersonalSenderClient() {
-    if (personalSenderClient === undefined) {
-        const configuration = getCorrespondenceTestConfiguration();
-        const tokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withScopes(
-                    CreateScopeString([
-                        AltinnScopes.CORRESPONDENCE.WRITE,
-                    ]),
-                )
-                .withPid(configuration.serviceOwnerRepresentativePid)
-                .withConsumerOrganizationNumber(
-                    configuration.serviceOwnerOrgNo,
-                )
-                .build(),
-        );
-
-        personalSenderClient = new CorrespondenceClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-        );
-    }
-
-    return personalSenderClient;
-}
 
 /**
  * Returns the client used directly by the service-owner organization.
@@ -304,18 +291,19 @@ export function getEnterpriseSenderClient() {
 /**
  * Returns a Correspondence client authenticated as the selected recipient.
  *
- * @param {string} recipient Recipient SSN.
+ * @param {CorrespondenceTestUser} endUser Recipient identity.
  * @returns {CorrespondenceClient} Cached recipient client.
  */
-export function getRecipientClient(recipient) {
-    const configuration = getCorrespondenceTestConfiguration();
+export function getRecipientClient(endUser) {
     const options = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withScopes(
             CreateScopeString([AltinnScopes.CORRESPONDENCE.READ]),
         )
-        .withPid(recipient)
-        .withConsumerOrganizationNumber(configuration.serviceOwnerOrgNo)
+        .withPid(endUser.ssn)
+        .withUserId(endUser.userId)
+        .withPartyId(endUser.userPartyId)
+        .withPartyUuid(endUser.partyUuid)
         .build();
 
     if (recipientClient === undefined) {
@@ -334,16 +322,19 @@ export function getRecipientClient(recipient) {
 /**
  * Returns a Dialogporten end-user client authenticated as the recipient.
  *
- * @param {string} recipient Recipient SSN.
+ * @param {CorrespondenceTestUser} endUser Recipient identity.
  * @returns {EnduserApiClient} Cached Dialogporten end-user client.
  */
-export function getDialogportenClient(recipient) {
+export function getDialogportenClient(endUser) {
     const options = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withScopes(
             CreateScopeString([DigDirScopes.DIALOGPORTEN.DEFAULT]),
         )
-        .withPid(recipient)
+        .withPid(endUser.ssn)
+        .withUserId(endUser.userId)
+        .withPartyId(endUser.userPartyId)
+        .withPartyUuid(endUser.partyUuid)
         .build();
 
     if (dialogportenClient === undefined) {
@@ -398,7 +389,6 @@ export function buildInitializeCorrespondenceRequest(recipient) {
     return new InitializeCorrespondencesBuilder()
         .withCorrespondence(correspondence)
         .withRecipients([recipient])
-        .withIdempotentKey(uuidv4())
         .build();
 }
 
@@ -430,26 +420,25 @@ export function buildUploadCorrespondenceForm(recipient) {
     const fileName = "k6-validation-attachment.txt";
 
     return {
-        "request.Correspondence.ResourceId": configuration.resourceId,
-        "request.Correspondence.SendersReference": uuidv4(),
-        "request.Correspondence.Content.Language": "nb",
-        "request.Correspondence.Content.MessageTitle": "k6 validation test",
-        "request.Correspondence.Content.MessageSummary":
+        "Correspondence.ResourceId": configuration.resourceId,
+        "Correspondence.SendersReference": uuidv4(),
+        "Correspondence.Content.Language": "nb",
+        "Correspondence.Content.MessageTitle": "k6 validation test",
+        "Correspondence.Content.MessageSummary":
             "Correspondence with an attachment initialized by a k6 test",
-        "request.Correspondence.Content.MessageBody":
+        "Correspondence.Content.MessageBody":
             "# Correspondence attachment validation test",
-        "request.Correspondence.Content.Attachments[0].FileName": fileName,
-        "request.Correspondence.Content.Attachments[0].DisplayName": fileName,
-        "request.Correspondence.Content.Attachments[0].IsEncrypted": "false",
-        "request.Correspondence.Content.Attachments[0].SendersReference":
+        "Correspondence.Content.Attachments[0].FileName": fileName,
+        "Correspondence.Content.Attachments[0].DisplayName": fileName,
+        "Correspondence.Content.Attachments[0].IsEncrypted": "false",
+        "Correspondence.Content.Attachments[0].SendersReference":
             uuidv4(),
         // 0 is NewCorrespondenceAttachment in the current API contract.
-        "request.Correspondence.Content.Attachments[0].DataLocationType": "0",
-        "request.Correspondence.IgnoreReservation": String(
+        "Correspondence.Content.Attachments[0].DataLocationType": "0",
+        "Correspondence.IgnoreReservation": String(
             configuration.ignoreReservation,
         ),
-        "request.Recipients[0]": recipient,
-        "request.IdempotentKey": uuidv4(),
+        "Recipients[0]": recipient,
         attachments: http.file(
             getAttachmentPayload(configuration.attachmentSizeBytes),
             fileName,

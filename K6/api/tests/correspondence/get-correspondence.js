@@ -43,9 +43,10 @@ export function setup() {
  */
 export default function (endUsers) {
     const configuration = getCorrespondenceTestConfiguration();
-    const recipient = getEndUser(endUsers).ssn;
-    const correspondenceClient = getRecipientClient(recipient);
-    const dialogportenClient = getDialogportenClient(recipient);
+    const endUser = getEndUser(endUsers);
+    const recipient = endUser.ssn;
+    const correspondenceClient = getRecipientClient(endUser);
+    const dialogportenClient = getDialogportenClient(endUser);
     const query = new CorrespondenceQueryBuilder()
         .withResourceId(configuration.resourceId)
         .withRole("Recipient")

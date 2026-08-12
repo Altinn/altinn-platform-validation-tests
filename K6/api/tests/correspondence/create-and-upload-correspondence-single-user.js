@@ -8,7 +8,7 @@ import {
     buildUploadCorrespondenceForm,
     getCorrespondenceOptions,
     getEndUser,
-    getPersonalSenderClient,
+    getEnterpriseSenderClient,
     setupCorrespondenceTestData,
 } from "./commons.js";
 
@@ -24,17 +24,17 @@ export function setup() {
 
 /**
  * Test: initialize a correspondence with a 50 KiB attachment for one fixed
- * end user, using a person who represents the service owner.
+ * end user, using the service-owner organization.
  *
  * @param {Array<{ssn: string}>} endUsers Shared end-user test data.
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers, true).ssn;
-    const correspondenceClient = getPersonalSenderClient();
+    const correspondenceClient = getEnterpriseSenderClient();
     const formData = buildUploadCorrespondenceForm(recipient);
 
     group(
-        "A representative can upload correspondences for one recipient",
+        "A service owner can upload correspondences for one recipient",
         function () {
             const uploadResponse = UploadCorrespondences(
                 correspondenceClient,
