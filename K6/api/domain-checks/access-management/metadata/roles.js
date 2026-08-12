@@ -1,8 +1,6 @@
 import { check } from "k6";
 
-/**
- * @typedef {{ id: string, name: string, code: string, isKeyRole: boolean, urn: string, legacyRoleCode: string, legacyUrn: string, provider: { code: string, name: string } }} RoleDto
- */
+import { RoleDto } from "../../../../clients/access-management/metadata/roles/roles.types.js";
 
 /**
  * Finds a role with the specified id in the provided roles array.

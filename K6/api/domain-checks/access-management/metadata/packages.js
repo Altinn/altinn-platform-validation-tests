@@ -1,8 +1,6 @@
 import { check } from "k6";
 
-/**
- * @typedef {{ id: string, name: string, urn: string, area: { name: string, urn: string }, type: { name: string } }} PackageDto
- */
+import { PackageDto } from "../../../../clients/access-management/metadata/packages/packages.types.js";
 
 /**
  * @param {PackageDto[]} packages - Array of packages to search.
