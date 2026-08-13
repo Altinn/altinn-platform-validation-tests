@@ -131,9 +131,27 @@ function CheckPackageTypeName(pkg, expected) {
     return success;
 }
 
+/**
+ * @param {PackageDto[]} packages - Array of packages to check.
+ * @param {number} expected - Expected number of packages.
+ * @returns {boolean} True if the array contains the expected number of packages.
+ */
+function CheckPackageCount(packages, expected) {
+    const success = check(packages, {
+        "CheckPackageCount - Array has expected number of packages": (pkgs) => (pkgs ?? []).length === expected,
+    });
+
+    if (!success) {
+        console.error(`CheckPackageCount - expected ${expected} packages, got ${(packages ?? []).length}`);
+    }
+
+    return success;
+}
+
 export const PackagesDomainChecks = {
     FindPackage,
     CheckPackageExists,
+    CheckPackageCount,
     CheckPackageId,
     CheckPackageName,
     CheckPackageUrn,

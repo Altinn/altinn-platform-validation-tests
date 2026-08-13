@@ -31,6 +31,7 @@ export default function () {
 
         const packageDtos = MetadataBuildingBlocks.Roles.GetRolePackagesById(rolesApiClient, "f76b997a-9bd8-4f7b-899f-fcd85d35669f", query, labels);
 
+        PackagesDomainChecks.CheckPackageCount(packageDtos, 2);
         expectedPackages.forEach(({ id }) => {
             const pkg = PackagesDomainChecks.FindPackage(packageDtos, id);
             const expectedPackage = expectedPackages.find((p) => p.id === id);
