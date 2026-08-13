@@ -77,7 +77,7 @@ class FavoritesClient {
         const url = `${this.FULL_PATH}/${partyUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{partyUuid}`,
             name: `${this.FULL_PATH}/{partyUuid}`,
             action: TAGS.AddFavorite.action,
         };
@@ -112,7 +112,7 @@ class FavoritesClient {
         const url = `${this.FULL_PATH}/${partyUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{partyUuid}`,
             name: `${this.FULL_PATH}/{partyUuid}`,
             action: TAGS.DeleteFavorite.action,
         };

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a system user of an organisation.
@@ -18,19 +19,23 @@ export function DeleteSystemUser(
     systemUserGuid,
     labels = null,
 ) {
-    const res = systemUserClient.DeleteSystemUser(
-        partyId,
-        systemUserGuid,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserClient.DeleteSystemUser(
+                partyId,
+                systemUserGuid,
+                labels,
+            ),
+        "DeleteSystemUser",
     );
 
     let deleted = false;
 
+    // The api answers 202 Accepted with an empty body, not the 200 the swagger
+    // documents, so both count as deleted.
     const succeed = check(res, {
-        "DeleteSystemUser - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteSystemUser - status code is 200 or 202": (r) =>
+            r.status === 200 || r.status === 202,
     });
 
     if (!succeed) {

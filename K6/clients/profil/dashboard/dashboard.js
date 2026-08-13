@@ -49,7 +49,7 @@ class DashboardClient {
         const url = `${this.FULL_PATH}/organizations/${organizationNumber}/notificationaddresses`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/organizations/{organizationNumber}/notificationaddresses`,
             name: `${this.FULL_PATH}/organizations/{organizationNumber}/notificationaddresses`,
             action: TAGS.GetNotificationAddresses.action,
         };
@@ -84,7 +84,7 @@ class DashboardClient {
         const url = `${this.FULL_PATH}/organizations/notificationaddresses/email/${emailAddress}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/email/{emailAddress}`,
             name: `${this.FULL_PATH}/organizations/notificationaddresses/email/{emailAddress}`,
             action: TAGS.GetNotificationAddressesByEmail.action,
         };
@@ -141,8 +141,8 @@ class DashboardClient {
         }
 
         let tags = {
-            endpoint: url.origin + url.pathname,
-            name: url.origin + url.pathname,
+            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber/{phoneNumber}`,
+            name: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber/{phoneNumber}`,
             action: TAGS.GetNotificationAddressesByPhoneNumber.action,
         };
 

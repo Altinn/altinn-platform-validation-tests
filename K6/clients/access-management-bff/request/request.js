@@ -502,7 +502,7 @@ class RequestClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${id}`,
+            endpoint: `${this.FULL_PATH}/{id}`,
             name: `${this.FULL_PATH}/{id}`,
             action: TAGS.GetRequest.action,
         };
@@ -536,7 +536,7 @@ class RequestClient {
         const url = new URL(`${this.FULL_PATH}/draft/${id}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/draft/${id}`,
+            endpoint: `${this.FULL_PATH}/draft/{id}`,
             name: `${this.FULL_PATH}/draft/{id}`,
             action: TAGS.GetDraftRequest.action,
         };

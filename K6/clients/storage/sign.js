@@ -52,7 +52,7 @@ class SignClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
             action: TAGS.SignInstance.action,
         };

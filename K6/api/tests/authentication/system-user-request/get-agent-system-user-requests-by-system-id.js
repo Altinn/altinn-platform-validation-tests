@@ -1,7 +1,7 @@
 import { fail, group } from "k6";
 
 import { requireEnv } from "../../../../helpers.js";
-import { RequestSystemUserBuildingBlocks } from "../../../authentication-v2-imports.js";
+import { RequestSystemUserBuildingBlocks } from "../../../authentication-imports.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 import { getPaginationClients, PAGINATION_SYSTEM_ID } from "./commons.js";

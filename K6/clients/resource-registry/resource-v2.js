@@ -74,8 +74,8 @@ class ResourceV2Client {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
+            name: `${this.FULL_PATH}/{id}/policy/rights`,
             action: TAGS.ResourceV2GetPolicyRights.action,
         };
 

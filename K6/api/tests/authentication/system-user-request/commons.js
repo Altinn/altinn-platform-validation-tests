@@ -5,7 +5,7 @@ import {
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
     SystemRegisterClient,
-} from "../../../../clients/authentication/v2/index.js";
+} from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { parseCsvData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";

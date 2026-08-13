@@ -120,8 +120,8 @@ class ResourceClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/resourcelist`,
+            name: `${this.FULL_PATH}/resourcelist`,
             action: TAGS.ResourceGetResourceList.action,
         };
 
@@ -209,8 +209,8 @@ class ResourceClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/{id}`,
+            name: `${this.FULL_PATH}/{id}`,
             action: TAGS.ResourceGetResource.action,
         };
 
@@ -279,8 +279,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(id)}`,
+            endpoint: `${this.FULL_PATH}/{id}`,
+            name: `${this.FULL_PATH}/{id}`,
             action: TAGS.ResourceUpdateResource.action,
         };
 
@@ -314,8 +314,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(id)}`,
+            endpoint: `${this.FULL_PATH}/{id}`,
+            name: `${this.FULL_PATH}/{id}`,
             action: TAGS.ResourceDeleteResource.action,
         };
 
@@ -348,8 +348,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
+            endpoint: `${this.FULL_PATH}/{id}/policy`,
+            name: `${this.FULL_PATH}/{id}/policy`,
             action: TAGS.ResourceGetPolicy.action,
         };
 
@@ -383,8 +383,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
+            endpoint: `${this.FULL_PATH}/{id}/policy`,
+            name: `${this.FULL_PATH}/{id}/policy`,
             action: TAGS.ResourceCreatePolicy.action,
         };
 
@@ -424,8 +424,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
+            endpoint: `${this.FULL_PATH}/{id}/policy`,
+            name: `${this.FULL_PATH}/{id}/policy`,
             action: TAGS.ResourceUpdatePolicy.action,
         };
 
@@ -485,8 +485,8 @@ class ResourceClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/{encodeURIComponent(id)}/policy`,
+            endpoint: `${this.FULL_PATH}/{id}/policy/subjects`,
+            name: `${this.FULL_PATH}/{id}/policy/subjects`,
             action: TAGS.ResourceGetPolicySubjects.action,
         };
 
@@ -520,7 +520,7 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${id}/policy/rules`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}/policy/rules`,
             name: `${this.FULL_PATH}/{id}/policy/rules`,
             action: ResourceClient.TAGS.ResourceGetPolicyRules.action,
         };
@@ -555,7 +555,7 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/${id}/policy/rights`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
             name: `${this.FULL_PATH}/{id}/policy/rights`,
             action: ResourceClient.TAGS.ResourceGetPolicyRights.action,
         };
@@ -647,8 +647,8 @@ class ResourceClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/Search`,
+            name: `${this.FULL_PATH}/Search`,
             action: ResourceClient.TAGS.ResourceSearch.action,
         };
 
@@ -709,7 +709,7 @@ class ResourceClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/updated`,
             // The query stays out of the name tag, or metrics get one series per value.
             name: `${this.FULL_PATH}/updated`,
             action: TAGS.ResourceUpdated.action,

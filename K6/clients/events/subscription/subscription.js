@@ -128,7 +128,7 @@ class SubscriptionClient {
         const url = `${this.FULL_PATH}/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}`,
             name: `${this.FULL_PATH}/{id}`,
             action: TAGS.SubscriptionGet.action,
         };
@@ -163,7 +163,7 @@ class SubscriptionClient {
         const url = `${this.FULL_PATH}/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}`,
             name: `${this.FULL_PATH}/{id}`,
             action: TAGS.SubscriptionDelete.action,
         };
@@ -198,7 +198,7 @@ class SubscriptionClient {
         const url = `${this.FULL_PATH}/validate/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/validate/{id}`,
             name: `${this.FULL_PATH}/validate/{id}`,
             action: TAGS.SubscriptionValidate.action,
         };

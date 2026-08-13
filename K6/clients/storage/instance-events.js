@@ -58,7 +58,7 @@ class InstanceEventsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
             action: TAGS.CreateInstanceEvent.action,
         };
@@ -105,7 +105,7 @@ class InstanceEventsClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
             action: TAGS.GetInstanceEvents.action,
         };
@@ -137,7 +137,7 @@ class InstanceEventsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events/{eventGuid}`,
             name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events/{eventGuid}`,
             action: TAGS.GetInstanceEvent.action,
         };

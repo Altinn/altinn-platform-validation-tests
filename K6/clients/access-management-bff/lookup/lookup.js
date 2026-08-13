@@ -58,7 +58,7 @@ class LookupClient {
         const url = new URL(`${this.FULL_PATH}/org/${orgNummer}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/org/${orgNummer}`,
+            endpoint: `${this.FULL_PATH}/org/{orgNummer}`,
             name: `${this.FULL_PATH}/org/{orgNummer}`,
             action: TAGS.GetOrganization.action,
         };
@@ -92,7 +92,7 @@ class LookupClient {
         const url = new URL(`${this.FULL_PATH}/party/${uuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/party/${uuid}`,
+            endpoint: `${this.FULL_PATH}/party/{uuid}`,
             name: `${this.FULL_PATH}/party/{uuid}`,
             action: TAGS.GetParty.action,
         };
@@ -126,7 +126,7 @@ class LookupClient {
         const url = new URL(`${this.FULL_PATH}/user/${uuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/user/${uuid}`,
+            endpoint: `${this.FULL_PATH}/user/{uuid}`,
             name: `${this.FULL_PATH}/user/{uuid}`,
             action: TAGS.GetUser.action,
         };

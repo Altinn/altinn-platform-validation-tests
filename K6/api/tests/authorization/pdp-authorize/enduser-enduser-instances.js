@@ -8,8 +8,8 @@ import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
 import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-import { PdpAuthorizeUserInstance } from "../../../building-blocks/authorization/pdp-authorize/index.js";
-import { getClients } from "./common-functions.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
+import { buildInstanceRequest, getClients } from "./common-functions.js";
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
@@ -21,7 +21,7 @@ const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getTo
 export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermit, tokenGeneratorLabel]);
 
 export function setup() {
-    requireEnv(["ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
     const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`,
         { tags: { action: "fetch-test-data" } });
@@ -32,22 +32,23 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param testData TODO: description
+ * @param {object[][]} testData Enduser to enduser instance delegations, one slice per VU.
  */
 export default function (testData) {
-    const [pdpAuthorizeClient, tokenGenerator] = getClients();
+    const [authorizeClient] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], randomize);
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-    PdpAuthorizeUserInstance(
-        pdpAuthorizeClient,
-        party.tossn,
-        party.fromssn,
-        party.resourceid,
-        party.instanceid,
-        party.task,
-        action,
+    AuthorizePost(
+        authorizeClient,
+        buildInstanceRequest({
+            toSsn: party.tossn,
+            fromSsn: party.fromssn,
+            resourceId: party.resourceid,
+            instanceId: party.instanceid,
+            task: party.task,
+            action: action,
+        }),
         expectedResponse,
-        __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
         label
     );
 }
@@ -57,8 +58,8 @@ export default function (testData) {
  * 90% sign with Permit, 10% read with NotApplicable.
  * !! So far only Permit !!
  *
- * @param denyLabel TODO: description
- * @param permitLabel TODO: description
+ * @param {{[key: string]: string}} denyLabel Label used for the requests that are expected to be denied.
+ * @param {{[key: string]: string}} permitLabel Label used for the requests that are expected to be permitted.
  * @returns {Array} [action, label, expectedResponse]
  */
 function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {

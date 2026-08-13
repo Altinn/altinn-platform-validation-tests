@@ -49,3 +49,18 @@
  * @property {Array<RequestDto>|null} data
  * @property {PaginatedResultLinks|null} links
  */
+
+/**
+ * The request statuses the API recognises, for use where a
+ * {@link RequestStatus} is expected at runtime.
+ *
+ * @type {{[key: string]: RequestStatus}}
+ */
+export const RequestStatus = {
+    None: "None",
+    Draft: "Draft",
+    Pending: "Pending",
+    Approved: "Approved",
+    Rejected: "Rejected",
+    Withdrawn: "Withdrawn",
+};
