@@ -39,11 +39,11 @@ export function setup() {
 export default async function () {
     const ORG = "ttd";
     // Maskinporten takes the requested scopes space-separated in the grant.
-    const scopes = CreateScopeString[
+    const scopes = CreateScopeString([
         AltinnScopes.ACCESSMANAGEMENT.ENDUSER.REQUESTS.WRITE,
         AltinnScopes.CONSENTREQUESTS.READ,
         AltinnScopes.CONSENTREQUESTS.WRITE
-    ];
+    ]);
 
     // Every generator is set up the same way. ensureToken is awaited outside the
     // groups, since group() takes a synchronous callback.

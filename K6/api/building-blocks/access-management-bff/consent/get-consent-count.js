@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the number of consent requests a party has.
@@ -19,7 +20,10 @@ export function GetConsentCount(
     queryParams = null,
     labels = null,
 ) {
-    const res = consentClient.GetConsentCount(party, queryParams, labels);
+    const res = withRetries(
+        () => consentClient.GetConsentCount(party, queryParams, labels),
+        "GetConsentCount",
+    );
 
     /** @type {object|null} */
     let count = null;

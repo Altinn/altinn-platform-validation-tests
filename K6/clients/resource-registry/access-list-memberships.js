@@ -79,8 +79,8 @@ class AccessListMembershipsClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.AccessListMembershipsGetMemberships.action,
         };
 

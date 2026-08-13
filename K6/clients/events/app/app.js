@@ -91,8 +91,8 @@ class AppClient {
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/{org}/{app}`,
+                name: `${this.FULL_PATH}/{org}/{app}`,
                 action: TAGS.AppGetByApp.action,
             },
             headers: {

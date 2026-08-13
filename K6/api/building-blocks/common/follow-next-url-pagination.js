@@ -72,6 +72,7 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = 
         if (!ok) {
             console.log(res.status, res.status_text);
             console.log(res.body);
+            console.log(`Pagination failed at page ${pages + 1} with URL: ${currentUrl}`);
             return pages;
         }
 

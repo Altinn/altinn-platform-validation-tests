@@ -1,3 +1,25 @@
+/**
+ * Drops the properties a caller never set.
+ *
+ * The builders start out with every property set to null. Sending those nulls
+ * makes the API reject the request, since a null does not deserialize into the
+ * enums it expects, so they are stripped before the payload leaves the builder.
+ *
+ * @param {object} request The builder state.
+ * @returns {object} The payload without the properties that are still null.
+ */
+function withoutUnsetProperties(request) {
+    const payload = {};
+
+    for (const key of Object.keys(request)) {
+        if (request[key] !== null) {
+            payload[key] = request[key];
+        }
+    }
+
+    return payload;
+}
+
 class NotificationOrderChainRequestExtBuilder {
     constructor() {
         this.request = {
@@ -43,7 +65,7 @@ class NotificationOrderChainRequestExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 
     /**
@@ -160,7 +182,7 @@ class ComposedEmailRequestExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 
     /**
@@ -303,7 +325,7 @@ class NotificationRecipientExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -347,7 +369,7 @@ class RecipientEmailExtBuilder {
             throw new Error("RecipientEmailExt.emailSettings is required");
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -391,7 +413,7 @@ class RecipientSmsExtBuilder {
             throw new Error("RecipientSmsExt.smsSettings is required");
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -504,7 +526,7 @@ class RecipientPersonExtBuilder {
             throw new Error("RecipientPersonExt.channelSchema is required");
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -594,7 +616,7 @@ class RecipientOrganizationExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -686,7 +708,7 @@ class RecipientExternalIdentityExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -734,7 +756,7 @@ class RecipientComposedEmailExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -811,7 +833,7 @@ class EmailSendingOptionsExtBuilder {
             throw new Error("EmailSendingOptionsExt.body is required");
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -862,7 +884,7 @@ class SmsSendingOptionsExtBuilder {
             throw new Error("SmsSendingOptionsExt.body is required");
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -954,7 +976,7 @@ class ComposedEmailSendingOptionsExtBuilder {
             );
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 
@@ -1013,7 +1035,7 @@ class SasFileReferenceExtBuilder {
             throw new Error("SasFileReferenceExt.sasUrl is required");
         }
 
-        return this.request;
+        return withoutUnsetProperties(this.request);
     }
 }
 

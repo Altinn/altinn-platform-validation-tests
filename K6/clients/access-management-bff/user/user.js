@@ -266,7 +266,7 @@ class UserClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             name: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             action: TAGS.CreateFavorite.action,
         };
@@ -306,7 +306,7 @@ class UserClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             name: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
             action: TAGS.DeleteFavorite.action,
         };
@@ -344,7 +344,7 @@ class UserClient {
         const url = new URL(`${this.FULL_PATH}/reportee/${partyUuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}`,
             name: `${this.FULL_PATH}/reportee/{partyUuid}`,
             action: TAGS.GetReportee.action,
         };
@@ -378,7 +378,7 @@ class UserClient {
         const url = new URL(`${this.FULL_PATH}/reporteelist/${partyUuid}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/reporteelist/${partyUuid}`,
+            endpoint: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
             name: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
             action: TAGS.GetReporteeList.action,
         };
@@ -402,13 +402,15 @@ class UserClient {
     /**
      * Checks whether the authenticated user is an administrator for the reportee.
      *
+     * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetIsAdmin(labels = null) {
+    GetIsAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/isAdmin`);
+        url.searchParams.append("party", party);
 
         let tags = {
             endpoint: `${this.FULL_PATH}/isAdmin`,
@@ -435,13 +437,15 @@ class UserClient {
     /**
      * Checks whether the authenticated user is a client administrator.
      *
+     * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetIsClientAdmin(labels = null) {
+    GetIsClientAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/isClientAdmin`);
+        url.searchParams.append("party", party);
 
         let tags = {
             endpoint: `${this.FULL_PATH}/isClientAdmin`,
@@ -468,13 +472,15 @@ class UserClient {
     /**
      * Checks whether the authenticated user is a company profile administrator.
      *
+     * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetIsCompanyProfileAdmin(labels = null) {
+    GetIsCompanyProfileAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/isCompanyProfileAdmin`);
+        url.searchParams.append("party", party);
 
         let tags = {
             endpoint: `${this.FULL_PATH}/isCompanyProfileAdmin`,
@@ -501,13 +507,15 @@ class UserClient {
     /**
      * Checks whether the authenticated user is a main administrator.
      *
+     * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetIsHovedadmin(labels = null) {
+    GetIsHovedadmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/isHovedadmin`);
+        url.searchParams.append("party", party);
 
         let tags = {
             endpoint: `${this.FULL_PATH}/isHovedadmin`,
@@ -534,13 +542,15 @@ class UserClient {
     /**
      * Checks whether the authenticated user is an instance administrator.
      *
+     * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetIsInstanceAdmin(labels = null) {
+    GetIsInstanceAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/isInstanceAdmin`);
+        url.searchParams.append("party", party);
 
         let tags = {
             endpoint: `${this.FULL_PATH}/isInstanceAdmin`,
@@ -567,13 +577,15 @@ class UserClient {
     /**
      * Checks whether the authenticated user is a Maskinporten administrator.
      *
+     * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetIsMaskinportenAdmin(labels = null) {
+    GetIsMaskinportenAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/isMaskinportenAdmin`);
+        url.searchParams.append("party", party);
 
         let tags = {
             endpoint: `${this.FULL_PATH}/isMaskinportenAdmin`,

@@ -95,7 +95,7 @@ class RolesClient {
         const url = `${this.FULL_PATH}/meta/info/roles/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
             name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRole.action,
         };
@@ -161,7 +161,7 @@ class RolesClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
             name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRolePackages.action,
         };
@@ -227,7 +227,7 @@ class RolesClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
             name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRoleResources.action,
         };
@@ -284,7 +284,7 @@ class RolesClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
             name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRolePackagesById.action,
         };
@@ -341,7 +341,7 @@ class RolesClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
             name: `${this.FULL_PATH}/meta/info/roles/{id}`,
             action: TAGS.RolesGetRoleResourcesById.action,
         };

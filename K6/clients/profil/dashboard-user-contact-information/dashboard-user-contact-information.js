@@ -52,7 +52,7 @@ class DashboardUserContactInformationClient {
         const url = `${this.FULL_PATH}/organizations/${organizationNumber}/contactinformation`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/organizations/{organizationNumber}/contactinformation`,
             name: `${this.FULL_PATH}/organizations/{organizationNumber}/contactinformation`,
             action: TAGS.GetContactInformation.action,
         };
@@ -87,7 +87,7 @@ class DashboardUserContactInformationClient {
         const url = `${this.FULL_PATH}/organizations/contactinformation/email/${emailAddress}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/organizations/contactinformation/email/{emailAddress}`,
             name: `${this.FULL_PATH}/organizations/contactinformation/email/{emailAddress}`,
             action: TAGS.GetContactInformationByEmail.action,
         };
@@ -144,8 +144,8 @@ class DashboardUserContactInformationClient {
         }
 
         let tags = {
-            endpoint: url.origin + url.pathname,
-            name: url.origin + url.pathname,
+            endpoint: `${this.FULL_PATH}/organizations/contactinformation/phonenumber/{phoneNumber}`,
+            name: `${this.FULL_PATH}/organizations/contactinformation/phonenumber/{phoneNumber}`,
             action: TAGS.GetContactInformationByPhoneNumber.action,
         };
 

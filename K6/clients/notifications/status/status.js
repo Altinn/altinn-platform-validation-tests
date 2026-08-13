@@ -50,7 +50,7 @@ class StatusClient {
         const url = `${this.FULL_PATH}/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{id}`,
             name: `${this.FULL_PATH}/{id}`,
             action: TAGS.StatusGetShipment.action,
         };
@@ -108,7 +108,7 @@ class StatusClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/feed`,
             name: `${this.FULL_PATH}/feed`,
             action: TAGS.StatusGetFeed.action,
         };

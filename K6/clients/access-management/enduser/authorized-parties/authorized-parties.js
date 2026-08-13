@@ -1,5 +1,8 @@
 import http from "k6/http";
 
+import { EndUserAuthorizedPartiesQuery } from "./authorized-parties.types.js";
+import { EndUserAuthorizedPartiesQueryBuilder } from "./authorized-parties-query-builder.js";
+
 const TAGS = {
     GetAuthorizedParties: {
         action: "get-authorized-parties",
@@ -35,9 +38,9 @@ class AuthorizedPartiesClient {
     /**
      * Retrieves the parties the authenticated end user is authorized to represent.
      *
-     * @param {AuthorizedPartiesQuery|null} [query]
+     * @param {EndUserAuthorizedPartiesQuery|null} [query]
      * Optional query parameters. Prefer using
-     * {@link AuthorizedPartiesQueryBuilder} to construct this object.
+     * {@link EndUserAuthorizedPartiesQueryBuilder} to construct this object.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.

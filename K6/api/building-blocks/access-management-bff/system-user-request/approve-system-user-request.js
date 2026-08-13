@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Approves a system user request.
@@ -18,10 +19,14 @@ export function ApproveSystemUserRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.ApproveSystemUserRequest(
-        partyId,
-        requestId,
-        labels,
+    const res = withRetries(
+        () =>
+            systemUserRequestClient.ApproveSystemUserRequest(
+                partyId,
+                requestId,
+                labels,
+            ),
+        "ApproveSystemUserRequest",
     );
 
     let approved = false;

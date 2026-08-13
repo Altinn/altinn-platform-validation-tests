@@ -340,12 +340,15 @@ class ClientDelegationsClient {
     /**
      * Adds an agent to a party.
      *
+     * @param {ValidatePersonInput|null} [body] The person to add as agent, when
+     * they are identified by national identity number instead of party UUID.
+     * Prefer using {@link ValidatePersonInputBuilder}.
      * @param {CreateAgentQuery|null} [query] Optional query parameters. Prefer
      * using {@link CreateAgentQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    CreateAgent(query = null, labels = null) {
+    CreateAgent(body = null, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
         const url = new URL(`${this.FULL_PATH}/agents`);
@@ -379,11 +382,12 @@ class ClientDelegationsClient {
 
         return http.post(
             url.toString(),
-            null,
+            body !== null ? JSON.stringify(body) : null,
             {
                 tags,
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                     Accept: "application/json",
                 },
             },

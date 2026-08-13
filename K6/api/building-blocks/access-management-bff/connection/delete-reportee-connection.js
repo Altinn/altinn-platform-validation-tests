@@ -22,10 +22,10 @@ export function DeleteReporteeConnection(
     let removed = false;
 
     const succeed = check(res, {
-        "DeleteReporteeConnection - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteReporteeConnection - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteReporteeConnection - status code is 204": (r) =>
+            r.status === 204,
+        "DeleteReporteeConnection - status text is 204 No Content": (r) =>
+            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

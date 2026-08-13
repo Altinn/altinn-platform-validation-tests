@@ -58,7 +58,7 @@ class OrganizationsClient {
         const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
             name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
             action: TAGS.GetNotificationAddresses.action,
         };
@@ -98,7 +98,7 @@ class OrganizationsClient {
         const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
             name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
             action: TAGS.CreateNotificationAddress.action,
         };
@@ -139,7 +139,7 @@ class OrganizationsClient {
         const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             action: TAGS.GetNotificationAddress.action,
         };
@@ -181,7 +181,7 @@ class OrganizationsClient {
         const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             action: TAGS.UpdateNotificationAddress.action,
         };
@@ -222,7 +222,7 @@ class OrganizationsClient {
         const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
             action: TAGS.DeleteNotificationAddress.action,
         };

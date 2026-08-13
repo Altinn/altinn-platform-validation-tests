@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Rejects a consent request.
@@ -15,7 +16,10 @@ export function RejectConsentRequest(
     consentRequestId,
     labels = null,
 ) {
-    const res = consentClient.RejectConsentRequest(consentRequestId, labels);
+    const res = withRetries(
+        () => consentClient.RejectConsentRequest(consentRequestId, labels),
+        "RejectConsentRequest",
+    );
 
     let rejected = false;
 
