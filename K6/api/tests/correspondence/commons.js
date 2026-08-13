@@ -179,7 +179,7 @@ export function setupCorrespondenceTestData() {
 
     const url =
         "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/" +
-        `K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`;
+        `K6/testdata/correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`;
     const response = http.get(url, {
         tags: { action: "fetch-test-data" },
     });
