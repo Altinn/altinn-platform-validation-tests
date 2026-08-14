@@ -103,8 +103,8 @@ class PackagesClient {
         }
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/search`,
+            name: `${this.FULL_PATH}/meta/info/accesspackages/search`,
             action: TAGS.PackagesSearch.action,
         };
 
@@ -206,7 +206,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/group/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}`,
             action: TAGS.PackagesGetGroupById.action,
         };
@@ -241,7 +241,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/group/${id}/areas`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}/areas`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}/areas`,
             action: TAGS.PackagesGetGroupAreasById.action,
         };
@@ -276,7 +276,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/area/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}`,
             action: TAGS.PackagesGetAreaById.action,
         };
@@ -311,7 +311,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/area/${id}/packages`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}/packages`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}/packages`,
             action: TAGS.PackagesGetAreaPackagesById.action,
         };
@@ -346,7 +346,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/package/${id}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}`,
             action: TAGS.PackagesGetPackageById.action,
         };
@@ -381,7 +381,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/package/urn/${urnValue}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/urn/{urnValue}`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/package/urn/{urnValue}`,
             action: TAGS.PackagesGetPackageByUrn.action,
         };
@@ -416,7 +416,7 @@ class PackagesClient {
         const url = `${this.FULL_PATH}/meta/info/accesspackages/package/${id}/resources`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}/resources`,
             name: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}/resources`,
             action: TAGS.PackagesGetPackageResourcesById.action,
         };

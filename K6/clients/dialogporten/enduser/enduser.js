@@ -522,7 +522,7 @@ class EnduserApiClient {
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/systemlabels`);
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/systemlabels",
             name: this.FULL_PATH + "/dialogs/{dialogId}/context/systemlabels",
             action: TAGS.PutDialogSystemLabels.action,
         };

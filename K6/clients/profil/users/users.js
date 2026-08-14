@@ -54,7 +54,7 @@ class UsersClient {
         const url = `${this.FULL_PATH}/${userID}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{userID}`,
             name: `${this.FULL_PATH}/{userID}`,
             action: TAGS.GetUserById.action,
         };
@@ -91,7 +91,7 @@ class UsersClient {
         const url = `${this.FULL_PATH}/byuuid/${userUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/byuuid/{userUuid}`,
             name: `${this.FULL_PATH}/byuuid/{userUuid}`,
             action: TAGS.GetUserByUuid.action,
         };

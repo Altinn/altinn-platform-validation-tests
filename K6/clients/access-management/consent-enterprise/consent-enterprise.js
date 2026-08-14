@@ -92,7 +92,7 @@ class EnterpriseClient {
         const url = `${this.FULL_PATH}/consentrequests/${consentRequestId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/consentrequests/{consentRequestId}`,
             name: `${this.FULL_PATH}/consentrequests/{consentRequestId}`,
             action: TAGS.EnterpriseGetConsentRequest.action,
         };
@@ -160,7 +160,7 @@ class EnterpriseClient {
         }
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/consentrequests/events`,
             name: `${this.FULL_PATH}/consentrequests/events`,
             action: TAGS.EnterpriseGetConsentRequestEvents.action,
         };

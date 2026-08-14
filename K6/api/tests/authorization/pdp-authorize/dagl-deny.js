@@ -2,8 +2,8 @@ import exec from "k6/execution";
 
 import { randomIntBetween } from "../../../../common-imports.js";
 import { getOptions, pickUnique } from "../../../../helpers.js";
-import { PdpAuthorizeDagl } from "../../../building-blocks/authorization/pdp-authorize/index.js";
-import { getClients, getTokenOpts } from "./common-functions.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
+import { buildDaglRequest, getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
@@ -21,22 +21,18 @@ const resource = "ttd-dialogporten-performance-test-02";
 /**
  * Main function executed by each VU.
  *
- * @param testData TODO: description
+ * @param {object[][]} testData Organizations with their daglig leder, one slice per VU.
  */
 export default function (testData) {
-    const [pdpAuthorizeClient, tokenGenerator] = getClients();
+    const [authorizeClient, tokenGenerator] = getClients();
     const [party, org] = pickUnique(testData[exec.vu.idInTest - 1], 2);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
     const action = randomIntBetween(0, 1) === 0 ? "read" : "write";
     const expectedResponse = "NotApplicable";
-    PdpAuthorizeDagl(
-        pdpAuthorizeClient,
-        party.ssn,
-        org.orgno,
-        resource,
-        action,
+    AuthorizePost(
+        authorizeClient,
+        buildDaglRequest(party.ssn, org.orgno, resource, action),
         expectedResponse,
-        __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
         pdpAuthorizeLabelDenyPermit
     );
 }

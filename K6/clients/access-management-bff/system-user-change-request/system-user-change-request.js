@@ -59,7 +59,7 @@ class SystemUserChangeRequestClient {
         const url = new URL(`${this.FULL_PATH}/${changeRequestId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${changeRequestId}`,
+            endpoint: `${this.FULL_PATH}/{changeRequestId}`,
             name: `${this.FULL_PATH}/{changeRequestId}`,
             action: TAGS.GetChangeRequest.action,
         };
@@ -96,7 +96,7 @@ class SystemUserChangeRequestClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${changeRequestId}/approve`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{changeRequestId}/approve`,
             name: `${this.FULL_PATH}/{partyId}/{changeRequestId}/approve`,
             action: TAGS.ApproveChangeRequest.action,
         };
@@ -137,7 +137,7 @@ class SystemUserChangeRequestClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${changeRequestId}/reject`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{changeRequestId}/reject`,
             name: `${this.FULL_PATH}/{partyId}/{changeRequestId}/reject`,
             action: TAGS.RejectChangeRequest.action,
         };
@@ -175,7 +175,7 @@ class SystemUserChangeRequestClient {
         const url = new URL(`${this.FULL_PATH}/${changeRequestId}/logout`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${changeRequestId}/logout`,
+            endpoint: `${this.FULL_PATH}/{changeRequestId}/logout`,
             name: `${this.FULL_PATH}/{changeRequestId}/logout`,
             action: TAGS.GetChangeRequestLogout.action,
         };

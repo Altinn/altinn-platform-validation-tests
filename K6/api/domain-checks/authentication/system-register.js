@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RegisteredSystemDTO, RegisteredSystemResponse } from "../../../clients/authentication/v2/types.js";
+import { RegisteredSystemDTO, RegisteredSystemResponse } from "../../../clients/authentication/types.js";
 import { accessPackageUrns, missingRights } from "../common/rights.js";
 
 /**
