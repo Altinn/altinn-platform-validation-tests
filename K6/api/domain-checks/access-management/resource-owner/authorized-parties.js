@@ -616,6 +616,7 @@ function CheckSubunitInheritsMainUnitAccessPackages(outcome, parties, mainUnitPa
  */
 function CheckNoSubunitInheritsInstances(outcome, parties) {
     const problems = [];
+    let inspected = 0;
 
     for (const party of parties ?? []) {
         const mainUnitInstances = (party.authorizedInstances ?? []).map((instance) => instance.instanceId);
@@ -625,6 +626,8 @@ function CheckNoSubunitInheritsInstances(outcome, parties) {
         }
 
         for (const subunit of party.subunits ?? []) {
+            inspected += 1;
+
             const subunitInstances = (subunit.authorizedInstances ?? []).map((instance) => instance.instanceId);
             const overlap = mainUnitInstances.filter((instance) => subunitInstances.includes(instance));
 
@@ -634,7 +637,14 @@ function CheckNoSubunitInheritsInstances(outcome, parties) {
         }
     }
 
-    return Assert(outcome, parties, () => problems.length === 0, () => problems);
+    // A subject with no instance holding main unit that also has subunits gives this
+    // nothing to look at, and a loop that never runs would report success. Treated as a
+    // failure, because it means the fixture stopped exercising the rule.
+    return Assert(outcome, parties,
+        () => problems.length === 0 && inspected > 0,
+        () => inspected === 0
+            ? ["no main unit in the response both holds instances and has subunits, so the rule was never exercised: the fixture or the subject needs revisiting"]
+            : problems);
 }
 
 /**

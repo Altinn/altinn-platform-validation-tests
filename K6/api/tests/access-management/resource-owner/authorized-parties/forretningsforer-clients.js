@@ -15,29 +15,31 @@ import { getClients } from "./common.js";
 //   And the other housing company client is also returned
 
 export default function (data) {
-    const [authorizedPartiesClient] = getClients();
+    group("Scenario: A business manager's daily leader reaches the housing companies the firm manages", function () {
+        const [authorizedPartiesClient] = getClients();
 
-    const firm = data.testdata.forretningsforerNonfigurativEmosjonellPuma;
+        const firm = data.testdata.forretningsforerNonfigurativEmosjonellPuma;
 
-    const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
-    const queryParams = new AuthorizedPartiesQueryBuilder()
-        .includeRoles()
-        .includeAccessPackages()
-        .build();
+        const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
+        const queryParams = new AuthorizedPartiesQueryBuilder()
+            .includeRoles()
+            .includeAccessPackages()
+            .build();
 
-    group("WHEN the subject is the daily leader of a business manager firm", function () {
-        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+        group("WHEN the subject is the daily leader of a business manager firm", function () {
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-            "THEN the housing company the firm manages is returned",
-            parties, firm.esekClient.partyUuid);
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+                "THEN the housing company the firm manages is returned",
+                parties, firm.esekClient.partyUuid);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-            "AND it carries the eiendom package the firm holds for it",
-            parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage]);
+            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
+                "AND it carries the eiendom package the firm holds for it",
+                parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage]);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-            "AND the other housing company client is also returned",
-            parties, firm.nonBrlEsekClient.partyUuid);
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+                "AND the other housing company client is also returned",
+                parties, firm.nonBrlEsekClient.partyUuid);
+        });
     });
 }

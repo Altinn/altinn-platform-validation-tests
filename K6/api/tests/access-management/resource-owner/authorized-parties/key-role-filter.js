@@ -18,54 +18,56 @@ import { getClients } from "./common.js";
 // tracked by #3522. The inactive window is covered by the deleted parties scenario.
 
 export default function (data) {
-    const [authorizedPartiesClient] = getClients();
+    group("Scenario: Excluding key role parties drops what the subject only reaches through a firm", function () {
+        const [authorizedPartiesClient] = getClients();
 
-    const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
-    const client = firm.client_USENSUELL_UVIRKSOM_TIGER;
-    const clientWithoutDelegation = firm.client_WITHOUT_CLIENTDELEGATION;
-    const directDelegator = firm.client_rightholderOrg2;
+        const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
+        const client = firm.client_USENSUELL_UVIRKSOM_TIGER;
+        const clientWithoutDelegation = firm.client_WITHOUT_CLIENTDELEGATION;
+        const directDelegator = firm.client_rightholderOrg2;
 
-    const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
+        const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-    group("GIVEN key role parties are included", function () {
-        const queryParams = new AuthorizedPartiesQueryBuilder()
-            .includeAccessPackages()
-            .includePartiesViaKeyRoles("true")
-            .build();
+        group("GIVEN key role parties are included", function () {
+            const queryParams = new AuthorizedPartiesQueryBuilder()
+                .includeAccessPackages()
+                .includePartiesViaKeyRoles("true")
+                .build();
 
-        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-            "THEN a client the subject reaches through the firm's key role is in the list",
-            parties, client.partyUuid);
-    });
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+                "THEN a client the subject reaches through the firm's key role is in the list",
+                parties, client.partyUuid);
+        });
 
-    group("WHEN key role parties are excluded", function () {
-        const queryParams = new AuthorizedPartiesQueryBuilder()
-            .includeAccessPackages()
-            .includePartiesViaKeyRoles("false")
-            .build();
+        group("WHEN key role parties are excluded", function () {
+            const queryParams = new AuthorizedPartiesQueryBuilder()
+                .includeAccessPackages()
+                .includePartiesViaKeyRoles("false")
+                .build();
 
-        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-            "THEN the accountant client the subject only reached through the firm is gone",
-            parties, client.partyUuid);
+            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+                "THEN the accountant client the subject only reached through the firm is gone",
+                parties, client.partyUuid);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-            "AND the client without a client delegation is gone too",
-            parties, clientWithoutDelegation.partyUuid);
+            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+                "AND the client without a client delegation is gone too",
+                parties, clientWithoutDelegation.partyUuid);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-            "AND the firm the subject is daily leader for is still returned",
-            parties, firm.partyUuid);
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+                "AND the firm the subject is daily leader for is still returned",
+                parties, firm.partyUuid);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-            "AND a party that delegated directly to the person is still returned",
-            parties, directDelegator.partyUuid);
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+                "AND a party that delegated directly to the person is still returned",
+                parties, directDelegator.partyUuid);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-            "AND that party still carries the package delegated to the person",
-            parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson]);
+            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
+                "AND that party still carries the package delegated to the person",
+                parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson]);
+        });
     });
 }

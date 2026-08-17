@@ -13,6 +13,10 @@ which is why the outcome sentence is passed in at the call site rather than bake
 the domain check: the check owns the comparison, the scenario owns the sentence. That is
 also why the same check can appear twice in one group saying two different things.
 
+Each file wraps its steps in a `group("Scenario: ...")`, so the report shows the scenario
+as a heading with its steps numbered in sequence beneath it (`3/9`). Without that, a long
+scenario is indistinguishable from nine unrelated ones in a flat list.
+
 The suite reports through `K6/bdd-summary.js` rather than the shared
 `functional-tests-summary.js`. It keeps the GIVEN, WHEN, THEN and AND sentences and drops
 the request plumbing while it passes, since three `GetAuthorizedParties - ...` lines per

@@ -17,49 +17,51 @@ import { getClients } from "./common.js";
 // anyOfResourceIds is a query parameter on this endpoint, unlike the party filter.
 
 export default function (data) {
-    const [authorizedPartiesClient] = getClients();
+    group("Scenario: The resource filter narrows both the parties and the access shown on them", function () {
+        const [authorizedPartiesClient] = getClients();
 
-    const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
-    const resourceHolder = firm.client_rightholderOrg2;
-    const otherClient = firm.client_USENSUELL_UVIRKSOM_TIGER;
-    const resourceId = resourceHolder.resourceIdDelegatedToPerson;
+        const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
+        const resourceHolder = firm.client_rightholderOrg2;
+        const otherClient = firm.client_USENSUELL_UVIRKSOM_TIGER;
+        const resourceId = resourceHolder.resourceIdDelegatedToPerson;
 
-    const queryParams = new AuthorizedPartiesQueryBuilder()
-        .includeResources()
-        .addResourceId(resourceId)
-        .build();
-
-    group("WHEN the list is filtered on a single resource the subject holds on one client", function () {
-        const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
-
-        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
-
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-            "THEN the client that carries the filtered resource is returned",
-            parties, resourceHolder.partyUuid);
-
-        AuthorizedPartiesDomainChecks.CheckPartyHasExactlyResources(
-            "AND the only resource left on it is the one filtered on",
-            parties, resourceHolder.partyUuid, [resourceId]);
-
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-            "AND a client the subject reaches without that resource drops out",
-            parties, otherClient.partyUuid);
-    });
-
-    group("WHEN the subject holds packages on the firm but not the filtered resource", function () {
-        const request = new AuthorizedPartiesRequestBuilder()
-            .withPerson(firm.employee_rightholderWithPackages.pid)
+        const queryParams = new AuthorizedPartiesQueryBuilder()
+            .includeResources()
+            .addResourceId(resourceId)
             .build();
 
-        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+        group("WHEN the list is filtered on a single resource the subject holds on one client", function () {
+            const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-            "THEN the client that carries that resource for another person is not returned",
-            parties, resourceHolder.partyUuid);
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckNoPartyCarriesResource(
-            "AND no returned party carries the filtered resource",
-            parties, resourceId);
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+                "THEN the client that carries the filtered resource is returned",
+                parties, resourceHolder.partyUuid);
+
+            AuthorizedPartiesDomainChecks.CheckPartyHasExactlyResources(
+                "AND the only resource left on it is the one filtered on",
+                parties, resourceHolder.partyUuid, [resourceId]);
+
+            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+                "AND a client the subject reaches without that resource drops out",
+                parties, otherClient.partyUuid);
+        });
+
+        group("WHEN the subject holds packages on the firm but not the filtered resource", function () {
+            const request = new AuthorizedPartiesRequestBuilder()
+                .withPerson(firm.employee_rightholderWithPackages.pid)
+                .build();
+
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+
+            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+                "THEN the client that carries that resource for another person is not returned",
+                parties, resourceHolder.partyUuid);
+
+            AuthorizedPartiesDomainChecks.CheckNoPartyCarriesResource(
+                "AND no returned party carries the filtered resource",
+                parties, resourceId);
+        });
     });
 }
