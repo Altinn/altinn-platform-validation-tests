@@ -58,6 +58,88 @@ class AuthorizedPartiesRequestBuilder {
     }
 
     /**
+     * Set a subject identified by its Altinn user id.
+     *
+     * @param {string|number} userId Altinn user id.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withUserId(userId) {
+        return this.withSubject("urn:altinn:userid", String(userId));
+    }
+
+    /**
+     * Set a subject identified by its Altinn party id.
+     *
+     * @param {string|number} partyId Altinn party id.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withPartyId(partyId) {
+        return this.withSubject("urn:altinn:partyid", String(partyId));
+    }
+
+    /**
+     * Set a person subject identified by uuid rather than national identity number.
+     *
+     * @param {string} uuid Person uuid.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withPersonUuid(uuid) {
+        return this.withSubject("urn:altinn:person:uuid", uuid);
+    }
+
+    /**
+     * Set an organization subject identified by uuid rather than organization number.
+     *
+     * @param {string} uuid Organization uuid.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withOrganizationUuid(uuid) {
+        return this.withSubject("urn:altinn:organization:uuid", uuid);
+    }
+
+    /**
+     * Set an enterprise user subject identified by its user name.
+     *
+     * @param {string} username Enterprise user name.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withEnterpriseUserUsername(username) {
+        return this.withSubject("urn:altinn:enterpriseuser:username", username);
+    }
+
+    /**
+     * Set an enterprise user subject identified by uuid.
+     *
+     * @param {string} uuid Enterprise user uuid.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withEnterpriseUserUuid(uuid) {
+        return this.withSubject("urn:altinn:enterpriseuser:uuid", uuid);
+    }
+
+    /**
+     * Add party filters by party uuid.
+     *
+     * @param {Array<string>|string} partyUuids Party uuids to filter by.
+     * @returns {AuthorizedPartiesRequestBuilder} Builder instance.
+     */
+    withPartyUuidFilter(partyUuids) {
+        const uuids = Array.isArray(partyUuids)
+            ? partyUuids
+            : [partyUuids];
+
+        this.request.partyFilter = [
+            ...(this.request.partyFilter ?? []),
+            ...uuids.map((partyUuid) => ({
+                type: "urn:altinn:party:uuid",
+                value: partyUuid,
+            })),
+        ];
+
+        return this;
+    }
+
+    /**
      * Add party filters from the party reference format.
      *
      * Supported formats:
