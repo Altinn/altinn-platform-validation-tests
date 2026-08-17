@@ -82,9 +82,12 @@ The main unit and subunit delegation hierarchy that
 fixture, and the service owner org codes come from `../../enduser/shared-testdata.json`.
 
 The fixtures are fetched over HTTPS at `setup()` time rather than read off disk, so a
-scheduled run does not need a checkout. That also means a fixture change only takes
-effect once it is on `main`. To develop against fixtures that have not merged yet, point
-`TESTDATA_REF` in `common.js` at the branch.
+scheduled run does not need a checkout. That also means a fixture change only takes effect
+once it is on the ref `TESTDATA_REF` in `common.js` names.
+
+**`TESTDATA_REF` currently points at this feature branch, not at `main`, so the suite can
+be run by hand before its fixtures have merged. Set it back to `main` as part of merging.**
+Left pointing at the branch, every scheduled run breaks the moment the branch is deleted.
 
 ## Running
 

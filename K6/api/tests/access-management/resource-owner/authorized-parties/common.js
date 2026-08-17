@@ -27,10 +27,13 @@ export const OTHER_SERVICE_OWNER_ORG_CODE = "skd";
  *
  * The fixtures are fetched over HTTPS rather than read off disk, so a scheduled
  * run in the cluster does not depend on a checkout. That means a fixture change
- * only takes effect once it is on main. Point this at a branch to develop against
- * fixtures that have not merged yet.
+ * only takes effect once it is on the ref named here.
+ *
+ * FIXME: set back to "main" before merging. This points at the feature branch so
+ * the suite can be run by hand while its fixtures are not on main yet. Left as is,
+ * the scheduled runs break the moment the branch is deleted.
  */
-const TESTDATA_REF = "main";
+const TESTDATA_REF = "test/port-serviceowner-authorized-parties-to-k6";
 
 const RAW_BASE = `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/api/tests/access-management`;
 
