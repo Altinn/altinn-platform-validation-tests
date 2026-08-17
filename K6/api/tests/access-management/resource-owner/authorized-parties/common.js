@@ -30,7 +30,7 @@ export const OTHER_SERVICE_OWNER_ORG_CODE = "skd";
  * only takes effect once it is on main. Point this at a branch to develop against
  * fixtures that have not merged yet.
  */
-const TESTDATA_REF = "main";
+const TESTDATA_REF = "test/port-serviceowner-authorized-parties-to-k6";
 
 const RAW_BASE = `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/api/tests/access-management`;
 

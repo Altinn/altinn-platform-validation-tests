@@ -875,6 +875,30 @@ function CheckRequestRejected(response, expectedStatus, reason) {
 }
 
 /**
+ * Checks that a request succeeded, for the steps that only care about the status.
+ *
+ * Used by the authorization boundary steps, which assert that a credential is
+ * accepted without saying anything about the parties it comes back with.
+ *
+ * @param {object} response - The raw HTTP response.
+ * @param {string} credential - What was presented, for the failure message.
+ * @returns {boolean} True if the response was a 200.
+ */
+function CheckRequestSucceeded(response, credential) {
+    const success = check(response, {
+        "CheckRequestSucceeded - The credential is accepted with 200":
+            (res) => res.status === 200,
+    });
+
+    if (!success) {
+        console.error(`CheckRequestSucceeded - expected 200 with ${credential}, got ${response.status}`);
+        console.error(`CheckRequestSucceeded - body: ${response.body}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that a request was rejected as unauthenticated.
  *
  * @param {object} response - The raw HTTP response.
@@ -973,6 +997,7 @@ export const AuthorizedPartiesDomainChecks = {
     CheckNoPartyCarriesResource,
     CheckNoDuplicateParties,
     CheckPartyUuidsMatchBaseline,
+    CheckRequestSucceeded,
     CheckUnauthorized,
     CheckForbidden,
     CheckBadRequest,
