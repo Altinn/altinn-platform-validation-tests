@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -30,7 +31,11 @@ export default function (data) {
             .withOrgCode(orgCode)
             .build();
 
-        group("WHEN a service owner filters on its own org code", function () {
+        scenario({
+            name: "A service owner may filter on the org code it owns",
+            given: "a service owner calling with the resource owner scope",
+            when: "it lists the parties filtered on its own org code",
+        }, function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, filteredOnOrgCode(ownOrgCode));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
@@ -38,7 +43,11 @@ export default function (data) {
                 parties);
         });
 
-        group("WHEN a service owner with only the resource owner scope filters on another service owner's org code", function () {
+        scenario({
+            name: "A resource owner may not filter on an org code it does not own",
+            given: "a service owner calling with only the resource owner scope",
+            when: "it lists the parties filtered on another service owner's org code",
+        }, function () {
             // The building block asserts 200, so this refusal goes straight to the client.
             const response = authorizedPartiesClient.GetAuthorizedParties(request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
@@ -51,7 +60,11 @@ export default function (data) {
                 response, OTHER_SERVICE_OWNER_ORG_CODE);
         });
 
-        group("WHEN the caller has the admin scope and filters on that same org code", function () {
+        scenario({
+            name: "The admin scope may filter on any org code",
+            given: "a caller with the authorized parties admin scope",
+            when: "it lists the parties filtered on another service owner's org code",
+        }, function () {
             const parties = GetAuthorizedParties(getAdminClient(), request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(

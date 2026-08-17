@@ -6,16 +6,18 @@ Ported from the Bruno suite at
 Covers `POST /accessmanagement/api/v1/resourceowner/authorizedparties`. Each Bruno
 scenario folder became one file here.
 
-The BDD reading lives in two places. A `group()` names the action, so it reads as the
-GIVEN or the WHEN, and every check inside it names an outcome that was observed, so it
-reads as a THEN or an AND. Both show up in the summary output and in the Slack message,
-which is why the outcome sentence is passed in at the call site rather than baked into
-the domain check: the check owns the comparison, the scenario owns the sentence. That is
-also why the same check can appear twice in one group saying two different things.
+A file is a **feature**. Each `scenario()` inside it is one scenario, and a scenario is one
+action with the outcomes that followed from it, so it reads
+`(GIVEN AND*)? WHEN THEN (AND)*` and never stacks two WHENs or two THENs. `scenario()`
+takes the name, the setup and the single action as separate fields, so setup cannot drift
+into the action and become a run on clause.
 
-Each file wraps its steps in a `group("Scenario: ...")`, so the report shows the scenario
-as a heading with its steps numbered in sequence beneath it (`3/9`). Without that, a long
-scenario is indistinguishable from nine unrelated ones in a flat list.
+The outcomes are the checks inside the body, and their sentences are passed in at the call
+site rather than baked into the domain check: the check owns the comparison, the scenario
+owns the sentence. That is why the same check appears more than once in a scenario saying
+different things, and why the first outcome reads THEN and the rest read AND.
+
+Rationale does not go in a step name. It goes in a comment next to the step.
 
 The suite reports through `K6/bdd-summary.js` rather than the shared
 `functional-tests-summary.js`. It keeps the GIVEN, WHEN, THEN and AND sentences and drops

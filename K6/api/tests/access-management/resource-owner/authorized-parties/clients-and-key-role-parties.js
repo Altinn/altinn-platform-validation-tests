@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -43,7 +44,14 @@ export default function (data) {
 
         // Every outcome below is observed on one lookup, so the request is made once rather
         // than repeated per assertion the way the Bruno steps did.
-        group("WHEN a service owner lists the authorized parties for the accounting firm's daily leader", function () {
+        scenario({
+            name: "An accounting firm's daily leader reaches the firm, its clients and their owners",
+            given: [
+                "an accounting firm whose daily leader holds a key role in it",
+                "the firm is the accountant for several client organisations",
+            ],
+            when: "a service owner lists the authorized parties of the firm's daily leader, with every access information flag on",
+        }, function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(

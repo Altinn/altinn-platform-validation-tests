@@ -203,10 +203,13 @@ export default function (data) {
         // On a hierarchy subject there is nothing to inspect and the rule goes unexercised.
         scenario({
             name: "Instance access stays with the party it was delegated to",
-            given: "a main unit holds instance access and has subunits",
             when: "a service owner lists the authorized parties of the accounting firm's daily leader",
         }, function () {
             const parties = lookUp(firm.dagligleder.pid);
+
+            AuthorizedPartiesDomainChecks.CheckSomeMainUnitHoldsInstancesAndHasSubunits(
+                "GIVEN a main unit in the list holds instance access and has subunits",
+                parties);
 
             AuthorizedPartiesDomainChecks.CheckNoSubunitInheritsInstances(
                 "THEN no subunit carries an instance its main unit holds",

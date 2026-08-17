@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -28,7 +29,11 @@ export default function (data) {
 
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-        group("WHEN the parties are listed with key role parties included", function () {
+        scenario({
+            name: "Key role parties are included by default",
+            given: "a daily leader who reaches client organisations only through the firm's key role",
+            when: "a service owner lists the parties with key role parties included",
+        }, function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeAccessPackages()
                 .includePartiesViaKeyRoles("true")
@@ -41,7 +46,14 @@ export default function (data) {
                 parties, client.partyUuid);
         });
 
-        group("WHEN key role parties are excluded", function () {
+        scenario({
+            name: "Excluding key role parties drops what only the firm reaches",
+            given: [
+                "a daily leader who reaches some clients only through the firm's key role",
+                "another party has delegated to that person directly",
+            ],
+            when: "a service owner lists the parties with key role parties excluded",
+        }, function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeAccessPackages()
                 .includePartiesViaKeyRoles("false")

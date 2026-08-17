@@ -605,10 +605,33 @@ function CheckSubunitInheritsMainUnitAccessPackages(outcome, parties, mainUnitPa
 }
 
 /**
+ * At least one main unit in the response both holds instance access and has subunits.
+ *
+ * The precondition the inheritance rule needs to mean anything. Asserted rather than
+ * assumed, because a subject whose response has no such party makes the rule below pass
+ * without testing it, which is how this went green while checking nothing.
+ *
+ * @param {string} outcome - The outcome sentence.
+ * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
+ * @returns {boolean} True if the outcome held.
+ */
+function CheckSomeMainUnitHoldsInstancesAndHasSubunits(outcome, parties) {
+    const qualifying = (parties ?? []).filter((party) =>
+        (party.authorizedInstances ?? []).length > 0 && (party.subunits ?? []).length > 0);
+
+    return Assert(outcome, parties,
+        () => qualifying.length > 0,
+        () => ["no main unit in the response both holds instances and has subunits, so there is nothing for the inheritance rule to be tested against: the fixture or the subject needs revisiting"]);
+}
+
+/**
  * No subunit carries an instance its main unit holds.
  *
  * Access packages and resources extend from a main unit to its subunits, but instance
  * access does not: an instance is delegated to one party and stays there.
+ *
+ * That there is anything to inspect at all is asserted separately, by
+ * CheckSomeMainUnitHoldsInstancesAndHasSubunits, so this stays a statement of the rule.
  *
  * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
@@ -637,9 +660,8 @@ function CheckNoSubunitInheritsInstances(outcome, parties) {
         }
     }
 
-    // A subject with no instance holding main unit that also has subunits gives this
-    // nothing to look at, and a loop that never runs would report success. Treated as a
-    // failure, because it means the fixture stopped exercising the rule.
+    // The precondition check above is the primary guard. This keeps the same protection
+    // for any caller that asserts the rule without it.
     return Assert(outcome, parties,
         () => problems.length === 0 && inspected > 0,
         () => inspected === 0
@@ -819,6 +841,7 @@ export const AuthorizedPartiesDomainChecks = {
     CheckPartyHasNoSubunits,
     CheckSubunitIsNestedUnderMainUnit,
     CheckSubunitInheritsMainUnitAccessPackages,
+    CheckSomeMainUnitHoldsInstancesAndHasSubunits,
     CheckNoSubunitInheritsInstances,
     CheckEveryPartyHasNoAccessInformation,
     CheckNoPartyCarriesResource,

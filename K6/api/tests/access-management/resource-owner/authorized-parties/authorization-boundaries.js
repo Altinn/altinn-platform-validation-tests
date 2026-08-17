@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } from "./common.js";
@@ -24,7 +25,11 @@ export default function (data) {
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
         const queryParams = new AuthorizedPartiesQueryBuilder().build();
 
-        group("WHEN the request carries no token", function () {
+        scenario({
+            name: "An unauthenticated request is refused",
+            given: "no token at all",
+            when: "a caller lists authorized parties",
+        }, function () {
             const response = getNoTokenClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckUnauthorized(
@@ -32,7 +37,11 @@ export default function (data) {
                 response);
         });
 
-        group("WHEN the caller presents a valid token whose scope the policy does not accept", function () {
+        scenario({
+            name: "A valid token with the wrong scope is refused",
+            given: "a valid enterprise token carrying a scope this policy does not accept",
+            when: "a caller lists authorized parties",
+        }, function () {
             const response = getWrongScopeClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckForbidden(
@@ -40,7 +49,11 @@ export default function (data) {
                 response);
         });
 
-        group("WHEN the caller presents the resource owner scope", function () {
+        scenario({
+            name: "The resource owner scope is accepted",
+            given: "a valid enterprise token carrying the authorized parties resource owner scope",
+            when: "a caller lists authorized parties",
+        }, function () {
             const [authorizedPartiesClient] = getClients();
             const response = authorizedPartiesClient.GetAuthorizedParties(request, queryParams);
 
@@ -49,7 +62,11 @@ export default function (data) {
                 response);
         });
 
-        group("WHEN the caller presents the admin scope", function () {
+        scenario({
+            name: "The admin scope is accepted",
+            given: "a valid enterprise token carrying the authorized parties admin scope",
+            when: "a caller lists authorized parties",
+        }, function () {
             const response = getAdminClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckRequestSucceeded(

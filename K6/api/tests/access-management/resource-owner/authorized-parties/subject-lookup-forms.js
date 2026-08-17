@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks, PartyUuidList } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -39,7 +40,11 @@ export default function (data) {
         let organisationBaseline = null;
         let enterpriseUserBaseline = null;
 
-        group("WHEN a person is looked up by national identity number", function () {
+        scenario({
+            name: "A person can be looked up by national identity number",
+            given: "a person who is daily leader of the accounting firm",
+            when: "a service owner looks that person up by national identity number",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(person.pid).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
@@ -55,7 +60,11 @@ export default function (data) {
             return;
         }
 
-        group("WHEN the same person is looked up by user id", function () {
+        scenario({
+            name: "The user id form resolves to the same parties",
+            given: "the party list that person's national identity number resolved to",
+            when: "a service owner looks the same person up by user id",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withUserId(person.userId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
@@ -63,7 +72,11 @@ export default function (data) {
                 parties, personBaseline);
         });
 
-        group("WHEN the same person is looked up by party id", function () {
+        scenario({
+            name: "The party id form resolves to the same parties",
+            given: "the party list that person's national identity number resolved to",
+            when: "a service owner looks the same person up by party id",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(person.partyId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
@@ -71,7 +84,11 @@ export default function (data) {
                 parties, personBaseline);
         });
 
-        group("WHEN the same person is looked up by person uuid", function () {
+        scenario({
+            name: "The person uuid form resolves to the same parties",
+            given: "the party list that person's national identity number resolved to",
+            when: "a service owner looks the same person up by person uuid",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(person.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
@@ -79,7 +96,11 @@ export default function (data) {
                 parties, personBaseline);
         });
 
-        group("WHEN an organisation is looked up by organisation number", function () {
+        scenario({
+            name: "An organisation can be the subject too",
+            given: "an organisation with authorized parties of its own",
+            when: "a service owner looks that organisation up by organisation number",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(firm.orgno).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
@@ -89,7 +110,11 @@ export default function (data) {
             organisationBaseline = PartyUuidList(parties);
         });
 
-        group("WHEN the same organisation is looked up by organisation uuid", function () {
+        scenario({
+            name: "The organisation uuid form resolves to the same parties",
+            given: "the party list that organisation's number resolved to",
+            when: "a service owner looks the same organisation up by organisation uuid",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(firm.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
@@ -103,7 +128,11 @@ export default function (data) {
         // fixture is given access, but the equivalence is not exercised as things stand.
         // Deliberately not asserted non empty, which would be a fixture failure dressed up as
         // a product one. The Bruno suite this was ported from has the same gap.
-        group("WHEN an enterprise user is looked up by user name", function () {
+        scenario({
+            name: "An enterprise user can be the subject too",
+            given: "an enterprise user belonging to a service owner",
+            when: "a service owner looks that enterprise user up by user name",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUsername(enterpriseUser.username).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
@@ -113,7 +142,11 @@ export default function (data) {
             enterpriseUserBaseline = PartyUuidList(parties);
         });
 
-        group("WHEN the same enterprise user is looked up by uuid", function () {
+        scenario({
+            name: "The enterprise user uuid form resolves to the same parties",
+            given: "the party list that enterprise user's user name resolved to",
+            when: "a service owner looks the same enterprise user up by uuid",
+        }, function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUuid(enterpriseUser.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(

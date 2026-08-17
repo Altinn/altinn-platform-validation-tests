@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -30,7 +31,14 @@ export default function (data) {
             .addResourceId(resourceId)
             .build();
 
-        group("WHEN the list is filtered on a single resource the subject holds on one client", function () {
+        scenario({
+            name: "Filtering on a resource narrows the parties and their resources",
+            given: [
+                "one client has a resource delegated to the subject",
+                "another client the subject reaches does not have it",
+            ],
+            when: "a service owner lists the parties filtered on that one resource",
+        }, function () {
             const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
@@ -48,7 +56,11 @@ export default function (data) {
                 parties, otherClient.partyUuid);
         });
 
-        group("WHEN the subject holds packages on the firm but not the filtered resource", function () {
+        scenario({
+            name: "Filtering on a resource the subject does not hold returns nothing carrying it",
+            given: "an employee who holds packages on the firm but not the filtered resource",
+            when: "a service owner lists that employee's parties filtered on the resource",
+        }, function () {
             const request = new AuthorizedPartiesRequestBuilder()
                 .withPerson(firm.employee_rightholderWithPackages.pid)
                 .build();

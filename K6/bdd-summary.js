@@ -15,11 +15,15 @@
  * outcomes come from the checks inside the scenario body, first as the THEN and then as
  * ANDs, so one scenario has exactly one WHEN and one THEN however many things it asserts.
  *
- * GIVEN steps carry no tick. They state what the environment already holds, which this
- * suite takes on trust from its fixtures rather than verifying, and marking them would
- * claim more than was done. The WHEN carries the request's own success, which is what the
- * status and parse checks of a building block actually mean. Those checks are therefore
- * not printed as steps of their own, only surfaced by name when they fail.
+ * A GIVEN declared on scenario() states what the fixtures hold and is not checked, so it
+ * ticks once the scenario ran, the way any BDD runner treats a Given step that did not
+ * throw. A GIVEN that can actually be established should be registered as a check named
+ * "GIVEN ..." instead, so it is verified like any other step: a precondition that quietly
+ * stopped being true is how a test quietly stops testing anything.
+ *
+ * The WHEN carries the request's own success, which is what the status and parse checks of
+ * a building block actually mean. Those checks are therefore not printed as steps of their
+ * own, only surfaced by name when they fail.
  *
  * Docs: https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/
  */
@@ -36,6 +40,7 @@ import postSlackMessage from "./slack.js";
 const PART = " || ";
 
 const OUTCOME = /^\s*(THEN|AND|BUT)\b/i;
+const PRECONDITION = /^\s*GIVEN\b/i;
 
 /**
  * Declares one scenario.
@@ -96,8 +101,9 @@ function CollectScenarios(group, ancestors, scenarios) {
             feature: ancestors.length > 0 ? ancestors[0] : null,
             name: declared.name,
             declaredSteps: declared.steps,
+            givenChecks: checks.filter((check) => PRECONDITION.test(check.name)),
             outcomes: checks.filter((check) => OUTCOME.test(check.name)),
-            plumbing: checks.filter((check) => !OUTCOME.test(check.name)),
+            plumbing: checks.filter((check) => !PRECONDITION.test(check.name) && !OUTCOME.test(check.name)),
         });
     }
 
@@ -127,7 +133,7 @@ function AllPassed(checks) {
  * @returns {boolean} True if any check in it failed.
  */
 function Failed(scenario) {
-    return !AllPassed([...scenario.outcomes, ...scenario.plumbing]);
+    return !AllPassed([...scenario.givenChecks, ...scenario.outcomes, ...scenario.plumbing]);
 }
 
 /**
@@ -146,18 +152,27 @@ function RenderScenario(scenario, lines) {
         lines.push(`  Scenario: ${scenario.name}`);
     }
 
+    // Verified preconditions come first, then the ones taken on trust, then the action.
+    // Only the first says GIVEN; the rest continue it with AND, as a feature file reads.
+    scenario.givenChecks.forEach((check, index) => {
+        const name = index === 0 ? check.name : check.name.replace(PRECONDITION, "AND");
+
+        lines.push(`    ${check.fails === 0 ? "✅" : "❌"} ${name}`);
+    });
+
     for (const step of scenario.declaredSteps) {
-        // A GIVEN is stated, not asserted, so it gets no tick. The WHEN is the action, and
-        // whether it succeeded is exactly what the request's own checks say.
         const isAction = /^\s*WHEN\b/i.test(step);
-        const mark = isAction ? (AllPassed(scenario.plumbing) ? "✅" : "❌") : "  ";
 
-        lines.push(`    ${mark} ${step}`);
+        if (!isAction) {
+            lines.push(`    ✅ ${scenario.givenChecks.length > 0 ? step.replace(PRECONDITION, "AND") : step}`);
 
-        if (isAction) {
-            for (const failure of scenario.plumbing.filter((check) => check.fails > 0)) {
-                lines.push(`         ↳ ${failure.name}`);
-            }
+            continue;
+        }
+
+        lines.push(`    ${AllPassed(scenario.plumbing) ? "✅" : "❌"} ${step}`);
+
+        for (const failure of scenario.plumbing.filter((check) => check.fails > 0)) {
+            lines.push(`         ↳ ${failure.name}`);
         }
     }
 
@@ -195,8 +210,10 @@ function Render(scenarios, onlyFailures) {
         const reported = onlyFailures ? inFeature.filter(Failed) : inFeature;
 
         for (const scenario of inFeature) {
-            outcomeCount += scenario.outcomes.length;
-            outcomesFailed += scenario.outcomes.filter((check) => check.fails > 0).length;
+            const asserted = [...scenario.givenChecks, ...scenario.outcomes];
+
+            outcomeCount += asserted.length;
+            outcomesFailed += asserted.filter((check) => check.fails > 0).length;
 
             if (Failed(scenario)) {
                 scenariosFailed += 1;

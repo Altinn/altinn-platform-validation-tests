@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { check, group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks, IsInsideRetentionWindow } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -36,7 +37,10 @@ export default function (data) {
             .includeInactiveParties("true")
             .build();
 
-        group("WHEN a service owner lists the daily leader's parties with inactive parties included", function () {
+        scenario({
+            name: "A deleted party keeps granting access to its owner for a retention window",
+            when: "a service owner lists the daily leader's parties with inactive parties included",
+        }, function () {
             // Preconditions, so they read as the scenario's GIVEN. The fixtures only mean
             // anything while they still sit on the side of the window they were chosen for.
             check(null, {

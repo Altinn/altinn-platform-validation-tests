@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -26,7 +27,14 @@ export default function (data) {
             .includeAccessPackages()
             .build();
 
-        group("WHEN the subject is the daily leader of a business manager firm", function () {
+        scenario({
+            name: "A business manager's daily leader reaches the housing companies it manages",
+            given: [
+                "a business manager firm that manages two housing companies",
+                "the firm holds the eiendom package for one of them",
+            ],
+            when: "a service owner lists the authorized parties of the firm's daily leader",
+        }, function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(

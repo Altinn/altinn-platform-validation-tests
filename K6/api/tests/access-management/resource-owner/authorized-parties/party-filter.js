@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -32,7 +33,11 @@ export default function (data) {
             .withPartyUuidFilter(partyUuid)
             .build();
 
-        group("WHEN the subject's list is filtered on a client main unit", function () {
+        scenario({
+            name: "Filtering on a main unit returns that unit alone",
+            given: "a client main unit the subject has access to, which has a subunit",
+            when: "a service owner lists the parties filtered on that main unit",
+        }, function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(client.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckOnlyTheseTopLevelParties(
@@ -52,7 +57,11 @@ export default function (data) {
                 parties, client.partyUuid);
         });
 
-        group("WHEN the subject's list is filtered on a subunit", function () {
+        scenario({
+            name: "Filtering on a subunit returns it nested under its main unit",
+            given: "a client subunit the subject has access to",
+            when: "a service owner lists the parties filtered on that subunit",
+        }, function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(client.subunit.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsNotTopLevel(
@@ -72,7 +81,11 @@ export default function (data) {
                 parties, client.partyUuid);
         });
 
-        group("WHEN the subject's list is filtered on a party the subject cannot access", function () {
+        scenario({
+            name: "Filtering never widens what the subject may see",
+            given: "a party the subject has no access to",
+            when: "a service owner lists the parties filtered on that party",
+        }, function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(unreachable.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsEmptyPartyArray(

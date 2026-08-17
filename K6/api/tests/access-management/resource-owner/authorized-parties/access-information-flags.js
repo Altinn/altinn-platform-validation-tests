@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -21,7 +22,11 @@ export default function (data) {
         const client = firm.client_USENSUELL_UVIRKSOM_TIGER;
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-        group("WHEN every access information flag is on", function () {
+        scenario({
+            name: "The flags populate the access collections",
+            given: "a client organisation the subject reaches through the accountant role",
+            when: "a service owner lists the parties with every access information flag on",
+        }, function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeRoles()
                 .includeAccessPackages()
@@ -40,7 +45,11 @@ export default function (data) {
                 parties, client.partyUuid);
         });
 
-        group("WHEN every access information flag is off", function () {
+        scenario({
+            name: "The flags do not decide which parties are returned",
+            given: "a client organisation the subject reaches through the accountant role",
+            when: "a service owner lists the parties with every access information flag off",
+        }, function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeRoles(false)
                 .includeAccessPackages(false)
