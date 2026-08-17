@@ -1,0 +1,157 @@
+{
+    "env": "at22",
+    "deletedPartyRetentionYears": 2,
+    "REGN_ULASTELIG_RETTFERDIG_TIGER": {
+        "name": "ULASTELIG RETTFERDIG TIGER AS",
+        "orgno": "314242726",
+        "partyId": 51235100,
+        "partyUuid": "066148fe-7077-4484-b7ea-44b5ede0014e",
+        "dagligleder": {
+            "name": "OPPRIKTIG KAMEL",
+            "pid": "30856499983",
+            "userId": 20013154,
+            "partyId": 51181765,
+            "partyUuid": "a5eb95db-97fc-4bd4-a6f6-b9214bc24549"
+        },
+        "subunit": {
+            "name": "ULASTELIG RETTFERDIG TIGER AS",
+            "orgno": "314613155",
+            "partyId": 51708660,
+            "partyUuid": "825d14bf-b3f3-4d68-ae33-0994febf8a43"
+        },
+        "client_USENSUELL_UVIRKSOM_TIGER": {
+            "name": "USENSUELL UVIRKSOM TIGER AS",
+            "orgno": "312714051",
+            "partyId": 51581690,
+            "partyUuid": "c12f8f37-391b-4651-be09-05665f5acdb6",
+            "subunit": {
+                "name": "USENSUELL UVIRKSOM TIGER AS",
+                "orgno": "315556155",
+                "partyId": 51794395,
+                "partyUuid": "86ae6d6a-3545-4956-b395-c67ca0df4e51"
+            }
+        },
+        "client_ENK_HUMAN_TOPP_KATT_BIL": {
+            "name": "HUMAN TOPP KATT BIL",
+            "orgno": "310329495",
+            "partyId": 51340351,
+            "partyUuid": "ab07bec2-fcd0-4563-908a-d9f564724252",
+            "innehaver": {
+                "name": "EVENTYRLIG FALK",
+                "pid": "31886896576",
+                "userId": 20013167,
+                "partyId": 50175254,
+                "partyUuid": "00273506-3b4a-4e8e-a1f7-b7f28c4b411b"
+            }
+        },
+        "client_WITHOUT_CLIENTDELEGATION": {
+            "name": "UNYTTIG MANGE TIGER AS",
+            "orgno": "313750531",
+            "partyId": 51653860,
+            "partyUuid": "0fcdee75-036a-47d9-ab40-5e55509a5b26"
+        },
+        "client_rightholderOrg2": {
+            "name": "STOLT BETYDELIG TIGER AS",
+            "orgno": "313816915",
+            "partyId": 51658393,
+            "partyUuid": "ffa48a06-6a01-4fc7-ae5e-8aaff6c1a850",
+            "packageDelegatedToPerson": "lonn",
+            "resourceIdDelegatedToPerson": "devtest_gar_authparties-main-to-person"
+        },
+        "client_ENK_DELETED_2025_11_27_InnehaverAccess": {
+            "name": "SJELDEN REN KATT KONJAKK",
+            "deletedDate": "2025-11-27",
+            "orgno": "313744019",
+            "partyId": 51653406,
+            "partyUuid": "1fbd06a3-3654-460b-8917-d9f4f9664625",
+            "innehaver": {
+                "name": "PRATSOM SKOLE",
+                "pid": "19846999968",
+                "userId": 20820830,
+                "partyId": 51175128,
+                "partyUuid": "ab0e4f41-4dbe-4198-bc69-6429cbfb6989"
+            }
+        },
+        "client_ENK_DELETED_2023_11_01_NoInnehaverAccess": {
+            "name": "OMSORGSFULL KUL KATT SKATOLL",
+            "deletedDate": "2023-11-01",
+            "orgno": "312282054",
+            "partyId": 51545196,
+            "partyUuid": "2c3b1064-2289-4217-b5de-41038ea86158",
+            "innehaver": {
+                "name": "SYMPATISK LINJE",
+                "pid": "24887299168",
+                "userId": 20946709,
+                "partyId": 50218861,
+                "partyUuid": "c5950a52-d4b4-454d-8cdf-a9c78bda6ff8"
+            }
+        },
+        "systemuser_tilgangsstyrer": {
+            "name": "314242726_bruno-systembruker-som-tilgangsstyrer",
+            "clientId": "76db1f73-9895-41c0-8f76-09e8ebaee6c9",
+            "partyUuid": "171bd27b-31d2-409b-89b7-b88cb5b6bae3"
+        },
+        "employee_rightholderWithPackages": {
+            "name": "STOR UTHOLDEN AUTORITET ANSIKTSKREM",
+            "pid": "27877695722",
+            "userId": 20962455,
+            "partyId": 51233907,
+            "partyUuid": "c8ded0aa-60b5-4007-9429-6acca2f88031",
+            "directPackageToDelegate": "revisorattesterer"
+        },
+        "employee_rightholderWithoutPackages": {
+            "name": "MOBIL LAMA",
+            "pid": "31858374521",
+            "userId": 20429745,
+            "partyId": 50427753,
+            "partyUuid": "582591cd-b618-4c6f-a0e2-b2c6fe70eb70"
+        }
+    },
+    "a2BrunoSIUser": {
+        "name": "A2BrunoSIUser",
+        "username": "a2brunosiuser",
+        "userId": 21226088,
+        "partyId": 51842409,
+        "partyUuid": "2c496351-cdc6-402a-b4f8-2b1145bb626e"
+    },
+    "a2BrunoECUser": {
+        "name": "bruno_ec_digdir",
+        "username": "bruno_ec_digdir",
+        "userId": 21226091,
+        "partyId": 50088610,
+        "partyUuid": "b2139d9e-811b-48bd-81a7-7edd79a84d69"
+    },
+    "idportenEmailUser": {
+        "name": "am-bruno-automated-tests@mailinator.com",
+        "emailId": "am-bruno-automated-tests@mailinator.com",
+        "userId": 21228268,
+        "partyId": 51844582,
+        "partyUuid": "c356ff8f-fb44-4d21-9052-ac5376b7d7bf"
+    },
+    "forretningsforerNonfigurativEmosjonellPuma": {
+        "name": "NONFIGURATIV EMOSJONELL PUMA",
+        "orgno": "313760243",
+        "partyId": 51317416,
+        "partyUuid": "a3846553-4f56-4dd3-addc-d2a79b663b51",
+        "dagligleder": {
+            "name": "SPETTETE DALSIDE",
+            "pid": "08817696563",
+            "userId": 21129089,
+            "partyId": 50639183,
+            "partyUuid": "ec30c235-d7f6-432b-b060-bdbbe9cdd8ec"
+        },
+        "esekClient": {
+            "name": "LETT SLEM LØVE SAMEIE",
+            "orgno": "313184390",
+            "partyId": 51614735,
+            "partyUuid": "1d53cb86-18e0-45d7-b777-8a06c3d55fc3",
+            "clientPackage": "forretningsforer-eiendom"
+        },
+        "nonBrlEsekClient": {
+            "name": "SKEPTISK LILLA HEST BORETTSLAG",
+            "orgno": "311115057",
+            "partyId": 51409777,
+            "partyUuid": "02f2e6c8-b67e-4ee7-b98d-8c6541eb0bfa"
+        }
+    }
+}
