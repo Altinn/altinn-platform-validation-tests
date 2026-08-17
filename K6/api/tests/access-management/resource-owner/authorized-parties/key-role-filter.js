@@ -27,10 +27,7 @@ export default function (data) {
 
     const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-    // GIVEN key role parties are included, the clients the subject reaches through the
-    // accounting firm's key role are part of the list. This is the baseline the exclude
-    // step is compared against.
-    group("01 GIVEN key role parties are included", function () {
+    group("GIVEN key role parties are included", function () {
         const queryParams = new AuthorizedPartiesQueryBuilder()
             .includeAccessPackages()
             .includePartiesViaKeyRoles("true")
@@ -38,13 +35,12 @@ export default function (data) {
 
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, client.partyUuid, `the accountant client ${client.name}, reachable via the key role`);
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "THEN a client the subject reaches through the firm's key role is in the list",
+            parties, client.partyUuid);
     });
 
-    // WHEN key role parties are excluded, the clients the subject only reaches because
-    // the accounting firm has access to them drop out. The firm itself stays, and so
-    // does a party that delegated something to the person directly.
-    group("02 WHEN key role parties are excluded", function () {
+    group("WHEN key role parties are excluded", function () {
         const queryParams = new AuthorizedPartiesQueryBuilder()
             .includeAccessPackages()
             .includePartiesViaKeyRoles("false")
@@ -52,10 +48,24 @@ export default function (data) {
 
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, client.partyUuid, "the accountant client is only reachable through the key role");
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, clientWithoutDelegation.partyUuid, "the client without a client delegation is only reachable through the key role");
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.partyUuid, `the firm ${firm.name} the subject is daily leader for`);
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, directDelegator.partyUuid, `${directDelegator.name}, which delegated directly to the person`);
-        AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson]);
+        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+            "THEN the accountant client the subject only reached through the firm is gone",
+            parties, client.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+            "AND the client without a client delegation is gone too",
+            parties, clientWithoutDelegation.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "AND the firm the subject is daily leader for is still returned",
+            parties, firm.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "AND a party that delegated directly to the person is still returned",
+            parties, directDelegator.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
+            "AND that party still carries the package delegated to the person",
+            parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson]);
     });
 }

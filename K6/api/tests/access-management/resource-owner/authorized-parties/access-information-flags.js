@@ -20,10 +20,7 @@ export default function (data) {
     const client = firm.client_USENSUELL_UVIRKSOM_TIGER;
     const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-    // WHEN every access information flag is on, the access collections carry data:
-    // the client organisation is held through the accountant role with the accountant
-    // packages.
-    group("01 WHEN all access information is requested", function () {
+    group("WHEN every access information flag is on", function () {
         const queryParams = new AuthorizedPartiesQueryBuilder()
             .includeRoles()
             .includeAccessPackages()
@@ -33,14 +30,16 @@ export default function (data) {
 
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, client.partyUuid, `the client ${client.name}`);
-        AuthorizedPartiesDomainChecks.CheckPartyIncludesRole(parties, client.partyUuid, "regnskapsforer");
-        AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(parties, client.partyUuid, "access packages are populated when requested");
+        AuthorizedPartiesDomainChecks.CheckPartyIncludesRole(
+            "THEN the client party carries the accountant role it is held through",
+            parties, client.partyUuid, "regnskapsforer");
+
+        AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(
+            "AND the client party carries access packages",
+            parties, client.partyUuid);
     });
 
-    // WHEN every access information flag is off, the parties are still returned but
-    // all four access collections are empty on every party in the tree.
-    group("02 WHEN no access information is requested", function () {
+    group("WHEN every access information flag is off", function () {
         const queryParams = new AuthorizedPartiesQueryBuilder()
             .includeRoles(false)
             .includeAccessPackages(false)
@@ -50,8 +49,16 @@ export default function (data) {
 
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.partyUuid, `the accounting firm ${firm.name}`);
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, client.partyUuid, `the client ${client.name}`);
-        AuthorizedPartiesDomainChecks.CheckEveryPartyHasNoAccessInformation(parties);
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "THEN the accounting firm is still returned",
+            parties, firm.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "AND the client organisation is still returned",
+            parties, client.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckEveryPartyHasNoAccessInformation(
+            "AND every party has empty roles, packages, resources and instances",
+            parties);
     });
 }

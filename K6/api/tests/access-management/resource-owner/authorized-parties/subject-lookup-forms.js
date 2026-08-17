@@ -17,11 +17,11 @@ import { getClients } from "./common.js";
 //
 // This matrix only exists on the service owner surface, since the subject is named in
 // the request body rather than taken from the token. The system user uuid form is
-// covered by 07-party-kinds and is not repeated here.
+// covered by party-kinds and is not repeated here.
 //
-// The steps run in order: each baseline step records the party list the following
-// steps compare against. The baselines are locals rather than module state, so every
-// iteration and every VU establishes its own.
+// The steps run in order: each GIVEN records the party list the following steps compare
+// against. The baselines are locals rather than module state, so every iteration and
+// every VU establishes its own.
 
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
@@ -38,83 +38,85 @@ export default function (data) {
     let organisationBaseline = null;
     let enterpriseUserBaseline = null;
 
-    // GIVEN a person is looked up by national identity number, the party list this
-    // returns is the baseline the other identifier forms are compared against.
-    group("01 GIVEN a person looked up by national identity number", function () {
+    group("GIVEN a person is looked up by national identity number", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(person.pid).build());
 
-        AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
+        AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
+            "THEN the person has a party list to compare the other identifier forms against",
+            parties);
 
         personBaseline = PartyUuidList(parties);
     });
 
     if (personBaseline === null || personBaseline.length === 0) {
         // Without a baseline the comparisons below would pass against an empty list and
-        // say nothing. Step 01's own failed check is the signal.
+        // say nothing. The GIVEN's own failed check is the signal.
         return;
     }
 
-    // AND the same person looked up by user id returns the same parties as the national
-    // identity number form did.
-    group("02 AND the same person by user id", function () {
+    group("WHEN the same person is looked up by user id", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withUserId(person.userId).build());
 
-        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline, "user id");
+        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
+            "THEN the party list matches the national identity number lookup",
+            parties, personBaseline);
     });
 
-    // AND the same person looked up by party id returns the same parties.
-    group("03 AND the same person by party id", function () {
+    group("WHEN the same person is looked up by party id", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(person.partyId).build());
 
-        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline, "party id");
+        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
+            "THEN the party list matches the national identity number lookup",
+            parties, personBaseline);
     });
 
-    // AND the same person looked up by person uuid returns the same parties.
-    group("04 AND the same person by person uuid", function () {
+    group("WHEN the same person is looked up by person uuid", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(person.partyUuid).build());
 
-        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline, "person uuid");
+        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
+            "THEN the party list matches the national identity number lookup",
+            parties, personBaseline);
     });
 
-    // AND an organisation can be the subject too, looked up by organisation number. The
-    // party list this returns is the baseline for the organisation uuid form.
-    group("05 AND an organisation by organisation number", function () {
+    group("GIVEN an organisation is looked up by organisation number", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(firm.orgno).build());
 
-        // Asserted non empty so the uuid form below is compared against a real list
-        // rather than against nothing.
-        AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
+        AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
+            "THEN the organisation has a party list to compare the uuid form against",
+            parties);
 
         organisationBaseline = PartyUuidList(parties);
     });
 
-    // AND the same organisation looked up by organisation uuid returns the same parties.
-    group("06 AND the same organisation by organisation uuid", function () {
+    group("WHEN the same organisation is looked up by organisation uuid", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(firm.partyUuid).build());
 
-        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, organisationBaseline ?? [], "organisation uuid");
+        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
+            "THEN the party list matches the organisation number lookup",
+            parties, organisationBaseline ?? []);
     });
 
-    // AND an enterprise user can be the subject, looked up by user name. The party list
-    // this returns is the baseline for the enterprise user uuid form.
-    //
     // Both enterprise user forms resolve to an empty list at at22 today, because the
     // fixture user holds no access, so the pair below agrees on nothing. The steps are
     // kept because they still catch one form diverging from the other the moment the
     // fixture is given access, but the equivalence is not exercised as things stand.
-    // Deliberately not asserted non empty, which would be a fixture failure dressed up
-    // as a product one. The Bruno suite this was ported from has the same gap.
-    group("07 AND an enterprise user by user name", function () {
+    // Deliberately not asserted non empty, which would be a fixture failure dressed up as
+    // a product one. The Bruno suite this was ported from has the same gap.
+    group("GIVEN an enterprise user is looked up by user name", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUsername(enterpriseUser.username).build());
+
+        AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
+            "THEN an enterprise user is accepted as a subject and a party list comes back",
+            parties);
 
         enterpriseUserBaseline = PartyUuidList(parties);
     });
 
-    // AND the same enterprise user looked up by uuid returns the same parties as the user
-    // name form did.
-    group("08 AND the same enterprise user by uuid", function () {
+    group("WHEN the same enterprise user is looked up by uuid", function () {
         const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUuid(enterpriseUser.partyUuid).build());
 
-        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, enterpriseUserBaseline ?? [], "enterprise user uuid");
+        AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
+            "THEN the party list matches the user name lookup",
+            parties, enterpriseUserBaseline ?? []);
     });
 }

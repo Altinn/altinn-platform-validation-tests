@@ -25,14 +25,19 @@ export default function (data) {
         .includeAccessPackages()
         .build();
 
-    // WHEN the subject is the daily leader of a business manager firm, the housing company
-    // clients the firm manages are returned, and the client the firm holds the eiendom
-    // package for carries that package.
-    group("01 WHEN the subject is a business manager's daily leader", function () {
+    group("WHEN the subject is the daily leader of a business manager firm", function () {
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.esekClient.partyUuid, `the client ${firm.esekClient.name}`);
-        AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage]);
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.nonBrlEsekClient.partyUuid, `the other housing company client ${firm.nonBrlEsekClient.name}`);
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "THEN the housing company the firm manages is returned",
+            parties, firm.esekClient.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
+            "AND it carries the eiendom package the firm holds for it",
+            parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage]);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "AND the other housing company client is also returned",
+            parties, firm.nonBrlEsekClient.partyUuid);
     });
 }

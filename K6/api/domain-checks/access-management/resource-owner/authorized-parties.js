@@ -3,6 +3,17 @@ import { check } from "k6";
 import { AuthorizedParty } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 
 /**
+ * Every check here takes the scenario's outcome sentence as its first argument, and
+ * uses it as the check name.
+ *
+ * That is what keeps the suite readable as BDD. The group names the action, so it
+ * reads as the GIVEN or the WHEN, and each check names an outcome that was observed,
+ * so it reads as a THEN or an AND. The function owns the comparison, the scenario owns
+ * the sentence, which is why the same check can appear twice in one group saying two
+ * different things.
+ */
+
+/**
  * The fields every party in the response is expected to carry.
  *
  * Asserted as an exact set rather than a subset, so a field appearing or
@@ -117,6 +128,26 @@ function SameMembers(actual, expected) {
 }
 
 /**
+ * Runs one assertion under the scenario's outcome sentence.
+ *
+ * @param {string} outcome - The THEN or AND sentence, used as the check name.
+ * @param {*} target - The value the assertion reads.
+ * @param {Function} assertion - Returns true when the outcome held.
+ * @param {Function} diagnose - Returns lines to log when it did not.
+ * @returns {boolean} True if the outcome held.
+ */
+function Assert(outcome, target, assertion, diagnose) {
+    const success = check(target, { [outcome]: assertion });
+
+    if (!success) {
+        console.error(`FAILED: ${outcome}`);
+        diagnose().forEach((line) => console.error(`  ${line}`));
+    }
+
+    return success;
+}
+
+/**
  * True when a deletion date falls inside the window where a deleted party still
  * grants access to its owner.
  *
@@ -140,55 +171,55 @@ function IsInsideRetentionWindow(deletedDate, retentionYears) {
 }
 
 /**
- * Checks that the response is a non empty bare array of parties.
+ * The response is a bare array of parties, whatever it holds.
+ *
+ * @param {string} outcome - The outcome sentence.
+ * @param {AuthorizedParty[]} parties - The response body.
+ * @returns {boolean} True if the outcome held.
+ */
+function CheckResponseIsPartyArray(outcome, parties) {
+    return Assert(outcome, parties,
+        (body) => Array.isArray(body),
+        () => [`expected an array, got: ${JSON.stringify(parties)}`]);
+}
+
+/**
+ * The response is a non empty bare array of parties.
  *
  * The service owner endpoint returns the parties directly, not wrapped in the
  * paginated envelope the enduser endpoint uses, so this is part of its contract.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The response body.
- * @returns {boolean} True if the body is a non empty array.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckResponseIsNonEmptyPartyArray(parties) {
-    const success = check(parties, {
-        "CheckResponseIsNonEmptyPartyArray - The response is a non empty bare array of parties":
-            (body) => Array.isArray(body) && body.length > 0,
-    });
-
-    if (!success) {
-        console.error(`CheckResponseIsNonEmptyPartyArray - expected a non empty array, got: ${JSON.stringify(parties)}`);
-    }
-
-    return success;
+function CheckResponseIsNonEmptyPartyArray(outcome, parties) {
+    return Assert(outcome, parties,
+        (body) => Array.isArray(body) && body.length > 0,
+        () => [`expected a non empty array, got: ${JSON.stringify(parties)}`]);
 }
 
 /**
- * Checks that the response is an empty party array.
+ * The response is an empty party array.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The response body.
- * @param {string} reason - Why the list is expected to be empty, for the failure message.
- * @returns {boolean} True if the body is an empty array.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckResponseIsEmptyPartyArray(parties, reason) {
-    const success = check(parties, {
-        "CheckResponseIsEmptyPartyArray - The response is an empty party array":
-            (body) => Array.isArray(body) && body.length === 0,
-    });
-
-    if (!success) {
-        console.error(`CheckResponseIsEmptyPartyArray - ${reason}, so the list should be empty, got: ${JSON.stringify(TopLevelPartyUuids(parties))}`);
-    }
-
-    return success;
+function CheckResponseIsEmptyPartyArray(outcome, parties) {
+    return Assert(outcome, parties,
+        (body) => Array.isArray(body) && body.length === 0,
+        () => [`expected an empty array, got: ${JSON.stringify(TopLevelPartyUuids(parties))}`]);
 }
 
 /**
- * Checks that every party in the response carries exactly the contract's fields,
- * each with the expected type.
+ * Every party carries exactly the contract's fields, each with the expected type.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @returns {boolean} True if every party matches the contract.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckEveryPartyMatchesContract(parties) {
+function CheckEveryPartyMatchesContract(outcome, parties) {
     const problems = [];
 
     for (const party of FlattenParties(parties)) {
@@ -224,505 +255,366 @@ function CheckEveryPartyMatchesContract(parties) {
         }
     }
 
-    const success = check(parties, {
-        "CheckEveryPartyMatchesContract - Every party carries the contract's fields with the expected types":
-            () => problems.length === 0,
-    });
-
-    if (!success) {
-        problems.forEach((problem) => console.error(`CheckEveryPartyMatchesContract - ${problem}`));
-    }
-
-    return success;
+    return Assert(outcome, parties, () => problems.length === 0, () => problems);
 }
 
 /**
- * Checks that a party is present anywhere in the response, subunits included.
+ * The party is present anywhere in the response, subunits included.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @param {string} expectedPartyUuid - The uuid of the party expected to be present.
- * @param {string} description - What the party is, for the failure message.
- * @returns {boolean} True if the party is present.
+ * @param {string} partyUuid - The uuid of the party expected to be present.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIsPresent(parties, expectedPartyUuid, description) {
-    const success = check(parties, {
-        "CheckPartyIsPresent - The expected party is in the party list":
-            (body) => FindParty(body, expectedPartyUuid) !== undefined,
-    });
-
-    if (!success) {
-        console.error(`CheckPartyIsPresent - expected ${description} ('${expectedPartyUuid}') in the party list`);
-        console.error(`CheckPartyIsPresent - party uuids returned: ${JSON.stringify(PartyUuidList(parties))}`);
-    }
-
-    return success;
+function CheckPartyIsPresent(outcome, parties, partyUuid) {
+    return Assert(outcome, parties,
+        (body) => FindParty(body, partyUuid) !== undefined,
+        () => [
+            `'${partyUuid}' was not in the party list`,
+            `party uuids returned: ${JSON.stringify(PartyUuidList(parties))}`,
+        ]);
 }
 
 /**
- * Checks that a party is absent from the response, subunits included.
+ * The party is absent from the response, subunits included.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party expected to be absent.
- * @param {string} reason - Why the party should not be there, for the failure message.
- * @returns {boolean} True if the party is absent.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIsAbsent(parties, partyUuid, reason) {
-    const success = check(parties, {
-        "CheckPartyIsAbsent - The party is not in the party list":
-            (body) => FindParty(body, partyUuid) === undefined,
-    });
-
-    if (!success) {
-        console.error(`CheckPartyIsAbsent - '${partyUuid}' should not be in the party list: ${reason}`);
-    }
-
-    return success;
+function CheckPartyIsAbsent(outcome, parties, partyUuid) {
+    return Assert(outcome, parties,
+        (body) => FindParty(body, partyUuid) === undefined,
+        () => [`'${partyUuid}' was in the party list and should not have been`]);
 }
 
 /**
- * Checks that a party is not returned at the top level, since a subunit is only
- * ever returned nested under its main unit.
+ * The party is not returned at the top level, since a subunit is only ever returned
+ * nested under its main unit.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} subunitPartyUuid - The uuid of the subunit.
- * @returns {boolean} True if the subunit is absent from the top level.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIsNotTopLevel(parties, subunitPartyUuid) {
-    const success = check(parties, {
-        "CheckPartyIsNotTopLevel - A subunit is never returned as a top level party":
-            (body) => !TopLevelPartyUuids(body).includes(Normalise(subunitPartyUuid)),
-    });
-
-    if (!success) {
-        console.error(`CheckPartyIsNotTopLevel - subunit '${subunitPartyUuid}' was returned at the top level`);
-        console.error(`CheckPartyIsNotTopLevel - top level party uuids: ${JSON.stringify(TopLevelPartyUuids(parties))}`);
-    }
-
-    return success;
+function CheckPartyIsNotTopLevel(outcome, parties, subunitPartyUuid) {
+    return Assert(outcome, parties,
+        (body) => !TopLevelPartyUuids(body).includes(Normalise(subunitPartyUuid)),
+        () => [
+            `subunit '${subunitPartyUuid}' was returned at the top level`,
+            `top level party uuids: ${JSON.stringify(TopLevelPartyUuids(parties))}`,
+        ]);
 }
 
 /**
- * Checks that exactly the expected parties are returned at the top level.
+ * Exactly the expected parties are returned at the top level.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {Array<string>} expectedPartyUuids - The uuids of the only expected top level parties.
- * @returns {boolean} True if exactly those parties are returned.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckOnlyTheseTopLevelParties(parties, expectedPartyUuids) {
+function CheckOnlyTheseTopLevelParties(outcome, parties, expectedPartyUuids) {
     const expected = expectedPartyUuids.map(Normalise);
-    const returned = TopLevelPartyUuids(parties);
 
-    const success = check(parties, {
-        "CheckOnlyTheseTopLevelParties - Only the expected parties are returned at the top level":
-            () => SameMembers(returned, expected),
-    });
-
-    if (!success) {
-        console.error(`CheckOnlyTheseTopLevelParties - expected: ${JSON.stringify(expected)}`);
-        console.error(`CheckOnlyTheseTopLevelParties - got: ${JSON.stringify(returned)}`);
-    }
-
-    return success;
+    return Assert(outcome, parties,
+        (body) => SameMembers(TopLevelPartyUuids(body), expected),
+        () => [
+            `expected: ${JSON.stringify(expected)}`,
+            `got: ${JSON.stringify(TopLevelPartyUuids(parties))}`,
+        ]);
 }
 
 /**
- * Checks that a party is returned only as a hierarchy carrier, holding no access
- * of its own, which is how a main unit shows up when the access sits on a subunit.
+ * The party is returned only as a hierarchy carrier, holding no access of its own,
+ * which is how a main unit shows up when the access sits on a subunit.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the main unit.
- * @returns {boolean} True if the party is present and carries no access.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIsOnlyHierarchyElement(parties, partyUuid) {
+function CheckPartyIsOnlyHierarchyElement(outcome, parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyIsOnlyHierarchyElement - The main unit is a hierarchy carrier with no access of its own":
-            (found) => found !== undefined &&
-                found.onlyHierarchyElementWithNoAccess === true &&
-                AllAccess(found).length === 0,
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyIsOnlyHierarchyElement - '${partyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckPartyIsOnlyHierarchyElement - '${partyUuid}' onlyHierarchyElementWithNoAccess=${party.onlyHierarchyElementWithNoAccess}, access: ${JSON.stringify(AllAccess(party))}`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined &&
+            found.onlyHierarchyElementWithNoAccess === true &&
+            AllAccess(found).length === 0,
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [`onlyHierarchyElementWithNoAccess=${party.onlyHierarchyElementWithNoAccess}, access: ${JSON.stringify(AllAccess(party))}`]);
 }
 
 /**
- * Checks that a party holds the access itself rather than being a hierarchy carrier.
+ * The party holds the access itself rather than being a hierarchy carrier.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
- * @returns {boolean} True if the party is present and holds access itself.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHoldsAccessItself(parties, partyUuid) {
+function CheckPartyHoldsAccessItself(outcome, parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHoldsAccessItself - The party holds the access itself, not merely as a hierarchy carrier":
-            (found) => found !== undefined && found.onlyHierarchyElementWithNoAccess === false,
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyHoldsAccessItself - '${partyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckPartyHoldsAccessItself - '${partyUuid}' came back as a hierarchy carrier with no access of its own`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && found.onlyHierarchyElementWithNoAccess === false,
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [`'${partyUuid}' came back as a hierarchy carrier with no access of its own`]);
 }
 
 /**
- * Checks a party's organization number and party type.
+ * The party is an organization carrying the expected organization number.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
  * @param {string} expectedOrganizationNumber - The organization number the party should carry.
- * @returns {boolean} True if the party is an organization with that number.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIsOrganizationWithNumber(parties, partyUuid, expectedOrganizationNumber) {
+function CheckPartyIsOrganizationWithNumber(outcome, parties, partyUuid, expectedOrganizationNumber) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyIsOrganizationWithNumber - The party is an organization with the expected organization number":
-            (found) => found !== undefined &&
-                found.type === "Organization" &&
-                found.organizationNumber === expectedOrganizationNumber,
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyIsOrganizationWithNumber - '${partyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckPartyIsOrganizationWithNumber - expected Organization/${expectedOrganizationNumber}, got ${party.type}/${party.organizationNumber}`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined &&
+            found.type === "Organization" &&
+            found.organizationNumber === expectedOrganizationNumber,
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [`expected Organization/${expectedOrganizationNumber}, got ${party.type}/${party.organizationNumber}`]);
 }
 
 /**
- * Checks that a party has the expected party type.
+ * The party has the expected party type.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
  * @param {string} expectedType - The expected party type.
- * @returns {boolean} True if the party carries that type.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyType(parties, partyUuid, expectedType) {
+function CheckPartyType(outcome, parties, partyUuid, expectedType) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyType - The party has the expected party type":
-            (found) => found !== undefined && found.type === expectedType,
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyType - '${partyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckPartyType - expected type '${expectedType}' on '${partyUuid}', got '${party.type}'`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && found.type === expectedType,
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [`expected type '${expectedType}', got '${party.type}'`]);
 }
 
 /**
- * Checks that a party has no national identity number, which is how a self
- * identified or email registered user comes back.
+ * The party carries no national identity number, which is how a self identified or
+ * email registered user comes back.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
- * @returns {boolean} True if the party's personId is null.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHasNoNationalIdentityNumber(parties, partyUuid) {
+function CheckPartyHasNoNationalIdentityNumber(outcome, parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHasNoNationalIdentityNumber - The party carries no national identity number":
-            (found) => found !== undefined && found.personId === null,
-    });
-
-    if (!success) {
-        console.error(`CheckPartyHasNoNationalIdentityNumber - expected personId null on '${partyUuid}', got '${party?.personId}'`);
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && found.personId === null,
+        () => [`expected personId null on '${partyUuid}', got '${party?.personId}'`]);
 }
 
 /**
- * Checks that a party carries the expected email identifier.
+ * The party carries the expected email identifier.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
  * @param {string} expectedEmailId - The email identifier the party should carry.
- * @returns {boolean} True if the party carries that email identifier.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHasEmailId(parties, partyUuid, expectedEmailId) {
+function CheckPartyHasEmailId(outcome, parties, partyUuid, expectedEmailId) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHasEmailId - The party carries the expected email identifier":
-            (found) => found !== undefined && found.emailId === expectedEmailId,
-    });
-
-    if (!success) {
-        console.error(`CheckPartyHasEmailId - expected '${expectedEmailId}' on '${partyUuid}', got '${party?.emailId}'`);
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && found.emailId === expectedEmailId,
+        () => [`expected '${expectedEmailId}' on '${partyUuid}', got '${party?.emailId}'`]);
 }
 
 /**
- * Checks that a party's access packages include all of the expected ones.
+ * The party's access packages include all of the expected ones.
  *
- * A subset assertion, since the catalogue wide sets these fixtures hold are not
- * worth pinning exactly.
+ * A subset assertion, since the catalogue wide sets these fixtures hold are not worth
+ * pinning exactly.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
  * @param {Array<string>} expectedAccessPackages - The access packages the party should hold.
- * @returns {boolean} True if the party holds all of them.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPackages) {
+function CheckPartyIncludesAccessPackages(outcome, parties, partyUuid, expectedAccessPackages) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyIncludesAccessPackages - The party holds the expected access packages":
-            (found) => found !== undefined &&
-                expectedAccessPackages.every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyIncludesAccessPackages - '${partyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckPartyIncludesAccessPackages - expected '${partyUuid}' to hold: ${JSON.stringify(expectedAccessPackages)}`);
-            console.error(`CheckPartyIncludesAccessPackages - got: ${JSON.stringify(party.authorizedAccessPackages ?? [])}`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined &&
+            expectedAccessPackages.every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [
+                `expected to hold: ${JSON.stringify(expectedAccessPackages)}`,
+                `got: ${JSON.stringify(party.authorizedAccessPackages ?? [])}`,
+            ]);
 }
 
 /**
- * Checks that a party's access packages are not empty.
+ * The party holds at least one access package.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
- * @param {string} reason - Why packages are expected, for the failure message.
- * @returns {boolean} True if the party holds at least one access package.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHasSomeAccessPackages(parties, partyUuid, reason) {
+function CheckPartyHasSomeAccessPackages(outcome, parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHasSomeAccessPackages - The party holds at least one access package":
-            (found) => found !== undefined && (found.authorizedAccessPackages ?? []).length > 0,
-    });
-
-    if (!success) {
-        console.error(`CheckPartyHasSomeAccessPackages - expected access packages on '${partyUuid}' (${reason}), got: ${JSON.stringify(party?.authorizedAccessPackages ?? [])}`);
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && (found.authorizedAccessPackages ?? []).length > 0,
+        () => [`expected access packages on '${partyUuid}', got: ${JSON.stringify(party?.authorizedAccessPackages ?? [])}`]);
 }
 
 /**
- * Checks that a party's roles include the expected role, compared case insensitively.
+ * The party's roles include the expected role, compared case insensitively.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
  * @param {string} expectedRole - The role the party should hold.
- * @returns {boolean} True if the party holds that role.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyIncludesRole(parties, partyUuid, expectedRole) {
+function CheckPartyIncludesRole(outcome, parties, partyUuid, expectedRole) {
     const party = FindParty(parties, partyUuid);
     const wanted = expectedRole.toLowerCase();
 
-    const success = check(party, {
-        "CheckPartyIncludesRole - The party holds the expected role":
-            (found) => found !== undefined &&
-                (found.authorizedRoles ?? []).some((role) => String(role).toLowerCase() === wanted),
-    });
-
-    if (!success) {
-        console.error(`CheckPartyIncludesRole - expected role '${expectedRole}' on '${partyUuid}', got: ${JSON.stringify(party?.authorizedRoles ?? [])}`);
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined &&
+            (found.authorizedRoles ?? []).some((role) => String(role).toLowerCase() === wanted),
+        () => [`expected role '${expectedRole}' on '${partyUuid}', got: ${JSON.stringify(party?.authorizedRoles ?? [])}`]);
 }
 
 /**
- * Checks that a party holds exactly the expected resources.
+ * The party holds exactly the expected resources and nothing else.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
  * @param {Array<string>} expectedResources - The only resources the party should hold.
- * @returns {boolean} True if the party holds exactly those resources.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHasExactlyResources(parties, partyUuid, expectedResources) {
+function CheckPartyHasExactlyResources(outcome, parties, partyUuid, expectedResources) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHasExactlyResources - The party holds exactly the expected resources":
-            (found) => found !== undefined && SameMembers(found.authorizedResources ?? [], expectedResources),
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyHasExactlyResources - '${partyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckPartyHasExactlyResources - expected: ${JSON.stringify(expectedResources)}`);
-            console.error(`CheckPartyHasExactlyResources - got: ${JSON.stringify(party.authorizedResources ?? [])}`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && SameMembers(found.authorizedResources ?? [], expectedResources),
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [
+                `expected: ${JSON.stringify(expectedResources)}`,
+                `got: ${JSON.stringify(party.authorizedResources ?? [])}`,
+            ]);
 }
 
 /**
- * Checks that a party holds some access, across any of the four collections.
+ * The party holds some access, across any of the four collections.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
- * @param {string} description - What the party is, for the failure message.
- * @returns {boolean} True if the party holds at least one access entry.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHasSomeAccess(parties, partyUuid, description) {
+function CheckPartyHasSomeAccess(outcome, parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHasSomeAccess - The party carries the access that was delegated to it":
-            (found) => found !== undefined && AllAccess(found).length > 0,
-    });
-
-    if (!success) {
-        if (party === undefined) {
-            console.error(`CheckPartyHasSomeAccess - ${description} ('${partyUuid}') was not in the party list`);
-        } else {
-            console.error(`CheckPartyHasSomeAccess - expected some delegated access on ${description} ('${partyUuid}')`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && AllAccess(found).length > 0,
+        () => party === undefined
+            ? [`'${partyUuid}' was not in the party list`]
+            : [`expected some delegated access on '${partyUuid}'`]);
 }
 
 /**
- * Checks that a party has no subunits, which is how a person party comes back.
+ * The party has no subunits, which is how a person party comes back.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The uuid of the party.
- * @param {string} reason - Why no subunits are expected, for the failure message.
- * @returns {boolean} True if the party has no subunits.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyHasNoSubunits(parties, partyUuid, reason) {
+function CheckPartyHasNoSubunits(outcome, parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    const success = check(party, {
-        "CheckPartyHasNoSubunits - The party is returned without subunits":
-            (found) => found !== undefined && (found.subunits ?? []).length === 0,
-    });
-
-    if (!success) {
-        console.error(`CheckPartyHasNoSubunits - ${reason}, but '${partyUuid}' came back with: ${JSON.stringify((party?.subunits ?? []).map((subunit) => subunit.partyUuid))}`);
-    }
-
-    return success;
+    return Assert(outcome, party,
+        (found) => found !== undefined && (found.subunits ?? []).length === 0,
+        () => [`'${partyUuid}' came back with subunits: ${JSON.stringify((party?.subunits ?? []).map((subunit) => subunit.partyUuid))}`]);
 }
 
 /**
- * Checks that a subunit is nested under the given main unit.
+ * The subunit is nested under the given main unit.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} mainUnitPartyUuid - The uuid of the main unit expected to hold the subunit.
  * @param {string} subunitPartyUuid - The uuid of the subunit.
- * @param {string} description - What the subunit is, for the failure message.
- * @returns {boolean} True if the subunit is nested under that main unit.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckSubunitIsNestedUnderMainUnit(parties, mainUnitPartyUuid, subunitPartyUuid, description) {
+function CheckSubunitIsNestedUnderMainUnit(outcome, parties, mainUnitPartyUuid, subunitPartyUuid) {
     const mainUnit = FindParty(parties, mainUnitPartyUuid);
     const wanted = Normalise(subunitPartyUuid);
 
-    const success = check(mainUnit, {
-        "CheckSubunitIsNestedUnderMainUnit - The subunit is nested under its main unit":
-            (found) => (found?.subunits ?? []).some((subunit) => Normalise(subunit.partyUuid) === wanted),
-    });
-
-    if (!success) {
-        if (mainUnit === undefined) {
-            console.error(`CheckSubunitIsNestedUnderMainUnit - main unit '${mainUnitPartyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckSubunitIsNestedUnderMainUnit - expected ${description} ('${subunitPartyUuid}') under '${mainUnitPartyUuid}'`);
-            console.error(`CheckSubunitIsNestedUnderMainUnit - subunits returned: ${JSON.stringify((mainUnit.subunits ?? []).map((subunit) => subunit.partyUuid))}`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, mainUnit,
+        (found) => (found?.subunits ?? []).some((subunit) => Normalise(subunit.partyUuid) === wanted),
+        () => mainUnit === undefined
+            ? [`main unit '${mainUnitPartyUuid}' was not in the party list`]
+            : [
+                `expected '${subunitPartyUuid}' under '${mainUnitPartyUuid}'`,
+                `subunits returned: ${JSON.stringify((mainUnit.subunits ?? []).map((subunit) => subunit.partyUuid))}`,
+            ]);
 }
 
 /**
- * Checks that a subunit's access packages include all of the expected ones.
+ * The subunit inherits every access package its main unit holds.
  *
- * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @param {string} subunitPartyUuid - The uuid of the subunit.
- * @param {Array<string>} expectedAccessPackages - The access packages the subunit should hold.
- * @returns {boolean} True if the subunit holds all of them.
- */
-function CheckSubunitIncludesAccessPackages(parties, subunitPartyUuid, expectedAccessPackages) {
-    return CheckPartyIncludesAccessPackages(parties, subunitPartyUuid, expectedAccessPackages);
-}
-
-/**
- * Checks that a subunit inherits every access package its main unit holds.
- *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} mainUnitPartyUuid - The uuid of the main unit.
  * @param {string} subunitPartyUuid - The uuid of the subunit.
- * @returns {boolean} True if the subunit holds at least the main unit's packages.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckSubunitInheritsMainUnitAccessPackages(parties, mainUnitPartyUuid, subunitPartyUuid) {
+function CheckSubunitInheritsMainUnitAccessPackages(outcome, parties, mainUnitPartyUuid, subunitPartyUuid) {
     const mainUnit = FindParty(parties, mainUnitPartyUuid);
     const subunit = FindParty(parties, subunitPartyUuid);
 
-    const success = check(subunit, {
-        "CheckSubunitInheritsMainUnitAccessPackages - The subunit inherits the access packages its main unit holds":
-            (found) => found !== undefined && mainUnit !== undefined &&
-                (mainUnit.authorizedAccessPackages ?? [])
-                    .every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
-    });
-
-    if (!success) {
-        if (mainUnit === undefined || subunit === undefined) {
-            console.error(`CheckSubunitInheritsMainUnitAccessPackages - main unit '${mainUnitPartyUuid}' or subunit '${subunitPartyUuid}' was not in the party list`);
-        } else {
-            console.error(`CheckSubunitInheritsMainUnitAccessPackages - main unit holds: ${JSON.stringify(mainUnit.authorizedAccessPackages ?? [])}`);
-            console.error(`CheckSubunitInheritsMainUnitAccessPackages - subunit holds: ${JSON.stringify(subunit.authorizedAccessPackages ?? [])}`);
-        }
-    }
-
-    return success;
+    return Assert(outcome, subunit,
+        (found) => found !== undefined && mainUnit !== undefined &&
+            (mainUnit.authorizedAccessPackages ?? [])
+                .every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
+        () => mainUnit === undefined || subunit === undefined
+            ? [`main unit '${mainUnitPartyUuid}' or subunit '${subunitPartyUuid}' was not in the party list`]
+            : [
+                `main unit holds: ${JSON.stringify(mainUnit.authorizedAccessPackages ?? [])}`,
+                `subunit holds: ${JSON.stringify(subunit.authorizedAccessPackages ?? [])}`,
+            ]);
 }
 
 /**
- * Checks that no subunit carries an instance its main unit holds.
+ * No subunit carries an instance its main unit holds.
  *
- * Access packages and resources extend from a main unit to its subunits, but
- * instance access does not: an instance is delegated to one party and stays there.
+ * Access packages and resources extend from a main unit to its subunits, but instance
+ * access does not: an instance is delegated to one party and stays there.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @returns {boolean} True if no subunit inherited an instance.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckNoSubunitInheritsInstances(parties) {
+function CheckNoSubunitInheritsInstances(outcome, parties) {
     const problems = [];
 
     for (const party of parties ?? []) {
@@ -742,225 +634,151 @@ function CheckNoSubunitInheritsInstances(parties) {
         }
     }
 
-    const success = check(parties, {
-        "CheckNoSubunitInheritsInstances - Instance access is not inherited by subunits":
-            () => problems.length === 0,
-    });
-
-    if (!success) {
-        problems.forEach((problem) => console.error(`CheckNoSubunitInheritsInstances - ${problem}`));
-    }
-
-    return success;
+    return Assert(outcome, parties, () => problems.length === 0, () => problems);
 }
 
 /**
- * Checks that every party in the response has all four access collections empty,
- * which is what the include flags being off should produce.
+ * Every party has all four access collections empty, which is what the include flags
+ * being off should produce.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @returns {boolean} True if no party carries any access information.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckEveryPartyHasNoAccessInformation(parties) {
+function CheckEveryPartyHasNoAccessInformation(outcome, parties) {
     const problems = FlattenParties(parties)
         .filter((party) => AllAccess(party).length > 0)
         .map((party) => `${party.partyUuid} carries ${JSON.stringify(AllAccess(party))}`);
 
-    const success = check(parties, {
-        "CheckEveryPartyHasNoAccessInformation - No party carries access information when the flags are off":
-            () => problems.length === 0,
-    });
-
-    if (!success) {
-        problems.forEach((problem) => console.error(`CheckEveryPartyHasNoAccessInformation - ${problem}`));
-    }
-
-    return success;
+    return Assert(outcome, parties, () => problems.length === 0, () => problems);
 }
 
 /**
- * Checks that no party in the response carries the given resource.
+ * No party in the response carries the given resource.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {string} resourceId - The resource that should not appear anywhere.
- * @returns {boolean} True if no party carries the resource.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckNoPartyCarriesResource(parties, resourceId) {
+function CheckNoPartyCarriesResource(outcome, parties, resourceId) {
     const offenders = FlattenParties(parties)
         .filter((party) => (party.authorizedResources ?? []).includes(resourceId))
         .map((party) => party.partyUuid);
 
-    const success = check(parties, {
-        "CheckNoPartyCarriesResource - No returned party carries the filtered resource":
-            () => offenders.length === 0,
-    });
-
-    if (!success) {
-        console.error(`CheckNoPartyCarriesResource - '${resourceId}' unexpectedly appeared on: ${JSON.stringify(offenders)}`);
-    }
-
-    return success;
+    return Assert(outcome, parties,
+        () => offenders.length === 0,
+        () => [`'${resourceId}' unexpectedly appeared on: ${JSON.stringify(offenders)}`]);
 }
 
 /**
- * Checks that no party is returned more than once, subunits included.
+ * No party is returned more than once, subunits included.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @returns {boolean} True if every party is returned exactly once.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckNoDuplicateParties(parties) {
+function CheckNoDuplicateParties(outcome, parties) {
     const partyUuids = PartyUuidList(parties);
     const duplicates = partyUuids.filter((partyUuid, index) => partyUuids.indexOf(partyUuid) !== index);
 
-    const success = check(parties, {
-        "CheckNoDuplicateParties - Every party is returned exactly once":
-            () => duplicates.length === 0,
-    });
-
-    if (!success) {
-        console.error(`CheckNoDuplicateParties - duplicate party uuids: ${JSON.stringify([...new Set(duplicates)])}`);
-    }
-
-    return success;
+    return Assert(outcome, parties,
+        () => duplicates.length === 0,
+        () => [`duplicate party uuids: ${JSON.stringify([...new Set(duplicates)])}`]);
 }
 
 /**
- * Checks that the party list matches a baseline recorded by an earlier step.
+ * The party list matches a baseline recorded by an earlier step.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
  * @param {Array<string>} baselinePartyUuids - The sorted uuid list to compare against.
- * @param {string} lookupForm - The identifier form under test, for the failure message.
- * @returns {boolean} True if the party lists are identical.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckPartyUuidsMatchBaseline(parties, baselinePartyUuids, lookupForm) {
-    const returned = PartyUuidList(parties);
-
-    const success = check(parties, {
-        "CheckPartyUuidsMatchBaseline - The identifier form resolves to the same party list as the baseline":
-            () => SameMembers(returned, baselinePartyUuids),
-    });
-
-    if (!success) {
-        console.error(`CheckPartyUuidsMatchBaseline - looking the subject up by ${lookupForm} gave a different party list`);
-        console.error(`CheckPartyUuidsMatchBaseline - baseline: ${JSON.stringify(baselinePartyUuids)}`);
-        console.error(`CheckPartyUuidsMatchBaseline - got: ${JSON.stringify(returned)}`);
-    }
-
-    return success;
+function CheckPartyUuidsMatchBaseline(outcome, parties, baselinePartyUuids) {
+    return Assert(outcome, parties,
+        (body) => SameMembers(PartyUuidList(body), baselinePartyUuids),
+        () => [
+            `baseline: ${JSON.stringify(baselinePartyUuids)}`,
+            `got: ${JSON.stringify(PartyUuidList(parties))}`,
+        ]);
 }
 
 /**
- * Checks that a request was rejected with the expected status.
+ * The request succeeded, for the steps that only care about the status.
  *
- * The building block asserts 200 and returns an empty list on anything else, so
- * the steps that mean to be rejected call the client directly and land here.
+ * @param {string} outcome - The outcome sentence.
+ * @param {object} response - The raw HTTP response.
+ * @returns {boolean} True if the outcome held.
+ */
+function CheckRequestSucceeded(outcome, response) {
+    return Assert(outcome, response,
+        (res) => res.status === 200,
+        () => [`expected 200, got ${response.status}`, `body: ${response.body}`]);
+}
+
+/**
+ * The request was rejected with the expected status.
  *
+ * The building block asserts 200 and returns an empty list on anything else, so the
+ * steps that mean to be rejected call the client directly and land here.
+ *
+ * @param {string} outcome - The outcome sentence.
  * @param {object} response - The raw HTTP response.
  * @param {number} expectedStatus - The status the request should have been rejected with.
- * @param {string} reason - What makes the request invalid, for the check name and failure message.
- * @returns {boolean} True if the response carried that status.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckRequestRejected(response, expectedStatus, reason) {
-    const success = check(response, {
-        [`CheckRequestRejected - ${reason} is rejected with ${expectedStatus}`]:
-            (res) => res.status === expectedStatus,
-    });
-
-    if (!success) {
-        console.error(`CheckRequestRejected - expected ${expectedStatus} because ${reason}, got ${response.status}`);
-        console.error(`CheckRequestRejected - body: ${response.body}`);
-    }
-
-    return success;
+function CheckRequestRejected(outcome, response, expectedStatus) {
+    return Assert(outcome, response,
+        (res) => res.status === expectedStatus,
+        () => [`expected ${expectedStatus}, got ${response.status}`, `body: ${response.body}`]);
 }
 
 /**
- * Checks that a request succeeded, for the steps that only care about the status.
+ * The request was rejected as unauthenticated.
  *
- * Used by the authorization boundary steps, which assert that a credential is
- * accepted without saying anything about the parties it comes back with.
- *
+ * @param {string} outcome - The outcome sentence.
  * @param {object} response - The raw HTTP response.
- * @param {string} credential - What was presented, for the failure message.
- * @returns {boolean} True if the response was a 200.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckRequestSucceeded(response, credential) {
-    const success = check(response, {
-        "CheckRequestSucceeded - The credential is accepted with 200":
-            (res) => res.status === 200,
-    });
-
-    if (!success) {
-        console.error(`CheckRequestSucceeded - expected 200 with ${credential}, got ${response.status}`);
-        console.error(`CheckRequestSucceeded - body: ${response.body}`);
-    }
-
-    return success;
+function CheckUnauthorized(outcome, response) {
+    return CheckRequestRejected(outcome, response, 401);
 }
 
 /**
- * Checks that a request was rejected as unauthenticated.
+ * The request was rejected as unauthorized.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {object} response - The raw HTTP response.
- * @param {string} reason - What makes the request unauthenticated.
- * @returns {boolean} True if the response was a 401.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckUnauthorized(response, reason) {
-    return CheckRequestRejected(response, 401, reason);
+function CheckForbidden(outcome, response) {
+    return CheckRequestRejected(outcome, response, 403);
 }
 
 /**
- * Checks that a request was rejected as unauthorized.
+ * The request was rejected as a bad request.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {object} response - The raw HTTP response.
- * @param {string} reason - What makes the request unauthorized.
- * @returns {boolean} True if the response was a 403.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckForbidden(response, reason) {
-    return CheckRequestRejected(response, 403, reason);
+function CheckBadRequest(outcome, response) {
+    return CheckRequestRejected(outcome, response, 400);
 }
 
 /**
- * Checks that a request was rejected as a bad request, and that the problem body
- * names the value that was refused.
+ * The problem body names the value that was refused.
  *
+ * @param {string} outcome - The outcome sentence.
  * @param {object} response - The raw HTTP response.
- * @param {string} reason - What makes the request invalid.
  * @param {string} expectedInBody - A value the problem body is expected to mention.
- * @returns {boolean} True if the response was a 400 naming that value.
+ * @returns {boolean} True if the outcome held.
  */
-function CheckBadRequest(response, reason, expectedInBody) {
-    const rejected = CheckRequestRejected(response, 400, reason);
-
-    const named = check(response, {
-        "CheckBadRequest - The problem body names the value that was refused":
-            (res) => String(res.body ?? "").includes(expectedInBody),
-    });
-
-    if (!named) {
-        console.error(`CheckBadRequest - expected '${expectedInBody}' in the problem body, got: ${response.body}`);
-    }
-
-    return rejected && named;
-}
-
-/**
- * Checks that the response is a party list, without saying anything about its contents.
- *
- * @param {AuthorizedParty[]} parties - The response body.
- * @returns {boolean} True if the body is an array.
- */
-function CheckResponseIsPartyArray(parties) {
-    const success = check(parties, {
-        "CheckResponseIsPartyArray - The response is a bare array of parties":
-            (body) => Array.isArray(body),
-    });
-
-    if (!success) {
-        console.error(`CheckResponseIsPartyArray - expected an array, got: ${JSON.stringify(parties)}`);
-    }
-
-    return success;
+function CheckProblemBodyMentions(outcome, response, expectedInBody) {
+    return Assert(outcome, response,
+        (res) => String(res.body ?? "").includes(expectedInBody),
+        () => [`expected '${expectedInBody}' in the problem body, got: ${response.body}`]);
 }
 
 export {
@@ -990,7 +808,6 @@ export const AuthorizedPartiesDomainChecks = {
     CheckPartyHasSomeAccess,
     CheckPartyHasNoSubunits,
     CheckSubunitIsNestedUnderMainUnit,
-    CheckSubunitIncludesAccessPackages,
     CheckSubunitInheritsMainUnitAccessPackages,
     CheckNoSubunitInheritsInstances,
     CheckEveryPartyHasNoAccessInformation,
@@ -998,7 +815,9 @@ export const AuthorizedPartiesDomainChecks = {
     CheckNoDuplicateParties,
     CheckPartyUuidsMatchBaseline,
     CheckRequestSucceeded,
+    CheckRequestRejected,
     CheckUnauthorized,
     CheckForbidden,
     CheckBadRequest,
+    CheckProblemBodyMentions,
 };

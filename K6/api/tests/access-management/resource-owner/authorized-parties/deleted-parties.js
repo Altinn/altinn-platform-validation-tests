@@ -10,9 +10,10 @@ import { getClients } from "./common.js";
 
 // Scenario: A deleted party keeps granting access to its owner for a retention window
 //
+//   Given one sole proprietorship client deleted inside the retention window and one outside it
 //   When a service owner lists the daily leader's parties with inactive parties included
 //   Then the owner of the active sole proprietorship is present
-//   And the owner of the client deleted inside the retention window is present
+//   And the owner of the client deleted inside the window is present
 //   And the owner of the client deleted outside the window is absent
 //
 // The window is derived from the deletion date and the retention years rather than
@@ -34,23 +35,30 @@ export default function (data) {
         .includeInactiveParties("true")
         .build();
 
-    // WHEN a service owner lists the daily leader's authorized parties, the owners of
-    // the deleted sole proprietorship clients are included or excluded by the retention
-    // window.
-    group("01 WHEN the service owner lists parties with deleted clients", function () {
-        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
-
-        // The fixtures only mean anything if they still sit on the side of the window
-        // they were chosen for, so that is asserted before the parties are.
+    // The fixtures only mean anything while they still sit on the side of the window they
+    // were chosen for, so that is established before the parties are asserted.
+    group("GIVEN one deleted client inside the retention window and one outside it", function () {
         check(null, {
-            "The fixture deleted inside the window is still inside it":
+            [`GIVEN ${deletedInside.name} was deleted inside the ${retentionYears} year window`]:
                 () => IsInsideRetentionWindow(deletedInside.deletedDate, retentionYears),
-            "The fixture deleted outside the window is still outside it":
+            [`AND ${deletedOutside.name} was deleted outside it`]:
                 () => !IsInsideRetentionWindow(deletedOutside.deletedDate, retentionYears),
         });
+    });
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, activeEnk.innehaver.partyUuid, `the active sole proprietorship owner ${activeEnk.innehaver.name}`);
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, deletedInside.innehaver.partyUuid, `${deletedInside.innehaver.name}, owner of the recently deleted sole proprietorship`);
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, deletedOutside.innehaver.partyUuid, `${deletedOutside.name} was deleted outside the ${retentionYears} year retention window`);
+    group("WHEN a service owner lists the daily leader's parties with inactive parties included", function () {
+        const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "THEN the owner of the active sole proprietorship is present",
+            parties, activeEnk.innehaver.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "AND the owner of the client deleted inside the retention window is present",
+            parties, deletedInside.innehaver.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+            "AND the owner of the client deleted outside the retention window is absent",
+            parties, deletedOutside.innehaver.partyUuid);
     });
 }

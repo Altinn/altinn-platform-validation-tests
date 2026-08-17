@@ -29,30 +29,37 @@ export default function (data) {
         .addResourceId(resourceId)
         .build();
 
-    // WHEN the list is filtered on a single resource the subject holds on one client,
-    // that client is returned and the only resource left on it is the one filtered on.
-    // A client the subject reaches without that resource drops out.
-    group("01 WHEN filtering on a resource the subject holds", function () {
+    group("WHEN the list is filtered on a single resource the subject holds on one client", function () {
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, resourceHolder.partyUuid, `the client ${resourceHolder.name} that carries the filtered resource`);
-        AuthorizedPartiesDomainChecks.CheckPartyHasExactlyResources(parties, resourceHolder.partyUuid, [resourceId]);
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, otherClient.partyUuid, "the accountant client does not carry the filtered resource");
+        AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
+            "THEN the client that carries the filtered resource is returned",
+            parties, resourceHolder.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckPartyHasExactlyResources(
+            "AND the only resource left on it is the one filtered on",
+            parties, resourceHolder.partyUuid, [resourceId]);
+
+        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+            "AND a client the subject reaches without that resource drops out",
+            parties, otherClient.partyUuid);
     });
 
-    // WHEN the subject is an employee who holds packages on the firm but not the filtered
-    // resource, the client that carries that resource for another person is not returned,
-    // and no returned party carries the filtered resource.
-    group("02 WHEN the subject does not hold the resource", function () {
+    group("WHEN the subject holds packages on the firm but not the filtered resource", function () {
         const request = new AuthorizedPartiesRequestBuilder()
             .withPerson(firm.employee_rightholderWithPackages.pid)
             .build();
 
         const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, resourceHolder.partyUuid, "the rightholder client is not reachable for this subject");
-        AuthorizedPartiesDomainChecks.CheckNoPartyCarriesResource(parties, resourceId);
+        AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
+            "THEN the client that carries that resource for another person is not returned",
+            parties, resourceHolder.partyUuid);
+
+        AuthorizedPartiesDomainChecks.CheckNoPartyCarriesResource(
+            "AND no returned party carries the filtered resource",
+            parties, resourceId);
     });
 }
