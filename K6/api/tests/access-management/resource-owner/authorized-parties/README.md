@@ -13,6 +13,13 @@ which is why the outcome sentence is passed in at the call site rather than bake
 the domain check: the check owns the comparison, the scenario owns the sentence. That is
 also why the same check can appear twice in one group saying two different things.
 
+The suite reports through `K6/bdd-summary.js` rather than the shared
+`functional-tests-summary.js`. It keeps the GIVEN, WHEN, THEN and AND sentences and drops
+the request plumbing while it passes, since three `GetAuthorizedParties - ...` lines per
+request outnumber the outcomes they surround. Plumbing that *fails* is always shown,
+labelled `[request]`, because a request that never succeeded is the reason every outcome
+under it went red. The Slack message on a failed run carries only what did not hold.
+
 Bruno's `NN_` prefixes are not carried over. They existed because Bruno orders steps by
 `seq`; here the order is explicit in `run-all.js` and in source order within a file, and
 the scenarios are independent of each other anyway.
