@@ -1,0 +1,62 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/resource-owner/authorized-parties/
+test_definitions:
+  - test_file: 01-clients-and-key-role-parties.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 02-access-information-flags.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 03-key-role-filter.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 04-party-filter.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 05-resource-filter.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 06-unit-hierarchy-delegation-directions.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 07-party-kinds.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 08-authorization-boundaries.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 09-deleted-parties.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 10-subject-lookup-forms.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 11-org-code-filter.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
+
+  - test_file: 12-forretningsforer-clients.js
+    test_scope: resourceowner-authorized-parties
+    contexts:
+      - environment: at22
