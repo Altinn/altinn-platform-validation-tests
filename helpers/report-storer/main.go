@@ -15,6 +15,18 @@ import (
  - POST handler with metadata + json report body.
  - Azure SDK to write to a bucket
 */
+/*
+   ENVIRONMENT:                    tt02
+   MANIFEST_GENERATION_TIMESTAMP:  1786959903162
+   NAMESPACE:                      dialogporten
+   TESTFILENAME:                   K6/api/tests/dialogporten/graphql/get-filter-service-resources.js
+   TESTID:                         tt02-get-filter-service-resources
+   TEST_SCOPE:                     graphql
+*/
+
+/*
+	https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/#example-send-data-to-remote-server
+*/
 
 var addr = flag.String("listen", "localhost:8080", "listen address")
 

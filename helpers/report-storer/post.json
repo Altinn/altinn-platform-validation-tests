@@ -1,0 +1,9 @@
+{
+    "enviroment": "tt02",
+    "manifestGenerationTimestamp": "1786959903162",
+    "namespace": "dialogporten",
+    "testfileName": "K6/api/tests/dialogporten/graphql/get-filter-service-resources.js",
+    "testid": "tt02-get-filter-service-resources",
+    "testSCope": "graphql",
+    "report": {}
+}
