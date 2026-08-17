@@ -1,170 +1,226 @@
 /**
- * Summary for k6 scripts written as BDD scenarios.
+ * A BDD harness for k6: `scenario()` to declare one, `handleSummary` to report them.
  *
- * A drop in alternative to functional-tests-summary.js for suites where the group
- * names the action, so it reads as a GIVEN or a WHEN, and each check names an outcome
- * that was observed, so it reads as a THEN or an AND.
+ * A scenario is a complete thought, the way a feature file writes one. It has a name, the
+ * setup it assumes, the single action it performs, and the outcomes that followed:
  *
- * The report keeps only those sentences. Checks that do not read as BDD are the
- * plumbing of getting the request out and parsed, and they outnumber the outcomes,
- * so they are dropped while they pass. They are always shown when they fail, because
- * a request that never succeeded is the reason every outcome under it went red, and
- * hiding it would leave the report describing symptoms with no cause.
+ * Scenario: A main unit delegates to another main unit
+ * GIVEN main unit A has delegated access to main unit B
+ * WHEN a service owner lists the authorized parties of B's daily leader
+ * THEN main unit A is in the list
+ * AND it holds the access it delegated
+ *
+ * The setup and the action are declared, so they cannot drift into one run on clause, and
+ * a reader is never left working out which half of a sentence was the precondition. The
+ * outcomes come from the checks inside the scenario body, first as the THEN and then as
+ * ANDs, so one scenario has exactly one WHEN and one THEN however many things it asserts.
+ *
+ * GIVEN steps carry no tick. They state what the environment already holds, which this
+ * suite takes on trust from its fixtures rather than verifying, and marking them would
+ * claim more than was done. The WHEN carries the request's own success, which is what the
+ * status and parse checks of a building block actually mean. Those checks are therefore
+ * not printed as steps of their own, only surfaced by name when they fail.
  *
  * Docs: https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/
  */
 
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
+import { group } from "k6";
 
 import postSlackMessage from "./slack.js";
 
-const BDD_SENTENCE = /^\s*(GIVEN|WHEN|THEN|AND|BUT)\b/i;
+/**
+ * Separates the declared parts inside a group name. Prose does not contain it, so the
+ * summary can split a group name back into the scenario's name, GIVENs and WHEN.
+ */
+const PART = " || ";
+
+const OUTCOME = /^\s*(THEN|AND|BUT)\b/i;
 
 /**
- * Whether a check name reads as a BDD outcome rather than as plumbing.
+ * Declares one scenario.
  *
- * @param {string} name - The check name.
- * @returns {boolean} True if the name opens with a BDD keyword.
+ * @param {{name: string, given?: string|Array<string>, when: string}} declared
+ * The scenario's name, the setup it assumes, and the single action it performs.
+ * @param {Function} body - Performs the action and asserts the outcomes.
+ * @returns {*} Whatever the body returns.
  */
-function IsBddSentence(name) {
-    return BDD_SENTENCE.test(String(name ?? ""));
+export function scenario(declared, body) {
+    const givens = declared.given === undefined
+        ? []
+        : (Array.isArray(declared.given) ? declared.given : [declared.given]);
+
+    const parts = [
+        declared.name,
+        ...givens.map((given, index) => `${index === 0 ? "GIVEN" : "AND"} ${given}`),
+        `WHEN ${declared.when}`,
+    ];
+
+    return group(parts.join(PART), body);
 }
 
 /**
- * Flattens the group tree into one entry per group that holds checks, in run order,
- * each tagged with the scenario it sits under.
+ * Splits a group name back into what `scenario()` declared.
  *
- * A suite that wraps its steps in a scenario group gets the scenario reported as a
- * heading with its steps numbered beneath. A suite with flat groups still works, and
- * simply has no heading to show.
+ * @param {string} groupName - The group name to read.
+ * @returns {{name: string|null, steps: Array<string>}} The scenario's name and declared steps.
+ */
+function ReadDeclared(groupName) {
+    const parts = String(groupName ?? "").split(PART);
+
+    if (parts.length === 1) {
+        // Not declared through scenario(), so there is no name to show and the group name
+        // is the only step there is.
+        return { name: null, steps: parts };
+    }
+
+    return { name: parts[0], steps: parts.slice(1) };
+}
+
+/**
+ * Collects one entry per group that holds checks, in run order, tagged with its feature.
  *
  * @param {object} group - A k6 group from the summary data.
  * @param {Array<string>} ancestors - Names of the enclosing groups, outermost first.
- * @param {Array<object>} steps - Accumulator, appended to in place.
- * @returns {Array<object>} One entry per group that holds checks, in run order.
+ * @param {Array<object>} scenarios - Accumulator, appended to in place.
+ * @returns {Array<object>} The scenarios, in run order.
  */
-function CollectSteps(group, ancestors, steps) {
+function CollectScenarios(group, ancestors, scenarios) {
     const checks = Array.isArray(group?.checks) ? group.checks : [];
     const groups = Array.isArray(group?.groups) ? group.groups : [];
 
     if (checks.length > 0) {
-        steps.push({
-            scenario: ancestors.length > 0 ? ancestors[0] : null,
-            action: group?.name || "(no group)",
-            outcomes: checks.map((check) => ({
-                name: check.name,
-                fails: check.fails,
-                isBdd: IsBddSentence(check.name),
-            })),
+        const declared = ReadDeclared(group?.name);
+
+        scenarios.push({
+            feature: ancestors.length > 0 ? ancestors[0] : null,
+            name: declared.name,
+            declaredSteps: declared.steps,
+            outcomes: checks.filter((check) => OUTCOME.test(check.name)),
+            plumbing: checks.filter((check) => !OUTCOME.test(check.name)),
         });
     }
 
-    // The root group has no name and is not a scenario, so it never becomes an ancestor.
     const nextAncestors = group?.name ? [...ancestors, group.name] : ancestors;
 
     for (const nested of groups) {
-        CollectSteps(nested, nextAncestors, steps);
+        CollectScenarios(nested, nextAncestors, scenarios);
     }
 
-    return steps;
+    return scenarios;
 }
 
 /**
- * Renders the report, scenario by scenario, with the steps numbered in the order they
- * ran so a long scenario can still be followed.
+ * Whether every check in a list passed.
  *
- * @param {Array<object>} steps - The collected steps.
- * @param {boolean} onlyFailures - Drop everything that passed, for the Slack message.
+ * @param {Array<object>} checks - The checks to inspect.
+ * @returns {boolean} True if none of them failed.
+ */
+function AllPassed(checks) {
+    return checks.every((check) => check.fails === 0);
+}
+
+/**
+ * Whether anything in a scenario did not hold.
+ *
+ * @param {object} scenario - The scenario to inspect.
+ * @returns {boolean} True if any check in it failed.
+ */
+function Failed(scenario) {
+    return !AllPassed([...scenario.outcomes, ...scenario.plumbing]);
+}
+
+/**
+ * Renders one scenario as its Gherkin steps.
+ *
+ * @param {object} scenario - The scenario to render.
+ * @param {Array<string>} lines - Accumulator, appended to in place.
+ * @returns {Array<string>} The lines, for chaining.
+ */
+function RenderScenario(scenario, lines) {
+    lines.push("");
+
+    // A group that did not go through scenario() has no name of its own, so its steps are
+    // printed without a heading rather than under an invented one.
+    if (scenario.name !== null) {
+        lines.push(`  Scenario: ${scenario.name}`);
+    }
+
+    for (const step of scenario.declaredSteps) {
+        // A GIVEN is stated, not asserted, so it gets no tick. The WHEN is the action, and
+        // whether it succeeded is exactly what the request's own checks say.
+        const isAction = /^\s*WHEN\b/i.test(step);
+        const mark = isAction ? (AllPassed(scenario.plumbing) ? "✅" : "❌") : "  ";
+
+        lines.push(`    ${mark} ${step}`);
+
+        if (isAction) {
+            for (const failure of scenario.plumbing.filter((check) => check.fails > 0)) {
+                lines.push(`         ↳ ${failure.name}`);
+            }
+        }
+    }
+
+    scenario.outcomes.forEach((check) => {
+        lines.push(`    ${check.fails === 0 ? "✅" : "❌"} ${check.name}`);
+    });
+
+    return lines;
+}
+
+/**
+ * Renders the report.
+ *
+ * @param {Array<object>} scenarios - The collected scenarios.
+ * @param {boolean} onlyFailures - Keep only the scenarios that failed, for Slack.
  * @returns {Array<string>} The report lines.
  */
-function Render(steps, onlyFailures) {
+function Render(scenarios, onlyFailures) {
+    const perFeature = new Map();
+
+    for (const scenario of scenarios) {
+        if (!perFeature.has(scenario.feature)) {
+            perFeature.set(scenario.feature, []);
+        }
+
+        perFeature.get(scenario.feature).push(scenario);
+    }
+
     const lines = [];
     let outcomeCount = 0;
     let outcomesFailed = 0;
-    let requestsFailed = 0;
-    let stepsFailed = 0;
+    let scenariosFailed = 0;
 
-    // Steps arrive in run order, so the step number within a scenario is just a counter
-    // that resets whenever the scenario changes.
-    let currentScenario = undefined;
-    let stepNumber = 0;
+    for (const [feature, inFeature] of perFeature) {
+        const reported = onlyFailures ? inFeature.filter(Failed) : inFeature;
 
-    // How many steps each scenario has, so a step can be numbered "3/9" and the reader
-    // knows where in the scenario they are without counting.
-    const stepsPerScenario = new Map();
+        for (const scenario of inFeature) {
+            outcomeCount += scenario.outcomes.length;
+            outcomesFailed += scenario.outcomes.filter((check) => check.fails > 0).length;
 
-    for (const step of steps) {
-        stepsPerScenario.set(step.scenario, (stepsPerScenario.get(step.scenario) ?? 0) + 1);
-    }
-
-    for (const step of steps) {
-        // Plumbing is only worth a line when it failed. Everything that reads as BDD
-        // stays, so a green report is the scenario in its own words.
-        const shown = step.outcomes.filter((outcome) => outcome.isBdd || outcome.fails > 0);
-        const reported = onlyFailures ? shown.filter((outcome) => outcome.fails > 0) : shown;
-
-        // Outcomes and request plumbing are tallied apart. Counting them together lets
-        // the numerator outrun the denominator, since the denominator is outcomes only.
-        outcomeCount += step.outcomes.filter((outcome) => outcome.isBdd).length;
-        outcomesFailed += step.outcomes.filter((outcome) => outcome.isBdd && outcome.fails > 0).length;
-        requestsFailed += step.outcomes.filter((outcome) => !outcome.isBdd && outcome.fails > 0).length;
-
-        if (step.outcomes.some((outcome) => outcome.fails > 0)) {
-            stepsFailed += 1;
+            if (Failed(scenario)) {
+                scenariosFailed += 1;
+            }
         }
-
-        if (step.scenario !== currentScenario) {
-            currentScenario = step.scenario;
-            stepNumber = 0;
-        }
-
-        stepNumber += 1;
 
         if (reported.length === 0) {
             continue;
         }
 
-        // The heading is only printed once the scenario has something to report, so a
-        // failures only render does not announce scenarios that were entirely green.
-        if (stepNumber === 1 || lines.length === 0) {
-            lines.push("");
+        lines.push("");
+        lines.push(feature ?? "(no feature)");
 
-            if (step.scenario) {
-                lines.push(step.scenario);
-            }
-        }
-
-        const total = stepsPerScenario.get(step.scenario);
-        const counter = step.scenario ? `${stepNumber}/${total} ` : "";
-        const indent = step.scenario ? "  " : "";
-
-        lines.push(`${indent}${counter}${step.action}`);
-
-        for (const outcome of reported) {
-            const mark = outcome.fails === 0 ? "✅" : "❌";
-            // A failing non-BDD check is the request itself, so it is labelled rather
-            // than left to look like an outcome of the scenario.
-            const label = outcome.isBdd ? outcome.name : `[request] ${outcome.name}`;
-
-            lines.push(`${indent}    ${mark} ${label}`);
+        for (const scenario of reported) {
+            RenderScenario(scenario, lines);
         }
     }
+
+    const plural = (count, noun) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
     lines.push("");
-
-    if (outcomesFailed === 0 && requestsFailed === 0) {
-        lines.push(`${outcomeCount} outcomes across ${steps.length} steps, all held.`);
-
-        return lines;
-    }
-
-    lines.push(`${outcomesFailed} of ${outcomeCount} outcomes did not hold, in ${stepsFailed} of ${steps.length} steps.`);
-
-    if (requestsFailed > 0) {
-        // Worth saying plainly: when the request never succeeded, the outcomes under it
-        // are consequences rather than findings, and the request is what to look at.
-        lines.push(`${requestsFailed} request checks failed too, so start there: outcomes under a request that did not succeed are consequences, not findings.`);
-    }
+    lines.push(scenariosFailed === 0
+        ? `${plural(scenarios.length, "scenario")}, ${plural(outcomeCount, "outcome")}, all held.`
+        : `${scenariosFailed} of ${plural(scenarios.length, "scenario")} did not hold, ${outcomesFailed} of ${plural(outcomeCount, "outcome")}.`);
 
     return lines;
 }
@@ -177,14 +233,13 @@ function Render(steps, onlyFailures) {
  */
 export function handleSummary(data) {
     const runningInK8s = __ENV.RUNNING_IN_K8S == "true";
-    const steps = CollectSteps(data.root_group, [], []);
-    const hasFailures = steps.some((step) => step.outcomes.some((outcome) => outcome.fails > 0));
+    const scenarios = CollectScenarios(data.root_group, [], []);
 
     if (runningInK8s) {
-        if (hasFailures) {
-            // Only the outcomes that did not hold, so the message says what broke
-            // instead of restating everything that worked.
-            postSlackMessage(data, Render(steps, true).join("\n"));
+        if (scenarios.some(Failed)) {
+            // Only the scenarios that did not hold, so the message says what broke instead
+            // of restating everything that worked.
+            postSlackMessage(data, Render(scenarios, true).join("\n"));
         }
 
         return {
@@ -193,6 +248,6 @@ export function handleSummary(data) {
     }
 
     return {
-        stdout: `${Render(steps, false).join("\n")}\n\n`,
+        stdout: `${Render(scenarios, false).join("\n")}\n\n`,
     };
 }

@@ -7,7 +7,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } from "./common.js";
 
-// Scenario: The endpoint only answers callers the resource owner policy accepts
+// Feature: The endpoint only answers callers the resource owner policy accepts
 //
 //   When the request carries no token, it is rejected before any lookup
 //   When the token's scope is not one the policy accepts, it is rejected
@@ -19,7 +19,7 @@ import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } fro
 // check for every request that is meant to be refused.
 
 export default function (data) {
-    group("Scenario: The endpoint only answers callers the resource owner policy accepts", function () {
+    group("Feature: The endpoint only answers callers the resource owner policy accepts", function () {
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
         const queryParams = new AuthorizedPartiesQueryBuilder().build();
@@ -28,7 +28,7 @@ export default function (data) {
             const response = getNoTokenClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckUnauthorized(
-                "THEN the endpoint rejects it with 401 before any lookup",
+                "THEN the request is refused with 401",
                 response);
         });
 
@@ -36,7 +36,7 @@ export default function (data) {
             const response = getWrongScopeClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckForbidden(
-                "THEN the request fails with 403, since authentication succeeded and authorization did not",
+                "THEN the request is refused with 403",
                 response);
         });
 
@@ -45,7 +45,7 @@ export default function (data) {
             const response = authorizedPartiesClient.GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckRequestSucceeded(
-                "THEN the request succeeds, because the policy accepts that scope",
+                "THEN the request succeeds",
                 response);
         });
 
@@ -53,7 +53,7 @@ export default function (data) {
             const response = getAdminClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckRequestSucceeded(
-                "THEN the request succeeds too, because it is the other scope the policy accepts",
+                "THEN the request succeeds",
                 response);
         });
     });

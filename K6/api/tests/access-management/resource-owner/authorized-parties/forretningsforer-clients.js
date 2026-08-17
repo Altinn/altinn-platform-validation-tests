@@ -8,14 +8,14 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: A business manager's daily leader reaches the housing companies the firm manages
+// Feature: A business manager's daily leader reaches the housing companies the firm manages
 //
 //   When the subject is the daily leader of a forretningsfører firm
 //   Then the client the firm holds the eiendom package for carries that package
 //   And the other housing company client is also returned
 
 export default function (data) {
-    group("Scenario: A business manager's daily leader reaches the housing companies the firm manages", function () {
+    group("Feature: A business manager's daily leader reaches the housing companies the firm manages", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.forretningsforerNonfigurativEmosjonellPuma;

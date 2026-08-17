@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks, PartyUuidList } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: The same subject resolves to the same party list whichever identifier form is used
+// Feature: The same subject resolves to the same party list whichever identifier form is used
 //
 //   Given a person looked up by national identity number
 //   Then looking the same person up by user id, party id and person uuid returns the same parties
@@ -24,7 +24,7 @@ import { getClients } from "./common.js";
 // every VU establishes its own.
 
 export default function (data) {
-    group("Scenario: The same subject resolves to the same party list whichever identifier form is used", function () {
+    group("Feature: The same subject resolves to the same party list whichever identifier form is used", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -39,11 +39,11 @@ export default function (data) {
         let organisationBaseline = null;
         let enterpriseUserBaseline = null;
 
-        group("GIVEN a person is looked up by national identity number", function () {
+        group("WHEN a person is looked up by national identity number", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(person.pid).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
-                "THEN the person has a party list to compare the other identifier forms against",
+                "THEN a non empty party list comes back",
                 parties);
 
             personBaseline = PartyUuidList(parties);
@@ -79,11 +79,11 @@ export default function (data) {
                 parties, personBaseline);
         });
 
-        group("GIVEN an organisation is looked up by organisation number", function () {
+        group("WHEN an organisation is looked up by organisation number", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(firm.orgno).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
-                "THEN the organisation has a party list to compare the uuid form against",
+                "THEN a non empty party list comes back",
                 parties);
 
             organisationBaseline = PartyUuidList(parties);
@@ -103,11 +103,11 @@ export default function (data) {
         // fixture is given access, but the equivalence is not exercised as things stand.
         // Deliberately not asserted non empty, which would be a fixture failure dressed up as
         // a product one. The Bruno suite this was ported from has the same gap.
-        group("GIVEN an enterprise user is looked up by user name", function () {
+        group("WHEN an enterprise user is looked up by user name", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUsername(enterpriseUser.username).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
-                "THEN an enterprise user is accepted as a subject and a party list comes back",
+                "THEN a party list comes back",
                 parties);
 
             enterpriseUserBaseline = PartyUuidList(parties);

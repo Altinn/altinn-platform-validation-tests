@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks, IsInsideRetentionWindow } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: A deleted party keeps granting access to its owner for a retention window
+// Feature: A deleted party keeps granting access to its owner for a retention window
 //
 //   Given one sole proprietorship client deleted inside the retention window and one outside it
 //   When a service owner lists the daily leader's parties with inactive parties included
@@ -20,7 +20,7 @@ import { getClients } from "./common.js";
 // hardcoded, so the assertions do not go stale as the calendar moves.
 
 export default function (data) {
-    group("Scenario: A deleted party keeps granting access to its owner for a retention window", function () {
+    group("Feature: A deleted party keeps granting access to its owner for a retention window", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -36,18 +36,16 @@ export default function (data) {
             .includeInactiveParties("true")
             .build();
 
-        // The fixtures only mean anything while they still sit on the side of the window they
-        // were chosen for, so that is established before the parties are asserted.
-        group("GIVEN one deleted client inside the retention window and one outside it", function () {
+        group("WHEN a service owner lists the daily leader's parties with inactive parties included", function () {
+            // Preconditions, so they read as the scenario's GIVEN. The fixtures only mean
+            // anything while they still sit on the side of the window they were chosen for.
             check(null, {
                 [`GIVEN ${deletedInside.name} was deleted inside the ${retentionYears} year window`]:
                     () => IsInsideRetentionWindow(deletedInside.deletedDate, retentionYears),
-                [`AND ${deletedOutside.name} was deleted outside it`]:
+                [`GIVEN ${deletedOutside.name} was deleted outside it`]:
                     () => !IsInsideRetentionWindow(deletedOutside.deletedDate, retentionYears),
             });
-        });
 
-        group("WHEN a service owner lists the daily leader's parties with inactive parties included", function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(

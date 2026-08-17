@@ -8,13 +8,13 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: The access information flags decide what is populated, not which parties are returned
+// Feature: The access information flags decide what is populated, not which parties are returned
 //
 //   When every access information flag is on, the access collections carry data
 //   When every flag is off, the same parties come back with all four collections empty
 
 export default function (data) {
-    group("Scenario: The access information flags decide what is populated, not which parties are returned", function () {
+    group("Feature: The access information flags decide what is populated, not which parties are returned", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -32,7 +32,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesRole(
-                "THEN the client party carries the accountant role it is held through",
+                "THEN the client party carries the accountant role",
                 parties, client.partyUuid, "regnskapsforer");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(
@@ -59,7 +59,7 @@ export default function (data) {
                 parties, client.partyUuid);
 
             AuthorizedPartiesDomainChecks.CheckEveryPartyHasNoAccessInformation(
-                "AND every party has empty roles, packages, resources and instances",
+                "AND no party carries any access information",
                 parties);
         });
     });

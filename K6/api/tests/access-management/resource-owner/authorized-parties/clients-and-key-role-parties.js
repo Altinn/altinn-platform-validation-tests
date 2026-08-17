@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: A service owner lists the authorized parties of an accounting firm's daily leader
+// Feature: A service owner lists the authorized parties of an accounting firm's daily leader
 //
 //   When a service owner lists the authorized parties for the daily leader of the accounting firm
 //   Then the response is a bare array of parties, each carrying the full set of party fields
@@ -26,7 +26,7 @@ const ACCOUNTANT_PACKAGES = [
 ];
 
 export default function (data) {
-    group("Scenario: A service owner lists the authorized parties of an accounting firm's daily leader", function () {
+    group("Feature: A service owner lists the authorized parties of an accounting firm's daily leader", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -55,7 +55,7 @@ export default function (data) {
                 parties);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOrganizationWithNumber(
-                "AND the accounting firm the daily leader holds a key role in appears as an organisation",
+                "AND the accounting firm appears as an organisation",
                 parties, firm.partyUuid, firm.orgno);
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
@@ -87,7 +87,7 @@ export default function (data) {
                 parties, innehaver.partyUuid, "Person");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND the sole proprietorship owner carries the accountant packages too",
+                "AND the sole proprietorship owner carries the accountant packages",
                 parties, innehaver.partyUuid, ACCOUNTANT_PACKAGES);
 
             AuthorizedPartiesDomainChecks.CheckNoDuplicateParties(

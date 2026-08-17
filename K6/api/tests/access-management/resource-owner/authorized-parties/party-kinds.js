@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: Every kind of subject the endpoint accepts resolves to the right parties
+// Feature: Every kind of subject the endpoint accepts resolves to the right parties
 //
 //   When the subject is a self identified user, only its own party comes back
 //   When the subject is an ID-porten user registered by email, only its own party comes back
@@ -17,7 +17,7 @@ import { getClients } from "./common.js";
 //   When the subject is a system user, the organisation it was created for comes back
 
 export default function (data) {
-    group("Scenario: Every kind of subject the endpoint accepts resolves to the right parties", function () {
+    group("Feature: Every kind of subject the endpoint accepts resolves to the right parties", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -97,7 +97,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsEmptyPartyArray(
-                "THEN the party list is empty, because a rightholder relation on its own authorizes nothing",
+                "THEN the party list is empty",
                 parties);
         });
 

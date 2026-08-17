@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE } from "./common.js";
 
-// Scenario: Which org code a caller may ask on behalf of depends on its scope
+// Feature: Which org code a caller may ask on behalf of depends on its scope
 //
 //   When a service owner filters on its own org code, the request succeeds
 //   When it filters on another service owner's org code, the request is refused
@@ -18,7 +18,7 @@ import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE } from "./comm
 // limited to the org code it owns.
 
 export default function (data) {
-    group("Scenario: Which org code a caller may ask on behalf of depends on its scope", function () {
+    group("Feature: Which org code a caller may ask on behalf of depends on its scope", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -34,7 +34,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, filteredOnOrgCode(ownOrgCode));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
-                "THEN the request succeeds and the narrowed party list comes back",
+                "THEN a narrowed party list comes back",
                 parties);
         });
 
@@ -43,7 +43,7 @@ export default function (data) {
             const response = authorizedPartiesClient.GetAuthorizedParties(request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
             AuthorizedPartiesDomainChecks.CheckBadRequest(
-                "THEN the request is refused with 400, since the caller may only ask on behalf of the org code it owns",
+                "THEN the request is refused with 400",
                 response);
 
             AuthorizedPartiesDomainChecks.CheckProblemBodyMentions(
@@ -55,7 +55,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(getAdminClient(), request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
-                "THEN the request succeeds, because the admin scope may ask on behalf of any org code",
+                "THEN the request succeeds",
                 parties);
         });
     });

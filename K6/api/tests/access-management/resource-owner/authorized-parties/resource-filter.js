@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: The resource filter narrows both the parties and the access shown on them
+// Feature: The resource filter narrows both the parties and the access shown on them
 //
 //   When filtering on a resource the subject holds, the party carrying it comes back
 //     with only that resource, and a party reached without it drops out
@@ -17,7 +17,7 @@ import { getClients } from "./common.js";
 // anyOfResourceIds is a query parameter on this endpoint, unlike the party filter.
 
 export default function (data) {
-    group("Scenario: The resource filter narrows both the parties and the access shown on them", function () {
+    group("Feature: The resource filter narrows both the parties and the access shown on them", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;

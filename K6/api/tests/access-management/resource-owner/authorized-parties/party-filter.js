@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: The party filter narrows the list without ever widening it
+// Feature: The party filter narrows the list without ever widening it
 //
 //   When filtering on a client main unit, only that main unit comes back, without subunits
 //   When filtering on a subunit, it comes back nested under its main unit, which carries no access
@@ -18,7 +18,7 @@ import { getClients } from "./common.js";
 // parameter is silently ignored here, unlike on the enduser endpoint.
 
 export default function (data) {
-    group("Scenario: The party filter narrows the list without ever widening it", function () {
+    group("Feature: The party filter narrows the list without ever widening it", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -40,11 +40,11 @@ export default function (data) {
                 parties, [client.partyUuid]);
 
             AuthorizedPartiesDomainChecks.CheckPartyHasNoSubunits(
-                "AND its subunits are not pulled in, since the filter is on the party and not the hierarchy",
+                "AND its subunits are not pulled in",
                 parties, client.partyUuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyHoldsAccessItself(
-                "AND the filtered main unit holds access rather than being a hierarchy carrier",
+                "AND the filtered main unit holds access itself",
                 parties, client.partyUuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(
@@ -56,7 +56,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(client.subunit.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsNotTopLevel(
-                "THEN the subunit is not returned at the top level, since a subunit never is",
+                "THEN the subunit is not a top level party",
                 parties, client.subunit.partyUuid);
 
             AuthorizedPartiesDomainChecks.CheckOnlyTheseTopLevelParties(
@@ -76,7 +76,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(unreachable.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsEmptyPartyArray(
-                "THEN the party list is empty, because filtering never widens what the subject may see",
+                "THEN the party list is empty",
                 parties);
         });
     });

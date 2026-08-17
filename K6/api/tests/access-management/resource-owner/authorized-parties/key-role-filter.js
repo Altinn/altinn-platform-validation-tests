@@ -8,7 +8,7 @@ import { GetAuthorizedParties } from "../../../../building-blocks/access-managem
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: Excluding key role parties drops what the subject only reaches through a firm
+// Feature: Excluding key role parties drops what the subject only reaches through a firm
 //
 //   Given key role parties are included, the firm's clients are part of the list
 //   When key role parties are excluded, those clients drop out
@@ -18,7 +18,7 @@ import { getClients } from "./common.js";
 // tracked by #3522. The inactive window is covered by the deleted parties scenario.
 
 export default function (data) {
-    group("Scenario: Excluding key role parties drops what the subject only reaches through a firm", function () {
+    group("Feature: Excluding key role parties drops what the subject only reaches through a firm", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -28,7 +28,7 @@ export default function (data) {
 
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-        group("GIVEN key role parties are included", function () {
+        group("WHEN the parties are listed with key role parties included", function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeAccessPackages()
                 .includePartiesViaKeyRoles("true")
@@ -37,7 +37,7 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN a client the subject reaches through the firm's key role is in the list",
+                "THEN a client reached through the firm's key role is in the list",
                 parties, client.partyUuid);
         });
 
@@ -50,11 +50,11 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "THEN the accountant client the subject only reached through the firm is gone",
+                "THEN the accountant client is gone",
                 parties, client.partyUuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "AND the client without a client delegation is gone too",
+                "AND the client without a client delegation is gone",
                 parties, clientWithoutDelegation.partyUuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(

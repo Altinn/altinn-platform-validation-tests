@@ -3,129 +3,145 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 
-// Scenario: Every delegation direction in the unit hierarchy resolves the same way
+// Feature: Delegation directions in the unit hierarchy
 //
-//   When a main unit delegates to a main unit, a person, or a subunit
-//   When a person delegates to a main unit, a person, or a subunit
-//   When a subunit delegates to a main unit or to a subunit
-//   Then access packages and resources extend from a main unit to its subunits,
-//     but instance access never does
+// A delegation can run between main units, subunits and people in nine combinations, and
+// each one should put the delegating party on the receiving party's list with the access
+// it delegated. Two of the nine do not, which is #2952.
 //
-// Two directions assert today's behaviour rather than the correct one: when the
-// receiver of a delegation is a subunit, the delegating party goes missing from the
-// receiving side entirely. That is issue #2952, and those two steps turn red when it
-// is fixed, which is the point of them. They were switched off with a skipScenario
-// flag in the Bruno folder this replaces, so they registered no assertions at all.
-//
-// The hierarchy fixtures live with the enduser suite, which was ported from the same
-// Bruno fixture this scenario reads, so they are reused rather than duplicated.
+// The delegations themselves already exist in the at22 fixtures, so they are the GIVEN of
+// each scenario rather than something the test performs. The hierarchy fixtures live with
+// the enduser suite, ported from the same Bruno file this reads.
 
 export default function (data) {
-    group("Scenario: Every delegation direction in the unit hierarchy resolves the same way", function () {
-        const [authorizedPartiesClient] = getClients();
+    const [authorizedPartiesClient] = getClients();
 
-        const hovedenhetA = data.hierarchy.authParties_hovedenhetA;
-        const hovedenhetB = data.hierarchy.authParties_hovedenhetB;
-        const hovedenhetC = data.hierarchy.authParties_hovedenhetC;
-        const hovedenhetD = data.hierarchy.authParties_hovedenhetD;
-        const underenhetA = hovedenhetA.authParties_underenhetA;
-        const underenhetC = hovedenhetC.authParties_underenhetC;
-        const underenhetD = hovedenhetD.authParties_underenhetD;
-        const personA = data.hierarchy.authParties_personA;
-        const personB = data.hierarchy.authParties_personB;
-        const personC = hovedenhetA.authParties_personC;
+    const hovedenhetA = data.hierarchy.authParties_hovedenhetA;
+    const hovedenhetB = data.hierarchy.authParties_hovedenhetB;
+    const hovedenhetC = data.hierarchy.authParties_hovedenhetC;
+    const hovedenhetD = data.hierarchy.authParties_hovedenhetD;
+    const underenhetA = hovedenhetA.authParties_underenhetA;
+    const underenhetC = hovedenhetC.authParties_underenhetC;
+    const underenhetD = hovedenhetD.authParties_underenhetD;
+    const personA = data.hierarchy.authParties_personA;
+    const personB = data.hierarchy.authParties_personB;
+    const personC = hovedenhetA.authParties_personC;
+    const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
 
-        const queryParams = new AuthorizedPartiesQueryBuilder()
-            .includeRoles()
-            .includeAccessPackages()
-            .includeResources()
-            .includeInstances()
-            .build();
+    const queryParams = new AuthorizedPartiesQueryBuilder()
+        .includeRoles()
+        .includeAccessPackages()
+        .includeResources()
+        .includeInstances()
+        .build();
 
-        const lookup = (pid) => GetAuthorizedParties(
-            authorizedPartiesClient,
-            new AuthorizedPartiesRequestBuilder().withPerson(pid).build(),
-            queryParams,
-        );
+    const lookUp = (pid) => GetAuthorizedParties(
+        authorizedPartiesClient,
+        new AuthorizedPartiesRequestBuilder().withPerson(pid).build(),
+        queryParams,
+    );
 
-        group("WHEN main unit A has delegated to main unit B, looking up B's daily leader", function () {
-            const parties = lookup(hovedenhetB.dagligleder.pid);
+    group("Feature: Delegation directions in the unit hierarchy", function () {
+
+        scenario({
+            name: "A main unit delegates to another main unit",
+            given: "main unit A has delegated access to main unit B",
+            when: "a service owner lists the authorized parties of B's daily leader",
+        }, function () {
+            const parties = lookUp(hovedenhetB.dagligleder.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOrganizationWithNumber(
-                "THEN the delegating main unit is in the receiving side's list",
+                "THEN main unit A is in the list",
                 parties, hovedenhetA.partyuuid, hovedenhetA.org_no);
 
             AuthorizedPartiesDomainChecks.CheckPartyHoldsAccessItself(
-                "AND it holds the delegated access itself",
+                "AND it holds the access it delegated",
                 parties, hovedenhetA.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
-                "AND the delegating unit's subunit is nested under it",
+                "AND A's own subunit is nested under it",
                 parties, hovedenhetA.partyuuid, underenhetA.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckSubunitInheritsMainUnitAccessPackages(
-                "AND the received access extends to that subunit",
+                "AND the delegated access extends to that subunit",
                 parties, hovedenhetA.partyuuid, underenhetA.partyuuid);
         });
 
-        group("WHEN main unit A has delegated to a person, looking up that person", function () {
-            const parties = lookup(personC.pid);
+        scenario({
+            name: "A main unit delegates to a person",
+            given: "main unit A has delegated access to person C",
+            when: "a service owner lists the authorized parties of person C",
+        }, function () {
+            const parties = lookUp(personC.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOrganizationWithNumber(
-                "THEN the delegating main unit is in the person's list",
+                "THEN main unit A is in the list",
                 parties, hovedenhetA.partyuuid, hovedenhetA.org_no);
 
             AuthorizedPartiesDomainChecks.CheckPartyHoldsAccessItself(
-                "AND it holds the delegated access itself",
+                "AND it holds the access it delegated",
                 parties, hovedenhetA.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
-                "AND the delegating unit's subunit is nested under it",
+                "AND A's own subunit is nested under it",
                 parties, hovedenhetA.partyuuid, underenhetA.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckSubunitInheritsMainUnitAccessPackages(
-                "AND the received access extends to that subunit",
+                "AND the delegated access extends to that subunit",
                 parties, hovedenhetA.partyuuid, underenhetA.partyuuid);
         });
 
-        group("WHEN a person has delegated to main unit A, looking up A's daily leader", function () {
-            const parties = lookup(hovedenhetA.dagligleder.pid);
+        scenario({
+            name: "A person delegates to a main unit",
+            given: "person A has delegated access to main unit A",
+            when: "a service owner lists the authorized parties of A's daily leader",
+        }, function () {
+            const parties = lookUp(hovedenhetA.dagligleder.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyType(
-                "THEN the delegating person is in the receiving unit's list as a person party",
+                "THEN person A is in the list as a person party",
                 parties, personA.partyuuid, "Person");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasNoSubunits(
-                "AND the person party has no subunits",
+                "AND that party has no subunits, because a person cannot have any",
                 parties, personA.partyuuid);
         });
 
-        group("WHEN one person has delegated to another, looking up the receiving person", function () {
-            const parties = lookup(personB.pid);
+        scenario({
+            name: "A person delegates to another person",
+            given: "person A has delegated access to person B",
+            when: "a service owner lists the authorized parties of person B",
+        }, function () {
+            const parties = lookUp(personB.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyType(
-                "THEN the delegating person is in the receiving person's list as a person party",
+                "THEN person A is in the list as a person party",
                 parties, personA.partyuuid, "Person");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccess(
-                "AND the delegating person carries the access that was delegated",
+                "AND person A carries the access that was delegated",
                 parties, personA.partyuuid);
         });
 
-        group("WHEN a subunit has delegated to a person, looking up that person", function () {
-            const parties = lookup(personA.pid);
+        scenario({
+            name: "A subunit delegates to a person",
+            given: "subunit D has delegated access to person A",
+            when: "a service owner lists the authorized parties of person A",
+        }, function () {
+            const parties = lookUp(personA.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsNotTopLevel(
-                "THEN the delegating subunit is not at the top level, since a subunit never is",
+                "THEN subunit D is not a top level party",
                 parties, underenhetD.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND it is returned nested under its main unit instead",
+                "AND it is in the list nested under its own main unit",
                 parties, underenhetD.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccess(
@@ -133,50 +149,67 @@ export default function (data) {
                 parties, underenhetD.partyuuid);
         });
 
-        group("WHEN a subunit has delegated to main unit B, looking up B's daily leader", function () {
-            const parties = lookup(hovedenhetB.dagligleder.pid);
+        scenario({
+            name: "A subunit delegates to a main unit",
+            given: "subunit C has delegated access to main unit B",
+            when: "a service owner lists the authorized parties of B's daily leader",
+        }, function () {
+            const parties = lookUp(hovedenhetB.dagligleder.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsNotTopLevel(
-                "THEN the delegating subunit is not at the top level, since a subunit never is",
+                "THEN subunit C is not a top level party",
                 parties, underenhetC.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND it is returned nested under its own main unit",
+                "AND it is in the list nested under main unit C",
                 parties, underenhetC.partyuuid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOnlyHierarchyElement(
-                "AND that main unit is only a hierarchy carrier, having delegated nothing itself",
+                "AND main unit C carries no access, being only the hierarchy above the subunit",
                 parties, hovedenhetC.partyuuid);
         });
 
-        group("WHEN main unit A has delegated to a subunit, looking up the receiving side", function () {
-            const parties = lookup(hovedenhetC.dagligleder.pid);
+        // Asserts today's behaviour rather than the correct one, so it turns red when
+        // #2952 is fixed. That is the point of it: the correct outcome is that main unit A
+        // appears with the access it delegated. The direction was switched off behind a
+        // skipScenario flag in the Bruno folder this replaces, asserting nothing at all.
+        scenario({
+            name: "A main unit delegates to a subunit, and goes missing (#2952)",
+            given: "main unit A has delegated access to subunit C",
+            when: "a service owner lists the authorized parties of C's daily leader",
+        }, function () {
+            const parties = lookUp(hovedenhetC.dagligleder.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "THEN the delegating main unit is still missing from the receiving side (#2952), which is wrong but current. If it has started appearing, flip this step to expect it",
+                "THEN main unit A is absent from the list, which is #2952 and not the correct outcome",
                 parties, hovedenhetA.partyuuid);
         });
 
-        group("WHEN a subunit has delegated to another subunit, looking up the receiving side", function () {
-            const parties = lookup(hovedenhetC.dagligleder.pid);
+        // The same known bug, from the other direction. Also switched off in Bruno.
+        scenario({
+            name: "A subunit delegates to a subunit, and goes missing (#2952)",
+            given: "subunit D has delegated access to subunit C",
+            when: "a service owner lists the authorized parties of C's daily leader",
+        }, function () {
+            const parties = lookUp(hovedenhetC.dagligleder.pid);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "THEN the delegating subunit is still missing from the receiving side (#2952), which is wrong but current. If it has started appearing, flip this step to expect it",
+                "THEN subunit D is absent from the list, which is #2952 and not the correct outcome",
                 parties, underenhetD.partyuuid);
         });
 
-        // The rule that closes the scenario, rather than another direction, so it reads as
-        // a THEN over everything above rather than being dressed up as one more action.
-        //
         // Read on the accounting firm's daily leader, as the Bruno step was, because that
-        // is the subject whose response actually contains a main unit that both holds
-        // instances and has subunits. Read on a hierarchy subject there is nothing to
-        // inspect and the assertion passes without exercising the rule.
-        group("THEN across every direction, instance access stays where it was delegated", function () {
-            const parties = lookup(data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER.dagligleder.pid);
+        // is the subject whose response holds a main unit with both instances and subunits.
+        // On a hierarchy subject there is nothing to inspect and the rule goes unexercised.
+        scenario({
+            name: "Instance access stays with the party it was delegated to",
+            given: "a main unit holds instance access and has subunits",
+            when: "a service owner lists the authorized parties of the accounting firm's daily leader",
+        }, function () {
+            const parties = lookUp(firm.dagligleder.pid);
 
             AuthorizedPartiesDomainChecks.CheckNoSubunitInheritsInstances(
-                "THEN no subunit carries an instance its main unit holds, because an instance is delegated to one party and stays there",
+                "THEN no subunit carries an instance its main unit holds",
                 parties);
         });
     });
