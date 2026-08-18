@@ -47,7 +47,16 @@ export function GetCorrespondences(
             try {
                 const body = JSON.parse(r.body);
 
-                correspondenceIds = body.ids ?? [];
+                if (
+                    !Array.isArray(body?.ids) ||
+                    !body.ids.every(
+                        (id) => typeof id === "string" && id.length > 0,
+                    )
+                ) {
+                    return false;
+                }
+
+                correspondenceIds = body.ids;
 
                 return true;
             } catch (err) {
