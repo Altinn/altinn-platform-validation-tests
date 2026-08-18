@@ -1,4 +1,5 @@
 import { check, fail, group } from "k6";
+import http from "k6/http";
 
 import {
     AddressVerificationClient,
@@ -9,7 +10,7 @@ import {
     PersonalTokenBuilder,
     PersonalTokenGenerator,
 } from "../../../common-imports.js";
-import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
+import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     GetVerifiedAddresses,
@@ -51,21 +52,17 @@ const NOTIFICATION_SETTINGS = {
 /**
  * The persons the test acts as, and the organisation each one acts for.
  *
- * `partyUuid` is the avgiver, the organisation the setting is stored under, while
- * the user fields are the person the token is minted for. Only at22 has a person
- * set up for this, which is why the test runs there alone.
+ * One row per environment: the same person and the same avgiver everywhere, with
+ * the ids each environment gave them. `orgPartyUuid` is the avgiver, the
+ * organisation the setting is stored under, while the user fields are the person
+ * the token is minted for.
+ *
+ * Read over http rather than with k6's open(), which the cloud runner cannot use.
+ * The read is pinned to main, so an edit to the file takes effect once it is
+ * merged; point TESTDATA_REF at a branch to try one out before then.
  */
-const TEST_PERSONS = [
-    {
-        pid: "03827099790",
-        userId: "20208000",
-        userPartyId: "50934810",
-        userPartyUuid: "2935f549-3728-49f8-8e86-06332b2b7c1a",
-        orgNo: "311085972",
-        partyId: "51407216",
-        partyUuid: "d0e30ab3-8d2d-4b7c-a0d1-02beaf62fa9a",
-    },
-];
+const TESTDATA_URL =
+    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${__ENV.TESTDATA_REF ?? "main"}/K6/testdata/profil/notification-settings-users-and-parties.csv`;
 
 /**
  * @type {ProfessionalNotificationSettingsClient | undefined}
@@ -120,7 +117,7 @@ function getClients() {
  * The endpoints all read the person out of the token and write under
  * `users/current`, so the drawn user is what decides whose settings are touched.
  *
- * @param {{pid: string, userId: string, userPartyId: string}} person - The drawn person.
+ * @param {{pid: string, userId: string, userPartyId: string}} person - The person to act as.
  */
 function actAs(person) {
     tokenGenerator.setTokenGeneratorOptions(
@@ -150,16 +147,33 @@ function tryVerifyWithWrongCode(verificationClient) {
         .withVerificationCode("123456")
         .build();
 
-    VerifyAddress(verificationClient, request, [422, 429], label);
+    VerifyAddress(verificationClient, request, [422], label);
 }
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT", "TOKEN_GENERATOR_USERNAME", "TOKEN_GENERATOR_PASSWORD"]);
+
+    const res = http.get(TESTDATA_URL, { tags: { action: "fetch-test-data" } });
+
+    if (res.status !== 200) {
+        fail(`cannot read test data: ${TESTDATA_URL} answered ${res.status}`);
+    }
+
+    // The ids differ per environment, so only the rows for the one under test say
+    // anything about a person that exists there.
+    const persons = parseCsvData(res.body)
+        .filter((row) => row.env === __ENV.ENVIRONMENT);
+
+    if (persons.length === 0) {
+        fail(`cannot read test data: no rows for ${__ENV.ENVIRONMENT} in ${TESTDATA_URL}`);
+    }
+
+    return persons;
 }
 
-export default function () {
+export default function (persons) {
     const clients = getClients();
-    const person = getItemFromList(TEST_PERSONS, randomize);
+    const person = getItemFromList(persons, randomize);
 
     actAs(person);
 
@@ -167,7 +181,7 @@ export default function () {
         const created =
             CreateOrUpdateNotificationSettings(
                 clients.settings,
-                person.partyUuid,
+                person.orgPartyUuid,
                 NOTIFICATION_SETTINGS,
                 label,
             );
@@ -179,7 +193,7 @@ export default function () {
         const settings =
             GetNotificationSettings(
                 clients.settings,
-                person.partyUuid,
+                person.orgPartyUuid,
                 label,
             );
 
@@ -193,7 +207,7 @@ export default function () {
             "GetNotificationSettings - holds the phone number that was written": (s) =>
                 s.phoneNumber === NOTIFICATION_SETTINGS.phoneNumber,
             "GetNotificationSettings - is for the party it was written for": (s) =>
-                s.partyUuid === person.partyUuid,
+                s.partyUuid === person.orgPartyUuid,
         });
 
         GetVerifiedAddresses(
@@ -207,7 +221,7 @@ export default function () {
         // and the next run writes into an empty setting rather than over its own.
         DeleteNotificationSettings(
             clients.settings,
-            person.partyUuid,
+            person.orgPartyUuid,
             label,
         );
     });
