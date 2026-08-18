@@ -12,7 +12,10 @@ import {
 } from "../../../common-imports.js";
 import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { GetVerifiedAddresses } from "../../building-blocks/profil/address-verification/index.js";
+import {
+    GetVerifiedAddresses,
+    VerifyAddress,
+} from "../../building-blocks/profil/address-verification/index.js";
 import {
     CreateOrUpdateNotificationSettings,
     DeleteNotificationSettings,
@@ -128,9 +131,7 @@ function actAs(row) {
  *
  * The code is made up, so the only answers that say the endpoint is working are
  * 422, the code being wrong, and 429, too many attempts made on the address
- * already. A 204 would mean a wrong code was accepted. This goes through the
- * client rather than the VerifyAddress building block, which checks for the 204
- * of a code that was actually received.
+ * already. A 204 would mean a wrong code was accepted.
  *
  * @param {AddressVerificationClient} verificationClient - Client for the Address Verification API.
  */
@@ -141,17 +142,7 @@ function tryVerifyWithWrongCode(verificationClient) {
         .withVerificationCode("123456")
         .build();
 
-    const res = verificationClient.VerifyAddress(request, label);
-
-    const refused = check(res, {
-        "VerifyAddress with a wrong code - status code is 422 or 429": (r) =>
-            r.status === 422 || r.status === 429,
-    });
-
-    if (!refused) {
-        console.log(res.status);
-        console.log(res.body);
-    }
+    VerifyAddress(verificationClient, request, [422, 429], label);
 }
 
 export function setup() {
