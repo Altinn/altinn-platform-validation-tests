@@ -58,11 +58,10 @@ const NOTIFICATION_SETTINGS = {
  * the token is minted for.
  *
  * Read over http rather than with k6's open(), which the cloud runner cannot use.
- * The read is pinned to a ref, so the file has to be pushed for a run to see it.
- * Pointed at this branch while the test is being written; set it back to main
- * before merging, or a later edit to the file on main changes nothing here.
+ * The read is pinned to main, so an edit to the file takes effect once it is
+ * merged; point TESTDATA_REF at a branch to try one out before then.
  */
-const TESTDATA_REF = __ENV.TESTDATA_REF ?? "feat/profil-notification-settings-k6";
+const TESTDATA_REF = __ENV.TESTDATA_REF ?? "main";
 
 const TESTDATA_URL =
     `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/testdata/profil/notification-settings-users-and-parties.csv`;
