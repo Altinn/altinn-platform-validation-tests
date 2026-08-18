@@ -61,7 +61,7 @@ class TextsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
             name: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
             action: TAGS.CreateTextResource.action,
         };
@@ -94,7 +94,7 @@ class TextsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
             name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
             action: TAGS.GetTextResource.action,
         };
@@ -127,7 +127,7 @@ class TextsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
             name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
             action: TAGS.UpdateTextResource.action,
         };
@@ -160,7 +160,7 @@ class TextsClient {
 
         const tags = {
             ...labels,
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
             name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
             action: TAGS.DeleteTextResource.action,
         };

@@ -58,7 +58,7 @@ class ProfessionalNotificationSettingsClient {
         const url = `${this.FULL_PATH}/parties/${partyUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
             name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.GetNotificationSettings.action,
         };
@@ -99,7 +99,7 @@ class ProfessionalNotificationSettingsClient {
         const url = `${this.FULL_PATH}/parties/${partyUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
             name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.CreateOrUpdateNotificationSettings.action,
         };
@@ -137,7 +137,7 @@ class ProfessionalNotificationSettingsClient {
         const url = `${this.FULL_PATH}/parties/${partyUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
             name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.PatchNotificationSettings.action,
         };
@@ -173,7 +173,7 @@ class ProfessionalNotificationSettingsClient {
         const url = `${this.FULL_PATH}/parties/${partyUuid}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
             name: `${this.FULL_PATH}/parties/{partyUuid}`,
             action: TAGS.DeleteNotificationSettings.action,
         };

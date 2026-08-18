@@ -104,7 +104,7 @@ class SettingsClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/org/${orgNumber}/notificationaddresses`,
+            endpoint: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses`,
             name: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses`,
             action: TAGS.GetNotificationAddresses.action,
         };
@@ -142,7 +142,7 @@ class SettingsClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/org/${orgNumber}/notificationaddresses`,
+            endpoint: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses`,
             name: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses`,
             action: TAGS.CreateNotificationAddress.action,
         };
@@ -188,7 +188,7 @@ class SettingsClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/org/${orgNumber}/notificationaddresses/${notificationAddressId}`,
+            endpoint: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses/{notificationAddressId}`,
             name: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses/{notificationAddressId}`,
             action: TAGS.DeleteNotificationAddress.action,
         };
@@ -236,7 +236,7 @@ class SettingsClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/org/${orgNumber}/notificationaddresses/${notificationAddressId}`,
+            endpoint: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses/{notificationAddressId}`,
             name: `${this.FULL_PATH}/org/{orgNumber}/notificationaddresses/{notificationAddressId}`,
             action: TAGS.UpdateNotificationAddress.action,
         };

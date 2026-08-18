@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a single consent.
@@ -12,7 +13,10 @@ import { ConsentClient } from "../../../../clients/access-management-bff/consent
  * this response.
  */
 export function GetConsent(consentClient, consentId, labels = null) {
-    const res = consentClient.GetConsent(consentId, labels);
+    const res = withRetries(
+        () => consentClient.GetConsent(consentId, labels),
+        "GetConsent",
+    );
 
     /** @type {object|null} */
     let consent = null;

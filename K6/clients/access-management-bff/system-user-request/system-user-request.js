@@ -62,7 +62,7 @@ class SystemUserRequestClient {
         const url = new URL(`${this.FULL_PATH}/${requestId}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${requestId}`,
+            endpoint: `${this.FULL_PATH}/{requestId}`,
             name: `${this.FULL_PATH}/{requestId}`,
             action: TAGS.GetSystemUserRequest.action,
         };
@@ -99,7 +99,7 @@ class SystemUserRequestClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${requestId}/approve`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{requestId}/approve`,
             name: `${this.FULL_PATH}/{partyId}/{requestId}/approve`,
             action: TAGS.ApproveSystemUserRequest.action,
         };
@@ -140,7 +140,7 @@ class SystemUserRequestClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${requestId}/reject`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{requestId}/reject`,
             name: `${this.FULL_PATH}/{partyId}/{requestId}/reject`,
             action: TAGS.RejectSystemUserRequest.action,
         };
@@ -181,7 +181,7 @@ class SystemUserRequestClient {
         );
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${partyId}/${requestId}/escalate`,
+            endpoint: `${this.FULL_PATH}/{partyId}/{requestId}/escalate`,
             name: `${this.FULL_PATH}/{partyId}/{requestId}/escalate`,
             action: TAGS.EscalateSystemUserRequest.action,
         };
@@ -219,7 +219,7 @@ class SystemUserRequestClient {
         const url = new URL(`${this.FULL_PATH}/${requestId}/logout`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/${requestId}/logout`,
+            endpoint: `${this.FULL_PATH}/{requestId}/logout`,
             name: `${this.FULL_PATH}/{requestId}/logout`,
             action: TAGS.GetSystemUserRequestLogout.action,
         };

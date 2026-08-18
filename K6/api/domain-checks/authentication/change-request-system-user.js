@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ChangeRequestResponse } from "../../../clients/authentication/v2/types.js";
+import { ChangeRequestResponse } from "../../../clients/authentication/types.js";
 import { missingRights } from "../common/rights.js";
 
 /**

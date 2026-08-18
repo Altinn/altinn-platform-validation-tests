@@ -69,7 +69,7 @@ class FileTransferClient {
         const url = this.FULL_PATH;
 
         let tags = {
-            endpoint: url,
+            endpoint: this.FULL_PATH,
             name: this.FULL_PATH,
             action: TAGS.InitializeFileTransfer.action,
         };
@@ -122,7 +122,7 @@ class FileTransferClient {
         }
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH,
             name: this.FULL_PATH,
             action: TAGS.GetFileTransfers.action,
         };
@@ -159,7 +159,7 @@ class FileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/upload`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/upload`,
             name: `${this.FULL_PATH}/{fileTransferId}/upload`,
             action: TAGS.UploadFileTransfer.action,
         };
@@ -221,7 +221,7 @@ class FileTransferClient {
         const url = `${this.FULL_PATH}/upload`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/upload`,
             name: `${this.FULL_PATH}/upload`,
             action: TAGS.InitializeAndUploadFileTransfer.action,
         };
@@ -257,7 +257,7 @@ class FileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
             name: `${this.FULL_PATH}/{fileTransferId}`,
             action: TAGS.GetFileTransfer.action,
         };
@@ -293,7 +293,7 @@ class FileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/details`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/details`,
             name: `${this.FULL_PATH}/{fileTransferId}/details`,
             action: TAGS.GetFileTransferDetails.action,
         };
@@ -329,7 +329,7 @@ class FileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/download`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/download`,
             name: `${this.FULL_PATH}/{fileTransferId}/download`,
             action: TAGS.DownloadFileTransfer.action,
         };
@@ -364,7 +364,7 @@ class FileTransferClient {
         const url = `${this.FULL_PATH}/${fileTransferId}/confirmdownload`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/{fileTransferId}/confirmdownload`,
             name: `${this.FULL_PATH}/{fileTransferId}/confirmdownload`,
             action: TAGS.ConfirmDownload.action,
         };

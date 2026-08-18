@@ -2,8 +2,8 @@ import exec from "k6/execution";
 
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { PersonalTokenGenerator } from "../../../../token-generator.js";
-import { PdpAuthorizeUser } from "../../../building-blocks/authorization/pdp-authorize/index.js";
-import { getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./common-functions.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
+import { buildEnduserRequest, getActionLabelAndExpectedResponse, getClients, getTokenOpts } from "./common-functions.js";
 
 export { setup } from "./common-functions.js";
 
@@ -20,20 +20,17 @@ const resource = "ttd-dialogporten-performance-test-02";
 /**
  * Main function executed by each VU.
  *
- * @param testData TODO: description
+ * @param {object[][]} testData Organizations with their daglig leder, one slice per VU.
  */
 export default function (testData) {
-    const [pdpAuthorizeClient, tokenGenerator] = getClients();
+    const [authorizeClient, tokenGenerator] = getClients();
     const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
-    PdpAuthorizeUser(
-        pdpAuthorizeClient,
-        party.ssn,
-        resource,
-        action,
+    AuthorizePost(
+        authorizeClient,
+        buildEnduserRequest(party.ssn, resource, action),
         expectedResponse,
-        __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
         label
     );
 }

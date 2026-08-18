@@ -284,7 +284,7 @@ class AccessPackageClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/permission/${packageId}`,
+            endpoint: `${this.FULL_PATH}/permission/{packageId}`,
             name: `${this.FULL_PATH}/permission/{packageId}`,
             action: TAGS.GetAccessPackagePermission.action,
         };

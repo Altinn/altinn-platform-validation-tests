@@ -8,6 +8,9 @@ import { ConnectionClient } from "../../../../clients/access-management-bff/conn
  * @param {ConnectionClient} connectionClient Client for the connection
  * endpoints.
  * @param {string} partyUuid Party UUID of the reportee.
+ * @param {ValidatePersonInput|null} [body] The person to add, when they are
+ * identified by national identity number. Use
+ * {@link ValidatePersonInputBuilder}.
  * @param {CreateRightHolderQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreateRightHolderQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
@@ -16,11 +19,13 @@ import { ConnectionClient } from "../../../../clients/access-management-bff/conn
 export function CreateRightHolder(
     connectionClient,
     partyUuid,
+    body = null,
     queryParams = null,
     labels = null,
 ) {
     const res = connectionClient.CreateRightHolder(
         partyUuid,
+        body,
         queryParams,
         labels,
     );

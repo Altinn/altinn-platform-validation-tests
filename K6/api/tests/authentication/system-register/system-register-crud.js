@@ -3,7 +3,7 @@ import { fail, group } from "k6";
 import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-v2-imports.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);

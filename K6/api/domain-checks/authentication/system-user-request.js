@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { RequestSystemResponse } from "../../../clients/authentication/v2/types.js";
+import { RequestSystemResponse } from "../../../clients/authentication/types.js";
 
 /**
  * Checks that a created request echoes what it was asked for and carries the fields

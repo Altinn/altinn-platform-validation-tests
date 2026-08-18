@@ -124,8 +124,8 @@ class AccessListClient {
         const url = `${this.FULL_PATH}get-by-member?party=${encodeURIComponent(party)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}get-by-member?party={encodeURIComponent(party)}`,
+            endpoint: `${this.FULL_PATH}get-by-member`,
+            name: `${this.FULL_PATH}get-by-member`,
             action: TAGS.AccessListGetByMember.action,
         };
 
@@ -163,8 +163,8 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}${this.buildQuery(query)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}{owner}${this.buildQuery(query)}`,
+            endpoint: `${this.FULL_PATH}{owner}`,
+            name: `${this.FULL_PATH}{owner}`,
             action: TAGS.AccessListGetByOwner.action,
         };
 
@@ -202,8 +202,8 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}${this.buildQuery(query)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}{owner}/{identifier}${this.buildQuery(query)}`,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
+            name: `${this.FULL_PATH}{owner}/{identifier}`,
             action: TAGS.AccessListGet.action,
         };
 
@@ -241,7 +241,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
             name: `${this.FULL_PATH}{owner}/{identifier}`,
             action: TAGS.AccessListDelete.action,
         };
@@ -281,7 +281,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
             name: `${this.FULL_PATH}{owner}/{identifier}`,
             action: TAGS.AccessListUpsert.action,
         };
@@ -319,7 +319,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
             name: `${this.FULL_PATH}{owner}/{identifier}`,
             action: TAGS.AccessListPatch.action,
         };
@@ -366,8 +366,8 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/members${this.buildQuery(query)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}{owner}/{identifier}/members${this.buildQuery(query)}`,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
+            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
             action: TAGS.AccessListGetMembers.action,
         };
 
@@ -412,7 +412,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
             name: `${this.FULL_PATH}{owner}/{identifier}/members`,
             action: TAGS.AccessListReplaceMembers.action,
         };
@@ -458,7 +458,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
             name: `${this.FULL_PATH}{owner}/{identifier}/members`,
             action: TAGS.AccessListAddMembers.action,
         };
@@ -504,7 +504,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
             name: `${this.FULL_PATH}{owner}/{identifier}/members`,
             action: TAGS.AccessListRemoveMembers.action,
         };
@@ -551,8 +551,8 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/resource-connections${this.buildQuery(query)}`;
 
         let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections${this.buildQuery(query)}`,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections`,
+            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections`,
             action: TAGS.AccessListGetResourceConnections.action,
         };
 
@@ -599,7 +599,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/resource-connections/${resourceIdentifier}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
             name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
             action: TAGS.AccessListUpsertResourceConnection.action,
         };
@@ -645,7 +645,7 @@ class AccessListClient {
         const url = `${this.FULL_PATH}${owner}/${identifier}/resource-connections/${resourceIdentifier}`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
             name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
             action: TAGS.AccessListDeleteResourceConnection.action,
         };

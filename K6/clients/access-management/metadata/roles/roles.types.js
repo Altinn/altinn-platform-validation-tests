@@ -65,3 +65,5 @@
  * @property {ProviderDto} provider
  * @property {ResourceTypeDto} type
  */
+
+export const RoleDto = undefined;

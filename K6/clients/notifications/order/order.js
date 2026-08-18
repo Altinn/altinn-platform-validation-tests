@@ -29,7 +29,7 @@ class OrderClient {
         /**
          * Fully-qualified API path.
          */
-        this.FULL_PATH = `${baseUrl}${this.BASE_PATH} `;
+        this.FULL_PATH = `${baseUrl}${this.BASE_PATH}`;
     }
 
     static get TAGS() {
@@ -65,7 +65,7 @@ class OrderClient {
         return http.post(url, JSON.stringify(request), {
             tags,
             headers: {
-                Authorization: `Bearer ${token} `,
+                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
                 Accept: "application/json",
             },

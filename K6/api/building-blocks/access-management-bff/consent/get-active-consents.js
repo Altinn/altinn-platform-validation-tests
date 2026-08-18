@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the active consents of a party.
@@ -12,7 +13,10 @@ import { ConsentClient } from "../../../../clients/access-management-bff/consent
  * schema for this response.
  */
 export function GetActiveConsents(consentClient, party, labels = null) {
-    const res = consentClient.GetActiveConsents(party, labels);
+    const res = withRetries(
+        () => consentClient.GetActiveConsents(party, labels),
+        "GetActiveConsents",
+    );
 
     /** @type {object|null} */
     let consents = null;
