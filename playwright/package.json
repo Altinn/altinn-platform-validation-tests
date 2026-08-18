@@ -1,23 +1,14 @@
 {
-    "name": "playwright-bdd",
+    "name": "altinn-playwright-tests",
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "bdd:sso:login": "bddgen && playwright test tests/bdd/features/sso/innlogging-alle-flater.feature --project=bdd",
-        "bdd:sso:refresh": "bddgen && playwright test tests/bdd/features/sso/innlogging-refresh-alle-flater.feature --project=bdd",
-        "bdd:sso:logout": "bddgen && playwright test tests/bdd/features/sso/utlogging-alle-flater.feature --project=bdd",
-        "bdd:sso:infoportal": "bddgen && playwright test tests/bdd/features/sso/infoportal-innlogging.feature --project=bdd",
-        "bdd:sso": "bddgen && playwright test tests/bdd/features/sso/*.feature --project=bdd",
-        "bdd:tilgangsstyring": "bddgen && playwright test tests/bdd/features/tilgangsstyring/*.feature --project=bdd",
-        "bdd": "bddgen && playwright test tests/bdd/features/**/*.feature --project=bdd",
-        "native:sso:login": "playwright test tests/native/test-cases/sso/innlogging-alle-flater.spec.ts --project=native",
-        "native:sso:refresh": "playwright test tests/native/test-cases/sso/innlogging-refresh-alle-flater.spec.ts --project=native",
-        "native:sso:logout": "playwright test tests/native/test-cases/sso/utlogging-alle-flater.spec.ts --project=native",
-        "native:sso:infoportal": "playwright test tests/native/test-cases/sso/infoportal-innlogging.spec.ts --project=native",
-        "native:sso": "playwright test tests/native/test-cases/sso/*.spec.ts --project=native",
-        "native:tilgangsstyring": "playwright test tests/native/test-cases/tilgangsstyring/*.spec.ts --project=native",
-        "native": "playwright test --project=native",
-        "example": "playwright test playwright/tests/native/test-cases/example/example.spec.ts"
+        "test": "playwright test",
+        "test:prod": "TEST_ENV=prod playwright test",
+        "test:innlogging": "playwright test tests/innlogging",
+        "test:tilgangsstyring": "playwright test tests/tilgangsstyring",
+        "test:tilgangsstyring:prod": "TEST_ENV=prod playwright test tests/tilgangsstyring",
+        "typecheck": "tsc --noEmit"
     },
     "keywords": [],
     "author": "",
@@ -25,7 +16,8 @@
     "devDependencies": {
         "@playwright/test": "^1.60.0",
         "@types/node": "^25.9.1",
-        "playwright-bdd": "^9.0.0"
+        "dotenv": "^17.4.2",
+        "typescript": "^7.0.2"
     },
     "directories": {
         "test": "tests"

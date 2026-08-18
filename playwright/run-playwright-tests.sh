@@ -6,9 +6,9 @@ cd altinn-platform-validation-tests/playwright
 
 npm install -D \
     @playwright/test \
-    playwright-bdd
+    dotenv
 
-npm run example || true # Needs to be the input
+npm test || true # Needs to be the input
 
 set +e
 /tmp/generateMetricsFromJunitReport
