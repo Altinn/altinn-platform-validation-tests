@@ -29,8 +29,10 @@ import { SetupData } from "./setup-data.types.js";
 // have to query for it. Those values are not asserted, because this suite does not own them
 // and some of them look incidental rather than deliberate.
 //
-// Making the GIVEN perform its own delegation would fix the gap properly. See the README
-// for what that would take and what it would risk.
+// Having the GIVEN perform its own delegation would close the gap, and was deliberately
+// not done: it needs a write client this repo does not appear to have, and these parties
+// are shared with the enduser suite, which asserts the same delegations. The README says
+// what would have to change first.
 
 /**
  * Runs the feature.

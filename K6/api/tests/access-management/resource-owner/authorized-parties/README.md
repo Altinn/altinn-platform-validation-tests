@@ -102,22 +102,23 @@ None of it is asserted. The suite asserts the shape of the answer instead, that 
 delegating party is present and that access inherits to subunits, because this suite does
 not own those values and several of them look incidental rather than deliberate.
 
-### Making the GIVEN real
+### Why the suite does not create its own setup
 
-The setup belongs in k6's `setup()`, which runs once before the iterations and already hands
-the fixtures to every scenario, paired with `teardown()` to revoke what it created. A
-scenario's GIVEN would then describe something the suite actually did, and the packages
-could be named because the suite would have chosen them.
+Considered and deliberately not done. The natural home would be k6's `setup()`, which runs
+once before the iterations and already hands the fixtures to every scenario, paired with
+`teardown()` to revoke what it created. The GIVENs would then describe something the suite
+actually did, and could name the packages because the suite would have chosen them.
 
-Two things block it, and neither should be worked around quietly:
+It is not worth it here. Creating a delegation from one organisation to another needs a
+client this repo does not appear to have, and these parties are shared with the eight tests
+in `../../enduser/authorized-parties/`, which assert delegated access between them. A suite
+that creates or revokes delegations on shared parties can break that suite, and a failed
+teardown leaves the environment dirty for everyone. The cost of doing it safely, seeding
+parties of its own or agreeing ownership of these, is larger than the readability it buys.
 
-- **No confirmed write client.** Creating a delegation from one organisation to another needs
-  a client this repo may not have. That has to be established before the rest is designed.
-- **The fixtures are shared.** The eight merged tests in `../../enduser/authorized-parties/`
-  assert delegated access between these same parties. A suite that creates or revokes
-  delegations on them can break that suite, and a failed teardown leaves at22 dirty for
-  everyone. Either the new suite seeds its own parties rather than reusing these, or the two
-  suites agree on who owns the fixtures.
+So the GIVENs stay as descriptions of pre seeded state, and the table above stands in for
+the setup a reader cannot see. Revisit it if a write client appears, or if these fixtures
+stop being shared.
 
 ## Test data
 
