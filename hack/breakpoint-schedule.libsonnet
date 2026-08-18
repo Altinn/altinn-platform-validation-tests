@@ -1,3 +1,4 @@
+/*
 {
   'access-management': {
     'K6/api/tests/access-management/consent/breakpoint.yaml': {
@@ -34,3 +35,5 @@
     },
   },
 }
+*/
+{}

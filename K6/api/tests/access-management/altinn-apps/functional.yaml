@@ -1,0 +1,6 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/altinn-apps
+test_definitions:
+  - test_file: instance-delegation-check.js
+    contexts:
+      - environment: tt02
