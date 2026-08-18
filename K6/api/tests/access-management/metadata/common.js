@@ -1,11 +1,7 @@
 import { RolesClient } from "../../../../clients/access-management/metadata/roles/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getOptions } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { MetadataBuildingBlocks } from "../../../building-blocks/access-management/metadata/index.js";
-
-const labels = { step: "getRoles" };
 
 /**
  * @type {RolesClient | undefined}
@@ -16,8 +12,6 @@ let rolesApiClient = undefined;
  * @type {PersonalTokenGenerator | undefined}
  */
 let tokenGenerator = undefined;
-
-export const options = getOptions([labels]);
 
 /**
  * k6 setup function.
@@ -59,13 +53,4 @@ function getClients() {
     return [rolesApiClient];
 }
 
-/**
- * k6 default function executed for each iteration.
- *
- * @returns {void}
- */
-export default function () {
-    const [rolesApiClient] = getClients();
-
-    MetadataBuildingBlocks.Roles.GetRoles(rolesApiClient, labels);
-}
+export { getClients };
