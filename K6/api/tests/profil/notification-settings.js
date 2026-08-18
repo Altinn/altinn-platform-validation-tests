@@ -1,4 +1,4 @@
-import { check, fail, group } from "k6";
+import { fail, group } from "k6";
 
 import {
     AddressVerificationClient,
@@ -14,6 +14,8 @@ import {
     DeleteNotificationSettings,
     GetNotificationSettings,
 } from "../../building-blocks/profil/professional-notification-settings/index.js";
+import { AddressVerificationDomainChecks } from "../../domain-checks/profil/address-verification.js";
+import { NotificationSettingsDomainChecks } from "../../domain-checks/profil/notification-settings.js";
 import { actAs, getClients, getTestPersons } from "./commons.js";
 
 /**
@@ -98,19 +100,25 @@ export default function (persons) {
             fail("cannot continue: reading the notification settings failed");
         }
 
-        check(settings, {
-            "GetNotificationSettings - holds the email that was written": (s) =>
-                s.emailAddress === NOTIFICATION_SETTINGS.emailAddress,
-            "GetNotificationSettings - holds the phone number that was written": (s) =>
-                s.phoneNumber === NOTIFICATION_SETTINGS.phoneNumber,
-            "GetNotificationSettings - is for the party it was written for": (s) =>
-                s.partyUuid === person.orgPartyUuid,
-        });
+        NotificationSettingsDomainChecks.CheckSettingsMatchRequest(
+            settings,
+            NOTIFICATION_SETTINGS,
+            person.orgPartyUuid,
+        );
 
-        GetVerifiedAddresses(
+        NotificationSettingsDomainChecks.CheckSettingsBelongToUser(
+            settings,
+            person.userId,
+        );
+
+        NotificationSettingsDomainChecks.CheckAddressesCarryVerificationStatus(settings);
+
+        const verifiedAddresses = GetVerifiedAddresses(
             clients.verification,
             label,
         );
+
+        AddressVerificationDomainChecks.CheckVerifiedAddressesAreTyped(verifiedAddresses);
 
         tryVerifyWithWrongCode(clients.verification);
 
