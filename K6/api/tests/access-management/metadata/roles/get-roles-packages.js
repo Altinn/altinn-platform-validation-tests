@@ -16,6 +16,7 @@ export const options = getOptions([labels]);
 
 /**
  * k6 default function executed for each iteration.
+ * Test: Get role packages for a specific role (revisor) and variant (ENK), and validate the response against expected values.
  *
  * @returns {void}
  */

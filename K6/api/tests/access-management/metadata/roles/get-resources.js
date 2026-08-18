@@ -15,7 +15,8 @@ export const options = getOptions([labels]);
 
 /**
  * k6 default function executed for each iteration.
- *
+ * Test: Get role resources for a specific role and variant.
+ * 
  * @returns {void}
  */
 export default function () {

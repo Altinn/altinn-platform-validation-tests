@@ -14,6 +14,7 @@ export const options = getOptions([labels]);
 
 /**
  * k6 default function executed for each iteration.
+ * Test: Get all roles and validate the response against expected values.
  *
  * @returns {void}
  */
