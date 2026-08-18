@@ -132,7 +132,7 @@ class InitializeCorrespondencesBuilder {
         this.model = {
             correspondence: null,
             recipients: null,
-            existingAttachments: null,
+            existingAttachments: [],
             idempotentKey: null,
         };
     }
@@ -238,7 +238,7 @@ class BaseCorrespondenceBuilder {
             requestedPublishTime: null,
             dueDateTime: null,
             externalReferences: null,
-            propertyList: null,
+            propertyList: {},
             replyOptions: null,
             notification: null,
             ignoreReservation: null,

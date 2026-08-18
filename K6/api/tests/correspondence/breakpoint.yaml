@@ -1,0 +1,52 @@
+namespace: correspondence
+base_dir: K6/api/tests/correspondence/
+test_definitions:
+  - test_file: initialize-correspondence.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: create-and-upload-correspondence.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: create-and-upload-correspondence-single-user.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-correspondence-overview.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-correspondence.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
