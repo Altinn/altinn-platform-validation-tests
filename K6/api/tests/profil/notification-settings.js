@@ -1,17 +1,10 @@
 import { check, fail, group } from "k6";
-import http from "k6/http";
 
 import {
     AddressVerificationClient,
     AddressVerificationRequestBuilder,
 } from "../../../clients/profil/address-verification/index.js";
-import { ProfessionalNotificationSettingsClient } from "../../../clients/profil/professional-notification-settings/index.js";
-import {
-    PersonalTokenBuilder,
-    PersonalTokenGenerator,
-} from "../../../common-imports.js";
-import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
 import {
     GetVerifiedAddresses,
     VerifyAddress,
@@ -21,6 +14,7 @@ import {
     DeleteNotificationSettings,
     GetNotificationSettings,
 } from "../../building-blocks/profil/professional-notification-settings/index.js";
+import { actAs, getClients, getTestPersons } from "./commons.js";
 
 /**
  * Port of the notification settings test in altinn-profile:
@@ -50,90 +44,6 @@ const NOTIFICATION_SETTINGS = {
 };
 
 /**
- * The persons the test acts as, and the organisation each one acts for.
- *
- * One row per environment: the same person and the same avgiver everywhere, with
- * the ids each environment gave them. `orgPartyUuid` is the avgiver, the
- * organisation the setting is stored under, while the user fields are the person
- * the token is minted for.
- *
- * Read over http rather than with k6's open(), which the cloud runner cannot use.
- * The read is pinned to main, so an edit to the file takes effect once it is
- * merged; point TESTDATA_REF at a branch to try one out before then.
- */
-const TESTDATA_REF = __ENV.TESTDATA_REF ?? "main";
-
-const TESTDATA_URL =
-    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/testdata/profil/notification-settings-users-and-parties.csv`;
-
-/**
- * @type {ProfessionalNotificationSettingsClient | undefined}
- */
-let notificationSettingsClient = undefined;
-
-/**
- * @type {AddressVerificationClient | undefined}
- */
-let addressVerificationClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
- * Creates and caches the clients, both reading from the same token generator.
- *
- * Built once per VU and reused across its iterations, since the generator caches
- * a token per option set and rebuilding it per iteration refetches every token.
- * The person differs per iteration, so the options are replaced per iteration
- * instead, in {@link actAs}.
- *
- * @returns {{settings: ProfessionalNotificationSettingsClient, verification: AddressVerificationClient}}
- * The clients the test calls through.
- */
-function getClients() {
-    if (tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator();
-
-        notificationSettingsClient = new ProfessionalNotificationSettingsClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-        );
-
-        addressVerificationClient = new AddressVerificationClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-        );
-    }
-
-    return {
-        settings: notificationSettingsClient,
-        verification: addressVerificationClient,
-    };
-}
-
-/**
- * Points the token generator at the person of this iteration.
- *
- * The endpoints all read the person out of the token and write under
- * `users/current`, so the drawn user is what decides whose settings are touched.
- *
- * @param {{pid: string, userId: string, userPartyId: string}} person - The person to act as.
- */
-function actAs(person) {
-    tokenGenerator.setTokenGeneratorOptions(
-        new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-            .withUserId(person.userId)
-            .withPid(person.pid)
-            .withPartyId(person.userPartyId)
-            .build(),
-    );
-}
-
-/**
  * Sends a verification code the address never got and expects it to be refused.
  *
  * The code is made up, so the only answers that say the endpoint is working are
@@ -155,22 +65,7 @@ function tryVerifyWithWrongCode(verificationClient) {
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT", "TOKEN_GENERATOR_USERNAME", "TOKEN_GENERATOR_PASSWORD"]);
 
-    const res = http.get(TESTDATA_URL, { tags: { action: "fetch-test-data" } });
-
-    if (res.status !== 200) {
-        fail(`cannot read test data: ${TESTDATA_URL} answered ${res.status}`);
-    }
-
-    // The ids differ per environment, so only the rows for the one under test say
-    // anything about a person that exists there.
-    const persons = parseCsvData(res.body)
-        .filter((row) => row.env === __ENV.ENVIRONMENT);
-
-    if (persons.length === 0) {
-        fail(`cannot read test data: no rows for ${__ENV.ENVIRONMENT} in ${TESTDATA_URL}`);
-    }
-
-    return persons;
+    return getTestPersons(__ENV.ENVIRONMENT);
 }
 
 export default function (persons) {
