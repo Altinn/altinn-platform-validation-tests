@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: Which org code a caller may ask on behalf of depends on its scope
 //
@@ -18,6 +19,11 @@ import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE } from "./comm
 // This filter only exists on the service owner surface, since a plain resource owner is
 // limited to the org code it owns.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: Which org code a caller may ask on behalf of depends on its scope", function () {
         const [authorizedPartiesClient] = getClients();

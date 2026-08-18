@@ -11,19 +11,25 @@ import OrgCodeFilter from "./org-code-filter.js";
 import PartyFilter from "./party-filter.js";
 import PartyKinds from "./party-kinds.js";
 import ResourceFilter from "./resource-filter.js";
+import { SetupData } from "./setup-data.types.js";
 import SubjectLookupForms from "./subject-lookup-forms.js";
 import UnitHierarchyDelegationDirections from "./unit-hierarchy-delegation-directions.js";
 
 /**
  * Fetches the fixtures once for every scenario in the run.
  *
- * @returns {{testdata: object, hierarchy: object, sharedTestData: object}} The fixtures.
+ * @returns {SetupData} The fixtures every feature reads, as its `data` argument.
  */
 export function setup() {
     return CommonSetup();
 }
 
 // The scenarios are independent of each other, so this order is only for reading.
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     ClientsAndKeyRoleParties(data);
     AccessInformationFlags(data);

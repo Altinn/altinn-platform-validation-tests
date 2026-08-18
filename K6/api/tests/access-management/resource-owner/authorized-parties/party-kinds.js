@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: Every kind of subject the endpoint accepts resolves to the right parties
 //
@@ -17,6 +18,11 @@ import { getClients } from "./common.js";
 //   When the subject is a rightholder with nothing, the list is empty
 //   When the subject is a system user, the organisation it was created for comes back
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: Every kind of subject the endpoint accepts resolves to the right parties", function () {
         const [authorizedPartiesClient] = getClients();

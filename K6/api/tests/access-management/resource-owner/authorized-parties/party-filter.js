@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: The party filter narrows the list without ever widening it
 //
@@ -18,6 +19,11 @@ import { getClients } from "./common.js";
 // On this endpoint the party filter goes in the request body. A partyFilter query
 // parameter is silently ignored here, unlike on the enduser endpoint.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: The party filter narrows the list without ever widening it", function () {
         const [authorizedPartiesClient] = getClients();

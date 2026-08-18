@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: A business manager's daily leader reaches the housing companies the firm manages
 //
@@ -15,6 +16,11 @@ import { getClients } from "./common.js";
 //   Then the client the firm holds the eiendom package for carries that package
 //   And the other housing company client is also returned
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: A business manager's daily leader reaches the housing companies the firm manages", function () {
         const [authorizedPartiesClient] = getClients();

@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks, PartyUuidList } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: The same subject resolves to the same party list whichever identifier form is used
 //
@@ -24,6 +25,11 @@ import { getClients } from "./common.js";
 // against. The baselines are locals rather than module state, so every iteration and
 // every VU establishes its own.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: The same subject resolves to the same party list whichever identifier form is used", function () {
         const [authorizedPartiesClient] = getClients();

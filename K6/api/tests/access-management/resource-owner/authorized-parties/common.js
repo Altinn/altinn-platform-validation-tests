@@ -4,6 +4,7 @@ import { AuthorizedPartiesClient } from "../../../../../clients/access-managemen
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
+import { SetupData } from "./setup-data.types.js";
 
 /**
  * The service owner every scenario calls as.
@@ -135,7 +136,7 @@ export function getNoTokenClient() {
  * reused as is by the delegation directions scenario, since both suites were
  * ported from the same Bruno fixture.
  *
- * @returns {{testdata: object, hierarchy: object, sharedTestData: object}} The fixtures.
+ * @returns {SetupData} The fixtures every scenario reads, as its `data` argument.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

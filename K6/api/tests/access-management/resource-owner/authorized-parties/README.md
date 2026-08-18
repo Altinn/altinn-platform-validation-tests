@@ -78,6 +78,47 @@ leder package count and the `includeAltinn2` / `includeAltinn3` parameters are n
 asserted either, the first because the suite does not pin counts of catalogue wide sets
 and the second because no controller binds them.
 
+## The GIVENs are pre seeded, and should not be
+
+Every GIVEN in this suite describes state that already exists in at22. Nothing here creates
+it, and neither did the Bruno collection this was ported from: the delegation directions
+folder has no setup requests, only lookups. The parties are recorded in
+`../../enduser/testdata-at22.json`. What was delegated between them is recorded nowhere, so
+a reader cannot tell what `GIVEN main unit A has delegated access to main unit B` means
+without querying at22.
+
+Read out of at22 rather than out of any specification, the directions currently hold:
+
+| Direction | Access packages | Resources | Instances |
+| --- | --- | --- | --- |
+| Main unit A to main unit B | `beredskap`, `damp-varmtvann`, `motta-nabo-og-planvarsel`, `patent-varemerke-design` | 2 migrated correspondence resources | 0 |
+| Main unit A to person C | same four | `app_ttd_apps-test-prod` | 1 |
+| Person A to main unit A | `innbygger-bank-finans`, `innbygger-forsikring`, `innbygger-frivillighet`, `innbygger-stotte-tilskudd`, `innbygger-vapen` | 2 `devtest_gar_bruno_accesslist` resources | 0 |
+| Person A to person B | `innbygger-barn-foreldre`, `innbygger-helsetjenester`, `innbygger-pleie-omsorg`, `innbygger-samliv` | 2 | 1 |
+| Subunit D to person A | `beredskap`, `byggesoknad`, `motta-nabo-og-planvarsel`, `patent-varemerke-design` | none | 1 |
+| Subunit C to main unit B | `elektronisk-kommunikasjon`, `finansiering-og-forsikring`, `informasjon-og-kommunikasjon`, `kommuneoverlege`, `pleie-omsorgstjenester-i-institusjon` | `app_ttd_security-level3-app` | 0 |
+
+None of it is asserted. The suite asserts the shape of the answer instead, that the
+delegating party is present and that access inherits to subunits, because this suite does
+not own those values and several of them look incidental rather than deliberate.
+
+### Making the GIVEN real
+
+The setup belongs in k6's `setup()`, which runs once before the iterations and already hands
+the fixtures to every scenario, paired with `teardown()` to revoke what it created. A
+scenario's GIVEN would then describe something the suite actually did, and the packages
+could be named because the suite would have chosen them.
+
+Two things block it, and neither should be worked around quietly:
+
+- **No confirmed write client.** Creating a delegation from one organisation to another needs
+  a client this repo may not have. That has to be established before the rest is designed.
+- **The fixtures are shared.** The eight merged tests in `../../enduser/authorized-parties/`
+  assert delegated access between these same parties. A suite that creates or revokes
+  delegations on them can break that suite, and a failed teardown leaves at22 dirty for
+  everyone. Either the new suite seeds its own parties rather than reusing these, or the two
+  suites agree on who owns the fixtures.
+
 ## Test data
 
 `../testdata-<environment>.json` holds the accounting firm tree, the forretningsfører

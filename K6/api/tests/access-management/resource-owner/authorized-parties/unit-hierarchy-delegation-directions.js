@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: Delegation directions in the unit hierarchy
 //
@@ -15,10 +16,27 @@ import { getClients } from "./common.js";
 // each one should put the delegating party on the receiving party's list with the access
 // it delegated. Two of the nine do not, which is #2952.
 //
-// The delegations themselves already exist in the at22 fixtures, so they are the GIVEN of
-// each scenario rather than something the test performs. The hierarchy fixtures live with
-// the enduser suite, ported from the same Bruno file this reads.
+// The GIVEN of every scenario here is pre seeded at22 state, not something the suite
+// creates. Nothing in this repo or in the Bruno collection it was ported from performs
+// these delegations: the parties and their delegations were seeded into at22 by hand or by
+// some tool outside both, and only the parties are recorded, in
+// ../../enduser/testdata-at22.json. What was delegated is recorded nowhere.
+//
+// That is a real gap, and it is why the outcomes below assert the shape of the answer, that
+// the delegating party is present and that access inherits to subunits, rather than naming
+// the packages involved. The README carries a table of what each direction actually holds
+// today, read out of at22 rather than out of any specification, so the next reader does not
+// have to query for it. Those values are not asserted, because this suite does not own them
+// and some of them look incidental rather than deliberate.
+//
+// Making the GIVEN perform its own delegation would fix the gap properly. See the README
+// for what that would take and what it would risk.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
 

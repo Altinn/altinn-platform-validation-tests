@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: Excluding key role parties drops what the subject only reaches through a firm
 //
@@ -18,6 +19,11 @@ import { getClients } from "./common.js";
 // includeSubParties is not covered here: the filter is resolved but never applied,
 // tracked by #3522. The inactive window is covered by the deleted parties scenario.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: Excluding key role parties drops what the subject only reaches through a firm", function () {
         const [authorizedPartiesClient] = getClients();

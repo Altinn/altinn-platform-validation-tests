@@ -7,6 +7,7 @@ import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: The endpoint only answers callers the resource owner policy accepts
 //
@@ -19,6 +20,11 @@ import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } fro
 // GetAuthorizedParties building block, which asserts 200 and would register a failing
 // check for every request that is meant to be refused.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: The endpoint only answers callers the resource owner policy accepts", function () {
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;

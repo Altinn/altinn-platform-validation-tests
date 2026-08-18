@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: A service owner lists the authorized parties of an accounting firm's daily leader
 //
@@ -26,6 +27,11 @@ const ACCOUNTANT_PACKAGES = [
     "regnskapsforer-uten-signeringsrettighet",
 ];
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: A service owner lists the authorized parties of an accounting firm's daily leader", function () {
         const [authorizedPartiesClient] = getClients();

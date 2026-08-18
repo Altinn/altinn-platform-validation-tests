@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: The resource filter narrows both the parties and the access shown on them
 //
@@ -17,6 +18,11 @@ import { getClients } from "./common.js";
 //
 // anyOfResourceIds is a query parameter on this endpoint, unlike the party filter.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: The resource filter narrows both the parties and the access shown on them", function () {
         const [authorizedPartiesClient] = getClients();

@@ -8,6 +8,7 @@ import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks, IsInsideRetentionWindow } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
+import { SetupData } from "./setup-data.types.js";
 
 // Feature: A deleted party keeps granting access to its owner for a retention window
 //
@@ -20,6 +21,11 @@ import { getClients } from "./common.js";
 // The window is derived from the deletion date and the retention years rather than
 // hardcoded, so the assertions do not go stale as the calendar moves.
 
+/**
+ * Runs the feature.
+ *
+ * @param {SetupData} data - The fixtures returned by setup().
+ */
 export default function (data) {
     group("Feature: A deleted party keeps granting access to its owner for a retention window", function () {
         const [authorizedPartiesClient] = getClients();
