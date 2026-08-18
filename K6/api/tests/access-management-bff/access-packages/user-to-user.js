@@ -6,20 +6,20 @@ import {
     AccessPackageClient,
     CreateAccessPackageDelegationQueryBuilder,
     DeleteAccessPackageDelegationQueryBuilder,
-} from "../../../clients/access-management-bff/access-package/index.js";
+} from "../../../../clients/access-management-bff/access-package/index.js";
 import {
     ConnectionClient,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
     ValidatePersonInputBuilder,
-} from "../../../clients/access-management-bff/connection/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString, } from "../../../scopes.js";
-import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation } from "../../building-blocks/access-management-bff/access-package/index.js";
-import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
-import { getFromTo, getTokenOpts } from "./commons.js";
-import { accessPackagesForUsers as accessPackages } from "./custom-data.js";
+} from "../../../../clients/access-management-bff/connection/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString, } from "../../../../scopes.js";
+import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation } from "../../../building-blocks/access-management-bff/access-package/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
+import { getFromTo, getTokenOpts } from "../commons.js";
+import { accessPackagesForUsers as accessPackages } from "../custom-data.js";
 
 // Labels for different actions
 const postRightholderLabel = { step: "1. Connecting users with PostRightholder" };

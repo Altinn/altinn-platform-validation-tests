@@ -7,7 +7,7 @@ import {
     CreateAccessPackageDelegationQueryBuilder,
     DeleteAccessPackageDelegationQueryBuilder,
     GetAccessPackagePermissionQueryBuilder,
-} from "../../../clients/access-management-bff/access-package/index.js";
+} from "../../../../clients/access-management-bff/access-package/index.js";
 import {
     ClientDelegationsClient,
     CreateAgentAccessPackagesQueryBuilder,
@@ -19,18 +19,18 @@ import {
     GetAgentsQueryBuilder,
     GetClientAccessPackagesQueryBuilder,
     GetClientsQueryBuilder,
-} from "../../../clients/access-management-bff/client-delegations/index.js";
+} from "../../../../clients/access-management-bff/client-delegations/index.js";
 import {
     ConnectionClient,
     CreateRightHolderQueryBuilder,
     DeleteReporteeConnectionQueryBuilder,
     GetRightHoldersQueryBuilder,
     ValidatePersonInputBuilder,
-} from "../../../clients/access-management-bff/connection/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../building-blocks/access-management-bff/access-package/index.js";
+} from "../../../../clients/access-management-bff/connection/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import {
     CreateAgent,
     CreateAgentAccessPackages,
@@ -40,10 +40,10 @@ import {
     GetAgents,
     GetClientAccessPackages,
     GetClients,
-} from "../../building-blocks/access-management-bff/client-delegations/index.js";
-import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
-import { getTokenOpts } from "./commons.js";
-import { accessPackagesForOrgs as accessPackages } from "./custom-data.js";
+} from "../../../building-blocks/access-management-bff/client-delegations/index.js";
+import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
+import { getTokenOpts } from "../commons.js";
+import { accessPackagesForOrgs as accessPackages } from "../custom-data.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };

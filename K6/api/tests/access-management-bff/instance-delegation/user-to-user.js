@@ -2,34 +2,41 @@ import { group } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../clients/access-management-bff/access-package/index.js";
-import { GetRightHoldersQueryBuilder } from "../../../clients/access-management-bff/connection/index.js";
+import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../../clients/access-management-bff/access-package/index.js";
+import { GetRightHoldersQueryBuilder } from "../../../../clients/access-management-bff/connection/index.js";
 import {
     CreateInstanceRightsQueryBuilder,
     GetInstanceDelegationCheckQueryBuilder,
     GetInstanceDelegationsQueryBuilder,
-} from "../../../clients/access-management-bff/instance/index.js";
-import { GetResourceQueryBuilder } from "../../../clients/access-management-bff/resource/index.js";
-import { GetRolePermissionsQueryBuilder } from "../../../clients/access-management-bff/role/index.js";
-import { GetRightsMetaQueryBuilder } from "../../../clients/access-management-bff/single-right/index.js";
-import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../../clients/dialogporten/graphql/index.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
-import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../..//building-blocks/dialogporten/graphql/index.js";
-import { GetAccessPackageDelegationCheck } from "../../building-blocks/access-management-bff//access-package/index.js";
-import { GetOrgData } from "../../building-blocks/access-management-bff/altinn-cdn/index.js";
-import { GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
-import { GetActiveConsents } from "../../building-blocks/access-management-bff/consent/index.js";
-import { GetInstanceDelegationCheck } from "../../building-blocks/access-management-bff/instance/index.js";
-import { GetInstanceDelegations } from "../../building-blocks/access-management-bff/instance/index.js";
-import { CreateInstanceRights } from "../../building-blocks/access-management-bff/instance/index.js";
-import { GetParty } from "../../building-blocks/access-management-bff/lookup/index.js";
-import { GetResource } from "../../building-blocks/access-management-bff/resource/index.js";
-import { GetRolePermissions } from "../../building-blocks/access-management-bff/role/index.js";
-import { GetRightsMeta } from "../../building-blocks/access-management-bff/single-right/index.js";
-import { GetPendingSystemUsers } from "../../building-blocks/access-management-bff/system-user/index.js";
-import { GetActorList, GetActorListOld, GetIsAdmin, GetIsClientAdmin, GetIsCompanyProfileAdmin, GetIsInstanceAdmin, GetReportee, GetUserProfile } from "../../building-blocks/access-management-bff/user/index.js";
-import { CreateDialog } from "../../building-blocks/dialogporten/serviceowner/index.js";
-import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "./commons.js";
+} from "../../../../clients/access-management-bff/instance/index.js";
+import { GetResourceQueryBuilder } from "../../../../clients/access-management-bff/resource/index.js";
+import { GetRightsMetaQueryBuilder } from "../../../../clients/access-management-bff/single-right/index.js";
+import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/index.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
+import { GetOrgData, } from "../../../building-blocks/access-management-bff/altinn-cdn/index.js";
+import { GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
+import { GetActiveConsents } from "../../../building-blocks/access-management-bff/consent/index.js";
+import { CreateInstanceRights } from "../../../building-blocks/access-management-bff/instance/index.js";
+import { GetInstanceDelegationCheck } from "../../../building-blocks/access-management-bff/instance/index.js";
+import { GetInstanceDelegations } from "../../../building-blocks/access-management-bff/instance/index.js";
+import { GetPartyForAuthenticatedUser } from "../../../building-blocks/access-management-bff/lookup/index.js";
+import { GetResource } from "../../../building-blocks/access-management-bff/resource/index.js";
+import { GetRoles, } from "../../../building-blocks/access-management-bff/role/index.js";
+import { GetRightsMeta } from "../../../building-blocks/access-management-bff/single-right/index.js";
+import {
+    GetActorListOld,
+    GetFavorites,
+    GetIsAdmin,
+    GetIsClientAdmin,
+    GetIsCompanyProfileAdmin,
+    GetIsInstanceAdmin,
+    GetReportee,
+    GetUserProfile,
+} from "../../../building-blocks/access-management-bff/user/index.js";
+import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../building-blocks/dialogporten/graphql/index.js";
+import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "../commons.js";
 
 // serviceowner which will create a dialog.
 // The yt serviceOwner is different from the other environments.
@@ -71,8 +78,6 @@ const getConnectionsLabel = { step: "1m. Get connections for user" };
 const getResourceByIdLabel = { step: "1n. Get resource by id for user" };
 const getDelegationCheckLabel = { step: "1o. Get delegation check for resource and instance for user" };
 const getConnectionsWithTo = { step: "1p. Get connections for user with to parameter" };
-const getRolePermissionsLabel = { step: "1q. Get role permissions for user from and to" };
-const GetPendingDelegationsForUserLabel = { step: "1r. Get pending delegations for user" };
 
 const partTwoLabel = { step: "2 - Get access management data for user and resource" };
 const getRightsMetaLabel = { step: "2a. Get rights meta for resource" };
@@ -82,6 +87,7 @@ const getDelegatedInstancesForResourceAfterLabel = { step: "2d. Get delegated in
 const checkDelegationForResourceLabelAfter = { step: "2e. Check delegation for resource and instance for user after delegation" };
 const getConnectionsWithToAfter = { step: "2f. Get connections for user with to parameterafter delegation" };
 const getConnectionsLabelAfter = { step: "2g. Get connections for user after delegation" };
+const getRoleMetaLabel = { step: "2h. Get role meta" };
 
 const partThreeLabel = { step: "3 - Check delegated dialog is visible for delegated user" };
 const getDialogByIdLabel = { step: "3a. Get dialog by id for delegated user" };
@@ -107,8 +113,6 @@ export const options = getOptions([
     getResourceByIdLabel,
     getDelegationCheckLabel,
     getConnectionsWithTo,
-    getRolePermissionsLabel,
-    GetPendingDelegationsForUserLabel,
 
     partTwoLabel,
     getRightsMetaLabel,
@@ -119,6 +123,7 @@ export const options = getOptions([
     getConnectionsWithTo,
     getConnectionsWithToAfter,
     getConnectionsLabelAfter,
+    getRoleMetaLabel,
 
     partThreeLabel,
     getDialogByIdLabel,
@@ -129,12 +134,12 @@ export const options = getOptions([
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with their daglig leder, one slice per VU.
+ * @returns {object[][]} Users to delegate instances between, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/instance-delegation-org-user.csv`,
+    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/instance-delegation-user-user.csv`,
         { tags: { action: "fetch-test-data" } });
     const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
     return segmentedData;
@@ -149,7 +154,7 @@ export function setup() {
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
  *
- * @param {object[][]} data Organizations with their daglig leder, one slice per VU.
+ * @param {object[][]} data Users to delegate instances between, one slice per VU.
  */
 export default function (data) {
     const {
@@ -160,7 +165,6 @@ export default function (data) {
         role: roleApiClient,
         instance: instanceApiClient,
         consent: consentApiClient,
-        systemUser: systemUserApiClient,
         resource: resourceApiClient,
         singleRight: singleRightApiClient,
         connection: bffConnectionsApiClient,
@@ -176,7 +180,7 @@ export default function (data) {
     group(group0Label, function () {
         const resp = CreateDialog(
             serviceOwnerApiClient,
-            from.orgNo,
+            from.ssn,
             resource,
             serviceOwnerOrgNo,
             createDialog,
@@ -191,25 +195,16 @@ export default function (data) {
     // Open access management after creating the dialog.
     // Call every bff endpoint that the browser uses when navigating from arbeidsflate/del og gi tilgang
     group(group1Label, function () {
-        GetParty(lookupApiClient, from.partyUuid, getLookupPartyUserLabel);
-        GetIsCompanyProfileAdmin(userApiClient, from.orgUuid, getIsCompanyProfileAdminLabel);
+        GetPartyForAuthenticatedUser(lookupApiClient, getLookupPartyUserLabel);
+        GetIsCompanyProfileAdmin(userApiClient, from.partyUuid, getIsCompanyProfileAdminLabel);
         GetReportee(userApiClient, from.partyUuid, getReporteeLabel);
         GetUserProfile(userApiClient, getProfileLabel);
-        GetIsAdmin(userApiClient, from.orgUuid, getIsAdminLabel);
-        GetIsClientAdmin(userApiClient, from.orgUuid, getIsClientAdminLabel);
+        GetIsAdmin(userApiClient, from.partyUuid, getIsAdminLabel);
+        GetIsClientAdmin(userApiClient, from.partyUuid, getIsClientAdminLabel);
         GetActorListOld(userApiClient, getActorListOldLabel);
-        GetActorList(userApiClient, getActorListFavoritesLabel);
-        GetRolePermissions(
-            roleApiClient,
-            new GetRolePermissionsQueryBuilder()
-                .withParty(from.partyUuid)
-                .withFrom(from.orgUuid)
-                .withTo(from.partyUuid)
-                .build(),
-            getRolePermissionsLabel,
-        );
+        GetFavorites(userApiClient, getActorListFavoritesLabel);
         GetOrgData(altinnCdnApiClient, getOrganizationDataLabel);
-        GetIsInstanceAdmin(userApiClient, from.orgUuid, getIsInstanceAdminLabel);
+        GetIsInstanceAdmin(userApiClient, from.partyUuid, getIsInstanceAdminLabel);
         GetInstanceDelegations(
             instanceApiClient,
             new GetInstanceDelegationsQueryBuilder()
@@ -220,13 +215,12 @@ export default function (data) {
                 .build(),
             getDelegatedInstancesForResourceLabel,
         );
-        GetActiveConsents(consentApiClient, from.orgUuid, getActiveConsentLabel);
-        GetPendingSystemUsers(systemUserApiClient, from.orgUuid, GetPendingDelegationsForUserLabel);
+        GetActiveConsents(consentApiClient, from.partyUuid, getActiveConsentLabel);
         GetRightHolders(
             bffConnectionsApiClient,
             new GetRightHoldersQueryBuilder()
-                .withParty(from.orgUuid)
-                .withFrom(from.orgUuid)
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
                 .withIncludeClientDelegations(true)
                 .withIncludeAgentConnections(true)
                 .build(),
@@ -272,7 +266,7 @@ export default function (data) {
         GetInstanceDelegationCheck(
             instanceApiClient,
             new GetInstanceDelegationCheckQueryBuilder()
-                .withParty(from.orgUuid)
+                .withParty(from.partyUuid)
                 .withResource(resource)
                 .withInstance(`urn:altinn:dialog-id:${dialogId}`)
                 .build(),
@@ -281,7 +275,7 @@ export default function (data) {
         CreateInstanceRights(
             instanceApiClient,
             new CreateInstanceRightsQueryBuilder()
-                .withParty(from.orgUuid)
+                .withParty(from.partyUuid)
                 .withResource(resource)
                 .withInstance(`urn:altinn:dialog-id:${dialogId}`)
                 .build(),
@@ -291,8 +285,8 @@ export default function (data) {
         GetInstanceDelegations(
             instanceApiClient,
             new GetInstanceDelegationsQueryBuilder()
-                .withParty(from.orgUuid)
-                .withFrom(from.orgUuid)
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
                 .withResource(resource)
                 .withInstance(`urn:altinn:dialog-id:${dialogId}`)
                 .build(),
@@ -301,7 +295,7 @@ export default function (data) {
         GetInstanceDelegationCheck(
             instanceApiClient,
             new GetInstanceDelegationCheckQueryBuilder()
-                .withParty(from.orgUuid)
+                .withParty(from.partyUuid)
                 .withResource(resource)
                 .withInstance(`urn:altinn:dialog-id:${dialogId}`)
                 .build(),
@@ -311,7 +305,7 @@ export default function (data) {
             bffConnectionsApiClient,
             new GetRightHoldersQueryBuilder()
                 .withParty(from.partyUuid)
-                .withFrom(from.orgUuid)
+                .withFrom(from.partyUuid)
                 .withTo(from.partyUuid)
                 .withIncludeClientDelegations(true)
                 .withIncludeAgentConnections(true)
@@ -321,13 +315,14 @@ export default function (data) {
         GetRightHolders(
             bffConnectionsApiClient,
             new GetRightHoldersQueryBuilder()
-                .withParty(from.orgUuid)
-                .withFrom(from.orgUuid)
+                .withParty(from.partyUuid)
+                .withFrom(from.partyUuid)
                 .withIncludeClientDelegations(true)
                 .withIncludeAgentConnections(true)
                 .build(),
             getConnectionsLabelAfter,
         );
+        GetRoles(roleApiClient, getRoleMetaLabel);
     });
 
     // Finally, check that the delegated dialog is visible for the delegated user by
@@ -337,7 +332,7 @@ export default function (data) {
     group(group3Label, function () {
         tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(to.ssn));
         const variables = new DialogSearchVariablesBuilder()
-            .withParties([from.orgNo])
+            .withParties([from.ssn])
             .build();
         GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, getAllDialogsForPartyLabel);
         const getDialogByIdVariables = new DialogByIdVariablesBuilder()

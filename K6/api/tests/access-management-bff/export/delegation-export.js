@@ -1,12 +1,12 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
-import { DelegationExportClient, GetDelegationExportQueryBuilder } from "../../../clients/access-management-bff/delegation-export/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { GetDelegationExport } from "../../building-blocks/access-management-bff/delegation-export/index.js";
-import { getTokenOpts } from "./commons.js";
+import { DelegationExportClient, GetDelegationExportQueryBuilder } from "../../../../clients/access-management-bff/delegation-export/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { GetDelegationExport } from "../../../building-blocks/access-management-bff/delegation-export/index.js";
+import { getTokenOpts } from "../commons.js";
 
 // Labels for different actions
 const label = { step: "Export delegations" };

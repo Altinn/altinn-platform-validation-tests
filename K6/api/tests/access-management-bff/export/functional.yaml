@@ -1,0 +1,8 @@
+namespace: access-management-bff
+base_dir: K6/api/tests/access-management-bff/export
+test_definitions:
+  - test_file: delegation-export.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02

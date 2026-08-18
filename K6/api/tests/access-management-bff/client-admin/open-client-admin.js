@@ -14,23 +14,23 @@ import http from "k6/http";
 import {
     AccessPackageClient,
     GetAccessPackageDelegationCheckQueryBuilder,
-} from "../../../clients/access-management-bff/access-package/index.js";
+} from "../../../../clients/access-management-bff/access-package/index.js";
 import {
     ClientDelegationsClient,
     GetAgentsQueryBuilder,
     GetClientsQueryBuilder,
-} from "../../../clients/access-management-bff/client-delegations/index.js";
+} from "../../../../clients/access-management-bff/client-delegations/index.js";
 import {
     ConnectionClient,
     GetRightHoldersQueryBuilder,
-} from "../../../clients/access-management-bff/connection/index.js";
-import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-import { GetAccessPackageDelegationCheck } from "../../building-blocks/access-management-bff/access-package/index.js";
-import { GetAgents, GetClients } from "../../building-blocks/access-management-bff/client-delegations/index.js";
-import { GetRightHolders } from "../../building-blocks/access-management-bff/connection/index.js";
-import { getTokenOpts } from "./commons.js";
+} from "../../../../clients/access-management-bff/connection/index.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
+import { GetAgents, GetClients } from "../../../building-blocks/access-management-bff/client-delegations/index.js";
+import { GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
+import { getTokenOpts } from "../commons.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
