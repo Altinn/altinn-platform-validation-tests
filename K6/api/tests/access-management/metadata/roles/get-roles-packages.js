@@ -5,9 +5,9 @@ import { RolesGetRolePackagesByIdQueryBuilder } from "../../../../../clients/acc
 import { getOptions } from "../../../../../helpers.js";
 import { MetadataBuildingBlocks } from "../../../../building-blocks/access-management/metadata/index.js";
 import { PackagesDomainChecks } from "../../../../domain-checks/access-management/metadata/packages.js";
-import { getClients } from "../common.js";
+import { getClients } from "./common.js";
 
-export { setup } from "../common.js";;
+export { setup } from "./common.js";;
 
 const labels = { step: "getRolePackagesById" };
 const groupLabel = "get-role-packages-by-id";

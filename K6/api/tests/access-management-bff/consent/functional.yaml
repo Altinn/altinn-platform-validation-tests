@@ -1,0 +1,20 @@
+namespace: access-management-bff
+base_dir: K6/api/tests/access-management-bff/consent
+test_definitions:
+  - test_file: consent-log-worst-case.js
+    contexts:
+      - environment: yt01
+
+  - test_file: consent-requests-worst-case.js
+    contexts:
+      - environment: yt01
+
+  - test_file: consent-log.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+
+  - test_file: consent-requests.js
+    contexts:
+      - environment: yt01
+      - environment: at23
