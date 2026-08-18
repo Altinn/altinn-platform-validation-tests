@@ -5,7 +5,7 @@ import { RoleDto } from "../../../../../clients/access-management/metadata/roles
 import { getOptions } from "../../../../../helpers.js";
 import { MetadataBuildingBlocks } from "../../../../building-blocks/access-management/metadata/index.js";
 import { RolesDomainChecks } from "../../../../domain-checks/access-management/metadata/roles.js";
-import { getClients } from "../common.js";
+import { getClients } from "./common.js";
 
 const labels = { step: "getRoleWithId" };
 const groupLabel = "get-role-with-id";

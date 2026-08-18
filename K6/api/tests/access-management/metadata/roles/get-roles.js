@@ -3,9 +3,9 @@ import { group } from "k6";
 
 import { getOptions } from "../../../../../helpers.js";
 import { MetadataBuildingBlocks } from "../../../../building-blocks/access-management/metadata/index.js";
-import { getClients } from "../common.js";
+import { getClients } from "./common.js";
 
-export { setup } from "../common.js";;
+export { setup } from "./common.js";;
 
 const labels = { step: "getRoles" };
 const groupLabel = "get-roles";
