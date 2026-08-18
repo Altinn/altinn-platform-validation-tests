@@ -4,14 +4,23 @@ test_definitions:
   - test_file: get-roles.js
     contexts:
       - environment: yt01
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+
   - test_file: get-resources.js
     contexts:
       - environment: yt01
+      - environment: at22
+      - environment: at23
+      - environment: tt02
 
   - test_file: get-role-with-id.js
     contexts:
+      - environment: at22
       - environment: yt01
 
   - test_file: get-roles-packages.js
     contexts:
       - environment: yt01
+      - environment: at22
