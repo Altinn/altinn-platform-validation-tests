@@ -45,6 +45,14 @@ npm test -- tests/tilgangsstyring --debug
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
 
+Alle testene kan kjøres mot alle miljøer. De som ikke støttes der, rapporteres som
+skipped med begrunnelse framfor å feile. Begrensningen står øverst i testfila:
+
+```ts
+// Innlogging med TestID finnes bare i testmiljøene, ikke i prod.
+kjoresBareI('at22', 'at23', 'tt02');
+```
+
 ## Struktur
 
 Ett hovedområde per mappe, med en fil per underside og en fixture som samler dem:

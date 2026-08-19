@@ -5,12 +5,25 @@ import { test as innlogging } from './innlogging.fixture';
 import { test as sprak } from './sprak.fixture';
 import { test as tilgangsstyring } from './tilgangsstyring.fixture';
 import { Side } from '../pages/side';
+import { gjeldendeMiljo, Miljo } from '../config/miljo';
 
 /**
  * Testene importerer `test` herfra. Hvert hovedområde har sin egen fixture-fil,
  * og nye områder legges til i mergeTests under.
  */
 const test = mergeTests(innlogging, sprak, arbeidsflate, tilgangsstyring, infoportal);
+
+/**
+ * Begrenser en testfil eller et describe-blokk til bestemte miljøer. Kjører du mot
+ * et annet, rapporteres testene som skipped med begrunnelse framfor å feile eller
+ * forsvinne stille.
+ */
+export function kjoresBareI(...miljoer: Miljo[]) {
+    test.skip(
+        !miljoer.includes(gjeldendeMiljo()),
+        `Kjøres bare i ${miljoer.join(', ')}, ikke i ${gjeldendeMiljo()}`
+    );
+}
 
 export type Flate =
     | 'arbeidsflate'
