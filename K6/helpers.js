@@ -213,10 +213,11 @@ export function pickUnique(list, count) {
 /**
  * Reads one of the test data files over HTTP.
  *
- * A missing file answers 404 with a body that parses into an empty list rather
- * than into an error, and an empty list only surfaces later as an undefined row
- * somewhere in the test. Renaming a file on a branch is enough to cause it, since
- * the read is pinned to main, so the failure says which URL came up short.
+ * A missing file answers 404, and a body that parses into an empty list would only
+ * surface later as an undefined row somewhere in the test. Renaming or moving a
+ * file is enough to cause that, since the read is pinned to main, so this fails on
+ * the spot and names the URL that came up short. Pass failOnDataFetchingFailure as
+ * false for a caller that would rather handle empty data itself.
  *
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
