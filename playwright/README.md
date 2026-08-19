@@ -18,13 +18,17 @@ Tenor-nummer med måned 81-92. Filene er gitignorert.
 ## Kjør
 
 ```bash
-npm test                             # alt, mot at23
+npm run test:at23                    # alt, mot at23
 npm run test:tt02                    # alt, mot tt02
 npm run test:prod                    # alt, mot prod
 
-npm run test:tilgangsstyring         # ett område, mot at23
+npm run test:tilgangsstyring:at23    # ett område, mot at23
 npm run test:tilgangsstyring:prod    # samme område, mot prod
+npm run test:innlogging:at23         # og tilsvarende for innlogging
 ```
+
+`npm test` uten miljø i navnet kjører mot det `ENVIRONMENT` sier, med at23 som
+default.
 
 Miljøet velges med `ENVIRONMENT`, som scriptene setter, og bestemmer hvilken
 `.env.<miljø>.local` som leses. Vil du heller ha verdiene i shellet, slik k6-testene
@@ -40,7 +44,7 @@ Bruk likhetstegn på dem som tar en verdi, ellers tolker npm neste ord som eget
 argument. Alt annet, og en fritt valgt sti, sendes etter `--`:
 
 ```bash
-npm test -- tests/tilgangsstyring --debug
+npm run test:at23 -- tests/tilgangsstyring --debug
 ```
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
@@ -58,7 +62,7 @@ kjoresIMiljoer('at22', 'at23', 'tt02', 'prod');
 
 Kjører du mot et miljø som ikke står i lista, rapporteres testene som skipped med
 begrunnelsen `Kjøres i at22, at23, tt02, ikke i prod`. De feiler ikke, og de
-forsvinner ikke stille. `npm run test:prod` i dag gir derfor 3 passed og 8 skipped:
+forsvinner ikke stille. `npm run test:prod` gir i dag 3 passed og 8 skipped:
 tilgangsstyring-testen støtter prod, mens innloggingstestene bruker TestID hos
 ID-porten, som bare finnes i testmiljøene.
 
@@ -69,8 +73,8 @@ Anbefalingen for en ny test er minst `at23` og `tt02`, og at du faktisk har kjø
 der før du fører dem opp:
 
 ```bash
-npm test              # at23
-npm run test:tt02     # tt02
+npm run test:at23
+npm run test:tt02
 ```
 
 Legg til `prod` når testen er verifisert der også. Vær varsom: en test som endrer

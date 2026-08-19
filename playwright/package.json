@@ -4,12 +4,13 @@
     "main": "index.js",
     "scripts": {
         "test": "playwright test",
+        "test:at23": "ENVIRONMENT=at23 playwright test",
         "test:tt02": "ENVIRONMENT=tt02 playwright test",
         "test:prod": "ENVIRONMENT=prod playwright test",
-        "test:innlogging": "playwright test tests/innlogging",
+        "test:innlogging:at23": "ENVIRONMENT=at23 playwright test tests/innlogging",
         "test:innlogging:tt02": "ENVIRONMENT=tt02 playwright test tests/innlogging",
         "test:innlogging:prod": "ENVIRONMENT=prod playwright test tests/innlogging",
-        "test:tilgangsstyring": "playwright test tests/tilgangsstyring",
+        "test:tilgangsstyring:at23": "ENVIRONMENT=at23 playwright test tests/tilgangsstyring",
         "test:tilgangsstyring:tt02": "ENVIRONMENT=tt02 playwright test tests/tilgangsstyring",
         "test:tilgangsstyring:prod": "ENVIRONMENT=prod playwright test tests/tilgangsstyring",
         "typecheck": "tsc --noEmit"
