@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
+import { stopp } from "./feil";
+
 const environment = process.env.ENVIRONMENT;
 
 if (!environment) {
-  throw new Error(
-    "ENVIRONMENT må settes: at22, at23, tt02 eller prod. Bruk npm run test:<miljø>."
-  );
+  stopp("ENVIRONMENT må settes: at22, at23, tt02 eller prod. Bruk npm run test:<miljø>.");
 }
 
 // Verdiene kan komme fra shellet eller fra gitignorerte .env-filer. Miljøfila

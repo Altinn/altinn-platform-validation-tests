@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 
+import { stopp } from "./feil";
+
 const testDir = path.join(__dirname, "tests");
 
 /**
@@ -36,7 +38,7 @@ export default function globalSetup() {
       .map((fil) => `  ${path.relative(__dirname, fil)}`)
       .join("\n");
 
-    throw new Error(
+    stopp(
       `Disse spec-filene mangler runInEnvironment(), og kjører derfor ingen steder:\n${liste}\n\n` +
         "Legg kallet øverst i fila med miljøene testene er satt opp for, for eksempel " +
         "runInEnvironment('at22', 'at23', 'tt02')."
