@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { FavoritesClient } from "../../../../clients/profil/favorites/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the favorite parties for the current user.
@@ -13,7 +14,10 @@ export function GetFavorites(
     favoritesClient,
     labels = null,
 ) {
-    const res = favoritesClient.GetFavorites(labels);
+    const res = withRetries(
+        () => favoritesClient.GetFavorites(labels),
+        "GetFavorites",
+    );
 
     /** @type {GroupResponse|null} */
     let group = null;

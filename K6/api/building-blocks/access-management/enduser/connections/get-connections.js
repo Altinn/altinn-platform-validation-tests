@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves connections for a party.
@@ -20,10 +21,13 @@ export function GetConnections(
     headers = null,
     labels = null,
 ) {
-    const res = connectionsClient.GetConnections(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetConnections(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetConnections",
     );
 
     /** @type {ConnectionDtoPaginatedResult|null} */

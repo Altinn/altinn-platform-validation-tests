@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Partially updates notification settings for a party.
@@ -20,12 +21,14 @@ export function PatchNotificationSettings(
     request,
     labels = null,
 ) {
-    const res =
-        professionalNotificationSettingsClient.PatchNotificationSettings(
+    const res = withRetries(
+        () => professionalNotificationSettingsClient.PatchNotificationSettings(
             partyUuid,
             request,
             labels,
-        );
+        ),
+        "PatchNotificationSettings",
+    );
 
     const succeed = check(res, {
         "PatchNotificationSettings - status code is 201 or 204": (r) =>

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a single access request.
@@ -20,7 +21,10 @@ export function GetRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetRequest(id, queryParams, labels);
+    const res = withRetries(
+        () => requestClient.GetRequest(id, queryParams, labels),
+        "GetRequest",
+    );
 
     /** @type {object|null} */
     let request = null;

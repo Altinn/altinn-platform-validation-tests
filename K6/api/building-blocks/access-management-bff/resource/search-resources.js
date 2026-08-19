@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Searches the resources a party can delegate.
@@ -17,7 +18,10 @@ export function SearchResources(
     queryParams = null,
     labels = null,
 ) {
-    const res = resourceClient.SearchResources(queryParams, labels);
+    const res = withRetries(
+        () => resourceClient.SearchResources(queryParams, labels),
+        "SearchResources",
+    );
 
     /** @type {PaginatedListOfServiceResourceFE|null} */
     let resources = null;

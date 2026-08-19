@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves all party groups for the current user.
@@ -13,7 +14,10 @@ export function GetPartyGroups(
     partyGroupsClient,
     labels = null,
 ) {
-    const res = partyGroupsClient.GetPartyGroups(labels);
+    const res = withRetries(
+        () => partyGroupsClient.GetPartyGroups(labels),
+        "GetPartyGroups",
+    );
 
     /** @type {Array<GroupResponse>|null} */
     let groups = null;

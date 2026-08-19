@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates the language of the authenticated user.
@@ -17,7 +18,10 @@ export function UpdateSelectedLanguage(
     body = null,
     labels = null,
 ) {
-    const res = settingsClient.UpdateSelectedLanguage(body, labels);
+    const res = withRetries(
+        () => settingsClient.UpdateSelectedLanguage(body, labels),
+        "UpdateSelectedLanguage",
+    );
 
     let updated = false;
 

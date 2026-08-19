@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the Maskinporten suppliers of a party.
@@ -17,7 +18,10 @@ export function GetSuppliers(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenClient.GetSuppliers(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.GetSuppliers(queryParams, labels),
+        "GetSuppliers",
+    );
 
     /** @type {Array<MaskinportenConnection>|null} */
     let suppliers = null;

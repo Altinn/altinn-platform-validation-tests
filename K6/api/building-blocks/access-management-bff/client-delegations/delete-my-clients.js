@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes access packages the authenticated party holds on one of its clients.
@@ -20,10 +21,13 @@ export function DeleteMyClients(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.DeleteMyClients(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.DeleteMyClients(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteMyClients",
     );
 
     let revoked = false;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets request status.
@@ -15,7 +16,10 @@ export function RequestGetRequestStatus(
     id,
     labels = null,
 ) {
-    const res = requestClient.RequestGetRequestStatus(id, labels);
+    const res = withRetries(
+        () => requestClient.RequestGetRequestStatus(id, labels),
+        "RequestGetRequestStatus",
+    );
 
     /** @type {RequestStatus|null} */
     let status = null;

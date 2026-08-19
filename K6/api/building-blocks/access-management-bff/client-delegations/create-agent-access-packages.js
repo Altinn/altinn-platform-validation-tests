@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Delegates access packages on a client to an agent.
@@ -20,10 +21,13 @@ export function CreateAgentAccessPackages(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.CreateAgentAccessPackages(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.CreateAgentAccessPackages(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateAgentAccessPackages",
     );
 
     /** @type {Array<DelegationDto>|null} */

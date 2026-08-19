@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes resources the authenticated party holds on one of its clients.
@@ -20,10 +21,13 @@ export function DeleteMyClientResources(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.DeleteMyClientResources(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.DeleteMyClientResources(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteMyClientResources",
     );
 
     let revoked = false;

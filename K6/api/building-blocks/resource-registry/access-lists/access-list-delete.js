@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes an access list by owner and identifier.
@@ -17,10 +18,13 @@ export function AccessListDelete(
     identifier,
     labels = null,
 ) {
-    const res = accessListClient.AccessListDelete(
-        owner,
-        identifier,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListDelete(
+            owner,
+            identifier,
+            labels,
+        ),
+        "AccessListDelete",
     );
 
     /** @type {AccessListInfoDto|null} */

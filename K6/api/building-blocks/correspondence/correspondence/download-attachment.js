@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Downloads an attachment belonging to a correspondence.
@@ -22,10 +23,13 @@ export function DownloadAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = correspondenceClient.DownloadAttachment(
-        correspondenceId,
-        attachmentId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.DownloadAttachment(
+            correspondenceId,
+            attachmentId,
+            labels,
+        ),
+        "DownloadAttachment",
     );
 
     const succeed = check(res, {

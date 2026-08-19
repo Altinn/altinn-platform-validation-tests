@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the client providers the authenticated party is a client of.
@@ -13,8 +14,11 @@ export function GetMyClientProviders(
     clientDelegationClient,
     labels = null,
 ) {
-    const res = clientDelegationClient.GetMyClientProviders(
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.GetMyClientProviders(
+            labels,
+        ),
+        "GetMyClientProviders",
     );
 
     /** @type {AgentDtoPaginatedResult|null} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { FavoritesClient } from "../../../../clients/profil/favorites/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a party from the favorites group for the current user.
@@ -15,9 +16,12 @@ export function DeleteFavorite(
     partyUuid,
     labels = null,
 ) {
-    const res = favoritesClient.DeleteFavorite(
-        partyUuid,
-        labels,
+    const res = withRetries(
+        () => favoritesClient.DeleteFavorite(
+            partyUuid,
+            labels,
+        ),
+        "DeleteFavorite",
     );
 
     let deleted = false;

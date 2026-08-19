@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates or overwrites the XACML policy for a resource.
@@ -17,10 +18,13 @@ export function ResourceUpdatePolicy(
     policyFile,
     labels = null,
 ) {
-    const res = resourceClient.ResourceUpdatePolicy(
-        id,
-        policyFile,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceUpdatePolicy(
+            id,
+            policyFile,
+            labels,
+        ),
+        "ResourceUpdatePolicy",
     );
 
     const succeed = check(res, {

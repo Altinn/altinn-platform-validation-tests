@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a draft access request.
@@ -13,7 +14,10 @@ import { RequestClient } from "../../../../clients/access-management-bff/request
  * schema for this response.
  */
 export function GetDraftRequest(requestClient, id, labels = null) {
-    const res = requestClient.GetDraftRequest(id, labels);
+    const res = withRetries(
+        () => requestClient.GetDraftRequest(id, labels),
+        "GetDraftRequest",
+    );
 
     /** @type {object|null} */
     let request = null;

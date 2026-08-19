@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the policy rights for a resource.
@@ -19,10 +20,13 @@ export function ResourceV2GetPolicyRights(
     query = null,
     labels = null,
 ) {
-    const res = resourceV2Client.ResourceV2GetPolicyRights(
-        id,
-        query,
-        labels,
+    const res = withRetries(
+        () => resourceV2Client.ResourceV2GetPolicyRights(
+            id,
+            query,
+            labels,
+        ),
+        "ResourceV2GetPolicyRights",
     );
 
     /** @type {ResourceDecomposedDto|null} */

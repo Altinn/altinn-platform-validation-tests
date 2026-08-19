@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates a party group.
@@ -17,7 +18,10 @@ export function UpdatePartyGroup(
     request,
     labels = null,
 ) {
-    const res = partyGroupsClient.UpdatePartyGroup(groupId, request, labels);
+    const res = withRetries(
+        () => partyGroupsClient.UpdatePartyGroup(groupId, request, labels),
+        "UpdatePartyGroup",
+    );
 
     /** @type {GroupResponse|null} */
     let group = null;

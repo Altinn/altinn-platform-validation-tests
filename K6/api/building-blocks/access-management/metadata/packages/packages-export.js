@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Exports access packages.
@@ -13,7 +14,10 @@ export function PackagesExport(
     packagesClient,
     labels = null,
 ) {
-    const res = packagesClient.PackagesExport(labels);
+    const res = withRetries(
+        () => packagesClient.PackagesExport(labels),
+        "PackagesExport",
+    );
 
     /** @type {AreaGroupDto|null} */
     let areaGroup = null;

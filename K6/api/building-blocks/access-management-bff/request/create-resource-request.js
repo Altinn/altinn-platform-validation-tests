@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates an access request for a resource.
@@ -18,7 +19,10 @@ export function CreateResourceRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.CreateResourceRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.CreateResourceRequest(queryParams, labels),
+        "CreateResourceRequest",
+    );
 
     /** @type {object|null} */
     let request = null;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Replaces a transmission on a dialog.
@@ -23,12 +24,15 @@ export function UpdateTransmission(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PutTransmission(
-        dialogId,
-        transmissionId,
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PutTransmission(
+            dialogId,
+            transmissionId,
+            request,
+            ifMatch,
+            labels,
+        ),
+        "UpdateTransmission",
     );
 
     const success = check(res, {

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves count of sent requests for a party.
@@ -17,9 +18,12 @@ export function GetSentRequestsCount(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetSentRequestsCount(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => requestClient.GetSentRequestsCount(
+            queryParams,
+            labels,
+        ),
+        "GetSentRequestsCount",
     );
 
     /** @type {number} */

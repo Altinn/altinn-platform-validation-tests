@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Rejects an agent system user request.
@@ -18,10 +19,13 @@ export function RejectAgentRequest(
     agentRequestId,
     labels = null,
 ) {
-    const res = systemUserAgentRequestClient.RejectAgentRequest(
-        partyId,
-        agentRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentRequestClient.RejectAgentRequest(
+            partyId,
+            agentRequestId,
+            labels,
+        ),
+        "RejectAgentRequest",
     );
 
     let rejected = false;

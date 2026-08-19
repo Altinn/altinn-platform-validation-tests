@@ -20,11 +20,10 @@
  */
 
 import exec from "k6/execution";
-import http from "k6/http";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, segmentData } from "../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString, DigDirScopes } from "../../../scopes.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
@@ -52,9 +51,8 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "INFO_CLOUD_URL"]);
     const numberOfVUs = getNumberOfVUs();
     // Using the same CSV as one of the delegation tests, since we only do reads in this test, it should be safe to use the same users.
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/${__ENV.ENVIRONMENT}/userids.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`portaler/${__ENV.ENVIRONMENT}/userids.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 

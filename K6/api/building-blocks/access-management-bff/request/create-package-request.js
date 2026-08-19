@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates an access request for an access package.
@@ -18,7 +19,10 @@ export function CreatePackageRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.CreatePackageRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.CreatePackageRequest(queryParams, labels),
+        "CreatePackageRequest",
+    );
 
     /** @type {object|null} */
     let request = null;

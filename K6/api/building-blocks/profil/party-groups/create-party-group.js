@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a party group.
@@ -15,7 +16,10 @@ export function CreatePartyGroup(
     request,
     labels = null,
 ) {
-    const res = partyGroupsClient.CreatePartyGroup(request, labels);
+    const res = withRetries(
+        () => partyGroupsClient.CreatePartyGroup(request, labels),
+        "CreatePartyGroup",
+    );
 
     /** @type {GroupResponse|null} */
     let group = null;

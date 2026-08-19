@@ -7,6 +7,9 @@ import unusedImports from "eslint-plugin-unused-imports";
 
 export default defineConfig([
   {
+    ignores: ["K6/example_env/**"],
+  },
+  {
     plugins: {
       "@stylistic": stylistic,
       "simple-import-sort": simpleImportSort,

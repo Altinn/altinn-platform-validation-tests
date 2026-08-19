@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets resources connected to subjects.
@@ -15,9 +16,12 @@ export function ResourceGetResourcesBySubjects(
     subjects,
     labels = null,
 ) {
-    const res = resourceClient.ResourceGetResourcesBySubjects(
-        subjects,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceGetResourcesBySubjects(
+            subjects,
+            labels,
+        ),
+        "ResourceGetResourcesBySubjects",
     );
 
     /** @type {SubjectResourcesPaginated|null} */

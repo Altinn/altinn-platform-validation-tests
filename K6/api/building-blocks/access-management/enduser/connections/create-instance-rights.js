@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates instance rights.
@@ -20,10 +21,13 @@ export function CreateInstanceRights(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.CreateInstanceRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.CreateInstanceRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateInstanceRights",
     );
 
     return check(res, {

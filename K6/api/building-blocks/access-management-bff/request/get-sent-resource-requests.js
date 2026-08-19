@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resource access requests a party has sent.
@@ -18,7 +19,10 @@ export function GetSentResourceRequests(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetSentResourceRequests(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.GetSentResourceRequests(queryParams, labels),
+        "GetSentResourceRequests",
+    );
 
     /** @type {object|null} */
     let requests = null;

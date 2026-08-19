@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { OrganizationsClient } from "../../../../clients/profil/organizations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets notification addresses for an organization.
@@ -15,9 +16,12 @@ export function GetNotificationAddresses(
     organizationNumber,
     labels = null,
 ) {
-    const res = organizationsClient.GetNotificationAddresses(
-        organizationNumber,
-        labels,
+    const res = withRetries(
+        () => organizationsClient.GetNotificationAddresses(
+            organizationNumber,
+            labels,
+        ),
+        "GetNotificationAddresses",
     );
 
     /** @type {OrganizationResponse|null} */

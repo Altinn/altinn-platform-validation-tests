@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates a notification address of an organisation.
@@ -21,11 +22,14 @@ export function UpdateNotificationAddress(
     body = null,
     labels = null,
 ) {
-    const res = settingsClient.UpdateNotificationAddress(
-        orgNumber,
-        notificationAddressId,
-        body,
-        labels,
+    const res = withRetries(
+        () => settingsClient.UpdateNotificationAddress(
+            orgNumber,
+            notificationAddressId,
+            body,
+            labels,
+        ),
+        "UpdateNotificationAddress",
     );
 
     /** @type {NotificationAddressResponse|null} */

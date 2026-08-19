@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Rejects a received request.
@@ -18,10 +19,13 @@ export function RejectReceivedRequest(
     id,
     labels = null,
 ) {
-    const res = requestClient.RejectReceivedRequest(
-        party,
-        id,
-        labels,
+    const res = withRetries(
+        () => requestClient.RejectReceivedRequest(
+            party,
+            id,
+            labels,
+        ),
+        "RejectReceivedRequest",
     );
 
     /** @type {RequestDto|null} */

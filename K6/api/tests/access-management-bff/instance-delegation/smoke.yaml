@@ -1,0 +1,18 @@
+namespace: access-management-bff
+base_dir: K6/api/tests/access-management-bff/instance-delegation
+test_definitions:
+  - test_file: user-to-user.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: ../conf.json
+
+  - test_file: org-to-user.js
+    contexts:
+      - environment: at23
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: ../conf.json

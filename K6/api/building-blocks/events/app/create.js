@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Inserts a new event.
@@ -15,9 +16,12 @@ export function AppCreate(
     request,
     labels = null,
 ) {
-    const res = appClient.AppCreate(
-        request,
-        labels,
+    const res = withRetries(
+        () => appClient.AppCreate(
+            request,
+            labels,
+        ),
+        "AppCreate",
     );
 
     /** @type {string|null} */

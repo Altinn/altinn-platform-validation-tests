@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Uploads attachment data.
@@ -17,10 +18,13 @@ export function UploadAttachment(
     file,
     labels = null,
 ) {
-    const res = attachmentClient.UploadAttachment(
-        attachmentId,
-        file,
-        labels,
+    const res = withRetries(
+        () => attachmentClient.UploadAttachment(
+            attachmentId,
+            file,
+            labels,
+        ),
+        "UploadAttachment",
     );
 
     /** @type {AttachmentOverviewExt|null} */

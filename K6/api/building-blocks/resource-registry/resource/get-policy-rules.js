@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets flattened policy rules for a resource.
@@ -15,7 +16,10 @@ export function ResourceGetPolicyRules(
     id,
     labels = null,
 ) {
-    const res = resourceClient.ResourceGetPolicyRules(id, labels);
+    const res = withRetries(
+        () => resourceClient.ResourceGetPolicyRules(id, labels),
+        "ResourceGetPolicyRules",
+    );
 
     /** @type {Array<PolicyRuleDTO>|null} */
     let policyRules = null;

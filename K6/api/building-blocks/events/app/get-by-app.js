@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves events related to an application owner and application.
@@ -19,11 +20,14 @@ export function AppGetByApp(
     query = null,
     labels = null,
 ) {
-    const res = appClient.AppGetByApp(
-        org,
-        app,
-        query,
-        labels,
+    const res = withRetries(
+        () => appClient.AppGetByApp(
+            org,
+            app,
+            query,
+            labels,
+        ),
+        "AppGetByApp",
     );
 
     /** @type {CloudEvent[]|null} */

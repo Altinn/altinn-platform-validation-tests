@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a Maskinporten supplier from a party.
@@ -17,7 +18,10 @@ export function DeleteSupplier(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.DeleteSupplier(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.DeleteSupplier(queryParams, labels),
+        "DeleteSupplier",
+    );
 
     let removed = false;
 

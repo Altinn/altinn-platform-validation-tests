@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Purges a dialog, deleting it permanently.
@@ -19,10 +20,13 @@ export function PurgeDialog(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PurgeDialog(
-        dialogId,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PurgeDialog(
+            dialogId,
+            ifMatch,
+            labels,
+        ),
+        "PurgeDialog",
     );
 
     const success = check(res, {
@@ -54,10 +58,13 @@ export function RestoreDialog(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.RestoreDialog(
-        dialogId,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.RestoreDialog(
+            dialogId,
+            ifMatch,
+            labels,
+        ),
+        "RestoreDialog",
     );
 
     const success = check(res, {
@@ -89,10 +96,13 @@ export function FreezeDialog(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.FreezeDialog(
-        dialogId,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.FreezeDialog(
+            dialogId,
+            ifMatch,
+            labels,
+        ),
+        "FreezeDialog",
     );
 
     const success = check(res, {

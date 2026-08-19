@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Searches access packages, grouped by access area.
@@ -17,7 +18,10 @@ export function SearchAccessPackages(
     queryParams = null,
     labels = null,
 ) {
-    const res = accessPackageClient.SearchAccessPackages(queryParams, labels);
+    const res = withRetries(
+        () => accessPackageClient.SearchAccessPackages(queryParams, labels),
+        "SearchAccessPackages",
+    );
 
     /** @type {Array<AccessAreaFE>|null} */
     let areas = null;

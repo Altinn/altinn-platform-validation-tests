@@ -1,0 +1,46 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/resource-owner/get-authorized-parties
+test_definitions:
+  - test_file: for-org.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-system-user.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-user.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-user-include-parties-via-key-role.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: INCLUDE_ALTINN2
+              value: true
+
+  - test_file: for-user-avgiver-liste.js
+    contexts:
+      - environment: yt01
+
+  - test_file: for-user-dialogporten.js
+    contexts:
+      - environment: yt01
+
+  - test_file: for-user-dialogporten-with-filter.js
+    contexts:
+      - environment: yt01

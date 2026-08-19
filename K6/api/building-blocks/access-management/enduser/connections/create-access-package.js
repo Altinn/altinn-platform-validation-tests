@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates an access package assignment.
@@ -20,10 +21,13 @@ export function CreateAccessPackage(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.CreateAccessPackage(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.CreateAccessPackage(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateAccessPackage",
     );
 
     /** @type {AssignmentPackageDto|null} */

@@ -1,57 +1,33 @@
 # altinn-platform-validation-tests
 
-# Adding tests
-
-1 - Look into the [clients](K6/clients) folder to see if there is already a client for the API you need to use. If there is, proceed to the next step, otherwise go to [Altinn Studio docs](https://docs.altinn.studio/nb/api/) and create the Client for the API you need.
-
-2 - A lot of tests end up making similar basic checks so it is recommended, although not mandatory, to have an intermediate layer for those types of checks. So far, these layers have been put into the  [building_blocks](K6/api/building_blocks) folder.
-
-3 - Now you can start to write the actual tests, which are in the [tests](K6/api/tests) folder.
-
-
-# General recommendations
-
-- Make sure tests are able to run in every environment. Do not, as much as possible, create tests that can only be run in a single environment.
-- Avoid hardcoding values as much as possible. e.g. values such as the BASE_URL, ALTINN2_BASE_URL, AM_UI_BASE_URL, ENVIRONMENT (at22, yt01, tt02, etc.) will be available at runtime. If there are other envvars that are reusable across teams, we can add them [here](https://github.com/Altinn/altinn-platform/blob/f546f2447021da6d2338863707f734c041145e45/infrastructure/adminservices-test/altinn-monitor-test-rg/k6_tests_rg_configs.tf#L13-L17).
-- Other envvars you might need, make them configurable, i.e. rely on [__ENV](https://grafana.com/docs/k6/latest/using-k6/environment-variables/) and pass them on in the [custom config file](conf/authentication-break.yaml).
-- Secrets are managed out-of-band, you simply need to reference them in the config file and they will be available once the test starts (in K8s).
-- Start small, start by running functional tests and exploring the dashboards, metrics, logs/reports in [Grafana](https://altinn-grafana-test-b2b8dpdkcvfuhfd3.eno.grafana.azure.com/dashboards/f/eedixo6wu18n4e/?orgId=1).
-
 # Basic Repo Structure
 
-```
-├── K6
-│   ├── api
-│   │   ├── building_blocks
-│   │   │   ├── authentication
-│   │   │   │   ├── systemRegister
-│   │   │   │   │   ├── createNewSystem.js
-│   │   │   │   │   ├── deleteSystem.js
-│   │   │   │   │   ├── getDeletedSystemById.js
-│   │   │   │   │   ├── getSystemById.js
-│   │   │   │   │   ├── getSystemRights.js
-│   │   │   │   │   ├── getSystems.js
-│   │   │   │   │   ├── index.js
-│   │   └── tests
-│   │       ├── authentication
-│   │       │   ├── systemRegister
-│   │       │   │   ├── systemRegisterAccessPackages.js
-│   │       │   │   ├── systemRegisterCrud.js
-│   │       │   │   └── systemRegisterRights.js
-│   ├── clients
-│   │   ├── authentication
-│   │   │   ├── index.js
-│   │   │   ├── systemRegister.js
-│   │   │   └── ...
-│   ├── commonImports.js
-│   ├── helpers.js
-│   └── testdata
-│       ├── authentication
-│       │   ├── ...
-└── conf
-    ├── authentication-break.yaml
-    ├── authentication.yaml
-```
+## Important Folders
+- The [K6/clients](K6/clients) has API clients to abstract the communication with the different APIs listed in [Altinn Studio Docs](https://docs.altinn.studio/nb/api/).
+- The [K6/testdata](K6/testdata) has test data used in the various tests.
+- The [K6/api/building-blocks](K6/api/building-blocks) folder has code that wraps the api client calls and does basic http status code checks, tries to parse response bodies, adds retry logic, etc.
+- The [K6/api/domain-checks](K6/api/domain-checks) has reusable checks that should be used within the test files themselves (i.e. most checks should be created here and not in the test files themselves).
+- The [K6/api/tests](K6/api/tests) has the actual test files.
+
+## Important helpers
+- [K6/helpers.js](K6/helpers.js) has misc functions that tend to be useful across tests, such as segmenting data, picking unique data, etc..
+- [K6/scopes.js](K6/scopes.js) lists OAuth scopes and provides a simple method to concatenate them.
+- [K6/token-generator.js](K6/token-generator.js) and [K6/maskinporten.js](K6/maskinporten.js) both implement the same "interface", which the [K6/clients](K6/clients) use to get a valid token.
+
+## Important patterns
+- We try to follow the same structure as in the [Altinn Studio Docs](https://docs.altinn.studio/nb/api/), which means, if you need to talk to the [Altinn.AccessManagement.Api.Enduser](https://docs.altinn.studio/nb/,api/accessmanagement/enduser/) APIs, you will find the API clients in [K6/clients/access-management/enduser](K6/clients/access-management/enduser), the building-blocks in [K6/api/building-blocks/access-management/enduser](K6/api/building-blocks/access-management/enduser) and the domain-checks in [K6/api/domain-checks/access-management/enduser](K6/api/domain-checks/access-management/enduser). JSDOC types, Builders, etc. are located in the [K6/clients](K6/clients) folders, so, for the same APIs we've been talking about, you can see [K6/clients/access-management/enduser](K6/clients/access-management/enduser), and the domain-checks in [K6/api/domain-checks/access-management/enduser](K6/api/domain-checks/access-management/enduser).
+- In general, tests should be able to be run in all environments, so test data should be easy to get, and tests should use [__ENV](https://grafana.com/docs/k6/latest/using-k6/environment-variables/) vars instead of hardcoded values.
+- Use the [setup](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#setup-and-teardown-stages) to declare required env vars, fetch / prepare test data, etc.
+- It's usually the case that multiple tests will shared a lot of code. We usually create a `commons.js` with the reusable bits, such as Client initialization, TokenGenerator setup, the setup function, etc.
+- When writting tests, we assume that the test will be run as a smoke or breakpoint test sooner or later. So try not to hardcode test data and use the [data object](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#setup-and-teardown-stages). Exceptions to these are for example tests that simply require you to create a random object that will be sent to the backend, then a simple function call to create the object is enough.
+- Test are run in k8s periodically, by default, functional tests are run every 15 mins or so, smoke tests every hour (Breakpoint tests require a bit more coordination, but the goal is for them to be run once a week and compare how performance evolves over time). These configs are done in the various functional.yaml, smoke.yaml files you will see within the [K6/api/tests](K6/api/tests) folder.
+
+
+### Notes
+
+- Secrets are managed out-of-band, you simply need to reference them in the config file and they will be available once the test starts (in K8s).
+- Start small, start by running functional tests and exploring the dashboards, metrics, logs/reports in [Grafana](https://altinn-grafana-test-b2b8dpdkcvfuhfd3.eno.grafana.azure.com/dashboards/f/eedixo6wu18n4e/?orgId=1).
+- The code in this repo should follow the [Swagger docs](https://docs.altinn.studio/nb/api/) as most of the boiler plate is generated from them. When the Swagger docs don't match the actual service's code, use the Swagger nomenclature anyways. Swagger is our source of truth; eventually raise the issue with the team that owns the service(s).
 
 # Available [node types](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dv2-series?tabs=sizebasic#sizes-in-series)
 

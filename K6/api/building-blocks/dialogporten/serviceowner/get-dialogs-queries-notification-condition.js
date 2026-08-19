@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
@@ -19,12 +20,15 @@ export function GetDialogsQueriesNotificationCondition(
     transmissionId,
     labels = null
 ) {
-    const res = serviceOwnerApiClient.GetDialogsQueriesNotificationCondition(
-        dialogId,
-        conditionType,
-        activityType,
-        transmissionId,
-        labels
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogsQueriesNotificationCondition(
+            dialogId,
+            conditionType,
+            activityType,
+            transmissionId,
+            labels
+        ),
+        "GetDialogsQueriesNotificationCondition",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesNotificationCondition_NotificationCondition|null} */

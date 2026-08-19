@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a resource a Maskinporten consumer holds.
@@ -17,7 +18,10 @@ export function DeleteConsumerResource(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.DeleteConsumerResource(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.DeleteConsumerResource(queryParams, labels),
+        "DeleteConsumerResource",
+    );
 
     let revoked = false;
 

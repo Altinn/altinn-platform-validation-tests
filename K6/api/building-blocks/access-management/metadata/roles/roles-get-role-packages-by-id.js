@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets role packages by role id.
@@ -17,7 +18,10 @@ export function RolesGetRolePackagesById(
     query,
     labels = null,
 ) {
-    const res = rolesClient.RolesGetRolePackagesById(id, query, labels);
+    const res = withRetries(
+        () => rolesClient.RolesGetRolePackagesById(id, query, labels),
+        "RolesGetRolePackagesById",
+    );
 
     /** @type {PackageDto|null} */
     let rolePackage = null;

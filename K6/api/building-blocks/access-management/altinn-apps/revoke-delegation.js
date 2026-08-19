@@ -5,6 +5,7 @@ import {
     AppsInstanceDelegationResponseDto,
 } from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
 import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes delegation rights for an application instance.
@@ -31,11 +32,14 @@ export function RevokeDelegation(
     expectedStatus = null,
     labels = null,
 ) {
-    const res = appsInstanceDelegationClient.RevokeDelegation(
-        resourceId,
-        instanceId,
-        request,
-        labels,
+    const res = withRetries(
+        () => appsInstanceDelegationClient.RevokeDelegation(
+            resourceId,
+            instanceId,
+            request,
+            labels,
+        ),
+        "RevokeDelegation",
     );
 
     /** @type {AppsInstanceDelegationResponseDto|null} */
