@@ -247,10 +247,15 @@ export function pickUnique(list, count) {
  * Every read reports to `test_data_fetch_failures`, so a broken read is visible
  * in Grafana and not only in the log of whoever happened to watch the run.
  *
+ * A .csv comes back as rows, a .json as whatever it holds, and a .txt as its
+ * non-empty lines, trimmed. Any other extension is refused rather than handed back
+ * as a string, so a caller that meant to read a format nobody parses hears about it
+ * here.
+ *
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
  * @param {string} branch Branch to read test data from. Defaults to "main".
- * @returns {Array<object>|object} The parsed test data.
+ * @returns {Array<object>|Array<string>|object} The parsed test data.
  */
 export function fetchTestData(
     filename,
@@ -308,6 +313,21 @@ export function fetchTestData(
 
             return [];
         }
+    }
+
+    if (filename.endsWith(".txt")) {
+        const lines = res.body
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+
+        recordTestDataFetch(filename, lines.length === 0 ? "empty" : null);
+
+        if (lines.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no lines`);
+        }
+
+        return lines;
     }
 
     recordTestDataFetch(filename, "unsupported-file-type");
