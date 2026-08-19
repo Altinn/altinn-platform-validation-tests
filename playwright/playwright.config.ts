@@ -27,12 +27,6 @@ function les(fil: string, overstyr: boolean) {
   }
 }
 
-if (environment === "prod") {
-  // Prod er opt-in: test:prod kjører med --grep=@prod, så en test som ikke er merket
-  // kan ikke havne der ved en forglemmelse. Meldingen gjør "no tests found" forståelig.
-  console.log("Prod: kjører bare tester merket @prod");
-}
-
 les(`.env.${environment}.local`, true);
 les(".env.local", false);
 les(".env", false);
@@ -50,6 +44,26 @@ const grep = npmFlag("grep");
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
 
+/**
+ * Prod er opt-in: bare tester merket @prod kjøres der, så en ny test ikke kan havne i
+ * prod ved en forglemmelse. Filteret ligger her framfor i npm-scriptet, slik at det
+ * også gjelder når Playwright kalles direkte.
+ *
+ * `--grep=bokmål` fra npm kombineres med, ikke erstatter, prod-filteret. Likhetstegnet
+ * er nødvendig, ellers tolker npm neste ord som eget argument.
+ */
+function grepFilter(): RegExp | undefined {
+  const fraBruker = grep && grep !== "true" ? grep : undefined;
+
+  if (environment === "prod") {
+    return fraBruker
+      ? new RegExp(`(?=.*@prod)(?=.*${fraBruker})`, "i")
+      : /@prod/;
+  }
+
+  return fraBruker ? new RegExp(fraBruker, "i") : undefined;
+}
+
 export default defineConfig({
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
@@ -58,8 +72,7 @@ export default defineConfig({
   // Traces skrives ved første retry
   retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
   workers: workers ? Number(workers) : undefined,
-  // `--grep=bokmål`, med likhetstegn: uten det tolker npm neste ord som eget argument.
-  grep: grep && grep !== "true" ? new RegExp(grep, "i") : undefined,
+  grep: grepFilter(),
   reporter: [
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results.xml" }],
