@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the current user based on the request context.
@@ -13,8 +14,11 @@ export function GetCurrentUser(
     usersClient,
     labels = null,
 ) {
-    const res = usersClient.GetCurrentUser(
-        labels,
+    const res = withRetries(
+        () => usersClient.GetCurrentUser(
+            labels,
+        ),
+        "GetCurrentUser",
     );
 
     /** @type {UserProfile|null} */

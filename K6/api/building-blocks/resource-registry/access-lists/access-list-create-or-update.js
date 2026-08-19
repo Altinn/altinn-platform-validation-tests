@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates or updates an access list.
@@ -19,11 +20,14 @@ export function AccessListCreateOrUpdate(
     request,
     labels = null,
 ) {
-    const res = accessListClient.AccessListCreateOrUpdate(
-        owner,
-        identifier,
-        request,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListCreateOrUpdate(
+            owner,
+            identifier,
+            request,
+            labels,
+        ),
+        "AccessListCreateOrUpdate",
     );
 
     /** @type {AccessListInfoDto|null} */

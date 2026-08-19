@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { IdPortenAuthorizationClient } from "../../../../clients/access-management-bff/idporten-authorization/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the ID-porten authorizations of the authenticated user.
@@ -15,7 +16,10 @@ export function GetIdPortenAuthorizations(
     idPortenAuthorizationClient,
     labels = null,
 ) {
-    const res = idPortenAuthorizationClient.GetIdPortenAuthorizations(labels);
+    const res = withRetries(
+        () => idPortenAuthorizationClient.GetIdPortenAuthorizations(labels),
+        "GetIdPortenAuthorizations",
+    );
 
     /** @type {object|null} */
     let authorizations = null;

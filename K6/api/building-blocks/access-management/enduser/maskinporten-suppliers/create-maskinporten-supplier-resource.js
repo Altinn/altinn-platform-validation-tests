@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a resource delegation for a Maskinporten supplier.
@@ -16,9 +17,12 @@ export function CreateMaskinportenSupplierResource(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenSuppliersClient.CreateMaskinportenSupplierResource(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenSuppliersClient.CreateMaskinportenSupplierResource(
+            queryParams,
+            labels,
+        ),
+        "CreateMaskinportenSupplierResource",
     );
 
     /** @type {boolean} */

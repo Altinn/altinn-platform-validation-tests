@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves users connected to a party.
@@ -20,10 +21,13 @@ export function GetConnectionUsers(
     headers = null,
     labels = null,
 ) {
-    const res = connectionsClient.GetConnectionUsers(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetConnectionUsers(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetConnectionUsers",
     );
 
     /** @type {SimplifiedConnectionDtoPaginatedResult|null} */

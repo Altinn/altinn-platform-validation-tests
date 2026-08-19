@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { DashboardClient } from "../../../../clients/profil/dashboard/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all notification addresses for the given phone number.
@@ -18,10 +19,13 @@ export function GetNotificationAddressesByPhoneNumber(
     query = null,
     labels = null,
 ) {
-    const res = dashboardClient.GetNotificationAddressesByPhoneNumber(
-        phoneNumber,
-        query,
-        labels,
+    const res = withRetries(
+        () => dashboardClient.GetNotificationAddressesByPhoneNumber(
+            phoneNumber,
+            query,
+            labels,
+        ),
+        "GetNotificationAddressesByPhoneNumber",
     );
 
     /** @type {Array<DashboardNotificationAddressResponse>} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the user profile for a given SSN.
@@ -15,9 +16,12 @@ export function GetUserBySsn(
     ssn,
     labels = null,
 ) {
-    const res = usersClient.GetUserBySsn(
-        ssn,
-        labels,
+    const res = withRetries(
+        () => usersClient.GetUserBySsn(
+            ssn,
+            labels,
+        ),
+        "GetUserBySsn",
     );
 
     /** @type {UserProfile|null} */

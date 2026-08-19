@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes notification settings for a party.
@@ -17,11 +18,13 @@ export function DeleteNotificationSettings(
     partyUuid,
     labels = null,
 ) {
-    const res =
-        professionalNotificationSettingsClient.DeleteNotificationSettings(
+    const res = withRetries(
+        () => professionalNotificationSettingsClient.DeleteNotificationSettings(
             partyUuid,
             labels,
-        );
+        ),
+        "DeleteNotificationSettings",
+    );
 
     /** @type {NotificationSettingsResponse|null} */
     let settings = null;

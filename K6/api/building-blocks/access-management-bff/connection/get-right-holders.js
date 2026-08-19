@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the connections a party has as right holder or reportee.
@@ -18,7 +19,10 @@ export function GetRightHolders(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionClient.GetRightHolders(queryParams, labels);
+    const res = withRetries(
+        () => connectionClient.GetRightHolders(queryParams, labels),
+        "GetRightHolders",
+    );
 
     /** @type {object|null} */
     let connections = null;

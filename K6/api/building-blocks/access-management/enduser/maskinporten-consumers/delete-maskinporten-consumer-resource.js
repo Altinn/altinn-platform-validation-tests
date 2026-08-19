@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a resource delegation for a Maskinporten consumer.
@@ -16,9 +17,12 @@ export function DeleteMaskinportenConsumerResource(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenConsumersClient.DeleteMaskinportenConsumerResource(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenConsumersClient.DeleteMaskinportenConsumerResource(
+            queryParams,
+            labels,
+        ),
+        "DeleteMaskinportenConsumerResource",
     );
 
     let deleted = false;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProcessClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Replaces the process state of an instance.
@@ -19,11 +20,14 @@ export function UpdateProcessState(
     request,
     labels = null,
 ) {
-    const res = processClient.UpdateProcessState(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => processClient.UpdateProcessState(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "UpdateProcessState",
     );
 
     /** @type {Instance|null} */
@@ -73,10 +77,13 @@ export function GetProcessHistory(
     instanceGuid,
     labels = null,
 ) {
-    const res = processClient.GetProcessHistory(
-        instanceOwnerPartyId,
-        instanceGuid,
-        labels,
+    const res = withRetries(
+        () => processClient.GetProcessHistory(
+            instanceOwnerPartyId,
+            instanceGuid,
+            labels,
+        ),
+        "GetProcessHistory",
     );
 
     /** @type {ProcessHistoryList|null} */
@@ -128,11 +135,14 @@ export function UpdateProcessStateAndEvents(
     request,
     labels = null,
 ) {
-    const res = processClient.UpdateProcessStateAndEvents(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => processClient.UpdateProcessStateAndEvents(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "UpdateProcessStateAndEvents",
     );
 
     /** @type {Instance|null} */

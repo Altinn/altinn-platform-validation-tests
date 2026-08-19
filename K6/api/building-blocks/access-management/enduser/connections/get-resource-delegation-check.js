@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Checks resource delegation.
@@ -17,9 +18,12 @@ export function GetResourceDelegationCheck(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.GetResourceDelegationCheck(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetResourceDelegationCheck(
+            queryParams,
+            labels,
+        ),
+        "GetResourceDelegationCheck",
     );
 
     /** @type {ResourceCheckDto|null} */

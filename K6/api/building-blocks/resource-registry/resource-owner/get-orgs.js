@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceOwnerClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the organization list.
@@ -13,7 +14,10 @@ export function ResourceOwnerGetOrgs(
     resourceOwnerClient,
     labels = null,
 ) {
-    const res = resourceOwnerClient.ResourceOwnerGetOrgs(labels);
+    const res = withRetries(
+        () => resourceOwnerClient.ResourceOwnerGetOrgs(labels),
+        "ResourceOwnerGetOrgs",
+    );
 
     /** @type {OrgList|null} */
     let orgList = null;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the access packages delegated between two parties.
@@ -18,9 +19,12 @@ export function GetAccessPackageDelegations(
     queryParams = null,
     labels = null,
 ) {
-    const res = accessPackageClient.GetAccessPackageDelegations(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => accessPackageClient.GetAccessPackageDelegations(
+            queryParams,
+            labels,
+        ),
+        "GetAccessPackageDelegations",
     );
 
     /** @type {object|null} */

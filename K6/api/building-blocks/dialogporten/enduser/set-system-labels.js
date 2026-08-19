@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Sets the system labels of a dialog for the end user.
@@ -21,11 +22,14 @@ export function SetDialogSystemLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = enduserApiClient.PutDialogSystemLabels(
-        dialogId,
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.PutDialogSystemLabels(
+            dialogId,
+            request,
+            ifMatch,
+            labels,
+        ),
+        "SetDialogSystemLabels",
     );
 
     const success = check(res, {
@@ -57,10 +61,13 @@ export function BulkSetDialogSystemLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = enduserApiClient.PostBulkSetSystemLabels(
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.PostBulkSetSystemLabels(
+            request,
+            ifMatch,
+            labels,
+        ),
+        "BulkSetDialogSystemLabels",
     );
 
     const success = check(res, {

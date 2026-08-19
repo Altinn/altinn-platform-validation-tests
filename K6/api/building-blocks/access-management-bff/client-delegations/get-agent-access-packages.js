@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the access packages delegated to an agent, per client.
@@ -18,9 +19,12 @@ export function GetAgentAccessPackages(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.GetAgentAccessPackages(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.GetAgentAccessPackages(
+            queryParams,
+            labels,
+        ),
+        "GetAgentAccessPackages",
     );
 
     /** @type {Array<ClientDelegation>|null} */

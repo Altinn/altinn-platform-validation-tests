@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { OrderClient } from "../../../../clients/notifications/order/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a new notification order with zero or more reminders.
@@ -16,7 +17,10 @@ export function OrderCreateOrder(
     request,
     labels = null,
 ) {
-    const res = orderClient.OrderCreateOrder(request, labels);
+    const res = withRetries(
+        () => orderClient.OrderCreateOrder(request, labels),
+        "OrderCreateOrder",
+    );
 
     /** @type {NotificationOrderChainResponseExt|null} */
     let notificationOrder = null;

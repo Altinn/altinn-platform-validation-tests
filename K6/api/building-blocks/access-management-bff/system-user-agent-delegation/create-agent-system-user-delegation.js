@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Delegates a customer to an agent system user.
@@ -25,12 +26,15 @@ export function CreateAgentSystemUserDelegation(
     body = null,
     labels = null,
 ) {
-    const res = systemUserAgentDelegationClient.CreateAgentSystemUserDelegation(
-        partyId,
-        systemUserGuid,
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentDelegationClient.CreateAgentSystemUserDelegation(
+            partyId,
+            systemUserGuid,
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateAgentSystemUserDelegation",
     );
 
     /** @type {object|null} */

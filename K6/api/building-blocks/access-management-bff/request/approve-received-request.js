@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Approves an access request a party has received.
@@ -17,7 +18,10 @@ export function ApproveReceivedRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.ApproveReceivedRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.ApproveReceivedRequest(queryParams, labels),
+        "ApproveReceivedRequest",
+    );
 
     let approved = false;
 

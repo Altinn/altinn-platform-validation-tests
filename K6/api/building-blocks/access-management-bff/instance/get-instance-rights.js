@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the rights a party holds on an instance.
@@ -17,7 +18,10 @@ export function GetInstanceRights(
     queryParams = null,
     labels = null,
 ) {
-    const res = instanceClient.GetInstanceRights(queryParams, labels);
+    const res = withRetries(
+        () => instanceClient.GetInstanceRights(queryParams, labels),
+        "GetInstanceRights",
+    );
 
     /** @type {InstanceRights|null} */
     let instanceRights = null;

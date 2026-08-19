@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListMembershipsClient } from "../../../clients/resource-registry/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Gets access list memberships for parties and resources.
@@ -17,9 +18,12 @@ export function AccessListMembershipsGetMemberships(
     query = null,
     labels = null,
 ) {
-    const res = accessListMembershipsClient.AccessListMembershipsGetMemberships(
-        query,
-        labels,
+    const res = withRetries(
+        () => accessListMembershipsClient.AccessListMembershipsGetMemberships(
+            query,
+            labels,
+        ),
+        "AccessListMembershipsGetMemberships",
     );
 
     /** @type {AccessListResourceMembershipWithActionFilterDtoListObject|null} */

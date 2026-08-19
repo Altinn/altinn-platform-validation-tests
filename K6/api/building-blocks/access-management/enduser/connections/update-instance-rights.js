@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Updates instance rights.
@@ -20,10 +21,13 @@ export function UpdateInstanceRights(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.UpdateInstanceRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.UpdateInstanceRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "UpdateInstanceRights",
     );
 
     return check(res, {

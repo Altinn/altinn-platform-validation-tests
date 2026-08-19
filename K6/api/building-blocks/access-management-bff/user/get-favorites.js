@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the favourite actors of the authenticated user.
@@ -10,7 +11,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {Array<string>|null} Party UUIDs of the favourite actors.
  */
 export function GetFavorites(userClient, labels = null) {
-    const res = userClient.GetFavorites(labels);
+    const res = withRetries(
+        () => userClient.GetFavorites(labels),
+        "GetFavorites",
+    );
 
     /** @type {Array<string>|null} */
     let favorites = null;

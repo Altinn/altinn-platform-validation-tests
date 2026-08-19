@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { DashboardUserContactInformationClient } from "../../../../clients/profil/dashboard-user-contact-information/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all user contact information for the given phone number.
@@ -18,12 +19,14 @@ export function GetContactInformationByPhoneNumber(
     query = null,
     labels = null,
 ) {
-    const res =
-        dashboardUserContactInformationClient.GetContactInformationByPhoneNumber(
+    const res = withRetries(
+        () => dashboardUserContactInformationClient.GetContactInformationByPhoneNumber(
             phoneNumber,
             query,
             labels,
-        );
+        ),
+        "GetContactInformationByPhoneNumber",
+    );
 
     /** @type {Array<DashboardUserContactInformationResponse>} */
     let contactInformation = [];

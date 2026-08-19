@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Sets the end user system labels of a dialog.
@@ -23,12 +24,15 @@ export function SetEndUserContextSystemLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PutEndUserContextSystemLabels(
-        dialogId,
-        request,
-        enduserId,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PutEndUserContextSystemLabels(
+            dialogId,
+            request,
+            enduserId,
+            ifMatch,
+            labels,
+        ),
+        "SetEndUserContextSystemLabels",
     );
 
     const success = check(res, {
@@ -60,10 +64,13 @@ export function BulkSetEndUserContextSystemLabels(
     enduserId = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostBulkSetSystemLabels(
-        request,
-        enduserId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostBulkSetSystemLabels(
+            request,
+            enduserId,
+            labels,
+        ),
+        "BulkSetEndUserContextSystemLabels",
     );
 
     const success = check(res, {

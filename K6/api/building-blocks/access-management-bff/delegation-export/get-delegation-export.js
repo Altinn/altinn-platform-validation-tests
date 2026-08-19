@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { DelegationExportClient } from "../../../../clients/access-management-bff/delegation-export/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Exports the delegations of a party as a spreadsheet.
@@ -17,9 +18,12 @@ export function GetDelegationExport(
     queryParams = null,
     labels = null,
 ) {
-    const res = delegationExportClient.GetDelegationExport(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => delegationExportClient.GetDelegationExport(
+            queryParams,
+            labels,
+        ),
+        "GetDelegationExport",
     );
 
     const succeed = check(res, {

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the access package requests a party has sent.
@@ -18,7 +19,10 @@ export function GetSentPackageRequests(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetSentPackageRequests(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.GetSentPackageRequests(queryParams, labels),
+        "GetSentPackageRequests",
+    );
 
     /** @type {object|null} */
     let requests = null;

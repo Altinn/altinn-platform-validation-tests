@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all verified addresses for the current user.
@@ -13,7 +14,10 @@ export function GetVerifiedAddresses(
     addressVerificationClient,
     labels = null,
 ) {
-    const res = addressVerificationClient.GetVerifiedAddresses(labels);
+    const res = withRetries(
+        () => addressVerificationClient.GetVerifiedAddresses(labels),
+        "GetVerifiedAddresses",
+    );
 
     /** @type {Array<VerifiedAddressResponse>} */
     let verifiedAddresses = [];

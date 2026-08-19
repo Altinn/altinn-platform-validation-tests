@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a specific subscription.
@@ -16,9 +17,12 @@ export function SubscriptionGet(
     id,
     labels = null,
 ) {
-    const res = subscriptionClient.SubscriptionGet(
-        id,
-        labels,
+    const res = withRetries(
+        () => subscriptionClient.SubscriptionGet(
+            id,
+            labels,
+        ),
+        "SubscriptionGet",
     );
 
     /** @type {Subscription|null} */

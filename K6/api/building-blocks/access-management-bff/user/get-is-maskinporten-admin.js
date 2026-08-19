@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks whether the authenticated user is a Maskinporten administrator.
@@ -11,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {boolean|null} True if the user is a Maskinporten administrator.
  */
 export function GetIsMaskinportenAdmin(userClient, party, labels = null) {
-    const res = userClient.GetIsMaskinportenAdmin(party, labels);
+    const res = withRetries(
+        () => userClient.GetIsMaskinportenAdmin(party, labels),
+        "GetIsMaskinportenAdmin",
+    );
 
     /** @type {boolean|null} */
     let isMaskinportenAdmin = null;

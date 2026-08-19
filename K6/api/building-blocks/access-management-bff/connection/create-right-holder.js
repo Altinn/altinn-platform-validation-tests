@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds a right holder to a reportee.
@@ -23,11 +24,14 @@ export function CreateRightHolder(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionClient.CreateRightHolder(
-        partyUuid,
-        body,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionClient.CreateRightHolder(
+            partyUuid,
+            body,
+            queryParams,
+            labels,
+        ),
+        "CreateRightHolder",
     );
 
     /** @type {string|null} */

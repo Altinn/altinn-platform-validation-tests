@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves instance permissions.
@@ -17,9 +18,12 @@ export function GetInstances(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.GetInstances(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetInstances(
+            queryParams,
+            labels,
+        ),
+        "GetInstances",
     );
 
     /** @type {Array<InstancePermissionDto>|null} */

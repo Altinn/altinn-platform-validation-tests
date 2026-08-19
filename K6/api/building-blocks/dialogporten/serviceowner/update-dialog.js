@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Replaces a dialog.
@@ -21,11 +22,14 @@ export function UpdateDialog(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PutDialog(
-        dialogId,
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PutDialog(
+            dialogId,
+            request,
+            ifMatch,
+            labels,
+        ),
+        "UpdateDialog",
     );
 
     const success = check(res, {
@@ -59,11 +63,14 @@ export function PatchDialog(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PatchDialog(
-        dialogId,
-        operations,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PatchDialog(
+            dialogId,
+            operations,
+            ifMatch,
+            labels,
+        ),
+        "PatchDialog",
     );
 
     const success = check(res, {
@@ -95,10 +102,13 @@ export function DeleteDialog(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.DeleteDialog(
-        dialogId,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.DeleteDialog(
+            dialogId,
+            ifMatch,
+            labels,
+        ),
+        "DeleteDialog",
     );
 
     const success = check(res, {

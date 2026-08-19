@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a resource.
@@ -15,9 +16,12 @@ export function ResourceDeleteResource(
     id,
     labels = null,
 ) {
-    const res = resourceClient.ResourceDeleteResource(
-        id,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceDeleteResource(
+            id,
+            labels,
+        ),
+        "ResourceDeleteResource",
     );
 
     return check(res, {

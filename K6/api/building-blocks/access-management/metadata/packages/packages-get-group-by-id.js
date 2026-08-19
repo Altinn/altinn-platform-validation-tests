@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets access package group by id.
@@ -15,7 +16,10 @@ export function PackagesGetGroupById(
     id,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetGroupById(id, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetGroupById(id, labels),
+        "PackagesGetGroupById",
+    );
 
     /** @type {AreaGroupDto|null} */
     let areaGroup = null;

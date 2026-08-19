@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the notification addresses of an organisation.
@@ -16,7 +17,10 @@ export function GetNotificationAddresses(
     orgNumber,
     labels = null,
 ) {
-    const res = settingsClient.GetNotificationAddresses(orgNumber, labels);
+    const res = withRetries(
+        () => settingsClient.GetNotificationAddresses(orgNumber, labels),
+        "GetNotificationAddresses",
+    );
 
     /** @type {Array<NotificationAddressResponse>|null} */
     let notificationAddresses = null;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves sent requests for a party.
@@ -23,11 +24,14 @@ export function GetSentRequests(
     pageNumber = null,
     labels = null,
 ) {
-    const res = requestClient.GetSentRequests(
-        queryParams,
-        pageSize,
-        pageNumber,
-        labels,
+    const res = withRetries(
+        () => requestClient.GetSentRequests(
+            queryParams,
+            pageSize,
+            pageNumber,
+            labels,
+        ),
+        "GetSentRequests",
     );
 
     /** @type {Array<RequestDto>} */

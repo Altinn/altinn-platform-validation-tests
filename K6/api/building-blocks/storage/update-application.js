@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ApplicationsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Updates application metadata for a given application.
@@ -19,11 +20,14 @@ export function UpdateApplication(
     application,
     labels = null,
 ) {
-    const res = applicationsClient.UpdateApplication(
-        org,
-        app,
-        application,
-        labels,
+    const res = withRetries(
+        () => applicationsClient.UpdateApplication(
+            org,
+            app,
+            application,
+            labels,
+        ),
+        "UpdateApplication",
     );
 
     /** @type {Application|null} */

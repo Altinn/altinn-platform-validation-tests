@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the rights a resource defines.
@@ -17,7 +18,10 @@ export function GetRightsMeta(
     queryParams = null,
     labels = null,
 ) {
-    const res = singleRightClient.GetRightsMeta(queryParams, labels);
+    const res = withRetries(
+        () => singleRightClient.GetRightsMeta(queryParams, labels),
+        "GetRightsMeta",
+    );
 
     /** @type {Array<Right>|null} */
     let rights = null;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog activities
@@ -15,9 +16,12 @@ export function GetDialogActivities(
     dialogId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogActivities(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogActivities(
+            dialogId,
+            labels,
+        ),
+        "GetDialogActivities",
     );
 
     /** @type {V1EndUserDialogsQueriesSearchActivities_Activity[]} */
@@ -68,10 +72,13 @@ export function GetDialogActivity(
     activityId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogActivity(
-        dialogId,
-        activityId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogActivity(
+            dialogId,
+            activityId,
+            labels,
+        ),
+        "GetDialogActivity",
     );
 
     /** @type {V1EndUserDialogsQueriesGetActivity_Activity|null} */

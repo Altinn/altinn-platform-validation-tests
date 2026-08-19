@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the clients of the authenticated party, grouped by client provider.
@@ -18,7 +19,10 @@ export function GetMyClients(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.GetMyClients(queryParams, labels);
+    const res = withRetries(
+        () => clientDelegationsClient.GetMyClients(queryParams, labels),
+        "GetMyClients",
+    );
 
     /** @type {Array<MyClientDelegation>|null} */
     let myClients = null;

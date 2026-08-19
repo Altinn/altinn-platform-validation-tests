@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a correspondence by id.
@@ -18,9 +19,12 @@ export function GetCorrespondence(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.GetCorrespondence(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.GetCorrespondence(
+            correspondenceId,
+            labels,
+        ),
+        "GetCorrespondence",
     );
 
     /** @type {CorrespondenceOverviewExt|null} */

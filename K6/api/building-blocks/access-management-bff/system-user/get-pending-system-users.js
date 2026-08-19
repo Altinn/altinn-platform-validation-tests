@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the pending system user requests of an organisation.
@@ -17,7 +18,10 @@ export function GetPendingSystemUsers(
     partyUuid,
     labels = null,
 ) {
-    const res = systemUserClient.GetPendingSystemUsers(partyUuid, labels);
+    const res = withRetries(
+        () => systemUserClient.GetPendingSystemUsers(partyUuid, labels),
+        "GetPendingSystemUsers",
+    );
 
     /** @type {object|null} */
     let pendingSystemUsers = null;

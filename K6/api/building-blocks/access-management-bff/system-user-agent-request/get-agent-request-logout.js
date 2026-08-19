@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the logout redirect for an agent system user request.
@@ -17,9 +18,12 @@ export function GetAgentRequestLogout(
     agentRequestId,
     labels = null,
 ) {
-    const res = systemUserAgentRequestClient.GetAgentRequestLogout(
-        agentRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentRequestClient.GetAgentRequestLogout(
+            agentRequestId,
+            labels,
+        ),
+        "GetAgentRequestLogout",
     );
 
     const succeed = check(res, {

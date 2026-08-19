@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves Maskinporten suppliers for a party.
@@ -16,9 +17,12 @@ export function GetMaskinportenSuppliers(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenSuppliersClient.GetMaskinportenSuppliers(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenSuppliersClient.GetMaskinportenSuppliers(
+            queryParams,
+            labels,
+        ),
+        "GetMaskinportenSuppliers",
     );
 
     /** @type {Array<ConnectionDto>} */

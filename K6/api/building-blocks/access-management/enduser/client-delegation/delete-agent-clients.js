@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Revokes an agent's access to a client.
@@ -16,9 +17,12 @@ export function DeleteAgentClients(
     queryParams,
     labels = null,
 ) {
-    const res = clientDelegationClient.DeleteAgentClients(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.DeleteAgentClients(
+            queryParams,
+            labels,
+        ),
+        "DeleteAgentClients",
     );
 
     let revoked = false;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets attachment overview.
@@ -15,9 +16,12 @@ export function GetAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = attachmentClient.GetAttachment(
-        attachmentId,
-        labels,
+    const res = withRetries(
+        () => attachmentClient.GetAttachment(
+            attachmentId,
+            labels,
+        ),
+        "GetAttachment",
     );
 
     /** @type {AttachmentOverviewExt|null} */

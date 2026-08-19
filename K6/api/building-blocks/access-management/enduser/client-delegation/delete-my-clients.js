@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Revokes the authenticated party's access to a client.
@@ -19,10 +20,13 @@ export function DeleteMyClients(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationClient.DeleteMyClients(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.DeleteMyClients(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteMyClients",
     );
 
     /** @type {Array<DelegationDto>} */

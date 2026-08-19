@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all access lists for a resource owner.
@@ -17,7 +18,10 @@ export function AccessListGetByOwner(
     query = null,
     labels = null,
 ) {
-    const res = accessListClient.AccessListGetByOwner(owner, query, labels);
+    const res = withRetries(
+        () => accessListClient.AccessListGetByOwner(owner, query, labels),
+        "AccessListGetByOwner",
+    );
 
     /** @type {AccessListInfoDtoPaginated|null} */
     let accessLists = null;
