@@ -4,7 +4,7 @@ import { ConnectionsClient, } from "../../../../../clients/access-management/end
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, parseCsvData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PackagesExport } from "../../../../building-blocks/access-management/metadata/packages/index.js";
 
@@ -30,13 +30,10 @@ let requestApiClient = undefined;
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/beomtilgang/${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } },
-    );
-
-    return { users: parseCsvData(res.body), packages: fetchAssignablePackages() };
+    return {
+        users: fetchTestData(`testdata/access-management/enduser/request${__ENV.ENVIRONMENT}.csv`),
+        packages: fetchAssignablePackages()
+    };
 }
 
 /**
