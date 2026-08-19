@@ -207,3 +207,51 @@ export function pickUnique(list, count) {
 
     return result;
 }
+
+
+/**
+ * Reads one of the test data files over HTTP.
+ *
+ * A missing file answers 404 with a body that parses into an empty list rather
+ * than into an error, and an empty list only surfaces later as an undefined row
+ * somewhere in the test. Renaming a file on a branch is enough to cause it, since
+ * the read is pinned to main, so the failure says which URL came up short.
+ *
+ * @param {string} filename File name under the test data directory.
+ * @returns {Array<object>} The parsed rows.
+ */
+function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "main",) {
+    const TESTDATA_BASE_URL =
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata/`;
+
+    if (filename.startsWith("http")) {
+        // Allow people to overide the filelocation
+        const url = filename
+    } else {
+        const url = `${TESTDATA_BASE_URL}/${filename}`;
+    }
+
+    // TODO: add retry logic and logic for failOnDataFetchingFailure
+    const res = http.get(url, {
+        tags: { action: "fetch-test-data" },
+    });
+
+    if (res.status !== 200) {
+        fail(`cannot read test data: ${url} answered ${res.status}`);
+    }
+    if (filename.endsWith(".csv")) {
+        const rows = parseCsvData(res.body);
+
+        if (rows.length === 0) {
+            fail(`cannot read test data: ${url} holds no rows`);
+        }
+        return rows;
+    } else if (filename.endsWith(".json")) {
+        try {
+            data = JSON.parse(res.body)
+            return data;
+        } catch (e) {
+            fail(`cannot parse test data: ${url}. Error: ${e}`);
+        }
+    }
+}
