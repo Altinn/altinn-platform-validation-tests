@@ -259,7 +259,7 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/delegation/${__ENV.ENVIRONMENT}/single-service-org-org.csv`);
+    const data = fetchTestData(`access-management-bff/single-rights/${__ENV.ENVIRONMENT}/org-org.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
