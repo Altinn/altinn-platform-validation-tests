@@ -39,8 +39,8 @@ export default function (data) {
             const response = getNoTokenClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckUnauthorized(
-                "THEN the request is refused with 401",
-                response);
+                response,
+                "THEN the request is refused with 401");
         });
 
         scenario({
@@ -51,8 +51,8 @@ export default function (data) {
             const response = getWrongScopeClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckForbidden(
-                "THEN the request is refused with 403",
-                response);
+                response,
+                "THEN the request is refused with 403");
         });
 
         scenario({
@@ -64,8 +64,8 @@ export default function (data) {
             const response = authorizedPartiesClient.GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckRequestSucceeded(
-                "THEN the request succeeds",
-                response);
+                response,
+                "THEN the request succeeds");
         });
 
         scenario({
@@ -76,8 +76,8 @@ export default function (data) {
             const response = getAdminClient().GetAuthorizedParties(request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckRequestSucceeded(
-                "THEN the request succeeds",
-                response);
+                response,
+                "THEN the request succeeds");
         });
     });
 }

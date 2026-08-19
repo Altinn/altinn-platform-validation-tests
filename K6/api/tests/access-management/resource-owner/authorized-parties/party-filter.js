@@ -47,20 +47,20 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(client.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckOnlyTheseTopLevelParties(
-                "THEN only the filtered main unit is returned at the top level",
-                parties, [client.partyUuid]);
+                parties, [client.partyUuid],
+                "THEN only the filtered main unit is returned at the top level");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasNoSubunits(
-                "AND its subunits are not pulled in",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "AND its subunits are not pulled in");
 
             AuthorizedPartiesDomainChecks.CheckPartyHoldsAccessItself(
-                "AND the filtered main unit holds access itself",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "AND the filtered main unit holds access itself");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(
-                "AND it carries the access packages the subject holds on it",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "AND it carries the access packages the subject holds on it");
         });
 
         scenario({
@@ -71,20 +71,20 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(client.subunit.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsNotTopLevel(
-                "THEN the subunit is not a top level party",
-                parties, client.subunit.partyUuid);
+                parties, client.subunit.partyUuid,
+                "THEN the subunit is not a top level party");
 
             AuthorizedPartiesDomainChecks.CheckOnlyTheseTopLevelParties(
-                "AND its main unit is the only top level party",
-                parties, [client.partyUuid]);
+                parties, [client.partyUuid],
+                "AND its main unit is the only top level party");
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
-                "AND the filtered subunit is nested under that main unit",
-                parties, client.partyUuid, client.subunit.partyUuid);
+                parties, client.partyUuid, client.subunit.partyUuid,
+                "AND the filtered subunit is nested under that main unit");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOnlyHierarchyElement(
-                "AND the main unit is only a hierarchy carrier with no access of its own",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "AND the main unit is only a hierarchy carrier with no access of its own");
         });
 
         scenario({
@@ -95,8 +95,8 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, filteredOn(unreachable.partyUuid), queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsEmptyPartyArray(
-                "THEN the party list is empty",
-                parties);
+                parties,
+                "THEN the party list is empty");
         });
     });
 }

@@ -50,16 +50,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckOnlyTheseTopLevelParties(
-                "THEN the user's own party is the only party returned",
-                parties, [selfIdentified.partyUuid]);
+                parties, [selfIdentified.partyUuid],
+                "THEN the user's own party is the only party returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyType(
-                "AND that party is typed as self identified",
-                parties, selfIdentified.partyUuid, "SelfIdentified");
+                parties, selfIdentified.partyUuid, "SelfIdentified",
+                "AND that party is typed as self identified");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasNoNationalIdentityNumber(
-                "AND it carries no national identity number",
-                parties, selfIdentified.partyUuid);
+                parties, selfIdentified.partyUuid,
+                "AND it carries no national identity number");
         });
 
         // Looked up by user id too, because the endpoint has no email based subject form. The
@@ -76,16 +76,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckOnlyTheseTopLevelParties(
-                "THEN the user's own party is the only party returned",
-                parties, [emailUser.partyUuid]);
+                parties, [emailUser.partyUuid],
+                "THEN the user's own party is the only party returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasEmailId(
-                "AND that party carries the email address as its identity",
-                parties, emailUser.partyUuid, emailUser.emailId);
+                parties, emailUser.partyUuid, emailUser.emailId,
+                "AND that party carries the email address as its identity");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasNoNationalIdentityNumber(
-                "AND it carries no national identity number",
-                parties, emailUser.partyUuid);
+                parties, emailUser.partyUuid,
+                "AND it carries no national identity number");
         });
 
         scenario({
@@ -101,16 +101,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "THEN the firm is returned with the packages delegated to that person",
-                parties, firm.partyUuid, [rightholderWithPackages.directPackageToDelegate]);
+                parties, firm.partyUuid, [rightholderWithPackages.directPackageToDelegate],
+                "THEN the firm is returned with the packages delegated to that person");
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
-                "AND the firm's subunit is nested under it",
-                parties, firm.partyUuid, firm.subunit.partyUuid);
+                parties, firm.partyUuid, firm.subunit.partyUuid,
+                "AND the firm's subunit is nested under it");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND the firm's subunit inherits the delegated packages",
-                parties, firm.subunit.partyUuid, [rightholderWithPackages.directPackageToDelegate]);
+                parties, firm.subunit.partyUuid, [rightholderWithPackages.directPackageToDelegate],
+                "AND the firm's subunit inherits the delegated packages");
         });
 
         scenario({
@@ -123,8 +123,8 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsEmptyPartyArray(
-                "THEN the party list is empty",
-                parties);
+                parties,
+                "THEN the party list is empty");
         });
 
         scenario({
@@ -137,12 +137,12 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN the organisation the system user was created for is returned",
-                parties, firm.partyUuid);
+                parties, firm.partyUuid,
+                "THEN the organisation the system user was created for is returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(
-                "AND it carries the access the system user has been given",
-                parties, firm.partyUuid);
+                parties, firm.partyUuid,
+                "AND it carries the access the system user has been given");
         });
     });
 }

@@ -25,6 +25,10 @@
  * a building block actually mean. Those checks are therefore not printed as steps of their
  * own, only surfaced by name when they fail.
  *
+ * Nothing a scenario calls has to know about any of this. An outcome is a check whose name
+ * starts with THEN, AND or BUT, so a domain check takes part by being given that sentence
+ * as its check name where it accepts one, and reports under its own name everywhere else.
+ *
  * Docs: https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/
  */
 

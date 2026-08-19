@@ -48,8 +48,8 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN a client reached through the firm's key role is in the list",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "THEN a client reached through the firm's key role is in the list");
         });
 
         scenario({
@@ -68,24 +68,24 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "THEN the accountant client is gone",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "THEN the accountant client is gone");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "AND the client without a client delegation is gone",
-                parties, clientWithoutDelegation.partyUuid);
+                parties, clientWithoutDelegation.partyUuid,
+                "AND the client without a client delegation is gone");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND the firm the subject is daily leader for is still returned",
-                parties, firm.partyUuid);
+                parties, firm.partyUuid,
+                "AND the firm the subject is daily leader for is still returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND a party that delegated directly to the person is still returned",
-                parties, directDelegator.partyUuid);
+                parties, directDelegator.partyUuid,
+                "AND a party that delegated directly to the person is still returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND that party still carries the package delegated to the person",
-                parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson]);
+                parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson],
+                "AND that party still carries the package delegated to the person");
         });
     });
 }

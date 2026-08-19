@@ -44,16 +44,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN the housing company the firm manages is returned",
-                parties, firm.esekClient.partyUuid);
+                parties, firm.esekClient.partyUuid,
+                "THEN the housing company the firm manages is returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND it carries the eiendom package the firm holds for it",
-                parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage]);
+                parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage],
+                "AND it carries the eiendom package the firm holds for it");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND the other housing company client is also returned",
-                parties, firm.nonBrlEsekClient.partyUuid);
+                parties, firm.nonBrlEsekClient.partyUuid,
+                "AND the other housing company client is also returned");
         });
     });
 }

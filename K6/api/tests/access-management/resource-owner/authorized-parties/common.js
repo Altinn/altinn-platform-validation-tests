@@ -1,8 +1,6 @@
-import http from "k6/http";
-
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { SetupData } from "./setup-data.types.js";
 
@@ -22,21 +20,6 @@ const SERVICE_OWNER = { org: "digdir", orgno: "991825827" };
  * one is refused for it and allowed for the admin scope.
  */
 export const OTHER_SERVICE_OWNER_ORG_CODE = "skd";
-
-/**
- * The git ref the test data is read from.
- *
- * The fixtures are fetched over HTTPS rather than read off disk, so a scheduled
- * run in the cluster does not depend on a checkout. That means a fixture change
- * only takes effect once it is on the ref named here.
- *
- * FIXME: set back to "main" before merging. This points at the feature branch so
- * the suite can be run by hand while its fixtures are not on main yet. Left as is,
- * the scheduled runs break the moment the branch is deleted.
- */
-const TESTDATA_REF = "test/port-serviceowner-authorized-parties-to-k6";
-
-const RAW_BASE = `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/api/tests/access-management`;
 
 /**
  * Clients keyed by the scope string their token carries.
@@ -136,18 +119,18 @@ export function getNoTokenClient() {
  * reused as is by the delegation directions scenario, since both suites were
  * ported from the same Bruno fixture.
  *
+ * Read over HTTPS from main rather than off disk, so a scheduled run in the cluster
+ * does not depend on a checkout. A fixture change therefore only takes effect once
+ * it is merged.
+ *
  * @returns {SetupData} The fixtures every scenario reads, as its `data` argument.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    const fetchJson = (url) => JSON.parse(
-        http.get(url, { tags: { action: "fetch-test-data" } }).body,
-    );
-
     return {
-        testdata: fetchJson(`${RAW_BASE}/resource-owner/testdata-${__ENV.ENVIRONMENT}.json`),
-        hierarchy: fetchJson(`${RAW_BASE}/enduser/testdata-${__ENV.ENVIRONMENT}.json`),
-        sharedTestData: fetchJson(`${RAW_BASE}/enduser/shared-testdata.json`),
+        testdata: fetchTestData(`access-management/resource-owner/authorized-parties/${__ENV.ENVIRONMENT}.json`),
+        hierarchy: fetchTestData(`access-management/enduser/testdata-${__ENV.ENVIRONMENT}.json`),
+        sharedTestData: fetchTestData("access-management/enduser/shared-testdata.json"),
     };
 }

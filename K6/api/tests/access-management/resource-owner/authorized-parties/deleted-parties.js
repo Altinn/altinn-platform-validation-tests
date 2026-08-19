@@ -59,16 +59,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN the owner of the active sole proprietorship is present",
-                parties, activeEnk.innehaver.partyUuid);
+                parties, activeEnk.innehaver.partyUuid,
+                "THEN the owner of the active sole proprietorship is present");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND the owner of the client deleted inside the retention window is present",
-                parties, deletedInside.innehaver.partyUuid);
+                parties, deletedInside.innehaver.partyUuid,
+                "AND the owner of the client deleted inside the retention window is present");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "AND the owner of the client deleted outside the retention window is absent",
-                parties, deletedOutside.innehaver.partyUuid);
+                parties, deletedOutside.innehaver.partyUuid,
+                "AND the owner of the client deleted outside the retention window is absent");
         });
     });
 }

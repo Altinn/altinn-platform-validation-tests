@@ -43,12 +43,12 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesRole(
-                "THEN the client party carries the accountant role",
-                parties, client.partyUuid, "regnskapsforer");
+                parties, client.partyUuid, "regnskapsforer",
+                "THEN the client party carries the accountant role");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasSomeAccessPackages(
-                "AND the client party carries access packages",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "AND the client party carries access packages");
         });
 
         scenario({
@@ -66,16 +66,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN the accounting firm is still returned",
-                parties, firm.partyUuid);
+                parties, firm.partyUuid,
+                "THEN the accounting firm is still returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "AND the client organisation is still returned",
-                parties, client.partyUuid);
+                parties, client.partyUuid,
+                "AND the client organisation is still returned");
 
             AuthorizedPartiesDomainChecks.CheckEveryPartyHasNoAccessInformation(
-                "AND no party carries any access information",
-                parties);
+                parties,
+                "AND no party carries any access information");
         });
     });
 }

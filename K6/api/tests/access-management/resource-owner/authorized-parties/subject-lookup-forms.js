@@ -54,8 +54,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(person.pid).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
-                "THEN a non empty party list comes back",
-                parties);
+                parties,
+                "THEN a non empty party list comes back");
 
             personBaseline = PartyUuidList(parties);
         });
@@ -74,8 +74,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withUserId(person.userId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
-                "THEN the party list matches the national identity number lookup",
-                parties, personBaseline);
+                parties, personBaseline,
+                "THEN the party list matches the national identity number lookup");
         });
 
         scenario({
@@ -86,8 +86,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(person.partyId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
-                "THEN the party list matches the national identity number lookup",
-                parties, personBaseline);
+                parties, personBaseline,
+                "THEN the party list matches the national identity number lookup");
         });
 
         scenario({
@@ -98,8 +98,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(person.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
-                "THEN the party list matches the national identity number lookup",
-                parties, personBaseline);
+                parties, personBaseline,
+                "THEN the party list matches the national identity number lookup");
         });
 
         scenario({
@@ -110,8 +110,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(firm.orgno).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
-                "THEN a non empty party list comes back",
-                parties);
+                parties,
+                "THEN a non empty party list comes back");
 
             organisationBaseline = PartyUuidList(parties);
         });
@@ -124,8 +124,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(firm.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
-                "THEN the party list matches the organisation number lookup",
-                parties, organisationBaseline ?? []);
+                parties, organisationBaseline ?? [],
+                "THEN the party list matches the organisation number lookup");
         });
 
         // Both enterprise user forms resolve to an empty list at at22 today, because the
@@ -142,8 +142,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUsername(enterpriseUser.username).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
-                "THEN a party list comes back",
-                parties);
+                parties,
+                "THEN a party list comes back");
 
             enterpriseUserBaseline = PartyUuidList(parties);
         });
@@ -156,8 +156,8 @@ export default function (data) {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUuid(enterpriseUser.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(
-                "THEN the party list matches the user name lookup",
-                parties, enterpriseUserBaseline ?? []);
+                parties, enterpriseUserBaseline ?? [],
+                "THEN the party list matches the user name lookup");
         });
     });
 }

@@ -45,8 +45,8 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, filteredOnOrgCode(ownOrgCode));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
-                "THEN a narrowed party list comes back",
-                parties);
+                parties,
+                "THEN a narrowed party list comes back");
         });
 
         scenario({
@@ -58,12 +58,12 @@ export default function (data) {
             const response = authorizedPartiesClient.GetAuthorizedParties(request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
             AuthorizedPartiesDomainChecks.CheckBadRequest(
-                "THEN the request is refused with 400",
-                response);
+                response,
+                "THEN the request is refused with 400");
 
             AuthorizedPartiesDomainChecks.CheckProblemBodyMentions(
-                "AND the problem body names the org code that was refused",
-                response, OTHER_SERVICE_OWNER_ORG_CODE);
+                response, OTHER_SERVICE_OWNER_ORG_CODE,
+                "AND the problem body names the org code that was refused");
         });
 
         scenario({
@@ -74,8 +74,8 @@ export default function (data) {
             const parties = GetAuthorizedParties(getAdminClient(), request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(
-                "THEN the request succeeds",
-                parties);
+                parties,
+                "THEN the request succeeds");
         });
     });
 }

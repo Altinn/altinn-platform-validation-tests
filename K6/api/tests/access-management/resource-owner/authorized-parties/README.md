@@ -12,10 +12,12 @@ action with the outcomes that followed from it, so it reads
 takes the name, the setup and the single action as separate fields, so setup cannot drift
 into the action and become a run on clause.
 
-The outcomes are the checks inside the body, and their sentences are passed in at the call
-site rather than baked into the domain check: the check owns the comparison, the scenario
-owns the sentence. That is why the same check appears more than once in a scenario saying
-different things, and why the first outcome reads THEN and the rest read AND.
+The outcomes are the checks inside the body. A domain check names itself, so it can be
+called from any test without a sentence, and takes an optional trailing name that replaces
+the default one. This suite passes its outcome sentence in there: the check owns the
+comparison, the scenario owns the sentence. That is why the same check appears more than
+once in a scenario saying different things, and why the first outcome reads THEN and the
+rest read AND.
 
 Rationale does not go in a step name. It goes in a comment next to the step.
 

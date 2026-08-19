@@ -61,52 +61,52 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(
-                "THEN the response is a bare array of parties",
-                parties);
+                parties,
+                "THEN the response is a bare array of parties");
 
             AuthorizedPartiesDomainChecks.CheckEveryPartyMatchesContract(
-                "AND every party carries the party fields of the contract",
-                parties);
+                parties,
+                "AND every party carries the party fields of the contract");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOrganizationWithNumber(
-                "AND the accounting firm appears as an organisation",
-                parties, firm.partyUuid, firm.orgno);
+                parties, firm.partyUuid, firm.orgno,
+                "AND the accounting firm appears as an organisation");
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
-                "AND the accounting firm's subunit is nested under it",
-                parties, firm.partyUuid, firm.subunit.partyUuid);
+                parties, firm.partyUuid, firm.subunit.partyUuid,
+                "AND the accounting firm's subunit is nested under it");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsOrganizationWithNumber(
-                "AND a client organisation of the firm appears as an organisation",
-                parties, client.partyUuid, client.orgno);
+                parties, client.partyUuid, client.orgno,
+                "AND a client organisation of the firm appears as an organisation");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND the client organisation carries the accountant packages",
-                parties, client.partyUuid, ACCOUNTANT_PACKAGES);
+                parties, client.partyUuid, ACCOUNTANT_PACKAGES,
+                "AND the client organisation carries the accountant packages");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesRole(
-                "AND the client organisation is held through the accountant role",
-                parties, client.partyUuid, "regnskapsforer");
+                parties, client.partyUuid, "regnskapsforer",
+                "AND the client organisation is held through the accountant role");
 
             AuthorizedPartiesDomainChecks.CheckSubunitIsNestedUnderMainUnit(
-                "AND the client organisation's subunit is nested under it",
-                parties, client.partyUuid, client.subunit.partyUuid);
+                parties, client.partyUuid, client.subunit.partyUuid,
+                "AND the client organisation's subunit is nested under it");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND the client organisation's subunit carries the same accountant packages",
-                parties, client.subunit.partyUuid, ACCOUNTANT_PACKAGES);
+                parties, client.subunit.partyUuid, ACCOUNTANT_PACKAGES,
+                "AND the client organisation's subunit carries the same accountant packages");
 
             AuthorizedPartiesDomainChecks.CheckPartyType(
-                "AND the owner of a sole proprietorship client appears as a person party",
-                parties, innehaver.partyUuid, "Person");
+                parties, innehaver.partyUuid, "Person",
+                "AND the owner of a sole proprietorship client appears as a person party");
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                "AND the sole proprietorship owner carries the accountant packages",
-                parties, innehaver.partyUuid, ACCOUNTANT_PACKAGES);
+                parties, innehaver.partyUuid, ACCOUNTANT_PACKAGES,
+                "AND the sole proprietorship owner carries the accountant packages");
 
             AuthorizedPartiesDomainChecks.CheckNoDuplicateParties(
-                "AND no party appears twice anywhere in the response",
-                parties);
+                parties,
+                "AND no party appears twice anywhere in the response");
         });
     });
 }

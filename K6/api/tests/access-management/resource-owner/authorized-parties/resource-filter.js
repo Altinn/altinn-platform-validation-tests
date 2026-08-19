@@ -50,16 +50,16 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                "THEN the client that carries the filtered resource is returned",
-                parties, resourceHolder.partyUuid);
+                parties, resourceHolder.partyUuid,
+                "THEN the client that carries the filtered resource is returned");
 
             AuthorizedPartiesDomainChecks.CheckPartyHasExactlyResources(
-                "AND the only resource left on it is the one filtered on",
-                parties, resourceHolder.partyUuid, [resourceId]);
+                parties, resourceHolder.partyUuid, [resourceId],
+                "AND the only resource left on it is the one filtered on");
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "AND a client the subject reaches without that resource drops out",
-                parties, otherClient.partyUuid);
+                parties, otherClient.partyUuid,
+                "AND a client the subject reaches without that resource drops out");
         });
 
         scenario({
@@ -74,12 +74,12 @@ export default function (data) {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                "THEN the client that carries that resource for another person is not returned",
-                parties, resourceHolder.partyUuid);
+                parties, resourceHolder.partyUuid,
+                "THEN the client that carries that resource for another person is not returned");
 
             AuthorizedPartiesDomainChecks.CheckNoPartyCarriesResource(
-                "AND no returned party carries the filtered resource",
-                parties, resourceId);
+                parties, resourceId,
+                "AND no returned party carries the filtered resource");
         });
     });
 }
