@@ -23,8 +23,8 @@ Ett script per miljø, og område oppgis som sti:
 npm run test:at23                             # alt, mot at23
 npm run test:tt02                             # og at22 / prod tilsvarende
 
-npm run test:prod -- tests/tilgangsstyring    # ett område
-npm run test:at23 -- tests/innlogging         # eller én fil, eller én :linje
+npm run test:prod tests/tilgangsstyring       # ett område
+npm run test:at23 tests/innlogging            # eller én fil, eller én :linje
 ```
 
 Scriptet setter `ENVIRONMENT`, som bestemmer hvilken `.env.<miljø>.local` som leses.
@@ -39,10 +39,17 @@ npm run test:prod --headed --grep=bokmål
 ```
 
 Bruk likhetstegn på dem som tar en verdi, ellers tolker npm neste ord som eget
-argument. Alt annet, og en fritt valgt sti, sendes etter `--`:
+argument. Andre Playwright-flagg må etter `--`:
 
 ```bash
 npm run test:at23 -- tests/tilgangsstyring --debug
+```
+
+Vil du ha tab-komplettering på stien, kall Playwright direkte, eller legg en funksjon
+i shell-profilen. Zsh sin npm-completion kompletterer bare scriptnavn:
+
+```bash
+ENVIRONMENT=at23 npx playwright test tests/innlogging
 ```
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
