@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates whether deleted entities are shown for the authenticated user.
@@ -12,7 +13,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * preferences.
  */
 export function UpdateShowDeleted(userClient, body = null, labels = null) {
-    const res = userClient.UpdateShowDeleted(body, labels);
+    const res = withRetries(
+        () => userClient.UpdateShowDeleted(body, labels),
+        "UpdateShowDeleted",
+    );
 
     /** @type {ProfileSettingPreference|null} */
     let profileSettingPreference = null;

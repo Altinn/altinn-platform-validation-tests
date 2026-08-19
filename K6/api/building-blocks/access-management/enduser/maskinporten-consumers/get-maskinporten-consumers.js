@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves Maskinporten consumers for a party.
@@ -16,9 +17,12 @@ export function GetMaskinportenConsumers(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenConsumersClient.GetMaskinportenConsumers(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenConsumersClient.GetMaskinportenConsumers(
+            queryParams,
+            labels,
+        ),
+        "GetMaskinportenConsumers",
     );
 
     /** @type {Array<ConnectionDto>} */

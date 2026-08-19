@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialogLookup
@@ -15,9 +16,12 @@ export function GetDialogLookup(
     dialogId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogLookup(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogLookup(
+            dialogId,
+            labels,
+        ),
+        "GetDialogLookup",
     );
 
     /** @type {V1CommonIdentifierLookup_EndUserIdentifierLookup|null} */

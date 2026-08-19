@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the users an instance can be delegated to.
@@ -17,7 +18,10 @@ export function GetInstanceSimplifiedUsers(
     queryParams = null,
     labels = null,
 ) {
-    const res = instanceClient.GetInstanceSimplifiedUsers(queryParams, labels);
+    const res = withRetries(
+        () => instanceClient.GetInstanceSimplifiedUsers(queryParams, labels),
+        "GetInstanceSimplifiedUsers",
+    );
 
     /** @type {Array<SimplifiedParty>|null} */
     let parties = null;

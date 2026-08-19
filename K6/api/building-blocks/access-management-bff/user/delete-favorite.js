@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes an actor from the favourites of the authenticated user.
@@ -11,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {boolean} True if the actor was removed from the favourites.
  */
 export function DeleteFavorite(userClient, partyUuid, labels = null) {
-    const res = userClient.DeleteFavorite(partyUuid, labels);
+    const res = withRetries(
+        () => userClient.DeleteFavorite(partyUuid, labels),
+        "DeleteFavorite",
+    );
 
     let removed = false;
 

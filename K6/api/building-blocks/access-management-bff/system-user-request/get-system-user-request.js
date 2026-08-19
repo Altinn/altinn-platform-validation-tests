@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a system user request.
@@ -17,9 +18,12 @@ export function GetSystemUserRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.GetSystemUserRequest(
-        requestId,
-        labels,
+    const res = withRetries(
+        () => systemUserRequestClient.GetSystemUserRequest(
+            requestId,
+            labels,
+        ),
+        "GetSystemUserRequest",
     );
 
     /** @type {object|null} */

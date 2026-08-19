@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the access packages a role grants.
@@ -16,7 +17,10 @@ export function GetRolePackages(
     queryParams = null,
     labels = null,
 ) {
-    const res = roleClient.GetRolePackages(queryParams, labels);
+    const res = withRetries(
+        () => roleClient.GetRolePackages(queryParams, labels),
+        "GetRolePackages",
+    );
 
     /** @type {Array<AccessPackage>|null} */
     let accessPackages = null;

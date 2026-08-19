@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets updated resources since the provided last updated time.
@@ -17,7 +18,10 @@ export function ResourceUpdated(
     query = null,
     labels = null,
 ) {
-    const res = resourceClient.ResourceUpdated(query, labels);
+    const res = withRetries(
+        () => resourceClient.ResourceUpdated(query, labels),
+        "ResourceUpdated",
+    );
 
     /** @type {UpdatedResourceSubjectPaginated|null} */
     let updatedResources = null;

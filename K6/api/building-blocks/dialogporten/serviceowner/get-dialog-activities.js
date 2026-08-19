@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog activities
@@ -15,9 +16,12 @@ export function GetDialogActivities(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogActivities(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogActivities(
+            dialogId,
+            labels,
+        ),
+        "GetDialogActivities",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesSearchActivities_Activity[]} */
@@ -68,10 +72,13 @@ export function GetDialogActivity(
     activityId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogActivity(
-        dialogId,
-        activityId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogActivity(
+            dialogId,
+            activityId,
+            labels,
+        ),
+        "GetDialogActivity",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesGetActivity_Activity|null} */

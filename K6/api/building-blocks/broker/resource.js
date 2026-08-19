@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../clients/broker/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Gets a broker resource.
@@ -17,9 +18,12 @@ export function GetResource(
     resourceId,
     labels = null,
 ) {
-    const res = resourceClient.GetResource(
-        resourceId,
-        labels,
+    const res = withRetries(
+        () => resourceClient.GetResource(
+            resourceId,
+            labels,
+        ),
+        "GetResource",
     );
 
     /** @type {ResourceExt|null} */
@@ -70,10 +74,13 @@ export function PutResource(
     request,
     labels = null,
 ) {
-    const res = resourceClient.PutResource(
-        resourceId,
-        request,
-        labels,
+    const res = withRetries(
+        () => resourceClient.PutResource(
+            resourceId,
+            request,
+            labels,
+        ),
+        "PutResource",
     );
 
     const succeed = check(res, {

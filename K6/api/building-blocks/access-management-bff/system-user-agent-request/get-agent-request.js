@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets an agent system user request.
@@ -17,9 +18,12 @@ export function GetAgentRequest(
     agentRequestId,
     labels = null,
 ) {
-    const res = systemUserAgentRequestClient.GetAgentRequest(
-        agentRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentRequestClient.GetAgentRequest(
+            agentRequestId,
+            labels,
+        ),
+        "GetAgentRequest",
     );
 
     /** @type {object|null} */

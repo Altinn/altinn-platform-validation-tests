@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets a draft request.
@@ -15,9 +16,12 @@ export function GetDraftRequest(
     id,
     labels = null,
 ) {
-    const res = requestClient.GetDraftRequest(
-        id,
-        labels,
+    const res = withRetries(
+        () => requestClient.GetDraftRequest(
+            id,
+            labels,
+        ),
+        "GetDraftRequest",
     );
 
     /** @type {RequestDto|null} */

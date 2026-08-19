@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a subscription.
@@ -16,9 +17,12 @@ export function SubscriptionDelete(
     id,
     labels = null,
 ) {
-    const res = subscriptionClient.SubscriptionDelete(
-        id,
-        labels,
+    const res = withRetries(
+        () => subscriptionClient.SubscriptionDelete(
+            id,
+            labels,
+        ),
+        "SubscriptionDelete",
     );
 
     return check(res, {

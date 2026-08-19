@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes the delegation of the organisation itself to an agent system user.
@@ -22,11 +23,14 @@ export function DeleteAgentSystemUserSelfDelegation(
     queryParams = null,
     labels = null,
 ) {
-    const res = systemUserAgentDelegationClient.DeleteAgentSystemUserSelfDelegation(
-        partyId,
-        systemUserGuid,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentDelegationClient.DeleteAgentSystemUserSelfDelegation(
+            partyId,
+            systemUserGuid,
+            queryParams,
+            labels,
+        ),
+        "DeleteAgentSystemUserSelfDelegation",
     );
 
     let revoked = false;

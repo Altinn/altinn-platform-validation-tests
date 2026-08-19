@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SelfIdentifiedUserClient } from "../../../../clients/access-management-bff/self-identified-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a self identified Altinn 2 account.
@@ -17,7 +18,10 @@ export function CreateAltinn2Account(
     body = null,
     labels = null,
 ) {
-    const res = selfIdentifiedUserClient.CreateAltinn2Account(body, labels);
+    const res = withRetries(
+        () => selfIdentifiedUserClient.CreateAltinn2Account(body, labels),
+        "CreateAltinn2Account",
+    );
 
     let created = false;
 

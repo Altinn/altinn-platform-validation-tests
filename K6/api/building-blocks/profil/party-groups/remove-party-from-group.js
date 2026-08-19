@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a party from a group.
@@ -17,10 +18,13 @@ export function RemovePartyFromGroup(
     partyUuid,
     labels = null,
 ) {
-    const res = partyGroupsClient.RemovePartyFromGroup(
-        groupId,
-        partyUuid,
-        labels,
+    const res = withRetries(
+        () => partyGroupsClient.RemovePartyFromGroup(
+            groupId,
+            partyUuid,
+            labels,
+        ),
+        "RemovePartyFromGroup",
     );
 
     /** @type {GroupResponse|null} */

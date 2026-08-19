@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resources delegated between two parties.
@@ -17,7 +18,10 @@ export function GetResourceDelegations(
     queryParams = null,
     labels = null,
 ) {
-    const res = singleRightClient.GetResourceDelegations(queryParams, labels);
+    const res = withRetries(
+        () => singleRightClient.GetResourceDelegations(queryParams, labels),
+        "GetResourceDelegations",
+    );
 
     /** @type {Array<ResourceDelegation>|null} */
     let resourceDelegations = null;

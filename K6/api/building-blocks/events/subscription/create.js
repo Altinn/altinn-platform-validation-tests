@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a new subscription.
@@ -15,9 +16,12 @@ export function SubscriptionCreate(
     request,
     labels = null,
 ) {
-    const res = subscriptionClient.SubscriptionCreate(
-        request,
-        labels,
+    const res = withRetries(
+        () => subscriptionClient.SubscriptionCreate(
+            request,
+            labels,
+        ),
+        "SubscriptionCreate",
     );
 
     /** @type {Subscription|null} */

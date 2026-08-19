@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Resets the verification process for the current user and the given address
@@ -17,9 +18,12 @@ export function ResendVerificationCode(
     request,
     labels = null,
 ) {
-    const res = addressVerificationClient.ResendVerificationCode(
-        request,
-        labels,
+    const res = withRetries(
+        () => addressVerificationClient.ResendVerificationCode(
+            request,
+            labels,
+        ),
+        "ResendVerificationCode",
     );
 
     let sent = false;

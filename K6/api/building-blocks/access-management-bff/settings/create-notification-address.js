@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds a notification address to an organisation.
@@ -19,10 +20,13 @@ export function CreateNotificationAddress(
     body = null,
     labels = null,
 ) {
-    const res = settingsClient.CreateNotificationAddress(
-        orgNumber,
-        body,
-        labels,
+    const res = withRetries(
+        () => settingsClient.CreateNotificationAddress(
+            orgNumber,
+            body,
+            labels,
+        ),
+        "CreateNotificationAddress",
     );
 
     /** @type {NotificationAddressResponse|null} */

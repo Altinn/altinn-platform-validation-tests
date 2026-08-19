@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds a Maskinporten supplier to a party.
@@ -17,7 +18,10 @@ export function CreateSupplier(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.CreateSupplier(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.CreateSupplier(queryParams, labels),
+        "CreateSupplier",
+    );
 
     /** @type {AssignmentDto|null} */
     let assignment = null;

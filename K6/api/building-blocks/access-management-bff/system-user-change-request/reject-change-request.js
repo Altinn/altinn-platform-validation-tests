@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Rejects a system user change request.
@@ -18,10 +19,13 @@ export function RejectChangeRequest(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.RejectChangeRequest(
-        partyId,
-        changeRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserChangeRequestClient.RejectChangeRequest(
+            partyId,
+            changeRequestId,
+            labels,
+        ),
+        "RejectChangeRequest",
     );
 
     let rejected = false;

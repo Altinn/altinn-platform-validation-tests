@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AuthenticationClient } from "../../../../clients/access-management-bff/authentication/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Refreshes the authentication cookie of the authenticated user.
@@ -11,7 +12,10 @@ import { AuthenticationClient } from "../../../../clients/access-management-bff/
  * @returns {boolean} True if the token was refreshed.
  */
 export function RefreshToken(authenticationClient, labels = null) {
-    const res = authenticationClient.RefreshToken(labels);
+    const res = withRetries(
+        () => authenticationClient.RefreshToken(labels),
+        "RefreshToken",
+    );
 
     let refreshed = false;
 

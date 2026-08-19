@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a delegated instance.
@@ -17,7 +18,10 @@ export function DeleteInstanceDelegation(
     queryParams = null,
     labels = null,
 ) {
-    const res = instanceClient.DeleteInstanceDelegation(queryParams, labels);
+    const res = withRetries(
+        () => instanceClient.DeleteInstanceDelegation(queryParams, labels),
+        "DeleteInstanceDelegation",
+    );
 
     let revoked = false;
 

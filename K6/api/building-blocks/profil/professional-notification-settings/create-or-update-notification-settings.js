@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates or updates notification settings for a party.
@@ -20,12 +21,14 @@ export function CreateOrUpdateNotificationSettings(
     request,
     labels = null,
 ) {
-    const res =
-        professionalNotificationSettingsClient.CreateOrUpdateNotificationSettings(
+    const res = withRetries(
+        () => professionalNotificationSettingsClient.CreateOrUpdateNotificationSettings(
             partyUuid,
             request,
             labels,
-        );
+        ),
+        "CreateOrUpdateNotificationSettings",
+    );
 
     const succeed = check(res, {
         "CreateOrUpdateNotificationSettings - status code is 201 or 204": (

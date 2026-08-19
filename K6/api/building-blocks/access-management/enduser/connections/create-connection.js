@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a connection.
@@ -20,10 +21,13 @@ export function CreateConnection(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.CreateConnection(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.CreateConnection(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateConnection",
     );
 
     /** @type {AssignmentDto|null} */

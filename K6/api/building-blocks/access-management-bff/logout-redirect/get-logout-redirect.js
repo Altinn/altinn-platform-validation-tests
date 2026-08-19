@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { LogoutRedirectClient } from "../../../../clients/access-management-bff/logout-redirect/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the logout redirect target.
@@ -12,7 +13,10 @@ import { LogoutRedirectClient } from "../../../../clients/access-management-bff/
  * target.
  */
 export function GetLogoutRedirect(logoutRedirectClient, labels = null) {
-    const res = logoutRedirectClient.GetLogoutRedirect(labels);
+    const res = withRetries(
+        () => logoutRedirectClient.GetLogoutRedirect(labels),
+        "GetLogoutRedirect",
+    );
 
     const succeed = check(res, {
         "GetLogoutRedirect - status code is 200": (r) =>

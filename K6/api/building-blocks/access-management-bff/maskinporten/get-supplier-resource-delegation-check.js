@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks whether a resource can be delegated to a Maskinporten supplier.
@@ -17,9 +18,12 @@ export function GetSupplierResourceDelegationCheck(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.GetSupplierResourceDelegationCheck(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenClient.GetSupplierResourceDelegationCheck(
+            queryParams,
+            labels,
+        ),
+        "GetSupplierResourceDelegationCheck",
     );
 
     /** @type {ResourceCheckDto|null} */

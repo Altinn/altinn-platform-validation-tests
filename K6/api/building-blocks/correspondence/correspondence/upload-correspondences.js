@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Initializes correspondences and uploads attachment data as multipart form
@@ -17,9 +18,12 @@ export function UploadCorrespondences(
     formData,
     labels = null,
 ) {
-    const res = correspondenceClient.UploadCorrespondences(
-        formData,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.UploadCorrespondences(
+            formData,
+            labels,
+        ),
+        "UploadCorrespondences",
     );
 
     /** @type {InitializeCorrespondencesResponseExt|null} */

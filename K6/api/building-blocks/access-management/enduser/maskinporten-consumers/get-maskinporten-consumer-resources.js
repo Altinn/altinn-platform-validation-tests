@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves resources delegated through Maskinporten consumers for a party.
@@ -16,9 +17,12 @@ export function GetMaskinportenConsumerResources(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenConsumersClient.GetMaskinportenConsumerResources(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenConsumersClient.GetMaskinportenConsumerResources(
+            queryParams,
+            labels,
+        ),
+        "GetMaskinportenConsumerResources",
     );
 
     /** @type {Array<ResourcePermissionDto>} */

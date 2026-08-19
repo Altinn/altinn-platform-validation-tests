@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Downloads all correspondence attachments as a zip archive.
@@ -19,9 +20,12 @@ export function DownloadAllAttachments(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.DownloadAllAttachments(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.DownloadAllAttachments(
+            correspondenceId,
+            labels,
+        ),
+        "DownloadAllAttachments",
     );
 
     const succeed = check(res, {

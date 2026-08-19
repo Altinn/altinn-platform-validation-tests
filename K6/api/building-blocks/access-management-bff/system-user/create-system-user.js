@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a system user for an organisation.
@@ -20,7 +21,10 @@ export function CreateSystemUser(
     body = null,
     labels = null,
 ) {
-    const res = systemUserClient.CreateSystemUser(partyId, body, labels);
+    const res = withRetries(
+        () => systemUserClient.CreateSystemUser(partyId, body, labels),
+        "CreateSystemUser",
+    );
 
     /** @type {object|null} */
     let systemUser = null;

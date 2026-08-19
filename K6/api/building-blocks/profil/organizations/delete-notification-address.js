@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { OrganizationsClient } from "../../../../clients/profil/organizations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a notification address for an organization.
@@ -17,10 +18,13 @@ export function DeleteNotificationAddress(
     notificationAddressId,
     labels = null,
 ) {
-    const res = organizationsClient.DeleteNotificationAddress(
-        organizationNumber,
-        notificationAddressId,
-        labels,
+    const res = withRetries(
+        () => organizationsClient.DeleteNotificationAddress(
+            organizationNumber,
+            notificationAddressId,
+            labels,
+        ),
+        "DeleteNotificationAddress",
     );
 
     /** @type {NotificationAddressResponse|null} */

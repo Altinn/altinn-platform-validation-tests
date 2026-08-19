@@ -7,6 +7,7 @@ import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../com
 import { parseCsvData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PackagesExport } from "../../../../building-blocks/access-management/metadata/packages/index.js";
+import { withRetries } from "../../../../building-blocks/common/retry.js";
 
 /** @type {PersonalTokenGenerator | undefined} */
 let tokenGenerator = undefined;
@@ -31,9 +32,12 @@ let requestApiClient = undefined;
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/beomtilgang/${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } },
+    const res = withRetries(
+        () => http.get(
+            `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/beomtilgang/${__ENV.ENVIRONMENT}.csv`,
+            { tags: { action: "fetch-test-data" } },
+        ),
+        "fetch-test-data",
     );
 
     return { users: parseCsvData(res.body), packages: fetchAssignablePackages() };

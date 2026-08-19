@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets area by id.
@@ -15,7 +16,10 @@ export function PackagesGetAreaById(
     id,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetAreaById(id, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetAreaById(id, labels),
+        "PackagesGetAreaById",
+    );
 
     /** @type {AreaDto|null} */
     let area = null;

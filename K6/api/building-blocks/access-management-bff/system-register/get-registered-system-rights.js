@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/access-management-bff/system-register/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the rights a registered system asks for.
@@ -17,9 +18,12 @@ export function GetRegisteredSystemRights(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetRegisteredSystemRights(
-        systemId,
-        labels,
+    const res = withRetries(
+        () => systemRegisterClient.GetRegisteredSystemRights(
+            systemId,
+            labels,
+        ),
+        "GetRegisteredSystemRights",
     );
 
     /** @type {object|null} */

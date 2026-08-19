@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes an agent system user of an organisation.
@@ -21,11 +22,14 @@ export function DeleteAgentSystemUser(
     queryParams = null,
     labels = null,
 ) {
-    const res = systemUserClient.DeleteAgentSystemUser(
-        partyId,
-        systemUserGuid,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.DeleteAgentSystemUser(
+            partyId,
+            systemUserGuid,
+            queryParams,
+            labels,
+        ),
+        "DeleteAgentSystemUser",
     );
 
     let deleted = false;

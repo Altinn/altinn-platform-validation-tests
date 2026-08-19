@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { IdPortenAuthorizationClient } from "../../../../clients/access-management-bff/idporten-authorization/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes an ID-porten authorization.
@@ -16,9 +17,12 @@ export function DeleteIdPortenAuthorization(
     id,
     labels = null,
 ) {
-    const res = idPortenAuthorizationClient.DeleteIdPortenAuthorization(
-        id,
-        labels,
+    const res = withRetries(
+        () => idPortenAuthorizationClient.DeleteIdPortenAuthorization(
+            id,
+            labels,
+        ),
+        "DeleteIdPortenAuthorization",
     );
 
     let deleted = false;

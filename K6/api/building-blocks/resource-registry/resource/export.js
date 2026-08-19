@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Exports all resources as RDF/XML.
@@ -13,7 +14,10 @@ export function ResourceExport(
     resourceClient,
     labels = null,
 ) {
-    const res = resourceClient.ResourceExport(labels);
+    const res = withRetries(
+        () => resourceClient.ResourceExport(labels),
+        "ResourceExport",
+    );
 
     /** @type {string|null} */
     let rdf = null;

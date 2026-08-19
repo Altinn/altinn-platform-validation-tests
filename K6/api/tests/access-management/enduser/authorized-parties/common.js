@@ -4,6 +4,7 @@ import { AuthorizedPartiesClient } from "../../../../../clients/access-managemen
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
+import { withRetries } from "../../../../building-blocks/common/retry.js";
 
 /** @type {EnterpriseTokenGenerator|null} */
 let tokenGenerator = null;
@@ -35,17 +36,22 @@ export function getClients(userId, partyId, partyUuid, pid) {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    let res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main//K6/api/tests/access-management/enduser/testdata-${__ENV.ENVIRONMENT}.json`,
-
-        { tags: { action: "fetch-test-data" } },
+    let res = withRetries(
+        () => http.get(
+            `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main//K6/api/tests/access-management/enduser/testdata-${__ENV.ENVIRONMENT}.json`,
+            { tags: { action: "fetch-test-data" } },
+        ),
+        "fetch-test-data",
     );
 
     const testdata = JSON.parse(res.body);
 
-    res = http.get(
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main//K6/api/tests/access-management/enduser/shared-testdata.json",
-        { tags: { action: "fetch-test-data" } },
+    res = withRetries(
+        () => http.get(
+            "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main//K6/api/tests/access-management/enduser/shared-testdata.json",
+            { tags: { action: "fetch-test-data" } },
+        ),
+        "fetch-test-data",
     );
 
     const sharedTestData = JSON.parse(res.body);

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks whether the authenticated user is an administrator for the reportee.
@@ -11,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {boolean|null} True if the user is an administrator.
  */
 export function GetIsAdmin(userClient, party, labels = null) {
-    const res = userClient.GetIsAdmin(party, labels);
+    const res = withRetries(
+        () => userClient.GetIsAdmin(party, labels),
+        "GetIsAdmin",
+    );
 
     /** @type {boolean|null} */
     let isAdmin = null;

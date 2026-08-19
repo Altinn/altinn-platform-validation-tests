@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Checks instance delegation.
@@ -17,9 +18,12 @@ export function GetInstanceDelegationCheck(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.GetInstanceDelegationCheck(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetInstanceDelegationCheck(
+            queryParams,
+            labels,
+        ),
+        "GetInstanceDelegationCheck",
     );
 
     /** @type {InstanceCheckDto|null} */

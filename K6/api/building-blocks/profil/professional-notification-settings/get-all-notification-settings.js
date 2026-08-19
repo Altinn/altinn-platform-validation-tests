@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets notification settings for all parties.
@@ -15,10 +16,12 @@ export function GetAllNotificationSettings(
     professionalNotificationSettingsClient,
     labels = null,
 ) {
-    const res =
-        professionalNotificationSettingsClient.GetAllNotificationSettings(
+    const res = withRetries(
+        () => professionalNotificationSettingsClient.GetAllNotificationSettings(
             labels,
-        );
+        ),
+        "GetAllNotificationSettings",
+    );
 
     /** @type {Array<NotificationSettingsResponse>|null} */
     let settings = null;

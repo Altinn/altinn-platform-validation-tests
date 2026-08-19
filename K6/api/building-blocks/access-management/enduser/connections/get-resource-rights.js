@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets resource rights.
@@ -23,10 +24,13 @@ export function GetResourceRights(
     },
     labels = null,
 ) {
-    const res = connectionsClient.GetResourceRights(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetResourceRights(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetResourceRights",
     );
 
     /** @type {ExternalResourceRightDto|null} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets a role.
@@ -15,7 +16,10 @@ export function RolesGetRole(
     id,
     labels = null,
 ) {
-    const res = rolesClient.RolesGetRole(id, labels);
+    const res = withRetries(
+        () => rolesClient.RolesGetRole(id, labels),
+        "RolesGetRole",
+    );
 
     /** @type {RoleDto|null} */
     let role = null;

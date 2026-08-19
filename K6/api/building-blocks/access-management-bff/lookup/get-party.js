@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Looks up a party by party UUID.
@@ -11,7 +12,10 @@ import { LookupClient } from "../../../../clients/access-management-bff/lookup/i
  * @returns {PartyFE|null} The party.
  */
 export function GetParty(lookupClient, uuid, labels = null) {
-    const res = lookupClient.GetParty(uuid, labels);
+    const res = withRetries(
+        () => lookupClient.GetParty(uuid, labels),
+        "GetParty",
+    );
 
     /** @type {PartyFE|null} */
     let party = null;

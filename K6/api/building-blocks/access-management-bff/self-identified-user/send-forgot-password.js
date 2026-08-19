@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SelfIdentifiedUserClient } from "../../../../clients/access-management-bff/self-identified-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Starts password recovery for a self identified Altinn 2 account.
@@ -17,7 +18,10 @@ export function SendForgotPassword(
     body = null,
     labels = null,
 ) {
-    const res = selfIdentifiedUserClient.SendForgotPassword(body, labels);
+    const res = withRetries(
+        () => selfIdentifiedUserClient.SendForgotPassword(body, labels),
+        "SendForgotPassword",
+    );
 
     let sent = false;
 

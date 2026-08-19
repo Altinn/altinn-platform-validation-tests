@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets role resources.
@@ -15,7 +16,10 @@ export function RolesGetRoleResources(
     query,
     labels = null,
 ) {
-    const res = rolesClient.RolesGetRoleResources(query, labels);
+    const res = withRetries(
+        () => rolesClient.RolesGetRoleResources(query, labels),
+        "RolesGetRoleResources",
+    );
 
     /** @type {ResourceDto|null} */
     let resource = null;

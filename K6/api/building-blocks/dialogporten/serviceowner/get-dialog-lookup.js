@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialogLookup
@@ -15,9 +16,12 @@ export function GetDialogLookup(
     queryParams,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogLookup(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogLookup(
+            queryParams,
+            labels,
+        ),
+        "GetDialogLookup",
     );
 
     /** @type {V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup|null} */

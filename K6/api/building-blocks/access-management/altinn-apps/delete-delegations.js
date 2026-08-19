@@ -4,6 +4,7 @@ import {
     AppsInstanceRevokeResponseDtoPaginated,
 } from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
 import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes all delegations for an application instance.
@@ -25,10 +26,13 @@ export function DeleteDelegations(
     expectedStatus = null,
     labels = null,
 ) {
-    const res = appsInstanceDelegationClient.DeleteDelegations(
-        resourceId,
-        instanceId,
-        labels,
+    const res = withRetries(
+        () => appsInstanceDelegationClient.DeleteDelegations(
+            resourceId,
+            instanceId,
+            labels,
+        ),
+        "DeleteDelegations",
     );
 
     /** @type {AppsInstanceRevokeResponseDtoPaginated|null} */

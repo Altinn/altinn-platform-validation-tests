@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Marks a correspondence as read.
@@ -19,9 +20,12 @@ export function MarkCorrespondenceAsRead(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.MarkCorrespondenceAsRead(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.MarkCorrespondenceAsRead(
+            correspondenceId,
+            labels,
+        ),
+        "MarkCorrespondenceAsRead",
     );
 
     /** @type {string|null} */

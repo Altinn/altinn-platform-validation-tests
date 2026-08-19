@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Removes a client provider from the authenticated party.
@@ -16,9 +17,12 @@ export function DeleteMyClientProvider(
     queryParams,
     labels = null,
 ) {
-    const res = clientDelegationClient.DeleteMyClientProvider(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.DeleteMyClientProvider(
+            queryParams,
+            labels,
+        ),
+        "DeleteMyClientProvider",
     );
 
     let removed = false;

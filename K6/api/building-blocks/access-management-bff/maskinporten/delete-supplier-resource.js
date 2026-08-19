@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a resource delegated to a Maskinporten supplier.
@@ -17,7 +18,10 @@ export function DeleteSupplierResource(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.DeleteSupplierResource(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.DeleteSupplierResource(queryParams, labels),
+        "DeleteSupplierResource",
+    );
 
     let revoked = false;
 

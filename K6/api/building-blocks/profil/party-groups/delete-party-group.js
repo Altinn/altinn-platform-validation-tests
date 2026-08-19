@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a party group.
@@ -15,7 +16,10 @@ export function DeletePartyGroup(
     groupId,
     labels = null,
 ) {
-    const res = partyGroupsClient.DeletePartyGroup(groupId, labels);
+    const res = withRetries(
+        () => partyGroupsClient.DeletePartyGroup(groupId, labels),
+        "DeletePartyGroup",
+    );
 
     let deleted = false;
 
