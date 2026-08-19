@@ -1,8 +1,7 @@
-import http from "k6/http";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /*
@@ -114,10 +113,7 @@ export function setup() {
 
     const numberOfVUs = getNumberOfVUs();
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
-        { tags: { action: "fetch-test-data" } },
-    );
+    const data = fetchTestData(`access-management-bff/consent/${__ENV.ENVIRONMENT}.csv`);
 
-    return segmentData(parseCsvData(res.body), numberOfVUs);
+    return segmentData(data, numberOfVUs);
 }
