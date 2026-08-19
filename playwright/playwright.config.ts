@@ -4,11 +4,17 @@ import fs from "fs";
 import path from "path";
 
 import { stopp } from "./feil";
+import { MILJOER, Miljo } from "./miljo";
 
 const environment = process.env.ENVIRONMENT;
 
-if (!environment) {
-  stopp("ENVIRONMENT må settes: at22, at23, tt02 eller prod. Bruk npm run test:<miljø>.");
+// Sjekker verdien og ikke bare at den finnes: et ukjent miljønavn matcher ingen
+// runInEnvironment-deklarasjon, så en skrivefeil ville gitt en helgrønn kjøring
+// der hver eneste test skippet seg selv.
+if (!environment || !MILJOER.includes(environment as Miljo)) {
+  stopp(
+    `ENVIRONMENT må være ett av ${MILJOER.join(", ")}, ikke ${environment ? `"${environment}"` : "tom"}. Bruk npm run test:<miljø>.`
+  );
 }
 
 // Verdiene kan komme fra shellet eller fra gitignorerte .env-filer. Miljøfila

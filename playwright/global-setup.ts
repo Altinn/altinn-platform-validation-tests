@@ -21,16 +21,23 @@ function specFiler(katalog: string): string[] {
 }
 
 /**
- * Fila uten kommentarer.
+ * Om fila kaller `runInEnvironment` på ordentlig.
  *
- * Et utkommentert `runInEnvironment` er akkurat like lite en deklarasjon som et
- * manglende ett, og skal telle likt. Uten dette går en utkommentert linje gjennom
- * sjekken, og testene kjører i alle miljøer igjen.
+ * Et utkommentert kall er like lite en deklarasjon som et manglende ett, så linjer
+ * som starter med `//` eller `*` teller ikke. Vi ser bare på linjestarten og prøver
+ * ikke å lese TypeScript: et forsøk på å strippe kommentarer med regex spiser ekte
+ * kode så snart en streng inneholder `/*`, for eksempel en glob.
  */
-function utenKommentarer(innhold: string): string {
-  return innhold
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/(^|[^:])\/\/.*$/gm, "$1");
+function harDeklarasjon(innhold: string): boolean {
+  return innhold.split("\n").some((linje) => {
+    const kode = linje.trim();
+
+    if (kode.startsWith("//") || kode.startsWith("*")) {
+      return false;
+    }
+
+    return /\brunInEnvironment\s*\(/.test(kode);
+  });
 }
 
 /**
@@ -43,7 +50,7 @@ function utenKommentarer(innhold: string): string {
  */
 export default function globalSetup() {
   const mangler = specFiler(testDir).filter(
-    (fil) => !/\brunInEnvironment\s*\(/.test(utenKommentarer(fs.readFileSync(fil, "utf8")))
+    (fil) => !harDeklarasjon(fs.readFileSync(fil, "utf8"))
   );
 
   if (mangler.length > 0) {

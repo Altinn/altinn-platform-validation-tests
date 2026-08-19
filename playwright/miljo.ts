@@ -16,8 +16,8 @@ export type Miljo = (typeof MILJOER)[number];
  * kan ikke havne i prod ved en forglemmelse.
  *
  * En fil som aldri kaller denne kjører ingen steder. Det er meningen, og det
- * fanges av lint og ikke her, siden en test ingen starter aldri får sagt fra om
- * seg selv.
+ * fanges av global-setup.ts og ikke her, siden en test ingen starter aldri får
+ * sagt fra om seg selv.
  */
 export function runInEnvironment(...miljoer: Miljo[]) {
   if (miljoer.length === 0) {
