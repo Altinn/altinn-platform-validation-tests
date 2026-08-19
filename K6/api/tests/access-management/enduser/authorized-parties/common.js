@@ -1,4 +1,3 @@
-import http from "k6/http";
 
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/enduser/authorized-parties/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
@@ -36,7 +35,7 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     const testdata = fetchTestData(`access-management/enduser/testdata-${__ENV.ENVIRONMENT}.json`);
-    const sharedTestData = fetchTestData(`access-management/enduser/shared-testdata.json`);
+    const sharedTestData = fetchTestData("access-management/enduser/shared-testdata.json");
 
     return {
         testdata, sharedTestData

@@ -1,10 +1,9 @@
-import http from "k6/http";
 
 import { ConnectionsClient, } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, parseCsvData, requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PackagesExport } from "../../../../building-blocks/access-management/metadata/packages/index.js";
 
