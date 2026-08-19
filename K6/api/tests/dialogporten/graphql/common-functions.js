@@ -27,7 +27,7 @@ let tokenGenerator = undefined;
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return fetchTestData(`dialogporten/serviceowner/${__ENV.ENVIRONMENT}/endusers.csv`);
+    return fetchTestData(`dialogporten/graphql/${__ENV.ENVIRONMENT}/endusers.csv`);
 }
 
 /**
