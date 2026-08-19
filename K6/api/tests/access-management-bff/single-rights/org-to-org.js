@@ -50,8 +50,8 @@ import { GetResourceDelegations } from "../../../building-blocks/access-manageme
 import { GetResourceRights } from "../../../building-blocks/access-management-bff/single-right/index.js";
 import { GetSingleRightDelegationCheck } from "../../../building-blocks/access-management-bff/single-right/index.js";
 import { GetIsHovedadmin } from "../../../building-blocks/access-management-bff/user/index.js";
-import { getFromTo, getTokenOpts, } from "../commons.js";
 import { resourcesForOrg as resources } from "../custom-data.js";
+import { getFromTo, getTokenOpts, } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = { step: "1a. Get rightholders from org" };

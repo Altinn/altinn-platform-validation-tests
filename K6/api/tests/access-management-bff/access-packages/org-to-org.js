@@ -41,8 +41,8 @@ import {
     GetClients,
 } from "../../../building-blocks/access-management-bff/client-delegations/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
-import { getTokenOpts } from "../commons.js";
 import { accessPackagesForOrgs as accessPackages } from "../custom-data.js";
+import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };

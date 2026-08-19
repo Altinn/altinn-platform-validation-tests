@@ -48,8 +48,8 @@ import { DelegateSingleRights, RevokeSingleRights } from "../../../building-bloc
 import {
     GetIsHovedadmin,
 } from "../../../building-blocks/access-management-bff/user/index.js";
-import { getFromTo, getTokenOpts, } from "../commons.js";
 import { resourcesForUsers as resources } from "../custom-data.js";
+import { getFromTo, getTokenOpts, } from "./commons.js";
 
 // Labels for different actions
 const getRightholdersLabel1a = { step: "1a. Get rightholders from user" };

@@ -5,7 +5,7 @@ import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common
 import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetDelegationExport } from "../../../building-blocks/access-management-bff/delegation-export/index.js";
-import { getTokenOpts } from "../commons.js";
+import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const label = { step: "Export delegations" };

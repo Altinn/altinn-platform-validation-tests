@@ -29,7 +29,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { GetAgents, GetClients } from "../../../building-blocks/access-management-bff/client-delegations/index.js";
 import { GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
-import { getTokenOpts } from "../commons.js";
+import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };

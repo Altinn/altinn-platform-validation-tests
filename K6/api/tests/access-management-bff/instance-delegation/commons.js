@@ -1,20 +1,20 @@
 
-import { AccessPackageClient } from "../../../clients/access-management-bff/access-package/index.js";
-import { AltinnCdnClient } from "../../../clients/access-management-bff/altinn-cdn/index.js";
-import { ConnectionClient } from "../../../clients/access-management-bff/connection/index.js";
-import { ConsentClient } from "../../../clients/access-management-bff/consent/index.js";
-import { InstanceClient, InstanceRightsDelegationDtoBuilder } from "../../../clients/access-management-bff/instance/index.js";
-import { LookupClient } from "../../../clients/access-management-bff/lookup/index.js";
-import { ResourceClient } from "../../../clients/access-management-bff/resource/index.js";
-import { RoleClient } from "../../../clients/access-management-bff/role/index.js";
-import { SingleRightClient } from "../../../clients/access-management-bff/single-right/index.js";
-import { SystemUserClient } from "../../../clients/access-management-bff/system-user/index.js";
-import { UserClient } from "../../../clients/access-management-bff/user/index.js";
-import { GraphqlClient } from "../../../clients/dialogporten/graphql/index.js";
-import { ServiceOwnerApiClient } from "../../../clients/dialogporten/serviceowner/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
+import { InstanceClient, InstanceRightsDelegationDtoBuilder } from "../../../../clients/access-management-bff/instance/index.js";
+import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
+import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
+import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
+import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { pickUnique } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
@@ -134,7 +134,6 @@ export function getClients(serviceOwnerOrgNo) {
     };
 }
 
-// TODO: which one should be used here?
 export function getTokenOpts(userId, partyuuid) {
     const scopes = CreateScopeString([
         AltinnScopes.PORTAL.ENDUSER
@@ -155,20 +154,6 @@ export function getTokenOpts(userId, partyuuid) {
 export function getFromTo(list) {
     const [from, to] = pickUnique(list, 2);
     return { from, to };
-}
-
-/**
- * Setup function to segment data for VUs.
- *
- * @returns {object[][]} Organizations with a party uuid, one slice per VU.
- */
-export function setup() {
-    requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
-
-    const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
-    const segmentedData = segmentData(data, numberOfVUs);
-    return segmentedData;
 }
 
 // TODO: which one should be used here?

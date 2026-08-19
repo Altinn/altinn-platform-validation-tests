@@ -28,7 +28,7 @@ import { GetPendingSystemUsers } from "../../../building-blocks/access-managemen
 import { GetActorList, GetActorListOld, GetIsAdmin, GetIsClientAdmin, GetIsCompanyProfileAdmin, GetIsInstanceAdmin, GetReportee, GetUserProfile } from "../../../building-blocks/access-management-bff/user/index.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
-import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "../commons.js";
+import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "./commons.js";
 
 // serviceowner which will create a dialog.
 // The yt serviceOwner is different from the other environments.
