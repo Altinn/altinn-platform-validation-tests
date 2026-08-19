@@ -20,6 +20,7 @@
 - Use the [setup](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#setup-and-teardown-stages) to declare required env vars, fetch / prepare test data, etc.
 - It's usually the case that multiple tests will shared a lot of code. We usually create a `commons.js` with the reusable bits, such as Client initialization, TokenGenerator setup, the setup function, etc.
 - When writting tests, we assume that the test will be run as a smoke or breakpoint test sooner or later. So try not to hardcode test data and use the [data object](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#setup-and-teardown-stages). Exceptions to these are for example tests that simply require you to create a random object that will be sent to the backend, then a simple function call to create the object is enough.
+- Every test folder has a `run-all.js` that runs each test in the folder once, which is the quick way to see whether a change to something shared broke anything: `k6 run K6/api/tests/<folder>/run-all.js`.
 - Test are run in k8s periodically, by default, functional tests are run every 15 mins or so, smoke tests every hour (Breakpoint tests require a bit more coordination, but the goal is for them to be run once a week and compare how performance evolves over time). These configs are done in the various functional.yaml, smoke.yaml files you will see within the [K6/api/tests](K6/api/tests) folder.
 
 
