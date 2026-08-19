@@ -3,8 +3,7 @@ import { alleSprak } from "../../config/sprak";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 import { runInEnvironment } from "../../miljo";
 
-// Verifisert i prod, og endrer ingen data.
-runInEnvironment("at22", "at23", "tt02", "prod");
+runInEnvironment("prod", "at23", "tt02");
 // Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
 // ikke en conditional i page objectet.
 const forventedeSeksjoner = [
