@@ -14,19 +14,17 @@ import { gjeldendeMiljo, Miljo } from '../config/miljo';
 const test = mergeTests(innlogging, sprak, arbeidsflate, tilgangsstyring, infoportal);
 
 /**
- * Holder en testfil eller et describe-blokk unna bestemte miljøer, typisk prod.
- * Kjører du mot et av dem, rapporteres testene som skipped med begrunnelse framfor
- * å feile eller forsvinne stille.
- *
- * Unntaket navngis framfor det motsatte, slik at et nytt testmiljø ikke må legges
- * inn i hver testfil.
+ * Begrenser en testfil eller et describe-blokk til miljøene den er kjent å virke i.
+ * Kjører du mot et annet, rapporteres testene som skipped med begrunnelse framfor å
+ * feile eller forsvinne stille. Et nytt miljø må derfor legges inn her, som også er
+ * en anledning til å sjekke at testen faktisk virker der.
  */
-export function kjoresIkkeI(...miljoer: Miljo[]) {
+export function kjoresIMiljoer(...miljoer: Miljo[]) {
     const gjeldende = gjeldendeMiljo();
 
     test.skip(
-        miljoer.includes(gjeldende),
-        `Kjøres ikke i ${gjeldende}`
+        !miljoer.includes(gjeldende),
+        `Kjøres i ${miljoer.join(', ')}, ikke i ${gjeldende}`
     );
 }
 
