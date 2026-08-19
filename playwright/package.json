@@ -4,8 +4,14 @@
     "main": "index.js",
     "scripts": {
         "test": "playwright test",
+        "test:tt02": "ENVIRONMENT=tt02 playwright test",
+        "test:prod": "ENVIRONMENT=prod playwright test",
         "test:innlogging": "playwright test tests/innlogging",
+        "test:innlogging:tt02": "ENVIRONMENT=tt02 playwright test tests/innlogging",
+        "test:innlogging:prod": "ENVIRONMENT=prod playwright test tests/innlogging",
         "test:tilgangsstyring": "playwright test tests/tilgangsstyring",
+        "test:tilgangsstyring:tt02": "ENVIRONMENT=tt02 playwright test tests/tilgangsstyring",
+        "test:tilgangsstyring:prod": "ENVIRONMENT=prod playwright test tests/tilgangsstyring",
         "typecheck": "tsc --noEmit"
     },
     "keywords": [],
@@ -14,6 +20,7 @@
     "devDependencies": {
         "@playwright/test": "^1.60.0",
         "@types/node": "^25.9.1",
+        "dotenv": "^17.4.2",
         "typescript": "^7.0.2"
     },
     "directories": {
