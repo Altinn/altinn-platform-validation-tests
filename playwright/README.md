@@ -8,7 +8,7 @@ infoportalen.
 ```bash
 npm install
 npx playwright install
-cp example_env/at23.env .env.at23.local    # og tt02.env / prod.env ved behov
+cp example_env/at23.env .env.at23.local    # og at22 / tt02 / prod ved behov
 ```
 
 Fyll inn `TEST_IDP_PASSWORD` i fila, og `TEST_USER_PID` for tt02 og prod, der
@@ -17,23 +17,20 @@ Tenor-nummer med måned 81-92. Filene er gitignorert.
 
 ## Kjør
 
-Ett script per miljø. Vil du bare kjøre et område, oppgir du stien:
+Ett script per miljø, og område oppgis som sti:
 
 ```bash
-npm run test:at23                                    # alt, mot at23
-npm run test:tt02                                    # alt, mot tt02
-npm run test:prod                                    # alt, mot prod
+npm run test:at23                             # alt, mot at23
+npm run test:tt02                             # og at22 / prod tilsvarende
 
-npm run test:prod -- tests/tilgangsstyring           # ett område
-npm run test:at23 -- tests/innlogging --headed       # med Playwright-flagg
+npm run test:prod -- tests/tilgangsstyring    # ett område
+npm run test:at23 -- tests/innlogging         # eller én fil, eller én :linje
 ```
 
-`npm test` uten miljø i navnet kjører mot det `ENVIRONMENT` sier, med at23 som
-default.
-
-Miljøet velges med `ENVIRONMENT`, som scriptene setter, og bestemmer hvilken
-`.env.<miljø>.local` som leses. Vil du heller ha verdiene i shellet, slik k6-testene
-gjør det, virker malene der også: `set -a && . example_env/prod.env && set +a`.
+Scriptet setter `ENVIRONMENT`, som bestemmer hvilken `.env.<miljø>.local` som leses.
+`npm test` uten miljø i navnet bruker `ENVIRONMENT` fra shellet, med at23 som default.
+Malene kan også legges i shellet i stedet, slik k6-testene gjør det:
+`set -a && . example_env/prod.env && set +a`.
 
 `--headed`, `--grep=`, `--workers=` og `--retries=` virker rett på scriptene:
 
@@ -80,18 +77,20 @@ npm run test:tt02
 
 Legg til `prod` når testen er verifisert der også. Vær varsom: en test som endrer
 data hører ikke hjemme i prod. Kommer et nytt miljø til, må det legges inn i fila,
-og det er samtidig anledningen til å sjekke at testen virker der.
+og det er samtidig anledningen til å sjekke at testen virker der. `kjoresIMiljoer`
+ligger i `fixtures/test.ts`, og miljøene som finnes er listet i `config/miljo.ts`.
 
 ## Struktur
 
 Ett hovedområde per mappe, med en fil per underside og en fixture som samler dem:
 
 ```
-pages/tilgangsstyring/forside.ts     fixtures/tilgangsstyring.fixture.ts
-pages/arbeidsflate/{forside,profil}.ts
-pages/felles/                        meny og innlogging
+tests/tilgangsstyring/               testene for området
+pages/tilgangsstyring/forside.ts     page objects, en fil per underside
+fixtures/tilgangsstyring.fixture.ts  samler undersidene til én fixture
+pages/felles/                        meny og innlogging, brukt av alle
 flows/innlogging.ts                  innlogging, på tvers av flatene
-config/                              miljøvariabler og språk
+config/                              miljøvariabler, miljøliste og språk
 ```
 
 En test tar områdene den trenger som fixtures:
