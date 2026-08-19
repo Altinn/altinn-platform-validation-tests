@@ -12,15 +12,15 @@ pages/tilgangsstyring/forside.ts           fixtures/tilgangsstyring.fixture.ts
 pages/infoportal/forside.ts                fixtures/infoportal.fixture.ts
 pages/felles/                              meny og innlogging, brukt av alle
 flows/innlogging.ts                        innlogging, som går på tvers av flatene
-config/environment.ts                      URLer og testbrukere per miljø
+config/environment.ts                      miljøvariablene testene trenger
 ```
 
 En test tar områdene den trenger som fixtures, og går rett på undersiden:
 
 ```ts
 test('...', async ({ innlogging, user, tilgangsstyring }) => {
-    await innlogging.withMockporten(tilgangsstyring.forside, user);
-    await tilgangsstyring.forside.assertSectionsAreVisible(sections);
+    await innlogging.logIn(tilgangsstyring.forside, user);
+    await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
 });
 ```
 
@@ -35,61 +35,57 @@ npm install
 npx playwright install
 ```
 
-## Hemmeligheter og miljø
+## Miljø og hemmeligheter
 
-URLene og testbrukerne for testmiljøene står i `config/environment.ts`. Miljøet
-velges med `ENVIRONMENT` (`at23`, `at22` eller `prod`, default `at23`), og URLene kan
-overstyres med de samme env-varene k6-testene bruker: `AF_UI_BASE_URL`,
-`AM_UI_BASE_URL`, `INFO_CLOUD_URL` og `PLATFORM_BASE_URL`, som faller tilbake på
-`BASE_URL` når den er satt. Et sourcet miljø gjelder derfor for begge testsettene.
+Alt kommer fra miljøvariabler, samme konvensjon som k6-testene: du sourcer et miljø
+før du kjører. `example_env/at23.sh` og `example_env/prod.sh` er malene. Kopier dem
+et sted utenfor repoet, fyll inn hemmelighetene, og lag gjerne et alias slik
+`K6/example_env/README.md` beskriver.
 
-Hemmeligheter kommer utelukkende fra miljøvariabler:
+Variablene som må være satt:
 
-* `TEST_IDP_PASSWORD` alltid. Det delte tilgangspassordet til Test-IDP
-  ("mockporten"). Test-IDP-en låser seg globalt etter fem feilforsøk, så testene
-  feiler med en gang det mangler i stedet for å prøve seg fram.
-* `TEST_USER_PID` og `TEST_USER_NAME` bare ved kjøring mot prod, der testbrukeren
-  ikke er sjekket inn. Fødselsnummeret må være syntetisk, altså Tenor-nummer med
-  måned 81-92.
+| Variabel | Merknad |
+| --- | --- |
+| `AF_UI_BASE_URL`, `AM_UI_BASE_URL`, `INFO_CLOUD_URL` | Samme navn som i k6-testene |
+| `PLATFORM_BASE_URL` eller `BASE_URL` | `BASE_URL` er platform-URLen i k6-testene |
+| `TEST_USER_PID` | Syntetisk Tenor-fnr, altså måned 81-92 |
+| `TEST_USER_NAME` | Bare testene som slår opp navnet på skjermen trenger den |
+| `TEST_IDP_PASSWORD` | Delt tilgangspassord for innlogging som syntetisk bruker |
 
-Lokalt holder du dem i en gitignorert `.env` og kjører `source .env` først. I
-pipeline kommer de fra `secretKeyRef` i Kubernetes-manifestene.
+Testbrukeren i prod skal ikke sjekkes inn noe sted. I Kubernetes kommer variablene
+fra configmap og secrets på samme måte som for k6.
 
 ## Kjør
 
-at23 er default, og prod har egne scripts:
+Miljøet bestemmes av det du har sourcet, ikke av kommandoen:
 
 ```bash
-npm test                             # alt, mot at23
-npm run test:prod                    # alt, mot prod
-npm run test:innlogging              # innloggingstestene, mot at23
-npm run test:tilgangsstyring         # tilgangsstyring, mot at23
-npm run test:tilgangsstyring:prod    # tilgangsstyring, mot prod
+source ~/.scripts/playwright-at23.sh
+npm test                        # alt
+npm run test:innlogging         # innloggingstestene
+npm run test:tilgangsstyring    # tilgangsstyring
 ```
 
 Alt etter `--` går videre til Playwright, så enkelttester og feilsøkingsflagg
 fungerer som normalt:
 
 ```bash
-npm run test:prod -- tests/tilgangsstyring --grep bokmål --headed
+npm test -- tests/tilgangsstyring --grep bokmål --headed
 npm test -- tests/innlogging/innlogging-alle-flater.spec.ts
-```
-
-Miljøet velges med `ENVIRONMENT`, som scriptene bare er en snarvei for:
-
-```bash
-ENVIRONMENT=at22 npx playwright test tests/tilgangsstyring
 ```
 
 Rapporten åpnes med `npx playwright show-report`.
 
 ## Innlogging
 
-Innlogging går via Test-IDP-en, som Altinn Authentication ruter til når
-`iss=mockporten` er med i login-URLen. Flyten må starte på Altinns eget
-login-endepunkt, se `getLoginUrl` i `config/environment.ts`: `state` opprettes
-serverside per innlogging, så en authorize-URL mot mockporten kan ikke skrives for
-hånd eller gjenbrukes. Gjør du det, svarer Altinn
-`Unknown or expired upstream state`.
+Testene logger inn med `innlogging.logIn(side, user)`, som lander innlogget på siden
+du sender inn. Mekanismen er samlet i `pages/felles/syntetisk-innlogging.ts` og skal
+ikke lekke ut i testene: Altinn Authentication ruter til en syntetisk-only upstream
+når `iss` er med i login-URLen, og den godtar bare syntetiske Tenor-fødselsnummer.
 
-Test-IDP-en godtar bare syntetiske Tenor-fødselsnummer, altså måned 81-92.
+Flyten må starte på Altinns eget login-endepunkt. `state` opprettes serverside per
+innlogging, så en authorize-URL kan ikke skrives for hånd eller gjenbrukes; gjør du
+det, svarer Altinn `Unknown or expired upstream state`.
+
+Testene i `tests/innlogging/` bruker i stedet `innlogging.viaIdporten`, siden det er
+selve innloggingsflyten gjennom ID-porten de tester.

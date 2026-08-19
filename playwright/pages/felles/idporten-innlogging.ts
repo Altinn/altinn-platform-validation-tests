@@ -2,10 +2,10 @@ import { expect, Page } from "@playwright/test";
 import { TestUser } from "../../config/environment";
 
 /**
- * Innlogging med TestID hos ID-porten i testmiljøene. Brukes av testene som
- * sjekker selve innloggingsflyten; mockporten dekker resten.
+ * Innlogging med TestID hos ID-porten, altså gjennom skjermbildene en bruker
+ * møter. Brukes av testene der selve innloggingsflyten er det som testes.
  */
-export class TestidInnlogging {
+export class IdportenInnlogging {
     constructor(private page: Page) { }
 
     async login(user: TestUser) {

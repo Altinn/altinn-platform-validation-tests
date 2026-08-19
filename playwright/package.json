@@ -4,10 +4,8 @@
     "main": "index.js",
     "scripts": {
         "test": "playwright test",
-        "test:prod": "ENVIRONMENT=prod playwright test",
         "test:innlogging": "playwright test tests/innlogging",
         "test:tilgangsstyring": "playwright test tests/tilgangsstyring",
-        "test:tilgangsstyring:prod": "ENVIRONMENT=prod playwright test tests/tilgangsstyring",
         "typecheck": "tsc --noEmit"
     },
     "keywords": [],

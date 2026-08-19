@@ -1,9 +1,9 @@
 import { Page } from "@playwright/test";
-import { getLoginUrl, TestUser } from "../config/environment";
 import { Sprak } from "../config/sprak";
+import { TestUser } from "../config/environment";
+import { IdportenInnlogging } from "../pages/felles/idporten-innlogging";
 import { Meny } from "../pages/felles/meny";
-import { MockportenInnlogging } from "../pages/felles/mockporten-innlogging";
-import { TestidInnlogging } from "../pages/felles/testid-innlogging";
+import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { Side } from "../pages/side";
 
 /**
@@ -11,43 +11,41 @@ import { Side } from "../pages/side";
  * områdene.
  */
 export class Innlogging {
-    constructor(
-        private page: Page,
-        private meny = new Meny(page),
-        private testid = new TestidInnlogging(page),
-        private mockporten = new MockportenInnlogging(page),
-    ) { }
+    private meny: Meny;
+    private idporten: IdportenInnlogging;
+    private syntetisk: SyntetiskInnlogging;
+
+    constructor(private page: Page) {
+        this.meny = new Meny(page);
+        this.idporten = new IdportenInnlogging(page);
+        this.syntetisk = new SyntetiskInnlogging(page);
+    }
 
     /**
      * Logger inn og lander på siden som ble sendt inn. Dette er veien testene skal
      * bruke når innloggingen er et middel og ikke det som testes.
-     *
-     * Under panseret går det via Test-IDP ("mockporten"). Flyten må starte på
-     * Altinns login-endepunkt slik at `state` opprettes serverside; en
-     * authorize-URL kan ikke gjenbrukes.
      */
     async logIn(side: Side, user: TestUser) {
-        await this.page.goto(getLoginUrl(side.url), { waitUntil: 'domcontentloaded' });
-        await this.mockporten.login(user);
+        await this.syntetisk.login(side.url, user);
     }
 
     /**
-     * Logger inn med TestID hos ID-porten, altså gjennom skjermbildene en bruker
-     * møter. Bare for testene der selve innloggingsflyten er det som testes.
+     * Logger inn gjennom ID-porten-skjermbildene. Bare for testene der selve
+     * innloggingsflyten er det som testes.
      */
     async viaIdporten(user: TestUser) {
         if (!this.page.url().includes('idporten')) {
             await this.meny.clickLoginButton();
         }
-        await this.testid.login(user);
+        await this.idporten.login(user);
     }
 
     async assertOnIdportenLogin() {
-        await this.testid.assertOnPage();
+        await this.idporten.assertOnPage();
     }
 
-    async setLanguage(language: Sprak) {
-        await this.meny.setLanguage(language);
+    async setLanguage(sprak: Sprak) {
+        await this.meny.setLanguage(sprak);
     }
 
     async refresh() {
