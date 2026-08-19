@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Downloads attachment data.
@@ -15,9 +16,12 @@ export function DownloadAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = attachmentClient.DownloadAttachment(
-        attachmentId,
-        labels,
+    const res = withRetries(
+        () => attachmentClient.DownloadAttachment(
+            attachmentId,
+            labels,
+        ),
+        "DownloadAttachment",
     );
 
     /** @type {ArrayBuffer|null} */

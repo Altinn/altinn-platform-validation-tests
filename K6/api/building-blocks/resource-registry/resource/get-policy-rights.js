@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets rights from a resource policy.
@@ -15,7 +16,10 @@ export function ResourceGetPolicyRights(
     id,
     labels = null,
 ) {
-    const res = resourceClient.ResourceGetPolicyRights(id, labels);
+    const res = withRetries(
+        () => resourceClient.ResourceGetPolicyRights(id, labels),
+        "ResourceGetPolicyRights",
+    );
 
     /** @type {Array<PolicyRightsDTO>|null} */
     let policyRights = null;

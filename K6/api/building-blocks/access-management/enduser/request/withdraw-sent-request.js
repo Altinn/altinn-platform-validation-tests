@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Withdraws a sent request.
@@ -17,10 +18,13 @@ export function WithdrawSentRequest(
     id,
     labels = null,
 ) {
-    const res = requestClient.WithdrawSentRequest(
-        party,
-        id,
-        labels,
+    const res = withRetries(
+        () => requestClient.WithdrawSentRequest(
+            party,
+            id,
+            labels,
+        ),
+        "WithdrawSentRequest",
     );
 
     /** @type {RequestDto|null} */

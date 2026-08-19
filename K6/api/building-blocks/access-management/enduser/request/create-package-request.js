@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a package request.
@@ -20,11 +21,14 @@ export function CreatePackageRequest(
     packageId,
     labels = null,
 ) {
-    const res = requestClient.CreatePackageRequest(
-        party,
-        to,
-        packageId,
-        labels,
+    const res = withRetries(
+        () => requestClient.CreatePackageRequest(
+            party,
+            to,
+            packageId,
+            labels,
+        ),
+        "CreatePackageRequest",
     );
 
     /** @type {RequestDto|null} */

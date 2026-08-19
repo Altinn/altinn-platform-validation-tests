@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Verifies an address for the current user by providing the verification code
@@ -17,7 +18,10 @@ export function VerifyAddress(
     request,
     labels = null,
 ) {
-    const res = addressVerificationClient.VerifyAddress(request, labels);
+    const res = withRetries(
+        () => addressVerificationClient.VerifyAddress(request, labels),
+        "VerifyAddress",
+    );
 
     let verified = false;
 

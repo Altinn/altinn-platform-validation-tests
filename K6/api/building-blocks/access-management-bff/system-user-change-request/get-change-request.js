@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a system user change request.
@@ -17,9 +18,12 @@ export function GetChangeRequest(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.GetChangeRequest(
-        changeRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserChangeRequestClient.GetChangeRequest(
+            changeRequestId,
+            labels,
+        ),
+        "GetChangeRequest",
     );
 
     /** @type {object|null} */

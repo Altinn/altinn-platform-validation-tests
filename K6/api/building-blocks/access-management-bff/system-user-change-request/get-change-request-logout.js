@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the logout redirect for a system user change request.
@@ -17,9 +18,12 @@ export function GetChangeRequestLogout(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.GetChangeRequestLogout(
-        changeRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserChangeRequestClient.GetChangeRequestLogout(
+            changeRequestId,
+            labels,
+        ),
+        "GetChangeRequestLogout",
     );
 
     const succeed = check(res, {

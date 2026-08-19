@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the organisation data the Altinn CDN publishes, keyed by org code.
@@ -12,7 +13,10 @@ import { AltinnCdnClient } from "../../../../clients/access-management-bff/altin
  * {@link OrgData}.
  */
 export function GetOrgData(altinnCdnClient, labels = null) {
-    const res = altinnCdnClient.GetOrgData(labels);
+    const res = withRetries(
+        () => altinnCdnClient.GetOrgData(labels),
+        "GetOrgData",
+    );
 
     /** @type {object|null} */
     let orgData = null;

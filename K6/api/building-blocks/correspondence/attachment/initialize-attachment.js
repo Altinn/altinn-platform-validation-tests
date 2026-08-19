@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Initializes a new shared attachment.
@@ -15,9 +16,12 @@ export function InitializeAttachment(
     request,
     labels = null,
 ) {
-    const res = attachmentClient.InitializeAttachment(
-        request,
-        labels,
+    const res = withRetries(
+        () => attachmentClient.InitializeAttachment(
+            request,
+            labels,
+        ),
+        "InitializeAttachment",
     );
 
     /** @type {string|null} */

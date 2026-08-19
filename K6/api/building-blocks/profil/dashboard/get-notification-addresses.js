@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { DashboardClient } from "../../../../clients/profil/dashboard/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all notification addresses for the given organization.
@@ -15,9 +16,12 @@ export function GetNotificationAddresses(
     organizationNumber,
     labels = null,
 ) {
-    const res = dashboardClient.GetNotificationAddresses(
-        organizationNumber,
-        labels,
+    const res = withRetries(
+        () => dashboardClient.GetNotificationAddresses(
+            organizationNumber,
+            labels,
+        ),
+        "GetNotificationAddresses",
     );
 
     /** @type {Array<DashboardNotificationAddressResponse>} */

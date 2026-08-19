@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves resource permissions for Maskinporten suppliers.
@@ -16,9 +17,12 @@ export function GetMaskinportenSupplierResources(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenSuppliersClient.GetMaskinportenSupplierResources(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenSuppliersClient.GetMaskinportenSupplierResources(
+            queryParams,
+            labels,
+        ),
+        "GetMaskinportenSupplierResources",
     );
 
     /** @type {Array<ResourcePermissionDto>} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes an access package assignment.
@@ -17,9 +18,12 @@ export function DeleteAccessPackage(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.DeleteAccessPackage(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.DeleteAccessPackage(
+            queryParams,
+            labels,
+        ),
+        "DeleteAccessPackage",
     );
 
     const succeed = check(res, {

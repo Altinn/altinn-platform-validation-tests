@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the rights a party holds on a resource.
@@ -17,7 +18,10 @@ export function GetResourceRights(
     queryParams = null,
     labels = null,
 ) {
-    const res = singleRightClient.GetResourceRights(queryParams, labels);
+    const res = withRetries(
+        () => singleRightClient.GetResourceRights(queryParams, labels),
+        "GetResourceRights",
+    );
 
     /** @type {ResourceRight|null} */
     let resourceRight = null;

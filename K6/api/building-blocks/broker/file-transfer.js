@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { FileTransferClient } from "../../../clients/broker/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Initializes a file transfer.
@@ -15,9 +16,12 @@ export function InitializeFileTransfer(
     request,
     labels = null,
 ) {
-    const res = fileTransferClient.InitializeFileTransfer(
-        request,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.InitializeFileTransfer(
+            request,
+            labels,
+        ),
+        "InitializeFileTransfer",
     );
 
     /** @type {FileTransferInitializeResponseExt|null} */
@@ -67,9 +71,12 @@ export function GetFileTransfer(
     fileTransferId,
     labels = null,
 ) {
-    const res = fileTransferClient.GetFileTransfer(
-        fileTransferId,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.GetFileTransfer(
+            fileTransferId,
+            labels,
+        ),
+        "GetFileTransfer",
     );
 
     /** @type {FileTransferOverviewExt|null} */
@@ -119,9 +126,12 @@ export function GetFileTransferDetails(
     fileTransferId,
     labels = null,
 ) {
-    const res = fileTransferClient.GetFileTransferDetails(
-        fileTransferId,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.GetFileTransferDetails(
+            fileTransferId,
+            labels,
+        ),
+        "GetFileTransferDetails",
     );
 
     /** @type {FileTransferStatusDetailsExt|null} */
@@ -171,9 +181,12 @@ export function GetFileTransfers(
     queryParams = null,
     labels = null,
 ) {
-    const res = fileTransferClient.GetFileTransfers(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.GetFileTransfers(
+            queryParams,
+            labels,
+        ),
+        "GetFileTransfers",
     );
 
     /** @type {Array<string>} */
@@ -223,9 +236,12 @@ export function ConfirmDownload(
     fileTransferId,
     labels = null,
 ) {
-    const res = fileTransferClient.ConfirmDownload(
-        fileTransferId,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.ConfirmDownload(
+            fileTransferId,
+            labels,
+        ),
+        "ConfirmDownload",
     );
 
     return check(res, {
@@ -251,10 +267,13 @@ export function UploadFileTransfer(
     body,
     labels = null,
 ) {
-    const res = fileTransferClient.UploadFileTransfer(
-        fileTransferId,
-        body,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.UploadFileTransfer(
+            fileTransferId,
+            body,
+            labels,
+        ),
+        "UploadFileTransfer",
     );
 
     /** @type {FileTransferUploadResponseExt|null} */
@@ -306,9 +325,12 @@ export function DownloadFileTransfer(
     fileTransferId,
     labels = null,
 ) {
-    const res = fileTransferClient.DownloadFileTransfer(
-        fileTransferId,
-        labels,
+    const res = withRetries(
+        () => fileTransferClient.DownloadFileTransfer(
+            fileTransferId,
+            labels,
+        ),
+        "DownloadFileTransfer",
     );
 
     const succeed = check(res, {

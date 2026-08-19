@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates resource rights.
@@ -20,10 +21,13 @@ export function CreateResourceRights(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.CreateResourceRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.CreateResourceRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateResourceRights",
     );
 
     const succeed = check(res, {

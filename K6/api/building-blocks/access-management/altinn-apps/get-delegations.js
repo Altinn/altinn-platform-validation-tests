@@ -4,6 +4,7 @@ import {
     AppsInstanceDelegationResponseDtoPaginated,
 } from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
 import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets delegations for an application instance.
@@ -22,10 +23,13 @@ export function GetDelegations(
     instanceId,
     labels = null,
 ) {
-    const res = appsInstanceDelegationClient.GetDelegations(
-        resourceId,
-        instanceId,
-        labels,
+    const res = withRetries(
+        () => appsInstanceDelegationClient.GetDelegations(
+            resourceId,
+            instanceId,
+            labels,
+        ),
+        "GetDelegations",
     );
 
     /** @type {AppsInstanceDelegationResponseDtoPaginated|null} */

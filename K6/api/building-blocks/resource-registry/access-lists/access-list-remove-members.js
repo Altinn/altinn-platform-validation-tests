@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes members from an access list.
@@ -19,11 +20,14 @@ export function AccessListRemoveMembers(
     request,
     labels = null,
 ) {
-    const res = accessListClient.AccessListRemoveMembers(
-        owner,
-        identifier,
-        request,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListRemoveMembers(
+            owner,
+            identifier,
+            request,
+            labels,
+        ),
+        "AccessListRemoveMembers",
     );
 
     /** @type {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} */

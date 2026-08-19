@@ -1,6 +1,5 @@
 import { group } from "k6";
 import exec from "k6/execution";
-import http from "k6/http";
 
 import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../../clients/access-management-bff/access-package/index.js";
 import { GetRightHoldersQueryBuilder } from "../../../../clients/access-management-bff/connection/index.js";
@@ -13,7 +12,7 @@ import { GetResourceQueryBuilder } from "../../../../clients/access-management-b
 import { GetRolePermissionsQueryBuilder } from "../../../../clients/access-management-bff/role/index.js";
 import { GetRightsMetaQueryBuilder } from "../../../../clients/access-management-bff/single-right/index.js";
 import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/index.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { GetOrgData } from "../../../building-blocks/access-management-bff/altinn-cdn/index.js";
 import { GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
@@ -29,7 +28,7 @@ import { GetPendingSystemUsers } from "../../../building-blocks/access-managemen
 import { GetActorList, GetActorListOld, GetIsAdmin, GetIsClientAdmin, GetIsCompanyProfileAdmin, GetIsInstanceAdmin, GetReportee, GetUserProfile } from "../../../building-blocks/access-management-bff/user/index.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
-import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "../commons.js";
+import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "./commons.js";
 
 // serviceowner which will create a dialog.
 // The yt serviceOwner is different from the other environments.
@@ -134,9 +133,8 @@ export const options = getOptions([
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/instance-delegation-org-user.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`access-management-bff/instance-delegation/${__ENV.ENVIRONMENT}/org-user.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 

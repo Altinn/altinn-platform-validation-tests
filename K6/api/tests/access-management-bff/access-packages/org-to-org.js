@@ -1,6 +1,5 @@
 import { group } from "k6";
 import exec from "k6/execution";
-import http from "k6/http";
 
 import {
     AccessPackageClient,
@@ -28,7 +27,7 @@ import {
     ValidatePersonInputBuilder,
 } from "../../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import {
@@ -42,8 +41,8 @@ import {
     GetClients,
 } from "../../../building-blocks/access-management-bff/client-delegations/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
-import { getTokenOpts } from "../commons.js";
 import { accessPackagesForOrgs as accessPackages } from "../custom-data.js";
+import { getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const getPermissionsLabel = { step: "1a. Get permissions" };
@@ -164,9 +163,8 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-org-org.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`access-management-bff/access-packages/org-to-org/${__ENV.ENVIRONMENT}.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 

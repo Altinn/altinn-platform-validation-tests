@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes an attachment.
@@ -15,9 +16,12 @@ export function DeleteAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = attachmentClient.DeleteAttachment(
-        attachmentId,
-        labels,
+    const res = withRetries(
+        () => attachmentClient.DeleteAttachment(
+            attachmentId,
+            labels,
+        ),
+        "DeleteAttachment",
     );
 
     /** @type {AttachmentOverviewExt|null} */

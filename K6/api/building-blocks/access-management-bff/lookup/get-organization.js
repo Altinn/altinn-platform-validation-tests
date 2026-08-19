@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Looks up a party by organisation number.
@@ -11,7 +12,10 @@ import { LookupClient } from "../../../../clients/access-management-bff/lookup/i
  * @returns {PartyFE|null} The party of the organisation.
  */
 export function GetOrganization(lookupClient, orgNummer, labels = null) {
-    const res = lookupClient.GetOrganization(orgNummer, labels);
+    const res = withRetries(
+        () => lookupClient.GetOrganization(orgNummer, labels),
+        "GetOrganization",
+    );
 
     /** @type {PartyFE|null} */
     let party = null;

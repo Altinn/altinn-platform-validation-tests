@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get all dialogs for a party
@@ -12,7 +13,10 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
-    const res = graphqlClient.GetAllDialogsForParty(variables, labels);
+    const res = withRetries(
+        () => graphqlClient.GetAllDialogsForParty(variables, labels),
+        "GetAllDialogsForParty",
+    );
 
     /** @type {object|null} */
     let res_body = null;
@@ -43,7 +47,10 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
-    const res = graphqlClient.GetAllDialogsForParty(variables, labels);
+    const res = withRetries(
+        () => graphqlClient.GetAllDialogsForParty(variables, labels),
+        "GetAllDialogsForPartyCheckForDialogId",
+    );
 
     /** @type {object|null} */
     let res_body = null;
@@ -85,7 +92,10 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetDialogById(graphqlClient, dialogId, labels = null) {
-    const res = graphqlClient.GetDialogById(dialogId, labels);
+    const res = withRetries(
+        () => graphqlClient.GetDialogById(dialogId, labels),
+        "GetDialogById",
+    );
 
     /** @type {object|null} */
     let res_body = null;
@@ -115,7 +125,10 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
-    const res = graphqlClient.GetDialogById(dialogId, labels);
+    const res = withRetries(
+        () => graphqlClient.GetDialogById(dialogId, labels),
+        "GetAndVerifyDialogById",
+    );
 
     /** @type {object|null} */
     let res_body = null;
@@ -152,7 +165,10 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetParties(graphqlClient, labels = null) {
-    const res = graphqlClient.GetParties(labels);
+    const res = withRetries(
+        () => graphqlClient.GetParties(labels),
+        "GetParties",
+    );
 
     /** @type {object|null} */
     let res_body = null;
@@ -181,7 +197,10 @@ export function GetParties(graphqlClient, labels = null) {
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {
-    const res = graphqlClient.GetFilterServiceResources(labels);
+    const res = withRetries(
+        () => graphqlClient.GetFilterServiceResources(labels),
+        "GetFilterServiceResources",
+    );
 
     /** @type {object|null} */
     let res_body = null;

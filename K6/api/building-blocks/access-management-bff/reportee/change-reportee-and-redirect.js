@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ReporteeClient } from "../../../../clients/access-management-bff/reportee/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Changes the reportee of the authenticated user and redirects onwards.
@@ -17,7 +18,10 @@ export function ChangeReporteeAndRedirect(
     queryParams = null,
     labels = null,
 ) {
-    const res = reporteeClient.ChangeReporteeAndRedirect(queryParams, labels);
+    const res = withRetries(
+        () => reporteeClient.ChangeReporteeAndRedirect(queryParams, labels),
+        "ChangeReporteeAndRedirect",
+    );
 
     const succeed = check(res, {
         "ChangeReporteeAndRedirect - status code is 200": (r) =>

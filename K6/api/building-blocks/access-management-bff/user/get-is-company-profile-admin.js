@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks whether the authenticated user is a company profile administrator.
@@ -11,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {boolean|null} True if the user is a company profile administrator.
  */
 export function GetIsCompanyProfileAdmin(userClient, party, labels = null) {
-    const res = userClient.GetIsCompanyProfileAdmin(party, labels);
+    const res = withRetries(
+        () => userClient.GetIsCompanyProfileAdmin(party, labels),
+        "GetIsCompanyProfileAdmin",
+    );
 
     /** @type {boolean|null} */
     let isCompanyProfileAdmin = null;

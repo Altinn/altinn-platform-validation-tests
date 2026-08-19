@@ -28,8 +28,8 @@ const TRANSIENT_STATUSES = [
 ];
 
 /**
- * Retries per request, on top of the original one, applied to every test that
- * goes through a wrapped building block.
+ * Retries per request, on top of the original one. Every building block goes
+ * through this helper, so the number applies to every test in the repo.
  *
  * Not configurable on purpose, for now. The knob belongs to the run rather than
  * to the test file, since the same file is a smoke test under one config and a

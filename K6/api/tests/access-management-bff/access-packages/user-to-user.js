@@ -1,6 +1,5 @@
 import { group } from "k6";
 import exec from "k6/execution";
-import http from "k6/http";
 
 import {
     AccessPackageClient,
@@ -14,12 +13,12 @@ import {
     ValidatePersonInputBuilder,
 } from "../../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString, } from "../../../../scopes.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
-import { getFromTo, getTokenOpts } from "../commons.js";
 import { accessPackagesForUsers as accessPackages } from "../custom-data.js";
+import { getFromTo, getTokenOpts } from "./commons.js";
 
 // Labels for different actions
 const postRightholderLabel = { step: "1. Connecting users with PostRightholder" };
@@ -102,9 +101,8 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`access-management-bff/access-packages/user-to-user/${__ENV.ENVIRONMENT}.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 

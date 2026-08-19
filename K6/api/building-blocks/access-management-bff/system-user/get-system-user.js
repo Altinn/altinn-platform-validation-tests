@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a single system user of an organisation.
@@ -19,10 +20,13 @@ export function GetSystemUser(
     systemUserGuid,
     labels = null,
 ) {
-    const res = systemUserClient.GetSystemUser(
-        partyId,
-        systemUserGuid,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.GetSystemUser(
+            partyId,
+            systemUserGuid,
+            labels,
+        ),
+        "GetSystemUser",
     );
 
     /** @type {object|null} */

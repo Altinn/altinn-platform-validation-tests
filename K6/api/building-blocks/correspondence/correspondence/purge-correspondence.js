@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Purges an initialized correspondence.
@@ -21,9 +22,12 @@ export function PurgeCorrespondence(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.PurgeCorrespondence(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.PurgeCorrespondence(
+            correspondenceId,
+            labels,
+        ),
+        "PurgeCorrespondence",
     );
 
     /** @type {string|null} */

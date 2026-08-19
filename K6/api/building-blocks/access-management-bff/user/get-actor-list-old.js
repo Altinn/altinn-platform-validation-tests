@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the actor list of the authenticated user in the Altinn 2 format.
@@ -10,7 +11,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {Array<AuthorizedParty>|null} The actor list.
  */
 export function GetActorListOld(userClient, labels = null) {
-    const res = userClient.GetActorListOld(labels);
+    const res = withRetries(
+        () => userClient.GetActorListOld(labels),
+        "GetActorListOld",
+    );
 
     /** @type {Array<AuthorizedParty>|null} */
     let actorList = null;

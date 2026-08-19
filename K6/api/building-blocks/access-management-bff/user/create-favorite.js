@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds an actor to the favourites of the authenticated user.
@@ -11,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {boolean} True if the actor was added to the favourites.
  */
 export function CreateFavorite(userClient, partyUuid, labels = null) {
-    const res = userClient.CreateFavorite(partyUuid, labels);
+    const res = withRetries(
+        () => userClient.CreateFavorite(partyUuid, labels),
+        "CreateFavorite",
+    );
 
     let added = false;
 

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets access list members.
@@ -19,11 +20,14 @@ export function AccessListGetMembers(
     query = null,
     labels = null,
 ) {
-    const res = accessListClient.AccessListGetMembers(
-        owner,
-        identifier,
-        query,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListGetMembers(
+            owner,
+            identifier,
+            query,
+            labels,
+        ),
+        "AccessListGetMembers",
     );
 
     /** @type {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} */

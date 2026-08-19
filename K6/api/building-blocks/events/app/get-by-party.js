@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves events related to a party.
@@ -17,10 +18,13 @@ export function AppGetByParty(
     person = null,
     labels = null,
 ) {
-    const res = appClient.AppGetByParty(
-        query,
-        person,
-        labels,
+    const res = withRetries(
+        () => appClient.AppGetByParty(
+            query,
+            person,
+            labels,
+        ),
+        "AppGetByParty",
     );
 
     /** @type {CloudEvent[]|null} */

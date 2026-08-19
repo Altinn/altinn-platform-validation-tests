@@ -21,6 +21,7 @@ import {
     CreateScopeString,
     DigDirScopes,
 } from "../../../scopes.js";
+import { withRetries } from "../../building-blocks/common/retry.js";
 
 const DEFAULT_ATTACHMENT_SIZE_BYTES = 50 * 1024;
 const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
@@ -180,9 +181,12 @@ export function setupCorrespondenceTestData() {
     const url =
         "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/" +
         `K6/testdata/correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`;
-    const response = http.get(url, {
-        tags: { action: "fetch-test-data" },
-    });
+    const response = withRetries(
+        () => http.get(url, {
+            tags: { action: "fetch-test-data" },
+        }),
+        "fetch-test-data",
+    );
 
     const fetched = check(response, {
         "Correspondence test data - status code is 200": (res) =>

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the actor list of the authenticated user.
@@ -10,7 +11,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {Array<Connection>|null} The actor list.
  */
 export function GetActorList(userClient, labels = null) {
-    const res = userClient.GetActorList(labels);
+    const res = withRetries(
+        () => userClient.GetActorList(labels),
+        "GetActorList",
+    );
 
     /** @type {Array<Connection>|null} */
     let actorList = null;

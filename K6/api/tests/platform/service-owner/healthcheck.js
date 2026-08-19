@@ -3,6 +3,7 @@ import http from "k6/http";
 
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 import { requireEnv } from "../../../../helpers.js";
+import { withRetries } from "../../../building-blocks/common/retry.js";
 
 // https://grafana.com/docs/k6/latest/using-k6/k6-options/reference/#dns
 export const options = {
@@ -36,7 +37,7 @@ export default function (data) {
             tags: tags,
         };
         try {
-            const res = http.get(endpoint, params);
+            const res = withRetries(() => http.get(endpoint, params), org);
             check(res, { "HTTP version is valid": (res) => ["HTTP/1.1", "HTTP/2.0"].includes(res.proto), }, tags);
             check(res, { "response code was 200": (res) => res.status == 200, }, tags);
             const res_body = res.body;

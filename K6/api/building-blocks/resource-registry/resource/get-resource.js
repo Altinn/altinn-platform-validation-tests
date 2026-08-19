@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a resource.
@@ -17,10 +18,13 @@ export function ResourceGetResource(
     query = null,
     labels = null,
 ) {
-    const res = resourceClient.ResourceGetResource(
-        id,
-        query,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceGetResource(
+            id,
+            query,
+            labels,
+        ),
+        "ResourceGetResource",
     );
 
     /** @type {ServiceResource|null} */

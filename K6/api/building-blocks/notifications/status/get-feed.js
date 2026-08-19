@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { StatusClient } from "../../../../clients/notifications/status/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves an array of order status change history.
@@ -16,7 +17,10 @@ export function StatusGetFeed(
     queryParams = null,
     labels = null,
 ) {
-    const res = statusClient.StatusGetFeed(queryParams, labels);
+    const res = withRetries(
+        () => statusClient.StatusGetFeed(queryParams, labels),
+        "StatusGetFeed",
+    );
 
     /** @type {StatusFeedExt[]|null} */
     let statusFeed = null;

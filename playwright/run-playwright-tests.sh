@@ -4,11 +4,9 @@ set -euo pipefail
 git clone https://github.com/Altinn/altinn-platform-validation-tests.git
 cd altinn-platform-validation-tests/playwright
 
-npm install -D \
-    @playwright/test \
-    playwright-bdd
+npm install
 
-npm run example || true # Needs to be the input
+npm run test:at23 || true # Needs to be the input
 
 set +e
 /tmp/generateMetricsFromJunitReport

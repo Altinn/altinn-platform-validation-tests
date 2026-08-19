@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { StatusClient } from "../../../../clients/notifications/status/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves the delivery manifest for a specific notification order.
@@ -16,7 +17,10 @@ export function StatusGetShipment(
     id,
     labels = null,
 ) {
-    const res = statusClient.StatusGetShipment(id, labels);
+    const res = withRetries(
+        () => statusClient.StatusGetShipment(id, labels),
+        "StatusGetShipment",
+    );
 
     /** @type {NotificationDeliveryManifestExt|null} */
     let deliveryManifest = null;

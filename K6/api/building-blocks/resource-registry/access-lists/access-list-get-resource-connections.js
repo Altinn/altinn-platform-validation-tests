@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all resource connections for an access list.
@@ -19,11 +20,14 @@ export function AccessListsGetResourceConnections(
     query = null,
     labels = null,
 ) {
-    const res = accessListClient.AccessListsGetResourceConnections(
-        owner,
-        identifier,
-        query,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListsGetResourceConnections(
+            owner,
+            identifier,
+            query,
+            labels,
+        ),
+        "AccessListsGetResourceConnections",
     );
 
     /** @type {AccessListResourceConnectionDtoAggregateVersionVersionedPaginated|null} */

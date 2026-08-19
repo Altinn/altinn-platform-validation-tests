@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets a request by id.
@@ -17,10 +18,13 @@ export function GetRequest(
     id,
     labels = null,
 ) {
-    const res = requestClient.GetRequest(
-        party,
-        id,
-        labels,
+    const res = withRetries(
+        () => requestClient.GetRequest(
+            party,
+            id,
+            labels,
+        ),
+        "GetRequest",
     );
 
     /** @type {RequestDto|null} */

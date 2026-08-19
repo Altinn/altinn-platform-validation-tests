@@ -1,16 +1,13 @@
-import http from "k6/http";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getOptions, parseCsvData, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } });
-    return parseCsvData(res.body);
+    return fetchTestData(`dialogporten/serviceowner/should-send-notification/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
 }
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialogs
@@ -15,9 +16,12 @@ export function GetDialogs(
     queryParams,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogs(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogs(
+            queryParams,
+            labels,
+        ),
+        "GetDialogs",
     );
 
     /** @type {PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog|null} */
@@ -65,9 +69,12 @@ export function GetDialog(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialog(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialog(
+            dialogId,
+            labels,
+        ),
+        "GetDialog",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesGet_Dialog|null} */
@@ -115,9 +122,12 @@ export function GetEndUserContext(
     queryParams,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetEndUserContext(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetEndUserContext(
+            queryParams,
+            labels,
+        ),
+        "GetEndUserContext",
     );
 
     /** @type {PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem|null} */

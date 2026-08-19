@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the instances delegated between two parties.
@@ -17,7 +18,10 @@ export function GetInstanceDelegations(
     queryParams = null,
     labels = null,
 ) {
-    const res = instanceClient.GetInstanceDelegations(queryParams, labels);
+    const res = withRetries(
+        () => instanceClient.GetInstanceDelegations(queryParams, labels),
+        "GetInstanceDelegations",
+    );
 
     /** @type {Array<InstanceDelegation>|null} */
     let instanceDelegations = null;

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the access requests a party has received.
@@ -18,7 +19,10 @@ export function GetReceivedRequests(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetReceivedRequests(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.GetReceivedRequests(queryParams, labels),
+        "GetReceivedRequests",
+    );
 
     /** @type {object|null} */
     let requests = null;

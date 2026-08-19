@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Removes an agent from a party.
@@ -16,9 +17,12 @@ export function DeleteAgent(
     queryParams,
     labels = null,
 ) {
-    const res = clientDelegationClient.DeleteAgent(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.DeleteAgent(
+            queryParams,
+            labels,
+        ),
+        "DeleteAgent",
     );
 
     let removed = false;

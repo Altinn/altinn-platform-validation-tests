@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Escalates an agent system user request to someone who can approve it.
@@ -18,10 +19,13 @@ export function EscalateAgentRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserAgentRequestClient.EscalateAgentRequest(
-        partyId,
-        requestId,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentRequestClient.EscalateAgentRequest(
+            partyId,
+            requestId,
+            labels,
+        ),
+        "EscalateAgentRequest",
     );
 
     let escalated = false;

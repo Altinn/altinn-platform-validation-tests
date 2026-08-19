@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { AuthorizedPartiesQuery, AuthorizedPartiesRequest, AuthorizedPartiesResponse } from "../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the parties the specified subject is authorized to represent.
@@ -24,10 +25,13 @@ export function GetAuthorizedParties(
     queryParams = null,
     labels = null,
 ) {
-    const res = authorizedPartiesClient.GetAuthorizedParties(
-        request,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => authorizedPartiesClient.GetAuthorizedParties(
+            request,
+            queryParams,
+            labels,
+        ),
+        "GetAuthorizedParties",
     );
 
     /** @type {AuthorizedPartiesResponse} */

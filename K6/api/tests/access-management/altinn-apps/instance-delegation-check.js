@@ -2,6 +2,7 @@ import { group } from "k6";
 
 import { getOptions, requireEnv } from "../../../../helpers.js";
 import { CheckResourceDelegation, GetDelegations } from "../../../building-blocks/access-management/altinn-apps/index.js";
+import { withRetries } from "../../../building-blocks/common/retry.js";
 import { AltinnAppsDomainChecks } from "../../../domain-checks/access-management/altinn-apps.js";
 import { EXPECTED_DELEGABLE_RIGHT_KEYS, getClients, getEmptyTokenClient, getWrongAppClient, INSTANCE_ID, RESOURCE_ID } from "./commons.js";
 
@@ -67,10 +68,13 @@ export default function () {
     group("Without the right platform access token, the delegations stay out of reach", function () {
         group("An empty platform access token is rejected", function () {
             // Fails the PlatformAccess policy before the controller runs.
-            const res = getEmptyTokenClient().CheckResourceDelegation(
-                RESOURCE_ID,
-                INSTANCE_ID,
-                emptyTokenLabel,
+            const res = withRetries(
+                () => getEmptyTokenClient().CheckResourceDelegation(
+                    RESOURCE_ID,
+                    INSTANCE_ID,
+                    emptyTokenLabel,
+                ),
+                "CheckResourceDelegation(empty token)",
             );
 
             AltinnAppsDomainChecks.CheckPlatformAccessTokenRejected(res);
@@ -88,10 +92,13 @@ export default function () {
             // checks the status code passes while asserting nothing. That is why
             // the org and app belong in the client's token generator and not in
             // an optional argument each call site can forget.
-            const res = getWrongAppClient().CheckResourceDelegation(
-                RESOURCE_ID,
-                INSTANCE_ID,
-                wrongAppLabel,
+            const res = withRetries(
+                () => getWrongAppClient().CheckResourceDelegation(
+                    RESOURCE_ID,
+                    INSTANCE_ID,
+                    wrongAppLabel,
+                ),
+                "CheckResourceDelegation(wrong app)",
             );
 
             AltinnAppsDomainChecks.CheckNoRightsForOtherApp(res);

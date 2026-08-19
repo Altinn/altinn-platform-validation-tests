@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a role one party holds for another.
@@ -12,7 +13,10 @@ import { RoleClient } from "../../../../clients/access-management-bff/role/index
  * @returns {boolean} True if the role was revoked.
  */
 export function DeleteRole(roleClient, queryParams = null, labels = null) {
-    const res = roleClient.DeleteRole(queryParams, labels);
+    const res = withRetries(
+        () => roleClient.DeleteRole(queryParams, labels),
+        "DeleteRole",
+    );
 
     let revoked = false;
 

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds service owner labels to a dialog.
@@ -21,11 +22,14 @@ export function AddServiceOwnerLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostServiceOwnerLabels(
-        dialogId,
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostServiceOwnerLabels(
+            dialogId,
+            request,
+            ifMatch,
+            labels,
+        ),
+        "AddServiceOwnerLabels",
     );
 
     const success = check(res, {
@@ -59,11 +63,14 @@ export function RemoveServiceOwnerLabel(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.DeleteServiceOwnerLabel(
-        dialogId,
-        label,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.DeleteServiceOwnerLabel(
+            dialogId,
+            label,
+            ifMatch,
+            labels,
+        ),
+        "RemoveServiceOwnerLabel",
     );
 
     const success = check(res, {

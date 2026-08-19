@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/access-management-bff/system-register/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the systems in the system register.
@@ -12,7 +13,10 @@ import { SystemRegisterClient } from "../../../../clients/access-management-bff/
  * schema for this response.
  */
 export function GetRegisteredSystems(systemRegisterClient, labels = null) {
-    const res = systemRegisterClient.GetRegisteredSystems(labels);
+    const res = withRetries(
+        () => systemRegisterClient.GetRegisteredSystems(labels),
+        "GetRegisteredSystems",
+    );
 
     /** @type {object|null} */
     let systems = null;
