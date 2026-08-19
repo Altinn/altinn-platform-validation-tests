@@ -8,6 +8,7 @@
         "test:at23": "ENVIRONMENT=at23 playwright test",
         "test:tt02": "ENVIRONMENT=tt02 playwright test",
         "test:prod": "ENVIRONMENT=prod playwright test",
+        "report": "playwright show-report",
         "typecheck": "tsc --noEmit"
     },
     "keywords": [],

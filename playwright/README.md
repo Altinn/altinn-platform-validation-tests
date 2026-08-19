@@ -31,7 +31,8 @@ Den må være satt, det finnes ingen default, slik at ingen kjører mot et annet
 enn de tror. Verdiene kan også ligge i shellet, slik k6-testene gjør det:
 `set -a && . example_env/prod.env && set +a`.
 
-`npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
+`npm run typecheck` typesjekker, og `npm run report` åpner rapporten fra forrige
+kjøring. Den skrives til `playwright-report/` hver gang, men åpner seg ikke selv.
 
 Playwright-utvidelsen i VS Code får `ENVIRONMENT` fra `.vscode/settings.json` på
 repo-rota, satt til at23. Endre den der for å kjøre mot et annet miljø fra IDE-en.
