@@ -124,7 +124,7 @@ export function arrangeApprovedSystemUser({
  * @returns {string} Organisation number of the vendor to act as.
  */
 export function pickVendor() {
-    return getItemFromList(fetchTestData("authentication/change-request/vendors.csv"), randomize).orgNo;
+    return getItemFromList(fetchTestData("authentication/change-request-system-user/vendors.csv"), randomize).orgNo;
 }
 
 /**

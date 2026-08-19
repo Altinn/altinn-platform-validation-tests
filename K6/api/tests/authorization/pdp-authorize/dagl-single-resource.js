@@ -18,7 +18,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authorization/pdp-authorize/dagl-single-resourc/single-rights-${__ENV.ENVIRONMENT}-v2.csv`);
+    const data = fetchTestData(`authorization/pdp-authorize/dagl-single-resource/single-rights-${__ENV.ENVIRONMENT}-v2.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

@@ -59,7 +59,7 @@ let paginationTokenGenerator = undefined;
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
-    return fetchTestData(`authentication/authentication/system-user-request/${__ENV.ENVIRONMENT}.csv`);
+    return fetchTestData(`authentication/system-user-request/${__ENV.ENVIRONMENT}.csv`);
 }
 
 /**

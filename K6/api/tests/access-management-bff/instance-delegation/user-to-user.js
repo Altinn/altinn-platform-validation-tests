@@ -138,7 +138,7 @@ export const options = getOptions([
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/delegation/${__ENV.ENVIRONMENT}/user-user.csv`);
+    const data = fetchTestData(`access-management-bff/instance-delegation/${__ENV.ENVIRONMENT}/user-user.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

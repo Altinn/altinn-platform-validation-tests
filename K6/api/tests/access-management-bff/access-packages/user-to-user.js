@@ -101,7 +101,7 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`access-management-bff/access-packages/user-to-user/${__ENV.ENVIRONMENT}.csv`, true, "re-usable-fetch-data-function-and-cleanup-test-data-folder");
+    const data = fetchTestData(`access-management-bff/access-packages/user-to-user/${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
