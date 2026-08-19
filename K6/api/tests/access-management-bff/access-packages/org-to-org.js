@@ -163,7 +163,7 @@ function getClients() {
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/delegation/${__ENV.ENVIRONMENT}/fullmakt-org-org.csv`);
+    const data = fetchTestData(`access-management-bff/access-packages/org-to-org/${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

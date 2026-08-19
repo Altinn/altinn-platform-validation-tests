@@ -1,5 +1,6 @@
-import { check, fail, http, sleep } from "k6";
+import { check, fail, sleep } from "k6";
 import exec from "k6/execution";
+import http from "k6/http";
 
 import { withRetries } from "./api/building-blocks/common/retry.js";
 import { papaparse, randomItem } from "./common-imports.js";
