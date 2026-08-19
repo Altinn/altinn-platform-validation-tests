@@ -4,7 +4,7 @@
   "description": "# Adding tests",
   "scripts": {
     "lint": "eslint --max-warnings 0 K6",
-    "fix": "eslint --fix K6/**",
+    "fix": "eslint --fix K6",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

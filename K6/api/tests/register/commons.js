@@ -1,5 +1,4 @@
 import { fail } from "k6";
-import http from "k6/http";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import {
@@ -8,7 +7,7 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
-import { getItemFromList, parseCsvData, retry, fetchTestData } from "../../../helpers.js";
+import { fetchTestData, getItemFromList, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
@@ -22,7 +21,6 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
  * - register-usernames-<env>.csv   (header: username)
  * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
  */
-
 
 /**
  * @type {RegisterClient | undefined}
@@ -73,8 +71,6 @@ export function getUsernames(env) {
 export function getOrganizations(env) {
     return fetchTestData(`register/organizations-${env}.csv`);
 }
-
-
 
 /**
  * Creates and caches the client the party lookups read with.

@@ -1,6 +1,7 @@
-import { check, sleep } from "k6";
+import { check, fail, http, sleep } from "k6";
 import exec from "k6/execution";
 
+import { withRetries } from "./api/building-blocks/common/retry.js";
 import { papaparse, randomItem } from "./common-imports.js";
 
 /**
@@ -208,7 +209,6 @@ export function pickUnique(list, count) {
     return result;
 }
 
-
 /**
  * Reads one of the test data files over HTTP.
  *
@@ -218,23 +218,26 @@ export function pickUnique(list, count) {
  * the read is pinned to main, so the failure says which URL came up short.
  *
  * @param {string} filename File name under the test data directory.
+ * @param failOnDataFetchingFailure true by default, the test will fail if data fetching fails
+ * @param branch main by default, use a different branch if data is still not merged into main or you are making changes to the existing data.
  * @returns {Array<object>} The parsed rows.
  */
-function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "main",) {
+export function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "main",) {
     const TESTDATA_BASE_URL =
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata/`;
-
+    let url;
     if (filename.startsWith("http")) {
         // Allow people to overide the filelocation
-        const url = filename
+        url = filename;
     } else {
-        const url = `${TESTDATA_BASE_URL}/${filename}`;
+        url = `${TESTDATA_BASE_URL}/${filename}`;
     }
 
-    // TODO: add retry logic and logic for failOnDataFetchingFailure
-    const res = http.get(url, {
-        tags: { action: "fetch-test-data" },
-    });
+    // TODO: logic for failOnDataFetchingFailure
+    const res = withRetries(
+        () => http.get(url, { tags: { action: "fetch-test-data" } }),
+        "fetch-test-data",
+    );
 
     if (res.status !== 200) {
         fail(`cannot read test data: ${url} answered ${res.status}`);
@@ -248,7 +251,7 @@ function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "mai
         return rows;
     } else if (filename.endsWith(".json")) {
         try {
-            data = JSON.parse(res.body)
+            const data = JSON.parse(res.body);
             return data;
         } catch (e) {
             fail(`cannot parse test data: ${url}. Error: ${e}`);

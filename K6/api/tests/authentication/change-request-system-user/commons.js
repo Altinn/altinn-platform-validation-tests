@@ -1,5 +1,4 @@
 import { fail, group } from "k6";
-import http from "k6/http";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
 import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
@@ -13,23 +12,17 @@ import {
     SystemUserClient,
 } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { withRetries } from "../../../building-blocks/common/retry.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
  */
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-
-/**
- * Where the test data these tests draw from lives.
- */
-const TESTDATA_URL = "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request";
 
 /**
  * The scopes a vendor acts with. The system user lookup scope is what lets the
@@ -93,7 +86,7 @@ export function arrangeApprovedSystemUser({
     // an ENK. Built per environment by `yarn tenor:endusers` in
     // altinn-access-management-frontend, since Tenor holds the same synthetic
     // companies everywhere while the Altinn ids differ per environment.
-    const customer = getItemFromList(fetchTestData(`end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
+    const customer = getItemFromList(fetchTestData(`authentication/change-request/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
 
     const registration = createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages });
 
@@ -131,25 +124,7 @@ export function arrangeApprovedSystemUser({
  * @returns {string} Organisation number of the vendor to act as.
  */
 export function pickVendor() {
-    return getItemFromList(fetchTestData("vendors.csv"), randomize).orgNo;
-}
-
-/**
- * Fetches one of this test folder's test data files.
- *
- * Read over http from main rather than with k6's open(), which the cloud runner
- * cannot use, so a new file only takes effect once it is merged.
- *
- * @param {string} fileName - File name under the change-request test data folder.
- * @returns {object[]} The rows, keyed by column name.
- */
-function fetchTestData(fileName) {
-    const res = withRetries(
-        () => http.get(`${TESTDATA_URL}/${fileName}`, { tags: { action: "fetch-test-data" } }),
-        "fetch-test-data",
-    );
-
-    return parseCsvData(res.body);
+    return getItemFromList(fetchTestData("authentication/change-request/vendors.csv"), randomize).orgNo;
 }
 
 /**
