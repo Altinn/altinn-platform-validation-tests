@@ -218,44 +218,64 @@ export function pickUnique(list, count) {
  * somewhere in the test. Renaming a file on a branch is enough to cause it, since
  * the read is pinned to main, so the failure says which URL came up short.
  *
- * @param {string} filename File name under the test data directory.
- * @param failOnDataFetchingFailure true by default, the test will fail if data fetching fails
- * @param branch main by default, use a different branch if data is still not merged into main or you are making changes to the existing data.
- * @returns {Array<object>} The parsed rows.
+ * @param {string} filename File name under the test data directory, or an absolute URL.
+ * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
+ * @param {string} branch Branch to read test data from. Defaults to "main".
+ * @returns {Array<object>|object} The parsed test data.
  */
-export function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "main") {
-    const TESTDATA_BASE_URL =
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata/`;
-    let url;
-    if (filename.startsWith("http")) {
-        // Allow people to overide the filelocation
-        url = filename;
-    } else {
-        url = `${TESTDATA_BASE_URL}/${filename}`;
-    }
+export function fetchTestData(
+    filename,
+    failOnDataFetchingFailure = true,
+    branch = "main",
+) {
+    const testDataBaseUrl =
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const url = filename.startsWith("http")
+        ? filename
+        : `${testDataBaseUrl}/${filename}`;
 
-    // TODO: logic for failOnDataFetchingFailure
     const res = withRetries(
         () => http.get(url, { tags: { action: "fetch-test-data" } }),
         "fetch-test-data",
     );
 
     if (res.status !== 200) {
-        fail(`cannot read test data: ${url} answered ${res.status}`);
+        const message = `Cannot read test data: ${url} returned ${res.status}`;
+
+        if (failOnDataFetchingFailure) {
+            fail(message);
+        }
+
+        return [];
     }
+
     if (filename.endsWith(".csv")) {
         const rows = parseCsvData(res.body);
 
-        if (rows.length === 0) {
-            fail(`cannot read test data: ${url} holds no rows`);
+        if (rows.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no rows`);
         }
+
         return rows;
-    } else if (filename.endsWith(".json")) {
+    }
+
+    if (filename.endsWith(".json")) {
         try {
-            const data = JSON.parse(res.body);
-            return data;
-        } catch (e) {
-            fail(`cannot parse test data: ${url}. Error: ${e}`);
+            return JSON.parse(res.body);
+        } catch (error) {
+            if (failOnDataFetchingFailure) {
+                fail(`Cannot parse test data: ${url}. Error: ${error}`);
+            }
+
+            return [];
         }
     }
+
+    const message = `Unsupported test data file type: ${url}`;
+
+    if (failOnDataFetchingFailure) {
+        fail(message);
+    }
+
+    return [];
 }
