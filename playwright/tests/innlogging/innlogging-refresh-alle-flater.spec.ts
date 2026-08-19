@@ -1,7 +1,7 @@
-import { testMedFlater as test, Flate, kjoresBareI } from '../../fixtures/test';
+import { testMedFlater as test, Flate, kjoresIkkeI } from '../../fixtures/test';
 
 // Innlogging med TestID finnes bare i testmiljøene, ikke i prod.
-kjoresBareI('at22', 'at23', 'tt02');
+kjoresIkkeI('prod');
 
 const flater: { start: Flate; landing: Flate }[] = [
     { start: 'arbeidsflate', landing: 'arbeidsflate' },

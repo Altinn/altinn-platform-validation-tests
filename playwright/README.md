@@ -50,7 +50,7 @@ skipped med begrunnelse framfor å feile. Begrensningen står øverst i testfila
 
 ```ts
 // Innlogging med TestID finnes bare i testmiljøene, ikke i prod.
-kjoresBareI('at22', 'at23', 'tt02');
+kjoresIkkeI('prod');
 ```
 
 ## Struktur
