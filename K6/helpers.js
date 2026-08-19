@@ -1,9 +1,34 @@
 import { check, fail, sleep } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
+import { Counter } from "k6/metrics";
 
 import { withRetries } from "./api/building-blocks/common/retry.js";
 import { papaparse, randomItem } from "./common-imports.js";
+
+/**
+ * Counts test data reads that came up short. Shows up in the k6 summary and in
+ * Grafana as `test_data_fetch_failures`, tagged with the file that was read and
+ * why it failed, so a run that fell over on its test data says so in the metrics
+ * rather than only in the log.
+ *
+ * A read that worked adds 0 instead of adding nothing, so the series exists on a
+ * healthy run too. Without that a dashboard cannot tell "nothing failed" from
+ * "this test never ran", and an alert on the metric has nothing to sit on until
+ * the first failure.
+ */
+const testDataFetchFailures = new Counter("test_data_fetch_failures");
+
+/**
+ * Records the outcome of one test data read.
+ *
+ * @param {string} file The file that was read, as the caller named it.
+ * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @returns {void}
+ */
+function recordTestDataFetch(file, reason = null) {
+    testDataFetchFailures.add(reason ? 1 : 0, { file, reason: reason ?? "none" });
+}
 
 /**
  * Retry a function until it succeeds or all retries fail.
@@ -219,6 +244,9 @@ export function pickUnique(list, count) {
  * the spot and names the URL that came up short. Pass failOnDataFetchingFailure as
  * false for a caller that would rather handle empty data itself.
  *
+ * Every read reports to `test_data_fetch_failures`, so a broken read is visible
+ * in Grafana and not only in the log of whoever happened to watch the run.
+ *
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
  * @param {string} branch Branch to read test data from. Defaults to "main".
@@ -241,6 +269,8 @@ export function fetchTestData(
     );
 
     if (res.status !== 200) {
+        recordTestDataFetch(filename, `status-${res.status}`);
+
         const message = `Cannot read test data: ${url} returned ${res.status}`;
 
         if (failOnDataFetchingFailure) {
@@ -253,6 +283,8 @@ export function fetchTestData(
     if (filename.endsWith(".csv")) {
         const rows = parseCsvData(res.body);
 
+        recordTestDataFetch(filename, rows.length === 0 ? "empty" : null);
+
         if (rows.length === 0 && failOnDataFetchingFailure) {
             fail(`Cannot read test data: ${url} contains no rows`);
         }
@@ -262,8 +294,14 @@ export function fetchTestData(
 
     if (filename.endsWith(".json")) {
         try {
-            return JSON.parse(res.body);
+            const parsed = JSON.parse(res.body);
+
+            recordTestDataFetch(filename);
+
+            return parsed;
         } catch (error) {
+            recordTestDataFetch(filename, "unparseable");
+
             if (failOnDataFetchingFailure) {
                 fail(`Cannot parse test data: ${url}. Error: ${error}`);
             }
@@ -271,6 +309,8 @@ export function fetchTestData(
             return [];
         }
     }
+
+    recordTestDataFetch(filename, "unsupported-file-type");
 
     const message = `Unsupported test data file type: ${url}`;
 
