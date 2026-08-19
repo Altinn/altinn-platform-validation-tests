@@ -32,21 +32,21 @@ Verdiene kan også ligge i shellet, slik k6-testene gjør det:
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
 
-## Hvilke miljøer en test støtter
+## Prod er opt-in
 
-Hver testfil sier selv hvilke miljøer den er kjent å virke i, øverst i fila:
+`test:prod` kjører med `--grep=@prod`, så bare tester som er eksplisitt merket kjøres
+mot prod. En ny test kan ikke havne der ved en forglemmelse, og peker du prod-scriptet
+på en utagget mappe, får du "no tests found".
+
+Merk en testfil eller et describe-blokk når den er verifisert mot prod, og bare hvis
+den ikke endrer data:
 
 ```ts
-kjoresIMiljoer('at22', 'at23', 'tt02', 'prod');
+test.describe('Tilgangsstyring', { tag: '@prod' }, () => { ... });
 ```
 
-I andre miljøer rapporteres testene som skipped med begrunnelse, framfor å feile eller
-forsvinne stille. `npm run test:prod` gir derfor 3 passed og 8 skipped i dag:
-innloggingstestene bruker TestID hos ID-porten, som bare finnes i testmiljøene.
-
-Nye tester bør minst virke i `at23` og `tt02`, og være kjørt der før miljøene føres
-opp. `prod` legges til når testen er verifisert der, og bare hvis den ikke endrer
-data. Helperen ligger i `fixtures/test.ts`, miljølista i `config/miljo.ts`.
+I testmiljøene kjører alt uten merking, så nye tester bør minst være kjørt i `at23` og
+`tt02` først.
 
 ## Struktur
 

@@ -1,7 +1,4 @@
-import { testMedFlater as test, Flate, kjoresIMiljoer } from '../../fixtures/test';
-
-// Innlogging med TestID finnes bare i testmiljøene, ikke i prod.
-kjoresIMiljoer('at22', 'at23', 'tt02');
+import { testMedFlater as test, Flate } from '../../fixtures/test';
 
 const flater: { start: Flate; landing: Flate }[] = [
     { start: 'arbeidsflate', landing: 'arbeidsflate' },

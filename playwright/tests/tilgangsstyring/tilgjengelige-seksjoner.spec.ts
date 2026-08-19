@@ -1,4 +1,4 @@
-import { test, kjoresIMiljoer } from "../../fixtures/test";
+import { test } from "../../fixtures/test";
 import { alleSprak } from "../../config/sprak";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 // Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
@@ -11,10 +11,9 @@ const forventedeSeksjoner = [
   Seksjon.SamtykkeOgFullmaktsavtaler,
 ];
 
-kjoresIMiljoer("at22", "at23", "tt02", "prod");
-
 for (const valgtSprak of alleSprak) {
-  test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
+  // Merket for prod: verifisert der, og endrer ingen data.
+  test.describe(`Tilgangsstyring på ${valgtSprak}`, { tag: "@prod" }, () => {
     test.use({ sprak: valgtSprak });
 
     test("Bruker ser oversikt over navigasjonsvalg", async ({

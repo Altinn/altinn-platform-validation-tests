@@ -27,6 +27,12 @@ function les(fil: string, overstyr: boolean) {
   }
 }
 
+if (environment === "prod") {
+  // Prod er opt-in: test:prod kjører med --grep=@prod, så en test som ikke er merket
+  // kan ikke havne der ved en forglemmelse. Meldingen gjør "no tests found" forståelig.
+  console.log("Prod: kjører bare tester merket @prod");
+}
+
 les(`.env.${environment}.local`, true);
 les(".env.local", false);
 les(".env", false);
