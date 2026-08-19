@@ -19,7 +19,7 @@ for (const { start, landing } of flater) {
         });
 
         await test.step('Bruker logger inn', async () => {
-            await innlogging.withTestid(user);
+            await innlogging.viaIdporten(user);
         });
 
         await test.step(`Bruker skal være innlogget på ${landing} også etter refresh`, async () => {

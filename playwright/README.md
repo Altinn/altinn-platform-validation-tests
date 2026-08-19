@@ -12,7 +12,7 @@ pages/tilgangsstyring/forside.ts           fixtures/tilgangsstyring.fixture.ts
 pages/infoportal/forside.ts                fixtures/infoportal.fixture.ts
 pages/felles/                              meny og innlogging, brukt av alle
 flows/innlogging.ts                        innlogging, som går på tvers av flatene
-config/environment.ts                      URLer, testbruker og hemmeligheter
+config/environment.ts                      URLer og testbrukere per miljø
 ```
 
 En test tar områdene den trenger som fixtures, og går rett på undersiden:
@@ -37,23 +37,23 @@ npx playwright install
 
 ## Hemmeligheter og miljø
 
-URLene og testbrukerne for testmiljøene ligger i `.env.at23` og `.env.at22`, som er
-sjekket inn. Prod har `.env.prod` med URLene, men uten testbruker.
+URLene og testbrukerne for testmiljøene står i `config/environment.ts`. Miljøet
+velges med `ENVIRONMENT` (`at23`, `at22` eller `prod`, default `at23`), og URLene kan
+overstyres med de samme env-varene k6-testene bruker: `AF_UI_BASE_URL`,
+`AM_UI_BASE_URL`, `INFO_CLOUD_URL` og `PLATFORM_BASE_URL`, som faller tilbake på
+`BASE_URL` når den er satt. Et sourcet miljø gjelder derfor for begge testsettene.
 
-Hemmeligheter ligger i to gitignorerte filer:
+Hemmeligheter kommer utelukkende fra miljøvariabler:
 
-* `.env` for det som gjelder alle miljøer. Kopier `.env.example` og fyll inn
-  `TEST_IDP_PASSWORD`, det delte tilgangspassordet til Test-IDP ("mockporten").
-  Test-IDP-en låser seg globalt etter fem feilforsøk, så testene feiler med en gang
-  passordet mangler i stedet for å prøve seg fram.
-* `.env.prod.local` for prod-brukeren. Kopier `.env.prod.local.example` og fyll inn
-  `TEST_USER_PID` og `TEST_USER_NAME`. Fødselsnummeret må være syntetisk, altså
-  Tenor-nummer med måned 81-92.
+* `TEST_IDP_PASSWORD` alltid. Det delte tilgangspassordet til Test-IDP
+  ("mockporten"). Test-IDP-en låser seg globalt etter fem feilforsøk, så testene
+  feiler med en gang det mangler i stedet for å prøve seg fram.
+* `TEST_USER_PID` og `TEST_USER_NAME` bare ved kjøring mot prod, der testbrukeren
+  ikke er sjekket inn. Fødselsnummeret må være syntetisk, altså Tenor-nummer med
+  måned 81-92.
 
-dotenv overstyrer aldri en variabel som allerede er satt. Presedensen blir derfor
-ekte env (Kubernetes) foran `.env.<miljø>.local` foran `.env.<miljø>` foran `.env`.
-Miljøfila vinner over `.env`, så en verdi du legger i `.env` gjelder bare miljøene
-som ikke har sin egen.
+Lokalt holder du dem i en gitignorert `.env` og kjører `source .env` først. I
+pipeline kommer de fra `secretKeyRef` i Kubernetes-manifestene.
 
 ## Kjør
 
@@ -75,10 +75,10 @@ npm run test:prod -- tests/tilgangsstyring --grep bokmål --headed
 npm test -- tests/innlogging/innlogging-alle-flater.spec.ts
 ```
 
-Andre miljøer settes med `TEST_ENV`, som scriptene bare er en snarvei for:
+Miljøet velges med `ENVIRONMENT`, som scriptene bare er en snarvei for:
 
 ```bash
-TEST_ENV=at22 npx playwright test tests/tilgangsstyring
+ENVIRONMENT=at22 npx playwright test tests/tilgangsstyring
 ```
 
 Rapporten åpnes med `npx playwright show-report`.

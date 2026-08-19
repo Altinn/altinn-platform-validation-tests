@@ -19,20 +19,23 @@ export class Innlogging {
     ) { }
 
     /**
-     * Logger inn via mockporten og lander på siden som ble sendt inn. Flyten må
-     * starte på Altinns login-endepunkt slik at `state` opprettes serverside; en
+     * Logger inn og lander på siden som ble sendt inn. Dette er veien testene skal
+     * bruke når innloggingen er et middel og ikke det som testes.
+     *
+     * Under panseret går det via Test-IDP ("mockporten"). Flyten må starte på
+     * Altinns login-endepunkt slik at `state` opprettes serverside; en
      * authorize-URL kan ikke gjenbrukes.
      */
-    async withMockporten(side: Side, user: TestUser) {
+    async logIn(side: Side, user: TestUser) {
         await this.page.goto(getLoginUrl(side.url), { waitUntil: 'domcontentloaded' });
         await this.mockporten.login(user);
     }
 
     /**
-     * Logger inn med TestID hos ID-porten, altså slik en bruker gjør det. Brukes
-     * av testene som sjekker innloggingsflyten selv.
+     * Logger inn med TestID hos ID-porten, altså gjennom skjermbildene en bruker
+     * møter. Bare for testene der selve innloggingsflyten er det som testes.
      */
-    async withTestid(user: TestUser) {
+    async viaIdporten(user: TestUser) {
         if (!this.page.url().includes('idporten')) {
             await this.meny.clickLoginButton();
         }

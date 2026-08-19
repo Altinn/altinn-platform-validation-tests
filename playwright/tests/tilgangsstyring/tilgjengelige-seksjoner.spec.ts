@@ -20,7 +20,7 @@ for (const valgtSprak of alleSprak) {
         test('Bruker ser oversikt over navigasjonsvalg', async ({ innlogging, user, tilgangsstyring }) => {
 
             await test.step('Innlogget bruker åpner tilgangsstyring', async () => {
-                await innlogging.withMockporten(tilgangsstyring.forside, user);
+                await innlogging.logIn(tilgangsstyring.forside, user);
                 await tilgangsstyring.forside.assertLoggedIn();
             });
 
