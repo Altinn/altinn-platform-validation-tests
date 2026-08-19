@@ -30,7 +30,7 @@ let requestApiClient = undefined;
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     return {
-        users: fetchTestData(`testdata/access-management/enduser/request${__ENV.ENVIRONMENT}.csv`),
+        users: fetchTestData(`access-management/enduser/request/${__ENV.ENVIRONMENT}.csv`),
         packages: fetchAssignablePackages()
     };
 }
