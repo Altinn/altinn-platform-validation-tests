@@ -8,7 +8,7 @@ infoportalen.
 ```bash
 npm install
 npx playwright install
-cp example_env/at23.sh .env.at23.local    # og tt02.sh / prod.sh ved behov
+cp example_env/at23.env .env.at23.local    # og tt02.env / prod.env ved behov
 ```
 
 Fyll inn `TEST_IDP_PASSWORD` i fila, og `TEST_USER_PID` for tt02 og prod, der
@@ -27,8 +27,8 @@ npm run test:tilgangsstyring:prod    # samme område, mot prod
 ```
 
 Miljøet velges med `ENVIRONMENT`, som scriptene setter, og bestemmer hvilken
-`.env.<miljø>.local` som leses. Malene i `example_env/` kan også sources i shellet
-slik k6-testene gjør det.
+`.env.<miljø>.local` som leses. Vil du heller ha verdiene i shellet, slik k6-testene
+gjør det, virker malene der også: `set -a && . example_env/prod.env && set +a`.
 
 `--headed`, `--grep=`, `--workers=` og `--retries=` virker rett på scriptene:
 

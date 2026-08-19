@@ -1,5 +1,6 @@
 import { defineConfig } from "@playwright/test";
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 
 // Env-varene kan komme fra shellet, slik k6-testene gjør det, eller fra en lokal
@@ -10,15 +11,25 @@ import path from "path";
 // finnes bare lokalt, så i Kubernetes gjelder configmap og secrets som før.
 const environment = process.env.ENVIRONMENT || "at23";
 
-dotenv.config({
-  path: path.join(__dirname, `.env.${environment}.local`),
-  override: true,
-  quiet: true,
-});
+function les(fil: string, overstyr: boolean) {
+  const sti = path.join(__dirname, fil);
 
-for (const file of [".env.local", ".env"]) {
-  dotenv.config({ path: path.join(__dirname, file), quiet: true });
+  if (!fs.existsSync(sti)) {
+    return;
+  }
+
+  for (const [navn, verdi] of Object.entries(dotenv.parse(fs.readFileSync(sti)))) {
+    // Tomme verdier står i malene som utfyllingspunkt, og skal ikke skygge for en
+    // verdi satt et annet sted.
+    if (verdi && (overstyr || !process.env[navn])) {
+      process.env[navn] = verdi;
+    }
+  }
 }
+
+les(`.env.${environment}.local`, true);
+les(".env.local", false);
+les(".env", false);
 
 // Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
 // npm_config_*. De mest brukte plukkes opp her, slik at både
