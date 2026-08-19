@@ -223,7 +223,7 @@ export function pickUnique(list, count) {
  * @param branch main by default, use a different branch if data is still not merged into main or you are making changes to the existing data.
  * @returns {Array<object>} The parsed rows.
  */
-export function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "main",) {
+export function fetchTestData(filename, failOnDataFetchingFailure = true, branch = "main") {
     const TESTDATA_BASE_URL =
         `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata/`;
     let url;
