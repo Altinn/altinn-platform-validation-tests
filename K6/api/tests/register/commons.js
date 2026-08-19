@@ -49,7 +49,7 @@ let enhetsregisteretClient = undefined;
  * @returns {Array<{username: string}>} The usernames.
  */
 export function getUsernames(env) {
-    return fetchTestData(`K6/testdata/register/register-usernames-${env}.csv`);
+    return fetchTestData(`register/register-usernames-${env}.csv`);
 }
 
 /**
