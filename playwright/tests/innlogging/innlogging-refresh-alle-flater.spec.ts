@@ -1,36 +1,29 @@
 import { testMedFlater as test, Flate } from '../../fixtures/test';
 
-const flater: { start: Flate; landing: Flate }[] = [
-    { start: 'arbeidsflate', landing: 'arbeidsflate' },
-    { start: 'tilgangsstyring', landing: 'tilgangsstyring' },
-    { start: 'infoportalen', landing: 'arbeidsflate' },
-    { start: 'arbeidsflate-profil', landing: 'arbeidsflate-profil' },
+const flater: Flate[] = [
+    'arbeidsflate',
+    'arbeidsflate-profil',
+    'tilgangsstyring',
+    'infoportalen',
 ];
 
-for (const { start, landing } of flater) {
+for (const start of flater) {
 
-    test(`Bruker forblir innlogget på alle flater etter refresh fra ${start}`, async ({ innlogging, user, flater: sider }) => {
+    // Merket for prod: verifisert der, og endrer ingen data. Innloggingen skjer med
+    // logIn, altså uten ID-porten-skjermbildene, som ikke finnes i prod. Det testen
+    // faktisk verifiserer er at sesjonen gjelder på tvers av flatene og tåler refresh.
+    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, { tag: '@prod' }, async ({ innlogging, user, flater: sider }) => {
 
-        await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
-            await sider[start].navigateTo();
-            if (start !== 'infoportalen') {
-                await innlogging.assertOnIdportenLogin();
-            }
+        await test.step(`Bruker logger inn og lander på ${start}`, async () => {
+            await innlogging.logIn(sider[start], user);
+            await sider[start].assertLoggedIn(user);
         });
 
-        await test.step('Bruker logger inn', async () => {
-            await innlogging.viaIdporten(user);
-        });
-
-        await test.step(`Bruker skal være innlogget på ${landing} også etter refresh`, async () => {
-            await sider[landing].assertLoggedIn(user);
-            await innlogging.refresh();
-            await sider[landing].assertLoggedIn(user);
-        });
-
-        await test.step('Bruker skal fortsatt være innlogget på de andre flatene etter refresh', async () => {
-            for (const flate of flater.map(f => f.start).filter(f => f !== start)) {
+        await test.step('Bruker er innlogget på de andre flatene, også etter refresh', async () => {
+            for (const flate of flater.filter(f => f !== start)) {
                 await sider[flate].navigateTo();
+                await sider[flate].assertLoggedIn(user);
+
                 await innlogging.refresh();
                 await sider[flate].assertLoggedIn(user);
             }
