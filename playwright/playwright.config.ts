@@ -3,14 +3,16 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
-// Env-varene kan komme fra shellet, slik k6-testene gjør det, eller fra en lokal
-// fil for den som ikke vil source. Alle filene er gitignorert.
-//
-// .env.<miljø>.local overstyrer det som allerede ligger i shellet, ellers ville en
-// gammel BASE_URL fra shell-profilen bestemt hvilket miljø testene traff. Filene
-// finnes bare lokalt, så i Kubernetes gjelder configmap og secrets som før.
-const environment = process.env.ENVIRONMENT || "at23";
+const environment = process.env.ENVIRONMENT;
 
+if (!environment) {
+  throw new Error(
+    "ENVIRONMENT må settes: at22, at23, tt02 eller prod. Bruk npm run test:<miljø>."
+  );
+}
+
+// Verdiene kan komme fra shellet eller fra gitignorerte .env-filer. Miljøfila
+// overstyrer shellet, tomme verdier hoppes over.
 function les(fil: string, overstyr: boolean) {
   const sti = path.join(__dirname, fil);
 
@@ -19,8 +21,6 @@ function les(fil: string, overstyr: boolean) {
   }
 
   for (const [navn, verdi] of Object.entries(dotenv.parse(fs.readFileSync(sti)))) {
-    // Tomme verdier står i malene som utfyllingspunkt, og skal ikke skygge for en
-    // verdi satt et annet sted.
     if (verdi && (overstyr || !process.env[navn])) {
       process.env[navn] = verdi;
     }

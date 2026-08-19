@@ -27,7 +27,8 @@ npm run test:at23 -- tests/innlogging --debug   # øvrige flagg etter --
 ```
 
 Scriptet setter `ENVIRONMENT`, som bestemmer hvilken `.env.<miljø>.local` som leses.
-Verdiene kan også ligge i shellet, slik k6-testene gjør det:
+Den må være satt, det finnes ingen default, slik at ingen kjører mot et annet miljø
+enn de tror. Verdiene kan også ligge i shellet, slik k6-testene gjør det:
 `set -a && . example_env/prod.env && set +a`.
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
