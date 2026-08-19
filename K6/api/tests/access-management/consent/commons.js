@@ -12,7 +12,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
  * organizations and persons instead of hammering one of each.
  *
  * Test data folder (one folder per use case, one file per environment):
- * K6/testdata/authentication/consent/
+ * K6/testdata/access-management/consent
  * - consentee-orgs/<env>.csv       (header: orgNo)
  * - consenter-persons/<env>.csv    (header: ssn,partyUuid)
  * - lookup/<env>.csv               (header: Pid,Org,ConsentId)
@@ -65,7 +65,7 @@ let lookupClient = undefined;
  * @returns {Array<{orgNo: string}>} The consentee organizations.
  */
 export function getConsenteeOrgs(env) {
-    return fetchTestData(`authentication/consent/consentee-orgs/${env}.csv`);
+    return fetchTestData(`access-management/consent/consentee-orgs/${env}.csv`);
 }
 
 /**
@@ -75,7 +75,7 @@ export function getConsenteeOrgs(env) {
  * @returns {Array<{ssn: string, partyUuid: string}>} The consenter persons.
  */
 export function getConsenterPersons(env) {
-    return fetchTestData(`authentication/consent/consenter-persons/${env}.csv`);;
+    return fetchTestData(`access-management/consent/consenter-persons/${env}.csv`);;
 }
 
 /**
@@ -86,7 +86,7 @@ export function getConsenterPersons(env) {
  * @returns {Array<{Pid: string, Org: string, ConsentId: string}>} Consents to look up.
  */
 export function getLookupConsents(env) {
-    return fetchTestData(`authentication/consent/lookup/${env}.csv`);;;
+    return fetchTestData(`access-management/consent/lookup/${env}.csv`);;;
 }
 
 /**
