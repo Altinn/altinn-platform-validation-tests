@@ -1,0 +1,6 @@
+{
+  "//": "Playwright-utvidelsen laster playwright.config.ts uten env-varer, og configen krever ENVIRONMENT. Bytt verdi her for å kjøre mot et annet miljø fra IDE-en.",
+  "playwright.env": {
+    "ENVIRONMENT": "at23"
+  }
+}

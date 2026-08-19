@@ -33,6 +33,9 @@ enn de tror. Verdiene kan også ligge i shellet, slik k6-testene gjør det:
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
 
+Playwright-utvidelsen i VS Code får `ENVIRONMENT` fra `.vscode/settings.json` på
+repo-rota, satt til at23. Endre den der for å kjøre mot et annet miljø fra IDE-en.
+
 ## Prod er opt-in
 
 `test:prod` kjører `playwright test --grep @prod`, så bare tester som er eksplisitt
