@@ -1,0 +1,42 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/connections
+test_definitions:
+  - test_file: get-connections-to.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-connections-from.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-access-packages-to.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-access-packages-from.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100

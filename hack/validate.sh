@@ -10,7 +10,7 @@ for file in $(find ./K6 -type f -name "*.js"); do
   filename=$(basename "$file")
 
   # Check if the filename is not in kebab-case format
-  if [[ ! "$filename" =~ ^[a-z0-9]+(-[a-z0-9]+)*\.js$ ]]; then
+  if [[ ! "$filename" =~ ^[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+(-[a-z0-9]+)*)*\.js$ ]]; then
     echo "Filename not in kebab-case: $file"
     found_non_kebab_case=true
   fi
@@ -26,7 +26,7 @@ for file in $(find ./K6/api -type f -name "functional.yaml" -o -name "healthchec
   rm -rf .build/ .conf/ .dist/ && \
   docker run -u $(id -u ${USER}):$(id -g ${USER}) -v .:/workspace --rm \
   -e INPUT_CONFIG_FILE="$file" \
-  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.39
+  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.41
 done
 
 for file in $(find ./K6/browser -type f -name "browser.yaml"); do
@@ -34,5 +34,5 @@ for file in $(find ./K6/browser -type f -name "browser.yaml"); do
   rm -rf .build/ .conf/ .dist/ && \
   docker run -u $(id -u ${USER}):$(id -g ${USER}) -v .:/workspace --rm \
   -e INPUT_CONFIG_FILE="$file" \
-  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.39
+  ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.41
 done

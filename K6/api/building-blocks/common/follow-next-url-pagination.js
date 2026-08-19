@@ -1,9 +1,12 @@
 import { check } from "k6";
 import http from "k6/http";
 
+import { withRetries } from "./retry.js";
+
 /**
  * Extract `links.next` URL from a JSON response body.
- * @param {string|object} body - parsed JSON object
+ *
+ * @param {string|object} parsedBody - parsed JSON object
  * @returns {string|null} - The next URL or null if not found
  */
 export function extractNextUrl(parsedBody) {
@@ -29,12 +32,13 @@ export function extractNextUrl(parsedBody) {
  * It keeps following `links.next` and ensures each response body changes
  * (to avoid "stuck" pagination) and that URLs don't loop.
  *
- * @param {string} token
+ * @param {string} token TODO: description
  * @param {string|null} nextUrl Fully qualified URL from `links.next`
  * @param {number} [maxPages=10] Maximum number of pages to fetch
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
  */
-export function followNextUrlPagination(token, nextUrl, maxPages = 10) {
+export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = null) {
     const seenUrls = new Set();
     let pages = 0;
     let previousBody = null;
@@ -46,13 +50,21 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10) {
         });
         seenUrls.add(currentUrl);
 
-        const res = http.get(currentUrl, {
-            tags: { name: "next-url" },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        });
+        let tags = { name: "next-url" };
+        if (labels != null) {
+            tags = { ...labels, ...tags };
+        }
+
+        const res = withRetries(
+            () => http.get(currentUrl, {
+                tags: tags,
+                headers: {
+                    Authorization: "Bearer " + token,
+                    "Content-type": "application/json",
+                },
+            }),
+            "followNextUrlPagination",
+        );
 
         const ok = check(res, {
             "Next page status is 200.": (r) => r.status === 200,
@@ -65,6 +77,7 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10) {
         if (!ok) {
             console.log(res.status, res.status_text);
             console.log(res.body);
+            console.log(`Pagination failed at page ${pages + 1} with URL: ${currentUrl}`);
             return pages;
         }
 

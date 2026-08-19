@@ -1,11 +1,12 @@
-import { getClients } from "./common-functions.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetDialogs } from "../../../building-blocks/dialogporten/serviceowner/index.js";
+import { getClients } from "./common-functions.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getDialogslabel = { action: "1. get-dialogs-for-party" };
+const getDialogslabel = { step: "1. get-dialogs-for-party" };
 
 export const options = getOptions([
     getDialogslabel,

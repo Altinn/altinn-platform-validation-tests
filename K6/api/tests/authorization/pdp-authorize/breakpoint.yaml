@@ -1,0 +1,86 @@
+namespace: authorization
+base_dir: K6/api/tests/authorization/pdp-authorize/
+test_definitions:
+  - test_file: enduser.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl-direct-delegation.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl-deny.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: dagl-single-resource.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: enduser-enduser-instances.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: org-enduser-instances.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+          secrets:
+            - authorization-subscription-key-yt01

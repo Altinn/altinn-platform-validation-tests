@@ -19,12 +19,14 @@
  * * @see https://k6.io/docs/ for more information on k6 testing.
  */
 
-import http from "k6/http";
 import exec from "k6/execution";
-import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
+
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
-import { PersonalTokenGenerator } from "../../../common-imports.js";
-import { parseCsvData, segmentData, getNumberOfVUs, getItemFromList, getOptions } from "../../../helpers.js";
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, segmentData } from "../../../helpers.js";
+import { requireEnv } from "../../../helpers.js";
+import { AltinnScopes, CreateScopeString, DigDirScopes } from "../../../scopes.js";
+import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
 import { getInfoCloud } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -42,17 +44,22 @@ export const options = getOptions([
 
 /**
  * Setup function to segment data for VUs.
+ *
+ * @returns TODO: description
  */
 export function setup() {
+    requireEnv(["ENVIRONMENT", "INFO_CLOUD_URL"]);
     const numberOfVUs = getNumberOfVUs();
     // Using the same CSV as one of the delegation tests, since we only do reads in this test, it should be safe to use the same users.
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/${__ENV.ENVIRONMENT}/userids.csv`);
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`portaler/${__ENV.ENVIRONMENT}/userids.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 
 /**
  * Main test function that runs for each VU, will run for each iteration. Calls the tree info portal api endpoints, same as a logged in user would do via the browser.
+ *
+ * @param data TODO: description
  */
 export default function (data) {
     const user = getItemFromList(data[exec.vu.idInTest - 1], randomize);
@@ -65,36 +72,69 @@ export default function (data) {
     GetCurrent(infoPortalApiClient, currentLabel);
 }
 
-// Using global variables to store clients so they are not re-created for each iteration, but only once per VU.
+/**
+ * @type {InfoPortalApiClient | undefined}
+ */
 let infoPortalApiClient = undefined;
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
 let personalTokenGenerator = undefined;
 
 /**
- * Internal function to get clients, creates them if they don't exist. This is done to avoid creating new clients for each iteration, which would be inefficient.
- * @returns Array containing the infoPortalApiClient and personalTokenGenerator
+ * Creates and caches the clients used by the Info Portal tests.
+ *
+ * Clients are initialized once per VU to avoid unnecessary re-creation
+ * on each iteration. The same {@link InfoPortalApiClient} and
+ * {@link PersonalTokenGenerator} instances are reused throughout the test.
+ *
+ * @returns {[
+ * InfoPortalApiClient,
+ * PersonalTokenGenerator
+ * ]} Tuple containing the Info Portal API client and token generator.
  */
 function getClients() {
-    if (infoPortalApiClient == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "altinn:pdp/authorize.enduser");
+    if (infoPortalApiClient === undefined) {
+        const scopes = CreateScopeString([
+            AltinnScopes.PDP.AUTHORIZE.ENDUSER
+        ]);
+        const tokenOpts = new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(scopes)
+            .build();
+
         personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
-        infoPortalApiClient = new InfoPortalApiClient(__ENV.INFO_CLOUD_URL, personalTokenGenerator);
+
+        infoPortalApiClient = new InfoPortalApiClient(
+            __ENV.INFO_CLOUD_URL,
+            personalTokenGenerator
+        );
     }
+
     return [infoPortalApiClient, personalTokenGenerator];
 }
 
 /**
  * Internal function to get token options for the personal token generator, takes the userId as a parameter to set the correct user for the token.
+ *
  * @param {string} userId - The userId to set in the token options
- * @return Map containing the token options
+ * @returns Map containing the token options
  */
 function getTokenOpts(userId) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", __ENV.ENVIRONMENT);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:instances.read");
-    tokenOpts.set("userId", userId);
+    const scopes = CreateScopeString([
+        DigDirScopes.DIALOGPORTEN.NOCONSENT,
+        "openid", // TODO: what is this supposed to be???
+        AltinnScopes.PORTAL.ENDUSER,
+        AltinnScopes.INSTANCES.READ
+
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withUserId(userId)
+        .build();
     return tokenOpts;
 }

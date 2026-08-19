@@ -1,6 +1,34 @@
-import { sleep, check } from "k6";
+import { check, fail, sleep } from "k6";
 import exec from "k6/execution";
+import http from "k6/http";
+import { Counter } from "k6/metrics";
+
+import { withRetries } from "./api/building-blocks/common/retry.js";
 import { papaparse, randomItem } from "./common-imports.js";
+
+/**
+ * Counts test data reads that came up short. Shows up in the k6 summary and in
+ * Grafana as `test_data_fetch_failures`, tagged with the file that was read and
+ * why it failed, so a run that fell over on its test data says so in the metrics
+ * rather than only in the log.
+ *
+ * A read that worked adds 0 instead of adding nothing, so the series exists on a
+ * healthy run too. Without that a dashboard cannot tell "nothing failed" from
+ * "this test never ran", and an alert on the metric has nothing to sit on until
+ * the first failure.
+ */
+const testDataFetchFailures = new Counter("test_data_fetch_failures");
+
+/**
+ * Records the outcome of one test data read.
+ *
+ * @param {string} file The file that was read, as the caller named it.
+ * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @returns {void}
+ */
+function recordTestDataFetch(file, reason = null) {
+    testDataFetchFailures.add(reason ? 1 : 0, { file, reason: reason ?? "none" });
+}
 
 /**
  * Retry a function until it succeeds or all retries fail.
@@ -8,7 +36,7 @@ import { papaparse, randomItem } from "./common-imports.js";
  * Uses `check()` to report pass/fail instead of throwing.
  *
  * @param {Function} conditionFn - Function that returns true on success, false otherwise.
- * @param {Object} options - Retry settings.
+ * @param {object} options - Retry settings.
  * @param {number} options.retries - How many times to retry (default 10).
  * @param {number} options.intervalSeconds - Seconds between attempts (default 5).
  * @param {string} options.testscenario - Prefix used in log/check output.
@@ -61,6 +89,8 @@ export function readCsv(filename) {
 }
 /**
  *
+ * @param listOfItems TODO: description
+ * @param randomize TODO: description
  * @returns A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
@@ -75,6 +105,9 @@ export function getItemFromList(listOfItems, randomize = false) {
  * Divide the list of items into multiple sublists
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
+ *
+ * @param listOfItems TODO: description
+ * @param numberOfSublists TODO: description
  * @returns A list with numberOfSublists lists.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
@@ -94,6 +127,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
 
 /**
  * An attempt to abstract finding the number of VUs. Current implementation is a bit restrictive/opinionated but we can build upon.
+ *
  * @returns The number of VUs for the test
  */
 export function getNumberOfVUs() {
@@ -106,8 +140,10 @@ export function getNumberOfVUs() {
 
 /**
  * Function to get k6 options based on labels.
- * @param {} labels
- * @returns
+ *
+ * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
+ * @param {string[]} groups - list of strings
+ * @returns {object} TODO: description
  */
 export function getOptions(labels, groups = []) {
     const options = {
@@ -125,7 +161,6 @@ export function getOptions(labels, groups = []) {
         }
     }
 
-
     for (const group of groups) {
         options.thresholds[`http_req_duration{group:::${group}}`] = [];
     }
@@ -139,4 +174,149 @@ export function checkIp(ip) {
         /^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})$|^([0-9a-fA-F]{1,4}:){1,7}:$|^([0-9a-fA-F]{1,4}:){1,6}(:[0-9a-fA-F]{1,4}){1,2}$|^([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,3}$|^([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,4}$|^([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,5}$|^([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,6}$|^[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,7}|:)$/;
 
     return ipv4.test(ip) || ipv6.test(ip);
+}
+
+/**
+ * Ensures required environment variables exist.
+ *
+ * @param {string[]} vars - Array of environment variable names
+ * @returns {object} key-value map of env vars
+ */
+export function requireEnv(vars) {
+    const missing = [];
+    const result = {};
+
+    for (const name of vars) {
+        const value = __ENV[name];
+
+        if (value === undefined || value === "") {
+            missing.push(name);
+        } else {
+            result[name] = value;
+        }
+    }
+
+    if (missing.length > 0) {
+        // Fail the test immediately with a clear message
+        throw new Error(
+            `Missing required environment variables: ${missing.join(", ")}`
+        );
+    }
+
+    return result;
+}
+
+/**
+ * Picks a specified number of unique random items from a list.
+ * Each selected item is removed from the pool before the next pick,
+ * ensuring no duplicates are returned.
+ *
+ * @param {Array<any>} list - The source array to pick items from.
+ * @param {number} count - The number of unique items to select.
+ * @returns {Array<any>} An array containing the randomly selected unique items.
+ * @throws {Error} If `count` is greater than the size of the list.
+ * @example
+ * const [from, to, user] = pickUnique(users, 3);
+ */
+export function pickUnique(list, count) {
+    if (count > list.length) {
+        throw new Error("Cannot pick more unique items than exist in the list");
+    }
+
+    const copy = [...list];
+    const result = [];
+
+    for (let i = 0; i < count; i++) {
+        const item = getItemFromList(copy, true);
+        result.push(item);
+        copy.splice(copy.indexOf(item), 1);
+    }
+
+    return result;
+}
+
+/**
+ * Reads one of the test data files over HTTP.
+ *
+ * A missing file answers 404, and a body that parses into an empty list would only
+ * surface later as an undefined row somewhere in the test. Renaming or moving a
+ * file is enough to cause that, since the read is pinned to main, so this fails on
+ * the spot and names the URL that came up short. Pass failOnDataFetchingFailure as
+ * false for a caller that would rather handle empty data itself.
+ *
+ * Every read reports to `test_data_fetch_failures`, so a broken read is visible
+ * in Grafana and not only in the log of whoever happened to watch the run.
+ *
+ * @param {string} filename File name under the test data directory, or an absolute URL.
+ * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
+ * @param {string} branch Branch to read test data from. Defaults to "main".
+ * @returns {Array<object>|object} The parsed test data.
+ */
+export function fetchTestData(
+    filename,
+    failOnDataFetchingFailure = true,
+    branch = "main",
+) {
+    const testDataBaseUrl =
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const url = filename.startsWith("http")
+        ? filename
+        : `${testDataBaseUrl}/${filename}`;
+
+    const res = withRetries(
+        () => http.get(url, { tags: { action: "fetch-test-data" } }),
+        "fetch-test-data",
+    );
+
+    if (res.status !== 200) {
+        recordTestDataFetch(filename, `status-${res.status}`);
+
+        const message = `Cannot read test data: ${url} returned ${res.status}`;
+
+        if (failOnDataFetchingFailure) {
+            fail(message);
+        }
+
+        return [];
+    }
+
+    if (filename.endsWith(".csv")) {
+        const rows = parseCsvData(res.body);
+
+        recordTestDataFetch(filename, rows.length === 0 ? "empty" : null);
+
+        if (rows.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no rows`);
+        }
+
+        return rows;
+    }
+
+    if (filename.endsWith(".json")) {
+        try {
+            const parsed = JSON.parse(res.body);
+
+            recordTestDataFetch(filename);
+
+            return parsed;
+        } catch (error) {
+            recordTestDataFetch(filename, "unparseable");
+
+            if (failOnDataFetchingFailure) {
+                fail(`Cannot parse test data: ${url}. Error: ${error}`);
+            }
+
+            return [];
+        }
+    }
+
+    recordTestDataFetch(filename, "unsupported-file-type");
+
+    const message = `Unsupported test data file type: ${url}`;
+
+    if (failOnDataFetchingFailure) {
+        fail(message);
+    }
+
+    return [];
 }

@@ -1,14 +1,18 @@
 import { check } from "k6";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to create a dialog for a party
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
  * @param {string} serviceResource - the service resource for the dialog
  * @param {string} serviceOwner - the service owner for the dialog. an organization nunber (9 digits)
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @return response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param noTransmissionsActivities TODO: description
+ * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateDialog(
     serviceOwnerApiClient,
@@ -18,13 +22,19 @@ export function CreateDialog(
     labels = null,
     noTransmissionsActivities = false,
 ) {
-    const res = serviceOwnerApiClient.PostDialog(
-        partyId,
-        serviceResource,
-        serviceOwner,
-        labels,
-        noTransmissionsActivities,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostDialog(
+            partyId,
+            serviceResource,
+            serviceOwner,
+            labels,
+            noTransmissionsActivities,
+        ),
+        "CreateDialog",
     );
+
+    /** @type {string|null} */
+    let dialogId = null;
 
     const success = check(res, {
         "CreateDialog - status code MUST be 201": (res) => res.status == 201,
@@ -33,27 +43,51 @@ export function CreateDialog(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return dialogId;
     }
 
-    return res.body;
+    check(res, {
+        "CreateDialog - body is valid": (r) => {
+            try {
+                dialogId = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return dialogId;
 }
 
 /**
  * Create a transmission for a dialog
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
- * @param {string} label
- * @returns response body of the request
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateTransmission(
     serviceOwnerApiClient,
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostTransmission(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostTransmission(
+            dialogId,
+            labels,
+        ),
+        "CreateTransmission",
     );
+
+    /** @type {string|null} */
+    let transmissionId = null;
 
     const success = check(res, {
         "CreateTransmission - status code MUST be 201": (res) => res.status == 201,
@@ -62,27 +96,51 @@ export function CreateTransmission(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return transmissionId;
     }
 
-    return res.body;
+    check(res, {
+        "CreateTransmission - body is valid": (r) => {
+            try {
+                transmissionId = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return transmissionId;
 }
 
 /**
  * Create an activity for a dialog
- * @param {ServiceOwnerApiClient} serviceOwnerApiClient
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {uuidv7} dialogId - the id of the dialog to create the activity for
- * @param {Object.<string, string>} labels - Object containing request labels as key/value pairs
- * @returns
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateActivity(
     serviceOwnerApiClient,
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostActivity(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostActivity(
+            dialogId,
+            labels,
+        ),
+        "CreateActivity",
     );
+
+    /** @type {string|null} */
+    let activityId = null;
 
     const success = check(res, {
         "CreateActivity - status code MUST be 201": (res) => res.status == 201,
@@ -91,7 +149,24 @@ export function CreateActivity(
     if (!success) {
         console.log(res.status);
         console.log(res.body);
+
+        return activityId;
     }
 
-    return res.body;
+    check(res, {
+        "CreateActivity - body is valid": (r) => {
+            try {
+                activityId = JSON.parse(r.body);
+
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
+
+                return false;
+            }
+        },
+    });
+
+    return activityId;
 }

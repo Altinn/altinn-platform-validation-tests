@@ -1,9 +1,25 @@
-export { CreateNewSystem } from "./create-new-system.js";
-export { GetSystems } from "./get-systems.js";
-export { GetSystemById } from "./get-system-by-id.js";
-export { DeleteSystem } from "./delete-system.js";
-export { GetSystemRegisterRights } from "./get-system-rights.js";
-export { GetDeletedSystemByID } from "./get-deleted-system-by-id.js";
-export { UpdateVendorSystemRegister } from "./update-vendor-system-register.js";
-export { UpdateRightsVendorSystemRegister } from "./update-rights-vendor-system-register.js";
-export { UpdateVendorAccessPackages } from "./update-vendor-access-packages.js";
+import { SystemRegisterGet } from "./system-register-get.js";
+import { SystemRegisterGetAccessPackagesFrontend } from "./system-register-get-access-packages-frontend.js";
+import { SystemRegisterGetRightsFrontend } from "./system-register-get-rights-frontend.js";
+import { SystemRegisterVendorCreate } from "./system-register-vendor-create.js";
+import { SystemRegisterVendorDelete } from "./system-register-vendor-delete.js";
+import { SystemRegisterVendorGet } from "./system-register-vendor-get.js";
+import { SystemRegisterVendorGetById } from "./system-register-vendor-get-by-id.js";
+import { SystemRegisterVendorGetChangeLog } from "./system-register-vendor-get-change-log.js";
+import { SystemRegisterVendorUpdate } from "./system-register-vendor-update.js";
+import { SystemRegisterVendorUpdateAccessPackages } from "./system-register-vendor-update-access-packages.js";
+import { SystemRegisterVendorUpdateRights } from "./system-register-vendor-update-rights.js";
+
+export const SystemRegisterBuildingBlocks = {
+    Get: SystemRegisterGet,
+    GetAccessPackagesFrontend: SystemRegisterGetAccessPackagesFrontend,
+    GetRightsFrontend: SystemRegisterGetRightsFrontend,
+    VendorCreate: SystemRegisterVendorCreate,
+    VendorDelete: SystemRegisterVendorDelete,
+    VendorGet: SystemRegisterVendorGet,
+    VendorGetById: SystemRegisterVendorGetById,
+    VendorGetChangeLog: SystemRegisterVendorGetChangeLog,
+    VendorUpdate: SystemRegisterVendorUpdate,
+    VendorUpdateAccessPackages: SystemRegisterVendorUpdateAccessPackages,
+    VendorUpdateRights: SystemRegisterVendorUpdateRights,
+};

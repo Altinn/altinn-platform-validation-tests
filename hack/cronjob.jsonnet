@@ -47,7 +47,7 @@ local cronjob = {
             containers: [
               {
                 name: 'generate-manifests',
-                image: 'ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.39',
+                image: 'ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.41',
                 command: [
                   '/bin/sh',
                 ],

@@ -1,295 +1,482 @@
 import http from "k6/http";
 
 const TAGS = {
-    GetAllSystemsFromRegister: { action: "GetAllSystemsFromRegister" },
-    GetSystemRegisterById: { action: "GetSystemRegisterById" },
-    GetVendorSystemRegisterById: { action: "GetVendorSystemRegisterById" },
-    UpdateVendorSystemRegister: { action: "UpdateVendorSystemRegister" },
-    UpdateVendorAccessPackages: { action: "UpdateVendorAccessPackages" },
-    UpdateRightsVendorSystemRegister: { action: "UpdateRightsVendorSystemRegister" },
-    DeleteSystemSystemRegister: { action: "DeleteSystemSystemRegister" },
-    GetSystemRegisterRights: { action: "GetSystemRegisterRights" },
-    CreateSystemRegister: { action: "CreateSystemRegister" },
+    SystemRegisterGet: {
+        action: "system-register-get",
+    },
+    SystemRegisterVendorGet: {
+        action: "system-register-vendor-get",
+    },
+    SystemRegisterVendorCreate: {
+        action: "system-register-vendor-create",
+    },
+    SystemRegisterVendorGetById: {
+        action: "system-register-vendor-get-by-id",
+    },
+    SystemRegisterVendorUpdate: {
+        action: "system-register-vendor-update",
+    },
+    SystemRegisterVendorDelete: {
+        action: "system-register-vendor-delete",
+    },
+    SystemRegisterGetRightsFrontend: {
+        action: "system-register-get-rights",
+    },
+    SystemRegisterGetAccessPackagesFrontend: {
+        action: "system-register-get-access-packages",
+    },
+    SystemRegisterVendorUpdateRights: {
+        action: "system-register-vendor-update-rights",
+    },
+    SystemRegisterVendorUpdateAccessPackages: {
+        action: "system-register-vendor-update-access-packages",
+    },
+    SystemRegisterVendorGetChangeLog: {
+        action: "system-register-vendor-get-change-log",
+    },
 };
 
-class SystemRegisterApiClient {
+class SystemRegisterClient {
     /**
-     *
-     * @param {string} baseUrl e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator
+     * @param {string} baseUrl Base URL.
+     * @param {*} tokenGenerator Generates bearer tokens.
      */
-    constructor(
-        baseUrl,
-        tokenGenerator
-    ) {
+    constructor(baseUrl, tokenGenerator) {
         /**
-            * @property {*} tokenGenerator A class that generates tokens used in authenticated calls to the API
-            */
-        this.tokenGenerator = tokenGenerator;
-        /**
-         * @property {string} FULL_PATH The path to the api including protocol, hostname, etc.
+         * Generates authentication tokens.
          */
-        this.FULL_PATH = baseUrl + "/authentication/api/v1/systemregister";
+        this.tokenGenerator = tokenGenerator;
+
         /**
-         * @property {string} BASE_PATH The path to the api without host information
+         * Base API path.
          */
         this.BASE_PATH = "/authentication/api/v1/systemregister";
-    }
 
+        /**
+         * Fully-qualified API path.
+         */
+        this.FULL_PATH = `${baseUrl}${this.BASE_PATH}`;
+    }
 
     static get TAGS() {
         return TAGS;
     }
 
     /**
-     * Retrieves the List of all the Registered Systems, except those marked as deleted.
-     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister}
-     * @returns http.RefinedResponse
+     * Retrieves all registered systems.
+     *
+     * Requires the `altinn:portal/enduser` scope.
+     *
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetAllSystemsFromRegister() {
+    SystemRegisterGet(labels = null) {
         const token = this.tokenGenerator.getToken();
-        const url = this.FULL_PATH;
-        const params = {
-            tags: { endpoint: url.toString() },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
+
+        const url = `${this.FULL_PATH}`;
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.SystemRegisterGet.action,
         };
-        return http.get(url, params);
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
     }
 
     /**
-     * Retrieves a Registered System frontend DTO for the systemId.
-     * @param {string } systemId The Id of the Registered System
-     * @returns http.RefinedResponse
+     * Retrieves all vendor registered systems.
+     *
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
      */
-    GetSystemRegisterById(systemId) {
+    SystemRegisterVendorGet(labels = null) {
         const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/${systemId}`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/systemId`,
-                name: `${this.FULL_PATH}/systemId`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.get(url, params);
-    }
 
-    /**
-     * Retrieves a Registered System for the systemId.
-     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId_}
-     * @param {string } systemId The Id of the Registered System
-     * @returns http.RefinedResponse
-     */
-    GetVendorSystemRegisterById(systemId) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/vendor/${systemId}`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/vendor/systemId`,
-                name: `${this.FULL_PATH}/vendor/systemId`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.get(url, params);
-    }
-
-    /**
-     * Replaces the entire registered system
-     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/put_systemregister_vendor__systemId_}
-     * @param {string } systemId The Id of the Registered System
-     * @param {string } vendorId
-     * @param {string } name
-     * @param {string[] } clientId
-     * @param {{ en: string, nn: string, nb: string } } description
-     * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-     * @param {string[] } allowedRedirectUrls
-     * @returns http.RefinedResponse
-     */
-    UpdateVendorSystemRegister(
-        systemId,
-        vendorId,
-        name,
-        clientId,
-        description,
-        rights,
-        allowedRedirectUrls
-    ) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/vendor/${systemId}`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/vendor/systemId`,
-                name: `${this.FULL_PATH}/vendor/systemId`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        const body = {
-            "Id": `${vendorId}_${name}`,
-            "Vendor": {
-                "ID": `0192:${vendorId}` // «0192» is the reference that it is a value from EnhetsRegister # Enhetsregisteret ved Bronnoysundregisterne https://docs.peppol.eu/poacc/billing/3.0/codelist/eas/
-            },
-            "Name": {
-                "en": `${name}`,
-                "nb": `${name}`,
-                "nn": `${name}`
-            },
-            "Description": description,
-            "rights": rights,
-            "allowedRedirectUrls": allowedRedirectUrls,
-            "isVisible": false,
-            "ClientId": [`${clientId}`]
-        };
-        return http.put(url, JSON.stringify(body), params);
-    }
-
-    /**
-    * @param {string } systemId The Id of the Registered System
-    * @param {Array<{ urn: string }> } body
-    * @returns http.RefinedResponse
-    */
-    UpdateVendorAccessPackages(systemId, body) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/vendor/systemId/accesspackages`,
-                name: `${this.FULL_PATH}/vendor/systemId/accesspackages`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.put(url, JSON.stringify(body), params);
-    }
-
-    /**
-     * Updates the rights on a registered system
-     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
-    *  @param {string } systemId The Id of the Registered System
-    *  @param {Array<{action: string, resource: Array<{value: string, id: string}>}>} body
-     * @returns http.RefinedResponse
-     */
-    UpdateRightsVendorSystemRegister(systemId, body) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/vendor/systemId/rights`,
-                name: `${this.FULL_PATH}/vendor/systemId/rights`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.put(url, JSON.stringify(body), params);
-    }
-
-    /**
-     * Set the registered system to be deleted.
-     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/delete_systemregister_vendor__systemId_}
-     * @param {string } systemId The Id of the Registered System
-     * @returns http.RefinedResponse
-     */
-    DeleteSystemSystemRegister(systemId) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/vendor/${systemId}`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/vendor/systemId`,
-                name: `${this.FULL_PATH}/vendor/systemId`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.del(url, null, params);
-    }
-
-    /**
-     * Retrieves a list of the predfined default rights for the Product type, if any
-     * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/get_systemregister__systemId__rights}
-     * @param {string } systemId The Id of the Registered System
-     * @returns http.RefinedResponse
-     */
-    GetSystemRegisterRights(systemId) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/${systemId}/rights`;
-        const params = {
-            tags: {
-                endpoint: `${this.FULL_PATH}/systemId/rights`,
-                name: `${this.FULL_PATH}/systemId/rights`
-            },
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        };
-        return http.get(url, params);
-    }
-
-    /**
-    * Create a new System
-    * OpenAPI for {@link https://docs.altinn.studio/nb/api/authentication/spec/#/SystemRegister/post_systemregister_vendor}
-    * @param {string } vendorId
-    * @param {string } name
-    * @param {string[] } clientId
-    * @param {{ en: string, nn: string, nb: string } } description
-    * @param {Array<{resource: Array<{value: string, id: string}>}>} rights
-    * @param {string[] } allowedRedirectUrls
-    * @returns http.RefinedResponse
-    */
-    CreateSystemRegister(
-        vendorId,
-        name,
-        clientId,
-        description,
-        rights = [],
-        allowedRedirectUrls = [],
-        accessPackages = []
-    ) {
-        const token = this.tokenGenerator.getToken();
         const url = `${this.FULL_PATH}/vendor`;
-        const body = {
-            "Id": `${vendorId}_${name}`,
-            "Vendor": {
-                "ID": `0192:${vendorId}` // «0192» is the reference that it is a value from EnhetsRegister # Enhetsregisteret ved Bronnoysundregisterne https://docs.peppol.eu/poacc/billing/3.0/codelist/eas/
-            },
-            "Name": {
-                "en": `${name}`,
-                "nb": `${name}`,
-                "nn": `${name}`
-            },
-            "Description": description,
-            "rights": rights,
-            "accessPackages": accessPackages,
-            "allowedRedirectUrls": allowedRedirectUrls,
-            "isVisible": false,
-            "ClientId": [`${clientId}`]
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.SystemRegisterVendorGet.action,
         };
-        const params = {
-            tags: { endpoint: `${this.FULL_PATH}/vendor` },
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
             headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
+        });
+    }
+
+    /**
+     * Creates a new registered system.
+     *
+     * @param {RegisterSystemRequest} request System registration request.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorCreate(request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor`;
+
+        let tags = {
+            endpoint: url,
+            name: url,
+            action: TAGS.SystemRegisterVendorCreate.action,
         };
-        return http.post(url, JSON.stringify(body), params);
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.post(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Retrieves a registered system by id.
+     *
+     * @param {string} systemId System identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorGetById(systemId, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor/${systemId}`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
+            action: TAGS.SystemRegisterVendorGetById.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Updates a registered system.
+     *
+     * @param {string} systemId System identifier.
+     * @param {RegisterSystemRequest} request Updated system model.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorUpdate(systemId, request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor/${systemId}`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
+            action: TAGS.SystemRegisterVendorUpdate.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(url, JSON.stringify(request), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Deletes a registered system.
+     *
+     * @param {string} systemId System identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorDelete(systemId, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor/${systemId}`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
+            action: TAGS.SystemRegisterVendorDelete.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url, null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Retrieves default rights for a system.
+     *
+     * Requires the `altinn:portal/enduser` scope.
+     *
+     * @param {string} systemId System identifier.
+     * @param {boolean|null} useOldFormatForApp Whether to use old app format.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        let url = `${this.FULL_PATH}/${systemId}/rights`;
+
+        if (useOldFormatForApp !== null) {
+            url += `?useOldFormatForApp=${encodeURIComponent(useOldFormatForApp)}`;
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
+            action: TAGS.SystemRegisterGetRightsFrontend.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Retrieves default access packages for a system.
+     *
+     * Requires the `altinn:portal/enduser` scope.
+     *
+     * @param {string} systemId System identifier.
+     * @param {boolean|null} useOldFormatForApp Whether to use old app format.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterGetAccessPackagesFrontend(
+        systemId,
+        useOldFormatForApp = null,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        let url = `${this.FULL_PATH}/${systemId}/accesspackages`;
+
+        if (useOldFormatForApp !== null) {
+            url += `?useOldFormatForApp=${encodeURIComponent(useOldFormatForApp)}`;
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+            name: `${this.FULL_PATH}/vendor/{systemId}`,
+            action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Updates rights on a registered system.
+     *
+     * @param {string} systemId System identifier.
+     * @param {Right[]} rights Rights.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorUpdateRights(systemId, rights, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}/rights`,
+            name: `${this.FULL_PATH}/vendor/{systemId}/rights`,
+            action: TAGS.SystemRegisterVendorUpdateRights.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(url, JSON.stringify(rights), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Updates access packages on a registered system.
+     *
+     * @param {string} systemId System identifier.
+     * @param {AccessPackage[]} accessPackages Access packages.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorUpdateAccessPackages(
+        systemId,
+        accessPackages,
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
+            name: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
+            action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.put(url, JSON.stringify(accessPackages), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
+    }
+
+    /**
+     * Retrieves system change log.
+     *
+     * @param {string} systemId System identifier.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     */
+    SystemRegisterVendorGetChangeLog(systemId, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/vendor/${systemId}/changelog`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
+            name: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
+            action: TAGS.SystemRegisterVendorGetChangeLog.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
     }
 }
 
-export { SystemRegisterApiClient };
+export {
+    SystemRegisterClient,
+};

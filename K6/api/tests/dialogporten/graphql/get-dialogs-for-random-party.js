@@ -4,16 +4,17 @@
  * The test uses GraphQL queries to interact with the Dialogporten API and includes options for randomization and labeling for better organization and reporting.
  */
 
+import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { GetAllDialogsForParty } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { getClient, getDialogportenOpts, getParties } from "./common-functions.js";
-import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
+
 export { setup } from "./common-functions.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
-const getPartiesLabel = { action: "1. get-parties-for-enduser" };
-const getDialogslabel = { action: "2. get-dialogs-party" };
+const getPartiesLabel = { step: "1. get-parties-for-enduser" };
+const getDialogslabel = { step: "2. get-dialogs-party" };
 
 export const options = getOptions([
     getPartiesLabel,
@@ -22,8 +23,8 @@ export const options = getOptions([
 
 export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
-    const endUser = getItemFromList(data, randomize).ssn;
-    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser));
+    const endUser = getItemFromList(data, randomize);
+    tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
     const party = getItemFromList(getParties(graphqlClient, getPartiesLabel), true);
     const variables = new DialogSearchVariablesBuilder()
         .withPartyURIs([party])

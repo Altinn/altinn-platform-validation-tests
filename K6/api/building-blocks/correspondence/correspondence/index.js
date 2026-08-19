@@ -1,0 +1,11 @@
+export { ConfirmCorrespondence } from "./confirm-correspondence.js";
+export { DownloadAllAttachments } from "./download-all-attachments.js";
+export { DownloadAttachment } from "./download-attachment.js";
+export { GetCorrespondence } from "./get-correspondence.js";
+export { GetCorrespondenceContent } from "./get-correspondence-content.js";
+export { GetCorrespondenceDetails } from "./get-correspondence-details.js";
+export { GetCorrespondences } from "./get-correspondences.js";
+export { InitializeCorrespondences } from "./initialize-correspondences.js";
+export { MarkCorrespondenceAsRead } from "./mark-correspondence-as-read.js";
+export { PurgeCorrespondence } from "./purge-correspondence.js";
+export { UploadCorrespondences } from "./upload-correspondences.js";

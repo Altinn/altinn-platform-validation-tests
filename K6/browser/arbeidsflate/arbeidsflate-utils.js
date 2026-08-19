@@ -1,5 +1,6 @@
 import http from "k6/http";
-import { PersonalTokenGenerator } from "../../common-imports.js";
+
+import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
@@ -18,12 +19,13 @@ export const afUrl = (() => {
     }
 })();
 
-
 /**
  * Function to get a cookie object for the given PID.
- * @param {string} pid - The personal identification number (PID) of the user.
- * @return {Object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
- * **/
+ *
+ * @param user TODO: description
+ * @returns {object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
+ * *
+ */
 export function getCookie(user) {
     const token = getToken(user.pid, user.userId, user.partyId, user.partyUuid);
     const cookie = {
@@ -43,19 +45,24 @@ export function getCookie(user) {
 }
 
 /**
-* Function to get a personal token for a given PID.
-* @param {string} pid - The personal identification number (PID) of the user.
-* @return {string} - The generated personal token.
-**/
+ * Function to get a personal token for a given PID.
+ *
+ * @param {string} pid - The personal identification number (PID) of the user.
+ * @param userId TODO: description
+ * @param partyId TODO: description
+ * @param partyUuid TODO: description
+ * @returns {string} - The generated personal token.
+ **/
 function getToken(pid, userId, partyId, partyUuid) {
-    const tokenOpts = new Map();
-    tokenOpts.set("env", environment);
-    tokenOpts.set("ttl", 3600);
-    tokenOpts.set("scopes", "digdir:dialogporten.noconsent openid altinn:portal/enduser");
-    tokenOpts.set("pid", pid);
-    tokenOpts.set("userId", userId);
-    tokenOpts.set("partyId", partyId);
-    tokenOpts.set("partyuuid", partyUuid);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes("digdir:dialogporten.noconsent openid altinn:portal/enduser")
+        .withPid(pid)
+        .withUserId(userId)
+        .withPartyId(partyId)
+        .withPartyUuid(partyUuid)
+        .build();
 
     if (tokenGenerator == undefined) {
         tokenGenerator = new PersonalTokenGenerator();
@@ -68,6 +75,7 @@ function getToken(pid, userId, partyId, partyUuid) {
 
 /**
  * Function to initialize a session with the given token.
+ *
  * @param {F} token - The personal token to initialize the session.
  * @returns sessionId
  */
@@ -90,4 +98,29 @@ function getSessionId(token) {
     }
     const sessionId = resp.json().cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
     return sessionId;
+}
+
+/**
+ * Async function to wait for the page to load.
+ *
+ * @param {object} page - The page object to interact with.
+ * @param {number} empties - Number of empty checks to perform (default is 1).
+ * @returns {Promise<void>} - A promise that resolves when the page is loaded.
+ */
+export async function waitForPageLoaded(page, empties = 1) {
+    const button = page.getByRole("button", {
+        name: /Legg til filter|Add filter/
+    });
+
+    await button.waitFor({ state: "visible" });
+
+    let busyItems = await page.$$("li [aria-busy=\"true\"]");
+    let noEmptys = 0;
+    while (busyItems.length > 0 || noEmptys < empties) {
+        await page.waitForTimeout(10); // Wait for 10 ms before checking again
+        busyItems = await page.$$("li [aria-busy=\"true\"]");
+        if (busyItems.length === 0) {
+            noEmptys++;
+        }
+    }
 }

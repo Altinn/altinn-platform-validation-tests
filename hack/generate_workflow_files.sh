@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TEAMS=(authentication dialogporten core portaler platform register)
+TEAMS=(K6/api/tests/*)
+TEAMS=("${TEAMS[@]##*/}")
 WORKFLOWS_DIR=".github/workflows"
-
-
 
 generate() {
   temp_dir=$(mktemp -d)
@@ -16,6 +15,9 @@ generate() {
 
 
   jsonnet "$@" > "$temp_file1"
+  if [ "$(tr -d '[:space:]' < "$temp_file1")" = "null" ]; then
+    return
+  fi
   yq --prettyPrint -o yaml eval '{"name": .name, "on": .on, "run-name": ."run-name", "permissions": .permissions, "jobs": .jobs}' "$temp_file1" > "$temp_file2"
   yq '.. style="double"' "$temp_file2" > "$output"
 }

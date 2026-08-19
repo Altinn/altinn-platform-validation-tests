@@ -1,7 +1,8 @@
-import http from "k6/http";
-import { parseCsvData } from "../../../../helpers.js";
-import { EnterpriseTokenGenerator } from "../../../../common-imports.js";
+
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
+import { fetchTestData } from "../../../../helpers.js";
+import { requireEnv } from "../../../../helpers.js";
 
 export const orgNo = __ENV.ENVIRONMENT == "yt01" ? "713431400" : "991825827";
 
@@ -24,32 +25,51 @@ export const serviceResources =
         : ["k6-instancedelegation-test"];
 
 /**
-* Function to set up and return clients to interact with the Service Owner Dialog API
-*
-* @returns {Array} An array containing the ServiceOwnerApiClient instance
-*/
+ * @type {ServiceOwnerApiClient | undefined}
+ */
 let serviceOwnerApiClient = undefined;
+
+/**
+ * Creates and caches the client used to interact with the
+ * Service Owner Dialog API.
+ *
+ * The client uses an enterprise token with the following scopes:
+ * - `digdir:dialogporten.serviceprovider`
+ * - `digdir:dialogporten.serviceprovider.search`
+ *
+ * The same {@link ServiceOwnerApiClient} instance is reused across iterations.
+ *
+ * @returns {[ServiceOwnerApiClient]} Tuple containing the Service Owner API client.
+ */
 export function getClients() {
-    if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new Map();
-        tokenOpts.set("env", __ENV.ENVIRONMENT);
-        tokenOpts.set("ttl", 3600);
-        tokenOpts.set("scopes", "digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search");
-        tokenOpts.set("org", "ttd");
-        tokenOpts.set("orgNo", orgNo);
+    if (serviceOwnerApiClient === undefined) {
+        const tokenOpts = new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes("digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search")
+            .withOrganization("ttd")
+            .withOrganizationNumber(orgNo)
+            .build();
+
         const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
+
+        serviceOwnerApiClient = new ServiceOwnerApiClient(
+            __ENV.BASE_URL,
+            tokenGenerator
+        );
     }
+
     return [serviceOwnerApiClient];
 }
 
 /**
  * Setup function to fetch and parse CSV data of end users for testing
+ *
  * @returns data parsed from the CSV file containing end user information
  */
 export function setup() {
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
-    return parseCsvData(res.body);
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+    return fetchTestData(`dialogporten/serviceowner/${__ENV.ENVIRONMENT}/endusers.csv`);
 }
 
 export const sevenDaysAgoIso = () =>

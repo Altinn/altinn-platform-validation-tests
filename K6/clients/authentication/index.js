@@ -1,19 +1,11 @@
-export { SystemRegisterApiClient } from "./system-register.js";
-export { SystemUserApiClient } from "./system-user.js";
-export { SystemUserRequestApiClient } from "./system-user-request.js";
-export { RegisterApiClient } from "./register.js";
-export { ConsentApiClient } from "./consent.js";
-export { AuthorizedPartiesClient } from "./authorized-parties.js";
-export { PdpAuthorizeClient } from "./pdp-authorize.js";
-export { ConnectionsApiClient } from "./connections.js";
-export { RolesApiClient } from "./roles.js";
-export { ResourceRegistryApiClient } from "./resource-registry.js";
-export { RegisterLookupClient } from "../register/lookup.js";
-export { ClientDelegationsApiClient } from "./client-delegations.js";
-export { BffClientDelegationsApiClient } from "./bff-client-delegations.js";
-export { BffAccessPackageApiClient } from "./bff-access-package.js";
-export { BffConnectionsApiClient } from "./bff-connections.js";
-export { MaskinportenSchemaApiClient } from "./maskinporten-schema.js";
-export { BffSingleRightApiClient } from "./bff-single-right.js";
-export { BffAccessManagementApiClient } from "./bff-access-management.js";
-export { BffUserApiClient } from "./bff-user.js";
+export { ChangeRequestSystemUserBuilder } from "./change-request-system-user.builders.js";
+export { ChangeRequestSystemUserClient } from "./change-request-system-user.js";
+export {
+    CreateAgentRequestSystemUserBuilder,
+    CreateRequestSystemUserBuilder,
+} from "./request-system-user.builders.js";
+export { RequestSystemUserClient } from "./request-system-user.js";
+export { RegisterSystemRequestBuilder } from "./system-register.builders.js";
+export { SystemRegisterClient } from "./system-register.js";
+export { SystemUserClient } from "./system-user.js";
+export { SystemUserClientDelegationClient } from "./system-user-client-delegation.js";

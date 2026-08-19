@@ -5,10 +5,12 @@
  * 7 selected users are testet in at23, tt02 and yt01, varying number of enterprises and total number of dialogs that can be hit
  */
 
-import { browser } from "k6/browser";
 import { check } from "k6";
+import { browser } from "k6/browser";
 import { Trend } from "k6/metrics";
-import { getCookie, afUrl, environment } from "./arbeidsflate-utils.js";
+
+import { getItemFromList } from "../../helpers.js";
+import { afUrl, environment, getCookie, waitForPageLoaded } from "./arbeidsflate-utils.js";
 
 const pageLoadingTime = new Trend("page_loading_time", true);
 const allOrganizationsTime = new Trend("all_organizations_time", true);
@@ -55,6 +57,8 @@ const endUsersByEnvironment = {
  * The generated cookies are used to authenticate the users when they access the "arbeidsflate" page during the test,
  * making use of idporten not necessary since the token is generated directly and set as a cookie for the domain.
  * This allows us to simulate real user interactions without needing to go through the login process.
+ *
+ * @returns TODO: description
  */
 export function setup() {
     const users = endUsersByEnvironment[environment];
@@ -104,10 +108,11 @@ function getOptions() {
 
 /**
  * The default function is the main entry point for the test and is called for each iteration.
- * @param {} data
+ *
+ * @param {} data TODO: description
  */
 export default async function (data) {
-    const testData = data[__ITER % data.length];
+    const testData = getItemFromList(data);
     const label = endUsersByEnvironment[environment].find(user => user.pid === testData.pid)?.label;
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -142,10 +147,11 @@ export default async function (data) {
 
 /**
  * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
- * @param {} page
- * @param {*} trend
- * @param {*} labels
- * @returns
+ *
+ * @param {} page TODO: description
+ * @param {*} trend TODO: description
+ * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @returns TODO: description
  */
 export async function selectAllEnterprises(page, trend, labels) {
     const startTime = new Date();
@@ -163,22 +169,4 @@ export async function selectAllEnterprises(page, trend, labels) {
     await waitForPageLoaded(page, 2);
     const endTime = new Date();
     trend.add(endTime - startTime, labels);
-}
-
-/**
- * Async function to wait for the page to load.
- * @param {object} page - The page object to interact with.
- * @param {number} empties - Number of empty checks to perform (default is 1).
- * @return {Promise<void>} - A promise that resolves when the page is loaded.
- */
-export async function waitForPageLoaded(page, empties = 1) {
-    let busyItems = await page.$$("li [aria-busy=\"true\"]");
-    let noEmptys = 0;
-    while (busyItems.length > 0 || noEmptys < empties) {
-        await page.waitForTimeout(10); // Wait for 10 ms before checking again
-        busyItems = await page.$$("li [aria-busy=\"true\"]");
-        if (busyItems.length === 0) {
-            noEmptys++;
-        }
-    }
 }

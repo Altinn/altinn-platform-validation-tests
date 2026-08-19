@@ -6,6 +6,8 @@ function hex2(b) {
 
 /**
  * uuidv7 implmentation copied from the altinn/dialogporten repo
+ *
+ * @returns uuidv7 TODO: description
  */
 function uuidv7() {
     // Date.now() is < 2^53, so integer math via division is safe/precise here.
@@ -387,7 +389,8 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
 
 /**
  * Get a dialog body without transmissions and activities, used for testing creation of dialogs without these.
- * @param {string} endUser - either a pid/ssn (11 digits) or an org number (9 digits)
+ *
+ * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
  * @param {string} serviceResource - the service resource
  * @returns json object to be used as body when creating a dialog via the API, without transmissions and activities.
  */
@@ -400,6 +403,7 @@ export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceR
 
 /**
  * Get a transmission body, used for testing creation of transmissions. By default, the transmission will not be related to any other transmission, but you can provide an id of a transmission to relate it to.
+ *
  * @param {uuidv7} relatedTransmissionId - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
  * @returns json object to be used as body when creating a transmission via the API.
  */
@@ -468,6 +472,7 @@ export function getTransmissionBody(relatedTransmissionId = 0) {
 
 /**
  * Get a activity body, used for testing creation of activities. By default, the activity will be of type DialogCreated and performed by an actor of type ServiceOwner, but you can modify the returned object as needed.
+ *
  * @returns json object to be used as body when creating an activity via the API. The activity will have a random id, and the performedBy actor will be of type ServiceOwner with no id or name.
  */
 export function getActivityBody() {
