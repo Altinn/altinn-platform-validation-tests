@@ -113,7 +113,7 @@ export function setup() {
 
     const numberOfVUs = getNumberOfVUs();
 
-    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const data = fetchTestData(`access-management-bff/consent/${__ENV.ENVIRONMENT}.csv`);
 
     return segmentData(data, numberOfVUs);
 }
