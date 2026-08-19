@@ -33,8 +33,7 @@ les(".env", false);
 
 // Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
 // npm_config_*. De mest brukte plukkes opp her, slik at både
-// `npm run test:tilgangsstyring:prod --headed` og
-// `npm run test:tilgangsstyring:prod -- --headed` virker.
+// `npm run test:prod --headed` og `npm run test:prod -- --headed` virker.
 function npmFlag(name: string): string | undefined {
   const value = process.env[`npm_config_${name}`];
   return value && value !== "false" ? value : undefined;

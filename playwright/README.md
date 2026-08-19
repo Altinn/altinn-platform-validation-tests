@@ -17,14 +17,15 @@ Tenor-nummer med måned 81-92. Filene er gitignorert.
 
 ## Kjør
 
-```bash
-npm run test:at23                    # alt, mot at23
-npm run test:tt02                    # alt, mot tt02
-npm run test:prod                    # alt, mot prod
+Ett script per miljø. Vil du bare kjøre et område, oppgir du stien:
 
-npm run test:tilgangsstyring:at23    # ett område, mot at23
-npm run test:tilgangsstyring:prod    # samme område, mot prod
-npm run test:innlogging:at23         # og tilsvarende for innlogging
+```bash
+npm run test:at23                                    # alt, mot at23
+npm run test:tt02                                    # alt, mot tt02
+npm run test:prod                                    # alt, mot prod
+
+npm run test:prod -- tests/tilgangsstyring           # ett område
+npm run test:at23 -- tests/innlogging --headed       # med Playwright-flagg
 ```
 
 `npm test` uten miljø i navnet kjører mot det `ENVIRONMENT` sier, med at23 som
@@ -37,7 +38,7 @@ gjør det, virker malene der også: `set -a && . example_env/prod.env && set +a`
 `--headed`, `--grep=`, `--workers=` og `--retries=` virker rett på scriptene:
 
 ```bash
-npm run test:tilgangsstyring:prod --headed --grep=bokmål
+npm run test:prod --headed --grep=bokmål
 ```
 
 Bruk likhetstegn på dem som tar en verdi, ellers tolker npm neste ord som eget
