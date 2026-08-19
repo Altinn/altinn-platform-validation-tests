@@ -70,7 +70,7 @@ export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClien
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const data = fetchTestData(`access-management-bff/client-admin/open-client-admin/${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
