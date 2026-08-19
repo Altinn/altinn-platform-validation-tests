@@ -1,24 +1,16 @@
 
 import { check } from "k6";
 import { browser } from "k6/browser";
-import http from "k6/http";
 
-import { requireEnv } from "../../helpers.js";
+import { fetchTestData, requireEnv } from "../../helpers.js";
 import { getOptions } from "./common.js";
 
 export const options = getOptions();
 
 export function setup() {
     requireEnv(["INFO_CLOUD_URL"]);
-    const response = http.get(
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt",
-        { tags: { action: "fetch-test-data" } }
-    );
 
-    return response.body
-        .split("\n")
-        .map(w => w.trim())
-        .filter(Boolean);
+    return fetchTestData("portaler/words.txt");
 }
 
 export default async function (words) {
