@@ -47,7 +47,7 @@ Variablene som må være satt:
 | Variabel | Merknad |
 | --- | --- |
 | `AF_UI_BASE_URL`, `AM_UI_BASE_URL`, `INFO_CLOUD_URL` | Samme navn som i k6-testene |
-| `PLATFORM_BASE_URL` eller `BASE_URL` | `BASE_URL` er platform-URLen i k6-testene |
+| `BASE_URL` | Platform-URLen, samme som i k6-oppsettet |
 | `TEST_USER_PID` | Syntetisk Tenor-fnr, altså måned 81-92 |
 | `TEST_USER_NAME` | Bare testene som slår opp navnet på skjermen trenger den |
 | `TEST_IDP_PASSWORD` | Delt tilgangspassord for innlogging som syntetisk bruker |

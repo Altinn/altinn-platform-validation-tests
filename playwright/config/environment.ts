@@ -20,22 +20,6 @@ export function requireEnv(name: string): string {
     return value;
 }
 
-/**
- * Første variabel som er satt vinner. Brukes der k6-testene har et etablert navn
- * fra før, slik at et sourcet miljø gjelder for begge testsettene.
- */
-function requireOneOf(names: string[]): string {
-    for (const name of names) {
-        const value = process.env[name];
-
-        if (value) {
-            return value;
-        }
-    }
-
-    return requireEnv(names[0]);
-}
-
 export const baseUrls = {
     get arbeidsflate() {
         return requireEnv('AF_UI_BASE_URL');
@@ -46,9 +30,9 @@ export const baseUrls = {
     get infoportal() {
         return requireEnv('INFO_CLOUD_URL');
     },
-    // BASE_URL er platform-URLen i k6-testene, så den gjelder også her.
+    // BASE_URL er platform-URLen i k6-oppsettet, se K6/example_env/at23.sh.
     get platform() {
-        return requireOneOf(['PLATFORM_BASE_URL', 'BASE_URL']);
+        return requireEnv('BASE_URL');
     },
 };
 
