@@ -55,16 +55,53 @@ Variablene som må være satt:
 Testbrukeren i prod skal ikke sjekkes inn noe sted. I Kubernetes kommer variablene
 fra configmap og secrets på samme måte som for k6.
 
-## Kjør
+## Kjør mot et miljø
 
-Miljøet bestemmes av det du har sourcet, ikke av kommandoen:
+Miljøet bestemmes av env-varene du har sourcet, ikke av kommandoen. Det finnes ikke
+noe `--prod`-flagg eller eget npm-script per miljø: samme testkommando kjører mot
+det miljøet som ligger i shellet.
+
+Førstegangs oppsett, én gang per miljø:
 
 ```bash
-source ~/.scripts/playwright-at23.sh
-npm test                        # alt
-npm run test:innlogging         # innloggingstestene
-npm run test:tilgangsstyring    # tilgangsstyring
+mkdir -p ~/.scripts
+cp example_env/at23.sh ~/.scripts/playwright-at23.sh
+cp example_env/prod.sh ~/.scripts/playwright-prod.sh
 ```
+
+Fyll inn `TEST_IDP_PASSWORD` i begge, og `TEST_USER_PID` og `TEST_USER_NAME` i
+prod-fila. Legg gjerne inn alias, slik `K6/example_env/README.md` beskriver:
+
+```bash
+alias pw-at23='source ~/.scripts/playwright-at23.sh'
+alias pw-prod='source ~/.scripts/playwright-prod.sh'
+```
+
+Deretter kjører du:
+
+```bash
+pw-at23                         # eller: source ~/.scripts/playwright-at23.sh
+npm test                        # alt, mot at23
+npm run test:tilgangsstyring    # bare tilgangsstyring
+
+pw-prod                         # bytter miljø i samme shell
+npm run test:tilgangsstyring    # samme test, nå mot prod
+```
+
+Vil du ikke sette variablene i shellet, kan de sendes med på kommandolinja:
+
+```bash
+AF_UI_BASE_URL=https://af.altinn.no \
+AM_UI_BASE_URL=https://am.ui.altinn.no \
+INFO_CLOUD_URL=https://info.altinn.no \
+BASE_URL=https://platform.altinn.no \
+TEST_USER_PID=<syntetisk fnr> \
+TEST_IDP_PASSWORD=<passord> \
+npx playwright test tests/tilgangsstyring
+```
+
+Glemmer du å source, feiler testene med hvilken variabel som mangler framfor å kjøre
+mot et tilfeldig miljø.
 
 Alt etter `--` går videre til Playwright, så enkelttester og feilsøkingsflagg
 fungerer som normalt:
