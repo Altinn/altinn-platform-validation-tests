@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: playwright
-  namespace: platform
+  namespace: playwright
 spec:
   schedule: "0 * * * *"
   concurrencyPolicy: Forbid
@@ -40,6 +40,10 @@ spec:
               envFrom:
                 - secretRef:
                     name: am-ui-playwright-env
+                - secretRef:
+                    name: playwright-user-at23
+                - configMapRef:
+                    name: deploy-environments-at23
               env:
                 - name: APP_TOKEN
                   valueFrom:

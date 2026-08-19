@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: playwright
-  namespace: platform
+  namespace: platform # TODO change to playwright, but need to create proper SA
   labels:
     testrunner: playwright
     azure.workload.identity/use: "true"
@@ -16,6 +16,11 @@ spec:
         - name: swa-config
           mountPath: /etc/swa-config
           readOnly: true
+      envFrom:
+        - secretRef:
+            name: playwright-user-at23
+        - configMapRef:
+            name: deploy-environments-at23
       env:
         - name: APP_TOKEN
           valueFrom:

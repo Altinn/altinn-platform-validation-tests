@@ -7,6 +7,7 @@ cd altinn-platform-validation-tests/playwright
 npm install
 
 npm run test:at23 || true # Needs to be the input
+env=at23
 
 set +e
 /tmp/generateMetricsFromJunitReport
@@ -38,7 +39,8 @@ if [ "$exit_code" -eq 53 ]; then
         --resource-group playwright-rg \
         --app-name playwright-reports-webapp \
         --swa-config-location /etc/swa-config/ \
-    	--env Production
+    	--env $env \
+        --verbose silly --print-config
 
     #curl \
     #    -s -X POST "$SLACK_WEBHOOK_URL" \

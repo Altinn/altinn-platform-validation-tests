@@ -6,7 +6,12 @@ resource "azurerm_resource_group" "playwright" {
 resource "azuread_application" "playwrightreports" {
   display_name = "playwrightreports-app"
   web {
-    redirect_uris = ["https://${var.default_host_name}/.auth/login/aad/callback"]
+    redirect_uris = [
+      "https://${var.default_host_name}/.auth/login/aad/callback",
+      "https://${var.at22_host_name}/.auth/login/aad/callback",
+      "https://${var.at23_host_name}/.auth/login/aad/callback",
+      "https://${var.tt02_host_name}/.auth/login/aad/callback",
+    ]
 
     implicit_grant {
       access_token_issuance_enabled = false
@@ -38,6 +43,8 @@ resource "azurerm_key_vault" "playwright" {
   tenant_id                  = var.tenant_id
   sku_name                   = "premium"
   soft_delete_retention_days = 7
+
+  rbac_authorization_enabled = false # By default, but I should double check
 
   access_policy {
     tenant_id          = var.tenant_id
@@ -79,7 +86,7 @@ resource "azurerm_static_web_app" "playwrightreports" {
     type = "SystemAssigned"
   }
 
-  preview_environments_enabled = false
+  preview_environments_enabled = true
 }
 
 resource "azurerm_storage_account" "playwright_reports" {

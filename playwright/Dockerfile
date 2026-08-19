@@ -1,6 +1,6 @@
 FROM altinnplatformvalidationtests.azurecr.io/generate-metrics-from-junit-report AS builder
 
-FROM node:24-trixie@sha256:66bb8d36ae1ddd72199ed235a089904874ca4079ee517936ca3adb80506a75c1
+FROM node:24-bookworm
 
 RUN apt update && \
     apt upgrade -y && \
@@ -35,8 +35,8 @@ RUN curl -L -o azcopy.tar.gz https://aka.ms/downloadazcopy-v10-linux && \
     chmod +x /usr/local/bin/azcopy
 
 RUN npm install -g \
-    playwright@latest \
-    @azure/static-web-apps-cli
+    playwright@v1.62.1 \
+    @azure/static-web-apps-cli@v2.0.10
 
 RUN useradd -m playwright
 
@@ -51,6 +51,11 @@ COPY --from=builder /app/generateMetricsFromJunitReport .
 COPY --chown=playwright:playwright ./run-playwright-tests.sh .
 
 USER playwright
+
+#RUN mkdir -p ~/.swa/deploy/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2 && \
+#    curl -L \
+#    https://swalocaldeployv2-bndtgugjgqc3dhdx.b01.azurefd.net/downloads/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2/linux/StaticSitesClient@689a6c1fe8fc32f40348cc41223a7e9d83dd43d2 \
+#    -o ~/.swa/deploy/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2/StaticSitesClient
 
 ENV PATH=$PATH:/opt/az/bin
 
