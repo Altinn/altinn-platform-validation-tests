@@ -32,37 +32,16 @@ les(".env.local", false);
 les(".env", false);
 
 // Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
-// npm_config_*. De mest brukte plukkes opp her, slik at både
-// `npm run test:prod --headed` og `npm run test:prod -- --headed` virker.
+// npm_config_*. Disse tre plukkes opp her, slik at både `npm run test:prod --headed`
+// og `npm run test:prod -- --headed` virker. Resten, som --grep, går etter `--`.
 function npmFlag(name: string): string | undefined {
   const value = process.env[`npm_config_${name}`];
   return value && value !== "false" ? value : undefined;
 }
 
 const headed = npmFlag("headed") !== undefined;
-const grep = npmFlag("grep");
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
-
-/**
- * Prod er opt-in: bare tester merket @prod kjøres der, så en ny test ikke kan havne i
- * prod ved en forglemmelse. Filteret ligger her framfor i npm-scriptet, slik at det
- * også gjelder når Playwright kalles direkte.
- *
- * `--grep=bokmål` fra npm kombineres med, ikke erstatter, prod-filteret. Likhetstegnet
- * er nødvendig, ellers tolker npm neste ord som eget argument.
- */
-function grepFilter(): RegExp | undefined {
-  const fraBruker = grep && grep !== "true" ? grep : undefined;
-
-  if (environment === "prod") {
-    return fraBruker
-      ? new RegExp(`(?=.*@prod)(?=.*${fraBruker})`, "i")
-      : /@prod/;
-  }
-
-  return fraBruker ? new RegExp(fraBruker, "i") : undefined;
-}
 
 export default defineConfig({
   testDir: "./tests",
@@ -72,7 +51,6 @@ export default defineConfig({
   // Traces skrives ved første retry
   retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
   workers: workers ? Number(workers) : undefined,
-  grep: grepFilter(),
   reporter: [
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results.xml" }],

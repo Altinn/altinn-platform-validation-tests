@@ -34,10 +34,9 @@ Verdiene kan også ligge i shellet, slik k6-testene gjør det:
 
 ## Prod er opt-in
 
-Mot prod kjøres bare tester som er eksplisitt merket `@prod`. Filteret ligger i
-`playwright.config.ts`, så det gjelder også når Playwright kalles direkte. En ny test
-kan ikke havne i prod ved en forglemmelse, og peker du prod mot utagget kode, får du
-"no tests found".
+`test:prod` kjører `playwright test --grep @prod`, så bare tester som er eksplisitt
+merket kjøres mot prod. En ny test kan ikke havne der ved en forglemmelse, og peker du
+prod mot utagget kode, får du "no tests found".
 
 Merk en testfil eller et describe-blokk når den er verifisert mot prod, og bare hvis
 den ikke endrer data:
