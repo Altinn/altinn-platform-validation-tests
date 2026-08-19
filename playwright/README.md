@@ -45,13 +45,37 @@ npm test -- tests/tilgangsstyring --debug
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
 
-Alle testene kan kjøres mot alle miljøer. De som ikke støttes der, rapporteres som
-skipped med begrunnelse framfor å feile. Begrensningen står øverst i testfila:
+## Hvilke miljøer en test støtter
+
+Hele suiten kan kjøres mot alle miljøer. Hver testfil sier selv hvilke miljøer den
+er kjent å virke i, øverst i fila:
 
 ```ts
-// Innlogging med TestID finnes bare i testmiljøene, ikke i prod.
-kjoresIMiljoer('at22', 'at23', 'tt02');
+import { test, kjoresIMiljoer } from '../../fixtures/test';
+
+kjoresIMiljoer('at22', 'at23', 'tt02', 'prod');
 ```
+
+Kjører du mot et miljø som ikke står i lista, rapporteres testene som skipped med
+begrunnelsen `Kjøres i at22, at23, tt02, ikke i prod`. De feiler ikke, og de
+forsvinner ikke stille. `npm run test:prod` i dag gir derfor 3 passed og 8 skipped:
+tilgangsstyring-testen støtter prod, mens innloggingstestene bruker TestID hos
+ID-porten, som bare finnes i testmiljøene.
+
+Glemmer du kallet, kjører fila i alle miljøer. Det er ikke en feil, men det betyr at
+ingen har tatt stilling til spørsmålet, så ta det med når du skriver en ny test.
+
+Anbefalingen for en ny test er minst `at23` og `tt02`, og at du faktisk har kjørt den
+der før du fører dem opp:
+
+```bash
+npm test              # at23
+npm run test:tt02     # tt02
+```
+
+Legg til `prod` når testen er verifisert der også. Vær varsom: en test som endrer
+data hører ikke hjemme i prod. Kommer et nytt miljø til, må det legges inn i fila,
+og det er samtidig anledningen til å sjekke at testen virker der.
 
 ## Struktur
 

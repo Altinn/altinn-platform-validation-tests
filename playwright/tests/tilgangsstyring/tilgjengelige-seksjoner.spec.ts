@@ -1,7 +1,6 @@
-import { test } from "../../fixtures/test";
+import { test, kjoresIMiljoer } from "../../fixtures/test";
 import { alleSprak } from "../../config/sprak";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
-
 // Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
 // ikke en conditional i page objectet.
 const forventedeSeksjoner = [
@@ -11,6 +10,8 @@ const forventedeSeksjoner = [
   Seksjon.FullmakterHosAndre,
   Seksjon.SamtykkeOgFullmaktsavtaler,
 ];
+
+kjoresIMiljoer("at22", "at23", "tt02", "prod");
 
 for (const valgtSprak of alleSprak) {
   test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
