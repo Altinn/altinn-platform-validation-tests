@@ -1,6 +1,8 @@
-import { check, sleep } from "k6";
+import { check, fail, sleep } from "k6";
 import exec from "k6/execution";
+import http from "k6/http";
 
+import { withRetries } from "./api/building-blocks/common/retry.js";
 import { papaparse, randomItem } from "./common-imports.js";
 
 /**
@@ -206,4 +208,75 @@ export function pickUnique(list, count) {
     }
 
     return result;
+}
+
+/**
+ * Reads one of the test data files over HTTP.
+ *
+ * A missing file answers 404, and a body that parses into an empty list would only
+ * surface later as an undefined row somewhere in the test. Renaming or moving a
+ * file is enough to cause that, since the read is pinned to main, so this fails on
+ * the spot and names the URL that came up short. Pass failOnDataFetchingFailure as
+ * false for a caller that would rather handle empty data itself.
+ *
+ * @param {string} filename File name under the test data directory, or an absolute URL.
+ * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
+ * @param {string} branch Branch to read test data from. Defaults to "main".
+ * @returns {Array<object>|object} The parsed test data.
+ */
+export function fetchTestData(
+    filename,
+    failOnDataFetchingFailure = true,
+    branch = "main",
+) {
+    const testDataBaseUrl =
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const url = filename.startsWith("http")
+        ? filename
+        : `${testDataBaseUrl}/${filename}`;
+
+    const res = withRetries(
+        () => http.get(url, { tags: { action: "fetch-test-data" } }),
+        "fetch-test-data",
+    );
+
+    if (res.status !== 200) {
+        const message = `Cannot read test data: ${url} returned ${res.status}`;
+
+        if (failOnDataFetchingFailure) {
+            fail(message);
+        }
+
+        return [];
+    }
+
+    if (filename.endsWith(".csv")) {
+        const rows = parseCsvData(res.body);
+
+        if (rows.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no rows`);
+        }
+
+        return rows;
+    }
+
+    if (filename.endsWith(".json")) {
+        try {
+            return JSON.parse(res.body);
+        } catch (error) {
+            if (failOnDataFetchingFailure) {
+                fail(`Cannot parse test data: ${url}. Error: ${error}`);
+            }
+
+            return [];
+        }
+    }
+
+    const message = `Unsupported test data file type: ${url}`;
+
+    if (failOnDataFetchingFailure) {
+        fail(message);
+    }
+
+    return [];
 }

@@ -1,5 +1,4 @@
 import { fail } from "k6";
-import http from "k6/http";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import {
@@ -8,7 +7,7 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
-import { getItemFromList, parseCsvData, retry } from "../../../helpers.js";
+import { fetchTestData, getItemFromList, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
@@ -22,8 +21,6 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
  * - register-usernames-<env>.csv   (header: username)
  * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
  */
-const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/register";
 
 /**
  * @type {RegisterClient | undefined}
@@ -50,7 +47,7 @@ let enhetsregisteretClient = undefined;
  * @returns {Array<{username: string}>} The usernames.
  */
 export function getUsernames(env) {
-    return fetchTestData(`register-usernames-${env}.csv`);
+    return fetchTestData(`register/register-usernames-${env}.csv`);
 }
 
 /**
@@ -72,38 +69,7 @@ export function getUsernames(env) {
  * The organizations.
  */
 export function getOrganizations(env) {
-    return fetchTestData(`organizations-${env}.csv`);
-}
-
-/**
- * Reads one of the test data files over HTTP.
- *
- * A missing file answers 404 with a body that parses into an empty list rather
- * than into an error, and an empty list only surfaces later as an undefined row
- * somewhere in the test. Renaming a file on a branch is enough to cause it, since
- * the read is pinned to main, so the failure says which URL came up short.
- *
- * @param {string} filename File name under the test data directory.
- * @returns {Array<object>} The parsed rows.
- */
-function fetchTestData(filename) {
-    const url = `${TESTDATA_BASE_URL}/${filename}`;
-
-    const res = http.get(url, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    if (res.status !== 200) {
-        fail(`cannot read test data: ${url} answered ${res.status}`);
-    }
-
-    const rows = parseCsvData(res.body);
-
-    if (rows.length === 0) {
-        fail(`cannot read test data: ${url} holds no rows`);
-    }
-
-    return rows;
+    return fetchTestData(`register/organizations-${env}.csv`);
 }
 
 /**

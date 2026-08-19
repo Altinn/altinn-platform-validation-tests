@@ -1,8 +1,7 @@
-import http from "k6/http";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { parseCsvData } from "../../../../helpers.js";
+import { fetchTestData } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
 /**
@@ -27,13 +26,7 @@ let tokenGenerator = undefined;
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`,
-        { tags: { action: "fetch-test-data" } },
-    );
-
-    return parseCsvData(res.body);
+    return fetchTestData(`dialogporten/endusers/${__ENV.ENVIRONMENT}/endusers.csv`);
 }
 
 /**
