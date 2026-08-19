@@ -1,13 +1,10 @@
-import { fail } from "k6";
-import http from "k6/http";
-
 import { AddressVerificationClient } from "../../../clients/profil/address-verification/index.js";
 import { ProfessionalNotificationSettingsClient } from "../../../clients/profil/professional-notification-settings/index.js";
 import {
     PersonalTokenBuilder,
     PersonalTokenGenerator,
 } from "../../../common-imports.js";
-import { parseCsvData } from "../../../helpers.js";
+import { fetchTestData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 
 /**
@@ -19,22 +16,6 @@ import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
  * needs the same three things. They live in one place so a new test only has to
  * describe its own flow.
  */
-
-/**
- * Persons the tests act as, and the organisation each one may act for.
- *
- * One file per environment, since the ids a person and an organisation have are
- * the environment's own. `orgPartyUuid` is the avgiver, the organisation a setting
- * is stored under, while the user fields are the person the token is minted for.
- *
- * Read over http rather than with k6's open(), which the cloud runner cannot use.
- * The read is pinned to main, so an edit to the file takes effect once it is
- * merged; point TESTDATA_REF at a branch to try one out before then.
- */
-const TESTDATA_REF = __ENV.TESTDATA_REF ?? "main";
-
-const TESTDATA_BASE_URL =
-    `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${TESTDATA_REF}/K6/testdata/profil`;
 
 /**
  * @typedef {object} TestPerson
@@ -65,30 +46,15 @@ let tokenGenerator = undefined;
 /**
  * The persons set up in the given environment.
  *
- * An environment with no file of its own, and a file that was renamed on a branch
- * while the read is pinned to main, both answer 404. Either way the failure names
- * the url that came up short, since an empty list would otherwise only surface
- * later as an undefined person somewhere in a test.
+ * One file per environment, since the ids a person and an organisation have are
+ * the environment's own. `orgPartyUuid` is the avgiver, the organisation a setting
+ * is stored under, while the user fields are the person the token is minted for.
  *
  * @param {string} env - Environment, e.g. "tt02".
  * @returns {TestPerson[]} The persons to draw from.
  */
 export function getTestPersons(env) {
-    const url = `${TESTDATA_BASE_URL}/users-and-parties-${env}.csv`;
-
-    const res = http.get(url, { tags: { action: "fetch-test-data" } });
-
-    if (res.status !== 200) {
-        fail(`cannot read test data: ${url} answered ${res.status}`);
-    }
-
-    const persons = parseCsvData(res.body);
-
-    if (persons.length === 0) {
-        fail(`cannot read test data: ${url} holds no rows`);
-    }
-
-    return persons;
+    return fetchTestData(`profil/users-and-parties/${env}.csv`);
 }
 
 /**

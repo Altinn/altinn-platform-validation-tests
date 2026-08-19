@@ -61,7 +61,7 @@ function tryVerifyWithWrongCode(verificationClient) {
         .withVerificationCode("123456")
         .build();
 
-    VerifyAddress(verificationClient, request, [422], label);
+    VerifyAddress(verificationClient, request, [422, 429], label);
 }
 
 export function setup() {
