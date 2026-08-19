@@ -12,10 +12,7 @@ export class InfoportalForside implements Side {
     async navigateTo(maxAttempts = 3) {
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                await this.page.goto(this.url, {
-                    waitUntil: 'domcontentloaded',
-                    timeout: 15_000,
-                });
+                await this.page.goto(this.url, { timeout: 15_000 });
                 return;
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);

@@ -9,7 +9,7 @@ export class ArbeidsflateProfil implements Side {
     constructor(private page: Page, private meny = new Meny(page)) { }
 
     async navigateTo() {
-        await this.page.goto(this.url, { waitUntil: 'domcontentloaded' });
+        await this.page.goto(this.url);
     }
 
     async assertLoggedIn() {

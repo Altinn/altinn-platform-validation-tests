@@ -18,7 +18,7 @@ export class SyntetiskInnlogging {
      * ikke bygges her eller gjenbrukes.
      */
     async login(targetUrl: string, user: TestUser) {
-        await this.page.goto(loginUrl(targetUrl), { waitUntil: 'domcontentloaded' });
+        await this.page.goto(loginUrl(targetUrl));
 
         await expect(this.pidField(), 'Er på innloggingsskjemaet').toBeVisible();
         await this.passwordField().fill(sharedPassword());

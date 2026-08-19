@@ -16,7 +16,7 @@ export class TilgangsstyringForside implements Side {
     ) { }
 
     async navigateTo() {
-        await this.page.goto(this.url, { waitUntil: 'domcontentloaded' });
+        await this.page.goto(this.url);
     }
 
     async assertLoggedIn() {
