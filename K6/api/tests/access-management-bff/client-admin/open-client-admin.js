@@ -9,7 +9,6 @@
 
 import { group } from "k6";
 import exec from "k6/execution";
-import http from "k6/http";
 
 import {
     AccessPackageClient,
@@ -25,7 +24,7 @@ import {
     GetRightHoldersQueryBuilder,
 } from "../../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { GetAgents, GetClients } from "../../../building-blocks/access-management-bff/client-delegations/index.js";
@@ -71,10 +70,8 @@ export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClien
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
-        { tags: { action: "fetch-test-data" } }
-    );
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 

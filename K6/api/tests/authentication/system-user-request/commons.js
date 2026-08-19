@@ -1,4 +1,3 @@
-import http from "k6/http";
 
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
@@ -7,9 +6,8 @@ import {
     SystemRegisterClient,
 } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { parseCsvData, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { withRetries } from "../../../building-blocks/common/retry.js";
 
 /**
  * The vendor these tests act as. Owns the registered systems they create.
@@ -61,17 +59,7 @@ let paginationTokenGenerator = undefined;
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
-
-    const res = withRetries(
-        () =>
-            http.get(
-                `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`,
-                { tags: { action: "fetch-test-data" } },
-            ),
-        "fetch-test-data",
-    );
-
-    return parseCsvData(res.body);
+    return fetchTestData(`authentication/data-${__ENV.ENVIRONMENT}-all-customers.csv`);
 }
 
 /**

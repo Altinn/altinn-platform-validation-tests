@@ -1,9 +1,8 @@
 import exec from "k6/execution";
-import http from "k6/http";
 
 import { DelegationExportClient, GetDelegationExportQueryBuilder } from "../../../../clients/access-management-bff/delegation-export/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetDelegationExport } from "../../../building-blocks/access-management-bff/delegation-export/index.js";
 import { getTokenOpts } from "../commons.js";
@@ -63,9 +62,6 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
 
-    const baseUrl =
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/delegation/${__ENV.ENVIRONMENT}`;
-
     const files = [
         "fullmakt-org-org.csv",
         "fullmakt-user-user.csv",
@@ -76,16 +72,7 @@ export function setup() {
     ];
 
     const allData = files.flatMap(file => {
-        const res = http.get(`${baseUrl}/${file}`,
-            { tags: { action: "fetch-test-data" } });
-
-        if (res.status !== 200) {
-            throw new Error(
-                `Could not load ${file}. Status: ${res.status}`
-            );
-        }
-
-        return parseCsvData(res.body);
+        return fetchTestData(`authentication/delegation/${__ENV.ENVIRONMENT}/${file}`);
     });
 
     return segmentData(allData, numberOfVUs);

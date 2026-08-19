@@ -1,6 +1,4 @@
 
-import http from "k6/http";
-
 import { AccessPackageClient } from "../../../clients/access-management-bff/access-package/index.js";
 import { AltinnCdnClient } from "../../../clients/access-management-bff/altinn-cdn/index.js";
 import { ConnectionClient } from "../../../clients/access-management-bff/connection/index.js";
@@ -15,7 +13,7 @@ import { UserClient } from "../../../clients/access-management-bff/user/index.js
 import { GraphqlClient } from "../../../clients/dialogporten/graphql/index.js";
 import { ServiceOwnerApiClient } from "../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, pickUnique, requireEnv, segmentData } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 
 export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
@@ -168,9 +166,8 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL", "BASE_URL"]);
 
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 

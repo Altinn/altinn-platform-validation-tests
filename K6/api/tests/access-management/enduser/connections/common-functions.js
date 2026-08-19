@@ -1,8 +1,7 @@
-import http from "k6/http";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /**
@@ -78,8 +77,7 @@ export function getTokenOpts(userId) {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

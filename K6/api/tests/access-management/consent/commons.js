@@ -1,10 +1,9 @@
-import http from "k6/http";
 
 import { ConsentRequestBuilder, EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { ConsentLookupRequestBuilder, MaskinportenClient } from "../../../../clients/access-management/resource-owner/maskinporten/index.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { parseCsvData } from "../../../../helpers.js";
+import { fetchTestData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
@@ -18,8 +17,6 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
  * - consenter-persons/<env>.csv    (header: ssn,partyUuid)
  * - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
-const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent";
 
 /**
  * The resource the generated consents are for.
@@ -68,11 +65,7 @@ let lookupClient = undefined;
  * @returns {Array<{orgNo: string}>} The consentee organizations.
  */
 export function getConsenteeOrgs(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs/${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`authentication/consent/consentee-orgs/${env}.csv`);
 }
 
 /**
@@ -82,11 +75,7 @@ export function getConsenteeOrgs(env) {
  * @returns {Array<{ssn: string, partyUuid: string}>} The consenter persons.
  */
 export function getConsenterPersons(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`authentication/consent/consenter-persons/${env}.csv`);;
 }
 
 /**
@@ -97,11 +86,7 @@ export function getConsenterPersons(env) {
  * @returns {Array<{Pid: string, Org: string, ConsentId: string}>} Consents to look up.
  */
 export function getLookupConsents(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/lookup/${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`authentication/consent/lookup/${env}.csv`);;;
 }
 
 /**

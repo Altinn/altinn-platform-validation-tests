@@ -1,4 +1,3 @@
-import http from "k6/http";
 
 import {
     buildXacmlJsonAttributeExternal,
@@ -8,7 +7,7 @@ import {
 } from "../../../../clients/authorization/builders.js";
 import { AuthorizeClient } from "../../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
@@ -261,8 +260,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
