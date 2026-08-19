@@ -59,6 +59,28 @@ test('...', async ({ innlogging, user, tilgangsstyring }) => {
 
 En ny underside er en page object i områdets mappe pluss ett felt i fixturen.
 
+## Språk
+
+Språk er en option-fixture med bokmål som default. Settes per test eller per
+describe-blokk:
+
+```ts
+import { Sprak } from '../../config/sprak';
+
+test.describe('på nynorsk', () => {
+    test.use({ sprak: Sprak.Nynorsk });
+
+    test('...', async ({ innlogging, user, tilgangsstyring, sprak }) => {
+        await innlogging.setLanguage(sprak);
+    });
+});
+```
+
+Områdefixturene får språket injisert, så assertions som avhenger av det, for eksempel
+`assertSections`, slår opp riktige navn selv. Se
+`tests/tilgangsstyring/tilgjengelige-seksjoner.spec.ts`, som kjører samme test for
+alle språkene i `alleSprak`.
+
 ## Innlogging
 
 `innlogging.logIn(side, user)` lander innlogget på siden du sender inn. Mekanismen
