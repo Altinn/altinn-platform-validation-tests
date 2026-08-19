@@ -72,7 +72,7 @@ export function setup() {
     ];
 
     const allData = files.flatMap(file => {
-        return fetchTestData(`authentication/delegation/${__ENV.ENVIRONMENT}/${file}`);
+        return fetchTestData(`access-management-bff/export/${__ENV.ENVIRONMENT}/${file}`);
     });
 
     return segmentData(allData, numberOfVUs);
