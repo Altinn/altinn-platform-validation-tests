@@ -44,6 +44,8 @@ const workers = npmFlag("workers");
 const retries = npmFlag("retries");
 
 export default defineConfig({
+  // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
+  globalSetup: "./global-setup.ts",
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,

@@ -46,7 +46,9 @@ runInEnvironment('at22', 'at23', 'tt02');
 
 Er miljøet ikke listet, skippes testene i fila, med begrunnelsen i rapporten. Mangler
 kallet helt, kjører fila ingen steder. Det er meningen: en test som aldri har sagt hvor
-den hører hjemme skal ikke plukkes opp av et miljø ved en forglemmelse.
+den hører hjemme skal ikke plukkes opp av et miljø ved en forglemmelse. En spec uten
+kallet stopper hele kjøringen i `global-setup.ts`, slik at den glemte deklarasjonen
+oppdages med én gang og ikke ved at testen stille aldri kjører.
 
 Legg til `prod` først når testen er verifisert der, og bare hvis den ikke endrer data.
 Nye tester bør minst være kjørt i `at23` og `tt02` før prod føres opp.
