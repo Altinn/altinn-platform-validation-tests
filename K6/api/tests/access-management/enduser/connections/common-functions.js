@@ -77,7 +77,7 @@ export function getTokenOpts(userId) {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid.csv`);
+    const data = fetchTestData(`access-management/enduser/connections/${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

@@ -40,5 +40,5 @@ export default function (data) {
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return fetchTestData(`authentication/party-avgivere-${__ENV.ENVIRONMENT}.csv`);
+    return fetchTestData(`access-management/resource-owner/get-authorized-parties/for-user-dialogporten/${__ENV.ENVIRONMENT}.csv`);
 }

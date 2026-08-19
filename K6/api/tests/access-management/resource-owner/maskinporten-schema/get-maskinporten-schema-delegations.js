@@ -77,7 +77,7 @@ export const options = getOptions(
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`);
+    const data = fetchTestData(`access-management/resource-owner/maskinporten-schema/${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

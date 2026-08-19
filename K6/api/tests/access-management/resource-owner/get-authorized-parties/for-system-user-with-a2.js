@@ -13,7 +13,7 @@ export const options = getOptions([label]);
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return fetchTestData(`authentication/systemusers-${__ENV.ENVIRONMENT}.csv`);
+    return fetchTestData(`access-management/resource-owner/get-authorized-parties/for-system-user/${__ENV.ENVIRONMENT}.csv`);
 }
 
 export default function (data) {

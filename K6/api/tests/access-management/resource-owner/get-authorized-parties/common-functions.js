@@ -45,5 +45,5 @@ export function getClients() {
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return fetchTestData(`authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    return fetchTestData(`access-management/resource-owner/get-authorized-parties/${__ENV.ENVIRONMENT}.csv`);
 }
