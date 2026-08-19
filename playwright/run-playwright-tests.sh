@@ -4,9 +4,7 @@ set -euo pipefail
 git clone https://github.com/Altinn/altinn-platform-validation-tests.git
 cd altinn-platform-validation-tests/playwright
 
-npm install -D \
-    @playwright/test \
-    dotenv
+npm install
 
 npm test || true # Needs to be the input
 
