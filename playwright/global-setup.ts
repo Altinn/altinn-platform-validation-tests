@@ -21,6 +21,19 @@ function specFiler(katalog: string): string[] {
 }
 
 /**
+ * Fila uten kommentarer.
+ *
+ * Et utkommentert `runInEnvironment` er akkurat like lite en deklarasjon som et
+ * manglende ett, og skal telle likt. Uten dette går en utkommentert linje gjennom
+ * sjekken, og testene kjører i alle miljøer igjen.
+ */
+function utenKommentarer(innhold: string): string {
+  return innhold
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/.*$/gm, "$1");
+}
+
+/**
  * Krever at hver spec-fil sier hvilke miljøer den er satt opp for.
  *
  * En fil uten `runInEnvironment` kjører ingen steder, og det er ikke noe testen
@@ -30,7 +43,7 @@ function specFiler(katalog: string): string[] {
  */
 export default function globalSetup() {
   const mangler = specFiler(testDir).filter(
-    (fil) => !/\brunInEnvironment\s*\(/.test(fs.readFileSync(fil, "utf8"))
+    (fil) => !/\brunInEnvironment\s*\(/.test(utenKommentarer(fs.readFileSync(fil, "utf8")))
   );
 
   if (mangler.length > 0) {
