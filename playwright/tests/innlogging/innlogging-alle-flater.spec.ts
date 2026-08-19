@@ -1,4 +1,8 @@
 import { testMedFlater as test, Flate } from "../../fixtures/test";
+import { runInEnvironment } from "../../miljo";
+
+// Ikke prod: testen går gjennom ID-porten-skjermbildene, som bare finnes i testmiljøene.
+runInEnvironment("at22", "at23", "tt02");
 
 const flater: { start: Flate; landing: Flate }[] = [
   { start: "arbeidsflate", landing: "arbeidsflate" },

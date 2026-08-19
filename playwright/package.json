@@ -7,7 +7,7 @@
         "test:at22": "ENVIRONMENT=at22 playwright test",
         "test:at23": "ENVIRONMENT=at23 playwright test",
         "test:tt02": "ENVIRONMENT=tt02 playwright test",
-        "test:prod": "ENVIRONMENT=prod playwright test --grep @prod",
+        "test:prod": "ENVIRONMENT=prod playwright test",
         "typecheck": "tsc --noEmit"
     },
     "keywords": [],

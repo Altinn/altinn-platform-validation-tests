@@ -1,4 +1,9 @@
 import { testMedFlater as test, Flate } from '../../fixtures/test';
+import { runInEnvironment } from '../../miljo';
+
+// Verifisert i prod, og endrer ingen data. Innloggingen skjer med logIn, altså uten
+// ID-porten-skjermbildene, som ikke finnes i prod.
+runInEnvironment('at22', 'at23', 'tt02', 'prod');
 
 const flater: Flate[] = [
     'arbeidsflate',
@@ -9,10 +14,8 @@ const flater: Flate[] = [
 
 for (const start of flater) {
 
-    // Merket for prod: verifisert der, og endrer ingen data. Innloggingen skjer med
-    // logIn, altså uten ID-porten-skjermbildene, som ikke finnes i prod. Det testen
-    // faktisk verifiserer er at sesjonen gjelder på tvers av flatene og tåler refresh.
-    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, { tag: '@prod' }, async ({ innlogging, user, flater: sider }) => {
+    // Det testen verifiserer er at sesjonen gjelder på tvers av flatene og tåler refresh.
+    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, async ({ innlogging, user, flater: sider }) => {
 
         await test.step(`Bruker logger inn og lander på ${start}`, async () => {
             await innlogging.logIn(sider[start], user);
