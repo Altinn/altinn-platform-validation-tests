@@ -28,10 +28,19 @@ npm run test:tilgangsstyring:prod    # samme område, mot prod
 
 Miljøet velges med `ENVIRONMENT`, som scriptene setter, og bestemmer hvilken
 `.env.<miljø>.local` som leses. Malene i `example_env/` kan også sources i shellet
-slik k6-testene gjør det. Alt etter `--` går videre til Playwright:
+slik k6-testene gjør det.
+
+`--headed`, `--grep=`, `--workers=` og `--retries=` virker rett på scriptene:
 
 ```bash
-npm test -- tests/tilgangsstyring --grep bokmål --headed
+npm run test:tilgangsstyring:prod --headed --grep=bokmål
+```
+
+Bruk likhetstegn på dem som tar en verdi, ellers tolker npm neste ord som eget
+argument. Alt annet, og en fritt valgt sti, sendes etter `--`:
+
+```bash
+npm test -- tests/tilgangsstyring --debug
 ```
 
 `npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.

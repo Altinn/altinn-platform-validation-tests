@@ -20,13 +20,30 @@ for (const file of [".env.local", ".env"]) {
   dotenv.config({ path: path.join(__dirname, file), quiet: true });
 }
 
+// Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
+// npm_config_*. De mest brukte plukkes opp her, slik at både
+// `npm run test:tilgangsstyring:prod --headed` og
+// `npm run test:tilgangsstyring:prod -- --headed` virker.
+function npmFlag(name: string): string | undefined {
+  const value = process.env[`npm_config_${name}`];
+  return value && value !== "false" ? value : undefined;
+}
+
+const headed = npmFlag("headed") !== undefined;
+const grep = npmFlag("grep");
+const workers = npmFlag("workers");
+const retries = npmFlag("retries");
+
 export default defineConfig({
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
   // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
   // Traces skrives ved første retry
-  retries: process.env.CI ? 2 : 1,
+  retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
+  workers: workers ? Number(workers) : undefined,
+  // `--grep=bokmål`, med likhetstegn: uten det tolker npm neste ord som eget argument.
+  grep: grep && grep !== "true" ? new RegExp(grep, "i") : undefined,
   reporter: [
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results.xml" }],
@@ -34,7 +51,7 @@ export default defineConfig({
   ],
   timeout: 60000,
   use: {
-    headless: true,
+    headless: !headed,
     trace: "on-first-retry",
     video: "retain-on-failure",
   },
