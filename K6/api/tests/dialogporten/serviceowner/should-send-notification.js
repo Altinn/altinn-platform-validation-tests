@@ -7,7 +7,7 @@ import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks
 
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    return fetchTestData(`dialogporten/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
+    return fetchTestData(`dialogporten/serviceowner/should-send-notification/dialogs-with-transmissions-${__ENV.ENVIRONMENT}.csv`);
 }
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";

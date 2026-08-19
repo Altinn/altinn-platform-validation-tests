@@ -22,7 +22,7 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/pdp/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`);
+    const data = fetchTestData(`authorization/pdp-authorize/enduser-enduser-instances/${__ENV.ENVIRONMENT}/user-user-instance-delegations.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

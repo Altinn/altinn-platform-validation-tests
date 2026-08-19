@@ -260,7 +260,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`authentication/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    const data = fetchTestData(`authorization/pdp-authorize/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
     const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }

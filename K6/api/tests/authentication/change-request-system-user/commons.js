@@ -86,7 +86,7 @@ export function arrangeApprovedSystemUser({
     // an ENK. Built per environment by `yarn tenor:endusers` in
     // altinn-access-management-frontend, since Tenor holds the same synthetic
     // companies everywhere while the Altinn ids differ per environment.
-    const customer = getItemFromList(fetchTestData(`authentication/change-request/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
+    const customer = getItemFromList(fetchTestData(`authentication/change-request-system-user/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
 
     const registration = createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages });
 
