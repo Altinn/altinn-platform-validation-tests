@@ -8,7 +8,7 @@ export INFO_CLOUD_URL="https://info.altinn.no"
 export BASE_URL="https://platform.altinn.no"
 export ENVIRONMENT="prod"
 
-# Syntetisk Tenor-bruker, måned 81-92.
+# Syntetisk Tenor-bruker, måned 81-92. IKKE SJEKK INN ENDRINGER HER
 export TEST_USER_PID=
 export TEST_USER_NAME=
 
