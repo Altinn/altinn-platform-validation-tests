@@ -1,3 +1,4 @@
+import functionAppsReturn401 from "./function-apps-return-401.js";
 import runTokenGenerators, { setup } from "./token-generators.js";
 
 export { setup };
@@ -9,4 +10,5 @@ export { setup };
  */
 export default async function () {
     await runTokenGenerators();
+    functionAppsReturn401();
 }

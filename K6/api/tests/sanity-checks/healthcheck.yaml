@@ -7,3 +7,7 @@ test_definitions:
         test_run:
           secrets:
             - 313175650-maskinporten-client
+
+  - test_file: function-apps-return-401.js
+    contexts:
+      - environment: prod # Irrelevant for this test.
