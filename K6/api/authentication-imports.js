@@ -36,5 +36,6 @@ export { SystemUserBuildingBlocks } from "./building-blocks/authentication/syste
 export { SystemUserClientDelegationBuildingBlocks } from "./building-blocks/authentication/system-user-client-delegation/index.js";
 export { ChangeRequestSystemUserDomainChecks } from "./domain-checks/authentication/change-request-system-user.js";
 export { SystemRegisterDomainChecks } from "./domain-checks/authentication/system-register.js";
+export { SystemUserDomainChecks } from "./domain-checks/authentication/system-user.js";
 export { SystemUserClientDelegationDomainChecks } from "./domain-checks/authentication/system-user-client-delegation.js";
 export { SystemUserRequestDomainChecks } from "./domain-checks/authentication/system-user-request.js";

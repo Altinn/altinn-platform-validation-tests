@@ -58,8 +58,8 @@ const TESTDATA_BRANCH = "authentication-endpoint-coverage";
  * the role does not have leaves the client list empty and the test with nothing
  * to delegate.
  *
- * The names are the ones the browser test registers its system with, see
- * K6/browser/system-user/client-delegation.js.
+ * The urns come from the access package catalogue, so a role that gains a package
+ * needs it added here for the clients it covers to show up.
  */
 const ACCESS_PACKAGES_BY_ORG_TYPE = {
     regnskapsforer: [
@@ -232,6 +232,8 @@ export function arrangeAgentSystemUser() {
             .withExternalRef(uuidv4())
             .withSystemId(registration.systemId)
             .withPartyOrgNo(facilitator.orgNo)
+            // The agent request takes access package objects, while the system
+            // registration below takes the bare urns.
             .withAccessPackages(accessPackages.map((urn) => ({ urn })))
             .withRedirectUrl(REDIRECT_URL)
             .build();
@@ -288,18 +290,18 @@ export function cleanupArranged(arranged) {
     const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
 
     group("Cleanup - the facilitator deletes the agent system user and the vendor its system", function () {
-        for (const systemUser of arranged ?? []) {
-            tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(systemUser.facilitator));
-            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
+        for (const arrangement of arranged ?? []) {
+            tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
+            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
 
             DeleteAgentSystemUser(
                 apiClients.facilitator.bffSystemUserClient,
-                systemUser.facilitator.partyId,
-                systemUser.systemUserId,
-                new DeleteAgentSystemUserQueryBuilder().withPartyUuid(systemUser.facilitator.orgUuid).build(),
+                arrangement.facilitator.partyId,
+                arrangement.systemUserId,
+                new DeleteAgentSystemUserQueryBuilder().withPartyUuid(arrangement.facilitator.orgUuid).build(),
             );
 
-            SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
+            SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, arrangement.systemId);
         }
     });
 }

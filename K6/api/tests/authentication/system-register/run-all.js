@@ -1,3 +1,4 @@
+import runGetRegisteredSystems, { setup as setupGetRegisteredSystems } from "./get-registered-systems.js";
 import runSystemRegisterAccessPackages, { setup as setupSystemRegisterAccessPackages } from "./system-register-access-packages.js";
 import runSystemRegisterCrud, { setup as setupSystemRegisterCrud } from "./system-register-crud.js";
 import runSystemRegisterRights, { setup as setupSystemRegisterRights } from "./system-register-rights.js";
@@ -10,6 +11,7 @@ import runSystemRegisterRights, { setup as setupSystemRegisterRights } from "./s
  */
 export function setup() {
     return {
+        getRegisteredSystems: setupGetRegisteredSystems(),
         systemRegisterAccessPackages: setupSystemRegisterAccessPackages(),
         systemRegisterCrud: setupSystemRegisterCrud(),
         systemRegisterRights: setupSystemRegisterRights(),
@@ -21,6 +23,7 @@ export function setup() {
  * clients, building blocks or checks can be verified in one go.
  */
 export default async function () {
+    runGetRegisteredSystems();
     await runSystemRegisterAccessPackages();
     await runSystemRegisterCrud();
     await runSystemRegisterRights();
