@@ -4,3 +4,6 @@ test_definitions:
   - test_file: delegate-and-remove-client.js
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01

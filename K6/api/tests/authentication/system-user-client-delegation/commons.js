@@ -8,6 +8,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
+import { pickVendor } from "../change-request-system-user/commons.js";
 
 /**
  * Whether to draw a random facilitator rather than walk the list.
@@ -15,9 +16,12 @@ import { ApproveAgentRequest } from "../../../building-blocks/access-management-
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
- * The vendor these tests act as. Owns the system they register.
+ * The scopes a vendor acts with.
  */
-const SYSTEM_OWNER = "713431400";
+const VENDOR_SCOPES = CreateScopeString([
+    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+]);
 
 /**
  * Every system registered by these tests allows the same redirect url.
@@ -70,6 +74,11 @@ let clients = undefined;
 let facilitatorTokenGenerator = undefined;
 
 /**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let vendorTokenGenerator = undefined;
+
+/**
  * Creates and caches the clients these tests use.
  *
  * Built once per VU and reused across its iterations. The token generators cache
@@ -78,23 +87,21 @@ let facilitatorTokenGenerator = undefined;
  *
  * The vendor registers the system and asks for the agent system user, so it holds
  * an enterprise token. Everything after that is the facilitator's own doing, so it
- * goes with a personal token. Which facilitator that is changes per run, so swap
- * the options with setTokenGeneratorOptions and getFacilitatorTokenOpts rather
- * than building a new generator.
+ * goes with a personal token. Neither token is built for anyone in particular:
+ * which vendor and which facilitator a run acts as is decided by swapping the
+ * options with setTokenGeneratorOptions, the vendor with getVendorTokenOpts and
+ * the facilitator with getFacilitatorTokenOpts. The cache is keyed on the options,
+ * so each of them still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the facilitator token generator.
+ * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
-        const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes(CreateScopeString([
-                    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-                    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
-                ]))
-                .withOrganizationNumber(SYSTEM_OWNER)
+                .withScopes(VENDOR_SCOPES)
                 .build(),
         );
 
@@ -122,7 +129,25 @@ export function getClients() {
         };
     }
 
-    return [clients, facilitatorTokenGenerator];
+    return [clients, facilitatorTokenGenerator, vendorTokenGenerator];
+}
+
+/**
+ * Token options for acting as a vendor.
+ *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
+ * @param {string} vendorOrgNo - Organisation number of the vendor this run acts as.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getVendorTokenOpts(vendorOrgNo) {
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(VENDOR_SCOPES)
+        .withOrganizationNumber(vendorOrgNo)
+        .build();
 }
 
 /**
@@ -167,8 +192,16 @@ export function arrangeAgentSystemUser() {
         fail(`cannot arrange an agent system user: facilitator ${facilitator.orgNo} has unknown orgType '${facilitator.orgType}'`);
     }
 
-    const [apiClients, tokenGenerator] = getClients();
-    const registration = createSystemRegistration(accessPackages);
+    // Drawn rather than hardcoded, so a run says something about more than one
+    // vendor over time. The vendor is only ever the organisation the enterprise
+    // token is minted for, so nothing is looked up for it.
+    const vendorOrgNo = pickVendor();
+
+    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
+
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
+
+    const registration = createSystemRegistration(vendorOrgNo, accessPackages);
 
     let systemUserId;
 
@@ -216,6 +249,7 @@ export function arrangeAgentSystemUser() {
     return [
         {
             facilitator,
+            vendorOrgNo,
             systemId: registration.systemId,
             systemUserId,
             accessPackages,
@@ -235,11 +269,12 @@ export function arrangeAgentSystemUser() {
  * @param {object[]} arranged - What arrangeAgentSystemUser returned.
  */
 export function cleanupArranged(arranged) {
-    const [apiClients, tokenGenerator] = getClients();
+    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
 
     group("Cleanup - the facilitator deletes the agent system user and the vendor its system", function () {
         for (const systemUser of arranged ?? []) {
             tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(systemUser.facilitator));
+            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 
             DeleteAgentSystemUser(
                 apiClients.facilitator.bffSystemUserClient,
@@ -256,16 +291,17 @@ export function cleanupArranged(arranged) {
 /**
  * Builds the registration payload for the system the agent system user is made for.
  *
+ * @param {string} vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {string[]} accessPackages - Urns of the access packages the system is registered with.
  * @returns {object} The system id and the registration payload.
  */
-function createSystemRegistration(accessPackages) {
+function createSystemRegistration(vendorOrgNo, accessPackages) {
     const systemName = `clientdelegation${uuidv4()}`;
-    const systemId = `${SYSTEM_OWNER}_${systemName}`;
+    const systemId = `${vendorOrgNo}_${systemName}`;
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()
         .withId(systemId)
-        .withVendor(`0192:${SYSTEM_OWNER}`)
+        .withVendor(`0192:${vendorOrgNo}`)
         .withName({
             en: systemName,
             nb: systemName,
