@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { check, group } from "k6";
 
 import {
     ResourceClient,
@@ -44,6 +44,12 @@ const CONTACT_POINT = {
     contactPage: "https://www.digdir.no",
 };
 
+// The registry checks the resource owner against the consumer claim in the
+// token, so the organization number here and the one on the token have to be the
+// same. yt01 runs on a different org than the rest.
+const SERVICE_OWNER_ORG = "ttd";
+const SERVICE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" : "991825827";
+
 const ROLES = ["DAGL", "REGNA"];
 const ACTIONS = ["read", "write"];
 const MINIMUM_AUTHENTICATION_LEVEL = 3;
@@ -64,13 +70,14 @@ export function setup() {
  * back the rights the policy granted.
  *
  * Writing to the registry needs an enterprise token with the resource.write
- * scope. ttd owns the resource, since it is the one service owner the registry
- * lets create resources without an organization number.
+ * scope, and the registry only lets the owner write: it compares the resource
+ * owner organization number against the consumer claim in the token.
  */
 export default function () {
     const tokenGenerator = new EnterpriseTokenGenerator(
         new EnterpriseTokenBuilder()
-            .withOrganization("ttd")
+            .withOrganization(SERVICE_OWNER_ORG)
+            .withOrganizationNumber(SERVICE_OWNER_ORG_NO)
             .withScopes(CreateScopeString([
                 AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
             ]))
@@ -86,7 +93,7 @@ export default function () {
         .withDescription(RESOURCE_TEXTS)
         .withRightDescription(RIGHT_DESCRIPTION_TEXTS)
         .withResourceType(ResourceType.GenericAccessResource)
-        .withCompetentAuthority("ttd", null, "Testdepartementet")
+        .withCompetentAuthority(SERVICE_OWNER_ORG, SERVICE_OWNER_ORG_NO, "Testdepartementet")
         .withContactPoint(CONTACT_POINT)
         .withStatus("Completed")
         .withDelegable(false)
@@ -121,7 +128,33 @@ export default function () {
     });
 
     group("4. Read the rights the policy granted", () => {
-        ResourceGetPolicyRights(resourceClient, resource.identifier, getPolicyRightsLabel);
+        const rights = ResourceGetPolicyRights(
+            resourceClient,
+            resource.identifier,
+            getPolicyRightsLabel,
+        );
+
+        // The registry flattens the policy into one right per action, so a
+        // policy that arrived intact answers with the actions it was given and
+        // the roles behind each of them.
+        check(rights, {
+            "the policy granted one right per action": (r) =>
+                r !== null && r.length === ACTIONS.length,
+            "every right is for the resource under test": (r) =>
+                r !== null && r.every((right) => right.resource.some(
+                    (attribute) => attribute.value === resource.identifier,
+                )),
+            "the rights cover the actions the policy asked for": (r) =>
+                r !== null && ACTIONS.every((action) => r.some(
+                    (right) => right.action.value === action,
+                )),
+            "every right lists the roles the policy asked for": (r) =>
+                r !== null && r.every((right) => ROLES.every((role) => right.subjects.some(
+                    (subject) => subject.subjectAttributes.some(
+                        (attribute) => attribute.value === role,
+                    ),
+                ))),
+        });
     });
 
     group("5. Delete the resource", () => {

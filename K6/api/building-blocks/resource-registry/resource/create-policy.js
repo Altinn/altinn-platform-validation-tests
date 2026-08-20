@@ -28,10 +28,10 @@ export function ResourceCreatePolicy(
     );
 
     const succeed = check(res, {
-        "ResourceCreatePolicy - status code is 200": (r) =>
-            r.status === 200,
-        "ResourceCreatePolicy - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "ResourceCreatePolicy - status code is 201": (r) =>
+            r.status === 201,
+        "ResourceCreatePolicy - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
 
     if (!succeed) {
