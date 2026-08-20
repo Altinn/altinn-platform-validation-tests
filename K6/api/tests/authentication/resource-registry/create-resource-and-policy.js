@@ -1,4 +1,4 @@
-import { check, group } from "k6";
+import { group } from "k6";
 
 import {
     ResourceClient,
@@ -16,6 +16,7 @@ import {
     ResourceGetPolicyRights,
     ResourceGetResource,
 } from "../../../building-blocks/resource-registry/resource/index.js";
+import { PolicyRightsDomainChecks } from "../../../domain-checks/resource-registry/policy-rights.js";
 
 const createResourceLabel = { step: "1. Create the resource" };
 const getResourceLabel = { step: "2. Read the resource back" };
@@ -26,7 +27,7 @@ const deleteResourceLabel = { step: "5. Delete the resource" };
 // Dummy data. The identifier gets a uuid so reruns do not collide, and the
 // registry only accepts a-z, 0-9, _ and - in it.
 const RESOURCE_TEXTS = {
-    nb: "K6 testressurs",
+    nb: "K6 testressurs - Vegard",
     nn: "K6 testressurs",
     en: "K6 test resource",
 };
@@ -134,27 +135,26 @@ export default function () {
             getPolicyRightsLabel,
         );
 
-        // The registry flattens the policy into one right per action, so a
-        // policy that arrived intact answers with the actions it was given and
-        // the roles behind each of them.
-        check(rights, {
-            "the policy granted one right per action": (r) =>
-                r !== null && r.length === ACTIONS.length,
-            "every right is for the resource under test": (r) =>
-                r !== null && r.every((right) => right.resource.some(
-                    (attribute) => attribute.value === resource.identifier,
-                )),
-            "the rights cover the actions the policy asked for": (r) =>
-                r !== null && ACTIONS.every((action) => r.some(
-                    (right) => right.action.value === action,
-                )),
-            "every right lists the roles the policy asked for": (r) =>
-                r !== null && r.every((right) => ROLES.every((role) => right.subjects.some(
-                    (subject) => subject.subjectAttributes.some(
-                        (attribute) => attribute.value === role,
-                    ),
-                ))),
-        });
+        PolicyRightsDomainChecks.CheckOneRightPerAction(
+            rights,
+            ACTIONS,
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsForResource(
+            rights,
+            resource.identifier,
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsCoverActions(
+            rights,
+            ACTIONS,
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsGrantSubjects(
+            rights,
+            ROLES,
+            "ResourceGetPolicyRights",
+        );
     });
 
     group("5. Delete the resource", () => {
