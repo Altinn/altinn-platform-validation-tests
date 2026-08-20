@@ -28,7 +28,7 @@ const deleteResourceLabel = { step: "5. Delete the resource" };
 // Dummy data. The identifier gets a uuid so reruns do not collide, and the
 // registry only accepts a-z, 0-9, _ and - in it.
 const RESOURCE_TEXTS = {
-    nb: "K6 testressurs - Vegard",
+    nb: "K6 testressurs",
     nn: "K6 testressurs",
     en: "K6 test resource",
 };
