@@ -1,11 +1,19 @@
 import { fail, group } from "k6";
 
 import { getItemFromList } from "../../../../helpers.js";
-import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
+import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
+import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 import { createSystemRegistration, getApproverTokenOpts, getClients, getVendorTokenOpts, resourceRight } from "./commons.js";
 
-const RESOURCE = "ttd-dialogporten-performance-test-01";
+/**
+ * The resource the requested system user is asked for.
+ *
+ * Published and delegable in every environment this test runs in. The resource it
+ * used to name, ttd-dialogporten-performance-test-01, is not published in at23 and
+ * not delegable in yt01, so the test could only ever run in at22.
+ */
+const RESOURCE = "k6-instancedelegation-test";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -84,6 +92,25 @@ export default function (data) {
             const request = RequestSystemUserBuildingBlocks.VendorGet(clients.vendor.requestSystemUserClient, requestId);
 
             SystemUserRequestDomainChecks.CheckRequestStatus(request, "Accepted");
+        });
+
+        // Every iteration makes a system user and a system of its own, so the cleanup
+        // belongs here rather than in a teardown. Without it a scheduled run leaves
+        // both behind every fifteen minutes, which is where the piles of stale system
+        // users in the test environments came from.
+        group("Cleanup - the customer deletes the system user and the vendor its system", function () {
+            const systemUser = SystemUserBuildingBlocks.GetByExternalId(clients.vendor.systemUserClient, {
+                clientId: registration.clientId,
+                systemProviderOrgNo: registration.systemOwner,
+                systemUserOwnerOrgNo: customer.orgNo,
+                externalRef: registration.externalRef,
+            });
+
+            if (systemUser?.id !== undefined) {
+                DeleteSystemUser(clients.approver.bffSystemUserClient, customer.partyId, systemUser.id);
+            }
+
+            SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);
         });
     });
 }

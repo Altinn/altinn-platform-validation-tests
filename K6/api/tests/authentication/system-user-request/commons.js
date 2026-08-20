@@ -1,9 +1,11 @@
 
+import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
     SystemRegisterClient,
+    SystemUserClient,
 } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
@@ -18,6 +20,10 @@ const VENDOR_SCOPES = CreateScopeString([
     AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
     AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
     AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
+
+    // The lookup by external id is how a test finds the system user it just had
+    // approved, which is what it needs to delete it again.
+    AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
 ]);
 
 /**
@@ -113,13 +119,16 @@ export function getClients() {
             vendor: {
                 systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
             },
             approver: {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
 
                 // Approving is what the customer does in the portal, so it goes through
-                // the bff rather than the authentication api the vendor calls.
+                // the bff rather than the authentication api the vendor calls. So is
+                // deleting the system user afterwards.
                 bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }

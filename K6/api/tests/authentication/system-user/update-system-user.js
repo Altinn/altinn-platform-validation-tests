@@ -20,14 +20,25 @@ export function setup() {
 /**
  * Test: a customer can update the system user it owns.
  *
- * The only write on a system user, and it had no test at all, which is what issue
- * #432 pointed out first.
+ * PUT /systemuser is the only write on a system user, and it had no test at all,
+ * which is what issue #432 pointed out first. Parked rather than scheduled: the
+ * endpoint answers 500 for every caller, so there is nothing a test can do to make
+ * it pass. It is left out of functional.yaml and out of both run-all files, and
+ * belongs back in both the day the endpoint works.
  *
- * The new title is not read back on purpose: the endpoint answers 200 for a system
- * user that exists and 404 for one that does not, but persists nothing, since the
- * update is commented out in UpdateSystemUserById in altinn-authentication. So this
- * covers that the endpoint is reachable and accepts what the portal sends, and
- * should grow a read-back once the service actually writes.
+ * Two things are wrong with it in altinn-authentication, both in SystemUserController.
+ *
+ * The action is [HttpPut] with no route parameters, behind a PEP policy that builds
+ * its decision request from route data. With no {party} to read, the authorization
+ * handler throws a NullReferenceException in DecisionHelper.CreateDecisionRequest
+ * before the action runs, so every token shape gets 500: end user, vendor and system
+ * user owner alike. Its DELETE sibling takes {party}/{systemUserId} in the route,
+ * which is where that party is supposed to come from.
+ *
+ * Past that, UpdateSystemUserById persists nothing either. The call to the service
+ * is commented out, so the update would answer 200 without changing the title.
+ *
+ * So the title is not read back here either. Add that once the service writes.
  *
  * @param {object[]} data The arranged system users from setup.
  */

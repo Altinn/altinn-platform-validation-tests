@@ -11,9 +11,13 @@ test_definitions:
       - environment: tt02
       - environment: at22
 
+  # yt01 is missing the userPartyUuid column its personal token needs, so the
+  # approval cannot be made on the customer's behalf there.
   - test_file: create-and-confirm-system-user-request.js
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
 
   - test_file: create-and-delete-system-user-request.js
     contexts:
