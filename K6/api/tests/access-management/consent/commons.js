@@ -24,6 +24,14 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 export const CONSENT_RESOURCE = "samtykke-performance-test";
 
 /**
+ * How long the consents the tests create stay valid, and how long the ones the lookup
+ * test data is generated from stay valid. See {@link consentValidTo} and
+ * {@link lookupConsentValidTo} for why the two differ.
+ */
+const CONSENT_VALID_DAYS = 14;
+const LOOKUP_CONSENT_VALID_DAYS = 1520;
+
+/**
  * Where the consenter is sent after handling the consent request.
  */
 const REDIRECT_URL = "https://altinn.no";
@@ -265,14 +273,15 @@ export function getConsenterTokenOpts(partyUuid = undefined) {
  * @param {string} options.consentId - The id the consent gets.
  * @param {string} options.from - Party urn of the person giving the consent.
  * @param {string} options.to - Party urn of the organization receiving it.
+ * @param {string} [options.validTo] - When the consent expires, defaulting to {@link consentValidTo}.
  * @returns {ConsentRequestDto} The consent request payload.
  */
-export function createConsentRequest({ consentId, from, to }) {
+export function createConsentRequest({ consentId, from, to, validTo = consentValidTo() }) {
     return new ConsentRequestBuilder()
         .WithId(consentId)
         .WithFrom(from)
         .WithTo(to)
-        .WithValidTo(consentValidTo())
+        .WithValidTo(validTo)
         .WithConsentRights(consentRights())
         .WithRedirectUrl(REDIRECT_URL)
         .Build();
@@ -334,13 +343,37 @@ export function organizationUrn(orgNo) {
 }
 
 /**
- * `validTo` for generated consents.
+ * `validTo` for the consents the lifecycle test creates.
  *
- * Far enough out that the consents, and the lookup data derived from them, do not
- * go stale between runs.
+ * Short on purpose: every iteration of post-consent.js leaves a consent behind, and
+ * with a long validity the active consents and the consent log of the persons in the
+ * rotation grow with every run until reading them says more about the pile than about
+ * the endpoint. Two weeks is long enough that a consent outlives the run that made it,
+ * short enough that the pile is bounded by the last two weeks of runs.
+ *
+ * @returns {string} Iso timestamp two weeks from now.
+ */
+export function consentValidTo() {
+    return isoDaysFromNow(CONSENT_VALID_DAYS);
+}
+
+/**
+ * `validTo` for the consents testdataGeneration/consent-data.js creates.
+ *
+ * These are generated once and committed as the lookup test data, so they have to
+ * outlive many runs. The pile they leave behind is bounded by how often the data is
+ * regenerated, not by how often the tests run.
  *
  * @returns {string} Iso timestamp roughly four years from now.
  */
-export function consentValidTo() {
-    return new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString();
+export function lookupConsentValidTo() {
+    return isoDaysFromNow(LOOKUP_CONSENT_VALID_DAYS);
+}
+
+/**
+ * @param {number} days - How far ahead the timestamp should point.
+ * @returns {string} Iso timestamp that many days from now.
+ */
+function isoDaysFromNow(days) {
+    return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 }
