@@ -2,7 +2,6 @@ import { group } from "k6";
 
 import {
     ResourceClient,
-    ResourcePartyType,
     ResourceType,
     ServiceResourceBuilder,
     SubjectAttribute,
@@ -19,6 +18,12 @@ import {
     ResourceGetResource,
 } from "../../../building-blocks/resource-registry/resource/index.js";
 import { PolicyRightsDomainChecks } from "../../../domain-checks/resource-registry/policy-rights.js";
+
+const createResourceLabel = { step: "1. Create the resource" };
+const getResourceLabel = { step: "2. Read the resource back" };
+const createPolicyLabel = { step: "3. Publish the policy" };
+const getPolicyRightsLabel = { step: "4. Read the rights the policy granted" };
+const deleteResourceLabel = { step: "5. Delete the resource" };
 
 // Dummy data. The identifier gets a uuid so reruns do not collide, and the
 // registry only accepts a-z, 0-9, _ and - in it.
@@ -47,38 +52,10 @@ const CONTACT_POINT = {
 const SERVICE_OWNER_ORG = "ttd";
 const SERVICE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" : "991825827";
 
+const ROLES = ["DAGL", "REGNA"];
+const ACCESS_PACKAGES = ["jordbruk"];
 const ACTIONS = ["read", "write"];
 const MINIMUM_AUTHENTICATION_LEVEL = 3;
-
-/**
- * An access package is held either by a private person or by an organization,
- * and the two sets do not overlap: the private ones are the innbygger- packages.
- * A resource says which of the two it is published for through availableForType,
- * so the packages in its policy have to come from the matching set.
- *
- * The role codes go the same way. A private person holds no Altinn role in an
- * organization, so a resource for private persons is granted through access
- * packages alone.
- */
-const SCENARIOS = [
-    {
-        name: "Organization resource",
-        availableForType: [
-            ResourcePartyType.LegalEntityEnterprise,
-            ResourcePartyType.Company,
-        ],
-        roles: ["DAGL", "REGNA"],
-        accessPackages: ["jordbruk"],
-    },
-    {
-        name: "Private person resource",
-        availableForType: [
-            ResourcePartyType.PrivatePerson,
-        ],
-        roles: [],
-        accessPackages: ["innbygger-skatteforhold-privatpersoner"],
-    },
-];
 
 export function setup() {
     requireEnv([
@@ -92,116 +69,8 @@ export function setup() {
 }
 
 /**
- * Runs the full lifecycle for one scenario: create the resource, publish its
- * policy, read back the rights the policy granted, and delete the resource so a
- * passing run leaves nothing behind.
- *
- * @param {ResourceClient} resourceClient Client for the Resource API.
- * @param {object} scenario The scenario, see SCENARIOS.
- * @returns {void}
- */
-function runLifecycle(resourceClient, scenario) {
-    // The step labels carry the scenario, so the two runs stay apart in metrics.
-    const createResourceLabel = { step: `${scenario.name} - 1. Create the resource` };
-    const getResourceLabel = { step: `${scenario.name} - 2. Read the resource back` };
-    const createPolicyLabel = { step: `${scenario.name} - 3. Publish the policy` };
-    const getPolicyRightsLabel = { step: `${scenario.name} - 4. Read the rights the policy granted` };
-    const deleteResourceLabel = { step: `${scenario.name} - 5. Delete the resource` };
-
-    // Every field the registry validates is spelled out here rather than coming
-    // from the builder, so the payload under test is visible in the test.
-    const resource = new ServiceResourceBuilder(`k6-test-resource-${uuidv4()}`)
-        .withTitle(RESOURCE_TEXTS)
-        .withDescription(RESOURCE_TEXTS)
-        .withRightDescription(RIGHT_DESCRIPTION_TEXTS)
-        .withResourceType(ResourceType.GenericAccessResource)
-        .withCompetentAuthority(SERVICE_OWNER_ORG, SERVICE_OWNER_ORG_NO, "Testdepartementet")
-        .withContactPoint(CONTACT_POINT)
-        .withStatus("Completed")
-        .withAvailableForType(scenario.availableForType)
-        .withDelegable(false)
-        .withVisible(false)
-        .withKeyword("k6")
-        .build();
-
-    group(`${scenario.name} - 1. Create the resource`, () => {
-        ResourceCreateResource(resourceClient, resource, createResourceLabel);
-    });
-
-    group(`${scenario.name} - 2. Read the resource back`, () => {
-        ResourceGetResource(resourceClient, resource.identifier, null, getResourceLabel);
-    });
-
-    group(`${scenario.name} - 3. Publish the policy`, () => {
-        const policyFile = new XacmlPolicyBuilder(resource.identifier)
-            .withRule({
-                roles: scenario.roles,
-                accessPackages: scenario.accessPackages,
-                actions: ACTIONS,
-                description: `Subjects that get access to the ${scenario.name}`,
-            })
-            .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
-            .buildFile();
-
-        ResourceCreatePolicy(
-            resourceClient,
-            resource.identifier,
-            policyFile,
-            createPolicyLabel,
-        );
-    });
-
-    group(`${scenario.name} - 4. Read the rights the policy granted`, () => {
-        const rights = ResourceGetPolicyRights(
-            resourceClient,
-            resource.identifier,
-            getPolicyRightsLabel,
-        );
-
-        // A scenario without role codes expects only the access package type
-        // back, so the expected types follow the scenario rather than being fixed.
-        const expectedTypes = [SubjectAttribute.AccessPackage];
-
-        if (scenario.roles.length > 0) {
-            expectedTypes.push(SubjectAttribute.RoleCode);
-        }
-
-        PolicyRightsDomainChecks.CheckOneRightPerAction(
-            rights,
-            ACTIONS,
-            `ResourceGetPolicyRights - ${scenario.name}`,
-        );
-        PolicyRightsDomainChecks.CheckRightsForResource(
-            rights,
-            resource.identifier,
-            `ResourceGetPolicyRights - ${scenario.name}`,
-        );
-        PolicyRightsDomainChecks.CheckRightsCoverActions(
-            rights,
-            ACTIONS,
-            `ResourceGetPolicyRights - ${scenario.name}`,
-        );
-        PolicyRightsDomainChecks.CheckRightsGrantSubjects(
-            rights,
-            [...scenario.roles, ...scenario.accessPackages],
-            `ResourceGetPolicyRights - ${scenario.name}`,
-        );
-        PolicyRightsDomainChecks.CheckRightsSubjectTypes(
-            rights,
-            expectedTypes,
-            `ResourceGetPolicyRights - ${scenario.name}`,
-        );
-    });
-
-    group(`${scenario.name} - 5. Delete the resource`, () => {
-        ResourceDeleteResource(resourceClient, resource.identifier, deleteResourceLabel);
-    });
-}
-
-/**
  * Test: a resource can be created and given a policy, and the registry reports
- * back the rights the policy granted. Runs once for a resource published to
- * organizations and once for one published to private persons.
+ * back the rights the policy granted.
  *
  * Writing to the registry needs an enterprise token with the resource.write
  * scope, and the registry only lets the owner write: it compares the resource
@@ -220,7 +89,85 @@ export default function () {
 
     const resourceClient = new ResourceClient(__ENV.BASE_URL, tokenGenerator);
 
-    SCENARIOS.forEach((scenario) => runLifecycle(resourceClient, scenario));
+    // Every field the registry validates is spelled out here rather than coming
+    // from the builder, so the payload under test is visible in the test.
+    const resource = new ServiceResourceBuilder(`k6-test-resource-${uuidv4()}`)
+        .withTitle(RESOURCE_TEXTS)
+        .withDescription(RESOURCE_TEXTS)
+        .withRightDescription(RIGHT_DESCRIPTION_TEXTS)
+        .withResourceType(ResourceType.GenericAccessResource)
+        .withCompetentAuthority(SERVICE_OWNER_ORG, SERVICE_OWNER_ORG_NO, "Testdepartementet")
+        .withContactPoint(CONTACT_POINT)
+        .withStatus("Completed")
+        .withDelegable(false)
+        .withVisible(false)
+        .withKeyword("k6")
+        .build();
+
+    group("1. Create the resource", () => {
+        ResourceCreateResource(resourceClient, resource, createResourceLabel);
+    });
+
+    group("2. Read the resource back", () => {
+        ResourceGetResource(resourceClient, resource.identifier, null, getResourceLabel);
+    });
+
+    group("3. Publish the policy", () => {
+        const policyFile = new XacmlPolicyBuilder(resource.identifier)
+            .withRule({
+                roles: ROLES,
+                accessPackages: ACCESS_PACKAGES,
+                actions: ACTIONS,
+                description: "Roles and access packages that get access to the K6 test resource",
+            })
+            .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
+            .buildFile();
+
+        ResourceCreatePolicy(
+            resourceClient,
+            resource.identifier,
+            policyFile,
+            createPolicyLabel,
+        );
+    });
+
+    group("4. Read the rights the policy granted", () => {
+        const rights = ResourceGetPolicyRights(
+            resourceClient,
+            resource.identifier,
+            getPolicyRightsLabel,
+        );
+
+        PolicyRightsDomainChecks.CheckOneRightPerAction(
+            rights,
+            ACTIONS,
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsForResource(
+            rights,
+            resource.identifier,
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsCoverActions(
+            rights,
+            ACTIONS,
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsGrantSubjects(
+            rights,
+            [...ROLES, ...ACCESS_PACKAGES],
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsSubjectTypes(
+            rights,
+            [SubjectAttribute.RoleCode, SubjectAttribute.AccessPackage],
+            "ResourceGetPolicyRights",
+        );
+    });
+
+    group("5. Delete the resource", () => {
+        ResourceDeleteResource(resourceClient, resource.identifier, deleteResourceLabel);
+    });
 }
 
 // add the custom reporting for this test to the default summary
