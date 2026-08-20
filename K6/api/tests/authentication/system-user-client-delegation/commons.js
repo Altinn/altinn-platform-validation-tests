@@ -60,6 +60,13 @@ const TESTDATA_BRANCH = "authentication-endpoint-coverage";
  *
  * The urns come from the access package catalogue, so a role that gains a package
  * needs it added here for the clients it covers to show up.
+ *
+ * The package also decides which of the facilitator's clients are delegable, not
+ * only whether it has any: forretningsforer-eiendom only covers clients whose
+ * organisation form is one of the property forms, so a property manager whose
+ * clients are all AS gets an empty list from clients/available. That is a property
+ * of the test data rather than of the test, which is why the facilitator csv only
+ * holds property managers that have property clients.
  */
 const ACCESS_PACKAGES_BY_ORG_TYPE = {
     regnskapsforer: [
