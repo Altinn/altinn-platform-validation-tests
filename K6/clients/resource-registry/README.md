@@ -58,6 +58,12 @@ new XacmlPolicyBuilder(resource.identifier)
 `withRule` also takes `subjects: [{ attributeId, value }]` for anything the two
 lists do not cover, and `SubjectAttribute` holds the attribute ids.
 
+Private persons and organizations hold different access packages, and the two
+sets do not overlap: the private ones are the `innbygger-` packages. Which set a
+resource can use follows from its `availableForType`, and role codes only apply
+to organizations, since a private person holds no Altinn role in one. The test
+runs both shapes.
+
 `withText` is the one shortcut: it sets title, description and right description
 to the same string in all three required languages. Pass a `{nb, nn, en}` object
 to any of the three setters when they should differ.
