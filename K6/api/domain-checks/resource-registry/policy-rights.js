@@ -110,9 +110,46 @@ function CheckRightsGrantSubjects(rights, expectedSubjects, operation) {
     return success;
 }
 
+/**
+ * Checks that the subjects came back as the kind of subject the policy granted
+ * them to. Role codes and access packages both end up as subject values, so
+ * without this a policy that granted an access package but landed as a role code
+ * would still look correct.
+ *
+ * @param {Array<PolicyRightsDTO>} rights - The rights returned by the API.
+ * @param {Array<string>} expectedTypes - The subject attribute types expected,
+ * for instance urn:altinn:rolecode and urn:altinn:accesspackage.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if every right carries every type, false otherwise.
+ */
+function CheckRightsSubjectTypes(rights, expectedTypes, operation) {
+    const typesOf = (right) => (right.subjects ?? []).flatMap(
+        (subject) => (subject.subjectAttributes ?? []).map((attribute) => attribute.type),
+    );
+
+    const incomplete = (rights ?? []).filter((right) => {
+        const types = typesOf(right);
+
+        return !expectedTypes.every((type) => types.includes(type));
+    });
+
+    const success = check(rights, {
+        [`CheckRightsSubjectTypes - Every right from ${operation} carries the expected subject types`]: (response) =>
+            Array.isArray(response) && response.length > 0 && incomplete.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckRightsSubjectTypes - expected every right to carry ${JSON.stringify(expectedTypes)}`);
+        console.error(`CheckRightsSubjectTypes - rights missing types: ${JSON.stringify(incomplete.map(typesOf))}`);
+    }
+
+    return success;
+}
+
 export const PolicyRightsDomainChecks = {
     CheckOneRightPerAction,
     CheckRightsForResource,
     CheckRightsCoverActions,
     CheckRightsGrantSubjects,
+    CheckRightsSubjectTypes,
 };

@@ -448,6 +448,139 @@ class ServiceResourceBuilder {
     }
 
     /**
+     * Sets the resource version.
+     *
+     * @param {string} version The version.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withVersion(version) {
+        this.resource.version = version;
+
+        return this;
+    }
+
+    /**
+     * Sets the spatial coverage.
+     *
+     * @param {Array<string>} spatial Spatial coverage.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withSpatial(spatial) {
+        this.resource.spatial = spatial;
+
+        return this;
+    }
+
+    /**
+     * Sets what the resource produces.
+     *
+     * @param {Array<string>} produces What the resource produces.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withProduces(produces) {
+        this.resource.produces = produces;
+
+        return this;
+    }
+
+    /**
+     * Sets the larger service this resource is part of.
+     *
+     * @param {string} isPartOf The larger service.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withIsPartOf(isPartOf) {
+        this.resource.isPartOf = isPartOf;
+
+        return this;
+    }
+
+    /**
+     * Sets the thematic areas.
+     *
+     * @param {Array<string>} thematicAreas The thematic areas.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withThematicAreas(thematicAreas) {
+        this.resource.thematicAreas = thematicAreas;
+
+        return this;
+    }
+
+    /**
+     * Adds an authorization reference attribute.
+     *
+     * @param {string} id Attribute identifier.
+     * @param {string} value Attribute value.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withAuthorizationReference(id, value) {
+        if (!this.resource.authorizationReference) {
+            this.resource.authorizationReference = [];
+        }
+
+        this.resource.authorizationReference.push({ id, value });
+
+        return this;
+    }
+
+    /**
+     * Sets the consent template, for a Consent resource.
+     *
+     * @param {string} consentTemplate Consent template identifier.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withConsentTemplate(consentTemplate) {
+        this.resource.consentTemplate = consentTemplate;
+
+        return this;
+    }
+
+    /**
+     * Sets the consent text, for a Consent resource.
+     *
+     * @param {string|{[language: string]: string}} consentText Text for all three
+     * required languages, or a per language object.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withConsentText(consentText) {
+        this.resource.consentText = typeof consentText === "string"
+            ? allLanguages(consentText)
+            : consentText;
+
+        return this;
+    }
+
+    /**
+     * Adds a consent metadata field, for a Consent resource.
+     *
+     * @param {string} key Metadata key.
+     * @param {boolean} optional Whether the field is optional.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withConsentMetadata(key, optional) {
+        if (!this.resource.consentMetadata) {
+            this.resource.consentMetadata = {};
+        }
+
+        this.resource.consentMetadata[key] = { optional };
+
+        return this;
+    }
+
+    /**
+     * Sets whether the consent is one time only, for a Consent resource.
+     *
+     * @param {boolean} isOneTimeConsent Whether the consent is one time only.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withIsOneTimeConsent(isOneTimeConsent) {
+        this.resource.isOneTimeConsent = isOneTimeConsent;
+
+        return this;
+    }
+
+    /**
      * Escape hatch for fields without a dedicated method, and for testing
      * payloads the other methods will not produce.
      *

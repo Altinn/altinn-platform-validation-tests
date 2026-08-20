@@ -40,6 +40,24 @@ const policyFile = new XacmlPolicyBuilder(resource.identifier)
 ResourceCreatePolicy(resourceClient, resource.identifier, policyFile);
 ```
 
+Access packages are not a field on the resource: they exist only as policy
+subjects, so they go on a rule next to the role codes. The value is the bare
+package name, not the `urn:altinn:accesspackage:` urn, which is what the
+registry reports back under that type.
+
+```js
+new XacmlPolicyBuilder(resource.identifier)
+    .withRule({
+        roles: ["DAGL"],
+        accessPackages: ["jordbruk"],
+        actions: ["read", "write"],
+    })
+    .buildFile();
+```
+
+`withRule` also takes `subjects: [{ attributeId, value }]` for anything the two
+lists do not cover, and `SubjectAttribute` holds the attribute ids.
+
 `withText` is the one shortcut: it sets title, description and right description
 to the same string in all three required languages. Pass a `{nb, nn, en}` object
 to any of the three setters when they should differ.

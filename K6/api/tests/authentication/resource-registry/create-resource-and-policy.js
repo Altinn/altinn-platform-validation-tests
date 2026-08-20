@@ -4,6 +4,7 @@ import {
     ResourceClient,
     ResourceType,
     ServiceResourceBuilder,
+    SubjectAttribute,
     XacmlPolicyBuilder,
 } from "../../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
@@ -52,6 +53,7 @@ const SERVICE_OWNER_ORG = "ttd";
 const SERVICE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" : "991825827";
 
 const ROLES = ["DAGL", "REGNA"];
+const ACCESS_PACKAGES = ["jordbruk"];
 const ACTIONS = ["read", "write"];
 const MINIMUM_AUTHENTICATION_LEVEL = 3;
 
@@ -114,8 +116,9 @@ export default function () {
         const policyFile = new XacmlPolicyBuilder(resource.identifier)
             .withRule({
                 roles: ROLES,
+                accessPackages: ACCESS_PACKAGES,
                 actions: ACTIONS,
-                description: "Roles that get access to the K6 test resource",
+                description: "Roles and access packages that get access to the K6 test resource",
             })
             .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
             .buildFile();
@@ -152,7 +155,12 @@ export default function () {
         );
         PolicyRightsDomainChecks.CheckRightsGrantSubjects(
             rights,
-            ROLES,
+            [...ROLES, ...ACCESS_PACKAGES],
+            "ResourceGetPolicyRights",
+        );
+        PolicyRightsDomainChecks.CheckRightsSubjectTypes(
+            rights,
+            [SubjectAttribute.RoleCode, SubjectAttribute.AccessPackage],
             "ResourceGetPolicyRights",
         );
     });
