@@ -17,6 +17,7 @@
 //    two area barrels re-exporting PaginationDomainChecks would make a test that
 //    imports both fail on a duplicate binding. Import them directly instead.
 
+export { AuthenticationClient } from "../clients/authentication/authentication.js";
 export {
     ChangeRequestSystemUserBuilder,
     ChangeRequestSystemUserClient,
@@ -29,6 +30,7 @@ export {
     SystemUserClientDelegationClient,
 } from "../clients/authentication/index.js";
 export { SystemUserUpdateDtoBuilder } from "../clients/authentication/system-user.builders.js";
+export { AuthenticationBuildingBlocks } from "./building-blocks/authentication/authentication/index.js";
 export { ChangeRequestSystemUserBuildingBlocks } from "./building-blocks/authentication/change-request-system-user/index.js";
 export { RequestSystemUserBuildingBlocks } from "./building-blocks/authentication/request-system-user/index.js";
 export { SystemRegisterBuildingBlocks } from "./building-blocks/authentication/system-register/index.js";
@@ -39,3 +41,4 @@ export { SystemRegisterDomainChecks } from "./domain-checks/authentication/syste
 export { SystemUserDomainChecks } from "./domain-checks/authentication/system-user.js";
 export { SystemUserClientDelegationDomainChecks } from "./domain-checks/authentication/system-user-client-delegation.js";
 export { SystemUserRequestDomainChecks } from "./domain-checks/authentication/system-user-request.js";
+export { TokenExchangeDomainChecks } from "./domain-checks/authentication/token-exchange.js";
