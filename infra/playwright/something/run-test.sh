@@ -11,8 +11,8 @@ NAMESPACE="playwright"
 
 kubectl --context k6tests-cluster delete -f pod-at22.yaml || true
 kubectl --context k6tests-cluster apply -f pod-at22.yaml
-kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright" --timeout=180s
-kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright"
+kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright-at22" --timeout=180s
+kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright-at22"
 kubectl --context k6tests-cluster delete -f pod-at22.yaml
 
 
@@ -24,8 +24,8 @@ NAMESPACE="playwright"
 
 kubectl --context k6tests-cluster delete -f pod-at23.yaml || true
 kubectl --context k6tests-cluster apply -f pod-at23.yaml
-kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright" --timeout=180s
-kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright"
+kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright-at23" --timeout=180s
+kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright-at23"
 kubectl --context k6tests-cluster delete -f pod-at23.yaml
 
 
@@ -37,8 +37,8 @@ NAMESPACE="playwright"
 
 kubectl --context k6tests-cluster delete -f pod-tt02.yaml || true
 kubectl --context k6tests-cluster apply -f pod-tt02.yaml
-kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright" --timeout=180s
-kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright"
+kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright-tt02" --timeout=180s
+kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright-tt02"
 kubectl --context k6tests-cluster delete -f pod-tt02.yaml
 
 # prod
@@ -49,6 +49,6 @@ NAMESPACE="playwright"
 
 kubectl --context k6tests-cluster delete -f pod-prod.yaml || true
 kubectl --context k6tests-cluster apply -f pod-prod.yaml
-kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright" --timeout=180s
-kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright"
+kubectl --context k6tests-cluster -n "$NAMESPACE" wait --for=condition=Ready pod -l "testrunner=playwright-prod" --timeout=180s
+kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunner=playwright-prod"
 kubectl --context k6tests-cluster delete -f pod-prod.yaml

@@ -29,3 +29,9 @@ variable "tt02_host_name" {
   type      = string
   sensitive = false
 }
+
+variable "preview_environments" {
+  type      = set(string)
+  sensitive = false
+  default   = ["at22", "at23", "tt02"]
+}

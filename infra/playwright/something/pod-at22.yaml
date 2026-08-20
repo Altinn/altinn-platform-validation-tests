@@ -4,7 +4,7 @@ metadata:
   name: playwright
   namespace: playwright
   labels:
-    testrunner: playwright
+    testrunner: playwright-at22
     azure.workload.identity/use: "true"
 spec:
   restartPolicy: Never

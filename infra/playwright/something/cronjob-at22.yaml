@@ -13,7 +13,7 @@ spec:
       template:
         metadata:
           labels:
-            testrunner: playwright
+            testrunner: playwright-at22
             azure.workload.identity/use: "true"
         spec:
           restartPolicy: Never
@@ -53,11 +53,11 @@ spec:
                     secretKeyRef:
                       name: swa-app-token
                       key: SUBSCRIPTION_ID
-                - name: SLACK_WEBHOOK_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: slack-test
-                      key: SLACK_WEBHOOK_URL
+                #- name: SLACK_WEBHOOK_URL
+                #  valueFrom:
+                #    secretKeyRef:
+                #      name: slack-test
+                #      key: SLACK_WEBHOOK_URL
                 - name: REPORT_URL
                   valueFrom:
                     secretKeyRef:
