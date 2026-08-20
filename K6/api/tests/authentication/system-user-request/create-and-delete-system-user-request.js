@@ -2,37 +2,48 @@ import { fail, group } from "k6";
 
 import { getItemFromList } from "../../../../helpers.js";
 import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
-import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { createSystemRegistration, getApproverTokenOpts, getClients, getVendorTokenOpts, resourceRight } from "./commons.js";
+import { createSystemRegistration, getClients, getVendorTokenOpts, resourceRight } from "./commons.js";
 
-const RESOURCE = "ttd-dialogporten-performance-test-01";
+/**
+ * The resource the requested system user is asked for. Published in every
+ * environment these tests run in.
+ */
+const RESOURCE = "k6-instancedelegation-test";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 export { setup } from "./commons.js";
 
+/**
+ * Test: a vendor can withdraw a system user request the customer never approved.
+ *
+ * create-and-confirm-system-user-request.js covers the happy path through
+ * approval. What is left, and what this covers, is finding the request by its
+ * external ref and deleting it again. Without it every run leaves a pending
+ * request on the customer, which is what issue #432 pointed out.
+ *
+ * The system is removed from the register at the end, so a run leaves nothing
+ * behind but the metrics.
+ *
+ * @param {object[]} data The customers from setup.
+ */
 export default function (data) {
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const [clients, , vendorTokenGenerator] = getClients();
     const customer = getItemFromList(data, randomize);
 
     const rights = [resourceRight(RESOURCE)];
 
     const registration = createSystemRegistration({
-        systemNamePrefix: "perftest",
+        systemNamePrefix: "requestdelete",
         registeredRights: rights,
     });
 
-    // The registration drew the vendor, so both tokens are set for who this
-    // iteration acts as before the first call goes out.
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(registration.systemOwner));
-    approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
-    group("As a vendor, I can request a system user and have the customer approve it", function () {
+    group("As a vendor, I can find a system user request by external ref and withdraw it", function () {
         group("Register the system the request is made for", function () {
             const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
-            // A system user request against a system that was never registered is
-            // rejected, so the rest of the test would only measure that.
             if (createdSystemId === null) {
                 fail("cannot request a system user: registering the system did not return a system id");
             }
@@ -49,8 +60,6 @@ export default function (data) {
                 .withRedirectUrl(registration.redirectUrl)
                 .build();
 
-            const request = new CreateRequestSystemUserBuilder().withAccessPackages().build();
-
             const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(clients.vendor.requestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
@@ -62,28 +71,29 @@ export default function (data) {
             requestId = createdRequest?.id;
         });
 
-        group("Approve the request as the customer", function () {
-            if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
-                fail("cannot approve: creating the system user request returned no id");
-            }
-
-            const approved = ApproveSystemUserRequest(
-                clients.approver.bffRequestClient,
-                customer.partyId,
-                requestId,
+        group("Find the request by its external ref", function () {
+            const request = RequestSystemUserBuildingBlocks.VendorGetByExternalRef(
+                clients.vendor.requestSystemUserClient,
+                registration.systemId,
+                customer.orgNo,
+                registration.externalRef,
             );
 
-            SystemUserRequestDomainChecks.CheckRequestApproved(approved);
+            SystemUserRequestDomainChecks.CheckSameRequest(request, requestId);
         });
 
-        group("The approved request is accepted", function () {
+        group("Withdraw the request", function () {
             if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
-                fail("cannot check the status: creating the system user request returned no id");
+                fail("cannot withdraw: creating the system user request returned no id");
             }
 
-            const request = RequestSystemUserBuildingBlocks.VendorGet(clients.vendor.requestSystemUserClient, requestId);
+            const deleted = RequestSystemUserBuildingBlocks.VendorDelete(clients.vendor.requestSystemUserClient, requestId);
 
-            SystemUserRequestDomainChecks.CheckRequestStatus(request, "Accepted");
+            SystemUserRequestDomainChecks.CheckRequestDeleted(deleted);
+        });
+
+        group("Remove the system from the register", function () {
+            SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);
         });
     });
 }

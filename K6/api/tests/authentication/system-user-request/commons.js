@@ -8,11 +8,17 @@ import {
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { pickVendor } from "../change-request-system-user/commons.js";
 
 /**
- * The vendor these tests act as. Owns the registered systems they create.
+ * The scopes a vendor acts with.
  */
-const SYSTEM_OWNER = "713431400";
+const VENDOR_SCOPES = CreateScopeString([
+    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+    AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
+]);
 
 /**
  * The vendor whose existing system the pagination tests read from.
@@ -38,6 +44,11 @@ let clients = undefined;
  * @type {PersonalTokenGenerator | undefined}
  */
 let approverTokenGenerator = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let vendorTokenGenerator = undefined;
 
 /**
  * @type {RequestSystemUserClient | undefined}
@@ -72,28 +83,21 @@ export function setup() {
  * The vendor token carries only the scopes this folder needs, so it does not ask
  * for the system user lookup scope the change request tests use.
  *
- * The approver token depends on which customer an iteration drew, so swap its
- * options with setTokenGeneratorOptions and getApproverTokenOpts rather than
- * building a new generator. The cache is keyed on the options, so each customer
+ * Neither token is built for anyone in particular. Which vendor and which customer
+ * an iteration acts as is decided by swapping the generator options with
+ * setTokenGeneratorOptions, the vendor with getVendorTokenOpts and the approver
+ * with getApproverTokenOpts. The cache is keyed on the options, so each of them
  * still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
-        const vendorScopes = CreateScopeString([
-            AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
-            AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
-        ]);
-
-        const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes(vendorScopes)
-                .withOrganizationNumber(SYSTEM_OWNER)
+                .withScopes(VENDOR_SCOPES)
                 .build(),
         );
 
@@ -120,7 +124,25 @@ export function getClients() {
         };
     }
 
-    return [clients, approverTokenGenerator];
+    return [clients, approverTokenGenerator, vendorTokenGenerator];
+}
+
+/**
+ * Token options for acting as a vendor.
+ *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
+ * @param {string} vendorOrgNo - Organisation number of the vendor this iteration acts as.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getVendorTokenOpts(vendorOrgNo) {
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(VENDOR_SCOPES)
+        .withOrganizationNumber(vendorOrgNo)
+        .build();
 }
 
 /**
@@ -163,20 +185,26 @@ export function resourceRight(resource) {
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
+ * The vendor is drawn rather than hardcoded, so a run says something about more
+ * than one organisation over time. The vendor is only ever the organisation the
+ * enterprise token is minted for, so nothing is looked up for it.
+ *
  * @param {object} options - Test specific parts of the registration.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
+ * @param {string[]} [options.registeredAccessPackages] - Urns of the access packages the system is registered with. Agent system users are asked for access packages rather than rights.
  * @returns {object} Identifiers and the registration payload.
  */
-export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
+export function createSystemRegistration({ systemNamePrefix, registeredRights, registeredAccessPackages = [] }) {
+    const vendorOrgNo = pickVendor();
     const systemName = `${systemNamePrefix}${uuidv4()}`;
-    const systemId = `${SYSTEM_OWNER}_${systemName}`;
+    const systemId = `${vendorOrgNo}_${systemName}`;
     const clientId = uuidv4();
     const externalRef = uuidv4();
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()
         .withId(systemId)
-        .withVendor(`0192:${SYSTEM_OWNER}`)
+        .withVendor(`0192:${vendorOrgNo}`)
         .withName({
             en: systemName,
             nb: systemName,
@@ -188,13 +216,14 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
             nn: "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt.",
         })
         .withRights(registeredRights)
+        .withAccessPackages(registeredAccessPackages)
         .withClientId([clientId])
         .withVisibility(false)
         .withAllowedRedirectUrls([REDIRECT_URL])
         .build();
 
     return {
-        systemOwner: SYSTEM_OWNER,
+        systemOwner: vendorOrgNo,
         systemId,
         systemName,
         clientId,

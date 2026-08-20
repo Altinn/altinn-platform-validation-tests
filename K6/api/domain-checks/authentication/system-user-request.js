@@ -96,6 +96,26 @@ function CheckRequestApproved(approved) {
 }
 
 /**
+ * Checks that a lookup found the request an earlier step created.
+ *
+ * @param {RequestSystemResponse} request - The request the lookup returned.
+ * @param {string|undefined} expectedId - Id of the request the earlier step created.
+ * @returns {boolean} True if the lookup found that request, false otherwise.
+ */
+function CheckSameRequest(request, expectedId) {
+    const success = check(request, {
+        "CheckSameRequest - The lookup found the request that was created": (found) =>
+            found !== null && found?.id === expectedId,
+    });
+
+    if (!success) {
+        console.error(`CheckSameRequest - expected request '${expectedId}', got '${request?.id}'`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that a system user request was withdrawn.
  *
  * @param {boolean} deleted - Whether the delete call reported success.
@@ -119,4 +139,5 @@ export const SystemUserRequestDomainChecks = {
     CheckRequestApproved,
     CheckRequestId,
     CheckRequestDeleted,
+    CheckSameRequest,
 };
