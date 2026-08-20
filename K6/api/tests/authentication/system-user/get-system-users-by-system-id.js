@@ -1,62 +1,11 @@
 import { fail, group } from "k6";
 
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { SystemUserBuildingBlocks, SystemUserClient } from "../../../authentication-imports.js";
+import { SystemUserBuildingBlocks } from "../../../authentication-imports.js";
 import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
+import { getClients, PAGINATION_SYSTEM_ID } from "./commons.js";
 
-/**
- * The vendor whose existing system this test reads from.
- */
-const SYSTEM_OWNER = "312605031";
-
-/**
- * The system this test pages through.
- */
-const SYSTEM_ID = "312605031_Virksomhetsbruker";
-
-/**
- * @type {SystemUserClient | undefined}
- */
-let systemUserClient = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
- * Creates and caches the client this test reads with.
- *
- * Cached at module scope, so a VU builds it once and keeps the token it fetched
- * rather than refetching on every iteration.
- *
- * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
- */
-function getClients() {
-    if (systemUserClient === undefined) {
-        // The vendor endpoint sits behind the system register scope, not a system user one.
-        tokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE]))
-                .withOrganizationNumber(SYSTEM_OWNER)
-                .build(),
-        );
-
-        systemUserClient = new SystemUserClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return [systemUserClient, tokenGenerator];
-}
-
-export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return;
-}
+export { setup } from "./commons.js";
 
 /**
  * Test: System users by system id (vendor) and pagination.
@@ -64,13 +13,16 @@ export function setup() {
  * Ensures that paginated access to system users by systemId works through APIM.
  */
 export default function () {
-    const [systemUserClient, tokenGenerator] = getClients();
+    // The vendor endpoint sits behind the system register scope, not a system user
+    // one, which is what the vendor clients in commons.js carry.
+    const clients = getClients();
+    const systemUserClient = clients.vendor.systemUserClient;
 
     group("As a vendor, I can list system users by system id and follow pagination", function () {
         let firstPage;
 
         group("Fetch the first page of system users", function () {
-            firstPage = SystemUserBuildingBlocks.VendorGetBySystem(systemUserClient, SYSTEM_ID);
+            firstPage = SystemUserBuildingBlocks.VendorGetBySystem(systemUserClient, PAGINATION_SYSTEM_ID);
 
             // Following next links needs a page to follow them from, so a first page
             // that is missing or shaped wrong ends the iteration here rather than
@@ -80,7 +32,7 @@ export default function () {
             }
 
             PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");
-            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, SYSTEM_ID, "system user");
+            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, PAGINATION_SYSTEM_ID, "system user");
         });
 
         group("Follow the next-link pagination", function () {
@@ -90,7 +42,7 @@ export default function () {
 
             let additionalPages = 0;
             if (nextUrl !== null) {
-                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
+                additionalPages = followNextUrlPagination(clients.vendor.tokenGenerator.getToken(), nextUrl);
             }
 
             PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "VendorGetBySystem");
