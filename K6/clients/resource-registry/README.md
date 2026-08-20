@@ -57,5 +57,5 @@ What the registry validates, so a payload built here passes:
 - Writing to the registry needs the `altinn:resourceregistry/resource.write`
   scope, see `K6/scopes.js`.
 
-`K6/api/tests/resource-registry/create-resource-and-policy.js` runs the whole
+`K6/api/tests/authentication/resource-registry/create-resource-and-policy.js` runs the whole
 thing end to end and is the place to look for a worked example.

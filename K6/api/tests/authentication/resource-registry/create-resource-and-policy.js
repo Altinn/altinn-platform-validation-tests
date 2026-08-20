@@ -5,17 +5,17 @@ import {
     ResourceType,
     ServiceResourceBuilder,
     XacmlPolicyBuilder,
-} from "../../../clients/resource-registry/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../common-imports.js";
-import { requireEnv } from "../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+} from "../../../../clients/resource-registry/index.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
+import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import {
     ResourceCreatePolicy,
     ResourceCreateResource,
     ResourceDeleteResource,
     ResourceGetPolicyRights,
     ResourceGetResource,
-} from "../../building-blocks/resource-registry/resource/index.js";
+} from "../../../building-blocks/resource-registry/resource/index.js";
 
 const createResourceLabel = { step: "1. Create the resource" };
 const getResourceLabel = { step: "2. Read the resource back" };
@@ -130,4 +130,4 @@ export default function () {
 }
 
 // add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../common-imports.js";
+export { handleSummary } from "../../../../common-imports.js";
