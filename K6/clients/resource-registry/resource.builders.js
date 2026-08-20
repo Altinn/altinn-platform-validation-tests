@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { ResourceType, SubjectAttribute } from "./resource.constants.js";
+import { SubjectAttribute } from "./resource.constants.js";
 
 /**
  * Builder for creating query parameters for searching resources.
@@ -171,13 +171,21 @@ class ResourceUpdatedQueryBuilder {
 /**
  * Builder for a ServiceResource payload.
  *
- * The defaults pass the registry validation on their own: a delegable
- * GenericAccessResource owned by ttd, with title, description and right
- * description in all three required languages.
+ * Nothing is filled in for you beyond the identifier, so the payload a test
+ * sends is exactly the one the test spelled out. What the registry requires:
+ * an identifier matching ^[a-z0-9_-]{4,}$, a resource type other than Default,
+ * a competent authority (the organization number may only be left out for ttd),
+ * title and description in nb, nn and en, right description in the same three
+ * when the resource is delegable, and a MaskinportenScope resource reference
+ * for a MaskinportenSchema resource.
  *
  * @example
  * const resource = new ServiceResourceBuilder("k6-test-resource")
  *     .withText("K6 test resource")
+ *     .withResourceType(ResourceType.GenericAccessResource)
+ *     .withCompetentAuthority("ttd")
+ *     .withDelegable(false)
+ *     .withVisible(false)
  *     .build();
  */
 class ServiceResourceBuilder {
@@ -193,27 +201,6 @@ class ServiceResourceBuilder {
          */
         this.resource = {
             identifier,
-            title: allLanguages(identifier),
-            description: allLanguages(identifier),
-            rightDescription: allLanguages(identifier),
-            status: "Completed",
-            contactPoints: [
-                {
-                    category: "Support",
-                    email: "noreply@digdir.no",
-                    telephone: null,
-                    contactPage: null,
-                },
-            ],
-            delegable: true,
-            visible: true,
-            hasCompetentAuthority: {
-                // ttd is the only service owner that may skip the organization number.
-                orgcode: "ttd",
-                organization: null,
-                name: allLanguages("Testdepartementet"),
-            },
-            resourceType: ResourceType.GenericAccessResource,
         };
     }
 
@@ -282,13 +269,15 @@ class ServiceResourceBuilder {
      * @param {string} orgcode Service owner code, for instance ttd.
      * @param {string|null} [organization] Organization number. Required for
      * every service owner except ttd.
+     * @param {string|{[language: string]: string}|null} [name] Owner name for all
+     * three languages, or a per language object.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
-    withCompetentAuthority(orgcode, organization = null) {
+    withCompetentAuthority(orgcode, organization = null, name = null) {
         this.resource.hasCompetentAuthority = {
             orgcode,
             organization,
-            name: allLanguages(orgcode),
+            name: typeof name === "string" ? allLanguages(name) : name,
         };
 
         return this;
@@ -378,6 +367,70 @@ class ServiceResourceBuilder {
     }
 
     /**
+     * Sets the resource status, for instance Completed.
+     *
+     * @param {string} status The status.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withStatus(status) {
+        this.resource.status = status;
+
+        return this;
+    }
+
+    /**
+     * Adds a contact point.
+     *
+     * @param {ContactPoint} contactPoint The contact point.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withContactPoint(contactPoint) {
+        if (!this.resource.contactPoints) {
+            this.resource.contactPoints = [];
+        }
+
+        this.resource.contactPoints.push(contactPoint);
+
+        return this;
+    }
+
+    /**
+     * Sets the homepage.
+     *
+     * @param {string} homepage Homepage URL.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withHomepage(homepage) {
+        this.resource.homepage = homepage;
+
+        return this;
+    }
+
+    /**
+     * Sets whether enterprise users get access.
+     *
+     * @param {boolean} enabled Whether enterprise users are enabled.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withEnterpriseUserEnabled(enabled) {
+        this.resource.enterpriseUserEnabled = enabled;
+
+        return this;
+    }
+
+    /**
+     * Sets whether self identified users get access.
+     *
+     * @param {boolean} enabled Whether self identified users are enabled.
+     * @returns {ServiceResourceBuilder} This builder, for chaining.
+     */
+    withSelfIdentifiedUserEnabled(enabled) {
+        this.resource.selfIdentifiedUserEnabled = enabled;
+
+        return this;
+    }
+
+    /**
      * Adds a keyword.
      *
      * @param {string} word The keyword.
@@ -430,6 +483,7 @@ class ServiceResourceBuilder {
  * @example
  * const policyFile = new XacmlPolicyBuilder("k6-test-resource")
  *     .withRule({ roles: ["DAGL"], actions: ["read", "write"] })
+ *     .withMinimumAuthenticationLevel(3)
  *     .buildFile();
  */
 class XacmlPolicyBuilder {
@@ -450,12 +504,12 @@ class XacmlPolicyBuilder {
         this.rules = [];
 
         /**
-         * Minimum authentication level the policy requires, or null for no
-         * obligation.
+         * Minimum authentication level the policy requires. Stays null, and the
+         * obligation is left out of the policy, until set.
          *
          * @type {number|null}
          */
-        this.minimumAuthenticationLevel = 3;
+        this.minimumAuthenticationLevel = null;
     }
 
     /**
