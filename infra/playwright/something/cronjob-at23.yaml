@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: playwright
+  name: playwright-at23
   namespace: playwright
 spec:
-  schedule: "0 * * * *"
+  schedule: "15 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -32,14 +32,12 @@ spec:
               value: spot
           containers:
             - name: playwright
-              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:altinn-access-management-frontend-v3
+              image: altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at23
               volumeMounts:
                 - name: swa-config
                   mountPath: /etc/swa-config
                   readOnly: true
               envFrom:
-                - secretRef:
-                    name: am-ui-playwright-env
                 - secretRef:
                     name: playwright-user-at23
                 - configMapRef:

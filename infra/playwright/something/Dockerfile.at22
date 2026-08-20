@@ -48,7 +48,7 @@ WORKDIR /tmp
 
 COPY --from=builder /app/generateMetricsFromJunitReport .
 
-COPY --chown=playwright:playwright ./run-playwright-tests.sh .
+COPY --chown=playwright:playwright ./run-playwright-tests-at22.sh .
 
 USER playwright
 
@@ -59,4 +59,4 @@ USER playwright
 
 ENV PATH=$PATH:/opt/az/bin
 
-CMD ["bash", "./run-playwright-tests.sh"]
+CMD ["bash", "./run-playwright-tests-at22.sh"]

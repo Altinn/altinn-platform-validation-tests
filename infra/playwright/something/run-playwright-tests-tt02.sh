@@ -6,8 +6,8 @@ cd altinn-platform-validation-tests/playwright
 
 npm install
 
-npm run test:at23 || true # Needs to be the input
-env=at23
+npm run test:tt02 || true # Needs to be the input
+env=tt02
 
 set +e
 /tmp/generateMetricsFromJunitReport
