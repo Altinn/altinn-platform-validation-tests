@@ -95,9 +95,28 @@ function CheckRequestApproved(approved) {
     return success;
 }
 
+/**
+ * Checks that a system user request was withdrawn.
+ *
+ * @param {boolean} deleted - Whether the delete call reported success.
+ * @returns {boolean} True if the request was withdrawn, false otherwise.
+ */
+function CheckRequestDeleted(deleted) {
+    const success = check(deleted, {
+        "CheckRequestDeleted - Request was withdrawn": (result) => result === true,
+    });
+
+    if (!success) {
+        console.error(`CheckRequestDeleted - delete did not report success, got '${deleted}'`);
+    }
+
+    return success;
+}
+
 export const SystemUserRequestDomainChecks = {
     CheckRequestCreated,
     CheckRequestStatus,
     CheckRequestApproved,
     CheckRequestId,
+    CheckRequestDeleted,
 };

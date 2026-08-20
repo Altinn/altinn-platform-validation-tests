@@ -24,6 +24,19 @@ const VENDOR_SCOPES = CreateScopeString([
 ]);
 
 /**
+ * The scopes a facilitator acts with.
+ *
+ * The delegation endpoints sit behind the client delegation scopes, so the portal
+ * scope the facilitator needs for the bff is not enough on its own: without these
+ * the delegation calls answer 403 with an empty body.
+ */
+const FACILITATOR_SCOPES = CreateScopeString([
+    AltinnScopes.PORTAL.ENDUSER,
+    AltinnScopes.CLIENTDELEGATIONS.READ,
+    AltinnScopes.CLIENTDELEGATIONS.WRITE,
+]);
+
+/**
  * Every system registered by these tests allows the same redirect url.
  */
 const REDIRECT_URL = "https://digdir.no";
@@ -109,7 +122,7 @@ export function getClients() {
             new PersonalTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+                .withScopes(FACILITATOR_SCOPES)
                 .build(),
         );
 
@@ -153,6 +166,9 @@ export function getVendorTokenOpts(vendorOrgNo) {
 /**
  * Token options for acting as a facilitator.
  *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
  * @param {object} facilitator - The facilitator this run acts on behalf of.
  * @returns {object} Options to hand to setTokenGeneratorOptions.
  */
@@ -160,7 +176,7 @@ export function getFacilitatorTokenOpts(facilitator) {
     return new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
-        .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+        .withScopes(FACILITATOR_SCOPES)
         .withUserId(facilitator.userId)
         .withPartyUuid(facilitator.userPartyUuid)
         .build();

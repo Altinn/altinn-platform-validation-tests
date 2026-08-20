@@ -7,3 +7,10 @@ test_definitions:
       - environment: at23
       - environment: tt02
       - environment: yt01
+
+  - test_file: create-and-delete-change-request.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
