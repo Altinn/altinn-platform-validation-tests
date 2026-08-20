@@ -32,7 +32,7 @@ class SystemUserClientDelegationClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/enduser/systemuser";
+        this.BASE_PATH = "/authentication/api/v1/enduser/systemuser";
 
         /**
          * Fully-qualified API path.

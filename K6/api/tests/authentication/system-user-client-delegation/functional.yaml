@@ -1,0 +1,6 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/system-user-client-delegation
+test_definitions:
+  - test_file: delegate-and-remove-client.js
+    contexts:
+      - environment: at22

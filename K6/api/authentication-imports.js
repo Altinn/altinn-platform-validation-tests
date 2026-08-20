@@ -16,11 +16,6 @@
 // 3. Nothing from domain-checks/common/ belongs here. Those are cross-area, so
 //    two area barrels re-exporting PaginationDomainChecks would make a test that
 //    imports both fail on a duplicate binding. Import them directly instead.
-//
-// Deliberately left out: the system-user-client-delegation building blocks. They
-// have no callers, and their names (GetClients, GetAgents) are too generic to sit
-// in a flat namespace. Give them a SystemUserClientDelegationBuildingBlocks
-// object first, the way the other four have.
 
 export {
     ChangeRequestSystemUserBuilder,
@@ -38,6 +33,8 @@ export { ChangeRequestSystemUserBuildingBlocks } from "./building-blocks/authent
 export { RequestSystemUserBuildingBlocks } from "./building-blocks/authentication/request-system-user/index.js";
 export { SystemRegisterBuildingBlocks } from "./building-blocks/authentication/system-register/index.js";
 export { SystemUserBuildingBlocks } from "./building-blocks/authentication/system-user/index.js";
+export { SystemUserClientDelegationBuildingBlocks } from "./building-blocks/authentication/system-user-client-delegation/index.js";
 export { ChangeRequestSystemUserDomainChecks } from "./domain-checks/authentication/change-request-system-user.js";
 export { SystemRegisterDomainChecks } from "./domain-checks/authentication/system-register.js";
+export { SystemUserClientDelegationDomainChecks } from "./domain-checks/authentication/system-user-client-delegation.js";
 export { SystemUserRequestDomainChecks } from "./domain-checks/authentication/system-user-request.js";
