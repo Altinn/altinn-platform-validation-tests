@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+az acr login -n altinnplatformvalidationtests
 
 # at22
-time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at22 .
+time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at22 -f Dockerfile.at22 .
 docker push altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at22
 
 NAMESPACE="playwright"
@@ -16,7 +17,7 @@ kubectl --context k6tests-cluster delete -f pod-at22.yaml
 
 
 # at23
-time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at23 .
+time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at23 -f Dockerfile.at23 .
 docker push altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:at23
 
 NAMESPACE="playwright"
@@ -29,7 +30,7 @@ kubectl --context k6tests-cluster delete -f pod-at23.yaml
 
 
 # tt02
-time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:tt02 .
+time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:tt02 -f Dockerfile.tt02 .
 docker push altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:tt02
 
 NAMESPACE="playwright"
@@ -41,7 +42,7 @@ kubectl --context k6tests-cluster -n "$NAMESPACE" logs -f --tail=-1 -l "testrunn
 kubectl --context k6tests-cluster delete -f pod-tt02.yaml
 
 # prod
-time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:prod .
+time docker build -t altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:prod -f Dockerfile.prod .
 docker push altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:prod
 
 NAMESPACE="playwright"

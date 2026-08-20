@@ -13,7 +13,6 @@ set +e
 /tmp/generateMetricsFromJunitReport
 exit_code=$?
 set -e
-exit_code=53
 if [ "$exit_code" -eq 53 ]; then
     echo "Not all Playwright Tests ran successfully, uploading the report..."
 
