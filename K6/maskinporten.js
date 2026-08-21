@@ -92,7 +92,7 @@ export class MaskinportenAccessTokenGenerator {
     #signingKey = null;
 
     /**
-     * @param {any} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
+     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
      * @param {string} [maskinportenKid=__ENV.MASKINPORTEN_KID] - Key ID of the key registered on the Maskinporten client.
      * @param {string} [maskinportenClientId=__ENV.MASKINPORTEN_CLIENT_ID] - Maskinporten client ID, used as the `iss` claim.
      * @param {string} [clientPem=__ENV.MASKINPORTEN_CLIENT_PEM] - The client's private key as PEM. Quote it in .env so the newlines survive sourcing; literal `\n` sequences are converted back to real line breaks.
@@ -150,7 +150,7 @@ export class MaskinportenAccessTokenGenerator {
     }
 
     /**
-     * @param {any} tokenGeneratorOptions - Replacement options from {@link MaskinportenTokenBuilder}.
+     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Replacement options from {@link MaskinportenTokenBuilder}.
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = tokenGeneratorOptions;
