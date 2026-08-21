@@ -30,7 +30,7 @@ export function setup() {
  */
 export default function (testData) {
     const [authorizeClient] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], (__ENV.RANDOMIZE ?? "true") === "true");
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
     AuthorizePost(
         authorizeClient,

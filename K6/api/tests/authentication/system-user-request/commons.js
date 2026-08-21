@@ -78,7 +78,7 @@ export function setup() {
  * building a new generator. The cache is keyed on the options, so each customer
  * still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ * @returns {[any, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
  */
 export function getClients() {
     if (clients === undefined) {

@@ -119,7 +119,7 @@ export function getLookupConsents(env) {
  * Handling a consent request is what the person does in the portal, so it goes
  * through the bff rather than the enterprise api the organization calls.
  *
- * @returns {[object, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {

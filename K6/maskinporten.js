@@ -209,7 +209,6 @@ export class MaskinportenAccessTokenGenerator {
      * @param {string} scopes - Space-separated scopes to request.
      * @returns {Promise<string>} The access token from the response.
      * @throws {Error} If the request fails or the response cannot be parsed.
-     * @private
      */
     async #generateAccessToken(scopes) {
         const grant = await this.#createJwtGrant(scopes);
@@ -233,7 +232,7 @@ export class MaskinportenAccessTokenGenerator {
         }
 
         try {
-            return JSON.parse(response.body).access_token;
+            return JSON.parse(String(response.body)).access_token;
         } catch (e) {
             throw new Error(
                 `Unable to parse Maskinporten token: ${e.message}`,
@@ -247,7 +246,6 @@ export class MaskinportenAccessTokenGenerator {
      *
      * @param {string} scopes - Space-separated scopes to put in the `scope` claim.
      * @returns {Promise<string>} The signed JWT.
-     * @private
      */
     async #createJwtGrant(scopes) {
         const header = {
@@ -290,7 +288,6 @@ export class MaskinportenAccessTokenGenerator {
      *
      * @returns {Promise<CryptoKey>} The imported signing key.
      * @throws {Error} When the key cannot be imported.
-     * @private
      */
     async #getSigningKey() {
         if (this.#signingKey !== null) {
@@ -321,7 +318,6 @@ export class MaskinportenAccessTokenGenerator {
      * @param {string} token - The access token to inspect.
      * @returns {number} Expiry as a Unix timestamp in milliseconds.
      * @throws {Error} If the payload cannot be decoded, or the token is already expired.
-     * @private
      */
     #getExpirationTimestamp(token) {
         let expirationTimestamp;

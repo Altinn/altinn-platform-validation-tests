@@ -22,7 +22,7 @@ export const options = getOptions([getAccessPackagesToLabel, tokenGeneratorLabel
  */
 export default function (testData) {
     const [connectionsApiClient, tokenGenerator] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], (__ENV.RANDOMIZE ?? "true") === "true");
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.userId));
     const queryParamsTo = new GetAccessPackagesQueryBuilder()
         .withParty(party.orgUuid)

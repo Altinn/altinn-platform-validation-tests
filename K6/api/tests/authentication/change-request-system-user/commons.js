@@ -170,7 +170,7 @@ export function cleanupArranged(arranged) {
  * with getVendorTokenOpts and the approver with getApproverTokenOpts. The cache
  * is keyed on the options, so each of them still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
