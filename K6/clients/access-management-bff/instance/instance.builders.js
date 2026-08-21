@@ -464,7 +464,7 @@ class GetInstanceSimplifiedUsersQueryBuilder {
  */
 class InstanceRightsDelegationDtoBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {InstanceRightsDelegationDto} */ ({});
     }
 
     /**

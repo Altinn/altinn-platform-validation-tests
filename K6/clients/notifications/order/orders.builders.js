@@ -7,11 +7,12 @@ import { ChannelSchema, ComposedEmailRequestExt, ComposedEmailSendingOptionsExt,
  * makes the API reject the request, since a null does not deserialize into the
  * enums it expects, so they are stripped before the payload leaves the builder.
  *
- * @param {object} request The builder state.
- * @returns {object} The payload without the properties that are still null.
+ * @template T
+ * @param {T} request The builder state.
+ * @returns {T} The payload without the properties that are still null.
  */
 function withoutUnsetProperties(request) {
-    const payload = {};
+    const payload = /** @type {T} */ ({});
 
     for (const key of Object.keys(request)) {
         if (request[key] !== null) {

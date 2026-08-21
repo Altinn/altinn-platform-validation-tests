@@ -5,7 +5,7 @@ import { PrivateNotificationSettingsUpdateRequest } from "./private-notification
  */
 class PrivateNotificationSettingsUpdateRequestBuilder {
     constructor() {
-        this.request = {};
+        this.request = /** @type {PrivateNotificationSettingsUpdateRequest} */ ({});
     }
 
     /**

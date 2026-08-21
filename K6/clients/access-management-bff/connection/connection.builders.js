@@ -194,7 +194,7 @@ class GetSimplifiedConnectionsQueryBuilder {
  */
 class ValidatePersonInputBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {ValidatePersonInput} */ ({});
     }
 
     /**

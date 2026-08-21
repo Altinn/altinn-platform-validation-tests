@@ -35,7 +35,7 @@ class GetConsentCountQueryBuilder {
  */
 class ApproveConsentContextBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {ApproveConsentContext} */ ({});
     }
 
     /**

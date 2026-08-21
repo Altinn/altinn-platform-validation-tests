@@ -5,7 +5,7 @@ import { AddressCodeResendRequest, AddressCodeSendRequest, AddressType, AddressV
  */
 class AddressVerificationRequestBuilder {
     constructor() {
-        this.request = {};
+        this.request = /** @type {AddressVerificationRequest} */ ({});
     }
 
     /**
@@ -84,7 +84,7 @@ class AddressVerificationRequestBuilder {
  */
 class AddressCodeSendRequestBuilder {
     constructor() {
-        this.request = {};
+        this.request = /** @type {AddressCodeSendRequest} */ ({});
     }
 
     /**
@@ -142,7 +142,7 @@ class AddressCodeSendRequestBuilder {
  */
 class AddressCodeResendRequestBuilder {
     constructor() {
-        this.request = {};
+        this.request = /** @type {AddressCodeResendRequest} */ ({});
     }
 
     /**

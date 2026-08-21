@@ -573,7 +573,7 @@ class DelegationBatchInputBuilder {
  */
 class PersonInputBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {PersonInput} */ ({});
     }
 
     /**

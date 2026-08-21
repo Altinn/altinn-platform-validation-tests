@@ -6,7 +6,7 @@ import { NotificationAddressModel, SettingsControllerUpdateSelectedLanguageReque
  */
 class SettingsControllerUpdateSelectedLanguageRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {SettingsControllerUpdateSelectedLanguageRequest} */ ({});
     }
 
     /**
@@ -37,7 +37,7 @@ class SettingsControllerUpdateSelectedLanguageRequestBuilder {
  */
 class NotificationAddressModelBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {NotificationAddressModel} */ ({});
     }
 
     /**

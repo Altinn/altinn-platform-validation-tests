@@ -35,7 +35,7 @@ class DeleteAgentSystemUserQueryBuilder {
  */
 class NewSystemUserRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {NewSystemUserRequest} */ ({});
     }
 
     /**

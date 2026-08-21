@@ -102,7 +102,7 @@ class SearchScopesQueryBuilder {
  */
 class GetSupplierResourceDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSupplierResourceDelegationCheckQuery} */ ({});
     }
 
     /**
