@@ -1,7 +1,7 @@
 import runGetRegisteredSystems, { setup as setupGetRegisteredSystems } from "./get-registered-systems.js";
-import runSystemRegisterAccessPackages, { setup as setupSystemRegisterAccessPackages } from "./system-register-access-packages.js";
-import runSystemRegisterCrud, { setup as setupSystemRegisterCrud } from "./system-register-crud.js";
-import runSystemRegisterRights, { setup as setupSystemRegisterRights } from "./system-register-rights.js";
+import runSystemRegisterAccessPackages, { setup as setupSystemRegisterAccessPackages, teardown as teardownSystemRegisterAccessPackages } from "./system-register-access-packages.js";
+import runSystemRegisterCrud, { setup as setupSystemRegisterCrud, teardown as teardownSystemRegisterCrud } from "./system-register-crud.js";
+import runSystemRegisterRights, { setup as setupSystemRegisterRights, teardown as teardownSystemRegisterRights } from "./system-register-rights.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
@@ -27,6 +27,16 @@ export default async function () {
     await runSystemRegisterAccessPackages();
     await runSystemRegisterCrud();
     await runSystemRegisterRights();
+}
+
+/**
+ * k6 teardown stage. Runs the teardown of every test in the folder, so a run leaves
+ * the register as it found it.
+ */
+export async function teardown() {
+    await teardownSystemRegisterCrud();
+    await teardownSystemRegisterRights();
+    await teardownSystemRegisterAccessPackages();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

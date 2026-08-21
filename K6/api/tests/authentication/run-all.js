@@ -1,9 +1,9 @@
 import runChangeRequestSystemUser, { setup as setupChangeRequestSystemUser, teardown as teardownChangeRequestSystemUser } from "./change-request-system-user/run-all.js";
 import runResourceRegistry, { setup as setupResourceRegistry } from "./resource-registry/run-all.js";
-import runSystemRegister, { setup as setupSystemRegister } from "./system-register/run-all.js";
+import runSystemRegister, { setup as setupSystemRegister, teardown as teardownSystemRegister } from "./system-register/run-all.js";
 import runSystemUser, { setup as setupSystemUser, teardown as teardownSystemUser } from "./system-user/run-all.js";
 import runSystemUserClientDelegation, { setup as setupSystemUserClientDelegation, teardown as teardownSystemUserClientDelegation } from "./system-user-client-delegation/run-all.js";
-import runSystemUserRequest, { setup as setupSystemUserRequest } from "./system-user-request/run-all.js";
+import runSystemUserRequest, { setup as setupSystemUserRequest, teardown as teardownSystemUserRequest } from "./system-user-request/run-all.js";
 import runTokenExchange, { setup as setupTokenExchange } from "./token-exchange/run-all.js";
 
 /**
@@ -49,15 +49,17 @@ export default async function (data) {
 }
 
 /**
- * k6 teardown stage. Removes what the folders arranged, for the folders that
- * arrange anything.
+ * k6 teardown stage. Removes what the folders arranged, and sweeps up the systems
+ * a failed step left in the register.
  *
  * @param {object} data Setup results, keyed per folder.
  */
-export function teardown(data) {
+export async function teardown(data) {
     teardownChangeRequestSystemUser(data.changeRequestSystemUser);
     teardownSystemUser(data.systemUser);
     teardownSystemUserClientDelegation(data.systemUserClientDelegation);
+    teardownSystemUserRequest(data.systemUserRequest);
+    await teardownSystemRegister();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

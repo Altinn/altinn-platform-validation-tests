@@ -1,7 +1,8 @@
+import { cleanupArranged } from "../change-request-system-user/commons.js";
 import runCreateAndApproveChangeRequest from "../change-request-system-user/create-and-approve-change-request.js";
 import { setup as setupChangeRequest } from "../change-request-system-user/create-and-approve-change-request.js";
 import { setup as setupSystemUserRequest } from "../system-user-request/commons.js";
-import runCreateAndConfirmSystemUserRequest from "../system-user-request/create-and-confirm-system-user-request.js";
+import runCreateAndConfirmSystemUserRequest, { teardown as teardownCreateAndConfirm } from "../system-user-request/create-and-confirm-system-user-request.js";
 import runGetAgentSystemUserRequestsBySystemId from "../system-user-request/get-agent-system-user-requests-by-system-id.js";
 import runGetSystemUserRequestsBySystemId from "../system-user-request/get-system-user-requests-by-system-id.js";
 import runGetSystemUsersBySystemId from "./get-system-users-by-system-id.js";
@@ -11,13 +12,13 @@ import runGetSystemUsersBySystemId from "./get-system-users-by-system-id.js";
  *
  * The two create flows no longer take the same shape: the change request test
  * arranges a system user in its setup and hands its default function the ids,
- * while create-and-confirm takes the customer list.
+ * while create-and-confirm takes the customers and the vendor its setup drew.
  *
  * @returns {object} One entry per test that needs setup data.
  */
 export function setup() {
     return {
-        customers: setupSystemUserRequest(),
+        systemUserRequest: setupSystemUserRequest(),
         changeRequest: setupChangeRequest(),
     };
 }
@@ -35,8 +36,18 @@ export default function (data) {
     runGetSystemUsersBySystemId();
     runGetSystemUserRequestsBySystemId();
     runGetAgentSystemUserRequestsBySystemId();
-    runCreateAndConfirmSystemUserRequest(data.customers);
+    runCreateAndConfirmSystemUserRequest(data.systemUserRequest);
     runCreateAndApproveChangeRequest(data.changeRequest);
+}
+
+/**
+ * k6 teardown stage. Removes what the two create flows left behind.
+ *
+ * @param {object} data Setup results, keyed per test.
+ */
+export function teardown(data) {
+    teardownCreateAndConfirm(data.systemUserRequest);
+    cleanupArranged(data.changeRequest);
 }
 
 export { handleSummary } from "../../../../common-imports.js";

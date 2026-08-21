@@ -11,6 +11,7 @@ import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder,
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
+import { sweepRegisteredSystems } from "../commons.js";
 
 /**
  * The scopes a vendor acts with.
@@ -67,16 +68,42 @@ let paginationClient = undefined;
 let paginationTokenGenerator = undefined;
 
 /**
- * Fetches the customers the system users are created for.
+ * Fetches the customers the system users are created for, and draws the vendor that
+ * registers the systems.
  *
- * Returned flat rather than segmented per VU, so a test picks from the whole list
- * with getItemFromList, which walks it across iterations.
+ * The customers come back flat rather than segmented per VU, so a test picks from
+ * the whole list with getItemFromList, which walks it across iterations.
  *
- * @returns {object[]} The customers the tests act on behalf of.
+ * The vendor is drawn once per run rather than per iteration, so a run says
+ * something about a different organisation each time while the teardown still knows
+ * whose register to sweep. Nothing is looked up for it: the vendor is only ever the
+ * organisation the enterprise token is minted for.
+ *
+ * @returns {{customers: object[], vendorOrgNo: string}} The customers the tests act on behalf of, and the vendor they register systems as.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
-    return fetchTestData(`authentication/system-user-request/${__ENV.ENVIRONMENT}.csv`);
+
+    return {
+        customers: fetchTestData(`authentication/system-user-request/${__ENV.ENVIRONMENT}.csv`),
+        vendorOrgNo: pickVendor(),
+    };
+}
+
+/**
+ * Removes the systems a test left in the register.
+ *
+ * Call from a test's teardown, with the prefix that test names its systems with.
+ *
+ * @param {string} vendorOrgNo - The vendor from setup.
+ * @param {string} systemNamePrefix - The prefix the test names its systems with.
+ */
+export function sweepSystems(vendorOrgNo, systemNamePrefix) {
+    const [clients, , vendorTokenGenerator] = getClients();
+
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
+
+    sweepRegisteredSystems(clients.vendor.systemRegisterClient, vendorOrgNo, systemNamePrefix);
 }
 
 /**
@@ -194,18 +221,14 @@ export function resourceRight(resource) {
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
- * The vendor is drawn rather than hardcoded, so a run says something about more
- * than one organisation over time. The vendor is only ever the organisation the
- * enterprise token is minted for, so nothing is looked up for it.
- *
  * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them, and so the teardown can find what a failed run left behind.
+ * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as, from setup.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
  * @param {string[]} [options.registeredAccessPackages] - Urns of the access packages the system is registered with. Agent system users are asked for access packages rather than rights.
  * @returns {object} Identifiers and the registration payload.
  */
-export function createSystemRegistration({ systemNamePrefix, registeredRights, registeredAccessPackages = [] }) {
-    const vendorOrgNo = pickVendor();
+export function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages = [] }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;
     const systemId = `${vendorOrgNo}_${systemName}`;
     const clientId = uuidv4();

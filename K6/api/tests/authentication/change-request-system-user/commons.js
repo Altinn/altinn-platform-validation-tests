@@ -18,6 +18,7 @@ import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, Re
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -103,6 +104,7 @@ export function arrangeApprovedSystemUser({
         {
             customer,
             vendorOrgNo,
+            systemNamePrefix,
             systemId: registration.systemId,
             clientId: registration.clientId,
             externalRef: registration.externalRef,
@@ -152,6 +154,12 @@ export function cleanupArranged(arranged) {
             DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
+
+            // The delete above takes the system this run arranged. The sweep takes
+            // whatever an earlier run of the same test left in this vendor's
+            // register, which is what happens when the arrange itself broke: k6
+            // skips the teardown when the setup gives up.
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, systemUser.vendorOrgNo, systemUser.systemNamePrefix);
         }
     });
 }

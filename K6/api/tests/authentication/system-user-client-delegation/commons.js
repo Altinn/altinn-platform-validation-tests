@@ -9,6 +9,7 @@ import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, Requ
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
+import { sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to draw a random facilitator rather than walk the list.
@@ -35,6 +36,11 @@ const FACILITATOR_SCOPES = CreateScopeString([
     AltinnScopes.CLIENTDELEGATIONS.READ,
     AltinnScopes.CLIENTDELEGATIONS.WRITE,
 ]);
+
+/**
+ * What these tests name their systems, which is also what the teardown sweeps up.
+ */
+const SYSTEM_NAME_PREFIX = "clientdelegation";
 
 /**
  * Every system registered by these tests allows the same redirect url.
@@ -309,6 +315,12 @@ export function cleanupArranged(arranged) {
             );
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, arrangement.systemId);
+
+            // The delete above takes the system this run arranged. The sweep takes
+            // whatever an earlier run left in this vendor's register, which is what
+            // happens when the arrange itself broke: k6 skips the teardown when the
+            // setup gives up.
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX);
         }
     });
 }
@@ -321,7 +333,7 @@ export function cleanupArranged(arranged) {
  * @returns {object} The system id and the registration payload.
  */
 function createSystemRegistration(vendorOrgNo, accessPackages) {
-    const systemName = `clientdelegation${uuidv4()}`;
+    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
     const systemId = `${vendorOrgNo}_${systemName}`;
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()
