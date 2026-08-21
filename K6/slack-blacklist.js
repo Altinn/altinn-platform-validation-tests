@@ -47,6 +47,18 @@ const ENV_BY_FIELD = {
 const MATCHABLE_FIELDS = Object.keys(ENV_BY_FIELD);
 const METADATA_FIELDS = ["reason", "issue"];
 
+/**
+ * @typedef {object} SlackBlacklistEntry
+ * @property {string} [namespace]
+ * @property {string} [environment]
+ * @property {string} [testFile]
+ * @property {string} [testScope]
+ * @property {string} [testId]
+ * @property {string} reason
+ * @property {string} [issue]
+ */
+
+/** @type {SlackBlacklistEntry[]} */
 export const SLACK_BLACKLIST = [];
 
 /**
