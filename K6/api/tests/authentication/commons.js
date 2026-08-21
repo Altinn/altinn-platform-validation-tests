@@ -1,6 +1,6 @@
 import { group } from "k6";
 
-import { SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
+import { RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
 
 /**
  * Deletes the systems a test left in a vendor's register.
@@ -19,9 +19,10 @@ import { SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
  * @param {SystemRegisterClient} systemRegisterClient - Client authenticated as the vendor that owns the systems.
  * @param {string} vendorOrgNo - Organisation number of that vendor, which every system id starts with.
  * @param {string} systemNamePrefix - The prefix the test names its systems with.
+ * @param {RequestSystemUserClient} [requestSystemUserClient] - Client for the requests, for a test that makes them. Pass it and the pending requests on a leftover system go too.
  * @returns {number} How many systems were swept up.
  */
-export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, systemNamePrefix) {
+export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, systemNamePrefix, requestSystemUserClient = null) {
     let swept = 0;
 
     group(`Teardown - remove the systems left in the register by ${systemNamePrefix}`, function () {
@@ -31,6 +32,10 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
             .filter((system) => `${system?.systemId}`.startsWith(prefix));
 
         for (const system of leftovers) {
+            if (requestSystemUserClient !== null) {
+                sweepPendingRequests(requestSystemUserClient, system.systemId);
+            }
+
             SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, system.systemId);
         }
 
@@ -42,4 +47,38 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
     });
 
     return swept;
+}
+
+/**
+ * Withdraws the requests still pending on a system.
+ *
+ * A system that is about to be swept away can still carry requests nobody acted
+ * on, which is what a run that failed at the approval leaves behind. Only the ones
+ * still waiting are withdrawn: an accepted request has become a system user and is
+ * that system user's business, and asking to delete it only answers an error.
+ *
+ * Both kinds are listed, since agent requests live on their own endpoint and a
+ * system can hold either. Only the first page of each: a system this test made
+ * carries one request per run, so a second page means something other than
+ * leftovers.
+ *
+ * @param {RequestSystemUserClient} requestSystemUserClient - Client authenticated as the vendor that made the requests.
+ * @param {string} systemId - The system whose requests are withdrawn.
+ * @returns {number} How many requests were withdrawn.
+ */
+function sweepPendingRequests(requestSystemUserClient, systemId) {
+    const pending = [
+        ...(RequestSystemUserBuildingBlocks.VendorGetBySystem(requestSystemUserClient, systemId)?.data ?? []),
+        ...(RequestSystemUserBuildingBlocks.VendorAgentGetBySystem(requestSystemUserClient, systemId)?.data ?? []),
+    ].filter((request) => request?.status === "New");
+
+    for (const request of pending) {
+        RequestSystemUserBuildingBlocks.VendorDelete(requestSystemUserClient, request.id);
+    }
+
+    if (pending.length > 0) {
+        console.info(`sweepPendingRequests - withdrew ${pending.length} pending request(s) on ${systemId}`);
+    }
+
+    return pending.length;
 }

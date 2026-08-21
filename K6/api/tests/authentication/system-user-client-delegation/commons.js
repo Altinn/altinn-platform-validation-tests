@@ -22,6 +22,10 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const VENDOR_SCOPES = CreateScopeString([
     AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
     AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+
+    // Listing the requests on a system is how the teardown finds the ones a failed
+    // run left pending.
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
 ]);
 
 /**
@@ -320,7 +324,7 @@ export function cleanupArranged(arranged) {
             // whatever an earlier run left in this vendor's register, which is what
             // happens when the arrange itself broke: k6 skips the teardown when the
             // setup gives up.
-            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX);
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX, apiClients.vendor.requestSystemUserClient);
         }
     });
 }

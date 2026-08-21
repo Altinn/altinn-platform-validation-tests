@@ -159,7 +159,7 @@ export function cleanupArranged(arranged) {
             // whatever an earlier run of the same test left in this vendor's
             // register, which is what happens when the arrange itself broke: k6
             // skips the teardown when the setup gives up.
-            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, systemUser.vendorOrgNo, systemUser.systemNamePrefix);
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, systemUser.vendorOrgNo, systemUser.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
 }

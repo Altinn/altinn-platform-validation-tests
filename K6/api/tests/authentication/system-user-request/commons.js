@@ -103,7 +103,7 @@ export function sweepSystems(vendorOrgNo, systemNamePrefix) {
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
-    sweepRegisteredSystems(clients.vendor.systemRegisterClient, vendorOrgNo, systemNamePrefix);
+    sweepRegisteredSystems(clients.vendor.systemRegisterClient, vendorOrgNo, systemNamePrefix, clients.vendor.requestSystemUserClient);
 }
 
 /**
