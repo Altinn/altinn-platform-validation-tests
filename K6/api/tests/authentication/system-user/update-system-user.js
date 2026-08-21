@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { getItemFromList, requireEnv } from "../../../../helpers.js";
 import { SystemUserBuildingBlocks, SystemUserDomainChecks, SystemUserUpdateDtoBuilder } from "../../../authentication-imports.js";
@@ -47,6 +47,13 @@ export default function (data) {
     const [clients, customerTokenGenerator] = getClients();
 
     customerTokenGenerator.setTokenGeneratorOptions(getCustomerTokenOpts(systemUser.customer));
+
+    // The arrange hands back a system user id only when every step of it worked,
+    // rather than failing the run, so that its teardown gets to remove what it did
+    // create. Nothing below says anything without one.
+    if (!SystemUserDomainChecks.CheckSystemUserArranged(systemUser.systemUserId)) {
+        fail("cannot update the system user: the setup produced none");
+    }
 
     group("As a customer, I can update the system user I own", function () {
         const request = new SystemUserUpdateDtoBuilder()

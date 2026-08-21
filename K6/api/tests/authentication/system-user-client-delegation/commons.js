@@ -209,6 +209,12 @@ export function getFacilitatorTokenOpts(facilitator) {
  * list being arranged, so a run stays short and successive runs spread over the
  * organisations rather than hammering one.
  *
+ * An arrange that breaks stops at the step that broke and hands back a facilitator
+ * without an agent system user, rather than calling fail(). Setup giving up means
+ * k6 skips the teardown, and the system that was just registered would stay in the
+ * register. The test is the one that fails on the missing system user, and by then
+ * the teardown is going to run.
+ *
  * @returns {object[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
 export function arrangeAgentSystemUser() {
@@ -221,6 +227,7 @@ export function arrangeAgentSystemUser() {
 
     const accessPackages = ACCESS_PACKAGES_BY_ORG_TYPE[facilitator.orgType];
 
+    // Nothing has been created at this point, so this one can fail outright.
     if (accessPackages === undefined) {
         fail(`cannot arrange an agent system user: facilitator ${facilitator.orgNo} has unknown orgType '${facilitator.orgType}'`);
     }
@@ -242,7 +249,7 @@ export function arrangeAgentSystemUser() {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            fail("cannot arrange an agent system user: registering the system did not return a system id");
+            return;
         }
 
         const agentRequest = new CreateAgentRequestSystemUserBuilder()
@@ -258,7 +265,7 @@ export function arrangeAgentSystemUser() {
         const created = RequestSystemUserBuildingBlocks.VendorAgentCreate(apiClients.vendor.requestSystemUserClient, agentRequest);
 
         if (!created?.id) {
-            fail("cannot arrange an agent system user: the agent request was not created");
+            return;
         }
 
         // From here on the facilitator is the one acting, so the token has to be
@@ -266,7 +273,7 @@ export function arrangeAgentSystemUser() {
         tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, facilitator.partyId, created.id)) {
-            fail("cannot arrange an agent system user: the agent request was not approved");
+            return;
         }
 
         // The system id is nested under system, not on the system user itself.
@@ -275,7 +282,8 @@ export function arrangeAgentSystemUser() {
 
         if (systemUser === undefined) {
             console.error(`arrangeAgentSystemUser - agent system users returned: ${JSON.stringify(systemUsers)}`);
-            fail(`cannot arrange an agent system user: the facilitator has none for system ${registration.systemId}`);
+
+            return;
         }
 
         systemUserId = systemUser.id;
@@ -311,12 +319,16 @@ export function cleanupArranged(arranged) {
             tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
 
-            DeleteAgentSystemUser(
-                apiClients.facilitator.bffSystemUserClient,
-                arrangement.facilitator.partyId,
-                arrangement.systemUserId,
-                new DeleteAgentSystemUserQueryBuilder().withPartyUuid(arrangement.facilitator.orgUuid).build(),
-            );
+            // An arrange that stopped early leaves no agent system user to delete,
+            // only the system it had already registered.
+            if (arrangement.systemUserId !== undefined) {
+                DeleteAgentSystemUser(
+                    apiClients.facilitator.bffSystemUserClient,
+                    arrangement.facilitator.partyId,
+                    arrangement.systemUserId,
+                    new DeleteAgentSystemUserQueryBuilder().withPartyUuid(arrangement.facilitator.orgUuid).build(),
+                );
+            }
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, arrangement.systemId);
 

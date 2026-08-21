@@ -132,7 +132,33 @@ function CheckClientNotDelegated(clients, clientId) {
     return success;
 }
 
+/**
+ * Checks that the setup produced an agent system user to delegate to.
+ *
+ * The arrange stops at the step that broke rather than failing the run, so this is
+ * where an arrange that got nowhere surfaces. A caller that gets false back should
+ * fail(): there is nothing to say about the delegation endpoints without an agent
+ * system user, and failing here lets the teardown remove what the arrange did
+ * manage to create.
+ *
+ * @param {string|undefined} systemUserId - The agent system user the setup should have produced.
+ * @returns {boolean} True if there is an agent system user to act on, false otherwise.
+ */
+function CheckAgentSystemUserArranged(systemUserId) {
+    const success = check(systemUserId, {
+        "CheckAgentSystemUserArranged - The setup produced an agent system user": (id) =>
+            id !== null && id !== undefined,
+    });
+
+    if (!success) {
+        console.error(`CheckAgentSystemUserArranged - expected an agent system user from the setup, got ${JSON.stringify(systemUserId)}`);
+    }
+
+    return success;
+}
+
 export const SystemUserClientDelegationDomainChecks = {
+    CheckAgentSystemUserArranged,
     CheckAgentSystemUserListed,
     CheckAvailableClients,
     CheckClientDelegated,

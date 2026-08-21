@@ -34,6 +34,13 @@ export default function (data) {
 
     const delegationClient = clients.facilitator.clientDelegationClient;
 
+    // The arrange hands back a facilitator without an agent system user when it
+    // broke, rather than failing the run, so that its teardown gets to remove what
+    // it did create. Nothing below says anything without one.
+    if (!SystemUserClientDelegationDomainChecks.CheckAgentSystemUserArranged(arranged.systemUserId)) {
+        fail("cannot delegate a client: the setup produced no agent system user");
+    }
+
     group("As a facilitator, I can delegate a client to an agent system user and remove it again", function () {
         group("The agent system user is listed for the facilitator", function () {
             const agents = SystemUserClientDelegationBuildingBlocks.GetAgents(delegationClient, arranged.facilitator.orgNo);

@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { getItemFromList, requireEnv } from "../../../../helpers.js";
 import { SystemUserBuildingBlocks, SystemUserDomainChecks } from "../../../authentication-imports.js";
@@ -31,6 +31,13 @@ export default function (data) {
     const [clients, , vendorTokenGenerator] = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
+
+    // The arrange hands back a system user id only when every step of it worked,
+    // rather than failing the run, so that its teardown gets to remove what it did
+    // create. Nothing below says anything without one.
+    if (!SystemUserDomainChecks.CheckSystemUserArranged(systemUser.systemUserId)) {
+        fail("cannot look the system user up: the setup produced none");
+    }
 
     const expected = { id: systemUser.systemUserId, systemId: systemUser.systemId };
 
