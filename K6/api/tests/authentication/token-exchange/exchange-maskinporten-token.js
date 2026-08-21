@@ -1,30 +1,9 @@
 import { fail, group } from "k6";
 
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { AuthenticationBuildingBlocks, AuthenticationClient, TokenExchangeDomainChecks } from "../../../authentication-imports.js";
+import { AuthenticationBuildingBlocks, TokenExchangeDomainChecks } from "../../../authentication-imports.js";
+import { CONSUMER_ORG_NO, getClient, SCOPE } from "./commons.js";
 
-/**
- * The organisation the Maskinporten client belongs to.
- *
- * The exchange derives the organisation from the consumer claim of the incoming
- * token, so this is what the exchanged token has to come back with. It is the
- * client the `313175650-maskinporten-client` secret in functional.yaml is for, the
- * same one the system register tests use.
- */
-const CONSUMER_ORG_NO = "313175650";
-
-/**
- * The scope the Maskinporten token is asked for, and the one the exchanged token
- * has to keep.
- */
-const SCOPE = AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE;
-
-export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return;
-}
+export { setup } from "./commons.js";
 
 /**
  * Test: a Maskinporten token can be exchanged for an Altinn token.
@@ -39,17 +18,7 @@ export function setup() {
  * has to be refused, and so has a request without a readable token.
  */
 export default async function () {
-    const tokenGenerator = new MaskinportenAccessTokenGenerator(
-        new MaskinportenTokenBuilder()
-            .withScopes(CreateScopeString([SCOPE]))
-            .build(),
-    );
-
-    // Signing the grant goes through SubtleCrypto, so the token has to be fetched
-    // before the client starts asking for it.
-    await tokenGenerator.ensureToken();
-
-    const authenticationClient = new AuthenticationClient(__ENV.BASE_URL, tokenGenerator);
+    const authenticationClient = await getClient();
 
     group("As an enterprise integration, I can exchange my Maskinporten token for an Altinn token", function () {
         group("Exchange the Maskinporten token", function () {

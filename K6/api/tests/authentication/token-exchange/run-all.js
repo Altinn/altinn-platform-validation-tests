@@ -1,4 +1,5 @@
-import runExchangeMaskinportenToken, { setup } from "./exchange-maskinporten-token.js";
+import { setup } from "./commons.js";
+import runExchangeMaskinportenToken from "./exchange-maskinporten-token.js";
 
 export { setup };
 
