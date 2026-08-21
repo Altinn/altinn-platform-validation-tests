@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { isBlacklisted } from "./slack-blacklist.js";
+
 export function createDefaultPayload() {
     return {
         attachments: [
@@ -77,6 +79,9 @@ function buildHeaders() {
 }
 
 export default function postSlackMessage(data, report = null) {
+    if (isBlacklisted()) {
+        return;
+    }
     if (!__ENV.SLACK_WEBHOOK_URL) {
         console.error("SLACK_WEBHOOK_URL environment variable is not defined");
         return;
