@@ -34,7 +34,7 @@ class AuthorizedPartiesClient {
     /**
      * Default request tags used by the client.
      *
-     * @returns {object} Default k6 tags.
+     * @returns {typeof TAGS} Default k6 tags.
      */
     static get TAGS() {
         return TAGS;
@@ -56,7 +56,21 @@ class AuthorizedPartiesClient {
         );
 
         for (const key in queryParams) {
-            url.searchParams.append(key, queryParams[key]);
+            const value = queryParams[key];
+
+            if (value === undefined || value === null) {
+                continue;
+            }
+
+            // Array values have to be appended one at a time. Handing the array
+            // straight to append() stringifies it into a single comma joined
+            // parameter, which the API binds as one bogus value rather than a
+            // list, so anyOfResourceIds would silently filter on nothing.
+            if (Array.isArray(value)) {
+                value.forEach((entry) => url.searchParams.append(key, entry));
+            } else {
+                url.searchParams.append(key, value);
+            }
         }
 
         const tags = {
@@ -72,7 +86,10 @@ class AuthorizedPartiesClient {
             {
                 tags,
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    // An empty token means the caller wants an unauthenticated
+                    // request, so send no Authorization header at all rather
+                    // than a bare "Bearer ".
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     Accept: "application/json",
                     "Content-type": "application/json",
                 },
