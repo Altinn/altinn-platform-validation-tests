@@ -1,3 +1,4 @@
+
 // -----------------------------------------------------------------------------
 // Query models
 // -----------------------------------------------------------------------------
@@ -8,7 +9,7 @@
  * Use {@link GetConsentCountQueryBuilder} to construct this object.
  *
  * @typedef {object} GetConsentCountQuery
- * @property {ConsentRequestStatusType} [status] Consent request status to
+ * @property {import("../common/common.types.js").ConsentRequestStatusType} [status] Consent request status to
  * count.
  */
 

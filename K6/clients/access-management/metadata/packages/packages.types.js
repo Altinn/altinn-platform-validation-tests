@@ -16,7 +16,7 @@
 
 /**
  * @typedef {object} PackageDtoSearchObject
- * @property {PackageDto} object
+ * @property {import("../roles/roles.types.js").PackageDto} object
  * @property {number} score
  * @property {Array<SearchField>|null} fields
  */

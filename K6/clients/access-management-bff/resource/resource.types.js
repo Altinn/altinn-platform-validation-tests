@@ -1,3 +1,4 @@
+
 // -----------------------------------------------------------------------------
 // Query models
 // -----------------------------------------------------------------------------
@@ -8,7 +9,7 @@
  * Use {@link GetResourceOwnersQueryBuilder} to construct this object.
  *
  * @typedef {object} GetResourceOwnersQuery
- * @property {Array<ResourceType>} [relevantResourceTypes] Resource types to
+ * @property {Array<import("../common/common.types.js").ResourceType>} [relevantResourceTypes] Resource types to
  * include.
  */
 

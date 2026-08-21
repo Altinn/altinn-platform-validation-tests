@@ -36,7 +36,7 @@
  * @property {string|null} legacyRoleCode
  * @property {string|null} legacyUrn
  * @property {boolean} isResourcePolicyAvailable
- * @property {ProviderDto} provider
+ * @property {import("../../enduser/connections/connections.types.js").ProviderDto} provider
  * @property {boolean|null} isRevocable
  */
 
@@ -50,7 +50,7 @@
  * @property {boolean} isAssignable
  * @property {boolean} isResourcePolicyAvailable
  * @property {AreaDto} area
- * @property {TypeDto} type
+ * @property {import("../types/types.types.js").TypeDto} type
  * @property {Array<ResourceDto>|null} resources
  */
 
@@ -62,7 +62,7 @@
  * @property {string|null} name
  * @property {string|null} description
  * @property {string|null} refId
- * @property {ProviderDto} provider
+ * @property {import("../../enduser/connections/connections.types.js").ProviderDto} provider
  * @property {ResourceTypeDto} type
  */
 

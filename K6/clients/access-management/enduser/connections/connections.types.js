@@ -461,8 +461,8 @@
  * @typedef {object} RightDto
  * @property {string|null} key
  * @property {string|null} name
- * @property {Array<AttributeDto>|null} resource
- * @property {AttributeDto} action
+ * @property {Array<import("../maskinporten-suppliers/maskinporten-suppliers.types.js").AttributeDto>|null} resource
+ * @property {import("../maskinporten-suppliers/maskinporten-suppliers.types.js").AttributeDto} action
  */
 
 /**
