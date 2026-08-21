@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 K6",
     "fix": "eslint --fix K6",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc -p jsconfig.json --noEmit"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "eslint-plugin-jsdoc": "^64.0.0",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.0.0"
+    "globals": "^17.0.0",
+    "typescript": "^7.0.2"
   }
 }
