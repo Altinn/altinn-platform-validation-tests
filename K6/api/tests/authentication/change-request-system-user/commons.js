@@ -391,52 +391,82 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             fail("cannot arrange a system user: registering the system did not return a system id");
         }
 
-        const createRequest = new CreateRequestSystemUserBuilder()
-            .withExternalRef(registration.externalRef)
-            .withSystemId(registration.systemId)
-            .withPartyOrgNo(customer.orgNo)
-            .withRights(grantedRights)
-            .withAccessPackages(grantedAccessPackages.map(accessPackage))
-            .withRedirectUrl(registration.redirectUrl)
-            .build();
+        // The system is registered from here on, and this runs in setup, where a
+        // fail() aborts the run before the teardown that would have removed it. So
+        // an arrange that gives up takes the system back out on its way. A system
+        // user the customer already approved is left behind in that case, since the
+        // lookup that would have named it is the step that failed.
+        try {
+            systemUserId = requestAndApproveSystemUser(registration, customer, grantedRights, grantedAccessPackages);
+        } catch (error) {
+            SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, registration.systemId);
 
-        const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(apiClients.vendor.requestSystemUserClient, createRequest);
-
-        SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
-            systemId: registration.systemId,
-            partyOrgNo: customer.orgNo,
-            externalRef: registration.externalRef,
-        });
-
-        if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
-            fail("cannot arrange a system user: creating the system user request returned no id");
-        }
-
-        const approved = ApproveSystemUserRequest(
-            apiClients.approver.bffRequestClient,
-            customer.orgPartyId,
-            createdRequest?.id,
-        );
-
-        // Nothing to look up unless the request was approved, so stop here rather
-        // than let the lookup fail as a second, unrelated failure.
-        if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            fail("cannot arrange a system user: approving the system user request failed");
-        }
-
-        const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
-            clientId: registration.clientId,
-            systemProviderOrgNo: registration.systemOwner,
-            systemUserOwnerOrgNo: customer.orgNo,
-            externalRef: registration.externalRef,
-        });
-
-        systemUserId = systemUser?.id;
-
-        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
-            fail("cannot arrange a system user: the lookup by external ref returned no system user");
+            throw error;
         }
     });
 
     return systemUserId;
+}
+
+/**
+ * Asks for the system user, has the customer approve it and finds it again.
+ *
+ * Split out from createApprovedSystemUser so everything that happens once the
+ * system is registered sits in one place, which is what lets the caller undo the
+ * registration when any of it fails.
+ *
+ * @param {object} registration - Registration from createSystemRegistration.
+ * @param {object} customer - The customer the system user is created for.
+ * @param {Right[]} grantedRights - The rights the system user is granted up front.
+ * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
+ * @returns {string} Identifier of the approved system user.
+ */
+function requestAndApproveSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
+    const [apiClients] = getClients();
+
+    const createRequest = new CreateRequestSystemUserBuilder()
+        .withExternalRef(registration.externalRef)
+        .withSystemId(registration.systemId)
+        .withPartyOrgNo(customer.orgNo)
+        .withRights(grantedRights)
+        .withAccessPackages(grantedAccessPackages.map(accessPackage))
+        .withRedirectUrl(registration.redirectUrl)
+        .build();
+
+    const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(apiClients.vendor.requestSystemUserClient, createRequest);
+
+    SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
+        systemId: registration.systemId,
+        partyOrgNo: customer.orgNo,
+        externalRef: registration.externalRef,
+    });
+
+    if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
+        fail("cannot arrange a system user: creating the system user request returned no id");
+    }
+
+    const approved = ApproveSystemUserRequest(
+        apiClients.approver.bffRequestClient,
+        customer.orgPartyId,
+        createdRequest?.id,
+    );
+
+    // Nothing to look up unless the request was approved, so stop here rather
+    // than let the lookup fail as a second, unrelated failure.
+    if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
+        fail("cannot arrange a system user: approving the system user request failed");
+    }
+
+    const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
+        clientId: registration.clientId,
+        systemProviderOrgNo: registration.systemOwner,
+        systemUserOwnerOrgNo: customer.orgNo,
+        externalRef: registration.externalRef,
+    });
+
+    if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser?.id)) {
+        fail("cannot arrange a system user: the lookup by external ref returned no system user");
+    }
+
+    return systemUser?.id;
 }

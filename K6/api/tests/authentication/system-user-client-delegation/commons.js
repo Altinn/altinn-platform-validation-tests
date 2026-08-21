@@ -220,7 +220,7 @@ export function arrangeAgentSystemUser() {
     // token is minted for, so nothing is looked up for it.
     const vendorOrgNo = pickVendor();
 
-    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
+    const [apiClients, , vendorTokenGenerator] = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
@@ -235,40 +235,16 @@ export function arrangeAgentSystemUser() {
             fail("cannot arrange an agent system user: registering the system did not return a system id");
         }
 
-        const agentRequest = new CreateAgentRequestSystemUserBuilder()
-            .withExternalRef(uuidv4())
-            .withSystemId(registration.systemId)
-            .withPartyOrgNo(facilitator.orgNo)
-            // The agent request takes access package objects, while the system
-            // registration below takes the bare urns.
-            .withAccessPackages(accessPackages.map((urn) => ({ urn })))
-            .withRedirectUrl(REDIRECT_URL)
-            .build();
+        // The system is registered from here on, and this runs in setup, where a
+        // fail() aborts the run before the teardown that would have removed it. So
+        // an arrange that gives up takes the system back out on its way.
+        try {
+            systemUserId = approveAgentSystemUser(facilitator, registration, accessPackages);
+        } catch (error) {
+            SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, registration.systemId);
 
-        const created = RequestSystemUserBuildingBlocks.VendorAgentCreate(apiClients.vendor.requestSystemUserClient, agentRequest);
-
-        if (!created?.id) {
-            fail("cannot arrange an agent system user: the agent request was not created");
+            throw error;
         }
-
-        // From here on the facilitator is the one acting, so the token has to be
-        // theirs before the approval goes out.
-        tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
-
-        if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, facilitator.partyId, created.id)) {
-            fail("cannot arrange an agent system user: the agent request was not approved");
-        }
-
-        // The system id is nested under system, not on the system user itself.
-        const systemUsers = GetAgentSystemUsers(apiClients.facilitator.bffSystemUserClient, facilitator.partyId) ?? [];
-        const systemUser = systemUsers.find((candidate) => candidate.system?.systemId === registration.systemId);
-
-        if (systemUser === undefined) {
-            console.error(`arrangeAgentSystemUser - agent system users returned: ${JSON.stringify(systemUsers)}`);
-            fail(`cannot arrange an agent system user: the facilitator has none for system ${registration.systemId}`);
-        }
-
-        systemUserId = systemUser.id;
     });
 
     return [
@@ -280,6 +256,57 @@ export function arrangeAgentSystemUser() {
             accessPackages,
         },
     ];
+}
+
+/**
+ * Asks for the agent system user, has the facilitator approve it and finds it again.
+ *
+ * Split out from arrangeAgentSystemUser so everything that happens once the system
+ * is registered sits in one place, which is what lets the caller undo the
+ * registration when any of it fails.
+ *
+ * @param {object} facilitator - The facilitator the agent system user is for.
+ * @param {object} registration - The registration from createSystemRegistration.
+ * @param {string[]} accessPackages - Urns of the access packages the agent system user is asked for.
+ * @returns {string} Identifier of the approved agent system user.
+ */
+function approveAgentSystemUser(facilitator, registration, accessPackages) {
+    const [apiClients, tokenGenerator] = getClients();
+
+    const agentRequest = new CreateAgentRequestSystemUserBuilder()
+        .withExternalRef(uuidv4())
+        .withSystemId(registration.systemId)
+        .withPartyOrgNo(facilitator.orgNo)
+        // The agent request takes access package objects, while the system
+        // registration takes the bare urns.
+        .withAccessPackages(accessPackages.map((urn) => ({ urn })))
+        .withRedirectUrl(REDIRECT_URL)
+        .build();
+
+    const created = RequestSystemUserBuildingBlocks.VendorAgentCreate(apiClients.vendor.requestSystemUserClient, agentRequest);
+
+    if (!created?.id) {
+        fail("cannot arrange an agent system user: the agent request was not created");
+    }
+
+    // From here on the facilitator is the one acting, so the token has to be theirs
+    // before the approval goes out.
+    tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
+
+    if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, facilitator.partyId, created.id)) {
+        fail("cannot arrange an agent system user: the agent request was not approved");
+    }
+
+    // The system id is nested under system, not on the system user itself.
+    const systemUsers = GetAgentSystemUsers(apiClients.facilitator.bffSystemUserClient, facilitator.partyId) ?? [];
+    const systemUser = systemUsers.find((candidate) => candidate.system?.systemId === registration.systemId);
+
+    if (systemUser === undefined) {
+        console.error(`approveAgentSystemUser - agent system users returned: ${JSON.stringify(systemUsers)}`);
+        fail(`cannot arrange an agent system user: the facilitator has none for system ${registration.systemId}`);
+    }
+
+    return systemUser.id;
 }
 
 /**

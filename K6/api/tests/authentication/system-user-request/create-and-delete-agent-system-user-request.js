@@ -42,66 +42,79 @@ export default function (data) {
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(registration.systemOwner));
 
     group("As a vendor, I can request an agent system user, find it by external ref and withdraw it", function () {
-        group("Register the system the request is made for", function () {
-            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
-
-            if (createdSystemId === null) {
-                fail("cannot request an agent system user: registering the system did not return a system id");
-            }
-        });
-
+        // What the cleanup below has to take back out. Tracked rather than assumed,
+        // since a step that fails calls fail(), and deleting a system that was never
+        // registered only turns one failure into two.
+        let systemRegistered = false;
         let requestId;
 
-        group("Create the agent system user request", function () {
-            const createRequest = new CreateAgentRequestSystemUserBuilder()
-                .withExternalRef(registration.externalRef)
-                .withSystemId(registration.systemId)
-                .withPartyOrgNo(customer.orgNo)
-                .withAccessPackages([{ urn: ACCESS_PACKAGE }])
-                .withRedirectUrl(registration.redirectUrl)
-                .build();
+        try {
+            group("Register the system the request is made for", function () {
+                const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
-            const createdRequest = RequestSystemUserBuildingBlocks.VendorAgentCreate(clients.vendor.requestSystemUserClient, createRequest);
+                if (createdSystemId === null) {
+                    fail("cannot request an agent system user: registering the system did not return a system id");
+                }
 
-            SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
-                systemId: registration.systemId,
-                partyOrgNo: customer.orgNo,
-                externalRef: registration.externalRef,
+                systemRegistered = true;
             });
 
-            requestId = createdRequest?.id;
-        });
+            group("Create the agent system user request", function () {
+                const createRequest = new CreateAgentRequestSystemUserBuilder()
+                    .withExternalRef(registration.externalRef)
+                    .withSystemId(registration.systemId)
+                    .withPartyOrgNo(customer.orgNo)
+                    .withAccessPackages([{ urn: ACCESS_PACKAGE }])
+                    .withRedirectUrl(registration.redirectUrl)
+                    .build();
 
-        group("Find the agent request by its external ref", function () {
-            const request = RequestSystemUserBuildingBlocks.VendorAgentGetByExternalRef(
-                clients.vendor.requestSystemUserClient,
-                registration.systemId,
-                customer.orgNo,
-                registration.externalRef,
-            );
+                const createdRequest = RequestSystemUserBuildingBlocks.VendorAgentCreate(clients.vendor.requestSystemUserClient, createRequest);
 
-            SystemUserRequestDomainChecks.CheckSameRequest(request, requestId);
-        });
+                SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
+                    systemId: registration.systemId,
+                    partyOrgNo: customer.orgNo,
+                    externalRef: registration.externalRef,
+                });
 
-        group("Read the agent request back by id", function () {
-            if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
-                fail("cannot read the request back: creating the agent system user request returned no id");
-            }
+                requestId = createdRequest?.id;
+            });
 
-            const request = RequestSystemUserBuildingBlocks.VendorAgentGet(clients.vendor.requestSystemUserClient, requestId);
+            group("Find the agent request by its external ref", function () {
+                const request = RequestSystemUserBuildingBlocks.VendorAgentGetByExternalRef(
+                    clients.vendor.requestSystemUserClient,
+                    registration.systemId,
+                    customer.orgNo,
+                    registration.externalRef,
+                );
 
-            SystemUserRequestDomainChecks.CheckRequestStatus(request, "New");
-        });
+                SystemUserRequestDomainChecks.CheckSameRequest(request, requestId);
+            });
 
-        group("Withdraw the agent request", function () {
-            const deleted = RequestSystemUserBuildingBlocks.VendorDelete(clients.vendor.requestSystemUserClient, requestId);
+            group("Read the agent request back by id", function () {
+                if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
+                    fail("cannot read the request back: creating the agent system user request returned no id");
+                }
 
-            SystemUserRequestDomainChecks.CheckRequestDeleted(deleted);
-        });
+                const request = RequestSystemUserBuildingBlocks.VendorAgentGet(clients.vendor.requestSystemUserClient, requestId);
 
-        group("Remove the system from the register", function () {
-            SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);
-        });
+                SystemUserRequestDomainChecks.CheckRequestStatus(request, "New");
+            });
+
+            group("Withdraw the agent request", function () {
+                const deleted = RequestSystemUserBuildingBlocks.VendorDelete(clients.vendor.requestSystemUserClient, requestId);
+
+                SystemUserRequestDomainChecks.CheckRequestDeleted(deleted);
+            });
+        } finally {
+            // Every iteration registers a system of its own, so the cleanup belongs
+            // here rather than in a teardown, and in a finally so that a failed step
+            // still takes back what it managed to create.
+            group("Cleanup - remove the system from the register", function () {
+                if (systemRegistered) {
+                    SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);
+                }
+            });
+        }
     });
 }
 
