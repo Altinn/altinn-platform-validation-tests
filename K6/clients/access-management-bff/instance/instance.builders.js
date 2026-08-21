@@ -6,7 +6,7 @@ import { CreateInstanceRightsQuery, DeleteInstanceDelegationQuery, GetInstanceDe
  */
 class GetInstanceDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetInstanceDelegationsQuery} */ ({});
     }
 
     /**
@@ -80,7 +80,7 @@ class GetInstanceDelegationsQueryBuilder {
  */
 class DeleteInstanceDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteInstanceDelegationQuery} */ ({});
     }
 
     /**
@@ -154,7 +154,7 @@ class DeleteInstanceDelegationQueryBuilder {
  */
 class GetInstanceDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetInstanceDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -209,7 +209,7 @@ class GetInstanceDelegationCheckQueryBuilder {
  */
 class CreateInstanceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateInstanceRightsQuery} */ ({});
     }
 
     /**
@@ -272,7 +272,7 @@ class CreateInstanceRightsQueryBuilder {
  */
 class GetInstanceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetInstanceRightsQuery} */ ({});
     }
 
     /**
@@ -346,7 +346,7 @@ class GetInstanceRightsQueryBuilder {
  */
 class UpdateInstanceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdateInstanceRightsQuery} */ ({});
     }
 
     /**
@@ -409,7 +409,7 @@ class UpdateInstanceRightsQueryBuilder {
  */
 class GetInstanceSimplifiedUsersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetInstanceSimplifiedUsersQuery} */ ({});
     }
 
     /**

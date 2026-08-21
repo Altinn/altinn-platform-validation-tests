@@ -6,7 +6,7 @@ import { CreateRightHolderQuery, DeleteReporteeConnectionQuery, GetRightHoldersQ
  */
 class DeleteReporteeConnectionQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteReporteeConnectionQuery} */ ({});
     }
 
     /**
@@ -58,7 +58,7 @@ class DeleteReporteeConnectionQueryBuilder {
  */
 class CreateRightHolderQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateRightHolderQuery} */ ({});
     }
 
     /**
@@ -88,7 +88,7 @@ class CreateRightHolderQueryBuilder {
  */
 class GetRightHoldersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRightHoldersQuery} */ ({});
     }
 
     /**
@@ -164,7 +164,7 @@ class GetRightHoldersQueryBuilder {
  */
 class GetSimplifiedConnectionsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSimplifiedConnectionsQuery} */ ({});
     }
 
     /**

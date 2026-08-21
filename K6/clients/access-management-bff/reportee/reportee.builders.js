@@ -5,7 +5,7 @@ import { ChangeReporteeAndRedirectQuery, ChangeReporteeQuery } from "./reportee.
  */
 class ChangeReporteeAndRedirectQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ChangeReporteeAndRedirectQuery} */ ({});
     }
 
     /**
@@ -67,7 +67,7 @@ class ChangeReporteeAndRedirectQueryBuilder {
  */
 class ChangeReporteeQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ChangeReporteeQuery} */ ({});
     }
 
     /**

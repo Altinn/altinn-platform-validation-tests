@@ -6,7 +6,7 @@ import { GetConsentCountQuery } from "./consent.types.js";
  */
 class GetConsentCountQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetConsentCountQuery} */ ({});
     }
 
     /**

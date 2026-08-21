@@ -6,7 +6,7 @@ import { CreateAgentAccessPackagesQuery, CreateAgentQuery, CreateAgentResourcesQ
  */
 class GetMyClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetMyClientsQuery} */ ({});
     }
 
     /**
@@ -47,7 +47,7 @@ class GetMyClientsQueryBuilder {
  */
 class DeleteMyClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteMyClientsQuery} */ ({});
     }
 
     /**
@@ -87,7 +87,7 @@ class DeleteMyClientsQueryBuilder {
  */
 class DeleteMyClientProvidersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteMyClientProvidersQuery} */ ({});
     }
 
     /**
@@ -116,7 +116,7 @@ class DeleteMyClientProvidersQueryBuilder {
  */
 class GetClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetClientsQuery} */ ({});
     }
 
     /**
@@ -169,7 +169,7 @@ class GetClientsQueryBuilder {
  */
 class GetAgentsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentsQuery} */ ({});
     }
 
     /**
@@ -199,7 +199,7 @@ class GetAgentsQueryBuilder {
  */
 class CreateAgentQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentQuery} */ ({});
     }
 
     /**
@@ -240,7 +240,7 @@ class CreateAgentQueryBuilder {
  */
 class DeleteAgentQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentQuery} */ ({});
     }
 
     /**
@@ -281,7 +281,7 @@ class DeleteAgentQueryBuilder {
  */
 class GetAgentAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -322,7 +322,7 @@ class GetAgentAccessPackagesQueryBuilder {
  */
 class CreateAgentAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -374,7 +374,7 @@ class CreateAgentAccessPackagesQueryBuilder {
  */
 class DeleteAgentAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -426,7 +426,7 @@ class DeleteAgentAccessPackagesQueryBuilder {
  */
 class GetClientAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetClientAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -467,7 +467,7 @@ class GetClientAccessPackagesQueryBuilder {
  */
 class GetAgentResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentResourcesQuery} */ ({});
     }
 
     /**
@@ -508,7 +508,7 @@ class GetAgentResourcesQueryBuilder {
  */
 class CreateAgentResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentResourcesQuery} */ ({});
     }
 
     /**
@@ -560,7 +560,7 @@ class CreateAgentResourcesQueryBuilder {
  */
 class DeleteAgentResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentResourcesQuery} */ ({});
     }
 
     /**
@@ -612,7 +612,7 @@ class DeleteAgentResourcesQueryBuilder {
  */
 class GetClientResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetClientResourcesQuery} */ ({});
     }
 
     /**
@@ -653,7 +653,7 @@ class GetClientResourcesQueryBuilder {
  */
 class DeleteMyClientResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteMyClientResourcesQuery} */ ({});
     }
 
     /**

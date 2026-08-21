@@ -8,7 +8,7 @@ import { ConsentLookupRequest, MaskinportenDelegationsQuery } from "./maskinport
  */
 class MaskinportenDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenDelegationsQuery} */ ({});
     }
 
     /**

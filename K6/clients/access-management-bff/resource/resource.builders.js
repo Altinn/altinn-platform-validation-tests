@@ -6,7 +6,7 @@ import { GetResourceOwnersQuery, GetResourceQuery, SearchResourcesQuery } from "
  */
 class GetResourceOwnersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceOwnersQuery} */ ({});
     }
 
     /**
@@ -48,7 +48,7 @@ class GetResourceOwnersQueryBuilder {
  */
 class GetResourceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceQuery} */ ({});
     }
 
     /**
@@ -77,7 +77,7 @@ class GetResourceQueryBuilder {
  */
 class SearchResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {SearchResourcesQuery} */ ({});
     }
 
     /**

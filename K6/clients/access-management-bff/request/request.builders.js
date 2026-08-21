@@ -6,7 +6,7 @@ import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageReq
  */
 class GetSentRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSentRequestsQuery} */ ({});
     }
 
     /**
@@ -81,7 +81,7 @@ class GetSentRequestsQueryBuilder {
  */
 class GetSentResourceRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSentResourceRequestsQuery} */ ({});
     }
 
     /**
@@ -145,7 +145,7 @@ class GetSentResourceRequestsQueryBuilder {
  */
 class GetSentPackageRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSentPackageRequestsQuery} */ ({});
     }
 
     /**
@@ -209,7 +209,7 @@ class GetSentPackageRequestsQueryBuilder {
  */
 class GetReceivedRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetReceivedRequestsQuery} */ ({});
     }
 
     /**
@@ -284,7 +284,7 @@ class GetReceivedRequestsQueryBuilder {
  */
 class GetReceivedResourceRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetReceivedResourceRequestsQuery} */ ({});
     }
 
     /**
@@ -352,7 +352,7 @@ class GetReceivedResourceRequestsQueryBuilder {
  */
 class GetReceivedPackageRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetReceivedPackageRequestsQuery} */ ({});
     }
 
     /**
@@ -420,7 +420,7 @@ class GetReceivedPackageRequestsQueryBuilder {
  */
 class GetSentRequestsCountQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSentRequestsCountQuery} */ ({});
     }
 
     /**
@@ -484,7 +484,7 @@ class GetSentRequestsCountQueryBuilder {
  */
 class GetReceivedRequestsCountQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetReceivedRequestsCountQuery} */ ({});
     }
 
     /**
@@ -548,7 +548,7 @@ class GetReceivedRequestsCountQueryBuilder {
  */
 class GetRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRequestQuery} */ ({});
     }
 
     /**
@@ -578,7 +578,7 @@ class GetRequestQueryBuilder {
  */
 class CreateResourceRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateResourceRequestQuery} */ ({});
     }
 
     /**
@@ -630,7 +630,7 @@ class CreateResourceRequestQueryBuilder {
  */
 class CreatePackageRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreatePackageRequestQuery} */ ({});
     }
 
     /**
@@ -682,7 +682,7 @@ class CreatePackageRequestQueryBuilder {
  */
 class WithdrawSentRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {WithdrawSentRequestQuery} */ ({});
     }
 
     /**
@@ -723,7 +723,7 @@ class WithdrawSentRequestQueryBuilder {
  */
 class ConfirmDraftRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ConfirmDraftRequestQuery} */ ({});
     }
 
     /**
@@ -764,7 +764,7 @@ class ConfirmDraftRequestQueryBuilder {
  */
 class RejectReceivedRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RejectReceivedRequestQuery} */ ({});
     }
 
     /**
@@ -805,7 +805,7 @@ class RejectReceivedRequestQueryBuilder {
  */
 class ApproveReceivedRequestQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ApproveReceivedRequestQuery} */ ({});
     }
 
     /**

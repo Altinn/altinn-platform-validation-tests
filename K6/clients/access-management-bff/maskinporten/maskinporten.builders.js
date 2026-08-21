@@ -5,7 +5,7 @@ import { CreateSupplierQuery, CreateSupplierResourceQuery, DeleteConsumerQuery, 
  */
 class SearchScopesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {SearchScopesQuery} */ ({});
     }
 
     /**
@@ -146,7 +146,7 @@ class GetSupplierResourceDelegationCheckQueryBuilder {
  */
 class GetSupplierResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSupplierResourcesQuery} */ ({});
     }
 
     /**
@@ -198,7 +198,7 @@ class GetSupplierResourcesQueryBuilder {
  */
 class CreateSupplierResourceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateSupplierResourceQuery} */ ({});
     }
 
     /**
@@ -250,7 +250,7 @@ class CreateSupplierResourceQueryBuilder {
  */
 class DeleteSupplierResourceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteSupplierResourceQuery} */ ({});
     }
 
     /**
@@ -302,7 +302,7 @@ class DeleteSupplierResourceQueryBuilder {
  */
 class GetSuppliersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSuppliersQuery} */ ({});
     }
 
     /**
@@ -343,7 +343,7 @@ class GetSuppliersQueryBuilder {
  */
 class CreateSupplierQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateSupplierQuery} */ ({});
     }
 
     /**
@@ -384,7 +384,7 @@ class CreateSupplierQueryBuilder {
  */
 class DeleteSupplierQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteSupplierQuery} */ ({});
     }
 
     /**
@@ -437,7 +437,7 @@ class DeleteSupplierQueryBuilder {
  */
 class GetConsumersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetConsumersQuery} */ ({});
     }
 
     /**
@@ -478,7 +478,7 @@ class GetConsumersQueryBuilder {
  */
 class DeleteConsumerQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteConsumerQuery} */ ({});
     }
 
     /**
@@ -531,7 +531,7 @@ class DeleteConsumerQueryBuilder {
  */
 class GetConsumerResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetConsumerResourcesQuery} */ ({});
     }
 
     /**
@@ -572,7 +572,7 @@ class GetConsumerResourcesQueryBuilder {
  */
 class DeleteConsumerResourceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteConsumerResourceQuery} */ ({});
     }
 
     /**

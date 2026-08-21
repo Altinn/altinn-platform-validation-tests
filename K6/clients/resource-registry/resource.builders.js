@@ -102,7 +102,7 @@ class ResourceSearchQueryBuilder {
  */
 class ResourceUpdatedQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {object} */ ({});
     }
 
     /**

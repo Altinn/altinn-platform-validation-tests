@@ -5,7 +5,7 @@ import { GetDelegationExportQuery } from "./delegation-export.types.js";
  */
 class GetDelegationExportQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetDelegationExportQuery} */ ({});
     }
 
     /**

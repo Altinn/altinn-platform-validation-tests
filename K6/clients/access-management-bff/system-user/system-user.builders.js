@@ -6,7 +6,7 @@ import { DeleteAgentSystemUserQuery } from "./system-user.types.js";
  */
 class DeleteAgentSystemUserQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentSystemUserQuery} */ ({});
     }
 
     /**

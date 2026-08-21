@@ -6,7 +6,7 @@ import { CreateAgentSystemUserDelegationQuery, CreateAgentSystemUserSelfDelegati
  */
 class GetAgentSystemUserCustomersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentSystemUserCustomersQuery} */ ({});
     }
 
     /**
@@ -36,7 +36,7 @@ class GetAgentSystemUserCustomersQueryBuilder {
  */
 class GetAgentSystemUserDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentSystemUserDelegationsQuery} */ ({});
     }
 
     /**
@@ -66,7 +66,7 @@ class GetAgentSystemUserDelegationsQueryBuilder {
  */
 class CreateAgentSystemUserDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentSystemUserDelegationQuery} */ ({});
     }
 
     /**
@@ -96,7 +96,7 @@ class CreateAgentSystemUserDelegationQueryBuilder {
  */
 class DeleteAgentSystemUserDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentSystemUserDelegationQuery} */ ({});
     }
 
     /**
@@ -191,7 +191,7 @@ class DeleteAgentSystemUserSelfDelegationQueryBuilder {
  */
 class GetAgentSystemUserSelfDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentSystemUserSelfDelegationQuery} */ ({});
     }
 
     /**

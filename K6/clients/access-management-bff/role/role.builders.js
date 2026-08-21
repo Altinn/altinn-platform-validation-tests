@@ -5,7 +5,7 @@ import { DeleteRoleQuery, GetRolePackagesQuery, GetRolePermissionsQuery, GetRole
  */
 class GetRolePermissionsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRolePermissionsQuery} */ ({});
     }
 
     /**
@@ -57,7 +57,7 @@ class GetRolePermissionsQueryBuilder {
  */
 class GetRolePackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRolePackagesQuery} */ ({});
     }
 
     /**
@@ -109,7 +109,7 @@ class GetRolePackagesQueryBuilder {
  */
 class DeleteRoleQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteRoleQuery} */ ({});
     }
 
     /**
@@ -172,7 +172,7 @@ class DeleteRoleQueryBuilder {
  */
 class GetRoleResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRoleResourcesQuery} */ ({});
     }
 
     /**
