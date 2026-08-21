@@ -230,7 +230,7 @@ class ApplicationsClient {
         );
 
         if (hard !== null && hard !== undefined) {
-            url.searchParams.append("hard", hard);
+            url.searchParams.append("hard", String(hard));
         }
 
         const tags = {

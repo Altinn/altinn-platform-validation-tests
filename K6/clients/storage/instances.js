@@ -228,7 +228,7 @@ class InstancesClient {
         const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`);
 
         if (hard !== null) {
-            url.searchParams.append("hard", hard);
+            url.searchParams.append("hard", String(hard));
         }
 
         const tags = {

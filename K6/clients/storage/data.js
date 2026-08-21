@@ -78,7 +78,7 @@ class DataClient {
         }
 
         if (refs !== null) {
-            url.searchParams.append("refs", refs);
+            url.searchParams.append("refs", refs.join(","));
         }
 
         if (generatedFromTask !== null) {
@@ -153,7 +153,7 @@ class DataClient {
         const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`);
 
         if (refs !== null) {
-            url.searchParams.append("refs", refs);
+            url.searchParams.append("refs", refs.join(","));
         }
 
         if (generatedFromTask !== null) {
@@ -195,7 +195,7 @@ class DataClient {
         const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`);
 
         if (delay !== null) {
-            url.searchParams.append("delay", delay);
+            url.searchParams.append("delay", String(delay));
         }
 
         const tags = {

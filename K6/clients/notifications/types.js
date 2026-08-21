@@ -55,9 +55,9 @@
 /**
  * @typedef {object} NotificationReminderExt
  * @property {string|null} sendersReference Sender's reference for this reminder.
- * @property {string|null} conditionEndpoint Condition endpoint used to determine if the reminder should be sent.
- * @property {number|null} delayDays Number of days to delay this reminder.
- * @property {string|null} requestedSendTime Earliest date and time when the reminder should be delivered.
+ * @property {string|null} [conditionEndpoint] Condition endpoint used to determine if the reminder should be sent.
+ * @property {number|null} [delayDays] Number of days to delay this reminder.
+ * @property {string|null} [requestedSendTime] Earliest date and time when the reminder should be delivered.
  * @property {NotificationRecipientExt} recipient Notification recipient.
  */
 

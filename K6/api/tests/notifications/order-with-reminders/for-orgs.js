@@ -24,6 +24,11 @@ export function setup() {
     return;
 }
 
+/**
+ * Builds the order and the reminders it carries.
+ *
+ * @returns {[NotificationOrderChainRequestExt, NotificationReminderExt[]]} The order and its reminders.
+ */
 function generateDomainObjects() {
     const uniqueIdentifier = uuidv4().substring(0, 8);
     const requestedSendTime = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(); // 120 days into the future

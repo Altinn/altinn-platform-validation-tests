@@ -94,7 +94,7 @@ class InstanceEventsClient {
         const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events`);
 
         if (eventTypes !== null) {
-            url.searchParams.append("eventTypes", eventTypes);
+            url.searchParams.append("eventTypes", eventTypes.join(","));
         }
 
         if (from !== null) {
