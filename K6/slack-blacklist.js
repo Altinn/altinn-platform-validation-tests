@@ -89,7 +89,7 @@ function fieldMatches(field, expected, actual) {
  * Without that guard a typo such as `test_file` would leave an entry with no
  * fields to match on, which would suppress every Slack message in the repo.
  *
- * @param {object} entry Blacklist entry to evaluate.
+ * @param {SlackBlacklistEntry} entry Blacklist entry to evaluate.
  * @returns {boolean} True when the entry matches the current test run.
  */
 function entryMatches(entry) {
@@ -126,7 +126,7 @@ function entryMatches(entry) {
  * Logs the matching entry so a suppressed message can still be traced in the
  * pod logs rather than looking like a silent failure to post.
  *
- * @param {Array<object>} blacklist Entries to match against, defaults to SLACK_BLACKLIST.
+ * @param {SlackBlacklistEntry[]} blacklist Entries to match against, defaults to SLACK_BLACKLIST.
  * @returns {boolean} True when no Slack message should be sent.
  */
 export function isBlacklisted(blacklist = SLACK_BLACKLIST) {
