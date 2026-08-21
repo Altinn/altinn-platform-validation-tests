@@ -73,7 +73,7 @@ class AccessListClient {
     /**
      * Creates query string parameters.
      *
-     * @param {object | null} query Query parameters.
+     * @param {{[key: string]: string|number|boolean|Array<string>}|null} query Query parameters.
      * @returns {string} The result.
      */
     buildQuery(query) {

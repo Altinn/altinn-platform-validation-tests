@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { ResourceSearchQueryBuilder, ResourceUpdatedQueryBuilder } from "./resource.builders.js";
-import { ServiceResource } from "./types.js";
+import { ResourceListQuery, ServiceResource } from "./types.js";
 
 const TAGS = {
     ResourceGetResourceList: {
@@ -84,10 +84,7 @@ class ResourceClient {
     /**
      * Gets all resources.
      *
-     * @param {object} [query] Optional query parameters.
-     * @param {boolean} [query.includeApps] Whether to include apps.
-     * @param {boolean} [query.includeAltinn2] Whether to include altinn2.
-     * @param {boolean} [query.includeMigratedApps] Whether to include migrated apps.
+     * @param {ResourceListQuery|null} [query] Optional query parameters.
      * @param {{[key:string]:string}} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

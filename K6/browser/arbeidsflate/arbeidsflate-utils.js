@@ -23,7 +23,7 @@ export const afUrl = (() => {
  * Function to get a cookie object for the given PID.
  *
  * @param user TODO: description
- * @returns {object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
+ * @returns {{name: string, value: string, domain: string, path: string, httpOnly: boolean, secure: boolean, sameSite: string, url: string}} - The cookie for the arbeidsflate session.
  * *
  */
 export function getCookie(user) {

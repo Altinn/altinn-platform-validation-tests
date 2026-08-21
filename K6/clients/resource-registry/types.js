@@ -460,6 +460,15 @@
  * @property {boolean} [includeAppRights] Whether to include app rights.
  */
 
+/**
+ * Query parameters for the resource list.
+ *
+ * @typedef {object} ResourceListQuery
+ * @property {boolean} [includeApps] Whether to include apps.
+ * @property {boolean} [includeAltinn2] Whether to include altinn2.
+ * @property {boolean} [includeMigratedApps] Whether to include migrated apps.
+ */
+
 export const AccessListGetByOwnerQuery = undefined;
 export const AccessListGetQuery = undefined;
 export const AccessListInfoDto = undefined;
@@ -477,6 +486,7 @@ export const OrgList = undefined;
 export const PolicyRightsDTO = undefined;
 export const PolicyRuleDTO = undefined;
 export const ResourceDecomposedDto = undefined;
+export const ResourceListQuery = undefined;
 export const ResourceListQueryBuilder = undefined;
 export const ResourcePolicyRightsQuery = undefined;
 export const ResourceSearchQuery = undefined;

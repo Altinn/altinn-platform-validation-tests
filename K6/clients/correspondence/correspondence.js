@@ -109,7 +109,7 @@ class CorrespondenceClient {
      * Do not set Content-Type here. k6 adds the multipart boundary when the
      * request body contains values created with http.file().
      *
-     * @param {object} formData Multipart form fields and attachment data.
+     * @param {{[key: string]: string|import("k6/http").FileData}} formData Multipart form fields and attachment data.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

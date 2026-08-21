@@ -77,6 +77,20 @@ export function getTokenOpts(ssn) {
 }
 
 /**
+ * The parties, resource and action an instance authorization request is built
+ * from. Exactly one of fromSsn and fromOrg identifies the delegating party.
+ *
+ * @typedef {object} InstanceRequestParams
+ * @property {string} toSsn Social security number of the person being given access.
+ * @property {string|null} [fromSsn] Social security number of the delegating person.
+ * @property {string|null} [fromOrg] Organization number of the delegating organization.
+ * @property {string} resourceId Resource, e.g. ttd-dialogporten-performance-test-02.
+ * @property {string} instanceId Instance, e.g. 56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.
+ * @property {string|null} [task] Task, e.g. SigningTask_Founders.
+ * @property {string} action Action, e.g. read, write or sign.
+ */
+
+/**
  * Builds an XACML request asking whether a person may perform an action on a
  * resource belonging to themselves, so the person is both the access subject
  * and the party the resource is looked up for.
@@ -137,14 +151,7 @@ export function buildDaglRequest(ssn, orgno, resourceId, action) {
  * single instance that another party has delegated to them. Exactly one of
  * fromSsn and fromOrg identifies the delegating party.
  *
- * @param {object} params Request parameters.
- * @param {string} params.toSsn Social security number of the person being given access.
- * @param {string|null} [params.fromSsn] Social security number of the delegating person.
- * @param {string|null} [params.fromOrg] Organization number of the delegating organization.
- * @param {string} params.resourceId Resource, e.g. ttd-dialogporten-performance-test-02.
- * @param {string} params.instanceId Instance, e.g. 56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.
- * @param {string|null} [params.task] Task, e.g. SigningTask_Founders.
- * @param {string} params.action Action, e.g. read, write or sign.
+ * @param {InstanceRequestParams} params Request parameters.
  * @returns {XacmlJsonRequestRootExternal} Authorization request.
  */
 export function buildInstanceRequest({
