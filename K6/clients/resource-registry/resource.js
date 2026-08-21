@@ -57,9 +57,10 @@ const TAGS = {
 class ResourceClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} [tokenGenerator] Generates bearer tokens. The public endpoints
+     * are readable without one.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator = null) {
         /**
          * Generates authentication tokens.
          */

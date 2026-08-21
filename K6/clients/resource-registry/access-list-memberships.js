@@ -35,7 +35,7 @@ class AccessListMembershipsClient {
     /**
      * Gets memberships for parties and resources.
      *
-     * @param {object | null} [query] Query parameters.
+     * @param {object} [query] Query parameters.
      * Optional query parameters.
      * @param {Array<string>} [query.party] Parties to include.
      * @param {Array<string>} [query.resource] Resources to include.

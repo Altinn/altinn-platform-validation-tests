@@ -36,7 +36,7 @@ class ResourceV2Client {
      * Gets the policy rights for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {object | null} [query] Query parameters.
+     * @param {object} [query] Query parameters.
      * Optional query parameters.
      * @param {boolean} [query.includeServiceOwnerRights] Whether to include service owner rights.
      * @param {boolean} [query.includeAppRights] Whether to include app rights.

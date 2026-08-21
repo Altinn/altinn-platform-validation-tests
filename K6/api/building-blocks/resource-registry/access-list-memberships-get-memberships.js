@@ -8,7 +8,7 @@ import { withRetries } from "../common/retry.js";
  * Gets access list memberships for parties and resources.
  *
  * @param {AccessListMembershipsClient} accessListMembershipsClient Client for the Access List Memberships API.
- * @param {object | null} [query] Optional query parameters.
+ * @param {object} [query] Optional query parameters.
  * @param {Array<string>} [query.party] Parties to include.
  * @param {Array<string>} [query.resource] Resources to include.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.

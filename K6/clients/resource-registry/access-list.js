@@ -151,7 +151,7 @@ class AccessListClient {
      * Gets access lists for a resource owner.
      *
      * @param {string} owner Resource owner.
-     * @param {object | null} query Query parameters.
+     * @param {object} query Query parameters.
      * @param {string} [query.token] Continuation token for paging.
      * @param {Array<string>} [query.include] Related data to include.
      * @param {string} [query.resource] Resource identifier to filter by.
@@ -191,7 +191,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object | null} query Query parameters.
+     * @param {object} query Query parameters.
      * @param {Array<string>} [query.include] Related data to include.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
@@ -348,7 +348,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object | null} query Query parameters.
+     * @param {object} query Query parameters.
      * @param {string} [query.token] Continuation token for paging.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
@@ -533,7 +533,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object | null} query Query parameters.
+     * @param {object} query Query parameters.
      * @param {string} [query.token] Continuation token for paging.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.

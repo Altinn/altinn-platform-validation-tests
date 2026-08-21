@@ -392,10 +392,11 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
  *
  * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
  * @param {string} serviceResource - the service resource
+ * @param {string} serviceOwner - the org number of the service owner
  * @returns json object to be used as body when creating a dialog via the API, without transmissions and activities.
  */
-export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource) {
-    let body = getDialogBody(partyId, serviceResource);
+export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource, serviceOwner) {
+    let body = getDialogBody(partyId, serviceResource, serviceOwner);
     body.transmissions = [];
     body.activities = [];
     return body;

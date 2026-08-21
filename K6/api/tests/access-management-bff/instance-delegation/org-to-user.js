@@ -179,7 +179,6 @@ export default function (data) {
             serviceOwnerOrgNo,
             createDialog,
             false,
-            `Dialog created for instance delegation test with resource ${resource}`,
         );
         dialogId = resp;
     });
