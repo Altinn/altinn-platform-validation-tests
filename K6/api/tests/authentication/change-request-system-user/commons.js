@@ -18,6 +18,7 @@ import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, Re
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -69,7 +70,7 @@ let vendorTokenGenerator = undefined;
  * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
  * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
  * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
- * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
+ * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, the system id so a teardown can remove what was registered, and the client id and external ref so a test can look the system user up again.
  */
 export function arrangeApprovedSystemUser({
     systemNamePrefix,
@@ -103,7 +104,10 @@ export function arrangeApprovedSystemUser({
         {
             customer,
             vendorOrgNo,
+            systemNamePrefix,
             systemId: registration.systemId,
+            clientId: registration.clientId,
+            externalRef: registration.externalRef,
             systemUserId,
             grantedAccessPackages,
             registeredAccessPackages,
@@ -147,9 +151,19 @@ export function cleanupArranged(arranged) {
             approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 
-            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+            // An arrange that stopped early leaves no system user to delete, only the
+            // system it had already registered.
+            if (systemUser.systemUserId !== undefined) {
+                DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+            }
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
+
+            // The delete above takes the system this run arranged. The sweep takes
+            // whatever an earlier run of the same test left in this vendor's
+            // register, which is what happens when the arrange itself broke: k6
+            // skips the teardown when the setup gives up.
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, systemUser.vendorOrgNo, systemUser.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
 }
@@ -285,6 +299,9 @@ export function findAccessPackages(count, vendorOrgNo) {
         .map((found) => found.urn)
         .sort();
 
+    // Called before anything is registered, so failing outright leaves nothing
+    // behind. The steps that run once a system exists stop instead, see
+    // createApprovedSystemUser.
     if (urns.length < count) {
         fail(`cannot arrange a system user: needed ${count} delegable access packages, the environment has ${urns.length}`);
     }
@@ -367,9 +384,12 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * user, so it stays out of those test files. The flow itself is the subject of
  * create-and-confirm-system-user-request.js, which tests it directly.
  *
- * Keeps its own checks, so an arrange that breaks is visible and points at the
- * step that broke rather than surfacing as a confusing failure later, and fails
- * the iteration rather than letting the test carry on without a system user.
+ * Keeps its own checks, so an arrange that breaks is visible and points at the step
+ * that broke rather than surfacing as a confusing failure later. It stops at that
+ * step and hands back nothing rather than calling fail(), since this runs in setup
+ * and k6 skips the teardown when the setup gives up, which would leave the system
+ * it had just registered in the register. The test is the one that fails, on the
+ * missing system user, and by then the teardown is going to run.
  *
  * @param {object} registration - Registration from createSystemRegistration.
  * @param {object} customer - The customer the system user is created for.
@@ -386,7 +406,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            fail("cannot arrange a system user: registering the system did not return a system id");
+            return;
         }
 
         const createRequest = new CreateRequestSystemUserBuilder()
@@ -407,7 +427,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         });
 
         if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
-            fail("cannot arrange a system user: creating the system user request returned no id");
+            return;
         }
 
         const approved = ApproveSystemUserRequest(
@@ -419,7 +439,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         // Nothing to look up unless the request was approved, so stop here rather
         // than let the lookup fail as a second, unrelated failure.
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            fail("cannot arrange a system user: approving the system user request failed");
+            return;
         }
 
         const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
@@ -429,11 +449,11 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             externalRef: registration.externalRef,
         });
 
-        systemUserId = systemUser?.id;
-
-        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
-            fail("cannot arrange a system user: the lookup by external ref returned no system user");
+        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser?.id)) {
+            return;
         }
+
+        systemUserId = systemUser.id;
     });
 
     return systemUserId;

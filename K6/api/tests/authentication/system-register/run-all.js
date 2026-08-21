@@ -1,29 +1,48 @@
-import runSystemRegisterAccessPackages, { setup as setupSystemRegisterAccessPackages } from "./system-register-access-packages.js";
-import runSystemRegisterCrud, { setup as setupSystemRegisterCrud } from "./system-register-crud.js";
-import runSystemRegisterRights, { setup as setupSystemRegisterRights } from "./system-register-rights.js";
+import runGetRegisteredSystems, { setup as setupGetRegisteredSystems } from "./get-registered-systems.js";
+import runSystemRegisterAccessPackages, { setup as setupSystemRegisterAccessPackages, teardown as teardownSystemRegisterAccessPackages } from "./system-register-access-packages.js";
+import runSystemRegisterCrud, { setup as setupSystemRegisterCrud, teardown as teardownSystemRegisterCrud } from "./system-register-crud.js";
+import runSystemRegisterRights, { setup as setupSystemRegisterRights, teardown as teardownSystemRegisterRights } from "./system-register-rights.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
  * results apart so a test still gets exactly the data it declared.
  *
- * @returns {object} One entry per setup, keyed by the file it came from.
+ * Awaited: three of the four sign a Maskinporten grant, which is asynchronous.
+ *
+ * @returns {Promise<object>} One entry per setup, keyed by the file it came from.
  */
-export function setup() {
+export async function setup() {
     return {
-        systemRegisterAccessPackages: setupSystemRegisterAccessPackages(),
-        systemRegisterCrud: setupSystemRegisterCrud(),
-        systemRegisterRights: setupSystemRegisterRights(),
+        getRegisteredSystems: setupGetRegisteredSystems(),
+        systemRegisterAccessPackages: await setupSystemRegisterAccessPackages(),
+        systemRegisterCrud: await setupSystemRegisterCrud(),
+        systemRegisterRights: await setupSystemRegisterRights(),
     };
 }
 
 /**
  * Runs every test in this folder once, in one k6 run, so a change to the shared
  * clients, building blocks or checks can be verified in one go.
+ *
+ * @param {object} data Setup results, keyed per test.
  */
-export default async function () {
-    await runSystemRegisterAccessPackages();
-    await runSystemRegisterCrud();
-    await runSystemRegisterRights();
+export default async function (data) {
+    runGetRegisteredSystems();
+    await runSystemRegisterAccessPackages(data.systemRegisterAccessPackages);
+    await runSystemRegisterCrud(data.systemRegisterCrud);
+    await runSystemRegisterRights(data.systemRegisterRights);
+}
+
+/**
+ * k6 teardown stage. Runs the teardown of every test in the folder, so a run leaves
+ * the register as it found it.
+ *
+ * @param {object} data Setup results, keyed per test.
+ */
+export function teardown(data) {
+    teardownSystemRegisterCrud(data.systemRegisterCrud);
+    teardownSystemRegisterRights(data.systemRegisterRights);
+    teardownSystemRegisterAccessPackages(data.systemRegisterAccessPackages);
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

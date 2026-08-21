@@ -1,18 +1,31 @@
 
+import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
     SystemRegisterClient,
+    SystemUserClient,
 } from "../../../../clients/authentication/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { pickVendor } from "../change-request-system-user/commons.js";
+import { sweepRegisteredSystems } from "../commons.js";
 
 /**
- * The vendor these tests act as. Owns the registered systems they create.
+ * The scopes a vendor acts with.
  */
-const SYSTEM_OWNER = "713431400";
+const VENDOR_SCOPES = CreateScopeString([
+    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
+    AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
+
+    // The lookup by external id is how a test finds the system user it just had
+    // approved, which is what it needs to delete it again.
+    AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
+]);
 
 /**
  * The vendor whose existing system the pagination tests read from.
@@ -40,6 +53,11 @@ let clients = undefined;
 let approverTokenGenerator = undefined;
 
 /**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let vendorTokenGenerator = undefined;
+
+/**
  * @type {RequestSystemUserClient | undefined}
  */
 let paginationClient = undefined;
@@ -50,16 +68,42 @@ let paginationClient = undefined;
 let paginationTokenGenerator = undefined;
 
 /**
- * Fetches the customers the system users are created for.
+ * Fetches the customers the system users are created for, and draws the vendor that
+ * registers the systems.
  *
- * Returned flat rather than segmented per VU, so a test picks from the whole list
- * with getItemFromList, which walks it across iterations.
+ * The customers come back flat rather than segmented per VU, so a test picks from
+ * the whole list with getItemFromList, which walks it across iterations.
  *
- * @returns {object[]} The customers the tests act on behalf of.
+ * The vendor is drawn once per run rather than per iteration, so a run says
+ * something about a different organisation each time while the teardown still knows
+ * whose register to sweep. Nothing is looked up for it: the vendor is only ever the
+ * organisation the enterprise token is minted for.
+ *
+ * @returns {{customers: object[], vendorOrgNo: string}} The customers the tests act on behalf of, and the vendor they register systems as.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
-    return fetchTestData(`authentication/system-user-request/${__ENV.ENVIRONMENT}.csv`);
+
+    return {
+        customers: fetchTestData(`authentication/system-user-request/${__ENV.ENVIRONMENT}.csv`),
+        vendorOrgNo: pickVendor(),
+    };
+}
+
+/**
+ * Removes the systems a test left in the register.
+ *
+ * Call from a test's teardown, with the prefix that test names its systems with.
+ *
+ * @param {string} vendorOrgNo - The vendor from setup.
+ * @param {string} systemNamePrefix - The prefix the test names its systems with.
+ */
+export function sweepSystems(vendorOrgNo, systemNamePrefix) {
+    const [clients, , vendorTokenGenerator] = getClients();
+
+    vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
+
+    sweepRegisteredSystems(clients.vendor.systemRegisterClient, vendorOrgNo, systemNamePrefix, clients.vendor.requestSystemUserClient);
 }
 
 /**
@@ -72,28 +116,21 @@ export function setup() {
  * The vendor token carries only the scopes this folder needs, so it does not ask
  * for the system user lookup scope the change request tests use.
  *
- * The approver token depends on which customer an iteration drew, so swap its
- * options with setTokenGeneratorOptions and getApproverTokenOpts rather than
- * building a new generator. The cache is keyed on the options, so each customer
+ * Neither token is built for anyone in particular. Which vendor and which customer
+ * an iteration acts as is decided by swapping the generator options with
+ * setTokenGeneratorOptions, the vendor with getVendorTokenOpts and the approver
+ * with getApproverTokenOpts. The cache is keyed on the options, so each of them
  * still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
-        const vendorScopes = CreateScopeString([
-            AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
-            AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ,
-            AltinnScopes.AUTHORIZATION.AUTHORIZE.DEFAULT,
-        ]);
-
-        const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withScopes(vendorScopes)
-                .withOrganizationNumber(SYSTEM_OWNER)
+                .withScopes(VENDOR_SCOPES)
                 .build(),
         );
 
@@ -109,18 +146,39 @@ export function getClients() {
             vendor: {
                 systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
             },
             approver: {
                 requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
 
                 // Approving is what the customer does in the portal, so it goes through
-                // the bff rather than the authentication api the vendor calls.
+                // the bff rather than the authentication api the vendor calls. So is
+                // deleting the system user afterwards.
                 bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
             },
         };
     }
 
-    return [clients, approverTokenGenerator];
+    return [clients, approverTokenGenerator, vendorTokenGenerator];
+}
+
+/**
+ * Token options for acting as a vendor.
+ *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
+ * @param {string} vendorOrgNo - Organisation number of the vendor this iteration acts as.
+ * @returns {object} Options to hand to setTokenGeneratorOptions.
+ */
+export function getVendorTokenOpts(vendorOrgNo) {
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(VENDOR_SCOPES)
+        .withOrganizationNumber(vendorOrgNo)
+        .build();
 }
 
 /**
@@ -164,19 +222,21 @@ export function resourceRight(resource) {
  * lets a test grant a subset up front and ask for the rest later.
  *
  * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them, and so the teardown can find what a failed run left behind.
+ * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as, from setup.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
+ * @param {string[]} [options.registeredAccessPackages] - Urns of the access packages the system is registered with. Agent system users are asked for access packages rather than rights.
  * @returns {object} Identifiers and the registration payload.
  */
-export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
+export function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages = [] }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;
-    const systemId = `${SYSTEM_OWNER}_${systemName}`;
+    const systemId = `${vendorOrgNo}_${systemName}`;
     const clientId = uuidv4();
     const externalRef = uuidv4();
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()
         .withId(systemId)
-        .withVendor(`0192:${SYSTEM_OWNER}`)
+        .withVendor(`0192:${vendorOrgNo}`)
         .withName({
             en: systemName,
             nb: systemName,
@@ -188,13 +248,14 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
             nn: "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt.",
         })
         .withRights(registeredRights)
+        .withAccessPackages(registeredAccessPackages)
         .withClientId([clientId])
         .withVisibility(false)
         .withAllowedRedirectUrls([REDIRECT_URL])
         .build();
 
     return {
-        systemOwner: SYSTEM_OWNER,
+        systemOwner: vendorOrgNo,
         systemId,
         systemName,
         clientId,
