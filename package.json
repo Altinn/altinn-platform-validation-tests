@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.5.0",
+    "@types/k6": "^2.2.0",
     "eslint": "^10.0.0",
     "eslint-plugin-jsdoc": "^64.0.0",
     "eslint-plugin-simple-import-sort": "^14.0.0",
