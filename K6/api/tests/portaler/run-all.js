@@ -3,6 +3,7 @@ import runGetInfoDotAltinnDotCloudSkjemaoversikt from "./get-info-dot-altinn-dot
 import runGetInfoDotAltinnDotCloudSok, { setup as setupGetInfoDotAltinnDotCloudSok } from "./get-info-dot-altinn-dot-cloud-sok.js";
 import runGetInfoDotAltinnDotCloudStarteOgDrive from "./get-info-dot-altinn-dot-cloud-starte-og-drive.js";
 import runGetInfoportalApiWhenLoggedin, { setup as setupGetInfoportalApiWhenLoggedin } from "./get-infoportal-api-when-loggedin.js";
+import runGetInfoportalHealth from "./get-infoportal-health.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
@@ -29,4 +30,5 @@ export default function (data) {
     runGetInfoDotAltinnDotCloudStarteOgDrive();
     runGetInfoDotAltinnDotCloud();
     runGetInfoportalApiWhenLoggedin(data.getInfoportalApiWhenLoggedin);
+    runGetInfoportalHealth();
 }
