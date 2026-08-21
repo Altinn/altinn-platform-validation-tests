@@ -1,4 +1,4 @@
-namespace: arbeidsflate
+namespace: dialogporten
 base_dir: K6/api/tests/arbeidsflate/
 test_definitions:
   - test_file: get-arbeidsflate-health.js

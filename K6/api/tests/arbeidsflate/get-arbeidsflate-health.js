@@ -9,18 +9,31 @@ const healthLabel = { step: "arbeidsflate health" };
 export const options = getOptions([healthLabel]);
 
 export default function () {
-    requireEnv(["AM_UI_BASE_URL"]);
-    const url = `${__ENV.AM_UI_BASE_URL}/health`;
+    requireEnv(["AF_UI_BASE_URL"]);
+    const url = `${__ENV.AF_UI_BASE_URL}/api/health`;
     const res = withRetries(
         () => http.get(url, { tags: healthLabel }),
         "arbeidsflate-health",
     );
 
     const succeed = check(res, {
-        "arbeidsflate health status is 200": (r) => r.status === 200,
+        "status code is 200": (r) => r.status === 200,
     });
 
     if (!succeed) {
         console.log(`Arbeidsflate health check failed: ${res.status} ${res.body}`);
+        return;
+    }
+
+    const body = res.json();
+
+    check(body, {
+        "overall status is ok": (b) => b.status === "ok",
+    });
+
+    for (const [name, healthCheck] of Object.entries(body.healthChecks)) {
+        check(healthCheck, {
+            [`${name} status is ok`]: (hc) => hc.status === "ok",
+        });
     }
 }
