@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { RolesGetRolePackagesByIdQueryBuilder } from "../../../../../clients/access-management/metadata/roles/roles.builders.js";
 import { PackageDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
 import { withRetries } from "../../../common/retry.js";
 

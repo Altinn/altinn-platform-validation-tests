@@ -40,7 +40,7 @@ class AttachmentClient {
     /**
      * Default request tags.
      *
-     * @returns {object} The built payload.
+     * @returns {typeof TAGS} The built payload.
      */
     static get TAGS() {
         return TAGS;

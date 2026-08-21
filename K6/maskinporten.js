@@ -136,7 +136,7 @@ export class MaskinportenAccessTokenGenerator {
     }
 
     /**
-     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     * @returns {typeof TAGS} The tags this generator puts on its requests, for use in threshold labels.
      */
     static get TAGS() {
         return TAGS;

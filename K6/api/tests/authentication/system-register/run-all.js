@@ -6,7 +6,7 @@ import runSystemRegisterRights, { setup as setupSystemRegisterRights } from "./s
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
  * results apart so a test still gets exactly the data it declared.
  *
- * @returns {object} One entry per setup, keyed by the file it came from.
+ * @returns One entry per setup, keyed by the file it came from.
  */
 export function setup() {
     return {

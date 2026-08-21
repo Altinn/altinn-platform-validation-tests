@@ -50,7 +50,7 @@ class ApplicationsClient {
     /**
      * Default request tags used by the client.
      *
-     * @returns {object} Default k6 tags.
+     * @returns {typeof TAGS} Default k6 tags.
      */
     static get TAGS() {
         return TAGS;

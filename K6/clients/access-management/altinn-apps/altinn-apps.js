@@ -75,7 +75,7 @@ class AppsInstanceDelegationClient {
     /**
      * Default request tags.
      *
-     * @returns {object} Tags keyed by client method name.
+     * @returns {typeof TAGS} Tags keyed by client method name.
      */
     static get TAGS() {
         return TAGS;

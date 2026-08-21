@@ -397,7 +397,7 @@ export class PersonalTokenGenerator extends BaseTokenGenerator {
     }
 
     /**
-     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     * @returns {typeof PERSONAL_TOKEN_TAGS} The tags this generator puts on its requests, for use in threshold labels.
      */
     static get TAGS() {
         return PERSONAL_TOKEN_TAGS;
@@ -424,7 +424,7 @@ export class EnterpriseTokenGenerator extends BaseTokenGenerator {
     }
 
     /**
-     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     * @returns {typeof ENTERPRISE_TOKEN_TAGS} The tags this generator puts on its requests, for use in threshold labels.
      */
     static get TAGS() {
         return ENTERPRISE_TOKEN_TAGS;
@@ -451,7 +451,7 @@ export class PlatformTokenGenerator extends BaseTokenGenerator {
     }
 
     /**
-     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     * @returns {typeof PLATFORM_TOKEN_TAGS} The tags this generator puts on its requests, for use in threshold labels.
      */
     static get TAGS() {
         return PLATFORM_TOKEN_TAGS;
