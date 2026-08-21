@@ -1,3 +1,5 @@
+import { Altinn2AccountFromTokenRequest, Altinn2AccountRequest, Altinn2ForgotPasswordRequest } from "../common/common.types.js";
+
 /**
  * Builder for the {@link Altinn2AccountRequest} request body.
  */

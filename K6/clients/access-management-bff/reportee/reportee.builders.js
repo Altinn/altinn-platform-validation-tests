@@ -1,3 +1,5 @@
+import { ChangeReporteeAndRedirectQuery, ChangeReporteeQuery } from "./reportee.types.js";
+
 /**
  * Builder for the query parameters of {@link ChangeReporteeAndRedirect}.
  */

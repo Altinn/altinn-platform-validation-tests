@@ -11,3 +11,5 @@
  * @property {ConsentRequestStatusType} [status] Consent request status to
  * count.
  */
+
+export const GetConsentCountQuery = undefined;

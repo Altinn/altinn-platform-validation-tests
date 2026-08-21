@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { GetSentRequestsQuery } from "../../../../clients/access-management-bff/request/request.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

@@ -1,6 +1,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
+import { InitializeCorrespondencesExt } from "../../../clients/correspondence/correspondence.types.js";
 import {
     BaseCorrespondenceBuilder,
     CorrespondenceClient,

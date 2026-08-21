@@ -31,3 +31,7 @@
  * @property {string|null} description
  * @property {TypeDto} type
  */
+
+export const ProviderDto = undefined;
+export const SubTypeDto = undefined;
+export const TypeDto = undefined;

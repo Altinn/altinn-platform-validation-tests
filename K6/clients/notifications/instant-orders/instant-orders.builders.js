@@ -1,3 +1,5 @@
+import { EmailContentType, InstantEmailContentExt, InstantEmailDetailsExt, InstantEmailNotificationOrderRequestExt, InstantSmsNotificationOrderRequestExt, ShortMessageContentExt, ShortMessageDeliveryDetailsExt } from "../types.js";
+
 class ShortMessageContentBuilder {
     constructor() {
         this.request = {

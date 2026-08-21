@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CloudEvent, EventsQueryParams } from "../types.js";
+
 const TAGS = {
     EventsCreate: {
         action: "events-create",
@@ -41,7 +43,7 @@ class EventsClient {
      * @param {CloudEvent} request CloudEvent payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EventsCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -79,7 +81,7 @@ class EventsClient {
      * Alternative subject header value.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EventsGet(query = null, alternativeSubject = null, labels = null) {
         const token = this.tokenGenerator.getToken();

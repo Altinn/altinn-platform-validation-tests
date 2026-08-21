@@ -60,8 +60,8 @@
  * @property {Array<string>} [anyOfResourceIds] Filter by resource identifiers.
  */
 
-export const AuthorizedPartyDtoListPaginatedResult = undefined;
-export const PaginatedResultLinks = undefined;
 export const AuthorizedPartyDto = undefined;
+export const AuthorizedPartyDtoListPaginatedResult = undefined;
 export const AuthorizedPartyResourceInstance = undefined;
 export const EndUserAuthorizedPartiesQuery = undefined;
+export const PaginatedResultLinks = undefined;

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ResourceDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
 import { withRetries } from "../../../common/retry.js";
 

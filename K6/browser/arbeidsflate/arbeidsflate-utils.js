@@ -76,7 +76,7 @@ function getToken(pid, userId, partyId, partyUuid) {
 /**
  * Function to initialize a session with the given token.
  *
- * @param {F} token - The personal token to initialize the session.
+ * @param {string} token - The personal token to initialize the session.
  * @returns sessionId
  */
 function getSessionId(token) {

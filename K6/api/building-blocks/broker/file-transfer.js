@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { FileTransferInitalizeExt, FileTransferInitializeResponseExt, FileTransferOverviewExt, FileTransferQuery, FileTransferStatusDetailsExt, FileTransferUploadResponseExt } from "../../../clients/broker/file-transfer.types.js";
 import { FileTransferClient } from "../../../clients/broker/index.js";
 import { withRetries } from "../common/retry.js";
 
@@ -317,7 +318,7 @@ export function UploadFileTransfer(
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {string} fileTransferId File transfer UUID.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The HTTP response. The body is the file
+ * @returns {http.RefinedResponse<"text">} The HTTP response. The body is the file
  * content, so the response is returned rather than a boolean.
  */
 export function DownloadFileTransfer(

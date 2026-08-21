@@ -1,5 +1,6 @@
 import { fail, group } from "k6";
 
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";

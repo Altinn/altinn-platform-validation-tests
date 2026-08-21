@@ -1,3 +1,6 @@
+import { RequestStatus } from "../common/common.types.js";
+import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
+
 /**
  * Builder for the query parameters of {@link GetSentRequests}.
  */

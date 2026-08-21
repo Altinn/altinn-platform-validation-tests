@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { Application } from "./applications.types.js";
+
 const TAGS = {
     GetApplications: {
         action: "get-applications",
@@ -58,7 +60,7 @@ class ApplicationsClient {
      * Get all applications.
      *
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetApplications(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -87,7 +89,7 @@ class ApplicationsClient {
      * @param {string|null} appId Application identifier.
      * @param {Application} application Application metadata.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateApplication(appId, application, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -124,7 +126,7 @@ class ApplicationsClient {
      *
      * @param {string} org Organization identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetApplicationsByOrg(org, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,7 +155,7 @@ class ApplicationsClient {
      * @param {string} org Organization identifier.
      * @param {string} app Application identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetApplication(org, app, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -183,7 +185,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {Application} application Application metadata.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateApplication(org, app, application, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -218,7 +220,7 @@ class ApplicationsClient {
      * @param {string} app Application identifier.
      * @param {boolean|null} hard Permanently delete.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteApplication(org, app, hard = null, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { NewSystemUserRequest } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { withRetries } from "../../common/retry.js";
 

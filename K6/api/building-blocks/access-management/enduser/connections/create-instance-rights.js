@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { InstanceRightsDelegationDto } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { CreateInstanceRightsQuery } from "../../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

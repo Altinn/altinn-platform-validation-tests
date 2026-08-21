@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ChangeReporteeAndRedirectQuery, ChangeReporteeQuery } from "./reportee.types.js";
+
 const TAGS = {
     ChangeReporteeAndRedirect: {
         action: "change-reportee-and-redirect",
@@ -45,7 +47,7 @@ class ReporteeClient {
      * @param {ChangeReporteeAndRedirectQuery|null} [query] Optional query
      * parameters. Prefer using {@link ChangeReporteeAndRedirectQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeReporteeAndRedirect(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -94,7 +96,7 @@ class ReporteeClient {
      * @param {ChangeReporteeQuery|null} [query] Optional query parameters. Prefer
      * using {@link ChangeReporteeQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeReportee(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

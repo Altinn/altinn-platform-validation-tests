@@ -1,3 +1,5 @@
+import { AccessPackageUrn, ServiceOwnerAccessPackageDelegation, ServiceOwnerConnectionPartyUrn } from "./connections.types.js";
+
 class ServiceOwnerAccessPackageDelegationBuilder {
     constructor() {
         this.request = {

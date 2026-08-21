@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
+
 const TAGS = {
     GetSentRequests: {
         action: "get-sent-requests",
@@ -87,7 +89,7 @@ class RequestClient {
      * @param {GetSentRequestsQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetSentRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentRequests(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -136,7 +138,7 @@ class RequestClient {
      * @param {GetSentResourceRequestsQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetSentResourceRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentResourceRequests(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -185,7 +187,7 @@ class RequestClient {
      * @param {GetSentPackageRequestsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetSentPackageRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentPackageRequests(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -234,7 +236,7 @@ class RequestClient {
      * @param {GetReceivedRequestsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetReceivedRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedRequests(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -283,7 +285,7 @@ class RequestClient {
      * @param {GetReceivedResourceRequestsQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetReceivedResourceRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedResourceRequests(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -332,7 +334,7 @@ class RequestClient {
      * @param {GetReceivedPackageRequestsQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetReceivedPackageRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedPackageRequests(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -381,7 +383,7 @@ class RequestClient {
      * @param {GetSentRequestsCountQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetSentRequestsCountQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -430,7 +432,7 @@ class RequestClient {
      * @param {GetReceivedRequestsCountQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetReceivedRequestsCountQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -480,7 +482,7 @@ class RequestClient {
      * @param {GetRequestQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRequest(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -528,7 +530,7 @@ class RequestClient {
      *
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDraftRequest(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -563,7 +565,7 @@ class RequestClient {
      * @param {CreateResourceRequestQuery|null} [query] Optional query parameters.
      * Prefer using {@link CreateResourceRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateResourceRequest(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -616,7 +618,7 @@ class RequestClient {
      * @param {CreatePackageRequestQuery|null} [query] Optional query parameters.
      * Prefer using {@link CreatePackageRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreatePackageRequest(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -669,7 +671,7 @@ class RequestClient {
      * @param {WithdrawSentRequestQuery|null} [query] Optional query parameters.
      * Prefer using {@link WithdrawSentRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     WithdrawSentRequest(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -722,7 +724,7 @@ class RequestClient {
      * @param {ConfirmDraftRequestQuery|null} [query] Optional query parameters.
      * Prefer using {@link ConfirmDraftRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmDraftRequest(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -775,7 +777,7 @@ class RequestClient {
      * @param {RejectReceivedRequestQuery|null} [query] Optional query parameters.
      * Prefer using {@link RejectReceivedRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectReceivedRequest(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -828,7 +830,7 @@ class RequestClient {
      * @param {ApproveReceivedRequestQuery|null} [query] Optional query parameters.
      * Prefer using {@link ApproveReceivedRequestQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveReceivedRequest(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -66,4 +66,7 @@
  * @property {ResourceTypeDto} type
  */
 
+export const AreaDto = undefined;
+export const AreaGroupDto = undefined;
+export const PackageDto = undefined;
 export const RoleDto = undefined;

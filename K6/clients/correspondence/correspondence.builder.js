@@ -1,3 +1,5 @@
+import { BaseCorrespondenceExt, CorrespondenceContentExt, CorrespondenceQuery, CorrespondenceReplyOptionExt, CorrespondencesRoleType, CorrespondenceStatusExt, CustomNotificationRecipientExt, EmailContentType, ExternalReferenceExt, InitializeCorrespondenceNotificationExt, InitializeCorrespondencesExt, NotificationChannelExt, NotificationRecipientExt, NotificationTemplateExt } from "./correspondence.types.js";
+
 /**
  * Builder for CorrespondenceQuery.
  *

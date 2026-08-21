@@ -1,3 +1,5 @@
+import { ChannelSchema, ComposedEmailRequestExt, ComposedEmailSendingOptionsExt, DialogportenIdentifiersExt, EmailContentType, EmailSendingOptionsExt, NotificationOrderChainRequestExt, NotificationRecipientExt, NotificationReminderExt, RecipientComposedEmailExt, RecipientEmailExt, RecipientExternalIdentityExt, RecipientOrganizationExt, RecipientPersonExt, RecipientSmsExt, SasFileReferenceExt, SendingTimePolicy, SmsSendingOptionsExt } from "../types.js";
+
 /**
  * Drops the properties a caller never set.
  *

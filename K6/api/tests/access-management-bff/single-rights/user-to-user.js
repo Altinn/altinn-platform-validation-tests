@@ -6,6 +6,7 @@ import {
     GetAccessPackageDelegationsQueryBuilder,
     SearchAccessPackagesQueryBuilder,
 } from "../../../../clients/access-management-bff/access-package/index.js";
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     DeleteReporteeConnectionQueryBuilder,

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { RevokeSingleRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

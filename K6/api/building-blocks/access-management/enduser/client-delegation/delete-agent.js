@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { DeleteAgentQuery } from "../../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

@@ -41,7 +41,7 @@ class AccessListMembershipsClient {
      * @param {Array<string>} [query.resource] Resources to include.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListMembershipsGetMemberships(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

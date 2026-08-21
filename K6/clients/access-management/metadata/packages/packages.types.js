@@ -33,3 +33,6 @@
  * @property {boolean} [query.simpleSearch] Whether to use simple search.
  * @property {boolean} [query.strict] Whether to use strict matching.
  */
+
+export const PackageDtoSearchObject = undefined;
+export const PackagesSearchQueryBuilder = undefined;

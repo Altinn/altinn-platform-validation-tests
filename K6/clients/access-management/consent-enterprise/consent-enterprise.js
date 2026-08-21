@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ConsentRequestDto, ConsentRequestEventsQueryBuilder } from "./consent-enterprise.types.js";
+
 const TAGS = {
     EnterpriseCreateConsentRequest: {
         action: "enterprise-create-consent-request",
@@ -46,7 +48,7 @@ class EnterpriseClient {
      * @param {ConsentRequestDto} request Consent request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EnterpriseCreateConsentRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -84,7 +86,7 @@ class EnterpriseClient {
      * @param {string} consentRequestId Consent request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EnterpriseGetConsentRequest(consentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -122,7 +124,7 @@ class EnterpriseClient {
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EnterpriseGetConsentRequestEvents(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

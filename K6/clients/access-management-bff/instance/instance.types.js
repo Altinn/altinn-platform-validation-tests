@@ -93,3 +93,11 @@
  * @property {string} [resource] Resource identifier.
  * @property {string} [instance] Instance identifier.
  */
+
+export const CreateInstanceRightsQuery = undefined;
+export const DeleteInstanceDelegationQuery = undefined;
+export const GetInstanceDelegationCheckQuery = undefined;
+export const GetInstanceDelegationsQuery = undefined;
+export const GetInstanceRightsQuery = undefined;
+export const GetInstanceSimplifiedUsersQuery = undefined;
+export const UpdateInstanceRightsQuery = undefined;

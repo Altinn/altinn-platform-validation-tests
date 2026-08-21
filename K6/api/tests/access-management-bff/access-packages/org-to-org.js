@@ -19,6 +19,7 @@ import {
     GetClientAccessPackagesQueryBuilder,
     GetClientsQueryBuilder,
 } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { DelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     CreateRightHolderQueryBuilder,

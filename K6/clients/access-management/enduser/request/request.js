@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ReceivedRequestsQuery, SentRequestsQuery } from "./request.types.js";
+
 const TAGS = {
     GetReceivedRequests: {
         action: "get-received-requests",
@@ -67,7 +69,7 @@ class RequestClient {
      * Page number header.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedRequests(
         query = null,
@@ -128,7 +130,7 @@ class RequestClient {
      * Query parameters. Prefer using {@link ReceivedRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -180,7 +182,7 @@ class RequestClient {
      * Optional resource rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveReceivedRequest(
         party,
@@ -229,7 +231,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectReceivedRequest(
         party,
@@ -275,7 +277,7 @@ class RequestClient {
      * Optional rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateResourceRequest(
         party,
@@ -327,7 +329,7 @@ class RequestClient {
      * @param {string} packageId Access package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreatePackageRequest(
         party,
@@ -375,7 +377,7 @@ class RequestClient {
      * Page number header.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentRequests(
         query = null,
@@ -436,7 +438,7 @@ class RequestClient {
      * Query parameters. Prefer using {@link SentRequestsQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentRequestsCount(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -486,7 +488,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     WithdrawSentRequest(
         party,
@@ -529,7 +531,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRequest(
         party,
@@ -571,7 +573,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDraftRequest(
         id,
@@ -612,7 +614,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmDraftRequest(
         party,

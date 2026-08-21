@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { MaskinportenConsumerResourcesQuery, MaskinportenConsumersQuery } from "./maskinporten-consumers.types.js";
+
 const TAGS = {
     GetMaskinportenConsumers: {
         action: "get-maskinporten-consumers",
@@ -49,7 +51,7 @@ class MaskinportenConsumersClient {
      * {@link MaskinportenConsumersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenConsumers(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -100,7 +102,7 @@ class MaskinportenConsumersClient {
      * {@link MaskinportenConsumersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMaskinportenConsumer(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -151,7 +153,7 @@ class MaskinportenConsumersClient {
      * {@link MaskinportenConsumerResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenConsumerResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -202,7 +204,7 @@ class MaskinportenConsumersClient {
      * {@link MaskinportenConsumerResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMaskinportenConsumerResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

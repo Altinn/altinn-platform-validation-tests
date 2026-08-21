@@ -1,3 +1,5 @@
+import { PrivateNotificationSettingsUpdateRequest } from "./private-notifications-settings.types.js";
+
 /**
  * Builder for PrivateNotificationSettingsUpdateRequest.
  */

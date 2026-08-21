@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { DataElement, FileScanStatus } from "./instances.types.js";
+
 const TAGS = {
     CreateData: {
         action: "create-data",
@@ -64,7 +66,7 @@ class DataClient {
      * @param {Array<string>} refs Ids of related data elements.
      * @param {string} generatedFromTask Task the element was generated from.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateData(instanceOwnerPartyId, instanceGuid, body, dataType = null, refs = null, generatedFromTask = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -109,7 +111,7 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetData(instanceOwnerPartyId, instanceGuid, dataGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -143,7 +145,7 @@ class DataClient {
      * @param {Array<string>} refs Ids of related data elements.
      * @param {string} generatedFromTask Task the element was generated from.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateData(instanceOwnerPartyId, instanceGuid, dataGuid, body, refs = null, generatedFromTask = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -185,7 +187,7 @@ class DataClient {
      * @param {string} dataGuid Data element UUID.
      * @param {boolean} delay Whether to delay the delete until the instance is deleted.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteData(instanceOwnerPartyId, instanceGuid, dataGuid, delay = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -220,7 +222,7 @@ class DataClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDataElements(instanceOwnerPartyId, instanceGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -253,7 +255,7 @@ class DataClient {
      * @param {string} dataGuid Data element UUID.
      * @param {DataElement} request Data element metadata to store.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateDataElement(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -287,7 +289,7 @@ class DataClient {
      * @param {string} dataGuid Data element UUID.
      * @param {FileScanStatus} request File scan status to store.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateFileScanStatus(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();

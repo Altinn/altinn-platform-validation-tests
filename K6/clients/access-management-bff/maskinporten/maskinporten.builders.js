@@ -1,3 +1,5 @@
+import { CreateSupplierQuery, CreateSupplierResourceQuery, DeleteConsumerQuery, DeleteConsumerResourceQuery, DeleteSupplierQuery, DeleteSupplierResourceQuery, GetConsumerResourcesQuery, GetConsumersQuery, GetSupplierResourceDelegationCheckQuery, GetSupplierResourcesQuery, GetSuppliersQuery, SearchScopesQuery } from "./maskinporten.types.js";
+
 /**
  * Builder for the query parameters of {@link SearchScopes}.
  */

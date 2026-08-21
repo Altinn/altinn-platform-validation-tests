@@ -1,3 +1,5 @@
+import { AppCloudEventRequestModel, ContentType } from "../types.js";
+
 class AppCloudEventRequestModelBuilder {
     constructor() {
         this.request = {

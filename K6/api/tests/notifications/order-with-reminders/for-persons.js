@@ -5,6 +5,7 @@ import {
     RecipientPersonExtBuilder,
     SmsSendingOptionsExtBuilder
 } from "../../../../clients/notifications/order/index.js";
+import { DialogportenIdentifiersExt, NotificationOrderChainRequestExt, NotificationReminderExt } from "../../../../clients/notifications/types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { OrderCreateOrder } from "../../../building-blocks/notifications/order/index.js";

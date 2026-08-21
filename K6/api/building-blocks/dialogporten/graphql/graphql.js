@@ -42,7 +42,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
- * @param {uuidv7} dialogId TODO: description
+ * @param {string} dialogId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
@@ -87,7 +87,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  * Function to get a dialog by id
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {string} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */
@@ -120,7 +120,7 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  * Function to get a dialog by id and verify that the response contains the correct dialogId
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {string} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {object|null} Parsed GraphQL response, or null when the call failed.
  */

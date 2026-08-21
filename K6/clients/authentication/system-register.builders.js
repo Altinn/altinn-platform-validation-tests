@@ -1,3 +1,5 @@
+import { RegisterSystemRequest, Right, VendorInfo } from "./types.js";
+
 /**
  * Builds the body for registering a system.
  *

@@ -1,3 +1,5 @@
+import { AddressCodeResendRequest, AddressCodeSendRequest, AddressType, AddressVerificationRequest } from "./address-verification.types.js";
+
 /**
  * Builder for address verification requests.
  */

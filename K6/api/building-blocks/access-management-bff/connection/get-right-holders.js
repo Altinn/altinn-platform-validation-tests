@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetRightHoldersQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { withRetries } from "../../common/retry.js";
 

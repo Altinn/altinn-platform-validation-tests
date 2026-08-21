@@ -1,6 +1,7 @@
 
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
 import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { InstanceRightsDelegationDto, Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { InstanceClient, InstanceRightsDelegationDtoBuilder } from "../../../../clients/access-management-bff/instance/index.js";

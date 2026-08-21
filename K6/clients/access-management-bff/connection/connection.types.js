@@ -49,3 +49,8 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  */
+
+export const CreateRightHolderQuery = undefined;
+export const DeleteReporteeConnectionQuery = undefined;
+export const GetRightHoldersQuery = undefined;
+export const GetSimplifiedConnectionsQuery = undefined;

@@ -1,6 +1,8 @@
 
+import { ConsentRequestDto, ConsentRightDto } from "../../../../clients/access-management/consent-enterprise/consent-enterprise.types.js";
 import { ConsentRequestBuilder, EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { ConsentLookupRequestBuilder, MaskinportenClient } from "../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { ConsentLookupRequest } from "../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { fetchTestData } from "../../../../helpers.js";

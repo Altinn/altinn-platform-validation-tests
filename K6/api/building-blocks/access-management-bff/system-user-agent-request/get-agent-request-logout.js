@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * for the agent system user request endpoints.
  * @param {string} agentRequestId Agent request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @returns {http.RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetAgentRequestLogout(

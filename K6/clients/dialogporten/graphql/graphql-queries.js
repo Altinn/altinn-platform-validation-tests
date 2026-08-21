@@ -1,3 +1,5 @@
+import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
+
 /**
  * GraphQL queries for Dialogporten
  * TODO: These can be moved to separate files if the number of queries grows too large

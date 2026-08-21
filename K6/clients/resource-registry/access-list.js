@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
+
 const TAGS = {
     AccessListGetByMember: {
         action: "access-list-get-by-member",
@@ -116,7 +118,7 @@ class AccessListClient {
      * @param {string} party Member party UUID URN.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetByMember(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -155,7 +157,7 @@ class AccessListClient {
      * @param {string} [query.resource] Resource identifier to filter by.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetByOwner(owner, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -194,7 +196,7 @@ class AccessListClient {
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGet(owner, identifier, query = null, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -233,7 +235,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListDelete(owner, identifier, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -273,7 +275,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListUpsert(owner, identifier, request, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -311,7 +313,7 @@ class AccessListClient {
      * @param {Array<JsonPatchOperation>} request Patch operations.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListPatch(owner, identifier, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -352,7 +354,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetMembers(
         owner,
@@ -398,7 +400,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListReplaceMembers(
         owner,
@@ -444,7 +446,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListAddMembers(
         owner,
@@ -490,7 +492,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListRemoveMembers(
         owner,
@@ -537,7 +539,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetResourceConnections(
         owner,
@@ -584,7 +586,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListUpsertResourceConnection(
         owner,
@@ -631,7 +633,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListDeleteResourceConnection(
         owner,

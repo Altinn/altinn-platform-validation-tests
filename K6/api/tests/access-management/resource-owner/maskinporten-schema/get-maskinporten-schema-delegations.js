@@ -1,6 +1,7 @@
 import exec from "k6/execution";
 
 import { MaskinportenClient, MaskinportenDelegationsQueryBuilder } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { MaskinportenDelegationsQuery } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../../common-imports.js";
 import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";

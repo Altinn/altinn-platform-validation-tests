@@ -268,14 +268,6 @@
  */
 
 /**
- * @typedef {"Plain"|"Html"} EmailContentType
- */
-
-/**
- * @typedef {"Plain"|"Html"} EmailContentType
- */
-
-/**
  * @typedef {object} ShortMessageContentExt
  * @property {string|null} sender The sender identifier displayed in the recipient's SMS message.
  * @property {string} body The text content of the SMS message to be delivered to the recipient.
@@ -337,3 +329,35 @@
  * @typedef {object} InstantNotificationRecipientExt
  * @property {ShortMessageDeliveryDetailsExt} recipientSms
  */
+
+export const ChannelSchema = undefined;
+export const ComposedEmailRequestExt = undefined;
+export const ComposedEmailSendingOptionsExt = undefined;
+export const DialogportenIdentifiersExt = undefined;
+export const EmailContentType = undefined;
+export const EmailSendingOptionsExt = undefined;
+export const InstantEmailContentExt = undefined;
+export const InstantEmailDetailsExt = undefined;
+export const InstantEmailNotificationOrderRequestExt = undefined;
+export const InstantNotificationOrderRequestExt = undefined;
+export const InstantNotificationOrderResponseExt = undefined;
+export const InstantSmsNotificationOrderRequestExt = undefined;
+export const NotificationDeliveryManifestExt = undefined;
+export const NotificationOrderChainRequestExt = undefined;
+export const NotificationOrderChainResponseExt = undefined;
+export const NotificationRecipientExt = undefined;
+export const NotificationReminderExt = undefined;
+export const RecipientComposedEmailExt = undefined;
+export const RecipientEmailExt = undefined;
+export const RecipientExternalIdentityExt = undefined;
+export const RecipientOrganizationExt = undefined;
+export const RecipientPersonExt = undefined;
+export const RecipientSmsExt = undefined;
+export const SasFileReferenceExt = undefined;
+export const SendingTimePolicy = undefined;
+export const ShortMessageContentExt = undefined;
+export const ShortMessageDeliveryDetailsExt = undefined;
+export const SmsSendingOptionsExt = undefined;
+export const StatusFeedExt = undefined;
+export const StatusFeedQuery = undefined;
+export const StatusOrderBy = undefined;

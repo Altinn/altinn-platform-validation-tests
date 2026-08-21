@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { InitializeCorrespondencesResponseExt } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
 import { withRetries } from "../../common/retry.js";
 

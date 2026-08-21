@@ -1,3 +1,5 @@
+import { DeleteRoleQuery, GetRolePackagesQuery, GetRolePermissionsQuery, GetRoleResourcesQuery } from "./role.types.js";
+
 /**
  * Builder for the query parameters of {@link GetRolePermissions}.
  */

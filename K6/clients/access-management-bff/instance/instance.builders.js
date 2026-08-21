@@ -1,3 +1,6 @@
+import { InstanceRightsDelegationDto, PersonInput } from "../common/common.types.js";
+import { CreateInstanceRightsQuery, DeleteInstanceDelegationQuery, GetInstanceDelegationCheckQuery, GetInstanceDelegationsQuery, GetInstanceRightsQuery, GetInstanceSimplifiedUsersQuery, UpdateInstanceRightsQuery } from "./instance.types.js";
+
 /**
  * Builder for the query parameters of {@link GetInstanceDelegations}.
  */

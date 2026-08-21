@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListMembershipsClient } from "../../../clients/resource-registry/index.js";
+import { AccessListResourceMembershipWithActionFilterDtoListObject } from "../../../clients/resource-registry/types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

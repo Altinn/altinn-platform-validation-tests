@@ -1,3 +1,5 @@
+import { DelegateSingleRightsQuery, GetResourceDelegationsQuery, GetResourceRightsQuery, GetRightsMetaQuery, GetSingleRightDelegationCheckQuery, RevokeSingleRightsQuery, UpdateSingleRightsQuery } from "./single-right.types.js";
+
 /**
  * Builder for the query parameters of {@link GetSingleRightDelegationCheck}.
  */

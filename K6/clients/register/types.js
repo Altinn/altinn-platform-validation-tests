@@ -217,6 +217,7 @@ export const ErRoleFieldTypes = {
 
 // Value exports so a building block can name the type it returns in an import
 // and have the JSDoc reference resolve. There is nothing to import at runtime.
+
 export const Party = undefined;
 export const PartyFieldInclude = undefined;
 export const PartyHistoricalAggregate = undefined;

@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { EventsClient } from "../../../../clients/events/events/index.js";
+import { CloudEvent, EventsQueryParams } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

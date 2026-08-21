@@ -7,6 +7,7 @@ import {
     SearchAccessPackagesQueryBuilder,
 } from "../../../../clients/access-management-bff/access-package/index.js";
 import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     CreateRightHolderQueryBuilder,

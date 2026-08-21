@@ -42,7 +42,7 @@ class ResourceV2Client {
      * @param {boolean} [query.includeAppRights] Whether to include app rights.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceV2GetPolicyRights(
         id,

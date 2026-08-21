@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * Correspondence identifier.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {http.RefinedResponse|null}
+ * @returns {http.RefinedResponse<"text">|null}
  * Response containing the zip archive, or null if the request failed.
  */
 export function DownloadAllAttachments(

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { ResourceUpdatedQueryBuilder } from "../../../../clients/resource-registry/resource.builders.js";
+import { UpdatedResourceSubjectPaginated } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

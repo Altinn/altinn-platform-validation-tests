@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog, PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem, V1ServiceOwnerDialogsQueriesGet_Dialog } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

@@ -35,3 +35,7 @@
  * @property {number} [ResultsPerPage] Page size of the search result.
  * @property {number} [Page] Page number of the search result.
  */
+
+export const GetResourceOwnersQuery = undefined;
+export const GetResourceQuery = undefined;
+export const SearchResourcesQuery = undefined;

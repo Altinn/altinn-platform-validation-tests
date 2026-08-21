@@ -1,3 +1,5 @@
+import { EndUserAuthorizedPartiesQuery } from "./authorized-parties.types.js";
+
 /**
  * Builder for creating query parameters for the End User Authorized Parties API.
  *

@@ -1,3 +1,4 @@
+import { StatusFeedQuery, StatusOrderBy } from "../types.js";
 
 class StatusFeedQueryBuilder {
     constructor() {

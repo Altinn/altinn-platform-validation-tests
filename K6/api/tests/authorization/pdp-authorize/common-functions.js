@@ -6,6 +6,7 @@ import {
     buildXacmlJsonRequestRootExternal,
 } from "../../../../clients/authorization/builders.js";
 import { AuthorizeClient } from "../../../../clients/authorization/index.js";
+import { XacmlJsonAttributeExternal, XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";

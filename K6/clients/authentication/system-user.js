@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { Int64Opaque, SystemUserUpdateDto } from "./types.js";
+
 const TAGS = {
     SystemUserGetByExternalId: {
         action: "system-user-get-by-external-id",
@@ -56,7 +58,7 @@ class SystemUserClient {
      * @param {string} [query.externalRef] See the client method.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserGetByExternalId(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -114,7 +116,7 @@ class SystemUserClient {
      * @param {SystemUserUpdateDto} request Updated SystemUser.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserUpdate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,7 +155,7 @@ class SystemUserClient {
      * @param {string} [query.orgno] See the client method.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserVendorGetByQuery(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -213,7 +215,7 @@ class SystemUserClient {
      * @param {Int64Opaque} [query.token] Continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserVendorGetBySystem(systemId, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -276,7 +278,7 @@ class SystemUserClient {
      * @param {Int64Opaque} [query.token] Continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserInternalStream(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

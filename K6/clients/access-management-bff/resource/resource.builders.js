@@ -1,3 +1,6 @@
+import { ResourceType } from "../common/common.types.js";
+import { GetResourceOwnersQuery, GetResourceQuery, SearchResourcesQuery } from "./resource.types.js";
+
 /**
  * Builder for the query parameters of {@link GetResourceOwners}.
  */

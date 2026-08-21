@@ -1,3 +1,5 @@
+import { ConsentPortalViewMode, ConsentRequestDto, ConsentRightDto } from "./consent-enterprise.types.js";
+
 class ConsentRequestBuilder {
     constructor() {
         this.request = {

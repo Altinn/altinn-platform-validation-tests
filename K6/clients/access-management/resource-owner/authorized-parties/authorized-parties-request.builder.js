@@ -1,3 +1,5 @@
+import { AuthorizedPartiesRequest } from "./authorized-parties.types.js";
+
 /**
  * Builder for creating authorized parties lookup requests.
  */

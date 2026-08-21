@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetConsentCountQuery } from "../../../../clients/access-management-bff/consent/consent.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { withRetries } from "../../common/retry.js";
 

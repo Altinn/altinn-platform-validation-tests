@@ -1,3 +1,5 @@
+import { NotificationAddressModel, SettingsControllerUpdateSelectedLanguageRequest } from "../common/common.types.js";
+
 /**
  * Builder for the {@link SettingsControllerUpdateSelectedLanguageRequest}
  * request body.

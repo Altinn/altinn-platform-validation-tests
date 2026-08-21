@@ -1,3 +1,5 @@
+import { GetDelegationExportQuery } from "./delegation-export.types.js";
+
 /**
  * Builder for the query parameters of {@link GetDelegationExport}.
  */

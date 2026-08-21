@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { GetRightsMetaQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

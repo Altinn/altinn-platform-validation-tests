@@ -69,10 +69,10 @@
  */
 
 /**
- * @typedef {object} AccessListMembershipIdentifiers
- * @property {number|null} ["urn:altinn:party:id"] Party identifier.
- * @property {string|null} ["urn:altinn:party:uuid"] Party UUID.
- * @property {object | null} ["urn:altinn:organization:identifier-no"] Organization number.
+ * Identifiers a membership can be looked up by. The keys are URNs, so the type
+ * is written inline rather than with `@property` tags.
+ *
+ * @typedef {{"urn:altinn:party:id"?: number|null, "urn:altinn:party:uuid"?: string|null, "urn:altinn:organization:identifier-no"?: object|null}} AccessListMembershipIdentifiers
  */
 
 /**
@@ -312,6 +312,12 @@
  */
 
 /**
+ * @typedef {object} AccessListInfoDtoPaginated
+ * @property {Array<AccessListInfoDto>} data
+ * @property {PaginatedLinks} links
+ */
+
+/**
  * @typedef {object} AttributeMatchV2Paginated
  * @property {Array<AttributeMatchV2>} data
  * @property {PaginatedLinks} links
@@ -395,3 +401,24 @@
  * @property {string} [query.token] Continuation token.
  * @property {number} [query.limit] Maximum number of pairs returned.
  */
+
+export const AccessListInfoDto = undefined;
+export const AccessListInfoDtoPaginated = undefined;
+export const AccessListMembershipDtoAggregateVersionVersionedPaginated = undefined;
+export const AccessListResourceConnectionDtoAggregateVersionVersionedPaginated = undefined;
+export const AccessListResourceConnectionWithVersionDto = undefined;
+export const AccessListResourceMembershipWithActionFilterDtoListObject = undefined;
+export const AttributeMatchV2Paginated = undefined;
+export const CreateAccessListModel = undefined;
+export const JsonPatchOperation = undefined;
+export const OrgList = undefined;
+export const PolicyRightsDTO = undefined;
+export const PolicyRuleDTO = undefined;
+export const ResourceDecomposedDto = undefined;
+export const ResourceListQueryBuilder = undefined;
+export const ResourceSearchQueryBuilder = undefined;
+export const ResourceType = undefined;
+export const ServiceResource = undefined;
+export const SubjectResourcesPaginated = undefined;
+export const UpdatedResourceSubjectPaginated = undefined;
+export const UpsertAccessListResourceConnectionDto = undefined;

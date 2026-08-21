@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ConsentClient} consentClient Client for the consent endpoints.
  * @param {string} consentRequestId Consent request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @returns {http.RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetConsentRequestLogout(

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
+import { ResourceDecomposedDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

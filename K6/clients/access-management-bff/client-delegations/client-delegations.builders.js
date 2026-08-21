@@ -1,3 +1,6 @@
+import { DelegationBatchInputDto, ResourceDelegationBatchInputDto } from "../common/common.types.js";
+import { CreateAgentAccessPackagesQuery, CreateAgentQuery, CreateAgentResourcesQuery, DeleteAgentAccessPackagesQuery, DeleteAgentQuery, DeleteAgentResourcesQuery, DeleteMyClientProvidersQuery, DeleteMyClientResourcesQuery, DeleteMyClientsQuery, GetAgentAccessPackagesQuery, GetAgentResourcesQuery, GetAgentsQuery, GetClientAccessPackagesQuery, GetClientResourcesQuery, GetClientsQuery, GetMyClientsQuery } from "./client-delegations.types.js";
+
 /**
  * Builder for the query parameters of {@link GetMyClients}.
  */

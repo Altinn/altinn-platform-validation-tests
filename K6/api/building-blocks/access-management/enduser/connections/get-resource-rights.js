@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ExternalResourceRightDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { GetResourceRightsQuery } from "../../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

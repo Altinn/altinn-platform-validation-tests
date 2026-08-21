@@ -1,3 +1,5 @@
+import { CreateAccessPackageDelegationQuery, DeleteAccessPackageDelegationQuery, GetAccessPackageDelegationCheckQuery, GetAccessPackageDelegationsQuery, GetAccessPackagePermissionQuery, SearchAccessPackagesQuery } from "./access-package.types.js";
+
 /**
  * Builder for the query parameters of {@link SearchAccessPackages}.
  */

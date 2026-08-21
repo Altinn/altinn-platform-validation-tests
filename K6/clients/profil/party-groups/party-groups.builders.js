@@ -1,3 +1,5 @@
+import { GroupRequest } from "./party-groups.types.js";
+
 /**
  * Builder for GroupRequest.
  */

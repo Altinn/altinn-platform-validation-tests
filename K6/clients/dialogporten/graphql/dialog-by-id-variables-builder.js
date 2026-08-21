@@ -6,8 +6,8 @@ export class DialogByIdVariablesBuilder {
     }
 
     /**
-     * @param {uuidv7} id - the id of the dialog to get
-     * @returns {DialogSearchVariablesBuilder} TODO: description
+     * @param {string} id - the id of the dialog to get
+     * @returns {DialogByIdVariablesBuilder} TODO: description
      * */
     withId(id) {
         this.variables.id = id;
@@ -15,7 +15,7 @@ export class DialogByIdVariablesBuilder {
     }
 
     /**
-     * @returns {DialogSearchVariablesBuilder}
+     * @returns {DialogByIdVariablesBuilder}
      */
 
     build() {

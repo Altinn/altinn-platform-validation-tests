@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SystemRegisterClient } from "../../../../clients/authentication/index.js";
 import { withRetries } from "../../common/retry.js";
 

@@ -1,5 +1,8 @@
 import http from "k6/http";
 
+import { ResourceSearchQueryBuilder, ResourceUpdatedQueryBuilder } from "./resource.builders.js";
+import { ServiceResource } from "./types.js";
+
 const TAGS = {
     ResourceGetResourceList: {
         action: "resource-get-resource-list",
@@ -92,7 +95,7 @@ class ResourceClient {
      * @param {boolean} [query.includeMigratedApps] Whether to include migrated apps.
      * @param {{[key:string]:string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourceList(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -146,7 +149,7 @@ class ResourceClient {
      *
      * @param {{[key:string]:string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceExport(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -181,7 +184,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {{versionId?: number} | object} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResource(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -235,7 +238,7 @@ class ResourceClient {
      *
      * @param {ServiceResource} resource Resource payload.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreateResource(resource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -271,7 +274,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {ServiceResource} resource Updated resource.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdateResource(id, resource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -306,7 +309,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceDeleteResource(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -340,7 +343,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicy(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -375,7 +378,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreatePolicy(id, policyFile, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -416,7 +419,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdatePolicy(id, policyFile, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -457,7 +460,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {{reloadFromXacml?: boolean} | object} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicySubjects(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -512,7 +515,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicyRules(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -547,7 +550,7 @@ class ResourceClient {
      * @param {string} id Resource identifier.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicyRights(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -582,7 +585,7 @@ class ResourceClient {
      * @param {Array<string>} subjects List of subjects for resource information.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourcesBySubjects(subjects, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -619,7 +622,7 @@ class ResourceClient {
      * Optional search query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -674,7 +677,7 @@ class ResourceClient {
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdated(query = null, labels = null) {
         // The endpoint is public, so the client may be built without a token

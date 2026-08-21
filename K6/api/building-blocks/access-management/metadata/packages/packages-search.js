@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { PackageDtoSearchObject, PackagesSearchQueryBuilder } from "../../../../../clients/access-management/metadata/packages/packages.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

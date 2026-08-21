@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CorrespondenceQuery, InitializeCorrespondencesExt } from "./correspondence.types.js";
+
 const TAGS = {
     InitializeCorrespondence: {
         action: "initialize-correspondence",
@@ -69,7 +71,7 @@ class CorrespondenceClient {
      * Correspondence initialization payload.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeCorrespondence(body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -110,7 +112,7 @@ class CorrespondenceClient {
      * @param {object} formData Multipart form fields and attachment data.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadCorrespondences(formData, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -144,11 +146,11 @@ class CorrespondenceClient {
     /**
      * Gets a list of correspondences for the authenticated user.
      *
-     * @param {CorrespondencesQuery|null} [query]
+     * @param {CorrespondenceQuery|null} [query]
      * Optional query parameters.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondences(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -200,7 +202,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PurgeCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -241,7 +243,7 @@ class CorrespondenceClient {
      * Attachment UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadAttachment(correspondenceId, attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -280,7 +282,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadAllAttachments(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -319,7 +321,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     MarkAsRead(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -359,7 +361,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -399,7 +401,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondence(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -438,7 +440,7 @@ class CorrespondenceClient {
      * Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondenceDetails(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -477,7 +479,7 @@ class CorrespondenceClient {
      * @param {string} correspondenceId Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondenceContent(correspondenceId, labels = null) {
         const token = this.tokenGenerator.getToken();

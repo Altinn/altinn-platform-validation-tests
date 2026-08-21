@@ -1,3 +1,5 @@
+import { AccessPackage, Right } from "../../../clients/access-management-bff/common/common.types.js";
+
 /**
  * Compares two lists of rights on action and resource values, since the API may
  * return additional or reordered fields.

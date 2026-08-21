@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { DeleteMyClientsQuery } from "../../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
+import { DelegationBatchInputDto, DelegationDto } from "../../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

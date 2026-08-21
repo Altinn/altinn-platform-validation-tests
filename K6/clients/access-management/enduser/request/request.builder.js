@@ -1,3 +1,5 @@
+import { RequestStatus } from "./request.types.js";
+
 class ReceivedRequestsQueryBuilder {
     constructor() {
         this.query = {};

@@ -40,7 +40,7 @@ class InfoPortalApiClient {
      * Get authorized parties for the user
      *
      * @param {object} labels - k6 check tags
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetAuthorizedParties(labels = null) {
 
@@ -55,7 +55,7 @@ class InfoPortalApiClient {
      * Get favorites for the user
      *
      * @param {object} labels - k6 check tags
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetFavorites(labels = null) {
         const url = this.FULL_PATH + "/favorites";
@@ -69,7 +69,7 @@ class InfoPortalApiClient {
      * Get current user info
      *
      * @param {object} labels - k6 check tags
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetCurrent(labels = null) {
         const url = this.FULL_PATH + "/current";

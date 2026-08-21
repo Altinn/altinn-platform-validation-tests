@@ -89,7 +89,7 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CheckResourceDelegation(
         resourceId,
@@ -133,7 +133,7 @@ class AppsInstanceDelegationClient {
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Delegation request.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateDelegation(
         resourceId,
@@ -182,7 +182,7 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDelegations(
         resourceId,
@@ -229,7 +229,7 @@ class AppsInstanceDelegationClient {
      * @param {string} instanceId Instance identifier.
      * @param {AppsInstanceDelegationRequestDto} request Revoke request.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RevokeDelegation(
         resourceId,
@@ -278,7 +278,7 @@ class AppsInstanceDelegationClient {
      * @param {string} resourceId Resource identifier.
      * @param {string} instanceId Instance identifier.
      * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteDelegations(
         resourceId,

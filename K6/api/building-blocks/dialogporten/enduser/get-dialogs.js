@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog, V1EndUserDialogsQueriesGet_Dialog } from "../../../../clients/dialogporten/enduser/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

@@ -51,7 +51,7 @@ class AttachmentClient {
      *
      * @param {InitializeAttachmentExt} request See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeAttachment(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -86,7 +86,7 @@ class AttachmentClient {
      * @param {*} fileData Binary payload (ArrayBuffer, http.file(), string, etc.)
      * @param {string} [contentType] See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadAttachment(
         attachmentId,
@@ -125,7 +125,7 @@ class AttachmentClient {
      *
      * @param {string} attachmentId See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -155,7 +155,7 @@ class AttachmentClient {
      *
      * @param {string} attachmentId See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -185,7 +185,7 @@ class AttachmentClient {
      *
      * @param {string} attachmentId See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAttachmentDetails(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -215,7 +215,7 @@ class AttachmentClient {
      *
      * @param {string} attachmentId See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();

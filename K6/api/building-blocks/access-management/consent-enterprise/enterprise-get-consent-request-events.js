@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ConsentStatusChangeDtoPaginatedResult } from "../../../../clients/access-management/consent-enterprise/consent-enterprise.types.js";
 import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { withRetries } from "../../common/retry.js";
 

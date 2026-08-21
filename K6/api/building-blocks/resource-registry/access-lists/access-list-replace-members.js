@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { PartyUrn } from "../../../../clients/register/types.js";
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListMembershipDtoAggregateVersionVersionedPaginated } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

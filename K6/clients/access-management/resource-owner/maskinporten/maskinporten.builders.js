@@ -1,3 +1,5 @@
+import { ConsentLookupRequest, MaskinportenDelegationsQuery } from "./maskinporten.types.js";
+
 /**
  * Builder for Maskinporten delegations query parameters.
  *

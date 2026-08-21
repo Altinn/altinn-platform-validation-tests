@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { GetAgentSystemUserDelegationsQuery } from "../../../../clients/access-management-bff/system-user-agent-delegation/system-user-agent-delegation.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

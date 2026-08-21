@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceEventsClient } from "../../../clients/storage/index.js";
+import { InstanceEvent, InstanceEventList } from "../../../clients/storage/instances.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

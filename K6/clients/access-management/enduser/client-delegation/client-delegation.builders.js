@@ -1,3 +1,5 @@
+import { AgentAccessPackagesQuery, AgentClientAccessPackagesQuery, AgentsQuery, ClientAccessPackagesQuery, ClientsQuery, CreateAgentQuery, DelegationBatchInputDto, DeleteAgentClientsQuery, DeleteAgentQuery, DeleteMyClientAccessPackagesQuery, DeleteMyClientProviderQuery, DeleteMyClientsQuery, MyClientsQuery, PersonInput } from "./client-delegation.types.js";
+
 /**
  * Builder for the clients query of the authenticated party.
  */

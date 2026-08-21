@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AccessPackageDelegationCheckQuery, CreateAccessPackageQuery, CreateConnectionQuery, CreateInstanceRightsQuery, CreateResourceRightsQuery, DeleteAccessPackageQuery, DeleteConnectionQuery, DeleteInstanceQuery, DeleteRoleQuery, GetAccessPackagesQuery, GetConnectionsQuery, GetConnectionUsersQuery, GetInstanceDelegationCheckQuery, GetInstanceRightsQuery, GetInstancesQuery, GetInstanceUsersQuery, GetResourceDelegationCheckQuery, GetResourceRightsQuery, GetRolesQuery, InstanceRightsDelegationDto, PersonInput, RightKeyListDto, UpdateInstanceRightsQuery, UpdateResourceRightsQuery } from "./connections.types.js";
+
 const TAGS = {
     GetConnections: {
         action: "get-connections",
@@ -129,7 +131,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConnections(
         query = null,
@@ -190,7 +192,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateConnection(
         query = null,
@@ -250,7 +252,7 @@ class ConnectionsClient {
      * {@link DeleteConnectionQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteConnection(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -303,7 +305,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConnectionUsers(
         query = null,
@@ -363,7 +365,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackages(
         query = null,
@@ -424,7 +426,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAccessPackage(
         query = null,
@@ -484,7 +486,7 @@ class ConnectionsClient {
      * {@link DeleteAccessPackageQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAccessPackage(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -535,7 +537,7 @@ class ConnectionsClient {
      * {@link AccessPackageDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackageDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -588,7 +590,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRoles(
         query = null,
@@ -646,7 +648,7 @@ class ConnectionsClient {
      * {@link DeleteRoleQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteRole(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -698,7 +700,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceRights(
         query = null,
@@ -759,7 +761,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateResourceRights(
         query = null,
@@ -821,7 +823,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateResourceRights(
         query = null,
@@ -880,7 +882,7 @@ class ConnectionsClient {
      * {@link GetResourceDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -932,7 +934,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstances(
         query = null,
@@ -991,7 +993,7 @@ class ConnectionsClient {
      * {@link DeleteInstanceQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstance(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1043,7 +1045,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceRights(
         query = null,
@@ -1104,7 +1106,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceRights(
         query = null,
@@ -1166,7 +1168,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateInstanceRights(
         query = null,
@@ -1227,7 +1229,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceRights(
         query = null,
@@ -1288,7 +1290,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceRights(
         query = null,
@@ -1350,7 +1352,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateInstanceRights(
         query = null,
@@ -1410,7 +1412,7 @@ class ConnectionsClient {
      * {@link GetInstanceDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1462,7 +1464,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceUsers(
         query = null,
