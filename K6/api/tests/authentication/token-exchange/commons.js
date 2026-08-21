@@ -20,48 +20,58 @@ export const CONSUMER_ORG_NO = "313175650";
 export const SCOPE = AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE;
 
 /**
- * @type {AuthenticationClient | undefined}
- */
-let authenticationClient = undefined;
-
-/**
- * k6 setup stage. Declares what the tests in this folder need.
+ * k6 setup stage. Fetches the Maskinporten token the tests exchange.
  *
- * The Maskinporten grant is signed per VU rather than here, since the generator
- * cannot be handed over: k6 serializes the setup result to JSON and the prototypes
- * would not survive.
+ * The token is test data here rather than plumbing: it is the thing under test, so
+ * it is fetched where the other tests fetch their test data, and a run that cannot
+ * sign the grant says so before any iteration starts rather than in the middle of
+ * one.
  *
- * @returns {undefined} Nothing, the tests draw no test data.
+ * The token itself crosses into the iterations, not the generator: k6 serializes
+ * the setup result to JSON and the prototypes would not survive. That also means
+ * the token is not renewed while the run lasts, so this holds for a run that fits
+ * inside the lifetime Maskinporten gave it. A load run would need a generator per
+ * VU instead.
+ *
+ * @returns {Promise<{maskinportenToken: string}>} The token to exchange.
  */
-export function setup() {
+export async function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
-    return;
+
+    return { maskinportenToken: await fetchMaskinportenToken() };
 }
 
 /**
- * Creates and caches the client these tests exchange tokens with.
+ * Signs a grant and fetches a Maskinporten access token for the scope above.
  *
- * Async, unlike most client helpers in this repo: signing the Maskinporten grant
- * goes through SubtleCrypto, so the token has to be fetched before the client
- * starts asking for it.
+ * Async, unlike everything else here: signing goes through SubtleCrypto, which is
+ * promise based.
  *
- * Cached at module scope, so a VU builds it once and keeps the token it fetched
- * rather than signing a new grant on every iteration.
- *
- * @returns {Promise<AuthenticationClient>} The client, holding the Maskinporten token that gets exchanged.
+ * @returns {Promise<string>} The access token.
  */
-export async function getClient() {
-    if (authenticationClient === undefined) {
-        const tokenGenerator = new MaskinportenAccessTokenGenerator(
-            new MaskinportenTokenBuilder()
-                .withScopes(CreateScopeString([SCOPE]))
-                .build(),
-        );
+export async function fetchMaskinportenToken() {
+    const tokenGenerator = new MaskinportenAccessTokenGenerator(
+        new MaskinportenTokenBuilder()
+            .withScopes(CreateScopeString([SCOPE]))
+            .build(),
+    );
 
-        await tokenGenerator.ensureToken();
+    return await tokenGenerator.ensureToken();
+}
 
-        authenticationClient = new AuthenticationClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return authenticationClient;
+/**
+ * Builds the client that exchanges a token.
+ *
+ * Takes the token rather than fetching one, so what a test does with the token and
+ * where the token comes from stay apart.
+ *
+ * @param {string} maskinportenToken - The token from setup.
+ * @returns {AuthenticationClient} The client, sending that token as its bearer.
+ */
+export function getClient(maskinportenToken) {
+    return new AuthenticationClient(__ENV.BASE_URL, {
+        // The clients ask a generator for a token per request. This one is already
+        // fetched, so it only has to be handed over.
+        getToken: () => maskinportenToken,
+    });
 }

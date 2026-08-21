@@ -7,36 +7,42 @@ import runSystemRegisterRights, { setup as setupSystemRegisterRights, teardown a
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
  * results apart so a test still gets exactly the data it declared.
  *
- * @returns {object} One entry per setup, keyed by the file it came from.
+ * Awaited: three of the four sign a Maskinporten grant, which is asynchronous.
+ *
+ * @returns {Promise<object>} One entry per setup, keyed by the file it came from.
  */
-export function setup() {
+export async function setup() {
     return {
         getRegisteredSystems: setupGetRegisteredSystems(),
-        systemRegisterAccessPackages: setupSystemRegisterAccessPackages(),
-        systemRegisterCrud: setupSystemRegisterCrud(),
-        systemRegisterRights: setupSystemRegisterRights(),
+        systemRegisterAccessPackages: await setupSystemRegisterAccessPackages(),
+        systemRegisterCrud: await setupSystemRegisterCrud(),
+        systemRegisterRights: await setupSystemRegisterRights(),
     };
 }
 
 /**
  * Runs every test in this folder once, in one k6 run, so a change to the shared
  * clients, building blocks or checks can be verified in one go.
+ *
+ * @param {object} data Setup results, keyed per test.
  */
-export default async function () {
+export default async function (data) {
     runGetRegisteredSystems();
-    await runSystemRegisterAccessPackages();
-    await runSystemRegisterCrud();
-    await runSystemRegisterRights();
+    await runSystemRegisterAccessPackages(data.systemRegisterAccessPackages);
+    await runSystemRegisterCrud(data.systemRegisterCrud);
+    await runSystemRegisterRights(data.systemRegisterRights);
 }
 
 /**
  * k6 teardown stage. Runs the teardown of every test in the folder, so a run leaves
  * the register as it found it.
+ *
+ * @param {object} data Setup results, keyed per test.
  */
-export async function teardown() {
-    await teardownSystemRegisterCrud();
-    await teardownSystemRegisterRights();
-    await teardownSystemRegisterAccessPackages();
+export function teardown(data) {
+    teardownSystemRegisterCrud(data.systemRegisterCrud);
+    teardownSystemRegisterRights(data.systemRegisterRights);
+    teardownSystemRegisterAccessPackages(data.systemRegisterAccessPackages);
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

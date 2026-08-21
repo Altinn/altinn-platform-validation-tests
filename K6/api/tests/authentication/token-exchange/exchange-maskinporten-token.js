@@ -16,9 +16,11 @@ export { setup } from "./commons.js";
  * The rejections are covered too, since an endpoint that hands out tokens for
  * anything it is given is worse than one that is down: a provider it does not know
  * has to be refused, and so has a request without a readable token.
+ *
+ * @param {object} data The Maskinporten token from setup.
  */
-export default async function () {
-    const authenticationClient = await getClient();
+export default function (data) {
+    const authenticationClient = getClient(data.maskinportenToken);
 
     group("As an enterprise integration, I can exchange my Maskinporten token for an Altinn token", function () {
         group("Exchange the Maskinporten token", function () {

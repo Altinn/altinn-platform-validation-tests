@@ -1,7 +1,6 @@
 import { fail, group } from "k6";
 
 import { uuidv4 } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
 import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
 import { getVendorClient, sweepSystems, VENDOR_ID } from "./commons.js";
 
@@ -11,13 +10,10 @@ import { getVendorClient, sweepSystems, VENDOR_ID } from "./commons.js";
  */
 const SYSTEM_NAME_PREFIX = "K6-super-system-";
 
-export function setup() {
-    requireEnv(["BASE_URL"]);
-    return;
-}
+export { setup } from "./commons.js";
 
-export default async function () {
-    const systemRegisterClient = await getVendorClient();
+export default async function (data) {
+    const systemRegisterClient = getVendorClient(data.vendorToken);
 
     const vendorId = VENDOR_ID;
     const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
@@ -202,9 +198,11 @@ export default async function () {
  * Deleting the system is a step of the test itself, so on the way it was meant to
  * go there is nothing here to do. An iteration that gave up half way is what this
  * is for: fail() skips the delete, and the system would stay behind.
+ *
+ * @param {object} data The vendor token from setup.
  */
-export async function teardown() {
-    await sweepSystems(SYSTEM_NAME_PREFIX);
+export function teardown(data) {
+    sweepSystems(data.vendorToken, SYSTEM_NAME_PREFIX);
 }
 
 // add the custom reporting for this test to the default summary

@@ -10,17 +10,20 @@ import runTokenExchange, { setup as setupTokenExchange } from "./token-exchange/
  * k6 setup stage. Runs every folder's setup, keeping the results apart so each
  * folder still gets exactly the data it declared.
  *
- * @returns {object} One entry per folder.
+ * The token exchange setup signs a Maskinporten grant, which is asynchronous, so
+ * this one is awaited.
+ *
+ * @returns {Promise<object>} One entry per folder.
  */
-export function setup() {
+export async function setup() {
     return {
         changeRequestSystemUser: setupChangeRequestSystemUser(),
         resourceRegistry: setupResourceRegistry(),
-        systemRegister: setupSystemRegister(),
+        systemRegister: await setupSystemRegister(),
         systemUser: setupSystemUser(),
         systemUserClientDelegation: setupSystemUserClientDelegation(),
         systemUserRequest: setupSystemUserRequest(),
-        tokenExchange: setupTokenExchange(),
+        tokenExchange: await setupTokenExchange(),
     };
 }
 
@@ -45,7 +48,7 @@ export default async function (data) {
     runSystemUserRequest(data.systemUserRequest);
     runChangeRequestSystemUser(data.changeRequestSystemUser);
     runSystemUserClientDelegation(data.systemUserClientDelegation);
-    await runTokenExchange();
+    runTokenExchange(data.tokenExchange);
 }
 
 /**
@@ -54,12 +57,12 @@ export default async function (data) {
  *
  * @param {object} data Setup results, keyed per folder.
  */
-export async function teardown(data) {
+export function teardown(data) {
     teardownChangeRequestSystemUser(data.changeRequestSystemUser);
     teardownSystemUser(data.systemUser);
     teardownSystemUserClientDelegation(data.systemUserClientDelegation);
     teardownSystemUserRequest(data.systemUserRequest);
-    await teardownSystemRegister();
+    teardownSystemRegister(data.systemRegister);
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

@@ -4,7 +4,7 @@ import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
-import { getVendorClient, sweepSystems, VENDOR_ID } from "./commons.js";
+import { getVendorClient, setup as commonsSetup, sweepSystems, VENDOR_ID } from "./commons.js";
 
 const ORG = "ttd";
 
@@ -14,13 +14,21 @@ const ORG = "ttd";
  */
 const SYSTEM_NAME_PREFIX = "K6-access-packages-system-";
 
-export function setup() {
-    requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    return;
+/**
+ * k6 setup stage. Fetches the vendor token, and declares the environment this test
+ * needs on top of it: the rights and access packages a customer sees come back on an
+ * enduser token, which is minted per environment.
+ *
+ * @returns {Promise<{vendorToken: string}>} The token the vendor acts with.
+ */
+export async function setup() {
+    requireEnv(["ENVIRONMENT"]);
+
+    return await commonsSetup();
 }
 
-export default async function () {
-    const systemRegisterClient = await getVendorClient();
+export default async function (data) {
+    const systemRegisterClient = getVendorClient(data.vendorToken);
 
     // GET /{systemId}/accesspackages wants the portal enduser scope, the same as the
     // rights endpoint. Registering, updating and deleting the system still goes
@@ -120,9 +128,11 @@ export default async function () {
  * Deleting the system is a step of the test itself, so on the way it was meant to
  * go there is nothing here to do. An iteration that gave up half way is what this
  * is for: fail() skips the delete, and the system would stay behind.
+ *
+ * @param {object} data The vendor token from setup.
  */
-export async function teardown() {
-    await sweepSystems(SYSTEM_NAME_PREFIX);
+export function teardown(data) {
+    sweepSystems(data.vendorToken, SYSTEM_NAME_PREFIX);
 }
 
 // add the custom reporting for this test to the default summary
