@@ -2,11 +2,11 @@ import { AccessPackageUrn, ServiceOwnerAccessPackageDelegation, ServiceOwnerConn
 
 class ServiceOwnerAccessPackageDelegationBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {ServiceOwnerAccessPackageDelegation} */ ({
             from: null,
             to: null,
             packageUrn: null,
-        };
+        });
     }
 
     /**

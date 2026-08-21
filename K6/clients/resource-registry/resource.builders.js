@@ -5,14 +5,14 @@ import { ResourceSearchQuery, ResourceType, UpdatedResourceSubjectsQuery } from 
  */
 class ResourceSearchQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {ResourceSearchQuery} */ ({
             Id: null,
             Title: null,
             Description: null,
             ResourceType: null,
             Keyword: null,
             Reference: null,
-        };
+        });
     }
 
     /**
@@ -102,7 +102,7 @@ class ResourceSearchQueryBuilder {
  */
 class ResourceUpdatedQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdatedResourceSubjectsQuery} */ ({});
     }
 
     /**

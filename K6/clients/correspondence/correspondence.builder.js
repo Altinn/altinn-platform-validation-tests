@@ -8,7 +8,7 @@ import { BaseCorrespondenceExt, CorrespondenceContentExt, CorrespondenceQuery, C
  */
 class CorrespondenceQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {CorrespondenceQuery} */ ({
             resourceId: null,
             from: null,
             to: null,
@@ -18,7 +18,7 @@ class CorrespondenceQueryBuilder {
             sendersReference: null,
             idempotentKey: null,
             altinn2CorrespondenceId: null,
-        };
+        });
     }
 
     /**

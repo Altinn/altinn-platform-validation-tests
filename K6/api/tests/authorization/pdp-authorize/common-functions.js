@@ -253,7 +253,11 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     switch (randNumber) {
         case 0:
             return ["sign", denyLabel, "NotApplicable"];
-        case 1, 3, 5, 7, 9:
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 9:
             return ["read", permitLabel, "Permit"];
         default:
             return ["write", permitLabel, "Permit"];

@@ -1,4 +1,6 @@
-import { Page } from "k6/browser";
+/**
+ * @typedef {import("k6/browser").Page} Page
+ */
 
 import { expect } from "../../common-imports.js";
 import { requireEnv } from "../../helpers.js";

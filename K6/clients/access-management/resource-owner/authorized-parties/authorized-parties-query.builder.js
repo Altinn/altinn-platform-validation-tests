@@ -6,14 +6,14 @@ import { AuthorizedPartiesQuery } from "./authorized-parties.types.js";
  */
 export class AuthorizedPartiesQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {AuthorizedPartiesQuery} */ ({
             includeAltinn2: false,
             includeAltinn3: true,
             includeRoles: true,
             includeAccessPackages: false,
             includeResources: true,
             includeInstances: true
-        };
+        });
     }
 
     /**

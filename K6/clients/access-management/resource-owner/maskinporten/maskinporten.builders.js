@@ -63,11 +63,11 @@ class MaskinportenDelegationsQueryBuilder {
  */
 class ConsentLookupRequestBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {ConsentLookupRequest} */ ({
             id: null,
             from: null,
             to: null,
-        };
+        });
     }
 
     /**

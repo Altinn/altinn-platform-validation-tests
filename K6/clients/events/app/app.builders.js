@@ -2,7 +2,7 @@ import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery, Co
 
 class AppCloudEventRequestModelBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {AppCloudEventRequestModel} */ ({
             source: null,
             specversion: null,
             type: null,
@@ -11,7 +11,7 @@ class AppCloudEventRequestModelBuilder {
             data: null,
             dataschema: null,
             contenttype: null,
-        };
+        });
     }
 
     /**
@@ -103,7 +103,7 @@ class AppCloudEventRequestModelBuilder {
 }
 class AppEventsByAppQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AppEventsByAppQuery} */ ({});
     }
 
     /**
@@ -196,7 +196,7 @@ class AppEventsByAppQueryBuilder {
 
 class AppPartyEventsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AppPartyEventsQuery} */ ({});
     }
 
     /**

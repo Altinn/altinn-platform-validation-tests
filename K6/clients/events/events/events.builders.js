@@ -18,7 +18,7 @@ import { EventsQueryParams } from "../types.js";
  */
 export class EventsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {EventsQueryParams} */ ({});
     }
 
     /**

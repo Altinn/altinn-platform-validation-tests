@@ -1,9 +1,11 @@
+import { MaskinportenConsumerResourcesQuery, MaskinportenConsumersQuery } from "./maskinporten-consumers.types.js";
+
 /**
  * Builder for Maskinporten consumers query parameters.
  */
 class MaskinportenConsumersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenConsumersQuery} */ ({});
     }
 
     /**
@@ -31,7 +33,7 @@ class MaskinportenConsumersQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, consumer?: string}} The built payload.
+     * @returns {MaskinportenConsumersQuery} The built payload.
      */
     build() {
         return this.query;
@@ -43,7 +45,7 @@ class MaskinportenConsumersQueryBuilder {
  */
 class MaskinportenConsumersResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenConsumerResourcesQuery} */ ({});
     }
 
     /**
@@ -82,7 +84,7 @@ class MaskinportenConsumersResourcesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, consumer?: string, resource?: string}} The built payload.
+     * @returns {MaskinportenConsumerResourcesQuery} The built payload.
      */
     build() {
         return this.query;

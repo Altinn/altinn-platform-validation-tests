@@ -2,7 +2,7 @@ import { PackagesSearchQuery } from "./packages.types.js";
 
 class PackagesSearchQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {PackagesSearchQuery} */ ({});
     }
 
     /**

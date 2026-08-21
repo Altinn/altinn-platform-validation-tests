@@ -5,9 +5,9 @@ import { AuthorizedPartiesRequest } from "./authorized-parties.types.js";
  */
 class AuthorizedPartiesRequestBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {AuthorizedPartiesRequest} */ ({
             partyFilter: null,
-        };
+        });
     }
 
     /**

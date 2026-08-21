@@ -2,7 +2,7 @@ import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleR
 
 class RolesGetRolePackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRolePackagesQuery} */ ({});
     }
 
     /**
@@ -45,7 +45,7 @@ class RolesGetRolePackagesQueryBuilder {
 
 class RolesGetRoleResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRoleResourcesQuery} */ ({});
     }
 
     /**
@@ -88,7 +88,7 @@ class RolesGetRoleResourcesQueryBuilder {
 
 class RolesGetRolePackagesByIdQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRolePackagesByIdQuery} */ ({});
     }
 
     /**
@@ -121,7 +121,7 @@ class RolesGetRolePackagesByIdQueryBuilder {
 
 class RolesGetRoleResourcesByIdQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRoleResourcesByIdQuery} */ ({});
     }
 
     /**

@@ -25,7 +25,7 @@ function withoutUnsetProperties(request) {
 
 class NotificationOrderChainRequestExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {NotificationOrderChainRequestExt} */ ({
             sendersReference: null,
             requestedSendTime: null,
             conditionEndpoint: null,
@@ -33,7 +33,7 @@ class NotificationOrderChainRequestExtBuilder {
             idempotencyId: null,
             recipient: null,
             reminders: null,
-        };
+        });
     }
 
     /**
@@ -144,14 +144,14 @@ class NotificationOrderChainRequestExtBuilder {
 
 class ComposedEmailRequestExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {ComposedEmailRequestExt} */ ({
             sendersReference: null,
             requestedSendTime: null,
             conditionEndpoint: null,
             dialogportenAssociation: null,
             idempotencyId: null,
             recipient: null,
-        };
+        });
     }
 
     /**
@@ -251,13 +251,13 @@ class ComposedEmailRequestExtBuilder {
 
 class NotificationRecipientExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {NotificationRecipientExt} */ ({
             recipientEmail: null,
             recipientSms: null,
             recipientPerson: null,
             recipientOrganization: null,
             recipientExternalIdentity: null,
-        };
+        });
     }
 
     /**
@@ -334,10 +334,10 @@ class NotificationRecipientExtBuilder {
 
 class RecipientEmailExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {RecipientEmailExt} */ ({
             emailAddress: null,
             emailSettings: null,
-        };
+        });
     }
 
     /**
@@ -378,10 +378,10 @@ class RecipientEmailExtBuilder {
 
 class RecipientSmsExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {RecipientSmsExt} */ ({
             phoneNumber: null,
             smsSettings: null,
-        };
+        });
     }
 
     /**
@@ -422,7 +422,7 @@ class RecipientSmsExtBuilder {
 
 class RecipientPersonExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {RecipientPersonExt} */ ({
             emailSettings: null,
             smsSettings: null,
             resourceId: null,
@@ -431,7 +431,7 @@ class RecipientPersonExtBuilder {
             channelSchema: null,
             ignoreReservation: null,
             useStaleContactInformation: null,
-        };
+        });
     }
 
     /**
@@ -535,14 +535,14 @@ class RecipientPersonExtBuilder {
 
 class RecipientOrganizationExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {RecipientOrganizationExt} */ ({
             emailSettings: null,
             smsSettings: null,
             resourceId: null,
             resourceAction: null,
             orgNumber: null,
             channelSchema: null,
-        };
+        });
     }
 
     /**
@@ -625,14 +625,14 @@ class RecipientOrganizationExtBuilder {
 
 class RecipientExternalIdentityExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {RecipientExternalIdentityExt} */ ({
             emailSettings: null,
             smsSettings: null,
             resourceId: null,
             resourceAction: null,
             externalIdentity: null,
             channelSchema: null,
-        };
+        });
     }
 
     /**
@@ -717,10 +717,10 @@ class RecipientExternalIdentityExtBuilder {
 
 class RecipientComposedEmailExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {RecipientComposedEmailExt} */ ({
             emailAddress: null,
             emailSettings: null,
-        };
+        });
     }
 
     /**
@@ -765,13 +765,13 @@ class RecipientComposedEmailExtBuilder {
 
 class EmailSendingOptionsExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {EmailSendingOptionsExt} */ ({
             senderEmailAddress: null,
             subject: null,
             body: null,
             contentType: null,
             sendingTimePolicy: null,
-        };
+        });
     }
 
     /**
@@ -842,11 +842,11 @@ class EmailSendingOptionsExtBuilder {
 
 class SmsSendingOptionsExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {SmsSendingOptionsExt} */ ({
             sender: null,
             body: null,
             sendingTimePolicy: null,
-        };
+        });
     }
 
     /**
@@ -893,14 +893,14 @@ class SmsSendingOptionsExtBuilder {
 
 class ComposedEmailSendingOptionsExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {ComposedEmailSendingOptionsExt} */ ({
             senderEmailAddress: null,
             subject: null,
             body: null,
             contentType: null,
             sendingTimePolicy: null,
             attachments: null,
-        };
+        });
     }
 
     /**
@@ -985,11 +985,11 @@ class ComposedEmailSendingOptionsExtBuilder {
 
 class SasFileReferenceExtBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {SasFileReferenceExt} */ ({
             filename: null,
             mimeType: null,
             sasUrl: null,
-        };
+        });
     }
 
     /**

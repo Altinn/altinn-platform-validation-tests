@@ -109,7 +109,7 @@ function getOptions() {
 /**
  * The default function is the main entry point for the test and is called for each iteration.
  *
- * @param {} data TODO: description
+ * @param {ReturnType<typeof setup>} data TODO: description
  */
 export default async function (data) {
     const testData = getItemFromList(data);

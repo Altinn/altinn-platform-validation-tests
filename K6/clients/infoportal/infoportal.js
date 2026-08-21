@@ -82,7 +82,7 @@ class InfoPortalApiClient {
     /**
      * Method to do the actuel http call to the api, used by all the public methods in this class
      *
-     * @param {url} url TODO: Description
+     * @param {string} url Full url of the endpoint to call.
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns TODO: description
      */
