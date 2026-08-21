@@ -14,6 +14,7 @@ import {
     getConsenteeTokenOpts,
     getConsenterPersons,
     getConsenterTokenOpts,
+    lookupConsentValidTo,
     organizationUrn,
     personUrn,
 } from "../commons.js";
@@ -86,7 +87,14 @@ export default function (rows) {
         const from = personUrn(row.pid);
         const to = organizationUrn(row.orgNo);
 
-        const consentRequest = createConsentRequest({ consentId: row.consentId, from, to });
+        // Long lived on purpose: this data is committed and read by lookup.js for a long
+        // time, unlike the short lived consents post-consent.js creates on every run.
+        const consentRequest = createConsentRequest({
+            consentId: row.consentId,
+            from,
+            to,
+            validTo: lookupConsentValidTo(),
+        });
 
         const createdRequest = EnterpriseCreateConsentRequest(clients.consentee.enterpriseClient, consentRequest);
 
