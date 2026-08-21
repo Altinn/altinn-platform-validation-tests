@@ -4,7 +4,7 @@ export { setup } from "./common.js";
 import { group } from "k6";
 
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
-import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
+import { GetAuthorizedParties, GetAuthorizedPartiesRefused } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE } from "./common.js";
 import { SetupData } from "./setup-data.types.js";
@@ -41,12 +41,9 @@ export default function (data) {
         });
 
         group("A resource owner may not filter on an org code it does not own", function () {
-            // The building block asserts 200, so this refusal goes straight to the client.
-            const response = authorizedPartiesClient.GetAuthorizedParties(request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
+            const problem = GetAuthorizedPartiesRefused(authorizedPartiesClient, 400, request, filteredOnOrgCode(OTHER_SERVICE_OWNER_ORG_CODE));
 
-            AuthorizedPartiesDomainChecks.CheckBadRequest(response);
-
-            AuthorizedPartiesDomainChecks.CheckProblemBodyMentions(response, OTHER_SERVICE_OWNER_ORG_CODE);
+            AuthorizedPartiesDomainChecks.CheckProblemBodyMentions(problem, OTHER_SERVICE_OWNER_ORG_CODE);
         });
 
         group("The admin scope may filter on any org code", function () {

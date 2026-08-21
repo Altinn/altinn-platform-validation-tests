@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AuthorizedParty } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
+import { AuthorizedParty, ProblemDetails } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 
 /**
  * Every check here names itself, after the function and what it compared, so it can be
@@ -708,74 +708,16 @@ function CheckPartyUuidsMatchBaseline(parties, baselinePartyUuids) {
 }
 
 /**
- * The request succeeded, for the steps that only care about the status.
- *
- * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
- * @returns {boolean} True if the check held.
- */
-function CheckRequestSucceeded(response) {
-    return Assert("CheckRequestSucceeded - the request succeeded", response,
-        (res) => res.status === 200,
-        () => [`expected 200, got ${response.status}`, `body: ${response.body}`]);
-}
-
-/**
- * The request was rejected with the expected status.
- *
- * The building block asserts 200 and returns an empty list on anything else, so the
- * steps that mean to be rejected call the client directly and land here.
- *
- * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
- * @param {number} expectedStatus - The status the request should have been rejected with.
- * @returns {boolean} True if the check held.
- */
-function CheckRequestRejected(response, expectedStatus) {
-    return Assert(`CheckRequestRejected - the request was rejected with ${expectedStatus}`, response,
-        (res) => res.status === expectedStatus,
-        () => [`expected ${expectedStatus}, got ${response.status}`, `body: ${response.body}`]);
-}
-
-/**
- * The request was rejected as unauthenticated.
- *
- * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
- * @returns {boolean} True if the check held.
- */
-function CheckUnauthorized(response) {
-    return CheckRequestRejected(response, 401);
-}
-
-/**
- * The request was rejected as unauthorized.
- *
- * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
- * @returns {boolean} True if the check held.
- */
-function CheckForbidden(response) {
-    return CheckRequestRejected(response, 403);
-}
-
-/**
- * The request was rejected as a bad request.
- *
- * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
- * @returns {boolean} True if the check held.
- */
-function CheckBadRequest(response) {
-    return CheckRequestRejected(response, 400);
-}
-
-/**
  * The problem body names the value that was refused.
  *
- * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
+ * @param {ProblemDetails|null} problem - The problem body, as the building block parsed it.
  * @param {string} expectedInBody - A value the problem body is expected to mention.
  * @returns {boolean} True if the check held.
  */
-function CheckProblemBodyMentions(response, expectedInBody) {
-    return Assert(`CheckProblemBodyMentions - the problem body mentions '${expectedInBody}'`, response,
-        (res) => String(res.body ?? "").includes(expectedInBody),
-        () => [`expected '${expectedInBody}' in the problem body, got: ${response.body}`]);
+function CheckProblemBodyMentions(problem, expectedInBody) {
+    return Assert(`CheckProblemBodyMentions - the problem body mentions '${expectedInBody}'`, problem,
+        (body) => JSON.stringify(body ?? "").includes(expectedInBody),
+        () => [`expected '${expectedInBody}' in the problem body, got: ${JSON.stringify(problem)}`]);
 }
 
 export {
@@ -812,10 +754,5 @@ export const AuthorizedPartiesDomainChecks = {
     CheckNoPartyCarriesResource,
     CheckNoDuplicateParties,
     CheckPartyUuidsMatchBaseline,
-    CheckRequestSucceeded,
-    CheckRequestRejected,
-    CheckUnauthorized,
-    CheckForbidden,
-    CheckBadRequest,
     CheckProblemBodyMentions,
 };

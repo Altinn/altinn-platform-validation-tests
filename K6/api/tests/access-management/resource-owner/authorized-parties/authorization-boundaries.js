@@ -4,6 +4,7 @@ export { setup } from "./common.js";
 import { group } from "k6";
 
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { GetAuthorizedParties, GetAuthorizedPartiesRefused } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } from "./common.js";
 import { SetupData } from "./setup-data.types.js";
@@ -28,28 +29,24 @@ export default function (data) {
         const queryParams = new AuthorizedPartiesQueryBuilder().build();
 
         group("An unauthenticated request is refused", function () {
-            const response = getNoTokenClient().GetAuthorizedParties(request, queryParams);
-
-            AuthorizedPartiesDomainChecks.CheckUnauthorized(response);
+            GetAuthorizedPartiesRefused(getNoTokenClient(), 401, request, queryParams);
         });
 
         group("A valid token with the wrong scope is refused", function () {
-            const response = getWrongScopeClient().GetAuthorizedParties(request, queryParams);
-
-            AuthorizedPartiesDomainChecks.CheckForbidden(response);
+            GetAuthorizedPartiesRefused(getWrongScopeClient(), 403, request, queryParams);
         });
 
         group("The resource owner scope is accepted", function () {
             const [authorizedPartiesClient] = getClients();
-            const response = authorizedPartiesClient.GetAuthorizedParties(request, queryParams);
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-            AuthorizedPartiesDomainChecks.CheckRequestSucceeded(response);
+            AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
         });
 
         group("The admin scope is accepted", function () {
-            const response = getAdminClient().GetAuthorizedParties(request, queryParams);
+            const parties = GetAuthorizedParties(getAdminClient(), request, queryParams);
 
-            AuthorizedPartiesDomainChecks.CheckRequestSucceeded(response);
+            AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
         });
     });
 }
