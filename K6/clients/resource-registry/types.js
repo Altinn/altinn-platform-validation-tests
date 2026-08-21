@@ -402,9 +402,52 @@
  * @property {number} [query.limit] Maximum number of pairs returned.
  */
 
+/**
+ * Query parameters for listing the access lists of a resource owner.
+ *
+ * @typedef {object} AccessListGetByOwnerQuery
+ * @property {string} [token] Continuation token for paging.
+ * @property {Array<string>} [include] Related data to include.
+ * @property {string} [resource] Resource identifier to filter by.
+ */
+
+/**
+ * Query parameters for reading a single access list.
+ *
+ * @typedef {object} AccessListGetQuery
+ * @property {Array<string>} [include] Related data to include.
+ */
+
+/**
+ * Query parameters for the paged access list reads.
+ *
+ * @typedef {object} AccessListPagedQuery
+ * @property {string} [token] Continuation token for paging.
+ */
+
+/**
+ * Query parameters for looking up access list memberships.
+ *
+ * @typedef {object} AccessListMembershipsQuery
+ * @property {Array<string>} [party] Parties to include.
+ * @property {Array<string>} [resource] Resources to include.
+ */
+
+/**
+ * Query parameters for reading the policy rights of a resource.
+ *
+ * @typedef {object} ResourcePolicyRightsQuery
+ * @property {boolean} [includeServiceOwnerRights] Whether to include service owner rights.
+ * @property {boolean} [includeAppRights] Whether to include app rights.
+ */
+
+export const AccessListGetByOwnerQuery = undefined;
+export const AccessListGetQuery = undefined;
 export const AccessListInfoDto = undefined;
 export const AccessListInfoDtoPaginated = undefined;
 export const AccessListMembershipDtoAggregateVersionVersionedPaginated = undefined;
+export const AccessListMembershipsQuery = undefined;
+export const AccessListPagedQuery = undefined;
 export const AccessListResourceConnectionDtoAggregateVersionVersionedPaginated = undefined;
 export const AccessListResourceConnectionWithVersionDto = undefined;
 export const AccessListResourceMembershipWithActionFilterDtoListObject = undefined;
@@ -416,6 +459,7 @@ export const PolicyRightsDTO = undefined;
 export const PolicyRuleDTO = undefined;
 export const ResourceDecomposedDto = undefined;
 export const ResourceListQueryBuilder = undefined;
+export const ResourcePolicyRightsQuery = undefined;
 export const ResourceSearchQueryBuilder = undefined;
 export const ResourceType = undefined;
 export const ServiceResource = undefined;

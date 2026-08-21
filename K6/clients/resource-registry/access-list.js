@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
+import { AccessListGetByOwnerQuery, AccessListGetQuery, AccessListPagedQuery, CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
 
 const TAGS = {
     AccessListGetByMember: {
@@ -151,10 +151,7 @@ class AccessListClient {
      * Gets access lists for a resource owner.
      *
      * @param {string} owner Resource owner.
-     * @param {object} query Query parameters.
-     * @param {string} [query.token] Continuation token for paging.
-     * @param {Array<string>} [query.include] Related data to include.
-     * @param {string} [query.resource] Resource identifier to filter by.
+     * @param {AccessListGetByOwnerQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
@@ -191,8 +188,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object} query Query parameters.
-     * @param {Array<string>} [query.include] Related data to include.
+     * @param {AccessListGetQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
@@ -348,8 +344,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object} query Query parameters.
-     * @param {string} [query.token] Continuation token for paging.
+     * @param {AccessListPagedQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
@@ -533,8 +528,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object} query Query parameters.
-     * @param {string} [query.token] Continuation token for paging.
+     * @param {AccessListPagedQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.

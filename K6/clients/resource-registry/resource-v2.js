@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ResourcePolicyRightsQuery } from "./types.js";
+
 const TAGS = {
     ResourceV2GetPolicyRights: {
         action: "resource-v2-get-policy-rights",
@@ -36,10 +38,7 @@ class ResourceV2Client {
      * Gets the policy rights for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {object} [query] Query parameters.
-     * Optional query parameters.
-     * @param {boolean} [query.includeServiceOwnerRights] Whether to include service owner rights.
-     * @param {boolean} [query.includeAppRights] Whether to include app rights.
+     * @param {ResourcePolicyRightsQuery|null} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

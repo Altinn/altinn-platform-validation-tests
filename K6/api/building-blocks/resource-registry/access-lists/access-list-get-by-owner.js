@@ -1,7 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
-import { AccessListInfoDtoPaginated } from "../../../../clients/resource-registry/types.js";
+import { AccessListGetByOwnerQuery, AccessListInfoDtoPaginated } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
- * @param {object | null} [query] Optional query parameters.
+ * @param {AccessListGetByOwnerQuery|null} [query] Optional query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDtoPaginated|null} Paginated access lists.
  */
