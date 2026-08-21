@@ -1,7 +1,6 @@
 import http from "k6/http";
 
-import { ResourceSearchQueryBuilder, ResourceUpdatedQueryBuilder } from "./resource.builders.js";
-import { ResourceListQuery, ServiceResource } from "./types.js";
+import { ResourceListQuery, ResourceSearchQuery, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
 
 const TAGS = {
     ResourceGetResourceList: {
@@ -610,7 +609,7 @@ class ResourceClient {
     /**
      * Searches for resources in the resource registry.
      *
-     * @param {ResourceSearchQueryBuilder | object | null} [query] Query parameters.
+     * @param {ResourceSearchQuery|null} [query] Query parameters.
      * Optional search query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
@@ -665,7 +664,7 @@ class ResourceClient {
     /**
      * Gets the updated resources since the provided last updated time.
      *
-     * @param {ResourceUpdatedQueryBuilder | object} [query] Query parameters.
+     * @param {UpdatedResourceSubjectsQuery|null} [query] Query parameters.
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.

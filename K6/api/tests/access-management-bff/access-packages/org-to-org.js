@@ -159,7 +159,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations and a user to act as agent, one slice per VU.
+ * @returns {any[][]} Organizations and a user to act as agent, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);

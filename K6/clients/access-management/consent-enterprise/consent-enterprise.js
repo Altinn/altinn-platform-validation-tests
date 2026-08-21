@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { ConsentRequestDto, ConsentRequestEventsQueryBuilder } from "./consent-enterprise.types.js";
+import { ConsentRequestDto, ConsentRequestEventsQuery } from "./consent-enterprise.types.js";
 
 const TAGS = {
     EnterpriseCreateConsentRequest: {
@@ -120,7 +120,7 @@ class EnterpriseClient {
      *
      * Requires an organization token with the `altinn:consentrequests.read` scope.
      *
-     * @param {ConsentRequestEventsQueryBuilder | object} [query]
+     * @param {ConsentRequestEventsQuery|null} [query]
      * Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.

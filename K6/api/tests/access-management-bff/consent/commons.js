@@ -106,7 +106,7 @@ export function getTokenOpts(userId, partyUuid) {
  * Segmented rather than flat, so two VUs do not spend the run reading for the same
  * user and measuring a warm cache.
  *
- * @returns {object[][]} The users, one slice per VU.
+ * @returns {any[][]} The users, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);

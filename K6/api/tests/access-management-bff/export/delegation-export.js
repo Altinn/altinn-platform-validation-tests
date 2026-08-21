@@ -56,7 +56,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations to export delegations for, one slice per VU.
+ * @returns {any[][]} Organizations to export delegations for, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);

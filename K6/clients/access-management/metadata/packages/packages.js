@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { PackagesSearchQueryBuilder } from "./packages.types.js";
+import { PackagesSearchQuery } from "./packages.types.js";
 
 const TAGS = {
     PackagesSearch: {
@@ -64,7 +64,7 @@ class PackagesClient {
     /**
      * Searches access packages.
      *
-     * @param {PackagesSearchQueryBuilder | object} query Query parameters.
+     * @param {PackagesSearchQuery} query Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
