@@ -111,15 +111,21 @@
  */
 
 /**
+ * Query parameters for {@link ConsentRequestEventsQueryBuilder}.
+ *
+ * @typedef {object} ConsentRequestEventsQuery
+ * @property {string} [continuationToken] Pagination continuation token.
+ * @property {string} [createdAfter] Filter events created after this timestamp.
+ * @property {string} [createdBefore] Filter events created before this timestamp.
+ * @property {Array<string>} [eventType] Event type filters.
+ * @property {string} [consentRequestId] Consent request UUID filter.
+ */
+
+/**
  * Builder for creating query parameters for retrieving consent request events.
  *
  * @typedef {object} ConsentRequestEventsQueryBuilder
- * @property {object} query The underlying query parameter object.
- * @property {string} [query.continuationToken] Pagination continuation token.
- * @property {string} [query.createdAfter] Filter events created after this timestamp.
- * @property {string} [query.createdBefore] Filter events created before this timestamp.
- * @property {Array<string>} [query.eventType] Event type filters.
- * @property {string} [query.consentRequestId] Consent request UUID filter.
+ * @property {ConsentRequestEventsQuery} query The underlying query parameter object.
  */
 
 // Runtime stub, so a file documenting this typedef has something to import and an
@@ -129,6 +135,7 @@
 export const ConsentPortalViewMode = undefined;
 export const ConsentRequestDetailsDto = undefined;
 export const ConsentRequestDto = undefined;
+export const ConsentRequestEventsQuery = undefined;
 export const ConsentRequestEventsQueryBuilder = undefined;
 export const ConsentRightDto = undefined;
 export const ConsentStatusChangeDtoPaginatedResult = undefined;

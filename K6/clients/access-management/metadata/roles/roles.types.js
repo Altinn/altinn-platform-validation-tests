@@ -66,7 +66,45 @@
  * @property {ResourceTypeDto} type
  */
 
+/**
+ * Query parameters for {@link RolesGetRolePackagesQueryBuilder}.
+ *
+ * @typedef {object} RolesGetRolePackagesQuery
+ * @property {string} [role] Role code.
+ * @property {string} [variant] Role variant.
+ * @property {boolean} [includeResources] Whether to include the resources of each package.
+ */
+
+/**
+ * Query parameters for {@link RolesGetRoleResourcesQueryBuilder}.
+ *
+ * @typedef {object} RolesGetRoleResourcesQuery
+ * @property {string} [role] Role code.
+ * @property {string} [variant] Role variant.
+ * @property {boolean} [includePackageResources] Whether to include the resources that come with the packages.
+ */
+
+/**
+ * Query parameters for {@link RolesGetRolePackagesByIdQueryBuilder}.
+ *
+ * @typedef {object} RolesGetRolePackagesByIdQuery
+ * @property {string} [variant] Role variant.
+ * @property {boolean} [includeResources] Whether to include the resources of each package.
+ */
+
+/**
+ * Query parameters for {@link RolesGetRoleResourcesByIdQueryBuilder}.
+ *
+ * @typedef {object} RolesGetRoleResourcesByIdQuery
+ * @property {string} [variant] Role variant.
+ * @property {boolean} [includePackageResources] Whether to include the resources that come with the packages.
+ */
+
 export const AreaDto = undefined;
 export const AreaGroupDto = undefined;
 export const PackageDto = undefined;
 export const RoleDto = undefined;
+export const RolesGetRolePackagesByIdQuery = undefined;
+export const RolesGetRolePackagesQuery = undefined;
+export const RolesGetRoleResourcesByIdQuery = undefined;
+export const RolesGetRoleResourcesQuery = undefined;

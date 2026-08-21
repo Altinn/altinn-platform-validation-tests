@@ -1,3 +1,5 @@
+import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleResourcesByIdQuery, RolesGetRoleResourcesQuery } from "./roles.types.js";
+
 class RolesGetRolePackagesQueryBuilder {
     constructor() {
         this.query = {};
@@ -34,7 +36,7 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRolePackagesQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -77,7 +79,7 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRoleResourcesQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -110,7 +112,7 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRolePackagesByIdQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -143,7 +145,7 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRoleResourcesByIdQuery} The built payload.
      */
     Build() {
         return this.query;

@@ -1,8 +1,7 @@
 import { check } from "k6";
 
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
-import { RolesGetRolePackagesByIdQueryBuilder } from "../../../../../clients/access-management/metadata/roles/roles.builders.js";
-import { PackageDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
+import { PackageDto, RolesGetRolePackagesByIdQuery } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -10,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {string} id Role identifier.
- * @param {RolesGetRolePackagesByIdQueryBuilder | object} query Query parameters.
+ * @param {RolesGetRolePackagesByIdQuery} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {PackageDto|null} Role package.
  */

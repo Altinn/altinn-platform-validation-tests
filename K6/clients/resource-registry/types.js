@@ -395,11 +395,30 @@
  */
 
 /**
+ * Query parameters for {@link UpdatedResourceSubjectsQueryBuilder}, and for the
+ * resource search and updated resource reads that take the same shape.
+ *
+ * @typedef {object} UpdatedResourceSubjectsQuery
+ * @property {string} [since] Date time used for filtering.
+ * @property {string} [token] Continuation token.
+ * @property {number} [limit] Maximum number of pairs returned.
+ */
+
+/**
+ * Query parameters for searching resources.
+ *
+ * @typedef {object} ResourceSearchQuery
+ * @property {string|null} [Id] Resource identifier filter.
+ * @property {string|null} [Title] Title filter.
+ * @property {string|null} [Description] Description filter.
+ * @property {ResourceType|null} [ResourceType] Resource type filter.
+ * @property {string|null} [Keyword] Keyword filter.
+ * @property {string|null} [Reference] Reference filter.
+ */
+
+/**
  * @typedef {object} UpdatedResourceSubjectsQueryBuilder
- * @property {object} query
- * @property {string} [query.since] Date time used for filtering.
- * @property {string} [query.token] Continuation token.
- * @property {number} [query.limit] Maximum number of pairs returned.
+ * @property {UpdatedResourceSubjectsQuery} query The underlying query parameter object.
  */
 
 /**
@@ -460,9 +479,11 @@ export const PolicyRuleDTO = undefined;
 export const ResourceDecomposedDto = undefined;
 export const ResourceListQueryBuilder = undefined;
 export const ResourcePolicyRightsQuery = undefined;
+export const ResourceSearchQuery = undefined;
 export const ResourceSearchQueryBuilder = undefined;
 export const ResourceType = undefined;
 export const ServiceResource = undefined;
 export const SubjectResourcesPaginated = undefined;
 export const UpdatedResourceSubjectPaginated = undefined;
+export const UpdatedResourceSubjectsQuery = undefined;
 export const UpsertAccessListResourceConnectionDto = undefined;

@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { RolesGetRolePackagesByIdQueryBuilder, RolesGetRolePackagesQueryBuilder, RolesGetRoleResourcesByIdQueryBuilder, RolesGetRoleResourcesQueryBuilder } from "./roles.builders.js";
+import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleResourcesByIdQuery, RolesGetRoleResourcesQuery } from "./roles.types.js";
 
 const TAGS = {
     RolesGetRoles: {
@@ -121,7 +121,7 @@ class RolesClient {
     /**
      * Gets role packages.
      *
-     * @param {RolesGetRolePackagesQueryBuilder | object} query
+     * @param {RolesGetRolePackagesQuery} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -187,7 +187,7 @@ class RolesClient {
     /**
      * Gets role resources.
      *
-     * @param {RolesGetRoleResourcesQueryBuilder | object} query
+     * @param {RolesGetRoleResourcesQuery} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -254,7 +254,7 @@ class RolesClient {
      * Gets role packages by role id.
      *
      * @param {string} id Role identifier.
-     * @param {RolesGetRolePackagesByIdQueryBuilder | object} query
+     * @param {RolesGetRolePackagesByIdQuery} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
@@ -311,7 +311,7 @@ class RolesClient {
      * Gets role resources by role id.
      *
      * @param {string} id Role identifier.
-     * @param {RolesGetRoleResourcesByIdQueryBuilder | object} query
+     * @param {RolesGetRoleResourcesByIdQuery} query
      * Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.

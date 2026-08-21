@@ -1,4 +1,4 @@
-import { ResourceType } from "./types.js";
+import { ResourceSearchQuery, ResourceType, UpdatedResourceSubjectsQuery } from "./types.js";
 
 /**
  * Builder for creating query parameters for searching resources.
@@ -90,7 +90,7 @@ class ResourceSearchQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {object} The result.
+     * @returns {ResourceSearchQuery} The result.
      */
     build() {
         return this.query;
@@ -144,7 +144,7 @@ class ResourceUpdatedQueryBuilder {
     /**
      * Returns the built query object.
      *
-     * @returns {object} The result.
+     * @returns {UpdatedResourceSubjectsQuery} The result.
      */
     build() {
         return this.query;
