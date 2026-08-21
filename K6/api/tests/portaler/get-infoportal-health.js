@@ -1,4 +1,4 @@
-import { check } from "k6";
+import { getOptions } from "../../../helpers.js";
 import http from "k6/http";
 
 import { getOptions, requireEnv } from "../../../helpers.js";
