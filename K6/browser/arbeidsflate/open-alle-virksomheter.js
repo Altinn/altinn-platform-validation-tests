@@ -148,7 +148,7 @@ export default async function (data) {
 /**
  * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
  *
- * @param {} page TODO: description
+ * @param {import("k6/browser").Page} page TODO: description
  * @param {*} trend TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns TODO: description
@@ -168,5 +168,5 @@ export async function selectAllEnterprises(page, trend, labels) {
 
     await waitForPageLoaded(page, 2);
     const endTime = new Date();
-    trend.add(endTime - startTime, labels);
+    trend.add(endTime.getTime() - startTime.getTime(), labels);
 }

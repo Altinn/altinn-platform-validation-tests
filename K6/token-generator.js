@@ -190,9 +190,11 @@ class BaseTokenGenerator {
             );
         }
 
-        this.#cache.set(cacheKey, response.body);
+        const token = String(response.body);
 
-        return response.body;
+        this.#cache.set(cacheKey, token);
+
+        return token;
     }
 }
 

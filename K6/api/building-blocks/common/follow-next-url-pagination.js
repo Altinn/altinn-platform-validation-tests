@@ -6,7 +6,7 @@ import { withRetries } from "./retry.js";
 /**
  * Extract `links.next` URL from a JSON response body.
  *
- * @param {string|object} parsedBody - parsed JSON object
+ * @param {{links?: {next?: string|null}}|null} parsedBody - parsed JSON object
  * @returns {string|null} - The next URL or null if not found
  */
 export function extractNextUrl(parsedBody) {

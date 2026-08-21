@@ -4,3 +4,4 @@
 
 declare module "https://jslib.k6.io/*";
 declare module "k6/x/*";
+declare module "k6/experimental/webcrypto";

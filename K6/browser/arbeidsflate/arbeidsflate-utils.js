@@ -96,7 +96,7 @@ function getSessionId(token) {
         console.error(resp.status_text);
         return null; // Handle error appropriately
     }
-    const sessionId = resp.json().cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
+    const sessionId = /** @type {{cookie: string}} */ (resp.json()).cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
     return sessionId;
 }
 
