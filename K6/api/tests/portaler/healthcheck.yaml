@@ -20,3 +20,8 @@ test_definitions:
   - test_file: get-infoportal-api-when-loggedin.js
     contexts:
       - environment: at23
+
+  - test_file: get-infoportal-health.js
+    contexts:
+      - environment: at23
+      - environment: tt02
