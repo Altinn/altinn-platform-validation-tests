@@ -1,3 +1,5 @@
+import { AuthorizedPartiesQuery } from "./authorized-parties.types.js";
+
 /**
  * Builder for query parameters for the
  * POST /resourceowner/authorizedparties endpoint.
