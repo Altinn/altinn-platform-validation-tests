@@ -14,3 +14,5 @@
  * @property {string} [types] Comma separated list of delegation types.
  * @property {string} [languageCode] Language code of the export, e.g. nb.
  */
+
+export const GetDelegationExportQuery = undefined;

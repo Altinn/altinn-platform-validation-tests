@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { PackageDto } from "../../../../clients/access-management/metadata/packages/packages.types.js";
+import { PackageDto } from "../../../../clients/access-management/metadata/roles/roles.types.js";
 
 /**
  * @param {PackageDto[]} packages - Array of packages to search.

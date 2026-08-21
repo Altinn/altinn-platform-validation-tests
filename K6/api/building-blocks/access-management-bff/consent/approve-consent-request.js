@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ApproveConsentContext } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { withRetries } from "../../common/retry.js";
 

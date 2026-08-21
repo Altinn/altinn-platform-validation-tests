@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { DeleteRoleQuery } from "../../../../clients/access-management-bff/role/role.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

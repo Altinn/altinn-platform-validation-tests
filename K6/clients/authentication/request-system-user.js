@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CreateAgentRequestSystemUser, CreateRequestSystemUser, GuidOpaque } from "./types.js";
+
 const TAGS = {
     RequestSystemUserVendorCreate: {
         action: "request-system-user-vendor-create",
@@ -64,7 +66,7 @@ class RequestSystemUserClient {
      * @param {CreateRequestSystemUser} request Request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -102,7 +104,7 @@ class RequestSystemUserClient {
      * @param {CreateAgentRequestSystemUser} request Agent request model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -140,7 +142,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -177,7 +179,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -214,7 +216,7 @@ class RequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -253,7 +255,7 @@ class RequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorGetByExternalRef(
         systemId,
@@ -297,7 +299,7 @@ class RequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGetByExternalRef(
         systemId,
@@ -340,7 +342,7 @@ class RequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorGetBySystem(systemId, token = null, labels = null) {
         const authToken = this.tokenGenerator.getToken();
@@ -382,7 +384,7 @@ class RequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGetBySystem(
         systemId,

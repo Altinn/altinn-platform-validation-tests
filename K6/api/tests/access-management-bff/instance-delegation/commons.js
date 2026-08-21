@@ -1,6 +1,7 @@
 
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
 import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { InstanceRightsDelegationDto, Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { InstanceClient, InstanceRightsDelegationDtoBuilder } from "../../../../clients/access-management-bff/instance/index.js";
@@ -148,7 +149,7 @@ export function getTokenOpts(userId, partyuuid) {
 /**
  * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
  *
- * @param {object[]} list Organizations or users available to this VU.
+ * @param {any[]} list Organizations or users available to this VU.
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {
@@ -171,7 +172,7 @@ export function getDialogportenOpts(ssn) {
  *
  * @param {Array<Right>} rightsMeta The rights the resource defines, as returned
  * by GetRightsMeta.
- * @param {object} to The user the rights are delegated to, with ssn and lastName.
+ * @param {any} to The user the rights are delegated to, with ssn and lastName.
  * @returns {InstanceRightsDelegationDto} Body for delegating every right of the
  * resource to that user.
  */

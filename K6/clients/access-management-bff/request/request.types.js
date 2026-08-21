@@ -1,3 +1,4 @@
+
 // -----------------------------------------------------------------------------
 // Query models
 // -----------------------------------------------------------------------------
@@ -11,7 +12,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [to] Party UUID the access is given to.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  * @property {string} [type] Request type to filter by.
  */
 
@@ -24,7 +25,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [to] Party UUID the access is given to.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  */
 
 /**
@@ -36,7 +37,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [to] Party UUID the access is given to.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  */
 
 /**
@@ -48,7 +49,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [from] Party UUID the access is given from.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  * @property {string} [type] Request type to filter by.
  */
 
@@ -62,7 +63,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [from] Party UUID the access is given from.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  */
 
 /**
@@ -74,7 +75,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [from] Party UUID the access is given from.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  */
 
 /**
@@ -86,7 +87,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [to] Party UUID the access is given to.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  */
 
 /**
@@ -98,7 +99,7 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  * @property {string} [from] Party UUID the access is given from.
- * @property {Array<RequestStatus>} [status] Request statuses to filter by.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
  */
 
 /**
@@ -178,3 +179,19 @@
  * behalf of.
  * @property {string} [id] Request UUID.
  */
+
+export const ApproveReceivedRequestQuery = undefined;
+export const ConfirmDraftRequestQuery = undefined;
+export const CreatePackageRequestQuery = undefined;
+export const CreateResourceRequestQuery = undefined;
+export const GetReceivedPackageRequestsQuery = undefined;
+export const GetReceivedRequestsCountQuery = undefined;
+export const GetReceivedRequestsQuery = undefined;
+export const GetReceivedResourceRequestsQuery = undefined;
+export const GetRequestQuery = undefined;
+export const GetSentPackageRequestsQuery = undefined;
+export const GetSentRequestsCountQuery = undefined;
+export const GetSentRequestsQuery = undefined;
+export const GetSentResourceRequestsQuery = undefined;
+export const RejectReceivedRequestQuery = undefined;
+export const WithdrawSentRequestQuery = undefined;

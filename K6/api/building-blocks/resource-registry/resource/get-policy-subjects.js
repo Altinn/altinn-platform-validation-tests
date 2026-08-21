@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { AttributeMatchV2Paginated } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -21,7 +22,7 @@ export function ResourceGetPolicySubjects(
     const res = withRetries(
         () => resourceClient.ResourceGetPolicySubjects(
             id,
-            reloadFromXacml,
+            reloadFromXacml === null ? null : { reloadFromXacml },
             labels,
         ),
         "ResourceGetPolicySubjects",

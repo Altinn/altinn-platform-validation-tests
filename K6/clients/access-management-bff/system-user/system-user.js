@@ -1,5 +1,8 @@
 import http from "k6/http";
 
+import { NewSystemUserRequest } from "../common/common.types.js";
+import { DeleteAgentSystemUserQuery } from "./system-user.types.js";
+
 const TAGS = {
     GetSystemUsers: {
         action: "get-system-users",
@@ -62,7 +65,7 @@ class SystemUserClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSystemUsers(partyId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -98,7 +101,7 @@ class SystemUserClient {
      * @param {NewSystemUserRequest|null} [body] The system user to create. Prefer
      * using {@link NewSystemUserRequestBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateSystemUser(partyId, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -138,7 +141,7 @@ class SystemUserClient {
      * @param {number} partyId Party id of the organisation.
      * @param {string} systemUserGuid System user UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSystemUser(partyId, systemUserGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -173,7 +176,7 @@ class SystemUserClient {
      * @param {number} partyId Party id of the organisation.
      * @param {string} systemUserGuid System user UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteSystemUser(partyId, systemUserGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -211,7 +214,7 @@ class SystemUserClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUsers(partyId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -246,7 +249,7 @@ class SystemUserClient {
      * @param {number} partyId Party id of the organisation.
      * @param {string} systemUserGuid System user UUID.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUser(partyId, systemUserGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -285,7 +288,7 @@ class SystemUserClient {
      * @param {DeleteAgentSystemUserQuery|null} [query] Optional query parameters.
      * Prefer using {@link DeleteAgentSystemUserQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentSystemUser(
         partyId,
@@ -344,7 +347,7 @@ class SystemUserClient {
      *
      * @param {string} partyUuid Party UUID of the organisation.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPendingSystemUsers(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();

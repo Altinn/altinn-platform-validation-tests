@@ -37,4 +37,6 @@
 // Runtime stub, so a file documenting this typedef has something to import and an
 // editor can follow the name back here. Only the typedefs that are actually
 // imported get one, so add to this as they are needed rather than up front.
+
 export const ConsentLookupRequest = undefined;
+export const MaskinportenDelegationsQuery = undefined;

@@ -16,12 +16,15 @@ export function DownloadAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = withRetries(
-        () => attachmentClient.DownloadAttachment(
-            attachmentId,
-            labels,
-        ),
-        "DownloadAttachment",
+    // The download answers with bytes rather than text, which the retry helper,
+    // written for the json endpoints, has no way to express.
+    const res = /** @type {import("k6/http").RefinedResponse<"binary">} */ (
+        /** @type {unknown} */ (withRetries(
+            () => /** @type {import("k6/http").RefinedResponse<"text">} */ (
+                /** @type {unknown} */ (attachmentClient.DownloadAttachment(attachmentId, labels))
+            ),
+            "DownloadAttachment",
+        ))
     );
 
     /** @type {ArrayBuffer|null} */

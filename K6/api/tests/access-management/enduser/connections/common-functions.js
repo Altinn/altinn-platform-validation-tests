@@ -72,7 +72,7 @@ export function getTokenOpts(userId) {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with a party uuid, one slice per VU.
+ * @returns {any[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

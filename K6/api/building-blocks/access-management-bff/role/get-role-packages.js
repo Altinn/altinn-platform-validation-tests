@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { AccessPackage } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { GetRolePackagesQuery } from "../../../../clients/access-management-bff/role/role.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

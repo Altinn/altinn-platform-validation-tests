@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { UserProfile } from "../../../../clients/profil/users/users.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

@@ -1,25 +1,18 @@
+import { ResourceSearchQuery, ResourceType, UpdatedResourceSubjectsQuery } from "./types.js";
+
 /**
  * Builder for creating query parameters for searching resources.
- *
- * @typedef {object} ResourceSearchQueryBuilder
- * @property {object} query The underlying search query parameters.
- * @property {string|null} query.Id Resource identifier filter.
- * @property {string|null} query.Title Title filter.
- * @property {string|null} query.Description Description filter.
- * @property {ResourceType|null} query.ResourceType Resource type filter.
- * @property {string|null} query.Keyword Keyword filter.
- * @property {string|null} query.Reference Reference filter.
  */
 class ResourceSearchQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {ResourceSearchQuery} */ ({
             Id: null,
             Title: null,
             Description: null,
             ResourceType: null,
             Keyword: null,
             Reference: null,
-        };
+        });
     }
 
     /**
@@ -97,7 +90,7 @@ class ResourceSearchQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {object} The result.
+     * @returns {ResourceSearchQuery} The result.
      */
     build() {
         return this.query;
@@ -106,16 +99,10 @@ class ResourceSearchQueryBuilder {
 
 /**
  * Builder for creating query parameters for retrieving updated resources.
- *
- * @typedef {object} ResourceUpdatedQueryBuilder
- * @property {object} query The underlying query parameter object.
- * @property {string} [query.since] Date time used for filtering.
- * @property {string} [query.token] Opaque continuation token.
- * @property {number} [query.limit] Maximum number of pairs returned.
  */
 class ResourceUpdatedQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdatedResourceSubjectsQuery} */ ({});
     }
 
     /**
@@ -157,7 +144,7 @@ class ResourceUpdatedQueryBuilder {
     /**
      * Returns the built query object.
      *
-     * @returns {object} The result.
+     * @returns {UpdatedResourceSubjectsQuery} The result.
      */
     build() {
         return this.query;
@@ -168,3 +155,4 @@ export {
     ResourceSearchQueryBuilder,
     ResourceUpdatedQueryBuilder
 };
+

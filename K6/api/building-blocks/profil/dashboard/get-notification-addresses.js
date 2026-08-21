@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DashboardNotificationAddressResponse } from "../../../../clients/profil/dashboard/dashboard.types.js";
 import { DashboardClient } from "../../../../clients/profil/dashboard/index.js";
 import { withRetries } from "../../common/retry.js";
 

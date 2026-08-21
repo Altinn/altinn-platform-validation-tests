@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ResourceDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 import { withRetries } from "../../../common/retry.js";
 

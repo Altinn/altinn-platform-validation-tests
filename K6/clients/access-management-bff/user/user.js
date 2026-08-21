@@ -82,7 +82,7 @@ class UserClient {
      * Gets the profile of the authenticated user.
      *
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUserProfile(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -116,7 +116,7 @@ class UserClient {
      *
      * @param {boolean|null} [body] Whether to show deleted entities.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateShowDeleted(body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -156,7 +156,7 @@ class UserClient {
      * Gets the actor list of the authenticated user in the Altinn 2 format.
      *
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActorListOld(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -189,7 +189,7 @@ class UserClient {
      * Gets the actor list of the authenticated user.
      *
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActorList(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -222,7 +222,7 @@ class UserClient {
      * Gets the favourite actors of the authenticated user.
      *
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -256,7 +256,7 @@ class UserClient {
      *
      * @param {string} partyUuid Party UUID of the actor.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -296,7 +296,7 @@ class UserClient {
      *
      * @param {string} partyUuid Party UUID of the actor.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -336,7 +336,7 @@ class UserClient {
      *
      * @param {string} partyUuid Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReportee(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -370,7 +370,7 @@ class UserClient {
      *
      * @param {string} partyUuid Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReporteeList(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -404,7 +404,7 @@ class UserClient {
      *
      * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -439,7 +439,7 @@ class UserClient {
      *
      * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsClientAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -474,7 +474,7 @@ class UserClient {
      *
      * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsCompanyProfileAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -509,7 +509,7 @@ class UserClient {
      *
      * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsHovedadmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -544,7 +544,7 @@ class UserClient {
      *
      * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsInstanceAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -579,7 +579,7 @@ class UserClient {
      *
      * @param {string} party Party UUID of the reportee.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsMaskinportenAdmin(party, labels = null) {
         const token = this.tokenGenerator.getToken();

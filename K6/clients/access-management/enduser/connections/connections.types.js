@@ -458,23 +458,11 @@
  */
 
 /**
- * @typedef {object} ExternalResourceRightDto
- * @property {ResourceDto} resource
- * @property {Array<RightPermission>|null} directRights
- * @property {Array<RightPermission>|null} indirectRights
- */
-
-/**
- * @typedef {object} RightKeyListDto
- * @property {Array<string>|null} directRightKeys
- */
-
-/**
  * @typedef {object} RightDto
  * @property {string|null} key
  * @property {string|null} name
- * @property {Array<AttributeDto>|null} resource
- * @property {AttributeDto} action
+ * @property {Array<import("../maskinporten-suppliers/maskinporten-suppliers.types.js").AttributeDto>|null} resource
+ * @property {import("../maskinporten-suppliers/maskinporten-suppliers.types.js").AttributeDto} action
  */
 
 /**
@@ -493,29 +481,6 @@
  * @typedef {object} AccessReasonRecord
  * @property {string|null} name
  * @property {string|null} description
- */
-
-/**
- * @typedef {object} RightPermission
- * @property {RightDto} right
- * @property {AccessReason} reason
- * @property {Array<PermissionDto>|null} permissions
- */
-
-/**
- * @typedef {object} ExternalResourceRightDto
- * @property {ResourceDto} resource
- * @property {Array<RightPermission>|null} directRights
- * @property {Array<RightPermission>|null} indirectRights
- */
-
-/**
- * @typedef {object} RightKeyListDto
- * @property {Array<string>|null} directRightKeys
- */
-
-/**
- * @typedef {number} AccessReasonFlag
  */
 
 /**
@@ -671,22 +636,6 @@
  */
 
 /**
- * @typedef {object} SimplifiedPartyDto
- * @property {string} id
- * @property {string|null} name
- * @property {string|null} type
- * @property {string|null} variant
- * @property {string|null} organizationIdentifier
- * @property {boolean} isDeleted
- * @property {string|null} deletedAt
- */
-
-/**
- * @typedef {object} PaginatedResultLinks
- * @property {string|null} next
- */
-
-/**
  * @typedef {object} SimplifiedPartyDtoPaginatedResult
  * @property {SimplifiedPartyDto[]|null} data
  * @property {PaginatedResultLinks} links
@@ -698,3 +647,41 @@
  * @property {string} resource Resource identifier.
  * @property {string} instance Instance reference.
  */
+
+export const AccessPackageDelegationCheckQuery = undefined;
+export const AccessPackageDtoCheckPaginatedResult = undefined;
+export const ConnectionDtoPaginatedResult = undefined;
+export const CreateAccessPackageQuery = undefined;
+export const CreateConnectionQuery = undefined;
+export const CreateInstanceRightsQuery = undefined;
+export const CreateResourceRightsQuery = undefined;
+export const DeleteAccessPackageQuery = undefined;
+export const DeleteConnectionQuery = undefined;
+export const DeleteInstanceQuery = undefined;
+export const DeleteResourceQuery = undefined;
+export const DeleteRoleQuery = undefined;
+export const ExtInstanceRightDto = undefined;
+export const ExternalResourceRightDto = undefined;
+export const GetAccessPackagesQuery = undefined;
+export const GetConnectionUsersQuery = undefined;
+export const GetConnectionsQuery = undefined;
+export const GetInstanceDelegationCheckQuery = undefined;
+export const GetInstanceRightsQuery = undefined;
+export const GetInstanceUsersQuery = undefined;
+export const GetInstancesQuery = undefined;
+export const GetResourceDelegationCheckQuery = undefined;
+export const GetResourceRightsQuery = undefined;
+export const GetResourcesQuery = undefined;
+export const GetRolesQuery = undefined;
+export const InstanceCheckDto = undefined;
+export const InstancePermissionDto = undefined;
+export const InstanceRightsDelegationDto = undefined;
+export const PackagePermissionDtoPaginatedResult = undefined;
+export const PersonInput = undefined;
+export const RightKeyListDto = undefined;
+export const RoleDto = undefined;
+export const RolePermissionDtoPaginatedResult = undefined;
+export const SimplifiedConnectionDtoPaginatedResult = undefined;
+export const SimplifiedPartyDtoPaginatedResult = undefined;
+export const UpdateInstanceRightsQuery = undefined;
+export const UpdateResourceRightsQuery = undefined;

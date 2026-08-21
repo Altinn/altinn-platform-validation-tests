@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { NewSystemUserRequest } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -12,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {NewSystemUserRequest|null} [body] The system user to create. Use
  * {@link NewSystemUserRequestBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The created system user. The API does not publish a
+ * @returns {any} The created system user. The API does not publish a
  * schema for this response.
  */
 export function CreateSystemUser(
@@ -26,7 +27,7 @@ export function CreateSystemUser(
         "CreateSystemUser",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let systemUser = null;
 
     const succeed = check(res, {

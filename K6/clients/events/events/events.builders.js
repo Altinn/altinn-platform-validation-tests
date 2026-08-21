@@ -1,3 +1,5 @@
+import { EventsQueryParams } from "../types.js";
+
 /**
  * Builder for creating query parameters for retrieving cloud events.
  *
@@ -16,7 +18,7 @@
  */
 export class EventsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {EventsQueryParams} */ ({});
     }
 
     /**

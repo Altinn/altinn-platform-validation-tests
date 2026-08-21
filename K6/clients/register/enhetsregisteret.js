@@ -62,7 +62,7 @@ class EnhetsregisteretClient {
      * @param {string} clientOrg Organization number of the organization getting a facilitator.
      * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Body holds the ER batch response XML.
+     * @returns {http.RefinedResponse<"text">} Body holds the ER batch response XML.
      */
     AddCcrRole(
         soapErUsername,
@@ -137,7 +137,7 @@ class EnhetsregisteretClient {
      * @param {string} clientOrg Organization number of the organization losing a facilitator.
      * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Body holds the ER batch response XML.
+     * @returns {http.RefinedResponse<"text">} Body holds the ER batch response XML.
      */
     RemoveCcrRole(
         soapErUsername,

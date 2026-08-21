@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { GetSentPackageRequestsQuery } from "../../../../clients/access-management-bff/request/request.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetSentPackageRequestsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetSentPackageRequestsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The sent package requests. The API does not publish a
+ * @returns {any} The sent package requests. The API does not publish a
  * schema for this response.
  */
 export function GetSentPackageRequests(
@@ -24,7 +25,7 @@ export function GetSentPackageRequests(
         "GetSentPackageRequests",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let requests = null;
 
     const succeed = check(res, {

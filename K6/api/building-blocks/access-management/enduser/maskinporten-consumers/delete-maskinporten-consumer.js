@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
+import { MaskinportenConsumersQuery } from "../../../../../clients/access-management/enduser/maskinporten-consumers/maskinporten-consumers.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

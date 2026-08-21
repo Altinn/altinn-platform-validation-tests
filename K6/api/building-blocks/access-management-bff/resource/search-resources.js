@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { PaginatedListOfServiceResourceFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
+import { SearchResourcesQuery } from "../../../../clients/access-management-bff/resource/resource.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

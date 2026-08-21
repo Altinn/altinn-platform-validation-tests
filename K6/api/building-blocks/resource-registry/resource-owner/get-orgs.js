@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceOwnerClient } from "../../../../clients/resource-registry/index.js";
+import { OrgList } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

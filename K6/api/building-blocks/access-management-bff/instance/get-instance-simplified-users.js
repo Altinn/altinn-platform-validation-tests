@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { SimplifiedParty } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { GetInstanceSimplifiedUsersQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
