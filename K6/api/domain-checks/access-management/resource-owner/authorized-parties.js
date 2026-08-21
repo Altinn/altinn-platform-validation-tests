@@ -710,7 +710,7 @@ function CheckPartyUuidsMatchBaseline(parties, baselinePartyUuids) {
 /**
  * The request succeeded, for the steps that only care about the status.
  *
- * @param {object} response - The raw HTTP response.
+ * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
  * @returns {boolean} True if the check held.
  */
 function CheckRequestSucceeded(response) {
@@ -725,7 +725,7 @@ function CheckRequestSucceeded(response) {
  * The building block asserts 200 and returns an empty list on anything else, so the
  * steps that mean to be rejected call the client directly and land here.
  *
- * @param {object} response - The raw HTTP response.
+ * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
  * @param {number} expectedStatus - The status the request should have been rejected with.
  * @returns {boolean} True if the check held.
  */
@@ -738,7 +738,7 @@ function CheckRequestRejected(response, expectedStatus) {
 /**
  * The request was rejected as unauthenticated.
  *
- * @param {object} response - The raw HTTP response.
+ * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
  * @returns {boolean} True if the check held.
  */
 function CheckUnauthorized(response) {
@@ -748,7 +748,7 @@ function CheckUnauthorized(response) {
 /**
  * The request was rejected as unauthorized.
  *
- * @param {object} response - The raw HTTP response.
+ * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
  * @returns {boolean} True if the check held.
  */
 function CheckForbidden(response) {
@@ -758,7 +758,7 @@ function CheckForbidden(response) {
 /**
  * The request was rejected as a bad request.
  *
- * @param {object} response - The raw HTTP response.
+ * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
  * @returns {boolean} True if the check held.
  */
 function CheckBadRequest(response) {
@@ -768,7 +768,7 @@ function CheckBadRequest(response) {
 /**
  * The problem body names the value that was refused.
  *
- * @param {object} response - The raw HTTP response.
+ * @param {import("k6/http").RefinedResponse<"text">} response - The raw HTTP response.
  * @param {string} expectedInBody - A value the problem body is expected to mention.
  * @returns {boolean} True if the check held.
  */
