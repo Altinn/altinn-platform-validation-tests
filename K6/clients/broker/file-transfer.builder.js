@@ -201,8 +201,7 @@ class FileTransferInitializeRequestBuilder {
  */
 class FileTransferQueryBuilder {
     constructor() {
-        /** @type {FileTransferQuery} */
-        this.query = {};
+        this.query = /** @type {FileTransferQuery} */ ({});
     }
 
     /**

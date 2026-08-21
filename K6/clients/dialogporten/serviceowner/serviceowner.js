@@ -110,9 +110,13 @@ class ServiceOwnerApiClient {
 
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Dialog
-     * * @param { Object } requestBody
-     * * @param { string } label
-     * * @returns http.RefinedResponse<"text">
+     *
+     * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
+     * @param {string} serviceResource - the service resource for the dialog
+     * @param {string} serviceOwner - the org number of the service owner
+     * @param {{[x: string]: string}} [labels] - Object containing request labels as key/value pairs.
+     * @param {boolean} [noTransmissionsActivities] - whether to leave transmissions and activities out of the body
+     * @returns http.RefinedResponse<"text">
      */
 
     PostDialog(
@@ -155,8 +159,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Transmission
      *
-     * @param { string } dialogId
-     * @param { string } label
+     * @param {string} dialogId - id of the dialog the transmission belongs to
+     * @param {{[x: string]: string}} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
 
@@ -195,8 +199,8 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Activity
      *
-     * @param { string } dialogId
-     * @param { string } label
+     * @param {string} dialogId - id of the dialog the activity belongs to
+     * @param {{[x: string]: string}} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
 

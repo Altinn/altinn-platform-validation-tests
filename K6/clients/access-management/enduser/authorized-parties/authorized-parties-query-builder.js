@@ -14,8 +14,7 @@ import { EndUserAuthorizedPartiesQuery } from "./authorized-parties.types.js";
  */
 class EndUserAuthorizedPartiesQueryBuilder {
     constructor() {
-        /** @type {EndUserAuthorizedPartiesQuery} */
-        this.query = {};
+        this.query = /** @type {EndUserAuthorizedPartiesQuery} */ ({});
     }
 
     /**

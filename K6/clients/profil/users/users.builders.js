@@ -164,8 +164,7 @@ class ProfileSettingPutRequestBuilder {
  */
 class ProfileSettingsPatchRequestBuilder {
     constructor() {
-        /** @type {ProfileSettingsPatchRequest} */
-        this.request = {};
+        this.request = /** @type {ProfileSettingsPatchRequest} */ ({});
     }
 
     /**

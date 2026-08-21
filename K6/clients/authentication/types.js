@@ -365,7 +365,8 @@
 
 /**
  * @typedef {object} VendorInfo
- * @property {string|null} [ID]
+ * @property {string|null} [ID] Authority prefixed organisation number, e.g. `0192:991825827`.
+ * @property {string|null} [id] The same value in the casing {@link RegisterSystemRequestBuilder} sends.
  */
 
 /**

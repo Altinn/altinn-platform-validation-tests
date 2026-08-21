@@ -9,8 +9,7 @@ import { RegisterSystemRequest, Right } from "./types.js";
  */
 class RegisterSystemRequestBuilder {
     constructor() {
-        /** @type {RegisterSystemRequest} */
-        this.request = {};
+        this.request = /** @type {RegisterSystemRequest} */ ({});
     }
 
     /**

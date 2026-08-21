@@ -432,3 +432,7 @@ export function buildUploadCorrespondenceForm(recipient) {
         ),
     };
 }
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here.
+export const CorrespondenceTestUser = undefined;

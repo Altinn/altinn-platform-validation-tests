@@ -114,10 +114,10 @@ class RequestClient {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
                 ...(pageSize !== null && {
-                    "X-Page-Size": pageSize,
+                    "X-Page-Size": String(pageSize),
                 }),
                 ...(pageNumber !== null && {
-                    "X-Page-Number": pageNumber,
+                    "X-Page-Number": String(pageNumber),
                 }),
             },
         });
@@ -422,10 +422,10 @@ class RequestClient {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
                 ...(pageSize !== null && {
-                    "X-Page-Size": pageSize,
+                    "X-Page-Size": String(pageSize),
                 }),
                 ...(pageNumber !== null && {
-                    "X-Page-Number": pageNumber,
+                    "X-Page-Number": String(pageNumber),
                 }),
             },
         });

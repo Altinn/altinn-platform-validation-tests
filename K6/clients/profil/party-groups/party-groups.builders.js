@@ -5,8 +5,7 @@ import { GroupRequest } from "./party-groups.types.js";
  */
 class GroupRequestBuilder {
     constructor() {
-        /** @type {GroupRequest} */
-        this.request = {};
+        this.request = /** @type {GroupRequest} */ ({});
     }
 
     /**

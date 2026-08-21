@@ -1260,8 +1260,7 @@ class UpdateInstanceRightsQueryBuilder {
 
 class GetInstanceDelegationCheckQueryBuilder {
     constructor() {
-        /** @type {GetInstanceDelegationCheckQuery} */
-        this.query = {};
+        this.query = /** @type {GetInstanceDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -1301,8 +1300,7 @@ class GetInstanceDelegationCheckQueryBuilder {
 
 class GetInstanceUsersQueryBuilder {
     constructor() {
-        /** @type {GetInstanceUsersQuery} */
-        this.query = {};
+        this.query = /** @type {GetInstanceUsersQuery} */ ({});
     }
 
     /**
