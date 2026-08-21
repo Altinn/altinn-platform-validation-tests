@@ -226,7 +226,7 @@ export class AuthorizedPartiesQueryBuilder {
     /**
      * Build the query parameter object.
      *
-     * @returns {object} Query parameters for the authorized parties endpoint.
+     * @returns {AuthorizedPartiesQuery} Query parameters for the authorized parties endpoint.
      */
     build() {
         return this.query;

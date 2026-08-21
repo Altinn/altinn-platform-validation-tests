@@ -1,4 +1,4 @@
-import { AppCloudEventRequestModel, ContentType } from "../types.js";
+import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery, ContentType } from "../types.js";
 
 class AppCloudEventRequestModelBuilder {
     constructor() {
@@ -187,7 +187,7 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {AppEventsByAppQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -290,7 +290,7 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {AppPartyEventsQuery} The built payload.
      */
     Build() {
         return this.query;

@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { AppCloudEventRequestModel } from "../types.js";
+import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery } from "../types.js";
 
 const TAGS = {
     AppCreate: {
@@ -81,7 +81,7 @@ class AppClient {
      *
      * @param {string} org Application owner acronym.
      * @param {string} app Application name.
-     * @param {object} [query] Optional query parameters.
+     * @param {AppEventsByAppQuery|null} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
@@ -147,7 +147,7 @@ class AppClient {
     /**
      * Retrieves events related to a party.
      *
-     * @param {object} [query] Optional query parameters.
+     * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
      * @param {string} [person] Person number header value.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.

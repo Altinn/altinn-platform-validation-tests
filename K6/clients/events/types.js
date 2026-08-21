@@ -147,7 +147,38 @@
  * @property {Subscription[]|null} subscriptions List of subscriptions.
  */
 
+/**
+ * Query parameters for the app events of one application owner and application.
+ *
+ * @typedef {object} AppEventsByAppQuery
+ * @property {string} [after] Retrieve events registered after this event id.
+ * @property {string} [from] Retrieve events registered after this time.
+ * @property {string} [to] Retrieve events registered before this time.
+ * @property {string} [party] Party id filter.
+ * @property {string} [unit] Organisation number filter.
+ * @property {string} [person] Person identifier filter.
+ * @property {string[]} [type] Filter by event types.
+ * @property {number} [size] Maximum number of events to return.
+ */
+
+/**
+ * Query parameters for the app events of one party.
+ *
+ * @typedef {object} AppPartyEventsQuery
+ * @property {string} [after] Retrieve events registered after this event id.
+ * @property {string} [from] Retrieve events registered after this time.
+ * @property {string} [to] Retrieve events registered before this time.
+ * @property {string} [party] Party id filter.
+ * @property {string} [unit] Organisation number filter.
+ * @property {string} [person] Person identifier filter.
+ * @property {string} [source] Source filter.
+ * @property {string[]} [type] Filter by event types.
+ * @property {number} [size] Maximum number of events to return.
+ */
+
 export const AppCloudEventRequestModel = undefined;
+export const AppEventsByAppQuery = undefined;
+export const AppPartyEventsQuery = undefined;
 export const CloudEvent = undefined;
 export const ContentType = undefined;
 export const EventsQueryParams = undefined;

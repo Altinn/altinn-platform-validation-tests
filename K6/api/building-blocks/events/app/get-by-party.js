@@ -1,14 +1,14 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
-import { CloudEvent } from "../../../../clients/events/types.js";
+import { AppPartyEventsQuery, CloudEvent } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves events related to a party.
  *
  * @param {AppClient} appClient Client for the App API.
- * @param {object} [query] Optional query parameters.
+ * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
  * @param {string} [person] Person number header value.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
