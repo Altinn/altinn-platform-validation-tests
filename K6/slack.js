@@ -97,7 +97,7 @@ export default function postSlackMessage(data, report = null) {
         if (slackRes.status != 200) {
             console.error("Could not send summary, got status " + slackRes.status);
             console.log(slackRes.body);
-            console.log(body.results);
+            console.log(body);
         }
     } catch (error) {
         console.error("Error sending Slack message:", error);

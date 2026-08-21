@@ -154,7 +154,7 @@
  * @property {string} [after] Retrieve events registered after this event id.
  * @property {string} [from] Retrieve events registered after this time.
  * @property {string} [to] Retrieve events registered before this time.
- * @property {string} [party] Party id filter.
+ * @property {number} [party] Party id filter.
  * @property {string} [unit] Organisation number filter.
  * @property {string} [person] Person identifier filter.
  * @property {string[]} [type] Filter by event types.
@@ -168,10 +168,10 @@
  * @property {string} [after] Retrieve events registered after this event id.
  * @property {string} [from] Retrieve events registered after this time.
  * @property {string} [to] Retrieve events registered before this time.
- * @property {string} [party] Party id filter.
+ * @property {number} [party] Party id filter.
  * @property {string} [unit] Organisation number filter.
  * @property {string} [person] Person identifier filter.
- * @property {string} [source] Source filter.
+ * @property {string[]} [source] Source filters.
  * @property {string[]} [type] Filter by event types.
  * @property {number} [size] Maximum number of events to return.
  */

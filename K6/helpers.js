@@ -132,7 +132,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
  */
 export function getNumberOfVUs() {
     return (
-        exec.test.options.scenarios.default.vus ??
+        /** @type {any} */ (exec.test.options.scenarios.default).vus ??
         __ENV.BREAKPOINT_STAGE_TARGET ??
         1
     );

@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} id Role identifier.
  * @param {RolesGetRolePackagesByIdQuery} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {PackageDto|null} Role package.
+ * @returns {PackageDto[]|null} The packages the role carries.
  */
 export function RolesGetRolePackagesById(
     rolesClient,
@@ -24,7 +24,7 @@ export function RolesGetRolePackagesById(
         "RolesGetRolePackagesById",
     );
 
-    /** @type {PackageDto|null} */
+    /** @type {PackageDto[]|null} */
     let rolePackage = null;
 
     const succeed = check(res, {

@@ -405,7 +405,7 @@ export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceR
 /**
  * Get a transmission body, used for testing creation of transmissions. By default, the transmission will not be related to any other transmission, but you can provide an id of a transmission to relate it to.
  *
- * @param {string} relatedTransmissionId - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
+ * @param {string|number} [relatedTransmissionId] - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
  * @returns json object to be used as body when creating a transmission via the API.
  */
 export function getTransmissionBody(relatedTransmissionId = 0) {
