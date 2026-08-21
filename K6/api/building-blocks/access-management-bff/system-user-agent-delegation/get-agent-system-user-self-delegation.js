@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetAgentSystemUserSelfDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetAgentSystemUserSelfDelegationQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The delegation. The API does not publish a schema for
+ * @returns {any} The delegation. The API does not publish a schema for
  * this response.
  */
 export function GetAgentSystemUserSelfDelegation(
@@ -34,7 +34,7 @@ export function GetAgentSystemUserSelfDelegation(
         "GetAgentSystemUserSelfDelegation",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let delegation = null;
 
     const succeed = check(res, {

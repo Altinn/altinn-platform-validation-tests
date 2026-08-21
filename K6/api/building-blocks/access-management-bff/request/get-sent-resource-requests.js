@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetSentResourceRequestsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetSentResourceRequestsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The sent resource requests. The API does not publish
+ * @returns {any} The sent resource requests. The API does not publish
  * a schema for this response.
  */
 export function GetSentResourceRequests(
@@ -25,7 +25,7 @@ export function GetSentResourceRequests(
         "GetSentResourceRequests",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let requests = null;
 
     const succeed = check(res, {

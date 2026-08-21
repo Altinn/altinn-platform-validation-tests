@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {IdPortenAuthorizationClient} idPortenAuthorizationClient Client for
  * the ID-porten authorization endpoints.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The authorizations. The API does not publish a schema
+ * @returns {any} The authorizations. The API does not publish a schema
  * for this response.
  */
 export function GetIdPortenAuthorizations(
@@ -21,7 +21,7 @@ export function GetIdPortenAuthorizations(
         "GetIdPortenAuthorizations",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let authorizations = null;
 
     const succeed = check(res, {

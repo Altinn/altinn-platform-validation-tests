@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetAgentSystemUserCustomersQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAgentSystemUserCustomersQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The customers. The API does not publish a schema for
+ * @returns {any} The customers. The API does not publish a schema for
  * this response.
  */
 export function GetAgentSystemUserCustomers(
@@ -34,7 +34,7 @@ export function GetAgentSystemUserCustomers(
         "GetAgentSystemUserCustomers",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let customers = null;
 
     const succeed = check(res, {

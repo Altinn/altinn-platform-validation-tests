@@ -15,7 +15,7 @@ import { withRetries } from "../../common/retry.js";
  * Optional query parameters. Use
  * {@link CreateAgentSystemUserSelfDelegationQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The created delegation. The API does not publish a
+ * @returns {any} The created delegation. The API does not publish a
  * schema for this response.
  */
 export function CreateAgentSystemUserSelfDelegation(
@@ -35,7 +35,7 @@ export function CreateAgentSystemUserSelfDelegation(
         "CreateAgentSystemUserSelfDelegation",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let delegation = null;
 
     const succeed = check(res, {

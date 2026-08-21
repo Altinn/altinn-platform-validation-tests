@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param variables TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
     const res = withRetries(
@@ -18,7 +18,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
         "GetAllDialogsForParty",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
@@ -44,7 +44,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
  * @param {string} dialogId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
     const res = withRetries(
@@ -52,7 +52,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
         "GetAllDialogsForPartyCheckForDialogId",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
@@ -89,7 +89,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {string} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetDialogById(graphqlClient, dialogId, labels = null) {
     const res = withRetries(
@@ -97,7 +97,7 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
         "GetDialogById",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
@@ -122,7 +122,7 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {string} dialogId - id of the dialog to get
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
     const res = withRetries(
@@ -130,7 +130,7 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
         "GetAndVerifyDialogById",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
@@ -162,7 +162,7 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetParties(graphqlClient, labels = null) {
     const res = withRetries(
@@ -170,7 +170,7 @@ export function GetParties(graphqlClient, labels = null) {
         "GetParties",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetParties - status code is 200": (r) => r.status === 200,
@@ -194,7 +194,7 @@ export function GetParties(graphqlClient, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {
     const res = withRetries(
@@ -202,7 +202,7 @@ export function GetFilterServiceResources(graphqlClient, labels = null) {
         "GetFilterServiceResources",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetFilteredServiceResources - status code is 200": (r) => r.status === 200,

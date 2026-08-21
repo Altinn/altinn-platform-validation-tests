@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetSentRequestsQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetSentRequestsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The sent requests. The API does not publish a schema
+ * @returns {any} The sent requests. The API does not publish a schema
  * for this response.
  */
 export function GetSentRequests(
@@ -25,7 +25,7 @@ export function GetSentRequests(
         "GetSentRequests",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let requests = null;
 
     const succeed = check(res, {

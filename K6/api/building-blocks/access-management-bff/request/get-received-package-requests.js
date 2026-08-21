@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetReceivedPackageRequestsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetReceivedPackageRequestsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The received package requests. The API does not
+ * @returns {any} The received package requests. The API does not
  * publish a schema for this response.
  */
 export function GetReceivedPackageRequests(
@@ -25,7 +25,7 @@ export function GetReceivedPackageRequests(
         "GetReceivedPackageRequests",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let requests = null;
 
     const succeed = check(res, {

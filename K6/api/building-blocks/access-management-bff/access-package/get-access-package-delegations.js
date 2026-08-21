@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetAccessPackageDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAccessPackageDelegationsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} Access package delegations grouped by area. The API
+ * @returns {any} Access package delegations grouped by area. The API
  * does not publish a schema for this response.
  */
 export function GetAccessPackageDelegations(
@@ -28,7 +28,7 @@ export function GetAccessPackageDelegations(
         "GetAccessPackageDelegations",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let delegations = null;
 
     const succeed = check(res, {

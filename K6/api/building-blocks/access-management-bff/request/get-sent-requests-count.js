@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetSentRequestsCountQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetSentRequestsCountQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The sent request count. The API does not publish a
+ * @returns {any} The sent request count. The API does not publish a
  * schema for this response.
  */
 export function GetSentRequestsCount(
@@ -25,7 +25,7 @@ export function GetSentRequestsCount(
         "GetSentRequestsCount",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let count = null;
 
     const succeed = check(res, {
