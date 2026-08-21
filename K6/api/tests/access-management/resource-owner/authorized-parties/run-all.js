@@ -1,4 +1,4 @@
-export { handleSummary } from "../../../../../bdd-summary.js";
+export { handleSummary } from "../../../../../common-imports.js";
 
 import AccessInformationFlags from "./access-information-flags.js";
 import AuthorizationBoundaries from "./authorization-boundaries.js";

@@ -1,20 +1,17 @@
-export { handleSummary } from "../../../../../bdd-summary.js";
+export { handleSummary } from "../../../../../common-imports.js";
 export { setup } from "./common.js";
 
 import { group } from "k6";
 
-import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 import { SetupData } from "./setup-data.types.js";
 
-// Feature: A business manager's daily leader reaches the housing companies the firm manages
-//
-//   When the subject is the daily leader of a forretningsfører firm
-//   Then the client the firm holds the eiendom package for carries that package
-//   And the other housing company client is also returned
+// A business manager's daily leader reaches the housing companies the firm manages. The
+// client the firm holds the eiendom package for carries that package, and the other
+// housing company client is returned too.
 
 /**
  * Runs the feature.
@@ -22,7 +19,7 @@ import { SetupData } from "./setup-data.types.js";
  * @param {SetupData} data - The fixtures returned by setup().
  */
 export default function (data) {
-    group("Feature: A business manager's daily leader reaches the housing companies the firm manages", function () {
+    group("A business manager's daily leader reaches the housing companies the firm manages", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.forretningsforerNonfigurativEmosjonellPuma;
@@ -33,27 +30,14 @@ export default function (data) {
             .includeAccessPackages()
             .build();
 
-        scenario({
-            name: "A business manager's daily leader reaches the housing companies it manages",
-            given: [
-                "a business manager firm that manages two housing companies",
-                "the firm holds the eiendom package for one of them",
-            ],
-            when: "a service owner lists the authorized parties of the firm's daily leader",
-        }, function () {
+        group("A business manager's daily leader reaches the housing companies it manages", function () {
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                parties, firm.esekClient.partyUuid,
-                "THEN the housing company the firm manages is returned");
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.esekClient.partyUuid);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage],
-                "AND it carries the eiendom package the firm holds for it");
+            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(parties, firm.esekClient.partyUuid, [firm.esekClient.clientPackage]);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                parties, firm.nonBrlEsekClient.partyUuid,
-                "AND the other housing company client is also returned");
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.nonBrlEsekClient.partyUuid);
         });
     });
 }

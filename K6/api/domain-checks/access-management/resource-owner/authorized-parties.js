@@ -6,11 +6,10 @@ import { AuthorizedParty } from "../../../../clients/access-management/resource-
  * Every check here names itself, after the function and what it compared, so it can be
  * called like any other domain check and needs nothing from the caller but the data.
  *
- * Each one also takes an optional trailing name, which replaces the default one. That
- * is what a BDD suite passes its outcome sentence in as, so the summary reads as THEN
- * and AND rather than as a list of function names, and it is why the same check can
- * appear twice in one scenario saying two different things. Nothing else needs it: a
- * test with no sentence to give leaves it out and gets the default.
+ * Each one also takes an optional trailing name, which replaces the default one, for the
+ * rare case where the default does not say enough. Nothing needs it: a caller that leaves
+ * it out gets the self describing default, which already distinguishes two calls of the
+ * same check because it carries the arguments.
  */
 
 /**

@@ -1,23 +1,21 @@
-export { handleSummary } from "../../../../../bdd-summary.js";
+export { handleSummary } from "../../../../../common-imports.js";
 export { setup } from "./common.js";
 
 import { group } from "k6";
 
-import { scenario } from "../../../../../bdd-summary.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
 import { SetupData } from "./setup-data.types.js";
 
-// Feature: Excluding key role parties drops what the subject only reaches through a firm
-//
-//   Given key role parties are included, the firm's clients are part of the list
-//   When key role parties are excluded, those clients drop out
-//   And the firm itself stays, and so does a party that delegated to the person directly
+// Excluding key role parties drops what the subject only reaches through a firm. With
+// them included the firm's clients are in the list; with them excluded those clients drop
+// out, while the firm itself stays and so does a party that delegated to the person
+// directly.
 //
 // includeSubParties is not covered here: the filter is resolved but never applied,
-// tracked by #3522. The inactive window is covered by the deleted parties scenario.
+// tracked by #3522. The inactive window is covered by the deleted parties test.
 
 /**
  * Runs the feature.
@@ -25,7 +23,7 @@ import { SetupData } from "./setup-data.types.js";
  * @param {SetupData} data - The fixtures returned by setup().
  */
 export default function (data) {
-    group("Feature: Excluding key role parties drops what the subject only reaches through a firm", function () {
+    group("Excluding key role parties drops what the subject only reaches through a firm", function () {
         const [authorizedPartiesClient] = getClients();
 
         const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
@@ -35,11 +33,7 @@ export default function (data) {
 
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-        scenario({
-            name: "Key role parties are included by default",
-            given: "a daily leader who reaches client organisations only through the firm's key role",
-            when: "a service owner lists the parties with key role parties included",
-        }, function () {
+        group("Key role parties are included by default", function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeAccessPackages()
                 .includePartiesViaKeyRoles("true")
@@ -47,19 +41,10 @@ export default function (data) {
 
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                parties, client.partyUuid,
-                "THEN a client reached through the firm's key role is in the list");
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, client.partyUuid);
         });
 
-        scenario({
-            name: "Excluding key role parties drops what only the firm reaches",
-            given: [
-                "a daily leader who reaches some clients only through the firm's key role",
-                "another party has delegated to that person directly",
-            ],
-            when: "a service owner lists the parties with key role parties excluded",
-        }, function () {
+        group("Excluding key role parties drops what only the firm reaches", function () {
             const queryParams = new AuthorizedPartiesQueryBuilder()
                 .includeAccessPackages()
                 .includePartiesViaKeyRoles("false")
@@ -67,25 +52,15 @@ export default function (data) {
 
             const parties = GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                parties, client.partyUuid,
-                "THEN the accountant client is gone");
+            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, client.partyUuid);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(
-                parties, clientWithoutDelegation.partyUuid,
-                "AND the client without a client delegation is gone");
+            AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, clientWithoutDelegation.partyUuid);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                parties, firm.partyUuid,
-                "AND the firm the subject is daily leader for is still returned");
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, firm.partyUuid);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(
-                parties, directDelegator.partyUuid,
-                "AND a party that delegated directly to the person is still returned");
+            AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, directDelegator.partyUuid);
 
-            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(
-                parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson],
-                "AND that party still carries the package delegated to the person");
+            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(parties, directDelegator.partyUuid, [directDelegator.packageDelegatedToPerson]);
         });
     });
 }

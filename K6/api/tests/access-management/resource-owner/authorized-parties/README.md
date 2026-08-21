@@ -6,31 +6,18 @@ Ported from the Bruno suite at
 Covers `POST /accessmanagement/api/v1/resourceowner/authorizedparties`. Each Bruno
 scenario folder became one file here.
 
-A file is a **feature**. Each `scenario()` inside it is one scenario, and a scenario is one
-action with the outcomes that followed from it, so it reads
-`(GIVEN AND*)? WHEN THEN (AND)*` and never stacks two WHENs or two THENs. `scenario()`
-takes the name, the setup and the single action as separate fields, so setup cannot drift
-into the action and become a run on clause.
+Each file is one outer `group()` naming what it covers, with an inner `group()` per lookup,
+following the nested group shape used by
+`../../altinn-apps/instance-delegation-check.js`. The assertions are domain checks, which
+name themselves from their arguments, so a check called twice in one group still produces
+two distinct lines rather than collapsing into one count.
 
-The outcomes are the checks inside the body. A domain check names itself, so it can be
-called from any test without a sentence, and takes an optional trailing name that replaces
-the default one. This suite passes its outcome sentence in there: the check owns the
-comparison, the scenario owns the sentence. That is why the same check appears more than
-once in a scenario saying different things, and why the first outcome reads THEN and the
-rest read AND.
-
-Rationale does not go in a step name. It goes in a comment next to the step.
-
-The suite reports through `K6/bdd-summary.js` rather than the shared
-`functional-tests-summary.js`. It keeps the GIVEN, WHEN, THEN and AND sentences and drops
-the request plumbing while it passes, since three `GetAuthorizedParties - ...` lines per
-request outnumber the outcomes they surround. Plumbing that *fails* is always shown,
-labelled `[request]`, because a request that never succeeded is the reason every outcome
-under it went red. The Slack message on a failed run carries only what did not hold.
+Reporting goes through the shared `handleSummary` in `common-imports.js`, like every other
+functional suite.
 
 Bruno's `NN_` prefixes are not carried over. They existed because Bruno orders steps by
 `seq`; here the order is explicit in `run-all.js` and in source order within a file, and
-the scenarios are independent of each other anyway.
+the groups are independent of each other anyway.
 
 Three things make this surface different from the enduser one, and the suite exists
 partly to pin them down:
@@ -80,14 +67,13 @@ leder package count and the `includeAltinn2` / `includeAltinn3` parameters are n
 asserted either, the first because the suite does not pin counts of catalogue wide sets
 and the second because no controller binds them.
 
-## The GIVENs are pre seeded, and should not be
+## The delegations are pre seeded, and should not be
 
-Every GIVEN in this suite describes state that already exists in at22. Nothing here creates
-it, and neither did the Bruno collection this was ported from: the delegation directions
+Every delegation this suite reads already exists in at22. Nothing here creates it, and neither did the Bruno collection this was ported from: the delegation directions
 folder has no setup requests, only lookups. The parties are recorded in
 `../../enduser/testdata-at22.json`. What was delegated between them is recorded nowhere, so
-a reader cannot tell what `GIVEN main unit A has delegated access to main unit B` means
-without querying at22.
+a reader cannot tell what "main unit A has delegated access to main unit B" means without
+querying at22.
 
 Read out of at22 rather than out of any specification, the directions currently hold:
 
@@ -108,7 +94,7 @@ not own those values and several of them look incidental rather than deliberate.
 
 Considered and deliberately not done. The natural home would be k6's `setup()`, which runs
 once before the iterations and already hands the fixtures to every scenario, paired with
-`teardown()` to revoke what it created. The GIVENs would then describe something the suite
+`teardown()` to revoke what it created. The setup would then be something the suite
 actually did, and could name the packages because the suite would have chosen them.
 
 It is not worth it here. Creating a delegation from one organisation to another needs a
@@ -118,8 +104,8 @@ that creates or revokes delegations on shared parties can break that suite, and 
 teardown leaves the environment dirty for everyone. The cost of doing it safely, seeding
 parties of its own or agreeing ownership of these, is larger than the readability it buys.
 
-So the GIVENs stay as descriptions of pre seeded state, and the table above stands in for
-the setup a reader cannot see. Revisit it if a write client appears, or if these fixtures
+So the delegations stay pre seeded, and the table above stands in for the setup a reader
+cannot see. Revisit it if a write client appears, or if these fixtures
 stop being shared.
 
 ## Test data
