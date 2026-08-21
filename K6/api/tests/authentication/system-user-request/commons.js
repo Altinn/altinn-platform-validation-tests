@@ -158,15 +158,21 @@ export function resourceRight(resource) {
 }
 
 /**
+ * The test specific parts of a system registration.
+ *
+ * @typedef {object} SystemRegistrationParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {Right[]} registeredRights Every right the system is registered with.
+ */
+
+/**
  * Builds the identifiers and registration payload for one iteration.
  *
  * Everything here is unique per iteration, so unlike the clients it cannot be
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
- * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {Right[]} options.registeredRights - Every right the system is registered with.
+ * @param {SystemRegistrationParams} options - Test specific parts of the registration.
  * @returns Identifiers and the registration payload.
  */
 export function createSystemRegistration({ systemNamePrefix, registeredRights }) {

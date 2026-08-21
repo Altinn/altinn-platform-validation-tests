@@ -57,19 +57,25 @@ let approverTokenGenerator = undefined;
 let vendorTokenGenerator = undefined;
 
 /**
+ * What a test needs arranged before it runs.
+ *
+ * @typedef {object} ArrangeSystemUserParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {string} vendorOrgNo Organisation number of the vendor to register the system as. Draw it with pickVendor.
+ * @property {Right[]} grantedRights The rights the system user is granted up front.
+ * @property {Right[]} [registeredRights] Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
+ * @property {string[]} [grantedAccessPackages] Urns of the access packages the system user is granted up front.
+ * @property {string[]} [registeredAccessPackages] Urns of every access package the system is registered with. Defaults to the granted ones.
+ */
+
+/**
  * Creates system in system register, requests a system user for it and has the end user approve it.
  * Call from a test's own setup, passing the rights that test cares about, so the
  * test decides what the system user starts with and what is left for it to ask
  * for. Returns only what it created. Clients cannot be returned at all, since k6
  * serializes the setup result to JSON and the prototypes would not survive.
  *
- * @param {object} options - What the calling test needs arranged.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {string} options.vendorOrgNo - Organisation number of the vendor to register the system as. Draw it with pickVendor.
- * @param {Right[]} options.grantedRights - The rights the system user is granted up front.
- * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
- * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
- * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
+ * @param {ArrangeSystemUserParams} options - What the calling test needs arranged.
  * @returns A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
  */
 export function arrangeApprovedSystemUser({
@@ -311,17 +317,23 @@ export function resource(resource) {
 }
 
 /**
+ * The test specific parts of a system registration.
+ *
+ * @typedef {object} SystemRegistrationParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {string} vendorOrgNo Organisation number of the vendor the system is registered as.
+ * @property {Right[]} registeredRights Every right the system is registered with.
+ * @property {string[]} registeredAccessPackages Urns of every access package the system is registered with.
+ */
+
+/**
  * Builds the identifiers and registration payload for one iteration.
  *
  * Every identifier here is generated fresh, so unlike the clients it cannot be
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
- * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as.
- * @param {Right[]} options.registeredRights - Every right the system is registered with.
- * @param {string[]} options.registeredAccessPackages - Urns of every access package the system is registered with.
+ * @param {SystemRegistrationParams} options - Test specific parts of the registration.
  * @returns Identifiers and the registration payload.
  */
 function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages }) {
