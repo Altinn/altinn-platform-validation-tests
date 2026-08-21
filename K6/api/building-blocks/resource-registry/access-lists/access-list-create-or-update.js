@@ -22,10 +22,11 @@ export function AccessListCreateOrUpdate(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListCreateOrUpdate(
+        () => accessListClient.AccessListUpsert(
             owner,
             identifier,
             request,
+            {},
             labels,
         ),
         "AccessListCreateOrUpdate",

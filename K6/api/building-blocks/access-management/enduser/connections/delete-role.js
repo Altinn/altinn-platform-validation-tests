@@ -1,7 +1,7 @@
 import { check } from "k6";
 
+import { DeleteRoleQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
-import { DeleteRoleQuery } from "../../../../../clients/access-management-bff/role/role.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

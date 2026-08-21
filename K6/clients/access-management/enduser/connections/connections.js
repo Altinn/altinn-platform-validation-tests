@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { AccessPackageDelegationCheckQuery, CreateAccessPackageQuery, CreateConnectionQuery, CreateInstanceRightsQuery, CreateResourceRightsQuery, DeleteAccessPackageQuery, DeleteConnectionQuery, DeleteInstanceQuery, DeleteRoleQuery, GetAccessPackagesQuery, GetConnectionsQuery, GetConnectionUsersQuery, GetInstanceDelegationCheckQuery, GetInstanceRightsQuery, GetInstancesQuery, GetInstanceUsersQuery, GetResourceDelegationCheckQuery, GetResourceRightsQuery, GetRolesQuery, InstanceRightsDelegationDto, PersonInput, RightKeyListDto, UpdateInstanceRightsQuery, UpdateResourceRightsQuery } from "./connections.types.js";
+import { AccessPackageDelegationCheckQuery, CreateAccessPackageQuery, CreateConnectionQuery, CreateInstanceRightsQuery, CreateResourceRightsQuery, DeleteAccessPackageQuery, DeleteConnectionQuery, DeleteInstanceQuery, DeleteResourceQuery, DeleteRoleQuery, GetAccessPackagesQuery, GetConnectionsQuery, GetConnectionUsersQuery, GetInstanceDelegationCheckQuery, GetInstanceRightsQuery, GetInstancesQuery, GetInstanceUsersQuery, GetResourceDelegationCheckQuery, GetResourceRightsQuery, GetResourcesQuery, GetRolesQuery, InstanceRightsDelegationDto, PersonInput, RightKeyListDto, UpdateInstanceRightsQuery, UpdateResourceRightsQuery } from "./connections.types.js";
 
 const TAGS = {
     GetConnections: {
@@ -655,6 +655,116 @@ class ConnectionsClient {
             endpoint: `${this.FULL_PATH}/roles`,
             name: `${this.FULL_PATH}/roles`,
             action: TAGS.DeleteRole.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url.toString(), null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+    }
+    /**
+     * Gets resource permissions.
+     *
+     * @param {GetResourcesQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetResourcesQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetResources(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources`,
+            name: `${this.FULL_PATH}/resources`,
+            action: TAGS.GetResources.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                ...headers,
+            },
+        });
+    }
+    /**
+     * Deletes a resource permission.
+     *
+     * @param {DeleteResourceQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link DeleteResourceQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    DeleteResource(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources`,
+            name: `${this.FULL_PATH}/resources`,
+            action: TAGS.DeleteResource.action,
         };
 
         if (labels !== null) {

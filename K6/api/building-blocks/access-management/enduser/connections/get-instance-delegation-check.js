@@ -1,8 +1,8 @@
 import { check } from "k6";
 
 import { InstanceCheckDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
+import { GetInstanceDelegationCheckQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
-import { GetInstanceDelegationCheckQuery } from "../../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
