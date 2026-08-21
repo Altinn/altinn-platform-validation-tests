@@ -22,7 +22,7 @@ export function AccessListsDeleteResourceConnection(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsDeleteResourceConnection(
+        () => accessListClient.AccessListDeleteResourceConnection(
             owner,
             identifier,
             resourceIdentifier,

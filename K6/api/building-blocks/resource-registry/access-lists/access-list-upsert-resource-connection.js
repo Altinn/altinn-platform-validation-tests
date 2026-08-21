@@ -24,7 +24,7 @@ export function AccessListsUpsertResourceConnection(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsUpsertResourceConnection(
+        () => accessListClient.AccessListUpsertResourceConnection(
             owner,
             identifier,
             resourceIdentifier,

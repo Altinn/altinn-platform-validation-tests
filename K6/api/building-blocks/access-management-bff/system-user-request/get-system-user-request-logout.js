@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse<"text">} The raw response, holding the redirect
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetSystemUserRequestLogout(

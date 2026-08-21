@@ -22,7 +22,7 @@ export function AccessListsGetResourceConnections(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsGetResourceConnections(
+        () => accessListClient.AccessListGetResourceConnections(
             owner,
             identifier,
             query,

@@ -80,7 +80,7 @@ export function CreateData(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse<"text">} The HTTP response. The body is the file
+ * @returns {import("k6/http").RefinedResponse<"text">} The HTTP response. The body is the file
  * content, so the response is returned rather than a boolean.
  */
 export function GetData(

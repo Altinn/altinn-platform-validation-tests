@@ -10,12 +10,6 @@ const TAGS = {
     ResourceExport: {
         action: "resource-export",
     },
-    ResourceGetResourceList: {
-        action: "resource-get-resource-list",
-    },
-    ResourceExport: {
-        action: "resource-export",
-    },
     ResourceGetResource: {
         action: "resource-get-resource",
     },

@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetDelegationExportQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetDelegationExportQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse<"text">} The raw response, holding the exported file.
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the exported file.
  */
 export function GetDelegationExport(
     delegationExportClient,
