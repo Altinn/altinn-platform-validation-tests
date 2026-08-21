@@ -4,12 +4,12 @@
  *
  * @typedef {object} SetupData
  * @property {AccountingFirmFixture} testdata
- * The accounting firm tree this suite brought with it, from `../testdata-<env>.json`.
+ * The accounting firm tree this suite brought with it, from `K6/testdata/access-management/resource-owner/authorized-parties/<environment>.json`.
  * @property {HierarchyFixture} hierarchy
- * The main unit and subunit delegation tree, from `../../enduser/testdata-<env>.json`.
+ * The main unit and subunit delegation tree, from `K6/testdata/access-management/enduser/testdata-<environment>.json`.
  * Shared with the enduser suite, which was ported from the same Bruno fixture.
  * @property {SharedTestData} sharedTestData
- * Environment independent constants, from `../../enduser/shared-testdata.json`.
+ * Environment independent constants, from `K6/testdata/access-management/enduser/shared-testdata.json`.
  */
 
 /**
@@ -32,7 +32,6 @@
  * The accounting firm tree, keyed by the fixture names the scenarios read.
  *
  * @typedef {object} AccountingFirmFixture
- * @property {string} env The environment the fixture describes.
  * @property {number} deletedPartyRetentionYears
  * How many years a deleted party keeps granting access to its owner.
  * @property {object} REGN_ULASTELIG_RETTFERDIG_TIGER
@@ -50,7 +49,7 @@
  * pre seeded in the environment; the fixture records only the parties.
  *
  * @typedef {object} HierarchyFixture
- * @property {string} env The environment the fixture describes.
+ * @property {string} [env] The environment, carried over from Bruno and read by nothing.
  * @property {FixtureParty} authParties_personA A person who both delegates and receives.
  * @property {FixtureParty} authParties_personB A person who receives from person A.
  * @property {object} authParties_hovedenhetA Main unit A, its daily leader, subunit and person C.
