@@ -41,73 +41,60 @@ export default function (data) {
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(registration.systemOwner));
 
     group("As a vendor, I can find a system user request by external ref and withdraw it", function () {
-        // What the cleanup below has to take back out. Tracked rather than assumed,
-        // since a step that fails calls fail(), and deleting a system that was never
-        // registered only turns one failure into two.
-        let systemRegistered = false;
+        group("Register the system the request is made for", function () {
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
+
+            if (createdSystemId === null) {
+                fail("cannot request a system user: registering the system did not return a system id");
+            }
+        });
+
         let requestId;
 
-        try {
-            group("Register the system the request is made for", function () {
-                const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(clients.vendor.systemRegisterClient, registration.registerSystemRequest);
+        group("Create the system user request", function () {
+            const createRequest = new CreateRequestSystemUserBuilder()
+                .withExternalRef(registration.externalRef)
+                .withSystemId(registration.systemId)
+                .withPartyOrgNo(customer.orgNo)
+                .withRights(rights)
+                .withRedirectUrl(registration.redirectUrl)
+                .build();
 
-                if (createdSystemId === null) {
-                    fail("cannot request a system user: registering the system did not return a system id");
-                }
+            const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(clients.vendor.requestSystemUserClient, createRequest);
 
-                systemRegistered = true;
+            SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
+                systemId: registration.systemId,
+                partyOrgNo: customer.orgNo,
+                externalRef: registration.externalRef,
             });
 
-            group("Create the system user request", function () {
-                const createRequest = new CreateRequestSystemUserBuilder()
-                    .withExternalRef(registration.externalRef)
-                    .withSystemId(registration.systemId)
-                    .withPartyOrgNo(customer.orgNo)
-                    .withRights(rights)
-                    .withRedirectUrl(registration.redirectUrl)
-                    .build();
+            requestId = createdRequest?.id;
+        });
 
-                const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(clients.vendor.requestSystemUserClient, createRequest);
+        group("Find the request by its external ref", function () {
+            const request = RequestSystemUserBuildingBlocks.VendorGetByExternalRef(
+                clients.vendor.requestSystemUserClient,
+                registration.systemId,
+                customer.orgNo,
+                registration.externalRef,
+            );
 
-                SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
-                    systemId: registration.systemId,
-                    partyOrgNo: customer.orgNo,
-                    externalRef: registration.externalRef,
-                });
+            SystemUserRequestDomainChecks.CheckSameRequest(request, requestId);
+        });
 
-                requestId = createdRequest?.id;
-            });
+        group("Withdraw the request", function () {
+            if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
+                fail("cannot withdraw: creating the system user request returned no id");
+            }
 
-            group("Find the request by its external ref", function () {
-                const request = RequestSystemUserBuildingBlocks.VendorGetByExternalRef(
-                    clients.vendor.requestSystemUserClient,
-                    registration.systemId,
-                    customer.orgNo,
-                    registration.externalRef,
-                );
+            const deleted = RequestSystemUserBuildingBlocks.VendorDelete(clients.vendor.requestSystemUserClient, requestId);
 
-                SystemUserRequestDomainChecks.CheckSameRequest(request, requestId);
-            });
+            SystemUserRequestDomainChecks.CheckRequestDeleted(deleted);
+        });
 
-            group("Withdraw the request", function () {
-                if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
-                    fail("cannot withdraw: creating the system user request returned no id");
-                }
-
-                const deleted = RequestSystemUserBuildingBlocks.VendorDelete(clients.vendor.requestSystemUserClient, requestId);
-
-                SystemUserRequestDomainChecks.CheckRequestDeleted(deleted);
-            });
-        } finally {
-            // Every iteration registers a system of its own, so the cleanup belongs
-            // here rather than in a teardown, and in a finally so that a failed step
-            // still takes back what it managed to create.
-            group("Cleanup - remove the system from the register", function () {
-                if (systemRegistered) {
-                    SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);
-                }
-            });
-        }
+        group("Remove the system from the register", function () {
+            SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);
+        });
     });
 }
 

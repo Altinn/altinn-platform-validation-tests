@@ -85,54 +85,41 @@ export default async function () {
     ];
 
     group("System Register Access Packages", function () {
-        // Whether the delete below has anything to take back out. A step that fails
-        // calls fail(), and deleting a system that was never registered would only
-        // turn one failure into two.
-        let systemRegistered = false;
+        group("Register a system with one access package", function () {
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
 
-        try {
-            group("Register a system with one access package", function () {
-                const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+            // The groups below read, update and delete this system by id, so there is
+            // nothing to assert on if the registration failed.
+            if (createdSystemId === null) {
+                fail("cannot continue: registering the system did not return a system id");
+            }
+        });
 
-                // The groups below read, update and delete this system by id, so there is
-                // nothing to assert on if the registration failed.
-                if (createdSystemId === null) {
-                    fail("cannot continue: registering the system did not return a system id");
-                }
+        group("An end user gets the access packages of the system", function () {
+            const registeredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
-                systemRegistered = true;
-            });
+            SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
+        });
 
-            group("An end user gets the access packages of the system", function () {
-                const registeredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
+        group("Replace the access packages on the system", function () {
+            const updateResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
 
-                SystemRegisterDomainChecks.CheckAccessPackages(registeredAccessPackages, accessPackages);
-            });
+            // Reading the packages back says nothing about the update unless the
+            // update itself went through.
+            if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdateAccessPackages")) {
+                fail("cannot verify the access packages: replacing them did not report success");
+            }
 
-            group("Replace the access packages on the system", function () {
-                const updateResult = SystemRegisterBuildingBlocks.VendorUpdateAccessPackages(systemRegisterClient, systemId, updatedAccessPackages);
+            const updatedRegisteredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
 
-                // Reading the packages back says nothing about the update unless the
-                // update itself went through.
-                if (!SystemRegisterDomainChecks.CheckUpdateSucceeded(updateResult, "SystemRegisterVendorUpdateAccessPackages")) {
-                    fail("cannot verify the access packages: replacing them did not report success");
-                }
+            SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
+        });
 
-                const updatedRegisteredAccessPackages = SystemRegisterBuildingBlocks.GetAccessPackagesFrontend(enduserSystemRegisterClient, systemId);
+        group("Delete the system", function () {
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-                SystemRegisterDomainChecks.CheckAccessPackages(updatedRegisteredAccessPackages, updatedAccessPackages);
-            });
-        } finally {
-            // In a finally, so that a step that failed earlier still leaves the
-            // register as it found it.
-            group("Delete the system", function () {
-                if (systemRegistered) {
-                    const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
-
-                    SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
-                }
-            });
-        }
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
+        });
     });
 }
 

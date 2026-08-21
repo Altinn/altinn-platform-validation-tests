@@ -93,41 +93,28 @@ export default async function () {
         .build();
 
     group("System Register Rights", function () {
-        // Whether the delete below has anything to take back out. A step that fails
-        // calls fail(), and deleting a system that was never registered would only
-        // turn one failure into two.
-        let systemRegistered = false;
+        group("Register a system with two rights", function () {
+            // POST /vendor
+            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
 
-        try {
-            group("Register a system with two rights", function () {
-                // POST /vendor
-                const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
+            if (createdSystemId === null) {
+                fail("cannot continue: registering the system did not return a system id");
+            }
+        });
 
-                if (createdSystemId === null) {
-                    fail("cannot continue: registering the system did not return a system id");
-                }
+        group("An end user gets the rights of the system", function () {
+            // GET /{systemId}/rights - the rights as consumers see them, not the
+            // vendor view, so this one goes on the enduser token
+            const registeredRights = SystemRegisterBuildingBlocks.GetRightsFrontend(enduserSystemRegisterClient, systemId);
 
-                systemRegistered = true;
-            });
+            SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
+        });
 
-            group("An end user gets the rights of the system", function () {
-                // GET /{systemId}/rights - the rights as consumers see them, not the
-                // vendor view, so this one goes on the enduser token
-                const registeredRights = SystemRegisterBuildingBlocks.GetRightsFrontend(enduserSystemRegisterClient, systemId);
+        group("Delete the system", function () {
+            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
 
-                SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
-            });
-        } finally {
-            // In a finally, so that a step that failed earlier still leaves the
-            // register as it found it.
-            group("Delete the system", function () {
-                if (systemRegistered) {
-                    const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, systemId);
-
-                    SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
-                }
-            });
-        }
+            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
+        });
     });
 }
 
