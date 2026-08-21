@@ -56,7 +56,7 @@ let paginationTokenGenerator = undefined;
  * Returned flat rather than segmented per VU, so a test picks from the whole list
  * with getItemFromList, which walks it across iterations.
  *
- * @returns {object[]} The customers the tests act on behalf of.
+ * @returns The customers the tests act on behalf of.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -128,7 +128,7 @@ export function getClients() {
  * Token options for approving on behalf of a customer.
  *
  * @param {any} customer - The customer this iteration acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
     return new PersonalTokenBuilder()
@@ -167,7 +167,7 @@ export function resourceRight(resource) {
  * @param {object} options - Test specific parts of the registration.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
- * @returns {object} Identifiers and the registration payload.
+ * @returns Identifiers and the registration payload.
  */
 export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;

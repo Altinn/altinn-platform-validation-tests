@@ -139,7 +139,8 @@ function getClients() {
 function getQueryParams(list) {
     const queryParams = new MaskinportenDelegationsQueryBuilder();
     let supplierOrg = undefined;
-    let label = "";
+    /** @type {{[key: string]: string}} */
+    let label = {};
     const randomValue = randomIntBetween(0, 6);
     switch (randomValue) {
         case 0:

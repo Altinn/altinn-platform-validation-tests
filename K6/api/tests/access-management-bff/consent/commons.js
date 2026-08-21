@@ -88,7 +88,7 @@ export function getClients() {
  *
  * @param {string} userId - The user the iteration reads as.
  * @param {string} partyUuid - The party that user reads for.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getTokenOpts(userId, partyUuid) {
     return new PersonalTokenBuilder()

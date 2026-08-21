@@ -34,7 +34,7 @@ const REQUESTED_RIGHTS = [resource("ttd-dialogporten-dummy")];
  * The system is registered with both sets, so the system user starts with the
  * granted rights and the change request has something left to ask for.
  *
- * @returns {object[]} The system user to change, as a single item list.
+ * @returns The system user to change, as a single item list.
  */
 export function setup() {
     // Drawn once here rather than per iteration, since the system belongs to the

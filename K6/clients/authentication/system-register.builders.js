@@ -1,4 +1,4 @@
-import { RegisterSystemRequest, Right, VendorInfo } from "./types.js";
+import { RegisterSystemRequest, Right } from "./types.js";
 
 /**
  * Builds the body for registering a system.
@@ -32,7 +32,7 @@ class RegisterSystemRequestBuilder {
     /**
      * Sets vendor information.
      *
-     * @param {VendorInfo|null} vendor See the client method.
+     * @param {string} vendor Area code and org number, e.g. `0192:212485772`.
      * @returns {RegisterSystemRequestBuilder} This builder, for chaining.
      * @example
      * const requestBody = new RegisterSystemRequestBuilder()

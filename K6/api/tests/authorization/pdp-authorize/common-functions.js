@@ -64,7 +64,7 @@ export function getClients() {
  * Function to get token options.
  *
  * @param {string} ssn - social security number
- * @returns {object} Token generator options for the given user.
+ * @returns Token generator options for the given user.
  */
 export function getTokenOpts(ssn) {
     const scopes = CreateScopeString([

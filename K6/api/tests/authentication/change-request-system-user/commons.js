@@ -70,7 +70,7 @@ let vendorTokenGenerator = undefined;
  * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
  * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
  * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
- * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
+ * @returns A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
  */
 export function arrangeApprovedSystemUser({
     systemNamePrefix,
@@ -221,7 +221,7 @@ export function getClients() {
  * generator was built with rather than adding to them.
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor this run acts as.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getVendorTokenOpts(vendorOrgNo) {
     return new EnterpriseTokenBuilder()
@@ -236,7 +236,7 @@ export function getVendorTokenOpts(vendorOrgNo) {
  * Token options for approving on behalf of a customer.
  *
  * @param {any} customer - The customer this iteration acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
     return new PersonalTokenBuilder()
@@ -322,7 +322,7 @@ export function resource(resource) {
  * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {Right[]} options.registeredRights - Every right the system is registered with.
  * @param {string[]} options.registeredAccessPackages - Urns of every access package the system is registered with.
- * @returns {object} Identifiers and the registration payload.
+ * @returns Identifiers and the registration payload.
  */
 function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;

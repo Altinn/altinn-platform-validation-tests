@@ -203,7 +203,7 @@ export function getLookupClient() {
  * iteration to point it at the organization that iteration drew.
  *
  * @param {string} [orgNo] - The consentee organization, or undefined to leave the token without one.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getConsenteeTokenOpts(orgNo = undefined) {
     const builder = new EnterpriseTokenBuilder()
@@ -228,7 +228,7 @@ export function getConsenteeTokenOpts(orgNo = undefined) {
  * iteration to point it at the organization that iteration drew.
  *
  * @param {string} [orgNo] - The organization, or undefined to leave the token without one.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getEventsTokenOpts(orgNo = undefined) {
     const builder = new EnterpriseTokenBuilder()
@@ -250,7 +250,7 @@ export function getEventsTokenOpts(orgNo = undefined) {
  * to point it at the person that iteration drew.
  *
  * @param {string} [partyUuid] - The consenter, or undefined to leave the token without one.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getConsenterTokenOpts(partyUuid = undefined) {
     const builder = new PersonalTokenBuilder()
