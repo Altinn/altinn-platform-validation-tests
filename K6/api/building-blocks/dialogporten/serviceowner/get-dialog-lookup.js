@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Function to get dialogLookup
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
+ * @param {{[x: string]: string}} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup|null} Parsed response body, or null when the call failed.
  */

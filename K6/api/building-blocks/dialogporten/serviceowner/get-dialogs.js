@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Function to get dialogs
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
+ * @param {{[x: string]: string}} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog|null} Parsed response body, or null when the call failed.
  */
@@ -114,7 +114,7 @@ export function GetDialog(
  * Function to get enduser context
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
+ * @param {{[x: string]: string}} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem|null} Parsed response body, or null when the call failed.
  */
