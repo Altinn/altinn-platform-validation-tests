@@ -1,3 +1,5 @@
+import { PackagesSearchQuery } from "./packages.types.js";
+
 class PackagesSearchQueryBuilder {
     constructor() {
         this.query = {};
@@ -64,7 +66,7 @@ class PackagesSearchQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {PackagesSearchQuery} The built payload.
      */
     Build() {
         return this.query;

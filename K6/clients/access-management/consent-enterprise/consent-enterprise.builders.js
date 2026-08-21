@@ -1,4 +1,4 @@
-import { ConsentPortalViewMode, ConsentRequestDto, ConsentRightDto } from "./consent-enterprise.types.js";
+import { ConsentPortalViewMode, ConsentRequestDto, ConsentRequestEventsQuery, ConsentRightDto } from "./consent-enterprise.types.js";
 
 class ConsentRequestBuilder {
     constructor() {
@@ -168,7 +168,7 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {ConsentRequestEventsQuery} The built payload.
      */
     Build() {
         return this.query;

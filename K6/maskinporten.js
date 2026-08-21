@@ -47,6 +47,13 @@ const TAGS = {
 };
 
 /**
+ * Options the Maskinporten token builder produces.
+ *
+ * @typedef {object} MaskinportenTokenOptions
+ * @property {string} [scopes] Space separated scopes to request.
+ */
+
+/**
  * Builder for Maskinporten token options.
  *
  * `withScopes` maps to the `scope` claim of the JWT grant. Maskinporten takes
@@ -54,7 +61,7 @@ const TAGS = {
  */
 export class MaskinportenTokenBuilder {
     constructor() {
-        this.options = {};
+        this.options = /** @type {MaskinportenTokenOptions} */ ({});
     }
 
     /**
@@ -67,7 +74,7 @@ export class MaskinportenTokenBuilder {
     }
 
     /**
-     * @returns {object} The built options, to pass to the generator.
+     * @returns {MaskinportenTokenOptions} The built options, to pass to the generator.
      */
     build() {
         return { ...this.options };
