@@ -1,6 +1,9 @@
+/**
+ * @typedef {import("../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js").DialogSearchVariables} DialogSearchVariables
+ */
 import { check } from "k6";
 
-import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
+import { DialogByIdVariables } from "../../../../clients/dialogporten/graphql/dialog-by-id-variables-builder.js";
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -41,7 +44,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
+ * @param {DialogSearchVariables} variables - search variables to use in the query
  * @param {string} dialogId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
@@ -87,13 +90,13 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  * Function to get a dialog by id
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {string} dialogId - id of the dialog to get
+ * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built with {@link DialogByIdVariablesBuilder}
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
-export function GetDialogById(graphqlClient, dialogId, labels = null) {
+export function GetDialogById(graphqlClient, variables, labels = null) {
     const res = withRetries(
-        () => graphqlClient.GetDialogById(dialogId, labels),
+        () => graphqlClient.GetDialogById(variables, labels),
         "GetDialogById",
     );
 
@@ -120,13 +123,13 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  * Function to get a dialog by id and verify that the response contains the correct dialogId
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {string} dialogId - id of the dialog to get
+ * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built with {@link DialogByIdVariablesBuilder}
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
-export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
+export function GetAndVerifyDialogById(graphqlClient, variables, labels = null) {
     const res = withRetries(
-        () => graphqlClient.GetDialogById(dialogId, labels),
+        () => graphqlClient.GetDialogById(variables, labels),
         "GetAndVerifyDialogById",
     );
 
@@ -140,9 +143,9 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
             if (res_body === null || res_body === undefined) {
                 return false;
             }
-            if (!res_body.data || res_body.data?.dialogById?.dialog?.id !== dialogId) {
+            if (!res_body.data || res_body.data?.dialogById?.dialog?.id !== variables.id) {
                 // TODO: Is this needed? or just noise?
-                // console.log(`DialogId ${dialogId} not found in dialogById-response`);
+                // console.log(`DialogId ${variables.id} not found in dialogById-response`);
                 return true;
             }
             return true;
