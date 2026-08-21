@@ -1,7 +1,6 @@
 import { fail, group } from "k6";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
-import { AccessPackage, Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
@@ -12,6 +11,7 @@ import {
     SystemRegisterClient,
     SystemUserClient,
 } from "../../../../clients/authentication/index.js";
+import { AccessPackage, Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";

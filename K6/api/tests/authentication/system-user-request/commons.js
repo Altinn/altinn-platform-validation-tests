@@ -1,11 +1,11 @@
 
-import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import {
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
     SystemRegisterClient,
 } from "../../../../clients/authentication/index.js";
+import { Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";

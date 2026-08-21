@@ -1,4 +1,4 @@
-import { AccessPackage, Right } from "../../../clients/access-management-bff/common/common.types.js";
+import { AccessPackage, Right } from "../../../clients/authentication/types.js";
 
 /**
  * Compares two lists of rights on action and resource values, since the API may
