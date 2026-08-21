@@ -28,7 +28,7 @@ export function setup() {
  * Runs every test in this folder once, in one k6 run, so a change to the shared
  * clients, building blocks or checks can be verified in one go.
  *
- * @param {object} data Setup results, keyed per setup.
+ * @param {any} data Setup results, keyed per setup.
  */
 export default async function (data) {
     runHealthcheck(data.healthcheck);

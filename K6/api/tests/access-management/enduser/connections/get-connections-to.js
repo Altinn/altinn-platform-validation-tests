@@ -18,7 +18,7 @@ export const options = getOptions([getConnectionsToLabel, tokenGeneratorLabel]);
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organizations with a party uuid, one slice per VU.
+ * @param {any[][]} testData Organizations with a party uuid, one slice per VU.
  */
 export default function (testData) {
     const [connectionsApiClient, tokenGenerator] = getClients();

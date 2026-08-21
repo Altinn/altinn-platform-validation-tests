@@ -89,9 +89,10 @@ export function readCsv(filename) {
 }
 /**
  *
- * @param listOfItems TODO: description
- * @param randomize TODO: description
- * @returns A random item from the list, or an item based on __ITER if randomize is false
+ * @template T
+ * @param {T[]} listOfItems TODO: description
+ * @param {boolean} randomize TODO: description
+ * @returns {T} A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
     if (randomize) {
@@ -255,7 +256,10 @@ export function pickUnique(list, count) {
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
  * @param {string} branch Branch to read test data from. Defaults to "main".
- * @returns {Array<object>|Array<string>|object} The parsed test data.
+ * The shape depends on the file the caller asked for, which is why this says
+ * `any` rather than a union nobody could narrow: a caller reads the columns its
+ * own fixture has.
+ * @returns {any} The parsed test data.
  */
 export function fetchTestData(
     filename,

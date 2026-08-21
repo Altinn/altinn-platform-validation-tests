@@ -103,7 +103,7 @@ function getSessionId(token) {
 /**
  * Async function to wait for the page to load.
  *
- * @param {object} page - The page object to interact with.
+ * @param {any} page - The page object to interact with.
  * @param {number} empties - Number of empty checks to perform (default is 1).
  * @returns {Promise<void>} - A promise that resolves when the page is loaded.
  */

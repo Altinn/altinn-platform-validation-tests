@@ -149,7 +149,7 @@ export function getTokenOpts(userId, partyuuid) {
 /**
  * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
  *
- * @param {object[]} list Organizations or users available to this VU.
+ * @param {any[]} list Organizations or users available to this VU.
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {
@@ -172,7 +172,7 @@ export function getDialogportenOpts(ssn) {
  *
  * @param {Array<Right>} rightsMeta The rights the resource defines, as returned
  * by GetRightsMeta.
- * @param {object} to The user the rights are delegated to, with ssn and lastName.
+ * @param {any} to The user the rights are delegated to, with ssn and lastName.
  * @returns {InstanceRightsDelegationDto} Body for delegating every right of the
  * resource to that user.
  */

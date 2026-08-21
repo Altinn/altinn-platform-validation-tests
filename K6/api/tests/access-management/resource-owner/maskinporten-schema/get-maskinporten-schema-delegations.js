@@ -132,7 +132,7 @@ function getClients() {
  * Picks one of the seven supported filter combinations at random and builds the
  * matching query parameters.
  *
- * @param {object[]} list Organizations available to this VU.
+ * @param {any[]} list Organizations available to this VU.
  * @returns {[MaskinportenDelegationsQuery, {[key: string]: string}]} The query
  * parameters and the label describing the combination.
  */

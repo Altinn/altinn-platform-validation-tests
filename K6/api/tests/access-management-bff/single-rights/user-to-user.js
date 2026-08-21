@@ -246,7 +246,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Users to delegate between, one slice per VU.
+ * @param {any[][]} segmentedData Users to delegate between, one slice per VU.
  */
 export default function (segmentedData) {
     const [

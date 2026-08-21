@@ -147,7 +147,7 @@ export function setup() {
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
  *
- * @param {object[][]} data Organizations with their daglig leder, one slice per VU.
+ * @param {any[][]} data Organizations with their daglig leder, one slice per VU.
  */
 export default function (data) {
     const {

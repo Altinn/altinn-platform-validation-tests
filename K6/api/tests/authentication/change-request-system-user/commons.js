@@ -138,7 +138,7 @@ export function pickVendor() {
  * vendor that registered it. The system goes last, since it is what the system
  * user is built on.
  *
- * @param {object[]} arranged - What arrangeApprovedSystemUser returned.
+ * @param {any[]} arranged - What arrangeApprovedSystemUser returned.
  */
 export function cleanupArranged(arranged) {
     const [apiClients, approverTokenGenerator, vendorTokenGenerator] = getClients();
@@ -235,7 +235,7 @@ export function getVendorTokenOpts(vendorOrgNo) {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {object} customer - The customer this iteration acts on behalf of.
+ * @param {any} customer - The customer this iteration acts on behalf of.
  * @returns {object} Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
@@ -372,8 +372,8 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * step that broke rather than surfacing as a confusing failure later, and fails
  * the iteration rather than letting the test carry on without a system user.
  *
- * @param {object} registration - Registration from createSystemRegistration.
- * @param {object} customer - The customer the system user is created for.
+ * @param {any} registration - Registration from createSystemRegistration.
+ * @param {any} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
  * @returns {string} Identifier of the approved system user.

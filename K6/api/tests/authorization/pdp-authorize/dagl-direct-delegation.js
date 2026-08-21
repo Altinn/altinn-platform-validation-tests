@@ -21,7 +21,7 @@ const resource = "perf_direct_access_resource";
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organizations with their daglig leder, one slice per VU.
+ * @param {any[][]} testData Organizations with their daglig leder, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient, tokenGenerator] = getClients();

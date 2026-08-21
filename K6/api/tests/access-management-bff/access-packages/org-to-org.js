@@ -172,7 +172,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
+ * @param {any[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
  */
 export default function (segmentedData) {
     // testdata. [0] contains segmented user data for each VU, [1] contains access packages

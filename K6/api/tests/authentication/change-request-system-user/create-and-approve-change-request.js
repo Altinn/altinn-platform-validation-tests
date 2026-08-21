@@ -57,7 +57,7 @@ export function setup() {
 /**
  * Test: a vendor can ask for more rights on an existing system user.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -159,7 +159,7 @@ export default function (data) {
  * deleted from the test itself without pulling them out from under the
  * iterations that follow.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

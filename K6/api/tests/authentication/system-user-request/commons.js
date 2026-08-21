@@ -127,7 +127,7 @@ export function getClients() {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {object} customer - The customer this iteration acts on behalf of.
+ * @param {any} customer - The customer this iteration acts on behalf of.
  * @returns {object} Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {

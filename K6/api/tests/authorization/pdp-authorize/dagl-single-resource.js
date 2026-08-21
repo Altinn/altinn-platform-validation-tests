@@ -26,7 +26,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Single right delegations, one slice per VU.
+ * @param {any[][]} testData Single right delegations, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient] = getClients();

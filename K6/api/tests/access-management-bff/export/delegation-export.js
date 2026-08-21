@@ -81,7 +81,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Organizations to export delegations for, one slice per VU.
+ * @param {any[][]} segmentedData Organizations to export delegations for, one slice per VU.
  */
 export default function (segmentedData) {
     const [delegationExportApiClient, tokenGenerator] = getClients();
