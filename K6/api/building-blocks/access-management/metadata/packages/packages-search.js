@@ -1,14 +1,14 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
-import { PackageDtoSearchObject, PackagesSearchQueryBuilder } from "../../../../../clients/access-management/metadata/packages/packages.types.js";
+import { PackageDtoSearchObject, PackagesSearchQuery } from "../../../../../clients/access-management/metadata/packages/packages.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
  * Searches access packages.
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
- * @param {PackagesSearchQueryBuilder | object} query Query parameters.
+ * @param {PackagesSearchQuery} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {Array<PackageDtoSearchObject>|null} Search results.
  */

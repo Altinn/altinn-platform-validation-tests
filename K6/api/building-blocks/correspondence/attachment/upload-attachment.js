@@ -23,6 +23,7 @@ export function UploadAttachment(
         () => attachmentClient.UploadAttachment(
             attachmentId,
             file,
+            undefined,
             labels,
         ),
         "UploadAttachment",

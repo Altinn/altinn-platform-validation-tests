@@ -22,7 +22,7 @@ export function ResourceGetPolicySubjects(
     const res = withRetries(
         () => resourceClient.ResourceGetPolicySubjects(
             id,
-            reloadFromXacml,
+            reloadFromXacml === null ? null : { reloadFromXacml },
             labels,
         ),
         "ResourceGetPolicySubjects",

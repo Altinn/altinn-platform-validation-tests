@@ -330,7 +330,7 @@ export function consentRights() {
             resource: [
                 { type: "urn:altinn:resource", value: CONSENT_RESOURCE },
             ],
-            metaData: { inntektsaar: "2026" },
+            metadata: { inntektsaar: "2026" },
         },
     ];
 }

@@ -215,7 +215,7 @@ class AttachmentClient {
      *
      * @param {string} attachmentId See the client method.
      * @param {{[key:string]:string}|null} labels See the client method.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"binary">} Exposes the attachment bytes.
      */
     DownloadAttachment(attachmentId, labels = null) {
         const token = this.tokenGenerator.getToken();

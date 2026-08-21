@@ -449,7 +449,7 @@ class ResourceClient {
      * Gets policy subjects.
      *
      * @param {string} id Resource identifier.
-     * @param {{reloadFromXacml?: boolean} | object} [query] Optional query parameters.
+     * @param {{reloadFromXacml?: boolean}|null} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

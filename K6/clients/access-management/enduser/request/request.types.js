@@ -72,6 +72,7 @@
  * @property {string} [type] Request type.
  */
 
+/** @type {{[K in RequestStatus]: RequestStatus}} */
 export const RequestStatus = {
     None: "None",
     Draft: "Draft",
