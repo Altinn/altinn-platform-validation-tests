@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PrivateNotificationsSettingsClient } from "../../../../clients/profil/private-notifications-settings/index.js";
+import { PrivateNotificationSettingsUpdateRequest, PrivateNotificationSettingsUpdateResponse } from "../../../../clients/profil/private-notifications-settings/private-notifications-settings.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

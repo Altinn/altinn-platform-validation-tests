@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../clients/broker/index.js";
+import { ResourceExt } from "../../../clients/broker/resource.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ResourceDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { GetSupplierResourcesQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

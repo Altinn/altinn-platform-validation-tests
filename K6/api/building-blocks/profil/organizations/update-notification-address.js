@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { OrganizationsClient } from "../../../../clients/profil/organizations/index.js";
+import { NotificationAddressRequest, NotificationAddressResponse } from "../../../../clients/profil/organizations/organizations.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

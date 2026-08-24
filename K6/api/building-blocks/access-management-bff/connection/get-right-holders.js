@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetRightHoldersQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetRightHoldersQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRightHoldersQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The connections. The API does not publish a schema
+ * @returns {any} The connections. The API does not publish a schema
  * for this response.
  */
 export function GetRightHolders(
@@ -24,7 +25,7 @@ export function GetRightHolders(
         "GetRightHolders",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let connections = null;
 
     const succeed = check(res, {

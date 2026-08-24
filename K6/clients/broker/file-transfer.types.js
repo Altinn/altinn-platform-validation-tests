@@ -133,13 +133,13 @@
 
 export const FileTransferInitalizeExt = undefined;
 export const FileTransferInitializeResponseExt = undefined;
-export const FileTransferUploadResponseExt = undefined;
-export const FileTransferQuery = undefined;
 export const FileTransferOverviewExt = undefined;
+export const FileTransferQuery = undefined;
 export const FileTransferStatusDetailsExt = undefined;
-export const RecipientFileTransferStatusDetailsExt = undefined;
 export const FileTransferStatusEventExt = undefined;
-export const RecipientFileTransferStatusEventExt = undefined;
 export const FileTransferStatusExt = undefined;
+export const FileTransferUploadResponseExt = undefined;
+export const RecipientFileTransferStatusDetailsExt = undefined;
+export const RecipientFileTransferStatusEventExt = undefined;
 export const RecipientFileTransferStatusExt = undefined;
 export const RoleExt = undefined;

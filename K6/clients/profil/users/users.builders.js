@@ -1,5 +1,7 @@
 import { randomUUID } from "k6/experimental/webcrypto";
 
+import { ProfileSettingPutRequest, ProfileSettingsPatchRequest } from "./users.types.js";
+
 /**
  * Builder for ProfileSettingPutRequest.
  */
@@ -162,8 +164,7 @@ class ProfileSettingPutRequestBuilder {
  */
 class ProfileSettingsPatchRequestBuilder {
     constructor() {
-        /** @type {ProfileSettingsPatchRequest} */
-        this.request = {};
+        this.request = /** @type {ProfileSettingsPatchRequest} */ ({});
     }
 
     /**

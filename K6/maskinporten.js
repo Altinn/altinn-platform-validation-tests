@@ -47,6 +47,13 @@ const TAGS = {
 };
 
 /**
+ * Options the Maskinporten token builder produces.
+ *
+ * @typedef {object} MaskinportenTokenOptions
+ * @property {string} [scopes] Space separated scopes to request.
+ */
+
+/**
  * Builder for Maskinporten token options.
  *
  * `withScopes` maps to the `scope` claim of the JWT grant. Maskinporten takes
@@ -54,7 +61,7 @@ const TAGS = {
  */
 export class MaskinportenTokenBuilder {
     constructor() {
-        this.options = {};
+        this.options = /** @type {MaskinportenTokenOptions} */ ({});
     }
 
     /**
@@ -67,7 +74,7 @@ export class MaskinportenTokenBuilder {
     }
 
     /**
-     * @returns {object} The built options, to pass to the generator.
+     * @returns {MaskinportenTokenOptions} The built options, to pass to the generator.
      */
     build() {
         return { ...this.options };
@@ -85,7 +92,7 @@ export class MaskinportenAccessTokenGenerator {
     #signingKey = null;
 
     /**
-     * @param {object} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
+     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
      * @param {string} [maskinportenKid=__ENV.MASKINPORTEN_KID] - Key ID of the key registered on the Maskinporten client.
      * @param {string} [maskinportenClientId=__ENV.MASKINPORTEN_CLIENT_ID] - Maskinporten client ID, used as the `iss` claim.
      * @param {string} [clientPem=__ENV.MASKINPORTEN_CLIENT_PEM] - The client's private key as PEM. Quote it in .env so the newlines survive sourcing; literal `\n` sequences are converted back to real line breaks.
@@ -136,14 +143,14 @@ export class MaskinportenAccessTokenGenerator {
     }
 
     /**
-     * @returns {object} The tags this generator puts on its requests, for use in threshold labels.
+     * @returns {typeof TAGS} The tags this generator puts on its requests, for use in threshold labels.
      */
     static get TAGS() {
         return TAGS;
     }
 
     /**
-     * @param {object} tokenGeneratorOptions - Replacement options from {@link MaskinportenTokenBuilder}.
+     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Replacement options from {@link MaskinportenTokenBuilder}.
      */
     setTokenGeneratorOptions(tokenGeneratorOptions) {
         this.tokenGeneratorOptions = tokenGeneratorOptions;
@@ -209,7 +216,6 @@ export class MaskinportenAccessTokenGenerator {
      * @param {string} scopes - Space-separated scopes to request.
      * @returns {Promise<string>} The access token from the response.
      * @throws {Error} If the request fails or the response cannot be parsed.
-     * @private
      */
     async #generateAccessToken(scopes) {
         const grant = await this.#createJwtGrant(scopes);
@@ -233,7 +239,7 @@ export class MaskinportenAccessTokenGenerator {
         }
 
         try {
-            return JSON.parse(response.body).access_token;
+            return JSON.parse(String(response.body)).access_token;
         } catch (e) {
             throw new Error(
                 `Unable to parse Maskinporten token: ${e.message}`,
@@ -247,7 +253,6 @@ export class MaskinportenAccessTokenGenerator {
      *
      * @param {string} scopes - Space-separated scopes to put in the `scope` claim.
      * @returns {Promise<string>} The signed JWT.
-     * @private
      */
     async #createJwtGrant(scopes) {
         const header = {
@@ -290,7 +295,6 @@ export class MaskinportenAccessTokenGenerator {
      *
      * @returns {Promise<CryptoKey>} The imported signing key.
      * @throws {Error} When the key cannot be imported.
-     * @private
      */
     async #getSigningKey() {
         if (this.#signingKey !== null) {
@@ -321,7 +325,6 @@ export class MaskinportenAccessTokenGenerator {
      * @param {string} token - The access token to inspect.
      * @returns {number} Expiry as a Unix timestamp in milliseconds.
      * @throws {Error} If the payload cannot be decoded, or the token is already expired.
-     * @private
      */
     #getExpirationTimestamp(token) {
         let expirationTimestamp;

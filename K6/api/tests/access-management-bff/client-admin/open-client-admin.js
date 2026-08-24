@@ -65,7 +65,7 @@ export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClien
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with a party uuid, one slice per VU.
+ * @returns {any[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -116,7 +116,7 @@ function getClients() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organizations with a party uuid, one slice per VU.
+ * @param {any[][]} testData Organizations with a party uuid, one slice per VU.
  */
 export default function (testData) {
     // connectionsApiClient for bff

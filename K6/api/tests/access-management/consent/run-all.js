@@ -12,7 +12,7 @@ import { setup as setupPostConsent } from "./post-consent.js";
  * organizations and the persons, the events test only the organizations, and the
  * lookup test the consents an earlier generator run produced.
  *
- * @returns {object} One entry per test that needs setup data.
+ * @returns One entry per test that needs setup data.
  */
 export function setup() {
     return {
@@ -30,7 +30,7 @@ export function setup() {
  * which only exists for yt01, so run this against yt01. The other two also pass on
  * at23 and tt02.
  *
- * @param {object} data Setup results, keyed per test.
+ * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
  */
 export default function (data) {
     runPostConsent(data.postConsent);

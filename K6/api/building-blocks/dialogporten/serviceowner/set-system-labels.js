@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * PUT /dialogs/{dialogId}/endusercontext/systemlabels
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
  * @param {string} enduserId - the end user to act on behalf of
  * @param {string} ifMatch - revision to send as the If-Match header

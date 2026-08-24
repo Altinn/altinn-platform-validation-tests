@@ -16,7 +16,7 @@ export function getTokenOpts(userId, partyuuid) {
 /**
  * Helper function to get from and to organizations/users for the current iteration, ensuring that they are not the same
  *
- * @param {object[]} list Organizations or users available to this VU.
+ * @param {any[]} list Organizations or users available to this VU.
  * @returns object with from and to organizations
  */
 export function getFromTo(list) {

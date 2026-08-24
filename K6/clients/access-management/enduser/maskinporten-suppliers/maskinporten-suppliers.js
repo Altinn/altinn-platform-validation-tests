@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { MaskinportenSupplierDelegationCheckQuery, MaskinportenSupplierResourcesQuery, MaskinportenSuppliersQuery } from "./maskinporten-suppliers.types.js";
+
 const TAGS = {
     GetMaskinportenSuppliers: {
         action: "get-maskinporten-suppliers",
@@ -59,7 +61,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenSuppliers(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -73,9 +75,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -110,7 +112,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateMaskinportenSupplier(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -124,9 +126,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -161,7 +163,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSuppliersQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMaskinportenSupplier(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -175,9 +177,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -212,7 +214,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenSupplierResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -226,9 +228,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -263,7 +265,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateMaskinportenSupplierResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -277,9 +279,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -314,7 +316,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierResourcesQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMaskinportenSupplierResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -328,9 +330,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -365,7 +367,7 @@ class MaskinportenSuppliersClient {
      * {@link MaskinportenSupplierDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenSupplierDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -379,9 +381,9 @@ class MaskinportenSuppliersClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { AssignmentPackageDto, ServiceOwnerAccessPackageDelegation } from "../../../../../clients/access-management/service-owner/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/service-owner/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 

@@ -22,7 +22,7 @@ export default function (data) {
 
     const queryParams = new AuthorizedPartiesQueryBuilder()
         .includeAltinn2(false)
-        .includePartiesViaKeyRoles(true)
+        .includePartiesViaKeyRoles("true")
         .build();
 
     GetAuthorizedParties(

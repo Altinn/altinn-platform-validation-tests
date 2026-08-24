@@ -19,6 +19,7 @@ import {
     GetClientAccessPackagesQueryBuilder,
     GetClientsQueryBuilder,
 } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { DelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     CreateRightHolderQueryBuilder,
@@ -158,7 +159,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations and a user to act as agent, one slice per VU.
+ * @returns {any[][]} Organizations and a user to act as agent, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -171,7 +172,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
+ * @param {any[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
  */
 export default function (segmentedData) {
     // testdata. [0] contains segmented user data for each VU, [1] contains access packages

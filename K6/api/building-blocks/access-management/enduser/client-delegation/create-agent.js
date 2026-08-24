@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { CreateAgentQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { AssignmentDto, PersonInput } from "../../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

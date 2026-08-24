@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { NotificationSettingsRequest } from "../../../../clients/profil/professional-notification-settings/professional-notification-settings.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

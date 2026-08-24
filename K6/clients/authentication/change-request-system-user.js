@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ChangeRequestSystemUser, GuidOpaque } from "./types.js";
+
 const TAGS = {
     ChangeRequestSystemUserVendorCreate: {
         action: "change-request-system-user-vendor-create",
@@ -54,7 +56,7 @@ class ChangeRequestSystemUserClient {
      * @param {string|null} systemUserId System user identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorCreate(
         request,
@@ -115,7 +117,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -152,7 +154,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} requestId Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -191,7 +193,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} externalRef External reference.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGetByExternalRef(
         systemId,
@@ -234,7 +236,7 @@ class ChangeRequestSystemUserClient {
      * @param {GuidOpaque|null} token Optional continuation token.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGetBySystem(
         systemId,

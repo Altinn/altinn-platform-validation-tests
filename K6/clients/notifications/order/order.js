@@ -1,6 +1,8 @@
 
 import http from "k6/http";
 
+import { ComposedEmailRequestExt, NotificationOrderChainRequestExt } from "../types.js";
+
 const TAGS = {
     OrderCreateOrder: {
         action: "order-create-order",
@@ -42,7 +44,7 @@ class OrderClient {
      * @param {NotificationOrderChainRequestExt} request Notification order request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     OrderCreateOrder(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -78,7 +80,7 @@ class OrderClient {
      * @param {ComposedEmailRequestExt} request Composed email order request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     OrderCreateComposedEmail(request, labels = null) {
         const token = this.tokenGenerator.getToken();

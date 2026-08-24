@@ -69,10 +69,10 @@
  */
 
 /**
- * @typedef {object} AccessListMembershipIdentifiers
- * @property {number|null} ["urn:altinn:party:id"] Party identifier.
- * @property {string|null} ["urn:altinn:party:uuid"] Party UUID.
- * @property {object | null} ["urn:altinn:organization:identifier-no"] Organization number.
+ * Identifiers a membership can be looked up by. The keys are URNs, so the type
+ * is written inline rather than with `@property` tags.
+ *
+ * @typedef {{"urn:altinn:party:id"?: number|null, "urn:altinn:party:uuid"?: string|null, "urn:altinn:organization:identifier-no"?: object|null}} AccessListMembershipIdentifiers
  */
 
 /**
@@ -312,6 +312,12 @@
  */
 
 /**
+ * @typedef {object} AccessListInfoDtoPaginated
+ * @property {Array<AccessListInfoDto>} data
+ * @property {PaginatedLinks} links
+ */
+
+/**
  * @typedef {object} AttributeMatchV2Paginated
  * @property {Array<AttributeMatchV2>} data
  * @property {PaginatedLinks} links
@@ -389,9 +395,105 @@
  */
 
 /**
- * @typedef {object} UpdatedResourceSubjectsQueryBuilder
- * @property {object} query
- * @property {string} [query.since] Date time used for filtering.
- * @property {string} [query.token] Continuation token.
- * @property {number} [query.limit] Maximum number of pairs returned.
+ * Query parameters for {@link UpdatedResourceSubjectsQueryBuilder}, and for the
+ * resource search and updated resource reads that take the same shape.
+ *
+ * @typedef {object} UpdatedResourceSubjectsQuery
+ * @property {string} [since] Date time used for filtering.
+ * @property {string} [token] Continuation token.
+ * @property {number} [limit] Maximum number of pairs returned.
  */
+
+/**
+ * Query parameters for searching resources.
+ *
+ * @typedef {object} ResourceSearchQuery
+ * @property {string|null} [Id] Resource identifier filter.
+ * @property {string|null} [Title] Title filter.
+ * @property {string|null} [Description] Description filter.
+ * @property {ResourceType|null} [ResourceType] Resource type filter.
+ * @property {string|null} [Keyword] Keyword filter.
+ * @property {string|null} [Reference] Reference filter.
+ */
+
+/**
+ * @typedef {object} UpdatedResourceSubjectsQueryBuilder
+ * @property {UpdatedResourceSubjectsQuery} query The underlying query parameter object.
+ */
+
+/**
+ * Query parameters for listing the access lists of a resource owner.
+ *
+ * @typedef {object} AccessListGetByOwnerQuery
+ * @property {string} [token] Continuation token for paging.
+ * @property {Array<string>} [include] Related data to include.
+ * @property {string} [resource] Resource identifier to filter by.
+ */
+
+/**
+ * Query parameters for reading a single access list.
+ *
+ * @typedef {object} AccessListGetQuery
+ * @property {Array<string>} [include] Related data to include.
+ */
+
+/**
+ * Query parameters for the paged access list reads.
+ *
+ * @typedef {object} AccessListPagedQuery
+ * @property {string} [token] Continuation token for paging.
+ */
+
+/**
+ * Query parameters for looking up access list memberships.
+ *
+ * @typedef {object} AccessListMembershipsQuery
+ * @property {Array<string>} [party] Parties to include.
+ * @property {Array<string>} [resource] Resources to include.
+ */
+
+/**
+ * Query parameters for reading the policy rights of a resource.
+ *
+ * @typedef {object} ResourcePolicyRightsQuery
+ * @property {boolean} [includeServiceOwnerRights] Whether to include service owner rights.
+ * @property {boolean} [includeAppRights] Whether to include app rights.
+ */
+
+/**
+ * Query parameters for the resource list.
+ *
+ * @typedef {object} ResourceListQuery
+ * @property {boolean} [includeApps] Whether to include apps.
+ * @property {boolean} [includeAltinn2] Whether to include altinn2.
+ * @property {boolean} [includeMigratedApps] Whether to include migrated apps.
+ */
+
+export const AccessListGetByOwnerQuery = undefined;
+export const AccessListGetQuery = undefined;
+export const AccessListInfoDto = undefined;
+export const AccessListInfoDtoPaginated = undefined;
+export const AccessListMembershipDtoAggregateVersionVersionedPaginated = undefined;
+export const AccessListMembershipsQuery = undefined;
+export const AccessListPagedQuery = undefined;
+export const AccessListResourceConnectionDtoAggregateVersionVersionedPaginated = undefined;
+export const AccessListResourceConnectionWithVersionDto = undefined;
+export const AccessListResourceMembershipWithActionFilterDtoListObject = undefined;
+export const AttributeMatchV2Paginated = undefined;
+export const CreateAccessListModel = undefined;
+export const JsonPatchOperation = undefined;
+export const OrgList = undefined;
+export const PolicyRightsDTO = undefined;
+export const PolicyRuleDTO = undefined;
+export const ResourceDecomposedDto = undefined;
+export const ResourceListQuery = undefined;
+export const ResourceListQueryBuilder = undefined;
+export const ResourcePolicyRightsQuery = undefined;
+export const ResourceSearchQuery = undefined;
+export const ResourceSearchQueryBuilder = undefined;
+export const ResourceType = undefined;
+export const ServiceResource = undefined;
+export const SubjectResourcesPaginated = undefined;
+export const UpdatedResourceSubjectPaginated = undefined;
+export const UpdatedResourceSubjectsQuery = undefined;
+export const UpsertAccessListResourceConnectionDto = undefined;

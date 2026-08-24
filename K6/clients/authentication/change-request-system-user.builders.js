@@ -1,3 +1,5 @@
+import { AccessPackage, ChangeRequestSystemUser, Right } from "./types.js";
+
 class ChangeRequestSystemUserBuilder {
     constructor() {
         // The API requires all four sets to be present, so they default to empty

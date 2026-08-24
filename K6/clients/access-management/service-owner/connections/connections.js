@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ServiceOwnerAccessPackageDelegation } from "./connections.types.js";
+
 const TAGS = {
     ConnectionsCreateAccessPackage: {
         action: "connections-create-access-package",
@@ -41,7 +43,7 @@ class ConnectionsClient {
      * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConnectionsCreateAccessPackage(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,7 +79,7 @@ class ConnectionsClient {
      * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConnectionsRevokeAccessPackage(request, labels = null) {
         const token = this.tokenGenerator.getToken();

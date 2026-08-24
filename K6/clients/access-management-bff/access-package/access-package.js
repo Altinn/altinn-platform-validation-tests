@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CreateAccessPackageDelegationQuery, DeleteAccessPackageDelegationQuery, GetAccessPackageDelegationCheckQuery, GetAccessPackageDelegationsQuery, GetAccessPackagePermissionQuery, SearchAccessPackagesQuery } from "./access-package.types.js";
+
 const TAGS = {
     SearchAccessPackages: {
         action: "search-access-packages",
@@ -57,7 +59,7 @@ class AccessPackageClient {
      * @param {SearchAccessPackagesQuery|null} [query] Optional query parameters.
      * Prefer using {@link SearchAccessPackagesQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SearchAccessPackages(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -106,7 +108,7 @@ class AccessPackageClient {
      * @param {GetAccessPackageDelegationsQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetAccessPackageDelegationsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackageDelegations(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -155,7 +157,7 @@ class AccessPackageClient {
      * @param {CreateAccessPackageDelegationQuery|null} [query] Optional query
      * parameters. Prefer using {@link CreateAccessPackageDelegationQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAccessPackageDelegation(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -208,7 +210,7 @@ class AccessPackageClient {
      * @param {DeleteAccessPackageDelegationQuery|null} [query] Optional query
      * parameters. Prefer using {@link DeleteAccessPackageDelegationQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAccessPackageDelegation(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -262,7 +264,7 @@ class AccessPackageClient {
      * @param {GetAccessPackagePermissionQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetAccessPackagePermissionQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackagePermission(packageId, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -313,7 +315,7 @@ class AccessPackageClient {
      * parameters. Prefer using
      * {@link GetAccessPackageDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackageDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

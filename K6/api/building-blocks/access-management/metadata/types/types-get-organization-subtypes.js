@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { TypesClient } from "../../../../../clients/access-management/metadata/types/index.js";
+import { SubTypeDto } from "../../../../../clients/access-management/metadata/types/types.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

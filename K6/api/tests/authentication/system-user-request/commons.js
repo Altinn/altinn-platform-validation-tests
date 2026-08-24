@@ -5,6 +5,7 @@ import {
     RequestSystemUserClient,
     SystemRegisterClient,
 } from "../../../../clients/authentication/index.js";
+import { Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
@@ -55,7 +56,7 @@ let paginationTokenGenerator = undefined;
  * Returned flat rather than segmented per VU, so a test picks from the whole list
  * with getItemFromList, which walks it across iterations.
  *
- * @returns {object[]} The customers the tests act on behalf of.
+ * @returns The customers the tests act on behalf of.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -77,7 +78,7 @@ export function setup() {
  * building a new generator. The cache is keyed on the options, so each customer
  * still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
+ * @returns {[any, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
  */
 export function getClients() {
     if (clients === undefined) {
@@ -126,8 +127,8 @@ export function getClients() {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {object} customer - The customer this iteration acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @param {any} customer - The customer this iteration acts on behalf of.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
     return new PersonalTokenBuilder()
@@ -157,16 +158,22 @@ export function resourceRight(resource) {
 }
 
 /**
+ * The test specific parts of a system registration.
+ *
+ * @typedef {object} SystemRegistrationParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {Right[]} registeredRights Every right the system is registered with.
+ */
+
+/**
  * Builds the identifiers and registration payload for one iteration.
  *
  * Everything here is unique per iteration, so unlike the clients it cannot be
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
- * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {Right[]} options.registeredRights - Every right the system is registered with.
- * @returns {object} Identifiers and the registration payload.
+ * @param {SystemRegistrationParams} options - Test specific parts of the registration.
+ * @returns Identifiers and the registration payload.
  */
 export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;

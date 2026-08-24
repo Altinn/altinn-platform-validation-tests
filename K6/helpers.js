@@ -36,10 +36,9 @@ function recordTestDataFetch(file, reason = null) {
  * Uses `check()` to report pass/fail instead of throwing.
  *
  * @param {Function} conditionFn - Function that returns true on success, false otherwise.
- * @param {object} options - Retry settings.
- * @param {number} options.retries - How many times to retry (default 10).
- * @param {number} options.intervalSeconds - Seconds between attempts (default 5).
- * @param {string} options.testscenario - Prefix used in log/check output.
+ * @param {{retries?: number, intervalSeconds?: number, testscenario?: string}} options
+ * Retry settings: how many times to retry (default 10), seconds between
+ * attempts (default 5) and the prefix used in log/check output.
  * @returns {boolean} - true if success within retry limit, false otherwise.
  */
 export function retry(conditionFn, options = {}) {
@@ -89,9 +88,10 @@ export function readCsv(filename) {
 }
 /**
  *
- * @param listOfItems TODO: description
- * @param randomize TODO: description
- * @returns A random item from the list, or an item based on __ITER if randomize is false
+ * @template T
+ * @param {T[]} listOfItems TODO: description
+ * @param {boolean} randomize TODO: description
+ * @returns {T} A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
     if (randomize) {
@@ -132,7 +132,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
  */
 export function getNumberOfVUs() {
     return (
-        exec.test.options.scenarios.default.vus ??
+        /** @type {any} */ (exec.test.options.scenarios.default).vus ??
         __ENV.BREAKPOINT_STAGE_TARGET ??
         1
     );
@@ -143,7 +143,7 @@ export function getNumberOfVUs() {
  *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {object} TODO: description
+ * @returns {import("k6/options").Options} The k6 options for the run.
  */
 export function getOptions(labels, groups = []) {
     const options = {
@@ -180,7 +180,7 @@ export function checkIp(ip) {
  * Ensures required environment variables exist.
  *
  * @param {string[]} vars - Array of environment variable names
- * @returns {object} key-value map of env vars
+ * @returns {{[key: string]: string}} key-value map of env vars
  */
 export function requireEnv(vars) {
     const missing = [];
@@ -255,7 +255,10 @@ export function pickUnique(list, count) {
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
  * @param {string} branch Branch to read test data from. Defaults to "main".
- * @returns {Array<object>|Array<string>|object} The parsed test data.
+ * The shape depends on the file the caller asked for, which is why this says
+ * `any` rather than a union nobody could narrow: a caller reads the columns its
+ * own fixture has.
+ * @returns {any} The parsed test data.
  */
 export function fetchTestData(
     filename,

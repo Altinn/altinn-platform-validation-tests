@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { OrderClient } from "../../../../clients/notifications/order/index.js";
+import { NotificationOrderChainRequestExt, NotificationOrderChainResponseExt } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

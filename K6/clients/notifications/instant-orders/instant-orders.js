@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { InstantEmailNotificationOrderRequestExt, InstantNotificationOrderRequestExt, InstantSmsNotificationOrderRequestExt } from "../types.js";
+
 const TAGS = {
     InstantOrdersCreate: {
         action: "instant-orders-create",
@@ -44,7 +46,7 @@ class InstantOrdersClient {
      * @param {InstantSmsNotificationOrderRequestExt} request SMS notification payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreateSms(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -80,7 +82,7 @@ class InstantOrdersClient {
      * @param {InstantEmailNotificationOrderRequestExt} request Email notification payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreateEmail(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -118,7 +120,7 @@ class InstantOrdersClient {
      * @param {InstantNotificationOrderRequestExt} request Instant order.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();

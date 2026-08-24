@@ -1,6 +1,8 @@
+import { ReceivedRequestsQuery, RequestStatus, SentRequestsQuery } from "./request.types.js";
+
 class ReceivedRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ReceivedRequestsQuery} */ ({});
     }
 
     /**
@@ -50,7 +52,7 @@ class ReceivedRequestsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, from?: string, status?: Array<RequestStatus>, type?: string}} The built payload.
+     * @returns {ReceivedRequestsQuery} The built payload.
      */
     build() {
         return this.query;
@@ -62,7 +64,7 @@ class ReceivedRequestsQueryBuilder {
  */
 class SentRequestsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {SentRequestsQuery} */ ({});
     }
 
     /**
@@ -112,7 +114,7 @@ class SentRequestsQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, to?: string, status?: Array<RequestStatus>, type?: string}} The built payload.
+     * @returns {SentRequestsQuery} The built payload.
      */
     build() {
         return this.query;

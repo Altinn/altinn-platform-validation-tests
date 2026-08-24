@@ -37,7 +37,7 @@ class TypesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     TypesGetOrganizationSubTypes(labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
+import { RequestStatus } from "../../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AddressCodeResendRequest, AddressCodeSendRequest, AddressVerificationRequest } from "./address-verification.types.js";
+
 const TAGS = {
     GetVerifiedAddresses: {
         action: "get-verified-addresses",
@@ -46,7 +48,7 @@ class AddressVerificationClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetVerifiedAddresses(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -84,7 +86,7 @@ class AddressVerificationClient {
      * {@link AddressVerificationRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     VerifyAddress(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -126,7 +128,7 @@ class AddressVerificationClient {
      * {@link AddressCodeSendRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -168,7 +170,7 @@ class AddressVerificationClient {
      * {@link AddressCodeResendRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { User } from "../../../../clients/access-management-bff/common/common.types.js";
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
 import { withRetries } from "../../common/retry.js";
 

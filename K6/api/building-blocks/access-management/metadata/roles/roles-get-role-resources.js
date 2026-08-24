@@ -1,13 +1,15 @@
 import { check } from "k6";
 
+import { ResourceDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { RolesGetRoleResourcesQuery } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets role resources.
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
- * @param {RolesGetRoleResourcesQueryBuilder | object} query Query parameters.
+ * @param {RolesGetRoleResourcesQuery} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ResourceDto|null} Role resource.
  */

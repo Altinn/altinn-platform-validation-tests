@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/authentication/index.js";
+import { SystemUserPagedQuery, SystemUserPaginated } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,8 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
  * @param {string} systemId System identifier.
- * @param {object} [query] Query parameters.
- * @param {Int64Opaque} [query.token] Continuation token.
+ * @param {SystemUserPagedQuery|null} [query] Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {SystemUserPaginated|null} Paginated SystemUsers.
  */

@@ -21,7 +21,7 @@ const resource = "ttd-dialogporten-performance-test-02";
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organizations with their daglig leder, one slice per VU.
+ * @param {any[][]} testData Organizations with their daglig leder, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient, tokenGenerator] = getClients();

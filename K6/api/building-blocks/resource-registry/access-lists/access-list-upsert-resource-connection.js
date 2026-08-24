@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListResourceConnectionWithVersionDto, UpsertAccessListResourceConnectionDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -23,7 +24,7 @@ export function AccessListsUpsertResourceConnection(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsUpsertResourceConnection(
+        () => accessListClient.AccessListUpsertResourceConnection(
             owner,
             identifier,
             resourceIdentifier,

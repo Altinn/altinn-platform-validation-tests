@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { StatusClient } from "../../../../clients/notifications/status/index.js";
+import { NotificationDeliveryManifestExt } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

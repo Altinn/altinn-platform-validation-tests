@@ -744,3 +744,52 @@
  * identity number or a username.
  * @property {string|null} lastName Last name of the person.
  */
+
+export const AccessAreaFE = undefined;
+export const AccessPackage = undefined;
+export const AccessPackageFE = undefined;
+export const AgentDelegation = undefined;
+export const AgentDelegationRequestFE = undefined;
+export const Altinn2AccountFromTokenRequest = undefined;
+export const Altinn2AccountRequest = undefined;
+export const Altinn2ForgotPasswordRequest = undefined;
+export const ApproveConsentContext = undefined;
+export const AssignmentDto = undefined;
+export const AuthorizedParty = undefined;
+export const ClientDelegation = undefined;
+export const ClientRoleAccessPackages = undefined;
+export const Connection = undefined;
+export const ConsentRequestStatusType = undefined;
+export const DelegationBatchInputDto = undefined;
+export const DelegationCheck = undefined;
+export const DelegationDto = undefined;
+export const InstanceDelegation = undefined;
+export const InstanceRights = undefined;
+export const InstanceRightsDelegationDto = undefined;
+export const MaskinportenConnection = undefined;
+export const MyClientDelegation = undefined;
+export const NewSystemUserRequest = undefined;
+export const NotificationAddressModel = undefined;
+export const PaginatedListOfServiceResourceFE = undefined;
+export const PartyFE = undefined;
+export const PersonInput = undefined;
+export const RequestStatus = undefined;
+export const ResourceAM = undefined;
+export const ResourceCheckDto = undefined;
+export const ResourceDelegation = undefined;
+export const ResourceDelegationBatchInputDto = undefined;
+export const ResourceDelegationDto = undefined;
+export const ResourceOwnerFE = undefined;
+export const ResourceRight = undefined;
+export const ResourceType = undefined;
+export const Right = undefined;
+export const RightCheck = undefined;
+export const Role = undefined;
+export const RolePermission = undefined;
+export const ServiceResourceFE = undefined;
+export const SettingsControllerUpdateSelectedLanguageRequest = undefined;
+export const SimplifiedConnection = undefined;
+export const SimplifiedParty = undefined;
+export const User = undefined;
+export const UserProfileFE = undefined;
+export const ValidatePersonInput = undefined;

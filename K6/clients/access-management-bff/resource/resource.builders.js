@@ -1,9 +1,12 @@
+import { ResourceType } from "../common/common.types.js";
+import { GetResourceOwnersQuery, GetResourceQuery, SearchResourcesQuery } from "./resource.types.js";
+
 /**
  * Builder for the query parameters of {@link GetResourceOwners}.
  */
 class GetResourceOwnersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceOwnersQuery} */ ({});
     }
 
     /**
@@ -45,7 +48,7 @@ class GetResourceOwnersQueryBuilder {
  */
 class GetResourceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceQuery} */ ({});
     }
 
     /**
@@ -74,7 +77,7 @@ class GetResourceQueryBuilder {
  */
 class SearchResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {SearchResourcesQuery} */ ({});
     }
 
     /**

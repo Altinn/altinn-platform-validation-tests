@@ -1,17 +1,14 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/authentication/index.js";
+import { SystemUser, SystemUserByExternalIdQuery } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a SystemUser by external id information.
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
- * @param {object} query Query parameters.
- * @param {string} [query.clientId] MaskinPorten client id.
- * @param {string} [query.systemProviderOrgNo] System provider organisation number.
- * @param {string} [query.systemUserOwnerOrgNo] System user owner organisation number.
- * @param {string} [query.externalRef] External reference.
+ * @param {SystemUserByExternalIdQuery|null} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {SystemUser|null} System user.
  */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProcessClient } from "../../../clients/storage/index.js";
+import { Instance, ProcessHistoryList, ProcessState, ProcessStateUpdate } from "../../../clients/storage/instances.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

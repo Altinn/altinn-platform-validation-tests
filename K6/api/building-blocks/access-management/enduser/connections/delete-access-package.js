@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DeleteAccessPackageQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 

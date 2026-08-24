@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GroupResponse } from "../../../../clients/profil/favorites/favorites.types.js";
 import { FavoritesClient } from "../../../../clients/profil/favorites/index.js";
 import { withRetries } from "../../common/retry.js";
 
