@@ -1,0 +1,9 @@
+namespace: arbeidsflate
+base_dir: K6/api/tests/arbeidsflate/
+test_definitions:
+  - test_file: get-arbeidsflate-health.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+      - environment: prod
