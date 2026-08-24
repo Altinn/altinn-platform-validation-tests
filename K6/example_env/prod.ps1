@@ -1,0 +1,12 @@
+$env:TOKEN_GENERATOR_USERNAME=""
+$env:TOKEN_GENERATOR_PASSWORD=""
+
+$env:BASE_URL="https://platform.altinn.no"
+$env:ALTINN2_BASE_URL="https://altinn.no"
+$env:ALTINN_CDN_BASE_URL="https://altinncdn.no"
+$env:AM_UI_BASE_URL="https://am.ui.altinn.no"
+$env:AF_UI_BASE_URL="https://af.altinn.no"
+$env:INFO_CLOUD_URL="https://info.altinn.no"
+$env:DEPLOY_ENV="prod"
+$env:ENV_TYPE="prod"
+$env:ENVIRONMENT="prod"
