@@ -1,5 +1,6 @@
 import { fail, group } from "k6";
 
+import { Right } from "../../../../clients/authentication/types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
@@ -24,7 +25,7 @@ const REQUESTED_RIGHTS = [resource("ttd-dialogporten-dummy")];
 /**
  * k6 setup stage. Arranges the system user the change requests are made for.
  *
- * @returns {object[]} The system user to change, as a single item list.
+ * @returns The system user to change, as a single item list.
  */
 export function setup() {
     const vendorOrgNo = pickVendor();
@@ -46,7 +47,7 @@ export function setup() {
  * deleting it again. Without this every run leaves a pending change request on the
  * customer.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -110,7 +111,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the system user this test made change requests for
  * and the system it belongs to.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

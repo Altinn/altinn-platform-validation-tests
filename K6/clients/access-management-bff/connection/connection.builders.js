@@ -1,9 +1,12 @@
+import { ValidatePersonInput } from "../common/common.types.js";
+import { CreateRightHolderQuery, DeleteReporteeConnectionQuery, GetRightHoldersQuery, GetSimplifiedConnectionsQuery } from "./connection.types.js";
+
 /**
  * Builder for the query parameters of {@link DeleteReporteeConnection}.
  */
 class DeleteReporteeConnectionQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteReporteeConnectionQuery} */ ({});
     }
 
     /**
@@ -55,7 +58,7 @@ class DeleteReporteeConnectionQueryBuilder {
  */
 class CreateRightHolderQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateRightHolderQuery} */ ({});
     }
 
     /**
@@ -85,7 +88,7 @@ class CreateRightHolderQueryBuilder {
  */
 class GetRightHoldersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRightHoldersQuery} */ ({});
     }
 
     /**
@@ -161,7 +164,7 @@ class GetRightHoldersQueryBuilder {
  */
 class GetSimplifiedConnectionsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSimplifiedConnectionsQuery} */ ({});
     }
 
     /**
@@ -191,7 +194,7 @@ class GetSimplifiedConnectionsQueryBuilder {
  */
 class ValidatePersonInputBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {ValidatePersonInput} */ ({});
     }
 
     /**

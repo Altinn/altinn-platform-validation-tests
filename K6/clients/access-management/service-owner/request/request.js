@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CreateServiceOwnerRequest, RequestPackageDto, RequestResourceDto } from "./request.types.js";
+
 const TAGS = {
     RequestGetPartyUrns: {
         action: "request-get-party-urns",
@@ -52,7 +54,7 @@ class RequestClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestGetPartyUrns(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -87,7 +89,7 @@ class RequestClient {
      * @param {string} id Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestGetRequestStatus(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -122,7 +124,7 @@ class RequestClient {
      * @param {string} id Request identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestWithdrawRequest(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -157,7 +159,7 @@ class RequestClient {
      * @param {RequestResourceDto} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreateResourceRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -193,7 +195,7 @@ class RequestClient {
      * @param {RequestPackageDto} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreatePackageRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -229,7 +231,7 @@ class RequestClient {
      * @param {CreateServiceOwnerRequest} request Request payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreateRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();

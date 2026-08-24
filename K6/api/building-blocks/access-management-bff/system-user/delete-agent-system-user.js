@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { DeleteAgentSystemUserQuery } from "../../../../clients/access-management-bff/system-user/system-user.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

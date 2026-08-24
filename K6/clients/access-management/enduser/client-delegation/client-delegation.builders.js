@@ -1,9 +1,11 @@
+import { AgentAccessPackagesQuery, AgentClientAccessPackagesQuery, AgentsQuery, ClientAccessPackagesQuery, ClientsQuery, CreateAgentQuery, DelegationBatchInputDto, DeleteAgentClientsQuery, DeleteAgentQuery, DeleteMyClientAccessPackagesQuery, DeleteMyClientProviderQuery, DeleteMyClientsQuery, MyClientsQuery, PersonInput } from "./client-delegation.types.js";
+
 /**
  * Builder for the clients query of the authenticated party.
  */
 class MyClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MyClientsQuery} */ ({});
     }
 
     /**
@@ -45,7 +47,7 @@ class MyClientsQueryBuilder {
  */
 class DeleteMyClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteMyClientsQuery} */ ({});
     }
 
     /**
@@ -97,7 +99,7 @@ class DeleteMyClientsQueryBuilder {
  */
 class DeleteMyClientProviderQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteMyClientProviderQuery} */ ({});
     }
 
     /**
@@ -127,7 +129,7 @@ class DeleteMyClientProviderQueryBuilder {
  */
 class DeleteMyClientAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteMyClientAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -167,7 +169,7 @@ class DeleteMyClientAccessPackagesQueryBuilder {
  */
 class ClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ClientsQuery} */ ({});
     }
 
     /**
@@ -219,7 +221,7 @@ class ClientsQueryBuilder {
  */
 class AgentsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AgentsQuery} */ ({});
     }
 
     /**
@@ -248,7 +250,7 @@ class AgentsQueryBuilder {
  */
 class CreateAgentQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentQuery} */ ({});
     }
 
     /**
@@ -289,7 +291,7 @@ class CreateAgentQueryBuilder {
  */
 class DeleteAgentQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentQuery} */ ({});
     }
 
     /**
@@ -340,7 +342,7 @@ class DeleteAgentQueryBuilder {
  */
 class DeleteAgentClientsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentClientsQuery} */ ({});
     }
 
     /**
@@ -402,7 +404,7 @@ class DeleteAgentClientsQueryBuilder {
  */
 class AgentAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AgentAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -443,7 +445,7 @@ class AgentAccessPackagesQueryBuilder {
  */
 class AgentClientAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AgentClientAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -494,7 +496,7 @@ class AgentClientAccessPackagesQueryBuilder {
  */
 class ClientAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ClientAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -571,7 +573,7 @@ class DelegationBatchInputBuilder {
  */
 class PersonInputBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {PersonInput} */ ({});
     }
 
     /**

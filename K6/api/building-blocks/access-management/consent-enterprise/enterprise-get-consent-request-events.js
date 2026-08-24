@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ConsentRequestEventsQuery, ConsentStatusChangeDtoPaginatedResult } from "../../../../clients/access-management/consent-enterprise/consent-enterprise.types.js";
 import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -7,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets consent request events.
  *
  * @param {EnterpriseClient} enterpriseClient Client for the Enterprise API.
- * @param {{[key:string]: string}} query Query parameters.
+ * @param {ConsentRequestEventsQuery} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ConsentStatusChangeDtoPaginatedResult|null} Consent request events.
  */

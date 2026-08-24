@@ -64,8 +64,6 @@ export default function (data) {
                 .withRedirectUrl(registration.redirectUrl)
                 .build();
 
-            const request = new CreateRequestSystemUserBuilder().withAccessPackages().build();
-
             const createdRequest = RequestSystemUserBuildingBlocks.VendorCreate(clients.vendor.requestSystemUserClient, createRequest);
 
             SystemUserRequestDomainChecks.CheckRequestCreated(createdRequest, {
@@ -129,7 +127,7 @@ export default function (data) {
  * meant to go there is nothing here to do. An iteration that gave up half way is
  * what this is for: fail() skips the delete, and the system would stay behind.
  *
- * @param {object} data The customers and the vendor from setup.
+ * @param {ReturnType<typeof import("./commons.js").setup>} data The customers and the vendor from setup.
  */
 export function teardown(data) {
     sweepSystems(data.vendorOrgNo, SYSTEM_NAME_PREFIX);

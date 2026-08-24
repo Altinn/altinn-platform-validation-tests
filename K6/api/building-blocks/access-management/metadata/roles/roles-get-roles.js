@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { RoleDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
 import { withRetries } from "../../../common/retry.js";
 

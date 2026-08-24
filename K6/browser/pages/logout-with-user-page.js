@@ -1,4 +1,6 @@
-import { Page } from "k6/browser";
+/**
+ * @typedef {import("k6/browser").Page} Page
+ */
 
 import { requireEnv } from "../../helpers.js";
 

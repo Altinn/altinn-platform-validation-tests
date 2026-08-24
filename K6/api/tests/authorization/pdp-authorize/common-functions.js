@@ -6,6 +6,7 @@ import {
     buildXacmlJsonRequestRootExternal,
 } from "../../../../clients/authorization/builders.js";
 import { AuthorizeClient } from "../../../../clients/authorization/index.js";
+import { XacmlJsonAttributeExternal, XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
@@ -63,7 +64,7 @@ export function getClients() {
  * Function to get token options.
  *
  * @param {string} ssn - social security number
- * @returns {object} Token generator options for the given user.
+ * @returns Token generator options for the given user.
  */
 export function getTokenOpts(ssn) {
     const scopes = CreateScopeString([
@@ -74,6 +75,20 @@ export function getTokenOpts(ssn) {
         .withPid(ssn);
     return tokenOpts.build();
 }
+
+/**
+ * The parties, resource and action an instance authorization request is built
+ * from. Exactly one of fromSsn and fromOrg identifies the delegating party.
+ *
+ * @typedef {object} InstanceRequestParams
+ * @property {string} toSsn Social security number of the person being given access.
+ * @property {string|null} [fromSsn] Social security number of the delegating person.
+ * @property {string|null} [fromOrg] Organization number of the delegating organization.
+ * @property {string} resourceId Resource, e.g. ttd-dialogporten-performance-test-02.
+ * @property {string} instanceId Instance, e.g. 56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.
+ * @property {string|null} [task] Task, e.g. SigningTask_Founders.
+ * @property {string} action Action, e.g. read, write or sign.
+ */
 
 /**
  * Builds an XACML request asking whether a person may perform an action on a
@@ -136,14 +151,7 @@ export function buildDaglRequest(ssn, orgno, resourceId, action) {
  * single instance that another party has delegated to them. Exactly one of
  * fromSsn and fromOrg identifies the delegating party.
  *
- * @param {object} params Request parameters.
- * @param {string} params.toSsn Social security number of the person being given access.
- * @param {string|null} [params.fromSsn] Social security number of the delegating person.
- * @param {string|null} [params.fromOrg] Organization number of the delegating organization.
- * @param {string} params.resourceId Resource, e.g. ttd-dialogporten-performance-test-02.
- * @param {string} params.instanceId Instance, e.g. 56850289/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.
- * @param {string|null} [params.task] Task, e.g. SigningTask_Founders.
- * @param {string} params.action Action, e.g. read, write or sign.
+ * @param {InstanceRequestParams} params Request parameters.
  * @returns {XacmlJsonRequestRootExternal} Authorization request.
  */
 export function buildInstanceRequest({
@@ -245,7 +253,11 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     switch (randNumber) {
         case 0:
             return ["sign", denyLabel, "NotApplicable"];
-        case 1, 3, 5, 7, 9:
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 9:
             return ["read", permitLabel, "Permit"];
         default:
             return ["write", permitLabel, "Permit"];
@@ -255,7 +267,7 @@ export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with their daglig leder, one slice per VU.
+ * @returns {any[][]} Organizations with their daglig leder, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);

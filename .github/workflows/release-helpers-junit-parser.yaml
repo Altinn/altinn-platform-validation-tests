@@ -1,0 +1,64 @@
+name: Release helpers-junitparser
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "helpers/junitparser/version.txt"
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  REGISTRY: altinnplatformvalidationtests.azurecr.io
+  REGISTRY_NAME: altinnplatformvalidationtests
+  IMAGE_NAME: helpers-junitparser
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Read version
+        id: version
+        working-directory: helpers/junitparser
+        run: |
+          VERSION=$(tr -d '[:space:]' < version.txt)
+
+          if [ -z "$VERSION" ]; then
+            echo "version.txt is empty"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing version $VERSION"
+
+      - name: Azure login
+        uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
+        with:
+          client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+          subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name "$REGISTRY_NAME"
+
+      - name: Build and push Docker image
+        working-directory: helpers/junitparser
+        run: |
+          IMAGE="${REGISTRY}/${IMAGE_NAME}"
+
+          docker build \
+            -t "${IMAGE}:${{ steps.version.outputs.version }}" \
+            -t "${IMAGE}:latest" \
+            .
+
+          docker push "${IMAGE}:${{ steps.version.outputs.version }}"
+          docker push "${IMAGE}:latest"

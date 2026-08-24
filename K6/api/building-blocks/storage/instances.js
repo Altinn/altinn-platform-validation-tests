@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstancesClient } from "../../../clients/storage/index.js";
+import { DataValues, Instance, InstanceQueryResponse, PresentationTexts, Substatus } from "../../../clients/storage/instances.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

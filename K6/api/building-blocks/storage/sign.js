@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SignClient } from "../../../clients/storage/index.js";
+import { SignRequest } from "../../../clients/storage/instances.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

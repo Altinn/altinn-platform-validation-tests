@@ -1,9 +1,11 @@
+import { CreateAccessPackageDelegationQuery, DeleteAccessPackageDelegationQuery, GetAccessPackageDelegationCheckQuery, GetAccessPackageDelegationsQuery, GetAccessPackagePermissionQuery, SearchAccessPackagesQuery } from "./access-package.types.js";
+
 /**
  * Builder for the query parameters of {@link SearchAccessPackages}.
  */
 class SearchAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {SearchAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -43,7 +45,7 @@ class SearchAccessPackagesQueryBuilder {
  */
 class GetAccessPackageDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAccessPackageDelegationsQuery} */ ({});
     }
 
     /**
@@ -98,7 +100,7 @@ class GetAccessPackageDelegationsQueryBuilder {
  */
 class CreateAccessPackageDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAccessPackageDelegationQuery} */ ({});
     }
 
     /**
@@ -165,7 +167,7 @@ class CreateAccessPackageDelegationQueryBuilder {
  */
 class DeleteAccessPackageDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAccessPackageDelegationQuery} */ ({});
     }
 
     /**
@@ -232,7 +234,7 @@ class DeleteAccessPackageDelegationQueryBuilder {
  */
 class GetAccessPackagePermissionQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAccessPackagePermissionQuery} */ ({});
     }
 
     /**
@@ -287,7 +289,7 @@ class GetAccessPackagePermissionQueryBuilder {
  */
 class GetAccessPackageDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAccessPackageDelegationCheckQuery} */ ({});
     }
 
     /**

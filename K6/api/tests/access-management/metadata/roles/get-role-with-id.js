@@ -1,7 +1,6 @@
 export { handleSummary } from "../../../../../common-imports.js";
 import { group } from "k6";
 
-import { RoleDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
 import { getOptions } from "../../../../../helpers.js";
 import { MetadataBuildingBlocks } from "../../../../building-blocks/access-management/metadata/index.js";
 import { RolesDomainChecks } from "../../../../domain-checks/access-management/metadata/roles.js";
@@ -22,7 +21,11 @@ export default function () {
     const [rolesApiClient] = getClients();
 
     group(groupLabel, function () {
-        /** @type {RoleDto} */
+        /**
+         * The role the environment is seeded with, as far as this test asserts on it.
+         *
+         * @type {{id: string, name: string, code: string, isKeyRole: boolean, urn: string, legacyRoleCode: string, legacyUrn: string, provider: {code: string, name: string}}}
+         */
         const expectedRole = {
             id: "18baa914-ac43-4663-9fa4-6f5760dc68eb",
             name: "Deltaker delt ansvar",

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { EndUserAuthorizedPartiesQuery } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
+import { AuthorizedPartyDtoListPaginatedResult, EndUserAuthorizedPartiesQuery } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
 import { EndUserAuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties-query-builder.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/enduser/authorized-parties/index.js";
 import { withRetries } from "../../../common/retry.js";

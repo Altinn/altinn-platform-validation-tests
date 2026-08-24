@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
+import { stopp } from "./feil";
+import { MILJOER, Miljo } from "./miljo";
+
 const environment = process.env.ENVIRONMENT;
 
-if (!environment) {
-  throw new Error(
-    "ENVIRONMENT må settes: at22, at23, tt02 eller prod. Bruk npm run test:<miljø>."
+// Sjekker verdien og ikke bare at den finnes: et ukjent miljønavn matcher ingen
+// runInEnvironment-deklarasjon, så en skrivefeil ville gitt en helgrønn kjøring
+// der hver eneste test skippet seg selv.
+if (!environment || !MILJOER.includes(environment as Miljo)) {
+  stopp(
+    `ENVIRONMENT må være ett av ${MILJOER.join(", ")}, ikke ${environment ? `"${environment}"` : "tom"}. Bruk npm run test:<miljø>.`
   );
 }
 
@@ -44,6 +50,8 @@ const workers = npmFlag("workers");
 const retries = npmFlag("retries");
 
 export default defineConfig({
+  // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
+  globalSetup: "./global-setup.ts",
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,

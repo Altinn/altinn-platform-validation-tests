@@ -10,7 +10,7 @@ import encoding from "k6/encoding";
  * and the signature left to the services that consume the token.
  *
  * @param {string|null} token - The token to read.
- * @returns {object|null} The claims, or null when the token is not a readable JWT.
+ * @returns {any|null} The claims, or null when the token is not a readable JWT.
  */
 function readClaims(token) {
     const parts = (token ?? "").split(".");

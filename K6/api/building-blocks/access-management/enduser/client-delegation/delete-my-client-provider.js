@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DeleteMyClientProviderQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
 import { withRetries } from "../../../common/retry.js";
 

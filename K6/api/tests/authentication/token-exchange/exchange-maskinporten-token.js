@@ -17,7 +17,7 @@ export { setup } from "./commons.js";
  * anything it is given is worse than one that is down: a provider it does not know
  * has to be refused, and so has a request without a readable token.
  *
- * @param {object} data The Maskinporten token from setup.
+ * @param {{maskinportenToken: string}} data The Maskinporten token from setup.
  */
 export default function (data) {
     const authenticationClient = getClient(data.maskinportenToken);

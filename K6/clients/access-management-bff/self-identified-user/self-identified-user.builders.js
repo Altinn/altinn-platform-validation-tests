@@ -1,9 +1,11 @@
+import { Altinn2AccountFromTokenRequest, Altinn2AccountRequest, Altinn2ForgotPasswordRequest } from "../common/common.types.js";
+
 /**
  * Builder for the {@link Altinn2AccountRequest} request body.
  */
 class Altinn2AccountRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {Altinn2AccountRequest} */ ({});
     }
 
     /**
@@ -43,7 +45,7 @@ class Altinn2AccountRequestBuilder {
  */
 class Altinn2ForgotPasswordRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {Altinn2ForgotPasswordRequest} */ ({});
     }
 
     /**
@@ -83,7 +85,7 @@ class Altinn2ForgotPasswordRequestBuilder {
  */
 class Altinn2AccountFromTokenRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {Altinn2AccountFromTokenRequest} */ ({});
     }
 
     /**

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListResourceConnectionWithVersionDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -21,7 +22,7 @@ export function AccessListsDeleteResourceConnection(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsDeleteResourceConnection(
+        () => accessListClient.AccessListDeleteResourceConnection(
             owner,
             identifier,
             resourceIdentifier,

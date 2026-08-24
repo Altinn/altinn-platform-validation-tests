@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { PartyFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
 import { withRetries } from "../../common/retry.js";
 

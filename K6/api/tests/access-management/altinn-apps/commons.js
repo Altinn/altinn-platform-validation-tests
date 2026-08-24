@@ -50,7 +50,7 @@ let wrongAppClient = undefined;
 /**
  * Token options for the app that owns the resource.
  *
- * @returns {object} Built platform token options.
+ * @returns Built platform token options.
  */
 export function getAppTokenOpts() {
     return new PlatformTokenBuilder()

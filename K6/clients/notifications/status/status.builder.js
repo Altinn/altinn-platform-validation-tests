@@ -1,11 +1,12 @@
+import { StatusFeedQuery, StatusOrderBy } from "../types.js";
 
 class StatusFeedQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {StatusFeedQuery} */ ({
             seq: null,
             pageSize: null,
             orderBy: null,
-        };
+        });
     }
 
     /**

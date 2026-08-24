@@ -6,7 +6,7 @@ export { setup, teardown };
  * Runs the folder's only test, so every folder has the same entry point. A second
  * test in here goes in the list below.
  *
- * @param {object} data Whatever setup returned.
+ * @param {ReturnType<typeof setup>} data Whatever setup returned.
  */
 export default function (data) {
     runDelegateAndRemoveClient(data);

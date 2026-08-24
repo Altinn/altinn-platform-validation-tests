@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { NotificationAddressModel } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { NotificationAddressResponse } from "../../../../clients/profil/organizations/organizations.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

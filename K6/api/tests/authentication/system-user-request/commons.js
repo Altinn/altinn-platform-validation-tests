@@ -7,6 +7,7 @@ import {
     SystemRegisterClient,
     SystemUserClient,
 } from "../../../../clients/authentication/index.js";
+import { Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
@@ -79,7 +80,7 @@ let paginationTokenGenerator = undefined;
  * whose register to sweep. Nothing is looked up for it: the vendor is only ever the
  * organisation the enterprise token is minted for.
  *
- * @returns {{customers: object[], vendorOrgNo: string}} The customers the tests act on behalf of, and the vendor they register systems as.
+ * @returns The customers the tests act on behalf of, and the vendor they register systems as.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -122,7 +123,7 @@ export function sweepSystems(vendorOrgNo, systemNamePrefix) {
  * with getApproverTokenOpts. The cache is keyed on the options, so each of them
  * still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
@@ -184,8 +185,8 @@ export function getVendorTokenOpts(vendorOrgNo) {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {object} customer - The customer this iteration acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @param {any} customer - The customer this iteration acts on behalf of.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
     return new PersonalTokenBuilder()
@@ -215,18 +216,24 @@ export function resourceRight(resource) {
 }
 
 /**
+ * The test specific parts of a system registration.
+ *
+ * @typedef {object} SystemRegistrationParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them, and so the teardown can find what a failed run left behind.
+ * @property {string} vendorOrgNo Organisation number of the vendor the system is registered as, from setup.
+ * @property {Right[]} registeredRights Every right the system is registered with.
+ * @property {string[]} [registeredAccessPackages] Urns of the access packages the system is registered with. Agent system users are asked for access packages rather than rights.
+ */
+
+/**
  * Builds the identifiers and registration payload for one iteration.
  *
  * Everything here is unique per iteration, so unlike the clients it cannot be
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
- * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them, and so the teardown can find what a failed run left behind.
- * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as, from setup.
- * @param {Right[]} options.registeredRights - Every right the system is registered with.
- * @param {string[]} [options.registeredAccessPackages] - Urns of the access packages the system is registered with. Agent system users are asked for access packages rather than rights.
- * @returns {object} Identifiers and the registration payload.
+ * @param {SystemRegistrationParams} options - Test specific parts of the registration.
+ * @returns Identifiers and the registration payload.
  */
 export function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages = [] }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;

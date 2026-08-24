@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { SubscriptionList } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

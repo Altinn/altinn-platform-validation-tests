@@ -1,5 +1,4 @@
 import runChangeRequestSystemUser, { setup as setupChangeRequestSystemUser, teardown as teardownChangeRequestSystemUser } from "./change-request-system-user/run-all.js";
-import runResourceRegistry, { setup as setupResourceRegistry } from "./resource-registry/run-all.js";
 import runSystemRegister, { setup as setupSystemRegister, teardown as teardownSystemRegister } from "./system-register/run-all.js";
 import runSystemUser, { setup as setupSystemUser, teardown as teardownSystemUser } from "./system-user/run-all.js";
 import runSystemUserClientDelegation, { setup as setupSystemUserClientDelegation, teardown as teardownSystemUserClientDelegation } from "./system-user-client-delegation/run-all.js";
@@ -13,12 +12,11 @@ import runTokenExchange, { setup as setupTokenExchange } from "./token-exchange/
  * The token exchange setup signs a Maskinporten grant, which is asynchronous, so
  * this one is awaited.
  *
- * @returns {Promise<object>} One entry per folder.
+ * @returns One entry per folder.
  */
 export async function setup() {
     return {
         changeRequestSystemUser: setupChangeRequestSystemUser(),
-        resourceRegistry: setupResourceRegistry(),
         systemRegister: await setupSystemRegister(),
         systemUser: setupSystemUser(),
         systemUserClientDelegation: setupSystemUserClientDelegation(),
@@ -39,10 +37,9 @@ export async function setup() {
  * and system register tests sign their grants with. Without the Maskinporten
  * secrets those two folders fail in their own setup and the rest still runs.
  *
- * @param {object} data Setup results, keyed per folder.
+ * @param {Awaited<ReturnType<typeof setup>>} data Setup results, keyed per folder.
  */
 export default async function (data) {
-    runResourceRegistry();
     await runSystemRegister(data.systemRegister);
     runSystemUser(data.systemUser);
     runSystemUserRequest(data.systemUserRequest);
@@ -59,7 +56,7 @@ export default async function (data) {
  * rather than reusing the one setup fetched, since by the time an aggregate run
  * gets here that one can have expired.
  *
- * @param {object} data Setup results, keyed per folder.
+ * @param {Awaited<ReturnType<typeof setup>>} data Setup results, keyed per folder.
  * @returns {Promise<void>} Resolves once every folder has been torn down.
  */
 export async function teardown(data) {

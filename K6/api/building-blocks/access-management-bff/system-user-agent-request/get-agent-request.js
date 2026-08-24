@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * for the agent system user request endpoints.
  * @param {string} agentRequestId Agent request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The agent request. The API does not publish a schema
+ * @returns {any} The agent request. The API does not publish a schema
  * for this response.
  */
 export function GetAgentRequest(
@@ -26,7 +26,7 @@ export function GetAgentRequest(
         "GetAgentRequest",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let agentRequest = null;
 
     const succeed = check(res, {

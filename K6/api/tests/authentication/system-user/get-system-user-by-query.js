@@ -9,7 +9,7 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 /**
  * k6 setup stage. Arranges the system user this test looks up.
  *
- * @returns {object[]} The system user to look up, as a single item list.
+ * @returns The system user to look up, as a single item list.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -24,7 +24,7 @@ export function setup() {
  * only return system users belonging to the vendor in the token, so they are what a
  * vendor uses to find the system user a customer just approved.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -69,7 +69,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the system user this test looked up and the system it
  * belongs to.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

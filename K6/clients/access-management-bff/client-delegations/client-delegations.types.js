@@ -174,3 +174,20 @@
  * @property {string} [provider] Client provider UUID.
  * @property {string} [from] Client party UUID.
  */
+
+export const CreateAgentAccessPackagesQuery = undefined;
+export const CreateAgentQuery = undefined;
+export const CreateAgentResourcesQuery = undefined;
+export const DeleteAgentAccessPackagesQuery = undefined;
+export const DeleteAgentQuery = undefined;
+export const DeleteAgentResourcesQuery = undefined;
+export const DeleteMyClientProvidersQuery = undefined;
+export const DeleteMyClientResourcesQuery = undefined;
+export const DeleteMyClientsQuery = undefined;
+export const GetAgentAccessPackagesQuery = undefined;
+export const GetAgentResourcesQuery = undefined;
+export const GetAgentsQuery = undefined;
+export const GetClientAccessPackagesQuery = undefined;
+export const GetClientResourcesQuery = undefined;
+export const GetClientsQuery = undefined;
+export const GetMyClientsQuery = undefined;

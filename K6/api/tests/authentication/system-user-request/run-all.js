@@ -11,7 +11,7 @@ import runGetSystemUserRequestsBySystemId, { setup as setupGetSystemUserRequests
  *
  * The three create flows share the customer list, so they share one setup.
  *
- * @returns {object} One entry per setup, keyed by the file it came from.
+ * @returns One entry per setup, keyed by the file it came from.
  */
 export function setup() {
     return {
@@ -25,7 +25,7 @@ export function setup() {
  * Runs every test in this folder once, in one k6 run, so a change to the shared
  * clients, building blocks or checks can be verified in one go.
  *
- * @param {object} data Setup results, keyed per setup.
+ * @param {ReturnType<typeof setup>} data Setup results, keyed per setup.
  */
 export default function (data) {
     runCreateAndConfirmSystemUserRequest(data.commons);
@@ -39,7 +39,7 @@ export default function (data) {
  * k6 teardown stage. Runs the teardown of every test that has one, so a folder run
  * leaves the register as it found it.
  *
- * @param {object} data Setup results, keyed per setup.
+ * @param {ReturnType<typeof setup>} data Setup results, keyed per setup.
  */
 export function teardown(data) {
     teardownCreateAndConfirm(data.commons);

@@ -26,11 +26,11 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Single right delegations, one slice per VU.
+ * @param {any[][]} testData Single right delegations, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], (__ENV.RANDOMIZE ?? "true") === "true");
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
     AuthorizePost(
         authorizeClient,

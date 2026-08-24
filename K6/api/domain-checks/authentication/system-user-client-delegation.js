@@ -1,13 +1,15 @@
 import { check } from "k6";
 
+import { ClientInfo, ClientInfoClientInfoPaginated, SystemUser } from "../../../clients/authentication/types.js";
+
 /**
  * Pulls the client list out of a paginated client response.
  *
  * The endpoints answer with a paginated object rather than a bare list, so every
  * check below reads through this instead of repeating the same guard.
  *
- * @param {{data: object[]}|null} clients - The paginated client response.
- * @returns {object[]} The clients, or an empty list when the response was missing or shaped differently.
+ * @param {ClientInfoClientInfoPaginated|null} clients - The paginated client response.
+ * @returns {ClientInfo[]} The clients, or an empty list when the response was missing or shaped differently.
  */
 function clientList(clients) {
     return Array.isArray(clients?.data) ? clients.data : [];
@@ -16,7 +18,7 @@ function clientList(clients) {
 /**
  * Checks that the facilitator's agent system users include the arranged one.
  *
- * @param {object[]|null} agents - The agent system users the endpoint returned.
+ * @param {SystemUser[]|null} agents - The agent system users the endpoint returned.
  * @param {string} systemUserId - Id of the agent system user the arrange created.
  * @returns {boolean} True if the agent system user is listed, false otherwise.
  */
@@ -41,7 +43,7 @@ function CheckAgentSystemUserListed(agents, systemUserId) {
  * A facilitator without clients is not a delegation failure, it is test data that
  * has gone stale, so this names the organisation rather than only failing.
  *
- * @param {{data: object[]}|null} clients - The available clients.
+ * @param {ClientInfoClientInfoPaginated|null} clients - The available clients.
  * @param {string} orgNo - Organisation number of the facilitator, used in the log.
  * @returns {boolean} True if at least one client came back, false otherwise.
  */
@@ -91,7 +93,7 @@ function CheckDelegationEchoesClient(delegation, expected, operation) {
 /**
  * Checks that a client is delegated to the agent system user.
  *
- * @param {{data: object[]}|null} clients - The clients delegated to the system user.
+ * @param {ClientInfoClientInfoPaginated|null} clients - The clients delegated to the system user.
  * @param {string} clientId - The client that was delegated.
  * @returns {boolean} True if the client is on the system user, false otherwise.
  */
@@ -113,7 +115,7 @@ function CheckClientDelegated(clients, clientId) {
 /**
  * Checks that a client is no longer delegated to the agent system user.
  *
- * @param {{data: object[]}|null} clients - The clients delegated to the system user.
+ * @param {ClientInfoClientInfoPaginated|null} clients - The clients delegated to the system user.
  * @param {string} clientId - The client that was removed.
  * @returns {boolean} True if the client is gone, false otherwise.
  */

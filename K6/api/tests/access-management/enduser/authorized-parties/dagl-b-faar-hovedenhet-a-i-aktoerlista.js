@@ -18,7 +18,7 @@ export default function (data) {
 
     group(groupLabel, function () {
         const queryParams = new EndUserAuthorizedPartiesQueryBuilder()
-            .includePartiesViaKeyRoles(true)
+            .includePartiesViaKeyRoles("true")
             .build();
 
         const authorizedParties = GetAuthorizedParties(authorizedPartiesClient, queryParams);

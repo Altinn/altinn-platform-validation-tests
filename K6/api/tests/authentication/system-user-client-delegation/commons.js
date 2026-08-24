@@ -86,7 +86,7 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
 };
 
 /**
- * @type {object | undefined}
+ * @type {any | undefined}
  */
 let clients = undefined;
 
@@ -115,7 +115,7 @@ let vendorTokenGenerator = undefined;
  * the facilitator with getFacilitatorTokenOpts. The cache is keyed on the options,
  * so each of them still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
@@ -161,7 +161,7 @@ export function getClients() {
  * generator was built with rather than adding to them.
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor this run acts as.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getVendorTokenOpts(vendorOrgNo) {
     return new EnterpriseTokenBuilder()
@@ -178,8 +178,8 @@ export function getVendorTokenOpts(vendorOrgNo) {
  * The scopes have to be repeated here, since the options replace the ones the
  * generator was built with rather than adding to them.
  *
- * @param {object} facilitator - The facilitator this run acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @param {any} facilitator - The facilitator this run acts on behalf of.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getFacilitatorTokenOpts(facilitator) {
     return new PersonalTokenBuilder()
@@ -207,7 +207,7 @@ export function getFacilitatorTokenOpts(facilitator) {
  * register. The test is the one that fails on the missing system user, and by then
  * the teardown is going to run.
  *
- * @returns {object[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
+ * @returns {any[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
 export function arrangeAgentSystemUser() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -301,7 +301,7 @@ export function arrangeAgentSystemUser() {
  * so it goes through the bff, while the system belongs to the vendor. The system
  * goes last, since it is what the system user is built on.
  *
- * @param {object[]} arranged - What arrangeAgentSystemUser returned.
+ * @param {any[]} arranged - What arrangeAgentSystemUser returned.
  */
 export function cleanupArranged(arranged) {
     const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
@@ -338,7 +338,7 @@ export function cleanupArranged(arranged) {
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {string[]} accessPackages - Urns of the access packages the system is registered with.
- * @returns {object} The system id and the registration payload.
+ * @returns The system id and the registration payload.
  */
 function createSystemRegistration(vendorOrgNo, accessPackages) {
     const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;

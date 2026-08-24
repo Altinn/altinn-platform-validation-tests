@@ -6,7 +6,7 @@ import runGetSystemUsersBySystemId, { setup as setupGetSystemUsersBySystemId } f
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
  * results apart so a test still gets exactly the system user it arranged.
  *
- * @returns {object} One entry per test that needs setup data.
+ * @returns One entry per test that needs setup data.
  */
 export function setup() {
     return {
@@ -26,7 +26,7 @@ export function setup() {
  * change-request-system-user and system-user-request as well, which is useful by
  * hand but is those folders' own run-all.js over again.
  *
- * @param {object} data Setup results, keyed per test.
+ * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
  */
 export default function (data) {
     runGetSystemUsersBySystemId();
@@ -36,7 +36,7 @@ export default function (data) {
 /**
  * k6 teardown stage. Removes the system users the setups arranged.
  *
- * @param {object} data Setup results, keyed per test.
+ * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
  */
 export function teardown(data) {
     cleanupArranged(data.getSystemUserByQuery);

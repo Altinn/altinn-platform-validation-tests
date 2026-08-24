@@ -1,5 +1,6 @@
 import { group } from "k6";
 
+import { RequestSystemUserClient, SystemRegisterClient } from "../../../clients/authentication/index.js";
 import { RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
 
 /**

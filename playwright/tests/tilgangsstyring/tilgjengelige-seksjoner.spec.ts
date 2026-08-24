@@ -1,6 +1,9 @@
 import { test } from "../../fixtures/test";
 import { alleSprak } from "../../config/sprak";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
+import { runInEnvironment } from "../../miljo";
+
+runInEnvironment("prod", "at23", "tt02");
 // Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
 // ikke en conditional i page objectet.
 const forventedeSeksjoner = [
@@ -12,8 +15,7 @@ const forventedeSeksjoner = [
 ];
 
 for (const valgtSprak of alleSprak) {
-  // Merket for prod: verifisert der, og endrer ingen data.
-  test.describe(`Tilgangsstyring på ${valgtSprak}`, { tag: "@prod" }, () => {
+  test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
     test.use({ sprak: valgtSprak });
 
     test("Bruker ser oversikt over navigasjonsvalg", async ({

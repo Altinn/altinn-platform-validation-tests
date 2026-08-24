@@ -6,6 +6,7 @@ import {
     GetAccessPackageDelegationsQueryBuilder,
     SearchAccessPackagesQueryBuilder,
 } from "../../../../clients/access-management-bff/access-package/index.js";
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     DeleteReporteeConnectionQueryBuilder,
@@ -232,7 +233,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Users to delegate between, one slice per VU.
+ * @returns {any[][]} Users to delegate between, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -245,7 +246,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Users to delegate between, one slice per VU.
+ * @param {any[][]} segmentedData Users to delegate between, one slice per VU.
  */
 export default function (segmentedData) {
     const [

@@ -29,7 +29,7 @@ export default function (data) {
     const parties = getParties(graphqlClient, getPartiesLabel, max_number_of_parties);
     const variables = new DialogSearchVariablesBuilder()
         .withPartyURIs(parties)
-        .withOrg([serviceOwner])
+        .withOrgs([serviceOwner])
         .build();
     GetAllDialogsForParty(
         graphqlClient,

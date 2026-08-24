@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
+import { AppCloudEventRequestModel } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

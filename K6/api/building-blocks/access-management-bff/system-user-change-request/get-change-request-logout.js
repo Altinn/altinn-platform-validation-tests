@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * for the system user change request endpoints.
  * @param {string} changeRequestId Change request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetChangeRequestLogout(

@@ -1,6 +1,7 @@
 import exec from "k6/execution";
 
 import { MaskinportenClient, MaskinportenDelegationsQueryBuilder } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { MaskinportenDelegationsQuery } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../../common-imports.js";
 import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
@@ -72,7 +73,7 @@ export const options = getOptions(
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with a party uuid, one slice per VU.
+ * @returns {any[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -131,14 +132,15 @@ function getClients() {
  * Picks one of the seven supported filter combinations at random and builds the
  * matching query parameters.
  *
- * @param {object[]} list Organizations available to this VU.
+ * @param {any[]} list Organizations available to this VU.
  * @returns {[MaskinportenDelegationsQuery, {[key: string]: string}]} The query
  * parameters and the label describing the combination.
  */
 function getQueryParams(list) {
     const queryParams = new MaskinportenDelegationsQueryBuilder();
     let supplierOrg = undefined;
-    let label = "";
+    /** @type {{[key: string]: string}} */
+    let label = {};
     const randomValue = randomIntBetween(0, 6);
     switch (randomValue) {
         case 0:

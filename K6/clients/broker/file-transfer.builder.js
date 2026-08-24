@@ -1,3 +1,5 @@
+import { FileTransferInitalizeExt, FileTransferQuery, FileTransferStatusExt, RecipientFileTransferStatusExt, RoleExt } from "./file-transfer.types.js";
+
 /**
  * Builder for creating file transfer initialization requests.
  *
@@ -199,8 +201,7 @@ class FileTransferInitializeRequestBuilder {
  */
 class FileTransferQueryBuilder {
     constructor() {
-        /** @type {FileTransferQuery} */
-        this.query = {};
+        this.query = /** @type {FileTransferQuery} */ ({});
     }
 
     /**

@@ -9,7 +9,7 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 /**
  * k6 setup stage. Arranges the agent system user the clients are delegated to.
  *
- * @returns {object[]} The arranged facilitator, as a single item list.
+ * @returns The arranged facilitator, as a single item list.
  */
 export function setup() {
     return arrangeAgentSystemUser();
@@ -24,7 +24,7 @@ export function setup() {
  * listing the available clients finds what to delegate, and the delegated list is
  * what says whether the delegation and the removal took effect.
  *
- * @param {object[]} data The arranged facilitators from setup.
+ * @param {any[]} data The arranged facilitators from setup.
  */
 export default function (data) {
     const arranged = getItemFromList(data, randomize);
@@ -101,7 +101,7 @@ export default function (data) {
  * deleted from the test itself without pulling it out from under the iterations
  * that follow.
  *
- * @param {object[]} data The arranged facilitators from setup.
+ * @param {any[]} data The arranged facilitators from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

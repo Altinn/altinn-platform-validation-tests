@@ -1,23 +1,50 @@
 namespace: register
 base_dir: K6/api/tests/register/
 test_definitions:
-  - test_file: run-all.js
+  - test_file: add-rm-ccr-role-for-client.js
     contexts:
       - environment: at22
         test_run:
           secrets:
             - soap-er-creds-at22
-            - authorization-subscription-key-at22
             - register-subscription-key-at22
       - environment: at23
         test_run:
           secrets:
             - soap-er-creds-at23
-            - authorization-subscription-key-at23
             - register-subscription-key-at23
       - environment: tt02
         test_run:
           secrets:
             - soap-er-creds-tt02
-            - authorization-subscription-key-tt02
+            - register-subscription-key-tt02
+
+  - test_file: look-up-on-idporten-email.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - register-subscription-key-at22
+      - environment: at23
+        test_run:
+          secrets:
+            - register-subscription-key-at23
+      - environment: tt02
+        test_run:
+          secrets:
+            - register-subscription-key-tt02
+
+  - test_file: look-up-on-username.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - register-subscription-key-at22
+      - environment: at23
+        test_run:
+          secrets:
+            - register-subscription-key-at23
+      - environment: tt02
+        test_run:
+          secrets:
             - register-subscription-key-tt02

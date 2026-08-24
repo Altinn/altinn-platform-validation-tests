@@ -33,7 +33,7 @@ export { setup } from "./commons.js";
  * The request is left unapproved on purpose: approving it is the facilitator's
  * action in the portal, and the client delegation test covers that flow.
  *
- * @param {object[]} data The customers from setup.
+ * @param {ReturnType<typeof import("./commons.js").setup>} data The customers and the vendor from setup.
  */
 export default function (data) {
     const [clients, , vendorTokenGenerator] = getClients();
@@ -119,7 +119,7 @@ export default function (data) {
  * meant to go there is nothing here to do. An iteration that gave up half way is
  * what this is for: fail() skips the delete, and the system would stay behind.
  *
- * @param {object} data The customers and the vendor from setup.
+ * @param {ReturnType<typeof import("./commons.js").setup>} data The customers and the vendor from setup.
  */
 export function teardown(data) {
     sweepSystems(data.vendorOrgNo, SYSTEM_NAME_PREFIX);

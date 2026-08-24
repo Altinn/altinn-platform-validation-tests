@@ -49,3 +49,7 @@
  * @property {StringOptional} [phoneNumber]
  * @property {StringListOptional} [resourceIncludeList]
  */
+
+export const NotificationSettingsPatchRequest = undefined;
+export const NotificationSettingsRequest = undefined;
+export const NotificationSettingsResponse = undefined;

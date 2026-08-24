@@ -1,6 +1,7 @@
 import exec from "k6/execution";
 import http from "k6/http";
 
+import { InitializeCorrespondencesExt } from "../../../clients/correspondence/correspondence.types.js";
 import {
     BaseCorrespondenceBuilder,
     CorrespondenceClient,
@@ -33,7 +34,7 @@ const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
  * request must succeed.
  *
  * @param {{ [key: string]: string }[]} labels Request labels.
- * @returns {object} Strict k6 options for a Correspondence test.
+ * @returns Strict k6 options for a Correspondence test.
  */
 export function getCorrespondenceOptions(labels) {
     const options = getOptions(labels);
@@ -398,7 +399,7 @@ function getAttachmentPayload(size) {
  * Correspondence attachment.
  *
  * @param {string} recipient Recipient SSN or organization number.
- * @returns {object} Multipart form fields for k6/http.
+ * @returns Multipart form fields for k6/http.
  */
 export function buildUploadCorrespondenceForm(recipient) {
     const configuration = getCorrespondenceTestConfiguration();
@@ -431,3 +432,7 @@ export function buildUploadCorrespondenceForm(recipient) {
         ),
     };
 }
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here.
+export const CorrespondenceTestUser = undefined;

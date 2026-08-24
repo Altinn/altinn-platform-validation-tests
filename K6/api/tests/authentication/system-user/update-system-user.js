@@ -9,7 +9,7 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 /**
  * k6 setup stage. Arranges the system user this test updates.
  *
- * @returns {object[]} The system user to update, as a single item list.
+ * @returns The system user to update, as a single item list.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -40,7 +40,7 @@ export function setup() {
  *
  * So the title is not read back here either. Add that once the service writes.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -74,7 +74,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the system user this test updated and the system it
  * belongs to.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {any[]} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

@@ -1,3 +1,4 @@
+import { Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemUserClient } from "../../../authentication-imports.js";
@@ -25,7 +26,7 @@ const VENDOR_SCOPES = CreateScopeString([
 ]);
 
 /**
- * @type {object | undefined}
+ * @type {any | undefined}
  */
 let clients = undefined;
 
@@ -47,7 +48,7 @@ let vendorTokenGenerator = undefined;
  * reused from the change request tests, which arrange the same thing.
  *
  * @param {string} systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @returns {object[]} A single arranged system user, as a list so a test picks from it with getItemFromList like any other test data.
+ * @returns {any[]} A single arranged system user, as a list so a test picks from it with getItemFromList like any other test data.
  */
 export function arrangeSystemUser(systemNamePrefix) {
     return arrangeApprovedSystemUser({
@@ -69,7 +70,7 @@ export function arrangeSystemUser(systemNamePrefix) {
  * enterprise token. Neither is built for anyone in particular: who a run acts as is
  * decided by swapping the options with setTokenGeneratorOptions.
  *
- * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
@@ -105,8 +106,8 @@ export function getClients() {
 /**
  * Token options for acting as the customer that owns the system user.
  *
- * @param {object} customer - The customer this iteration acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @param {any} customer - The customer this iteration acts on behalf of.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getCustomerTokenOpts(customer) {
     return new PersonalTokenBuilder()
@@ -125,7 +126,7 @@ export function getCustomerTokenOpts(customer) {
  * generator was built with rather than adding to them.
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor this iteration acts as.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getVendorTokenOpts(vendorOrgNo) {
     return new EnterpriseTokenBuilder()

@@ -365,7 +365,34 @@
 
 /**
  * @typedef {object} VendorInfo
- * @property {string|null} [ID]
+ * @property {string|null} [ID] Authority prefixed organisation number, e.g. `0192:991825827`.
+ * @property {string|null} [id] The same value in the casing {@link RegisterSystemRequestBuilder} sends.
+ */
+
+/**
+ * Query parameters for looking a system user up by its external id.
+ *
+ * @typedef {object} SystemUserByExternalIdQuery
+ * @property {string} [clientId] Client id of the system.
+ * @property {string} [systemProviderOrgNo] Organisation number of the system provider.
+ * @property {string} [systemUserOwnerOrgNo] Organisation number of the system user owner.
+ * @property {string} [externalRef] External reference the system user was created with.
+ */
+
+/**
+ * Query parameters for the vendor system user lookup.
+ *
+ * The hyphenated keys are what the endpoint reads, so this is written as an object
+ * type: @property cannot name a key that is not an identifier.
+ *
+ * @typedef {{orgno?: string, "system-id"?: string, "external-ref"?: string}} SystemUserVendorQuery
+ */
+
+/**
+ * Query parameters for the paged system user reads.
+ *
+ * @typedef {object} SystemUserPagedQuery
+ * @property {Int64Opaque|number} [token] Continuation token, either the opaque value or the number inside it.
  */
 
 export const AccessPackage = undefined;
@@ -400,10 +427,13 @@ export const SystemChangeLog = undefined;
 export const SystemChangeType = undefined;
 export const SystemRegisterUpdateResult = undefined;
 export const SystemUser = undefined;
+export const SystemUserByExternalIdQuery = undefined;
 export const SystemUserInfo = undefined;
+export const SystemUserPagedQuery = undefined;
 export const SystemUserPaginated = undefined;
 export const SystemUserRegisterDTO = undefined;
 export const SystemUserRegisterDTOItemStream = undefined;
 export const SystemUserType = undefined;
 export const SystemUserUpdateDto = undefined;
+export const SystemUserVendorQuery = undefined;
 export const VendorInfo = undefined;

@@ -75,7 +75,7 @@ export class DialogSearchVariablesBuilder {
     /**
      * Adds a search string to the search variables. The search string can be used to search for dialogs that contain the specified string in the title or content of the dialog.
      *
-     * @param {searchterm} search TODO: description
+     * @param {string} search TODO: description
      * @returns {DialogSearchVariablesBuilder} TODO: description
      */
     withSearch(search) {

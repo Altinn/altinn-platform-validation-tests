@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerClient } from "../../../clients/broker/index.js";
+import { ServiceOwnerInitializeExt, ServiceOwnerOverviewExt } from "../../../clients/broker/service-owner.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**

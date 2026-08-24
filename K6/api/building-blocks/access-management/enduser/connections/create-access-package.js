@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { CreateAccessPackageQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { AssignmentPackageDto } from "../../../../../clients/access-management/service-owner/connections/connections.types.js";
+import { PersonInput } from "../../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

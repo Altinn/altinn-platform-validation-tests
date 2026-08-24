@@ -9,7 +9,7 @@ import runSystemRegisterRights, { setup as setupSystemRegisterRights, teardown a
  *
  * Awaited: three of the four sign a Maskinporten grant, which is asynchronous.
  *
- * @returns {Promise<object>} One entry per setup, keyed by the file it came from.
+ * @returns One entry per setup, keyed by the file it came from.
  */
 export async function setup() {
     return {
@@ -24,7 +24,7 @@ export async function setup() {
  * Runs every test in this folder once, in one k6 run, so a change to the shared
  * clients, building blocks or checks can be verified in one go.
  *
- * @param {object} data Setup results, keyed per test.
+ * @param {Awaited<ReturnType<typeof setup>>} data Setup results, keyed per test.
  */
 export default async function (data) {
     runGetRegisteredSystems();

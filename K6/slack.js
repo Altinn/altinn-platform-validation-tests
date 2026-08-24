@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { isBlacklisted } from "./slack-blacklist.js";
+
 export function createDefaultPayload() {
     return {
         attachments: [
@@ -77,6 +79,9 @@ function buildHeaders() {
 }
 
 export default function postSlackMessage(data, report = null) {
+    if (isBlacklisted()) {
+        return;
+    }
     if (!__ENV.SLACK_WEBHOOK_URL) {
         console.error("SLACK_WEBHOOK_URL environment variable is not defined");
         return;
@@ -97,7 +102,7 @@ export default function postSlackMessage(data, report = null) {
         if (slackRes.status != 200) {
             console.error("Could not send summary, got status " + slackRes.status);
             console.log(slackRes.body);
-            console.log(body.results);
+            console.log(body);
         }
     } catch (error) {
         console.error("Error sending Slack message:", error);

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { GroupRequest } from "./party-groups.types.js";
+
 const TAGS = {
     GetPartyGroups: {
         action: "get-party-groups",
@@ -45,7 +47,7 @@ class PartyGroupsClient {
      * Retrieves all party groups for the current user.
      *
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartyGroups(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,7 +79,7 @@ class PartyGroupsClient {
      *
      * @param {number} groupId See the client method.
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -111,7 +113,7 @@ class PartyGroupsClient {
      *
      * @param {GroupRequest} request See the client method.
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreatePartyGroup(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -145,7 +147,7 @@ class PartyGroupsClient {
      * @param {number} groupId See the client method.
      * @param {GroupRequest} request See the client method.
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePartyGroup(groupId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -180,7 +182,7 @@ class PartyGroupsClient {
      *
      * @param {number} groupId See the client method.
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeletePartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -215,7 +217,7 @@ class PartyGroupsClient {
      * @param {number} groupId See the client method.
      * @param {string} partyUuid See the client method.
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AddPartyToGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -250,7 +252,7 @@ class PartyGroupsClient {
      * @param {number} groupId See the client method.
      * @param {string} partyUuid See the client method.
      * @param {{[key: string]: string}} [labels] See the client method.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RemovePartyFromGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();

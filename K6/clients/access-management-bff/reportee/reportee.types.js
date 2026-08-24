@@ -23,3 +23,6 @@
  * @property {string} [partyUuid] Party UUID of the new reportee.
  * @property {number} [partyId] Party id of the new reportee.
  */
+
+export const ChangeReporteeAndRedirectQuery = undefined;
+export const ChangeReporteeQuery = undefined;

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { TextResource } from "../../../clients/storage/applications.types.js";
 import { TextsClient } from "../../../clients/storage/index.js";
 import { withRetries } from "../common/retry.js";
 

@@ -59,10 +59,10 @@ const MAX_DELAY_SECONDS = 8;
  * The last response is always returned, so the building block's `check` calls
  * run exactly once regardless of how many tries it took.
  *
- * @param {() => import("k6/http").RefinedResponse} sendRequest
+ * @param {() => import("k6/http").RefinedResponse<"text">} sendRequest
  * Sends the request. Called once per try.
  * @param {string} label Building block name, used in logs and metric tags.
- * @returns {import("k6/http").RefinedResponse} The last response received.
+ * @returns {import("k6/http").RefinedResponse<"text">} The last response received.
  */
 export function withRetries(sendRequest, label) {
     let res = sendRequest();

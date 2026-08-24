@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { SystemUser } from "../../../clients/authentication/types.js";
+
 /**
  * Checks that an update of a system user was accepted.
  *

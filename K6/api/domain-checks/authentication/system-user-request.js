@@ -1,12 +1,12 @@
 import { check } from "k6";
 
-import { RequestSystemResponse } from "../../../clients/authentication/types.js";
+import { AgentRequestSystemResponse, RequestSystemResponse } from "../../../clients/authentication/types.js";
 
 /**
  * Checks that a created request echoes what it was asked for and carries the fields
  * the vendor needs to take the customer through approval.
  *
- * @param {RequestSystemResponse} request - The created request.
+ * @param {RequestSystemResponse|AgentRequestSystemResponse} request - The created request. Either kind, since the checks below only read the fields both carry.
  * @param {{systemId: string, partyOrgNo: string, externalRef: string}} expected - What the request was created with.
  * @returns {boolean} True if the request matches, false otherwise.
  */
@@ -37,7 +37,7 @@ function CheckRequestCreated(request, expected) {
 /**
  * Checks that a request has the expected status.
  *
- * @param {RequestSystemResponse} request - The request to check.
+ * @param {RequestSystemResponse|AgentRequestSystemResponse} request - The request to check.
  * @param {string} expectedStatus - The status the request is expected to have.
  * @returns {boolean} True if the status matches, false otherwise.
  */
@@ -98,7 +98,7 @@ function CheckRequestApproved(approved) {
 /**
  * Checks that a lookup found the request an earlier step created.
  *
- * @param {RequestSystemResponse} request - The request the lookup returned.
+ * @param {RequestSystemResponse|AgentRequestSystemResponse} request - The request the lookup returned.
  * @param {string|undefined} expectedId - Id of the request the earlier step created.
  * @returns {boolean} True if the lookup found that request, false otherwise.
  */
