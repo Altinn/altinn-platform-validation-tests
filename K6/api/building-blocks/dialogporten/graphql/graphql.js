@@ -143,11 +143,16 @@ export function GetAndVerifyDialogById(graphqlClient, variables, labels = null) 
             if (res_body === null || res_body === undefined) {
                 return false;
             }
-            if (!res_body.data || res_body.data?.dialogById?.dialog?.id !== variables.id) {
-                // TODO: Is this needed? or just noise?
-                // console.log(`DialogId ${variables.id} not found in dialogById-response`);
-                return true;
+            const returnedId = res_body.data?.dialogById?.dialog?.id;
+
+            if (returnedId !== variables.id) {
+                // Unlike the search this is a lookup by id, so there is no indexing lag
+                // to wait out: either the dialog is readable for this caller or it is not.
+                console.log(`Expected dialogId ${variables.id} in dialogById-response, got ${returnedId}`);
+
+                return false;
             }
+
             return true;
         }
     });
