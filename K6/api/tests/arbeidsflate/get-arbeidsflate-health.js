@@ -51,7 +51,7 @@ export default function () {
             !Array.isArray(b.healthChecks),
     });
 
-    if (!overallOk || !body?.healthChecks) {
+    if (!body?.healthChecks) {
         return;
     }
 
