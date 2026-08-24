@@ -44,7 +44,7 @@ export function setup() {
     const [grantedPackage, requestedPackage] = findAccessPackages(2, vendorOrgNo);
 
     return arrangeApprovedSystemUser({
-        systemNamePrefix: "changerequest",
+        systemNamePrefix: "changerequestapprove",
         vendorOrgNo,
         grantedRights: GRANTED_RIGHTS,
         registeredRights: [...GRANTED_RIGHTS, ...REQUESTED_RIGHTS],

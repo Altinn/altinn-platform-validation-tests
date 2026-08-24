@@ -124,10 +124,13 @@ export default async function (data) {
  * go there is nothing here to do. An iteration that gave up half way is what this
  * is for: fail() skips the delete, and the system would stay behind.
  *
- * @param {object} data The vendor token from setup.
+ * Async, since the sweep signs its own Maskinporten grant rather than reusing the
+ * token setup fetched.
+ *
+ * @returns {Promise<void>} Resolves once the register is swept.
  */
-export function teardown(data) {
-    sweepSystems(data.vendorToken, SYSTEM_NAME_PREFIX);
+export async function teardown() {
+    await sweepSystems(SYSTEM_NAME_PREFIX);
 }
 
 // add the custom reporting for this test to the default summary

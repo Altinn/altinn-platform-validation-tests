@@ -23,7 +23,8 @@ export const VENDOR_ID = "313175650";
  * The token crosses into the iterations, not the generator: k6 serializes the setup
  * result to JSON and the prototypes would not survive. That also means it is not
  * renewed while the run lasts, so this holds for a run that fits inside the lifetime
- * Maskinporten gave it. A load run would need a generator per VU instead.
+ * Maskinporten gave it. A load run would need a generator per VU instead, and the
+ * teardown signs a grant of its own rather than trusting this one to still be good.
  *
  * @returns {Promise<{vendorToken: string}>} The token the vendor acts with.
  */
@@ -73,9 +74,15 @@ export function getVendorClient(vendorToken) {
  *
  * Call from a test's teardown, with the prefix that test names its systems with.
  *
- * @param {string} vendorToken - The token from setup.
+ * Signs its own grant rather than reusing the token from setup. The teardown is the
+ * last thing a run does, and in the aggregate run it comes after every other folder,
+ * so the setup token can have expired by then. That failure would be a quiet one:
+ * the listing answers 401, the sweep reads the empty result as nothing to remove and
+ * says nothing, and every system stays in the register.
+ *
  * @param {string} systemNamePrefix - The prefix the test names its systems with.
+ * @returns {Promise<void>} Resolves once the systems are gone.
  */
-export function sweepSystems(vendorToken, systemNamePrefix) {
-    sweepRegisteredSystems(getVendorClient(vendorToken), VENDOR_ID, systemNamePrefix);
+export async function sweepSystems(systemNamePrefix) {
+    sweepRegisteredSystems(getVendorClient(await fetchVendorToken()), VENDOR_ID, systemNamePrefix);
 }

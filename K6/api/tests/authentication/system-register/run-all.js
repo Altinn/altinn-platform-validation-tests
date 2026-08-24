@@ -37,12 +37,14 @@ export default async function (data) {
  * k6 teardown stage. Runs the teardown of every test in the folder, so a run leaves
  * the register as it found it.
  *
- * @param {object} data Setup results, keyed per test.
+ * Awaited: each sweep signs a Maskinporten grant of its own, which is asynchronous.
+ *
+ * @returns {Promise<void>} Resolves once every teardown has run.
  */
-export function teardown(data) {
-    teardownSystemRegisterCrud(data.systemRegisterCrud);
-    teardownSystemRegisterRights(data.systemRegisterRights);
-    teardownSystemRegisterAccessPackages(data.systemRegisterAccessPackages);
+export async function teardown() {
+    await teardownSystemRegisterCrud();
+    await teardownSystemRegisterRights();
+    await teardownSystemRegisterAccessPackages();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

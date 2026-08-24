@@ -55,14 +55,19 @@ export default async function (data) {
  * k6 teardown stage. Removes what the folders arranged, and sweeps up the systems
  * a failed step left in the register.
  *
+ * The system register teardown is awaited: it signs its own Maskinporten grant
+ * rather than reusing the one setup fetched, since by the time an aggregate run
+ * gets here that one can have expired.
+ *
  * @param {object} data Setup results, keyed per folder.
+ * @returns {Promise<void>} Resolves once every folder has been torn down.
  */
-export function teardown(data) {
+export async function teardown(data) {
     teardownChangeRequestSystemUser(data.changeRequestSystemUser);
     teardownSystemUser(data.systemUser);
     teardownSystemUserClientDelegation(data.systemUserClientDelegation);
     teardownSystemUserRequest(data.systemUserRequest);
-    teardownSystemRegister(data.systemRegister);
+    await teardownSystemRegister();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

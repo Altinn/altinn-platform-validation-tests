@@ -63,6 +63,10 @@ let vendorTokenGenerator = undefined;
  * for. Returns only what it created. Clients cannot be returned at all, since k6
  * serializes the setup result to JSON and the prototypes would not survive.
  *
+ * The prefix a test passes has to be one no other test's prefix starts with: the
+ * sweep in the teardown matches on it with startsWith, so changerequest would take
+ * the systems of changerequestdelete along with its own.
+ *
  * @param {object} options - What the calling test needs arranged.
  * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
  * @param {string} options.vendorOrgNo - Organisation number of the vendor to register the system as. Draw it with pickVendor.

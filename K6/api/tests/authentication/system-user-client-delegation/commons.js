@@ -52,14 +52,6 @@ const SYSTEM_NAME_PREFIX = "clientdelegation";
 const REDIRECT_URL = "https://digdir.no";
 
 /**
- * The branch the facilitator test data is read from.
- *
- * The csv files land with these tests, so main does not have them yet. Drop this
- * and let fetchTestData default to main once this branch is merged.
- */
-const TESTDATA_BRANCH = "authentication-endpoint-coverage";
-
-/**
  * The access packages an agent system user is asked for, by the role the
  * facilitator holds.
  *
@@ -221,7 +213,7 @@ export function arrangeAgentSystemUser() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     const facilitator = getItemFromList(
-        fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`, true, TESTDATA_BRANCH),
+        fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`),
         randomize,
     );
 
