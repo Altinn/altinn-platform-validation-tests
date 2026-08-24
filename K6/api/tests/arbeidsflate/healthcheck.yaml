@@ -6,3 +6,4 @@ test_definitions:
       - environment: at23
       - environment: tt02
       - environment: yt01
+      - environment: prod

@@ -25,3 +25,4 @@ test_definitions:
     contexts:
       - environment: at23
       - environment: tt02
+      - environment: prod
