@@ -52,7 +52,7 @@ export default function () {
             !Array.isArray(b.entries),
     });
 
-    if (!overallOk || !body?.entries) {
+    if (!body?.entries) {
         console.log(body);
         return;
     }
