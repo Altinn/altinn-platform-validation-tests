@@ -1,3 +1,10 @@
+/**
+ * The variables the dialogById query takes.
+ *
+ * @typedef {object} DialogByIdVariables
+ * @property {string|null} id The id of the dialog to get.
+ */
+
 export class DialogByIdVariablesBuilder {
     constructor() {
         this.variables = {
@@ -6,8 +13,8 @@ export class DialogByIdVariablesBuilder {
     }
 
     /**
-     * @param {uuidv7} id - the id of the dialog to get
-     * @returns {DialogSearchVariablesBuilder} TODO: description
+     * @param {string} id - the id of the dialog to get
+     * @returns {DialogByIdVariablesBuilder} TODO: description
      * */
     withId(id) {
         this.variables.id = id;
@@ -15,10 +22,14 @@ export class DialogByIdVariablesBuilder {
     }
 
     /**
-     * @returns {DialogSearchVariablesBuilder}
+     * @returns {DialogByIdVariables} The built variables.
      */
 
     build() {
         return { ...this.variables };
     }
 }
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here.
+export const DialogByIdVariables = undefined;

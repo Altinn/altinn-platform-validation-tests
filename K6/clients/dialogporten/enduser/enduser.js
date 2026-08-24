@@ -1,6 +1,7 @@
 import http from "k6/http";
 
 import { uuidv4 } from "../../../common-imports.js";
+import { V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "./types.js";
 
 const TAGS = {
     GetDialogs: { action: "get-dialogs" },
@@ -49,7 +50,7 @@ class EnduserApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/End/V1ServiceOwnerDialogsQueriesSearch_Dialog
      *
      * @param DialogSearchParamsBuilder - object containing query parameters for the request
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
 
     GetDialogs(queryParams, labels = null) {
@@ -131,7 +132,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogActivities(
         dialogId,
@@ -170,7 +171,7 @@ class EnduserApiClient {
      * @param { string } dialogId TODO: description
      * @param { string } activityId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogActivity(
         dialogId,
@@ -209,7 +210,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLogs(
         dialogId,
@@ -248,7 +249,7 @@ class EnduserApiClient {
      * @param { string } dialogId TODO: description
      * @param { string } seenLogId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLog(
         dialogId,
@@ -287,7 +288,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmissions(
         dialogId,
@@ -326,7 +327,7 @@ class EnduserApiClient {
      * @param { string } dialogId TODO: description
      * @param { string } transmissionId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmission(
         dialogId,
@@ -364,7 +365,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogContextLabellog(
         dialogId,
@@ -401,7 +402,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetParties
      *
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetParties(
         labels = null,
@@ -437,7 +438,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetServiceResources
      *
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetServiceResources(
         labels = null,
@@ -474,7 +475,7 @@ class EnduserApiClient {
      *
      * @param {string} dialogId TODO: description
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogLookup(
         dialogId,
@@ -512,12 +513,13 @@ class EnduserApiClient {
      *
      * PUT /dialogs/{dialogId}/context/systemlabels
      *
-     * @param {uuidv7} dialogId - id of the dialog to set labels on
+     * @param {string} dialogId - id of the dialog to set labels on
      * @param {V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
+     * @param {string|null} ifMatch - revision the caller last saw, sent as If-Match so a concurrent write is rejected
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
-    PutDialogSystemLabels(dialogId, request, labels = null) {
+    PutDialogSystemLabels(dialogId, request, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/systemlabels`);
 
@@ -537,6 +539,10 @@ class EnduserApiClient {
             },
         };
 
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
+
         if (__ENV.TRACE_CALL) {
             params.headers["traceparent"] = uuidv4();
         }
@@ -550,10 +556,11 @@ class EnduserApiClient {
      * POST /dialogs/context/systemlabels/actions/bulkset
      *
      * @param {V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
+     * @param {string|null} ifMatch - revision the caller last saw, sent as If-Match so a concurrent write is rejected
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @returns http.RefinedResponse<"text">
      */
-    PostBulkSetSystemLabels(request, labels = null) {
+    PostBulkSetSystemLabels(request, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs/context/systemlabels/actions/bulkset");
 
@@ -571,6 +578,10 @@ class EnduserApiClient {
                 "Content-type": "application/json",
             },
         };
+
+        if (ifMatch != null) {
+            params.headers["If-Match"] = ifMatch;
+        }
 
         if (__ENV.TRACE_CALL) {
             params.headers["traceparent"] = uuidv4();

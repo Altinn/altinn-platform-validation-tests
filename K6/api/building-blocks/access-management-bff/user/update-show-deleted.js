@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { ProfileSettingPreference } from "../../../../clients/profil/users/users.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

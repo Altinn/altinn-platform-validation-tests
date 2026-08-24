@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { Role } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
 import { withRetries } from "../../common/retry.js";
 

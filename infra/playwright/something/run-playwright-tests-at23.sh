@@ -6,15 +6,18 @@ cd altinn-platform-validation-tests/playwright
 
 npm install
 
-npm run test:at23 || true # Needs to be the input
-env=at23
-
 set +e
+env=at23
+npm run test:at23 # Needs to be the input
+playwright_exit=$?
 /tmp/generateMetricsFromJunitReport
-exit_code=$?
+metrics_exit=$?
 set -e
 
-if [ "$exit_code" -eq 53 ]; then
+# 53 er "noen tester feilet". En exit-kode fra Playwright uten at metrics sier fra
+# betyr at kjøringen aldri kom i gang, for eksempel en globalSetup som stoppet den.
+# Da er rapporten tom, og tomt må ikke leses som grønt.
+if [ "$metrics_exit" -eq 53 ] || [ "$playwright_exit" -ne 0 ]; then
     echo "Not all Playwright Tests ran successfully, uploading the report..."
 
     # export AZCOPY_AUTO_LOGIN_TYPE=DEVICE

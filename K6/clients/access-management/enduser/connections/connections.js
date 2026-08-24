@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AccessPackageDelegationCheckQuery, CreateAccessPackageQuery, CreateConnectionQuery, CreateInstanceRightsQuery, CreateResourceRightsQuery, DeleteAccessPackageQuery, DeleteConnectionQuery, DeleteInstanceQuery, DeleteResourceQuery, DeleteRoleQuery, GetAccessPackagesQuery, GetConnectionsQuery, GetConnectionUsersQuery, GetInstanceDelegationCheckQuery, GetInstanceRightsQuery, GetInstancesQuery, GetInstanceUsersQuery, GetResourceDelegationCheckQuery, GetResourceRightsQuery, GetResourcesQuery, GetRolesQuery, InstanceRightsDelegationDto, PersonInput, RightKeyListDto, UpdateInstanceRightsQuery, UpdateResourceRightsQuery } from "./connections.types.js";
+
 const TAGS = {
     GetConnections: {
         action: "get-connections",
@@ -48,15 +50,6 @@ const TAGS = {
         action: "update-resource-rights",
     },
 
-    GetResourceRights: {
-        action: "get-resource-rights",
-    },
-    CreateResourceRights: {
-        action: "create-resource-rights",
-    },
-    UpdateResourceRights: {
-        action: "update-resource-rights",
-    },
     GetResourceDelegationCheck: {
         action: "get-resource-delegation-check",
     },
@@ -65,15 +58,6 @@ const TAGS = {
     },
     DeleteInstance: {
         action: "delete-instance",
-    },
-    GetInstanceRights: {
-        action: "get-instance-rights",
-    },
-    CreateInstanceRights: {
-        action: "create-instance-rights",
-    },
-    UpdateInstanceRights: {
-        action: "update-instance-rights",
     },
     GetInstanceRights: {
         action: "get-instance-rights",
@@ -129,7 +113,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConnections(
         query = null,
@@ -150,9 +134,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -190,7 +174,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateConnection(
         query = null,
@@ -208,9 +192,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -250,7 +234,7 @@ class ConnectionsClient {
      * {@link DeleteConnectionQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteConnection(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -264,9 +248,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -303,7 +287,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConnectionUsers(
         query = null,
@@ -323,9 +307,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -363,7 +347,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackages(
         query = null,
@@ -384,9 +368,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -424,7 +408,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAccessPackage(
         query = null,
@@ -442,9 +426,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -484,7 +468,7 @@ class ConnectionsClient {
      * {@link DeleteAccessPackageQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAccessPackage(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -498,9 +482,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -535,7 +519,7 @@ class ConnectionsClient {
      * {@link AccessPackageDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackageDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -549,9 +533,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -588,7 +572,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRoles(
         query = null,
@@ -609,9 +593,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -646,7 +630,7 @@ class ConnectionsClient {
      * {@link DeleteRoleQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteRole(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -660,9 +644,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -671,6 +655,116 @@ class ConnectionsClient {
             endpoint: `${this.FULL_PATH}/roles`,
             name: `${this.FULL_PATH}/roles`,
             action: TAGS.DeleteRole.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.del(url.toString(), null, {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+    }
+    /**
+     * Gets resource permissions.
+     *
+     * @param {GetResourcesQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link GetResourcesQueryBuilder}.
+     * @param {{[key: string]: string|number}} [headers]
+     * Optional request headers.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetResources(
+        query = null,
+        headers = {
+            "X-Page-Size": 100,
+            "X-Page-Number": 0,
+        },
+        labels = null,
+    ) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources`,
+            name: `${this.FULL_PATH}/resources`,
+            action: TAGS.GetResources.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url.toString(), {
+            tags,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                ...headers,
+            },
+        });
+    }
+    /**
+     * Deletes a resource permission.
+     *
+     * @param {DeleteResourceQuery|null} [query]
+     * Query parameters. Prefer using
+     * {@link DeleteResourceQueryBuilder}.
+     * @param {{[key: string]: string}} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    DeleteResource(query = null, labels = null) {
+        const token = this.tokenGenerator.getToken();
+
+        const url = new URL(`${this.FULL_PATH}/resources`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                if (Array.isArray(value)) {
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
+                }
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/resources`,
+            name: `${this.FULL_PATH}/resources`,
+            action: TAGS.DeleteResource.action,
         };
 
         if (labels !== null) {
@@ -698,7 +792,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceRights(
         query = null,
@@ -719,9 +813,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -759,7 +853,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateResourceRights(
         query = null,
@@ -777,9 +871,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -821,7 +915,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateResourceRights(
         query = null,
@@ -839,9 +933,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -880,7 +974,7 @@ class ConnectionsClient {
      * {@link GetResourceDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -894,9 +988,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -932,7 +1026,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstances(
         query = null,
@@ -953,9 +1047,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -991,7 +1085,7 @@ class ConnectionsClient {
      * {@link DeleteInstanceQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstance(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1005,9 +1099,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -1043,7 +1137,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceRights(
         query = null,
@@ -1064,9 +1158,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -1104,7 +1198,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceRights(
         query = null,
@@ -1122,9 +1216,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -1166,7 +1260,7 @@ class ConnectionsClient {
      * Request body.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateInstanceRights(
         query = null,
@@ -1184,9 +1278,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -1217,191 +1311,6 @@ class ConnectionsClient {
             },
         );
     }
-    /**
-     * Gets instance rights.
-     *
-     * @param {GetInstanceRightsQuery|null} [query]
-     * Query parameters. Prefer using
-     * {@link GetInstanceRightsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
-     * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
-     */
-    GetInstanceRights(
-        query = null,
-        headers = {
-            "X-Page-Size": 100,
-            "X-Page-Number": 0,
-        },
-        labels = null,
-    ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
-            name: `${this.FULL_PATH}/resources/instances/rights`,
-            action: TAGS.GetInstanceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...headers,
-            },
-        });
-    }
-
-    /**
-     * Creates instance rights.
-     *
-     * @param {CreateInstanceRightsQuery|null} [query]
-     * Query parameters. Prefer using
-     * {@link CreateInstanceRightsQueryBuilder}.
-     * @param {InstanceRightsDelegationDto|null} [body]
-     * Request body.
-     * @param {{[key: string]: string}} [labels]
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
-     */
-    CreateInstanceRights(
-        query = null,
-        body = null,
-        labels = null,
-    ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
-            name: `${this.FULL_PATH}/resources/instances/rights`,
-            action: TAGS.CreateInstanceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
-        );
-    }
-
-    /**
-     * Updates instance rights.
-     *
-     * @param {UpdateInstanceRightsQuery|null} [query]
-     * Query parameters. Prefer using
-     * {@link UpdateInstanceRightsQueryBuilder}.
-     * @param {RightKeyListDto|null} [body]
-     * Request body.
-     * @param {{[key: string]: string}} [labels]
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
-     */
-    UpdateInstanceRights(
-        query = null,
-        body = null,
-        labels = null,
-    ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/resources/instances/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/resources/instances/rights`,
-            name: `${this.FULL_PATH}/resources/instances/rights`,
-            action: TAGS.UpdateInstanceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
-        );
-    }
-
     /**
      * Checks instance delegation.
      *
@@ -1410,7 +1319,7 @@ class ConnectionsClient {
      * {@link GetInstanceDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1424,9 +1333,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -1462,7 +1371,7 @@ class ConnectionsClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceUsers(
         query = null,
@@ -1483,9 +1392,9 @@ class ConnectionsClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

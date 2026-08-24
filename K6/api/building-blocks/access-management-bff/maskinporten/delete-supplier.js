@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { DeleteSupplierQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

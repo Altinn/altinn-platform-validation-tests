@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery } from "../types.js";
+
 const TAGS = {
     AppCreate: {
         action: "app-create",
@@ -44,7 +46,7 @@ class AppClient {
      * @param {AppCloudEventRequestModel} request Event payload.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AppCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -79,10 +81,10 @@ class AppClient {
      *
      * @param {string} org Application owner acronym.
      * @param {string} app Application name.
-     * @param {object} [query] Optional query parameters.
+     * @param {AppEventsByAppQuery|null} [query] Optional query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AppGetByApp(org, app, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -145,11 +147,11 @@ class AppClient {
     /**
      * Retrieves events related to a party.
      *
-     * @param {object} [query] Optional query parameters.
+     * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
      * @param {string} [person] Person number header value.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AppGetByParty(query = null, person = null, labels = null) {
         const token = this.tokenGenerator.getToken();

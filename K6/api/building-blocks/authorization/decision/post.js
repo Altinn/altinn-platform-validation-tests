@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { DecisionClient } from "../../../../clients/authorization/decision.js";
+import { XacmlJsonResponseExternal, XacmlRequestApiModel } from "../../../../clients/authorization/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

@@ -28,7 +28,7 @@ export function setup() {
  * latest events are reached. The organization is drawn per iteration, which is
  * what lets the same script serve as both a smoke test and a load test.
  *
- * @param {object[]} orgs Consentee organizations to read events for.
+ * @param {any[]} orgs Consentee organizations to read events for.
  */
 export default function (orgs) {
     const [eventsClient, eventsTokenGenerator] = getEventsClient();

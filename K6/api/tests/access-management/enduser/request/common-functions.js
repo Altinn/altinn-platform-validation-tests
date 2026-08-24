@@ -101,7 +101,7 @@ export function getClients() {
  *
  * @param {string=} pid - the user's national identity number
  * @param {string=} partyUuid - the user's party uuid
- * @returns {object} Token generator options for the given user.
+ * @returns Token generator options for the given user.
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {
     const scopes = CreateScopeString([

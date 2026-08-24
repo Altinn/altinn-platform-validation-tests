@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstantOrdersClient } from "../../../../clients/notifications/instant-orders/index.js";
+import { InstantEmailNotificationOrderRequestExt, InstantNotificationOrderResponseExt } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

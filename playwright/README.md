@@ -31,26 +31,28 @@ Den må være satt, det finnes ingen default, slik at ingen kjører mot et annet
 enn de tror. Verdiene kan også ligge i shellet, slik k6-testene gjør det:
 `set -a && . example_env/prod.env && set +a`.
 
-`npm run typecheck` typesjekker, og `npx playwright show-report` åpner rapporten.
+`npm run typecheck` typesjekker, og `npm run report` åpner rapporten fra forrige
+kjøring. Den skrives til `playwright-report/` hver gang, men åpner seg ikke selv.
 
 Playwright-utvidelsen i VS Code får `ENVIRONMENT` fra `.vscode/settings.json` på
 repo-rota, satt til at23. Endre den der for å kjøre mot et annet miljø fra IDE-en.
 
-## Prod er opt-in
+## Miljø er opt-in
 
-`test:prod` kjører `playwright test --grep @prod`, så bare tester som er eksplisitt
-merket kjøres mot prod. En ny test kan ikke havne der ved en forglemmelse, og peker du
-prod mot utagget kode, får du "no tests found".
-
-Merk en testfil eller et describe-blokk når den er verifisert mot prod, og bare hvis
-den ikke endrer data:
+Hver spec sier selv hvilke miljøer den er satt opp for, øverst i fila:
 
 ```ts
-test.describe('Tilgangsstyring', { tag: '@prod' }, () => { ... });
+runInEnvironment('at22', 'at23', 'tt02');
 ```
 
-I testmiljøene kjører alt uten merking, så nye tester bør minst være kjørt i `at23` og
-`tt02` først.
+Er miljøet ikke listet, skippes testene i fila, med begrunnelsen i rapporten. Mangler
+kallet helt, kjører fila ingen steder. Det er meningen: en test som aldri har sagt hvor
+den hører hjemme skal ikke plukkes opp av et miljø ved en forglemmelse. En spec uten
+kallet stopper hele kjøringen i `global-setup.ts`, slik at den glemte deklarasjonen
+oppdages med én gang og ikke ved at testen stille aldri kjører.
+
+Legg til `prod` først når testen er verifisert der, og bare hvis den ikke endrer data.
+Nye tester bør minst være kjørt i `at23` og `tt02` før prod føres opp.
 
 ## Struktur
 

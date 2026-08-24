@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClientDelegationClient } from "../../../../clients/authentication/index.js";
+import { ClientInfoClientInfoPaginated } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

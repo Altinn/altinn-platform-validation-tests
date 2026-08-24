@@ -1,6 +1,7 @@
 
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/enduser/authorized-parties/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
+import { EnterpriseTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 

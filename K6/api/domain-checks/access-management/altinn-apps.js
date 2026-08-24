@@ -62,7 +62,7 @@ function CheckDelegationsShape(delegations) {
  * An empty token fails the PlatformAccess policy before the controller runs, so
  * the answer is a bare 401 with no body to read.
  *
- * @param {object} response - The raw k6 response.
+ * @param {any} response - The raw k6 response.
  * @returns {boolean} True if the request was rejected as expected, false otherwise.
  */
 function CheckPlatformAccessTokenRejected(response) {
@@ -87,7 +87,7 @@ function CheckPlatformAccessTokenRejected(response) {
  * that legitimately has nothing delegable, which is why a wrong org or app in
  * the token cannot be caught on the status code alone.
  *
- * @param {object} response - The raw k6 response.
+ * @param {any} response - The raw k6 response.
  * @returns {boolean} True if the answer was an empty 200, false otherwise.
  */
 function CheckNoRightsForOtherApp(response) {

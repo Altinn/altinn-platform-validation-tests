@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { JsonPatchOperations_Operation, V1ServiceOwnerDialogsCommandsUpdate_Dialog } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * PUT /dialogs/{dialogId}
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerDialogsCommandsUpdate_Dialog} request - the dialog to store
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
@@ -50,7 +51,7 @@ export function UpdateDialog(
  * PATCH /dialogs/{dialogId}
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {JsonPatchOperations_Operation[]} operations - the patch operations to apply
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
@@ -91,7 +92,7 @@ export function PatchDialog(
  * DELETE /dialogs/{dialogId}
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.

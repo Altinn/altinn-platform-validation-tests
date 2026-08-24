@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GroupResponse } from "../../../../clients/profil/favorites/favorites.types.js";
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
 import { withRetries } from "../../common/retry.js";
 

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { Altinn2AccountFromTokenRequest, Altinn2AccountRequest, Altinn2ForgotPasswordRequest } from "../common/common.types.js";
+
 const TAGS = {
     CreateAltinn2Account: {
         action: "create-altinn2-account",
@@ -49,7 +51,7 @@ class SelfIdentifiedUserClient {
      * @param {Altinn2AccountRequest|null} [body] The account to create. Prefer
      * using {@link Altinn2AccountRequestBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAltinn2Account(body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -89,7 +91,7 @@ class SelfIdentifiedUserClient {
      * @param {Altinn2ForgotPasswordRequest|null} [body] The account to recover the
      * password for. Prefer using {@link Altinn2ForgotPasswordRequestBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SendForgotPassword(body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -129,7 +131,7 @@ class SelfIdentifiedUserClient {
      * @param {Altinn2AccountFromTokenRequest|null} [body] The token to create the
      * account from. Prefer using {@link Altinn2AccountFromTokenRequestBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAltinn2AccountFromToken(body = null, labels = null) {
         const token = this.tokenGenerator.getToken();

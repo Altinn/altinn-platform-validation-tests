@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { XacmlJsonRequestRootExternal } from "./types.js";
+
 const TAGS = {
     AuthorizePost: {
         action: "authorize-post",
@@ -51,7 +53,7 @@ class AuthorizeClient {
      * @param {XacmlJsonRequestRootExternal} request Authorization request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AuthorizePost(request, labels = null) {
         const token = this.tokenGenerator.getToken();

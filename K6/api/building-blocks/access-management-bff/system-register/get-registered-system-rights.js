@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * register endpoints.
  * @param {string} systemId System identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The rights of the system. The API does not publish a
+ * @returns {any} The rights of the system. The API does not publish a
  * schema for this response.
  */
 export function GetRegisteredSystemRights(
@@ -26,7 +26,7 @@ export function GetRegisteredSystemRights(
         "GetRegisteredSystemRights",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let rights = null;
 
     const succeed = check(res, {

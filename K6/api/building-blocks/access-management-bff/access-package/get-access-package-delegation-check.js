@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetAccessPackageDelegationCheckQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { DelegationCheck } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

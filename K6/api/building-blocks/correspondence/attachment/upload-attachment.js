@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { AttachmentOverviewExt } from "../../../../clients/correspondence/attachment.types.js";
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -22,6 +23,7 @@ export function UploadAttachment(
         () => attachmentClient.UploadAttachment(
             attachmentId,
             file,
+            undefined,
             labels,
         ),
         "UploadAttachment",

@@ -1,3 +1,5 @@
+import { BaseCorrespondenceExt, CorrespondenceContentExt, CorrespondenceQuery, CorrespondenceReplyOptionExt, CorrespondencesRoleType, CorrespondenceStatusExt, CustomNotificationRecipientExt, EmailContentType, ExternalReferenceExt, InitializeCorrespondenceNotificationExt, InitializeCorrespondencesExt, NotificationChannelExt, NotificationRecipientExt, NotificationTemplateExt } from "./correspondence.types.js";
+
 /**
  * Builder for CorrespondenceQuery.
  *
@@ -6,7 +8,7 @@
  */
 class CorrespondenceQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {CorrespondenceQuery} */ ({
             resourceId: null,
             from: null,
             to: null,
@@ -16,7 +18,7 @@ class CorrespondenceQueryBuilder {
             sendersReference: null,
             idempotentKey: null,
             altinn2CorrespondenceId: null,
-        };
+        });
     }
 
     /**

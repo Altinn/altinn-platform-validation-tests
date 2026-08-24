@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { Altinn2AccountFromTokenRequest } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SelfIdentifiedUserClient } from "../../../../clients/access-management-bff/self-identified-user/index.js";
 import { withRetries } from "../../common/retry.js";
 

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AccessListGetByOwnerQuery, AccessListGetQuery, AccessListPagedQuery, CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
+
 const TAGS = {
     AccessListGetByMember: {
         action: "access-list-get-by-member",
@@ -71,7 +73,7 @@ class AccessListClient {
     /**
      * Creates query string parameters.
      *
-     * @param {object | null} query Query parameters.
+     * @param {{[key: string]: string|number|boolean|Array<string>}|null} query Query parameters.
      * @returns {string} The result.
      */
     buildQuery(query) {
@@ -116,7 +118,7 @@ class AccessListClient {
      * @param {string} party Member party UUID URN.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetByMember(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -149,13 +151,10 @@ class AccessListClient {
      * Gets access lists for a resource owner.
      *
      * @param {string} owner Resource owner.
-     * @param {object | null} query Query parameters.
-     * @param {string} [query.token] Continuation token for paging.
-     * @param {Array<string>} [query.include] Related data to include.
-     * @param {string} [query.resource] Resource identifier to filter by.
+     * @param {AccessListGetByOwnerQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetByOwner(owner, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -189,12 +188,11 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object | null} query Query parameters.
-     * @param {Array<string>} [query.include] Related data to include.
+     * @param {AccessListGetQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGet(owner, identifier, query = null, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -233,7 +231,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListDelete(owner, identifier, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -273,7 +271,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListUpsert(owner, identifier, request, headers = {}, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -311,7 +309,7 @@ class AccessListClient {
      * @param {Array<JsonPatchOperation>} request Patch operations.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListPatch(owner, identifier, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -346,13 +344,12 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object | null} query Query parameters.
-     * @param {string} [query.token] Continuation token for paging.
+     * @param {AccessListPagedQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetMembers(
         owner,
@@ -398,7 +395,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListReplaceMembers(
         owner,
@@ -444,7 +441,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListAddMembers(
         owner,
@@ -490,7 +487,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListRemoveMembers(
         owner,
@@ -531,13 +528,12 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {object | null} query Query parameters.
-     * @param {string} [query.token] Continuation token for paging.
+     * @param {AccessListPagedQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [headers] Optional request headers.
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetResourceConnections(
         owner,
@@ -584,7 +580,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListUpsertResourceConnection(
         owner,
@@ -631,7 +627,7 @@ class AccessListClient {
      * Optional request headers.
      * @param {{[key: string]: string}} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListDeleteResourceConnection(
         owner,

@@ -1,14 +1,15 @@
 import { check } from "k6";
 
 import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
+import { MaskinportenConsumerResourcesQuery } from "../../../../../clients/access-management/enduser/maskinporten-consumers/maskinporten-consumers.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a resource delegation for a Maskinporten consumer.
  *
  * @param {MaskinportenConsumersClient} maskinportenConsumersClient Client for the Maskinporten Consumers API.
- * @param {MaskinportenConsumersResourcesQuery} queryParams
- * Query parameters. Use {@link MaskinportenConsumersResourcesQueryBuilder}.
+ * @param {MaskinportenConsumerResourcesQuery} queryParams
+ * Query parameters. Use {@link MaskinportenConsumerResourcesQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {boolean} True if the resource delegation was successfully deleted.
  */

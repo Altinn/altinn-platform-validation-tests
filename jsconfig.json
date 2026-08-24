@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "noEmit": true,
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "types": ["k6"],
+        "strict": false
+    },
+    "include": [
+        "K6/**/*.js",
+        "K6/types/*.d.ts"
+    ]
+}

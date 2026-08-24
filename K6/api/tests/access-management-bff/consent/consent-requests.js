@@ -19,7 +19,7 @@ export const options = getOptions([getActiveConsentLabel]);
  * users with the most consent requests. Here the user is drawn at random from this
  * VU's slice, so the numbers say what the endpoint costs for an ordinary user.
  *
- * @param {object[][]} data Users, one slice per VU.
+ * @param {any[][]} data Users, one slice per VU.
  */
 export default function (data) {
     const [consentClient, tokenGenerator] = getClients();

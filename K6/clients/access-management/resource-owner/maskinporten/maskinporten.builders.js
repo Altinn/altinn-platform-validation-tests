@@ -1,3 +1,5 @@
+import { ConsentLookupRequest, MaskinportenDelegationsQuery } from "./maskinporten.types.js";
+
 /**
  * Builder for Maskinporten delegations query parameters.
  *
@@ -6,7 +8,7 @@
  */
 class MaskinportenDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenDelegationsQuery} */ ({});
     }
 
     /**
@@ -61,11 +63,11 @@ class MaskinportenDelegationsQueryBuilder {
  */
 class ConsentLookupRequestBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {ConsentLookupRequest} */ ({
             id: null,
             from: null,
             to: null,
-        };
+        });
     }
 
     /**

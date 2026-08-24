@@ -437,6 +437,7 @@ export const CorrespondenceContentExt = undefined;
 export const CorrespondenceDetailsExt = undefined;
 export const CorrespondenceNotificationOverviewExt = undefined;
 export const CorrespondenceOverviewExt = undefined;
+export const CorrespondenceQuery = undefined;
 export const CorrespondenceReplyOptionExt = undefined;
 export const CorrespondenceStatusEventExt = undefined;
 export const CorrespondenceStatusExt = undefined;

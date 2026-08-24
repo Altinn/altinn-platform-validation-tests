@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AuthorizeClient } from "../../../../clients/authorization/authorize.js";
+import { XacmlJsonRequestRootExternal, XacmlJsonResponseExternal } from "../../../../clients/authorization/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

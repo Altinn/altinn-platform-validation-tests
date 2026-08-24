@@ -34,7 +34,7 @@ class AuthorizedPartiesClient {
     /**
      * Default request tags used by the client.
      *
-     * @returns {object} Default k6 tags.
+     * @returns {typeof TAGS} Default k6 tags.
      */
     static get TAGS() {
         return TAGS;
@@ -46,7 +46,7 @@ class AuthorizedPartiesClient {
      * @param {AuthorizedPartiesRequest} request Authorized parties request.
      * @param {AuthorizedPartiesQuery} queryParams Query parameters.
      * @param {{[key:string]:string}|null} labels Request labels.
-     * @returns {http.RefinedResponse} HTTP response.
+     * @returns {http.RefinedResponse<"text">} HTTP response.
      */
     GetAuthorizedParties(request, queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();

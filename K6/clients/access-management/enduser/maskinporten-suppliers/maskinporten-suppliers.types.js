@@ -197,3 +197,11 @@
  * @property {string} party Party UUID.
  * @property {string} resource Resource identifier.
  */
+
+export const AttributeDto = undefined;
+export const ConnectionDto = undefined;
+export const MaskinportenSupplierDelegationCheckQuery = undefined;
+export const MaskinportenSupplierResourcesQuery = undefined;
+export const MaskinportenSuppliersQuery = undefined;
+export const ResourceDto = undefined;
+export const ResourcePermissionDto = undefined;

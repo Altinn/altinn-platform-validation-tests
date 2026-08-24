@@ -1,4 +1,4 @@
-namespace: dialogporten
+namespace: arbeidsflate
 test_definitions:
   - test_file: K6/browser/arbeidsflate/open-arbeidsflate.js
     contexts:

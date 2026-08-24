@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { SettingsControllerUpdateSelectedLanguageRequest } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
 import { withRetries } from "../../common/retry.js";
 

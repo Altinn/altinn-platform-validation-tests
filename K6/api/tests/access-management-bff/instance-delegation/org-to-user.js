@@ -128,7 +128,7 @@ export const options = getOptions([
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with their daglig leder, one slice per VU.
+ * @returns {any[][]} Organizations with their daglig leder, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -147,7 +147,7 @@ export function setup() {
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
  *
- * @param {object[][]} data Organizations with their daglig leder, one slice per VU.
+ * @param {any[][]} data Organizations with their daglig leder, one slice per VU.
  */
 export default function (data) {
     const {
@@ -179,7 +179,6 @@ export default function (data) {
             serviceOwnerOrgNo,
             createDialog,
             false,
-            `Dialog created for instance delegation test with resource ${resource}`,
         );
         dialogId = resp;
     });
