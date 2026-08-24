@@ -64,7 +64,7 @@ class PackagesClient {
     /**
      * Searches access packages.
      *
-     * @param {PackagesSearchQuery} query Query parameters.
+     * @param {PackagesSearchQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

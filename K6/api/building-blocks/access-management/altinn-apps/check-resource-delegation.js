@@ -14,9 +14,9 @@ import { withRetries } from "../../common/retry.js";
  * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
- * @param {string} [expectedStatus] Expected delegable status for every result,
+ * @param {string|null} [expectedStatus] Expected delegable status for every result,
  * e.g. Delegable or NotDelegable. Only checked when set.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceRightDelegationCheckResultDtoPaginated|null} Delegation check results.
  */
 export function CheckResourceDelegation(

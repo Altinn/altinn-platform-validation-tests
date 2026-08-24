@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AuthorizeClient} authorizeClient Client for the Authorize API.
  * @param {XacmlJsonRequestRootExternal} request Authorization request.
- * @param {string} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
+ * @param {string|null} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
  * or NotApplicable. The decision is only checked when this is set.
  * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.

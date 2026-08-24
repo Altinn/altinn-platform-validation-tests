@@ -69,8 +69,8 @@ class InstancesClient {
      * GET /instances
      *
      * @param {{[key: string]: *}} query Query parameters, e.g. org, appId, process.currentTask, instanceOwner.partyId, continuationToken, size, order and includeDataElements.
-     * @param {string} instanceOwnerIdentifier Value for the X-Ai-InstanceOwnerIdentifier header.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {string|null} [instanceOwnerIdentifier] Value for the X-Ai-InstanceOwnerIdentifier header.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     QueryInstances(query = null, instanceOwnerIdentifier = null, labels = null) {
@@ -120,8 +120,8 @@ class InstancesClient {
      * POST /instances
      *
      * @param {Instance} request Instance to create.
-     * @param {string} appId Application id, e.g. ttd/my-app.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {string|null} [appId] Application id, e.g. ttd/my-app.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstance(request, appId = null, labels = null) {
@@ -156,7 +156,7 @@ class InstancesClient {
      * GET /instances/{instanceGuid}
      *
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceByGuid(instanceGuid, labels = null) {
@@ -187,7 +187,7 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
@@ -218,8 +218,8 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {boolean} hard Whether to hard delete the instance.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {boolean|null} [hard] Whether to hard delete the instance.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstance(instanceOwnerPartyId, instanceGuid, hard = null, labels = null) {
@@ -254,7 +254,7 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CompleteInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
@@ -286,7 +286,7 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {DataValues} request Data values to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateDataValues(instanceOwnerPartyId, instanceGuid, request, labels = null) {
@@ -319,7 +319,7 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {PresentationTexts} request Presentation texts to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePresentationTexts(instanceOwnerPartyId, instanceGuid, request, labels = null) {
@@ -351,8 +351,8 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {string} status Read status to set, e.g. Read or Unread.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {string|null} [status] Read status to set, e.g. Read or Unread.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateReadStatus(instanceOwnerPartyId, instanceGuid, status = null, labels = null) {
@@ -388,7 +388,7 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {Substatus} request Substatus to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateSubStatus(instanceOwnerPartyId, instanceGuid, request, labels = null) {

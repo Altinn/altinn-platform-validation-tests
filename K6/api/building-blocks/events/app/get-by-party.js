@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AppClient} appClient Client for the App API.
  * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
- * @param {string} [person] Person number header value.
+ * @param {string|null} [person] Person number header value.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
  */

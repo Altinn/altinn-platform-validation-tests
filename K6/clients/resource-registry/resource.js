@@ -84,7 +84,7 @@ class ResourceClient {
      * Gets all resources.
      *
      * @param {ResourceListQuery|null} [query] Optional query parameters.
-     * @param {{[key:string]:string}} [labels] See the API documentation.
+     * @param {{[key:string]:string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -138,7 +138,7 @@ class ResourceClient {
     /**
      * Exports all resources as RDF/XML.
      *
-     * @param {{[key:string]:string}} [labels] See the API documentation.
+     * @param {{[key:string]:string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -173,7 +173,7 @@ class ResourceClient {
      * Gets a single resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{versionId?: number} | object} [query] Optional query parameters.
+     * @param {{versionId?: number} | object|null} [query] Optional query parameters.
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

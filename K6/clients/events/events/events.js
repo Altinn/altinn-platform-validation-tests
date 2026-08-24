@@ -75,9 +75,9 @@ class EventsClient {
     /**
      * Retrieves cloud events based on query parameters.
      *
-     * @param {EventsQueryParams} [query]
+     * @param {EventsQueryParams|null} [query]
      * Optional event filters.
-     * @param {string} [alternativeSubject]
+     * @param {string|null} [alternativeSubject]
      * Alternative subject header value.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.

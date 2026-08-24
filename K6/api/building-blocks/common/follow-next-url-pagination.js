@@ -35,7 +35,7 @@ export function extractNextUrl(parsedBody) {
  * @param {string} token TODO: description
  * @param {string|null} nextUrl Fully qualified URL from `links.next`
  * @param {number} [maxPages=10] Maximum number of pages to fetch
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {number} Number of pages fetched (starting from the provided `nextUrl`)
  */
 export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = null) {

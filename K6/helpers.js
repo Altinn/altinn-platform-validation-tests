@@ -23,7 +23,7 @@ const testDataFetchFailures = new Counter("test_data_fetch_failures");
  * Records the outcome of one test data read.
  *
  * @param {string} file The file that was read, as the caller named it.
- * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @param {string|null} [reason] Why the read failed, or omitted when it worked.
  * @returns {void}
  */
 function recordTestDataFetch(file, reason = null) {

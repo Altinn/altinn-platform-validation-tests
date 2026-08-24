@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {DecisionClient} decisionClient Client for the Decision API.
  * @param {XacmlRequestApiModel|string} request Decision request.
- * @param {string} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
+ * @param {string|null} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
  * or NotApplicable. The decision is only checked when this is set.
  * @param {string} [contentType] Content type of the request body.
  * @param {{[key: string]: string}|null} [labels]

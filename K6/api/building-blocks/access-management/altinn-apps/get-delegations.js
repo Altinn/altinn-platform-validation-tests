@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {AppsInstanceDelegationResponseDtoPaginated|null} Delegations response.
  */
 export function GetDelegations(

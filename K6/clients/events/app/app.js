@@ -148,7 +148,7 @@ class AppClient {
      * Retrieves events related to a party.
      *
      * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
-     * @param {string} [person] Person number header value.
+     * @param {string|null} [person] Person number header value.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

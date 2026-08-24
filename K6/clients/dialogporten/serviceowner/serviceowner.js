@@ -68,7 +68,7 @@ class ServiceOwnerApiClient {
      * @param { string } conditionType TODO: description
      * @param { string } activityType TODO: description
      * @param { string } transmissionId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogsQueriesNotificationCondition(
@@ -282,7 +282,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGet_Dialog
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialog(
@@ -319,7 +319,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchActivities_DialogActivity
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogActivities(
@@ -357,7 +357,7 @@ class ServiceOwnerApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } activityId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogActivity(
@@ -395,7 +395,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabel_ServiceOwnerLabel
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetServiceOwnerLabels(
@@ -432,7 +432,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchSeenLogs_DialogSeenLog
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLogs(
@@ -470,7 +470,7 @@ class ServiceOwnerApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } seenLogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLog(
@@ -508,7 +508,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogTransmission
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmissions(
@@ -546,7 +546,7 @@ class ServiceOwnerApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } transmissionId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmission(
@@ -583,7 +583,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContext
      *
      * @param queryParams - object containing query parameters for the request
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetEndUserContext(
@@ -624,7 +624,7 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogLookupQueriesGet_DialogLookup
      *
      * @param queryParams - object containing query parameters for the request
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogLookup(
@@ -668,8 +668,8 @@ class ServiceOwnerApiClient {
      *
      * @param {string} dialogId - id of the dialog
      * @param {V1ServiceOwnerDialogsCommandsUpdate_Dialog} request - the dialog to store
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PutDialog(dialogId, request, ifMatch = null, labels = null) {
@@ -710,8 +710,8 @@ class ServiceOwnerApiClient {
      *
      * @param {string} dialogId - id of the dialog
      * @param {JsonPatchOperations_Operation[]} operations - the patch operations to apply
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PatchDialog(dialogId, operations, ifMatch = null, labels = null) {
@@ -751,8 +751,8 @@ class ServiceOwnerApiClient {
      * DELETE /dialogs/{dialogId}
      *
      * @param {string} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     DeleteDialog(dialogId, ifMatch = null, labels = null) {
@@ -793,8 +793,8 @@ class ServiceOwnerApiClient {
      * @param {string} dialogId - id of the dialog
      * @param {string} transmissionId - id of the transmission
      * @param {V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest} request - the transmission to store
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PutTransmission(dialogId, transmissionId, request, ifMatch = null, labels = null) {
@@ -834,8 +834,8 @@ class ServiceOwnerApiClient {
      * POST /dialogs/{dialogId}/actions/purge
      *
      * @param {string} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PurgeDialog(dialogId, ifMatch = null, labels = null) {
@@ -874,8 +874,8 @@ class ServiceOwnerApiClient {
      * POST /dialogs/{dialogId}/actions/restore
      *
      * @param {string} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     RestoreDialog(dialogId, ifMatch = null, labels = null) {
@@ -914,8 +914,8 @@ class ServiceOwnerApiClient {
      * POST /dialogs/{dialogId}/actions/freeze
      *
      * @param {string} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     FreezeDialog(dialogId, ifMatch = null, labels = null) {
@@ -955,8 +955,8 @@ class ServiceOwnerApiClient {
      *
      * @param {string} dialogId - id of the dialog
      * @param {V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label} request - the label to add
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PostServiceOwnerLabels(dialogId, request, ifMatch = null, labels = null) {
@@ -997,8 +997,8 @@ class ServiceOwnerApiClient {
      *
      * @param {string} dialogId - id of the dialog
      * @param {string} label - the label to remove
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     DeleteServiceOwnerLabel(dialogId, label, ifMatch = null, labels = null) {
@@ -1038,9 +1038,9 @@ class ServiceOwnerApiClient {
      *
      * @param {string} dialogId - id of the dialog
      * @param {V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
-     * @param {string} enduserId - the end user to act on behalf of
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [enduserId] - the end user to act on behalf of
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PutEndUserContextSystemLabels(dialogId, request, enduserId = null, ifMatch = null, labels = null) {
@@ -1084,8 +1084,8 @@ class ServiceOwnerApiClient {
      * POST /dialogs/endusercontext/systemlabels/actions/bulkset
      *
      * @param {V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
-     * @param {string} enduserId - the end user to act on behalf of
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {string|null} [enduserId] - the end user to act on behalf of
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PostBulkSetSystemLabels(request, enduserId = null, labels = null) {

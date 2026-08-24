@@ -75,7 +75,7 @@ class RegisterClient {
      * Authenticated with a platform access token.
      *
      * @param {Array<PartyUrn>} urns The party identifiers to look up.
-     * @param {Array<PartyFieldInclude>} [fields]
+     * @param {Array<PartyFieldInclude>|null} [fields]
      * The fields to include in the response. Everything outside the default set
      * has to be asked for, so a caller that reads `user.username` has to include
      * `user` or `user.username` here.
@@ -139,7 +139,7 @@ class RegisterClient {
      * @param {string} partyUuid The party whose customers to get.
      * @param {string} ccrRole The role the customers have assigned, from
      * CcrCustomerRoles, e.g. "revisor".
-     * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
+     * @param {Array<PartyFieldInclude>|null} [fields] The party fields to include.
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      */
@@ -199,7 +199,7 @@ class RegisterClient {
      * @param {string} partyUuid The party that assigned the role.
      * @param {string} ccrRole The role that was assigned, from CcrHolderRoles,
      * e.g. "daglig-leder".
-     * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
+     * @param {Array<PartyFieldInclude>|null} [fields] The party fields to include.
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      */

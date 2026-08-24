@@ -96,7 +96,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialog
      *
      * @param {string} dialogId The ID of the dialog to retrieve
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns TODO: description
      */
     GetDialog(dialogId, labels = null) {
@@ -131,7 +131,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogActivities
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogActivities(
@@ -170,7 +170,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } activityId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogActivity(
@@ -209,7 +209,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogSeenLogs
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLogs(
@@ -248,7 +248,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } seenLogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLog(
@@ -287,7 +287,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogTransmissions
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmissions(
@@ -326,7 +326,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } transmissionId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmission(
@@ -364,7 +364,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogContextLabellog
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogContextLabellog(
@@ -401,7 +401,7 @@ class EnduserApiClient {
      * Get parties
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetParties
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetParties(
@@ -437,7 +437,7 @@ class EnduserApiClient {
      * Get service resources
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetServiceResources
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetServiceResources(
@@ -474,7 +474,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogLookup
      *
      * @param {string} dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogLookup(
@@ -516,7 +516,7 @@ class EnduserApiClient {
      * @param {string} dialogId - id of the dialog to set labels on
      * @param {V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
      * @param {string|null} ifMatch - revision the caller last saw, sent as If-Match so a concurrent write is rejected
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PutDialogSystemLabels(dialogId, request, ifMatch = null, labels = null) {
@@ -557,7 +557,7 @@ class EnduserApiClient {
      *
      * @param {V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
      * @param {string|null} ifMatch - revision the caller last saw, sent as If-Match so a concurrent write is rejected
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PostBulkSetSystemLabels(request, ifMatch = null, labels = null) {

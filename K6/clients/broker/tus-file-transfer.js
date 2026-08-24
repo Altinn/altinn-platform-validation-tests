@@ -102,8 +102,8 @@ class TusFileTransferClient {
      * POST /filetransfer/upload/tus/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {number} [uploadLength] Total length of the upload in bytes.
-     * @param {string} [uploadConcat] Tus concatenation header, e.g. "partial"
+     * @param {number|null} [uploadLength] Total length of the upload in bytes.
+     * @param {string|null} [uploadConcat] Tus concatenation header, e.g. "partial"
      * or "final;/url1 /url2".
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

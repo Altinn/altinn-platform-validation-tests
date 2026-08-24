@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
- * @param {string} [expectedStatus] Expected revoke status for every right,
+ * @param {string|null} [expectedStatus] Expected revoke status for every right,
  * e.g. Revoked or NotRevoked. Only checked when set.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AppsInstanceRevokeResponseDtoPaginated|null} Revocation result.

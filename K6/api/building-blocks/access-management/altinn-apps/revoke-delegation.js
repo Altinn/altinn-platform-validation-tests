@@ -19,9 +19,9 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
  * @param {AppsInstanceDelegationRequestDto} request Revoke request.
- * @param {string} [expectedStatus] Expected status for every right in the
+ * @param {string|null} [expectedStatus] Expected status for every right in the
  * response, e.g. Delegated or NotDelegated. Only checked when set.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {AppsInstanceDelegationResponseDto|null} Revoke response.
  */
 export function RevokeDelegation(
