@@ -9,7 +9,17 @@
         "types": [
             "k6"
         ],
-        "strict": true
+        // TypeScript defaults strict to true, so this has to stay explicit
+        // while we enable the family one flag at a time. The two still missing
+        // are strictNullChecks and noImplicitAny, which account for about 1500
+        // errors between them. Everything below is already clean.
+        "strict": false,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "strictBuiltinIteratorReturn": true,
+        "useUnknownInCatchVariables": true
     },
     "include": [
         "K6/**/*.js",
