@@ -10,30 +10,54 @@ export const options = getOptions([healthLabel]);
 
 export default function () {
     requireEnv(["AF_UI_BASE_URL"]);
+
     const url = `${__ENV.AF_UI_BASE_URL}/api/health`;
     const res = withRetries(
         () => http.get(url, { tags: healthLabel }),
         "arbeidsflate-health",
     );
 
-    const succeed = check(res, {
+    const statusOk = check(res, {
         "status code is 200": (r) => r.status === 200,
     });
 
-    if (!succeed) {
-        console.log(`Arbeidsflate health check failed: ${res.status} ${res.body}`);
+    if (!statusOk) {
+        console.log(
+            `Arbeidsflate health check failed: ${res.status} ${res.body}`,
+        );
         return;
     }
 
-    const body = res.json();
+    let body;
 
-    check(body, {
-        "overall status is ok": (b) => b.status === "ok",
+    try {
+        body = res.json();
+        check(null, {
+            "response is valid JSON": () => true,
+        });
+    } catch (error) {
+        console.log(`Arbeidsflate health response is not valid JSON: ${error}`);
+        check(null, {
+            "response is valid JSON": () => false,
+        });
+        return;
+    }
+
+    const overallOk = check(body, {
+        "overall status is ok": (b) => b?.status === "ok",
+        "health checks are present": (b) =>
+            b?.healthChecks &&
+            typeof b.healthChecks === "object" &&
+            !Array.isArray(b.healthChecks),
     });
+
+    if (!overallOk || !body?.healthChecks) {
+        return;
+    }
 
     for (const [name, healthCheck] of Object.entries(body.healthChecks)) {
         check(healthCheck, {
-            [`${name} status is ok`]: (hc) => hc.status === "ok",
+            [`${name} status is ok`]: (hc) => hc?.status === "ok",
         });
     }
 }
