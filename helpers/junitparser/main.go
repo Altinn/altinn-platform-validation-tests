@@ -302,7 +302,13 @@ func main() {
 		WithLabelValues(deployEnv).
 		Set(runStatus)
 
-	if err := push.New(*promPushGatewayEndpoint, "playwright_tests").
+	// TODO: Remove deploy_env from metric labels and use the Pushgateway
+	// grouping key as the canonical environment label.
+	// This will require updating the Prometheus scrape configuration
+	// (honor_labels)
+	if err := push.
+		New(*promPushGatewayEndpoint, "playwright_tests").
+		Grouping("environment", deployEnv).
 		Gatherer(reg).
 		Push(); err != nil {
 		log.Fatalf("Could not push metrics: %v", err)
