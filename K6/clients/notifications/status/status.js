@@ -42,7 +42,7 @@ class StatusClient {
      * Retrieves the delivery manifest for a specific notification order.
      *
      * @param {string} id Notification order identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -78,7 +78,7 @@ class StatusClient {
      * Retrieves an array of order status change history.
      *
      * @param {StatusFeedQuery|null} queryParams Optional feed query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

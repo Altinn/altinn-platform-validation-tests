@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {number} partyId Party id of the organisation.
  * @param {NewSystemUserRequest|null} [body] The system user to create. Use
  * {@link NewSystemUserRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The created system user. The API does not publish a
  * schema for this response.
  */

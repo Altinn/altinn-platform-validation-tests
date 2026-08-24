@@ -65,7 +65,7 @@ class PackagesClient {
      * Searches access packages.
      *
      * @param {PackagesSearchQuery} query Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -129,7 +129,7 @@ class PackagesClient {
     /**
      * Exports access packages.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -163,7 +163,7 @@ class PackagesClient {
     /**
      * Gets access package group.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -198,7 +198,7 @@ class PackagesClient {
      * Gets access package group by id.
      *
      * @param {string} id Group identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -233,7 +233,7 @@ class PackagesClient {
      * Gets areas for an access package group.
      *
      * @param {string} id Group identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -268,7 +268,7 @@ class PackagesClient {
      * Gets area by id.
      *
      * @param {string} id Area identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -303,7 +303,7 @@ class PackagesClient {
      * Gets packages for an area.
      *
      * @param {string} id Area identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -338,7 +338,7 @@ class PackagesClient {
      * Gets package by id.
      *
      * @param {string} id Package identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -373,7 +373,7 @@ class PackagesClient {
      * Gets package by URN.
      *
      * @param {string} urnValue Package URN.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -408,7 +408,7 @@ class PackagesClient {
      * Gets resources for a package.
      *
      * @param {string} id Package identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

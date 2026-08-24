@@ -19,7 +19,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} ccrRole The role that was assigned, from CcrHolderRoles,
  * e.g. "daglig-leder".
  * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Party>|null} The parties holding the role, or null on failure.
  */
 export function GetRoleHolders(

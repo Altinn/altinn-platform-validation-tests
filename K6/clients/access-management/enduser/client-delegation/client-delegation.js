@@ -79,9 +79,9 @@ class ClientDelegationClient {
      *
      * @param {MyClientsQuery|null} [query]
      * Optional query parameters. Prefer using {@link MyClientsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -142,7 +142,7 @@ class ClientDelegationClient {
      * @param {DelegationBatchInputDto|null} [body]
      * Roles and access packages to revoke. Prefer using
      * {@link DelegationBatchInputBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -195,7 +195,7 @@ class ClientDelegationClient {
     /**
      * Gets the client providers the authenticated party is a client of.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -232,7 +232,7 @@ class ClientDelegationClient {
      * @param {DeleteMyClientProviderQuery} query
      * Query parameters. Prefer using
      * {@link DeleteMyClientProviderQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -286,7 +286,7 @@ class ClientDelegationClient {
      * @param {DelegationBatchInputDto|null} [body]
      * Roles and access packages to revoke. Prefer using
      * {@link DelegationBatchInputBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -341,9 +341,9 @@ class ClientDelegationClient {
      *
      * @param {ClientsQuery} query
      * Query parameters. Prefer using {@link ClientsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -402,7 +402,7 @@ class ClientDelegationClient {
      * @param {ClientAccessPackagesQuery} query
      * Query parameters. Prefer using
      * {@link ClientAccessPackagesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -452,9 +452,9 @@ class ClientDelegationClient {
      *
      * @param {AgentsQuery} query
      * Query parameters. Prefer using {@link AgentsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -514,7 +514,7 @@ class ClientDelegationClient {
      * Query parameters. Prefer using {@link CreateAgentQueryBuilder}.
      * @param {PersonInput|null} [body]
      * The person to add as agent. Prefer using {@link PersonInputBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -569,7 +569,7 @@ class ClientDelegationClient {
      *
      * @param {DeleteAgentQuery} query
      * Query parameters. Prefer using {@link DeleteAgentQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -619,7 +619,7 @@ class ClientDelegationClient {
      *
      * @param {DeleteAgentClientsQuery} query
      * Query parameters. Prefer using {@link DeleteAgentClientsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -670,7 +670,7 @@ class ClientDelegationClient {
      * @param {AgentAccessPackagesQuery} query
      * Query parameters. Prefer using
      * {@link AgentAccessPackagesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -724,7 +724,7 @@ class ClientDelegationClient {
      * @param {DelegationBatchInputDto|null} [body]
      * Roles and access packages to delegate. Prefer using
      * {@link DelegationBatchInputBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -783,7 +783,7 @@ class ClientDelegationClient {
      * @param {DelegationBatchInputDto|null} [body]
      * Roles and access packages to revoke. Prefer using
      * {@link DelegationBatchInputBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
  * @param {SystemUserUpdateDto} request Update payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether update succeeded.
  */
 export function SystemUserUpdate(

@@ -44,7 +44,7 @@ class AppClient {
      * Inserts a new event.
      *
      * @param {AppCloudEventRequestModel} request Event payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -82,7 +82,7 @@ class AppClient {
      * @param {string} org Application owner acronym.
      * @param {string} app Application name.
      * @param {AppEventsByAppQuery|null} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -149,7 +149,7 @@ class AppClient {
      *
      * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
      * @param {string} [person] Person number header value.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

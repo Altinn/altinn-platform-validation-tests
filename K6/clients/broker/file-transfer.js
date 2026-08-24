@@ -62,7 +62,7 @@ class FileTransferClient {
      *
      * @param {FileTransferInitalizeExt} body File transfer metadata.
      * Prefer using {@link FileTransferInitializeRequestBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeFileTransfer(body, labels = null) {
@@ -101,7 +101,7 @@ class FileTransferClient {
      * @param {FileTransferQuery|null} [query]
      * Optional query parameters. Prefer using
      * {@link FileTransferQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransfers(query = null, labels = null) {
@@ -152,7 +152,7 @@ class FileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {*} body Binary file content.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadFileTransfer(fileTransferId, body, labels = null) {
@@ -196,7 +196,7 @@ class FileTransferClient {
      * "Metadata.FileName", "Metadata.ResourceId", "Metadata.Sender" and
      * "Metadata.Recipients".
      * @param {*} file File part, as returned by http.file().
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeAndUploadFileTransfer(metadata, file, labels = null) {
@@ -250,7 +250,7 @@ class FileTransferClient {
      * GET /filetransfer/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransfer(fileTransferId, labels = null) {
@@ -286,7 +286,7 @@ class FileTransferClient {
      * GET /filetransfer/{fileTransferId}/details
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransferDetails(fileTransferId, labels = null) {
@@ -322,7 +322,7 @@ class FileTransferClient {
      * GET /filetransfer/{fileTransferId}/download
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadFileTransfer(fileTransferId, labels = null) {
@@ -357,7 +357,7 @@ class FileTransferClient {
      * POST /filetransfer/{fileTransferId}/confirmdownload
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmDownload(fileTransferId, labels = null) {

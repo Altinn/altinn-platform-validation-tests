@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetMyClientsQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetMyClientsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<MyClientDelegation>|null} Clients grouped by client
  * provider.
  */

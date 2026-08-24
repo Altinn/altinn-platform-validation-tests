@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ConnectionClient} connectionClient Client for the connection
  * endpoints.
  * @param {number} partyId Party id of the reportee.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<User>|null} The right holders of the reportee.
  */
 export function GetReporteeRightHolders(

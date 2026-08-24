@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {CreateResourceRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreateResourceRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The created request. The API does not publish a
  * schema for this response.
  */

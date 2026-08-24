@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
  * or NotApplicable. The decision is only checked when this is set.
  * @param {string} [contentType] Content type of the request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {XacmlJsonResponseExternal|null} Decision response.
  */

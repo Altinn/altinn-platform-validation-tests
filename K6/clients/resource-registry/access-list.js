@@ -116,7 +116,7 @@ class AccessListClient {
      * Gets access lists for a given member.
      *
      * @param {string} party Member party UUID URN.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -152,7 +152,7 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {AccessListGetByOwnerQuery|null} [query] Query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -189,8 +189,8 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {AccessListGetQuery|null} [query] Query parameters.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -227,9 +227,9 @@ class AccessListClient {
      *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -267,9 +267,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {CreateAccessListModel} request Access list payload.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -307,7 +307,7 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {Array<JsonPatchOperation>} request Patch operations.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -345,9 +345,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {AccessListPagedQuery|null} [query] Query parameters.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -391,9 +391,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {{data:Array<string>}} request Members payload.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -437,9 +437,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {{data:Array<string>}} request Members payload.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -483,9 +483,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {{data:Array<string>}} request Members payload.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -529,9 +529,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {AccessListPagedQuery|null} [query] Query parameters.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -576,9 +576,9 @@ class AccessListClient {
      * @param {string} identifier Access list identifier.
      * @param {string} resourceIdentifier Resource identifier.
      * @param {UpsertAccessListResourceConnectionDto} request Resource connection payload.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -623,9 +623,9 @@ class AccessListClient {
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {string} resourceIdentifier Resource identifier.
-     * @param {{[key: string]: string}} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [headers] Optional request headers.
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

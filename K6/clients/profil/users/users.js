@@ -46,7 +46,7 @@ class UsersClient {
      * GET /users/{userID}
      *
      * @param {number} userID User id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -83,7 +83,7 @@ class UsersClient {
      * GET /users/byuuid/{userUuid}
      *
      * @param {string} userUuid User UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -119,7 +119,7 @@ class UsersClient {
      *
      * GET /users/current
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -156,7 +156,7 @@ class UsersClient {
      * POST /users
      *
      * @param {string} ssn Social security number.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -194,7 +194,7 @@ class UsersClient {
      * PUT /users/current/profilesettings
      *
      * @param {ProfileSettingPutRequest} request Profile settings.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -232,7 +232,7 @@ class UsersClient {
      * PATCH /users/current/profilesettings
      *
      * @param {ProfileSettingsPatchRequest} request Profile settings to change.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

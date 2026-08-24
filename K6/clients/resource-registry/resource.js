@@ -174,7 +174,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {{versionId?: number} | object} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResource(id, query = null, labels = null) {
@@ -228,7 +228,7 @@ class ResourceClient {
      * Creates a resource.
      *
      * @param {ServiceResource} resource Resource payload.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreateResource(resource, labels = null) {
@@ -264,7 +264,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {ServiceResource} resource Updated resource.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdateResource(id, resource, labels = null) {
@@ -299,7 +299,7 @@ class ResourceClient {
      * Deletes a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceDeleteResource(id, labels = null) {
@@ -333,7 +333,7 @@ class ResourceClient {
      * Gets the XACML policy for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicy(id, labels = null) {
@@ -368,7 +368,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreatePolicy(id, policyFile, labels = null) {
@@ -409,7 +409,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdatePolicy(id, policyFile, labels = null) {
@@ -450,7 +450,7 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {{reloadFromXacml?: boolean}|null} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicySubjects(id, query = null, labels = null) {
@@ -504,7 +504,7 @@ class ResourceClient {
      * Gets flattened policy rules for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -539,7 +539,7 @@ class ResourceClient {
      * Gets rights from a resource policy.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -574,7 +574,7 @@ class ResourceClient {
      * Gets resources connected to subjects.
      *
      * @param {Array<string>} subjects List of subjects for resource information.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -611,7 +611,7 @@ class ResourceClient {
      *
      * @param {ResourceSearchQuery|null} [query] Query parameters.
      * Optional search query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -666,7 +666,7 @@ class ResourceClient {
      *
      * @param {UpdatedResourceSubjectsQuery|null} [query] Query parameters.
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

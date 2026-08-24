@@ -12,7 +12,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link CreateResourceRightsQueryBuilder}.
  * @param {RightKeyListDto|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True when the request succeeds.
  */

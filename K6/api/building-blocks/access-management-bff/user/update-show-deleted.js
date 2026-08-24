@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UserClient} userClient Client for the user endpoints.
  * @param {boolean|null} [body] Whether to show deleted entities.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ProfileSettingPreference|null} The updated profile setting
  * preferences.
  */

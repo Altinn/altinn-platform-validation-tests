@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {DeleteMyClientProvidersQuery|null} [queryParams] Optional query
  * parameters. Use {@link DeleteMyClientProvidersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the client provider was removed.
  */
 export function DeleteMyClientProviders(

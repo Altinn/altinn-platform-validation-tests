@@ -52,7 +52,7 @@ class SystemUserClient {
      * Requires the `altinn:maskinporten/systemuser.read` scope.
      *
      * @param {SystemUserByExternalIdQuery|null} query Query parameters, with the keys "system-id" and "external-ref".
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -110,7 +110,7 @@ class SystemUserClient {
      * Requires the `altinn:portal/enduser` scope.
      *
      * @param {SystemUserUpdateDto} request Updated SystemUser.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -148,7 +148,7 @@ class SystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {SystemUserVendorQuery|null} query Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -207,7 +207,7 @@ class SystemUserClient {
      *
      * @param {string} systemId System identifier.
      * @param {SystemUserPagedQuery|null} [query] Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -269,7 +269,7 @@ class SystemUserClient {
      * Requires the `altinn:authentication/systemuser.admin` scope.
      *
      * @param {SystemUserPagedQuery|null} [query] Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

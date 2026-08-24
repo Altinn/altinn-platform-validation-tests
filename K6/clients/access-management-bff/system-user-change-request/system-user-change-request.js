@@ -50,7 +50,7 @@ class SystemUserChangeRequestClient {
      * Gets a system user change request.
      *
      * @param {string} changeRequestId Change request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetChangeRequest(changeRequestId, labels = null) {
@@ -85,7 +85,7 @@ class SystemUserChangeRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} changeRequestId Change request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveChangeRequest(partyId, changeRequestId, labels = null) {
@@ -126,7 +126,7 @@ class SystemUserChangeRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} changeRequestId Change request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectChangeRequest(partyId, changeRequestId, labels = null) {
@@ -166,7 +166,7 @@ class SystemUserChangeRequestClient {
      * Gets the logout redirect for a system user change request.
      *
      * @param {string} changeRequestId Change request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetChangeRequestLogout(changeRequestId, labels = null) {

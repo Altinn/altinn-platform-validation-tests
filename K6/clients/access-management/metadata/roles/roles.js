@@ -52,7 +52,7 @@ class RolesClient {
     /**
      * Gets roles.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -87,7 +87,7 @@ class RolesClient {
      * Gets a role.
      *
      * @param {string} id Role identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -123,7 +123,7 @@ class RolesClient {
      *
      * @param {RolesGetRolePackagesQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -189,7 +189,7 @@ class RolesClient {
      *
      * @param {RolesGetRoleResourcesQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -256,7 +256,7 @@ class RolesClient {
      * @param {string} id Role identifier.
      * @param {RolesGetRolePackagesByIdQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -313,7 +313,7 @@ class RolesClient {
      * @param {string} id Role identifier.
      * @param {RolesGetRoleResourcesByIdQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

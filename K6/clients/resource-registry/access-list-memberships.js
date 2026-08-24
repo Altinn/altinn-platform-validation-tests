@@ -38,7 +38,7 @@ class AccessListMembershipsClient {
      * Gets memberships for parties and resources.
      *
      * @param {AccessListMembershipsQuery|null} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

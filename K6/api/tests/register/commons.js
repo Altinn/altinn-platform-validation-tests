@@ -158,7 +158,7 @@ export function getEnhetsregisteretClient() {
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} organizationUuid The uuid of the organization holding the role.
  * @param {string} ccrRole The role the customers have assigned, e.g. "revisor".
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<string>|null} Organization numbers, or null when the call failed.
  */
 export function getCustomerOrganizationNumbers(
@@ -191,7 +191,7 @@ export function getCustomerOrganizationNumbers(
  * @param {string} ccrRole The role under test, e.g. "revisor".
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {boolean} randomize Whether to draw at random rather than take the first.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string} Organization number of the customer to move.
  */
 export function drawCustomerToMove(
@@ -247,7 +247,7 @@ export function drawCustomerToMove(
  * @param {string} targetOrg Organization number of the customer being moved.
  * @param {boolean} expectPresent Whether the customer should end up in the list.
  * @param {string} testscenario Prefix used in log and check output.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True once Register agrees, false if it never did.
  */
 export function waitForRegister(

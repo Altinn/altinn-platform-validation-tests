@@ -32,7 +32,7 @@ class FavoritesClient {
     /**
      * Gets the favorite parties for the current user.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -67,7 +67,7 @@ class FavoritesClient {
      * Adds a party to the favorites group for the current user.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -102,7 +102,7 @@ class FavoritesClient {
      * Removes a party from the favorites group for the current user.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

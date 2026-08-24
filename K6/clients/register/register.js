@@ -79,7 +79,7 @@ class RegisterClient {
      * The fields to include in the response. Everything outside the default set
      * has to be asked for, so a caller that reads `user.username` has to include
      * `user` or `user.username` here.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      * Note that the swagger says PartyRecordListObject here, but at22 answers with
      * the Party shape: it carries `urn` and a flat `user.usernames`, where a
@@ -140,7 +140,7 @@ class RegisterClient {
      * @param {string} ccrRole The role the customers have assigned, from
      * CcrCustomerRoles, e.g. "revisor".
      * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      */
     GetCustomers(partyUuid, ccrRole, fields = null, labels = null) {
@@ -200,7 +200,7 @@ class RegisterClient {
      * @param {string} ccrRole The role that was assigned, from CcrHolderRoles,
      * e.g. "daglig-leder".
      * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      */
     GetRoleHolders(partyUuid, ccrRole, fields = null, labels = null) {

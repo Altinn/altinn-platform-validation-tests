@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {CreateAccessListModel} request Access list payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDto|null} Access list information.
  */
 export function AccessListCreateOrUpdate(

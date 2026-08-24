@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * system user request endpoints.
  * @param {number} partyId Party id of the organisation.
  * @param {string} requestId System user request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the request was approved.
  */
 export function ApproveSystemUserRequest(

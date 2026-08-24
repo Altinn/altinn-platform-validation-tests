@@ -41,7 +41,7 @@ class EventsClient {
      * Posts a new CloudEvent.
      *
      * @param {CloudEvent} request CloudEvent payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -79,7 +79,7 @@ class EventsClient {
      * Optional event filters.
      * @param {string} [alternativeSubject]
      * Alternative subject header value.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

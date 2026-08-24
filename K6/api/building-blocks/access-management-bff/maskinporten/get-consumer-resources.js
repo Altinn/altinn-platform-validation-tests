@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetConsumerResourcesQuery} queryParams Query parameters. Use
  * {@link GetConsumerResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegation>|null} The resources the consumers hold.
  */
 export function GetConsumerResources(

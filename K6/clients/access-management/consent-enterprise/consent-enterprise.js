@@ -46,7 +46,7 @@ class EnterpriseClient {
      * Requires an organization token with the `altinn:consentrequests.write` scope.
      *
      * @param {ConsentRequestDto} request Consent request payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -84,7 +84,7 @@ class EnterpriseClient {
      * Requires an organization token with the `altinn:consentrequests.read` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -122,7 +122,7 @@ class EnterpriseClient {
      *
      * @param {ConsentRequestEventsQuery|null} [query]
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

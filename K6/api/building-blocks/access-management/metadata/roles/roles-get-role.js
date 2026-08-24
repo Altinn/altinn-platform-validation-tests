@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {string} id Role identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RoleDto[]|null} The roles the id resolves to.
  */
 export function RolesGetRole(

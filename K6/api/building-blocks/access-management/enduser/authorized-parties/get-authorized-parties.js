@@ -12,7 +12,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {EndUserAuthorizedPartiesQuery|null} [queryParams]
  * Optional query parameters. Prefer using
  * {@link EndUserAuthorizedPartiesQueryBuilder} to construct this object.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request tags.
  * @returns {AuthorizedPartyDtoListPaginatedResult} TODO: description
  */

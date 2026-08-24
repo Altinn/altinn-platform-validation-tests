@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClientDelegationClient} systemUserClientDelegationClient Client for SystemUserClientDelegation API.
  * @param {string} agent System user id.
  * @param {string} client Client id.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {DelegationResponse[]|null} Delegations.
  */
 export function RemoveClient(

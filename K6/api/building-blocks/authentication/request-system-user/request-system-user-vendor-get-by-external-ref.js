@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} systemId System identifier.
  * @param {string} orgNo Organization number.
  * @param {string} externalRef External reference.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
 export function RequestSystemUserVendorGetByExternalRef(
