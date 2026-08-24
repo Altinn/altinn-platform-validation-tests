@@ -11,6 +11,9 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 export { setup } from "./commons.js";
 
+/**
+ * @param {ReturnType<typeof import("./commons.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [clients, approverTokenGenerator] = getClients();
     const customer = getItemFromList(data, randomize);

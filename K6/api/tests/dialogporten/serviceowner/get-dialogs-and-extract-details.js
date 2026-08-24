@@ -38,6 +38,9 @@ export const options = getOptions([
     getDialogLookupLabel,
 ]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
     const ssn = getItemFromList(data, randomize).ssn;

@@ -87,6 +87,9 @@ export function setup() {
  * Main function executed by each VU.
  */
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     const segmentedData = data;
     const maskinportenSchemaApiClient = getClients();

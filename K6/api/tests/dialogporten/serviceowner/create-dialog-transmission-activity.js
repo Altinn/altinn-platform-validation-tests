@@ -12,6 +12,9 @@ const create_activity_label = { step: "create-activity" };
 
 export const options = getOptions([create_dialog_label, create_transmission_label, create_activity_label]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
     const noTransmissionsActivities = true;

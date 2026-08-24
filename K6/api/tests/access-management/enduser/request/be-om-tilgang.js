@@ -43,6 +43,9 @@ export const options = getOptions([
     approveLabel,
 ]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [connectionsApiClient, requestApiClient, tokenGenerator] = getClients();
 

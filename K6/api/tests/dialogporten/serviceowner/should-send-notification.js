@@ -58,6 +58,9 @@ export function getClients() {
     return [serviceOwnerApiClient];
 }
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
     const dialogWithTransmission = getItemFromList(data, randomize);
