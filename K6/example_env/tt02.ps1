@@ -1,0 +1,12 @@
+$env:TOKEN_GENERATOR_USERNAME=""
+$env:TOKEN_GENERATOR_PASSWORD=""
+
+$env:BASE_URL="https://platform.tt02.altinn.no"
+$env:ALTINN2_BASE_URL="https://tt02.altinn.no"
+$env:ALTINN_CDN_BASE_URL="https://altinncdn.no"
+$env:AM_UI_BASE_URL="https://am.ui.tt02.altinn.no"
+$env:AF_UI_BASE_URL="https://af.tt02.altinn.no"
+$env:INFO_CLOUD_URL="https://info.tt02.altinn.no"
+$env:DEPLOY_ENV="tt02"
+$env:ENV_TYPE="staging"
+$env:ENVIRONMENT="tt02"
