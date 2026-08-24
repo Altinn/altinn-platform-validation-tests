@@ -68,7 +68,7 @@ export function CheckResourceDelegation(
 
     if (parsed && expectedStatus !== null) {
         check(result, {
-            [`CheckResourceDelegation - every result is ${expectedStatus}`]: (b) => {
+            [`CheckResourceDelegation - every result is ${expectedStatus}`]: (/** @type {ResourceRightDelegationCheckResultDtoPaginated|null} */ b) => {
                 const data = b?.data ?? [];
 
                 return data.length > 0

@@ -68,7 +68,7 @@ export function DeleteDelegations(
 
     if (parsed && expectedStatus !== null) {
         check(result, {
-            [`DeleteDelegations - every right is ${expectedStatus}`]: (b) => {
+            [`DeleteDelegations - every right is ${expectedStatus}`]: (/** @type {AppsInstanceRevokeResponseDtoPaginated|null} */ b) => {
                 const rights = (b?.data ?? []).flatMap(
                     (delegation) => delegation.rights ?? [],
                 );

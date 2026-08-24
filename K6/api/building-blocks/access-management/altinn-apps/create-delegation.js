@@ -71,7 +71,7 @@ export function CreateDelegation(
 
     if (parsed && expectedStatus !== null) {
         check(delegation, {
-            [`CreateDelegation - every right is ${expectedStatus}`]: (b) => {
+            [`CreateDelegation - every right is ${expectedStatus}`]: (/** @type {AppsInstanceDelegationResponseDto|null} */ b) => {
                 const rights = b?.rights ?? [];
 
                 return rights.length > 0

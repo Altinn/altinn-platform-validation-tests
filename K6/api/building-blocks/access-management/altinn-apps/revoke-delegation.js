@@ -75,7 +75,7 @@ export function RevokeDelegation(
 
     if (parsed && expectedStatus !== null) {
         check(delegation, {
-            [`RevokeDelegation - every right is ${expectedStatus}`]: (b) => {
+            [`RevokeDelegation - every right is ${expectedStatus}`]: (/** @type {AppsInstanceDelegationResponseDto|null} */ b) => {
                 const rights = b?.rights ?? [];
 
                 return rights.length > 0

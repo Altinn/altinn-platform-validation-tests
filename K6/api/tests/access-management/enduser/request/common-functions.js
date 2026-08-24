@@ -99,8 +99,8 @@ export function getClients() {
 /**
  * Builds enduser personal-token options for a given user.
  *
- * @param {string=|null} [pid] - the user's national identity number
- * @param {string=|null} [partyUuid] - the user's party uuid
+ * @param {string|null} [pid] - the user's national identity number
+ * @param {string|null} [partyUuid] - the user's party uuid
  * @returns Token generator options for the given user.
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {
