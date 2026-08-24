@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -13,12 +14,12 @@ import (
 
 type TestSuites struct {
 	XMLName  xml.Name `xml:"testsuites"`
-	ID       string   `xml:"id,attr"`   // Doesn't look like this is set
-	Name     string   `xml:"name,attr"` // Doesn't look like this is set
+	ID       string   `xml:"id,attr"`
+	Name     string   `xml:"name,attr"`
 	Tests    int      `xml:"tests,attr"`
-	Failures int      `xml:"failures,attr"` // Test ran, assertion failed
+	Failures int      `xml:"failures,attr"`
 	Skipped  int      `xml:"skipped,attr"`
-	Errors   int      `xml:"errors,attr"` // Test did not complete due to unexpected issue
+	Errors   int      `xml:"errors,attr"`
 	Time     float64  `xml:"time,attr"`
 
 	TestSuites []TestSuite `xml:"testsuite"`
@@ -43,11 +44,10 @@ type TestCase struct {
 	ClassName string  `xml:"classname,attr"`
 	Time      float64 `xml:"time,attr"`
 
-	SystemOut string `xml:"system-out"` // Not worth parsing
-
-	Failure *Failure `xml:"failure"`
-	Error   *Error   `xml:"error"`
-	Skipped *Skipped `xml:"skipped"`
+	SystemOut string   `xml:"system-out"`
+	Failure   *Failure `xml:"failure"`
+	Error     *Error   `xml:"error"`
+	Skipped   *Skipped `xml:"skipped"`
 }
 
 type Failure struct {
@@ -59,7 +59,7 @@ type Failure struct {
 type Error struct {
 	Message string `xml:"message,attr"`
 	Type    string `xml:"type,attr"`
-	Text    string `xml:",chardata"` // Not worth parsing
+	Text    string `xml:",chardata"`
 }
 
 type Skipped struct {
@@ -67,6 +67,10 @@ type Skipped struct {
 }
 
 var (
+	// -------------------------------------------------------------------------
+	// Suite-level metrics
+	// -------------------------------------------------------------------------
+
 	suiteDuration = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_suite_duration_seconds",
@@ -79,6 +83,14 @@ var (
 		prometheus.GaugeOpts{
 			Name: "playwright_tests_total",
 			Help: "Total number of tests in the suite",
+		},
+		[]string{"suite", "deploy_env"},
+	)
+
+	suitePassed = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "playwright_tests_passed",
+			Help: "Total number of passed tests in the suite",
 		},
 		[]string{"suite", "deploy_env"},
 	)
@@ -99,6 +111,10 @@ var (
 		[]string{"suite", "deploy_env"},
 	)
 
+	// -------------------------------------------------------------------------
+	// Individual test metrics
+	// -------------------------------------------------------------------------
+
 	testDuration = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_test_duration_seconds",
@@ -113,6 +129,26 @@ var (
 			Help: "Status of individual testcases (0=passed,1=failed,2=skipped)",
 		},
 		[]string{"suite", "test", "deploy_env"},
+	)
+
+	// -------------------------------------------------------------------------
+	// Test-run-level metrics
+	// -------------------------------------------------------------------------
+
+	testRunTimestamp = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "playwright_test_run_timestamp_seconds",
+			Help: "Unix timestamp of the latest Playwright test run",
+		},
+		[]string{"deploy_env"},
+	)
+
+	testRunStatus = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "playwright_test_run_status",
+			Help: "Status of the latest Playwright test run (0=passed,1=failed)",
+		},
+		[]string{"deploy_env"},
 	)
 )
 
@@ -133,10 +169,45 @@ func parseJUnit(file string, deployEnv string) bool {
 	for _, suite := range testSuites.TestSuites {
 		fmt.Println(suite.Name)
 
-		suiteDuration.WithLabelValues(suite.Name, deployEnv).Set(suite.Time)
-		suiteTotal.WithLabelValues(suite.Name, deployEnv).Set(float64(suite.Tests))
-		suiteFailed.WithLabelValues(suite.Name, deployEnv).Set(float64(suite.Failures + suite.Errors))
-		suiteSkipped.WithLabelValues(suite.Name, deployEnv).Set(float64(suite.Skipped))
+		// failures + errors are considered failed tests.
+		failed := suite.Failures + suite.Errors
+
+		// A passed test is one that wasn't failed or skipped.
+		passed := suite.Tests - failed - suite.Skipped
+
+		// Protect against malformed JUnit data.
+		if passed < 0 {
+			passed = 0
+		}
+
+		suiteDuration.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(suite.Time)
+
+		suiteTotal.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(suite.Tests))
+
+		suitePassed.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(passed))
+
+		suiteFailed.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(failed))
+
+		suiteSkipped.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(suite.Skipped))
+
+		if failed > 0 {
+			hasFailedTests = true
+		}
 
 		for _, tc := range suite.TestCases {
 			status := "passed"
@@ -190,13 +261,22 @@ func main() {
 	}
 
 	reg := prometheus.NewRegistry()
+
 	reg.MustRegister(
+		// Suite metrics
 		suiteDuration,
 		suiteTotal,
+		suitePassed,
 		suiteFailed,
 		suiteSkipped,
+
+		// Test metrics
 		testDuration,
 		testStatus,
+
+		// Run metrics
+		testRunTimestamp,
+		testRunStatus,
 	)
 
 	hasFailedTests := parseJUnit(*xmlFile, deployEnv)
@@ -206,6 +286,21 @@ func main() {
 		log.Println("Serving metrics on :8080/metrics")
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	*/
+
+	// Record when this test run completed.
+	testRunTimestamp.
+		WithLabelValues(deployEnv).
+		Set(float64(time.Now().Unix()))
+
+	// 0 = passed, 1 = failed.
+	runStatus := 0.0
+	if hasFailedTests {
+		runStatus = 1.0
+	}
+
+	testRunStatus.
+		WithLabelValues(deployEnv).
+		Set(runStatus)
 
 	if err := push.New(*promPushGatewayEndpoint, "playwright_tests").
 		Gatherer(reg).
