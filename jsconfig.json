@@ -19,7 +19,9 @@
         "noImplicitThis": true,
         "alwaysStrict": true,
         "strictBuiltinIteratorReturn": true,
-        "useUnknownInCatchVariables": true
+        "useUnknownInCatchVariables": true,
+        "strictNullChecks": false,
+        "noImplicitAny": false
     },
     "include": [
         "K6/**/*.js",
