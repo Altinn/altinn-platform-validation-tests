@@ -12,6 +12,15 @@ import {
     SystemUserClient,
 } from "../../../../clients/authentication/index.js";
 import { AccessPackage, Right } from "../../../../clients/authentication/types.js";
+import {
+    buildXacmlJsonAttributeExternal,
+    buildXacmlJsonCategoryExternal,
+    buildXacmlJsonRequestExternal,
+    buildXacmlJsonRequestRootExternal,
+} from "../../../../clients/authorization/builders.js";
+import { AuthorizeClient } from "../../../../clients/authorization/index.js";
+import { XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
+import { XacmlPolicyBuilder } from "../../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
@@ -19,7 +28,13 @@ import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, Re
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { sweepRegisteredSystems } from "../commons.js";
+import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
+import {
+    ResourceCreatePolicy,
+    ResourceCreateResource,
+    ResourceDeleteResource,
+} from "../../../building-blocks/resource-registry/resource/index.js";
+import { createResourcePayload, getResourceFlowClients, sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -474,4 +489,231 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
     });
 
     return systemUserId;
+}
+
+/**
+ * The action the arranged resource policy grants, and the one the decision
+ * requests ask for.
+ */
+const RESOURCE_ACTION = "read";
+
+const MINIMUM_AUTHENTICATION_LEVEL = 3;
+
+/**
+ * @type {AuthorizeClient | undefined}
+ */
+let authorizeClient = undefined;
+
+/**
+ * Creates and caches the client the decision requests go through.
+ *
+ * Built once per VU and reused across its iterations, like the other clients
+ * here. The admin scope lets one token ask on behalf of every subject, so it is
+ * not built for anyone in particular and no options are swapped per system user.
+ *
+ * @returns {AuthorizeClient} Client for the PDP.
+ */
+export function getAuthorizeClient() {
+    if (authorizeClient === undefined) {
+        authorizeClient = new AuthorizeClient(
+            __ENV.BASE_URL,
+            new EnterpriseTokenGenerator(
+                new EnterpriseTokenBuilder()
+                    .withEnvironment(__ENV.ENVIRONMENT)
+                    .withTtl(3600)
+                    .withScopes(CreateScopeString([AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN]))
+                    .build(),
+            ),
+            __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
+        );
+    }
+
+    return authorizeClient;
+}
+
+/**
+ * What a test asking about access through an access package needs arranged.
+ *
+ * @typedef {object} ArrangeAccessPackageResourceParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {string} identifierPrefix Prefix for the generated resource identifier, likewise. Only a-z, 0-9, _ and -.
+ * @property {string} grantedAccessPackage Urn of the access package that opens the resource, which the system user is granted up front.
+ * @property {string} registeredAccessPackage Urn of the access package the system is registered with on top, left for a change request to ask for.
+ */
+
+/**
+ * Arranges a resource only one access package opens, and a system user granted
+ * that package.
+ *
+ * The resource is created here rather than named, so the policy grants the one
+ * package and nothing else. That, and a system user with no rights at all, leaves
+ * the access package as the only way a decision on it can come back Permit.
+ *
+ * @param {ArrangeAccessPackageResourceParams} options - What the calling test needs arranged.
+ * @returns {any[]} A single arranged system user, as a list like the other arranges here, carrying the resource its access package opens.
+ */
+export function arrangeSystemUserWithAccessPackageResource({
+    systemNamePrefix,
+    identifierPrefix,
+    grantedAccessPackage,
+    registeredAccessPackage,
+}) {
+    const resourceIdentifier = createAccessPackageResource(identifierPrefix, grantedAccessPackage);
+
+    // Drawn once here rather than per iteration, since the system belongs to the
+    // vendor that registered it and every iteration acts on that same system.
+    const arranged = arrangeApprovedSystemUser({
+        systemNamePrefix,
+        vendorOrgNo: pickVendor(),
+        grantedRights: [],
+        grantedAccessPackages: [grantedAccessPackage],
+        registeredAccessPackages: [grantedAccessPackage, registeredAccessPackage],
+    });
+
+    return arranged.map((systemUser) => ({
+        ...systemUser,
+        resourceIdentifier,
+    }));
+}
+
+/**
+ * Removes what arrangeSystemUserWithAccessPackageResource arranged.
+ *
+ * The system user and its system go the way every other arrange here is unwound,
+ * and the resource follows, since it is the one thing that arrange adds on top.
+ *
+ * @param {any[]} arranged - What arrangeSystemUserWithAccessPackageResource returned.
+ */
+export function cleanupArrangedWithResource(arranged) {
+    cleanupArranged(arranged);
+
+    const resourceClients = getResourceFlowClients();
+
+    group("Cleanup - delete the resource", function () {
+        for (const systemUser of arranged ?? []) {
+            ResourceDeleteResource(
+                resourceClients.resourceOwner.resourceClient,
+                systemUser.resourceIdentifier,
+                { step: "Delete the resource" },
+            );
+        }
+    });
+}
+
+/**
+ * Builds the decision request a service makes when a system user calls it: may
+ * this system user perform the action on this resource for this organization.
+ *
+ * @param {any} systemUser - An arranged system user, as the arrange hands it back.
+ * @returns {XacmlJsonRequestRootExternal} Decision request.
+ */
+export function buildSystemUserDecisionRequest(systemUser) {
+    return buildXacmlJsonRequestRootExternal({
+        request: buildXacmlJsonRequestExternal({
+            accessSubject: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:altinn:systemuser:uuid",
+                            value: systemUser.systemUserId,
+                        }),
+                    ],
+                }),
+            ],
+            action: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                            value: RESOURCE_ACTION,
+                        }),
+                    ],
+                }),
+            ],
+            resource: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:altinn:resource",
+                            value: systemUser.resourceIdentifier,
+                        }),
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:altinn:organization:identifier-no",
+                            value: systemUser.customer.orgNo,
+                        }),
+                    ],
+                }),
+            ],
+        }),
+    });
+}
+
+/**
+ * Asks the PDP for a decision and hands back what it decided.
+ *
+ * The decision is not checked the way AuthorizePost checks it when handed an
+ * expected one, for a caller that asks repeatedly and makes its checks on the
+ * answers as a whole rather than one at a time.
+ *
+ * @param {XacmlJsonRequestRootExternal} request - Decision request.
+ * @param {{[key: string]: string}} labels - k6 request labels.
+ * @returns {string} The decision, or a stand in when the response carried none.
+ */
+export function askForDecision(request, labels) {
+    const response = AuthorizePost(getAuthorizeClient(), request, null, labels);
+
+    return response?.response?.[0]?.decision ?? "no decision";
+}
+
+/**
+ * Creates a resource only one access package opens.
+ *
+ * Each step removes what the previous ones made before giving up, since this runs
+ * in setup and k6 skips the teardown when the setup fails.
+ *
+ * @param {string} identifierPrefix - Prefix for the generated identifier, so resources are traceable to the test that made them. Only a-z, 0-9, _ and -.
+ * @param {string} urn - Urn of the access package the policy grants access to.
+ * @returns {string} Identifier of the resource that was created.
+ */
+function createAccessPackageResource(identifierPrefix, urn) {
+    const resourceClients = getResourceFlowClients();
+    const resource = createResourcePayload(identifierPrefix);
+
+    group(`Arrange - a resource only ${urn} opens`, function () {
+        if (!ResourceCreateResource(
+            resourceClients.resourceOwner.resourceClient,
+            resource,
+            { step: "1. Create the resource" },
+        )) {
+            fail("cannot continue: the resource was not created");
+        }
+
+        // The policy takes the package as the bare name the urn ends in, since the
+        // urn prefix is the attribute the rule matches it against.
+        const policyFile = new XacmlPolicyBuilder(resource.identifier)
+            .withRule({
+                accessPackages: [urn.split(":").pop()],
+                actions: [RESOURCE_ACTION],
+                description: `Access package that gets access to the resource: ${urn}`,
+            })
+            .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
+            .buildFile();
+
+        if (!ResourceCreatePolicy(
+            resourceClients.resourceOwner.resourceClient,
+            resource.identifier,
+            policyFile,
+            { step: "2. Publish the policy" },
+        )) {
+            ResourceDeleteResource(
+                resourceClients.resourceOwner.resourceClient,
+                resource.identifier,
+                { step: "Cleanup - delete the resource" },
+            );
+
+            fail(`cannot continue: the policy was not published, so ${urn} opens nothing`);
+        }
+    });
+
+    return resource.identifier;
 }

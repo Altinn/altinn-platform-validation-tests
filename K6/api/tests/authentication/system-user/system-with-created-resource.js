@@ -10,7 +10,7 @@ import {
     ResourceDeleteResource,
 } from "../../../building-blocks/resource-registry/resource/index.js";
 import { resource as resourceRight } from "../change-request-system-user/commons.js";
-import { createResourcePayload, getResourceFlowClients, RESOURCE_FLOW_VENDOR_ORG_NO } from "./commons.js";
+import { createResourcePayload, getResourceFlowClients, RESOURCE_FLOW_VENDOR_ORG_NO } from "../commons.js";
 
 /**
  * The action the system asks for on the resource. It has to be one the resource

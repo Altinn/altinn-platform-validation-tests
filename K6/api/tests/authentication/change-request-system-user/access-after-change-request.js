@@ -1,143 +1,47 @@
-import { fail, group } from "k6";
+import { check, fail, group, sleep } from "k6";
 
-import {
-    buildXacmlJsonAttributeExternal,
-    buildXacmlJsonCategoryExternal,
-    buildXacmlJsonRequestExternal,
-    buildXacmlJsonRequestRootExternal,
-} from "../../../../clients/authorization/builders.js";
-import { AuthorizeClient } from "../../../../clients/authorization/index.js";
-import { XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
-import { XacmlPolicyBuilder } from "../../../../clients/resource-registry/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
+import { uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
 import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
 import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
-import {
-    ResourceCreatePolicy,
-    ResourceCreateResource,
-    ResourceDeleteResource,
-} from "../../../building-blocks/resource-registry/resource/index.js";
-import { createResourcePayload, getResourceFlowClients } from "../system-user/commons.js";
-import { accessPackage, arrangeApprovedSystemUser, cleanupArranged, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL } from "./commons.js";
+import { accessPackage, arrangeSystemUserWithAccessPackageResource, askForDecision, buildSystemUserDecisionRequest, cleanupArrangedWithResource, getApproverTokenOpts, getAuthorizeClient, getClients, getVendorTokenOpts, REDIRECT_URL } from "./commons.js";
 
 /**
  * The access package the resource requires, and the one the system user is
- * granted up front. Named in the bug report this test comes from, rather than
- * searched for, since the report is about these two packages sitting in the same
- * area of the catalogue.
+ * granted up front.
+ *
+ * Named rather than searched for, since the bug report this test comes from is
+ * about these two packages.
  *
  * @see https://github.com/Altinn/altinn-authorization-tmp/issues/3933
  */
 const REQUIRED_PACKAGE = "urn:altinn:accesspackage:lonn";
 
 /**
- * The access package the change request adds on top. It gives no access to the
+ * The access package the change request adds on top. It opens nothing on the
  * resource, so nothing about the decision should change when it is added.
  */
 const ADDED_PACKAGE = "urn:altinn:accesspackage:a-ordning";
 
-/**
- * The action the policy grants and the decision requests ask for.
- */
-const ACTION = "read";
-
-const MINIMUM_AUTHENTICATION_LEVEL = 3;
-
 const SYSTEM_NAME_PREFIX = "changerequestaccess";
 
 /**
- * @type {AuthorizeClient | undefined}
+ * How long after the change request the decisions are watched, and how often.
+ *
+ * In the bug report the wrong decision came back a little over two minutes after
+ * the change request, and the right one half a minute after that, so a single
+ * decision asked for the moment the change is approved walks straight past the
+ * window the bug lives in. The numbers here cover that window with room on either
+ * side.
  */
-let authorizeClient = undefined;
+const PROBE_WINDOW_SECONDS = 240;
+const PROBE_INTERVAL_SECONDS = 5;
 
 /**
- * Creates and caches the client the decision requests go through.
+ * k6 setup stage. Arranges the resource and the system user this test changes.
  *
- * The admin scope lets one token ask on behalf of every subject, so the client is
- * built once per VU rather than per system user.
- *
- * @returns {AuthorizeClient} Client for the PDP.
- */
-function getAuthorizeClient() {
-    if (authorizeClient === undefined) {
-        authorizeClient = new AuthorizeClient(
-            __ENV.BASE_URL,
-            new EnterpriseTokenGenerator(
-                new EnterpriseTokenBuilder()
-                    .withEnvironment(__ENV.ENVIRONMENT)
-                    .withTtl(3600)
-                    .withScopes(CreateScopeString([AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN]))
-                    .build(),
-            ),
-            __ENV.AUTHORIZATION_SUBSCRIPTION_KEY,
-        );
-    }
-
-    return authorizeClient;
-}
-
-/**
- * Builds the decision request a service makes when a system user calls it: may
- * this system user perform the action on this resource for this organization.
- *
- * @param {string} systemUserId Identifier of the system user asking.
- * @param {string} orgNo Organization number of the party the resource is looked up for.
- * @param {string} resourceIdentifier Resource the system user is asking for.
- * @returns {XacmlJsonRequestRootExternal} Decision request.
- */
-function buildSystemUserRequest(systemUserId, orgNo, resourceIdentifier) {
-    return buildXacmlJsonRequestRootExternal({
-        request: buildXacmlJsonRequestExternal({
-            accessSubject: [
-                buildXacmlJsonCategoryExternal({
-                    attribute: [
-                        buildXacmlJsonAttributeExternal({
-                            attributeId: "urn:altinn:systemuser:uuid",
-                            value: systemUserId,
-                        }),
-                    ],
-                }),
-            ],
-            action: [
-                buildXacmlJsonCategoryExternal({
-                    attribute: [
-                        buildXacmlJsonAttributeExternal({
-                            attributeId: "urn:oasis:names:tc:xacml:1.0:action:action-id",
-                            value: ACTION,
-                        }),
-                    ],
-                }),
-            ],
-            resource: [
-                buildXacmlJsonCategoryExternal({
-                    attribute: [
-                        buildXacmlJsonAttributeExternal({
-                            attributeId: "urn:altinn:resource",
-                            value: resourceIdentifier,
-                        }),
-                        buildXacmlJsonAttributeExternal({
-                            attributeId: "urn:altinn:organization:identifier-no",
-                            value: orgNo,
-                        }),
-                    ],
-                }),
-            ],
-        }),
-    });
-}
-
-/**
- * k6 setup stage. Arranges a resource only one access package opens, and a system
- * user granted that package.
- *
- * The resource is created here rather than named, so the policy grants the one
- * package and nothing else, and the system user is granted no rights at all. That
- * leaves the access package as the only way a decision can come back Permit.
- *
- * @returns The system user to change, as a single item list, carrying the resource it has access to.
+ * @returns The system user to change, as a single item list, carrying the resource its access package opens.
  */
 export function setup() {
     requireEnv([
@@ -149,69 +53,23 @@ export function setup() {
         "TOKEN_GENERATOR_PASSWORD",
     ]);
 
-    const resourceClients = getResourceFlowClients();
-    const resource = createResourcePayload("k6-changerequest-access-");
-
-    group("Arrange - a resource the access package opens", function () {
-        if (!ResourceCreateResource(
-            resourceClients.resourceOwner.resourceClient,
-            resource,
-            { step: "1. Create the resource" },
-        )) {
-            fail("cannot continue: the resource was not created");
-        }
-
-        const policyFile = new XacmlPolicyBuilder(resource.identifier)
-            .withRule({
-                accessPackages: [REQUIRED_PACKAGE.split(":").pop()],
-                actions: [ACTION],
-                description: `Access package that gets access to the K6 change request resource: ${REQUIRED_PACKAGE}`,
-            })
-            .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
-            .buildFile();
-
-        if (!ResourceCreatePolicy(
-            resourceClients.resourceOwner.resourceClient,
-            resource.identifier,
-            policyFile,
-            { step: "2. Publish the policy" },
-        )) {
-            ResourceDeleteResource(
-                resourceClients.resourceOwner.resourceClient,
-                resource.identifier,
-                { step: "Cleanup - delete the resource" },
-            );
-
-            fail("cannot continue: the policy was not published, so the access package opens nothing");
-        }
-    });
-
-    // Drawn once here rather than per iteration, since the system belongs to the
-    // vendor that registered it and every iteration acts on that same system.
-    const vendorOrgNo = pickVendor();
-
-    const arranged = arrangeApprovedSystemUser({
+    return arrangeSystemUserWithAccessPackageResource({
         systemNamePrefix: SYSTEM_NAME_PREFIX,
-        vendorOrgNo,
-        grantedRights: [],
-        grantedAccessPackages: [REQUIRED_PACKAGE],
-        registeredAccessPackages: [REQUIRED_PACKAGE, ADDED_PACKAGE],
+        identifierPrefix: "k6-changerequest-access-",
+        grantedAccessPackage: REQUIRED_PACKAGE,
+        registeredAccessPackage: ADDED_PACKAGE,
     });
-
-    return arranged.map((systemUser) => ({
-        ...systemUser,
-        resourceIdentifier: resource.identifier,
-    }));
 }
 
 /**
- * Test: adding an access package to a system user does not take away the access
- * it already had.
+ * Test: a change request that adds an access package does not take away the
+ * access the system user already had.
  *
- * This is the flow from the bug report, where a system user that had been granted
- * lonn was denied a resource that lonn opens, right after a change request added
- * a-ordning on top. The decision is asked for before the change as well, so a run
- * that fails says whether the access was ever there.
+ * This is the flow from the bug report, where a system user was refused a service
+ * right after a change request, because the rights cached on the system user were
+ * not the ones it had been left with. The decision is watched for a few minutes
+ * rather than asked for once, since the wrong ones in the report came back a
+ * couple of minutes in and were gone half a minute later.
  *
  * @param {any[]} data The arranged system users from setup.
  */
@@ -229,13 +87,9 @@ export default function (data) {
         fail("cannot ask for a decision: the setup produced no system user");
     }
 
-    const request = buildSystemUserRequest(
-        systemUser.systemUserId,
-        systemUser.customer.orgNo,
-        systemUser.resourceIdentifier,
-    );
+    const request = buildSystemUserDecisionRequest(systemUser);
 
-    group("The access package the system user was granted opens the resource", function () {
+    group("Before the change, the access package the system user was granted opens the resource", function () {
         AuthorizePost(getAuthorizeClient(), request, "Permit", { step: "Decision before the change" });
     });
 
@@ -262,35 +116,53 @@ export default function (data) {
         );
 
         if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestApproved(approved)) {
-            fail("cannot ask for a decision after the change: approving the change request failed");
+            fail("cannot watch the decisions: approving the change request failed");
         }
     });
 
-    group("The system user still has the access it had before the change", function () {
-        AuthorizePost(getAuthorizeClient(), request, "Permit", { step: "Decision after the change" });
+    group("Every decision in the minutes after the change is the right one", function () {
+        /** @type {{elapsed: number, decision: string}[]} */
+        const timeline = [];
+
+        for (let elapsed = 0; elapsed <= PROBE_WINDOW_SECONDS; elapsed += PROBE_INTERVAL_SECONDS) {
+            timeline.push({
+                elapsed,
+                decision: askForDecision(request, { step: "Decision after the change" }),
+            });
+
+            if (elapsed + PROBE_INTERVAL_SECONDS <= PROBE_WINDOW_SECONDS) {
+                sleep(PROBE_INTERVAL_SECONDS);
+            }
+        }
+
+        const wrong = timeline.filter((probe) => probe.decision !== "Permit");
+
+        const succeeded = check(timeline, {
+            "The system user keeps the access it had before the change": () => wrong.length === 0,
+        });
+
+        // The point of the test is which seconds the wrong decisions land in, and
+        // that is gone by the time the summary counts them, so the whole window is
+        // written out when there is something to write.
+        if (!succeeded) {
+            console.log(`Wrong decisions for system user ${systemUser.systemUserId} on ${systemUser.customer.orgNo}`);
+            console.log(`  ${systemUser.resourceIdentifier} is opened by ${REQUIRED_PACKAGE}, which the change request left alone`);
+
+            for (const probe of timeline) {
+                console.log(`  +${probe.elapsed}s ${probe.decision}`);
+            }
+        }
     });
 }
 
 /**
- * k6 teardown stage. Removes the system user, the system it belongs to and the
- * resource the setup created.
+ * k6 teardown stage. Deletes the system user this test changed, the system it
+ * belongs to and the resource the setup created.
  *
  * @param {any[]} data The arranged system users from setup.
  */
 export function teardown(data) {
-    cleanupArranged(data);
-
-    const resourceClients = getResourceFlowClients();
-
-    group("Cleanup - delete the resource", function () {
-        for (const systemUser of data ?? []) {
-            ResourceDeleteResource(
-                resourceClients.resourceOwner.resourceClient,
-                systemUser.resourceIdentifier,
-                { step: "Delete the resource" },
-            );
-        }
-    });
+    cleanupArrangedWithResource(data);
 }
 
 // add the custom reporting for this test to the default summary

@@ -1,5 +1,5 @@
-import runAccessAfterChangeRequest, { setup as setupAccessAfterChange, teardown as teardownAccessAfterChange } from "./access-after-change-request.js";
-import { cleanupArranged } from "./commons.js";
+import runAccessAfterChangeRequest, { setup as setupAccessAfterChange } from "./access-after-change-request.js";
+import { cleanupArranged, cleanupArrangedWithResource } from "./commons.js";
 import runCreateAndApproveChangeRequest, { setup as setupCreateAndApprove } from "./create-and-approve-change-request.js";
 import runCreateAndDeleteChangeRequest, { setup as setupCreateAndDelete } from "./create-and-delete-change-request.js";
 
@@ -35,7 +35,7 @@ export default function (data) {
  * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
  */
 export function teardown(data) {
-    teardownAccessAfterChange(data.accessAfterChange);
+    cleanupArrangedWithResource(data.accessAfterChange);
     cleanupArranged(data.createAndApprove);
     cleanupArranged(data.createAndDelete);
 }
