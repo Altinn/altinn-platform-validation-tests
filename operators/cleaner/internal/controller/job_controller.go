@@ -18,7 +18,7 @@ package controller
 
 import (
 	"context"
-	"fmt"
+	"strings"
 	"time"
 
 	batchv1 "k8s.io/api/batch/v1"
@@ -58,27 +58,71 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		if apierrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
-		log.Error(err, "Unable to fetch Job", "namespace", req.Namespace, "name", req.Name)
+
+		log.Error(err, "Unable to fetch Job",
+			"namespace", req.Namespace,
+			"name", req.Name,
+		)
 		return ctrl.Result{}, err
-	} else {
-		minutesSince := int(time.Now().UTC().Sub(job.CreationTimestamp.Time).Minutes())
-		if minutesSince >= DeletionThreshold {
-			log.Info(fmt.Sprintf("Job run %s should be deleted", job.Name))
-			if err := r.Delete(ctx, &job, &client.DeleteOptions{PropagationPolicy: ptr.To(metav1.DeletePropagationBackground)}); err != nil {
-				if apierrors.IsNotFound(err) {
-					return ctrl.Result{}, nil
-				}
-				log.Error(err, "Unable to delete old Job", "Job", job)
-				return ctrl.Result{}, err
-			}
-		} else {
-			// log.Info(fmt.Sprintf("Job will be deleted in %d minutes", DeletionThreshold-minutesSince))
-			return ctrl.Result{
-				RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
-			}, nil
+	}
+
+	shouldDelete := false
+	deleteReason := ""
+
+	// Delete jobs older than the configured threshold.
+	minutesSince := int(time.Now().UTC().Sub(job.CreationTimestamp.Time).Minutes())
+	if minutesSince >= DeletionThreshold {
+		shouldDelete = true
+		deleteReason = "exceeded age threshold"
+	}
+
+	// Delete completed jobs ending in -initializer or -starter.
+	// These are created by the k6-operator so they can be deleted faster
+	// I might want to add a small delay, e.g. in case we need to debug the k6 options.
+	cleanupSuffixes := []string{
+		"-initializer",
+		"-starter",
+	}
+
+	isJobToBeCleaned := false
+	for _, suffix := range cleanupSuffixes {
+		if strings.HasSuffix(job.Name, suffix) {
+			isJobToBeCleaned = true
+			break
 		}
 	}
-	return ctrl.Result{}, nil
+
+	now := metav1.Now()
+	if isJobToBeCleaned &&
+		job.Status.CompletionTime != nil &&
+		job.Status.CompletionTime.Before(&now) {
+		shouldDelete = true
+		deleteReason = "completed initializer/starter job"
+	}
+
+	if shouldDelete {
+		log.Info("Deleting Job",
+			"name", job.Name,
+			"reason", deleteReason,
+		)
+
+		if err := r.Delete(ctx, &job, &client.DeleteOptions{
+			PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
+		}); err != nil {
+			if apierrors.IsNotFound(err) {
+				return ctrl.Result{}, nil
+			}
+
+			log.Error(err, "Unable to delete Job", "Job", job)
+			return ctrl.Result{}, err
+		}
+
+		return ctrl.Result{}, nil
+	}
+
+	return ctrl.Result{
+		RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
+	}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
