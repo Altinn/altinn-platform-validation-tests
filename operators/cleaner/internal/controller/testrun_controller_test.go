@@ -174,7 +174,7 @@ var _ = Describe("TestRun Controller", func() {
 
 			testRun.CreationTimestamp = metav1.Time{
 				Time: time.Now().UTC().Add(
-					-(time.Duration(DeletionThreshold) + 1) * time.Minute,
+					-time.Duration(DeletionThreshold) * time.Minute,
 				),
 			}
 

@@ -158,15 +158,15 @@ var _ = Describe("Pod Controller", func() {
 		})
 	})
 
-	When("the Pod is already past the deletion threshold", func() {
+	When("the Pod is exactly at the deletion threshold", func() {
 		It("should delete the Pod and not requeue", func() {
 			pod := &corev1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "expired-pod",
+					Name:      "threshold-pod",
 					Namespace: "default",
 					CreationTimestamp: metav1.Time{
 						Time: time.Now().UTC().Add(
-							-(time.Duration(DeletionThreshold) + 10) * time.Minute,
+							-time.Duration(DeletionThreshold) * time.Minute,
 						),
 					},
 				},
@@ -182,8 +182,7 @@ var _ = Describe("Pod Controller", func() {
 			})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(result.Requeue).To(BeFalse())
-			Expect(result.RequeueAfter).To(Equal(time.Duration(0)))
+			Expect(result).To(Equal(ctrl.Result{}))
 
 			var deletedPod corev1.Pod
 			err = k8sClient.Get(

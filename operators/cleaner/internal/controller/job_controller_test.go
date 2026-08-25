@@ -158,15 +158,15 @@ var _ = Describe("Job Controller", func() {
 		})
 	})
 
-	When("the Job is already past the deletion threshold", func() {
+	When("the Job is exactly at the deletion threshold", func() {
 		It("should delete the Job and not requeue", func() {
 			job := &batchv1.Job{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "expired-job",
+					Name:      "threshold-job",
 					Namespace: "default",
 					CreationTimestamp: metav1.Time{
 						Time: time.Now().UTC().Add(
-							-(time.Duration(DeletionThreshold) + 10) * time.Minute,
+							-time.Duration(DeletionThreshold) * time.Minute,
 						),
 					},
 				},
@@ -182,8 +182,7 @@ var _ = Describe("Job Controller", func() {
 			})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(result.Requeue).To(BeFalse())
-			Expect(result.RequeueAfter).To(Equal(time.Duration(0)))
+			Expect(result).To(Equal(ctrl.Result{}))
 
 			var deletedJob batchv1.Job
 			err = k8sClient.Get(
@@ -197,5 +196,94 @@ var _ = Describe("Job Controller", func() {
 
 			Expect(apierrors.IsNotFound(err)).To(BeTrue())
 		})
+	})
+
+	// The -initializer/-starter rule is what makes the operator delete k6
+	// helper jobs ahead of the age threshold, so every spec below keeps the
+	// job young enough that the age rule cannot be what triggers deletion.
+	Context("the completed initializer/starter rule", func() {
+		const minutesUntilDeletion = 10
+
+		youngJob := func(name string, completed bool) *batchv1.Job {
+			job := &batchv1.Job{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      name,
+					Namespace: "default",
+					CreationTimestamp: metav1.Time{
+						Time: time.Now().UTC().Add(
+							-(time.Duration(DeletionThreshold) -
+								minutesUntilDeletion) * time.Minute,
+						),
+					},
+				},
+			}
+
+			if completed {
+				completionTime := metav1.NewTime(
+					time.Now().UTC().Add(-time.Minute),
+				)
+				job.Status.CompletionTime = &completionTime
+			}
+
+			return job
+		}
+
+		reconcile := func(job *batchv1.Job) (ctrl.Result, error) {
+			return reconciler.Reconcile(ctx, ctrl.Request{
+				NamespacedName: types.NamespacedName{
+					Namespace: job.Namespace,
+					Name:      job.Name,
+				},
+			})
+		}
+
+		exists := func(job *batchv1.Job) bool {
+			var fetched batchv1.Job
+			err := k8sClient.Get(
+				ctx,
+				types.NamespacedName{
+					Namespace: job.Namespace,
+					Name:      job.Name,
+				},
+				&fetched,
+			)
+
+			return err == nil
+		}
+
+		DescribeTable(
+			"deletes only completed jobs carrying a cleanup suffix",
+			func(name string, completed bool, shouldDelete bool) {
+				job := youngJob(name, completed)
+				Expect(k8sClient.Create(ctx, job)).To(Succeed())
+
+				result, err := reconcile(job)
+				Expect(err).NotTo(HaveOccurred())
+
+				if shouldDelete {
+					Expect(result).To(Equal(ctrl.Result{}))
+					Expect(exists(job)).To(BeFalse())
+					return
+				}
+
+				Expect(result.RequeueAfter).To(BeNumerically(
+					"==",
+					time.Duration(minutesUntilDeletion+1)*time.Minute,
+				))
+				Expect(exists(job)).To(BeTrue())
+			},
+			Entry("completed initializer", "k6-test-initializer", true, true),
+			Entry("completed starter", "k6-test-starter", true, true),
+			Entry("running initializer", "k6-test-initializer", false, false),
+			Entry("running starter", "k6-test-starter", false, false),
+			Entry("completed runner", "k6-test-runner-1", true, false),
+			Entry("completed unsuffixed job", "k6-test", true, false),
+			Entry(
+				"suffix in the middle of the name",
+				"k6-initializer-test",
+				true,
+				false,
+			),
+		)
 	})
 })

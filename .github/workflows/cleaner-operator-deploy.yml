@@ -10,6 +10,8 @@ on:
 
 permissions:
   contents: "read"
+  # Required by the OIDC login in ./.github/actions/setup-k8s.
+  id-token: "write"
 
 env:
   REGISTRY: altinnplatformvalidationtests.azurecr.io
@@ -19,10 +21,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: test
+    defaults:
+      run:
+        working-directory: ./operators/cleaner
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+        with:
+          go-version-file: ./operators/cleaner/go.mod
 
       - name: Setup k8s client
         uses: ./.github/actions/setup-k8s

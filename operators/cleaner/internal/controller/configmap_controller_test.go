@@ -204,7 +204,14 @@ var _ = Describe("ConfigMap Controller", func() {
 			})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(result.RequeueAfter).To(Equal(30 * 24 * time.Hour))
+
+			// The reconciler requeues for the ConfigMap's remaining
+			// lifetime plus one minute, not on a fixed interval.
+			Expect(result.RequeueAfter).To(BeNumerically(
+				"~",
+				time.Until(generationTime.AddDate(0, 1, 0))+time.Minute,
+				time.Minute,
+			))
 
 			var existingCM corev1.ConfigMap
 			Expect(k8sClient.Get(

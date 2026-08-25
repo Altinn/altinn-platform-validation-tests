@@ -82,8 +82,11 @@ func (r *ConfigMapReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 				return ctrl.Result{}, err
 			}
 		} else {
+			// Requeue when this ConfigMap is due for deletion rather than
+			// on a fixed interval. A fixed 30 day requeue lets a ConfigMap
+			// that is nearly a month old survive for almost another month.
 			return ctrl.Result{
-				RequeueAfter: 30 * 24 * time.Hour, // every 30 days should be fine.. but I doubt the pod will stay up that long hehe
+				RequeueAfter: time.Until(ts.AddDate(0, 1, 0)) + time.Minute,
 			}, nil
 		}
 	}

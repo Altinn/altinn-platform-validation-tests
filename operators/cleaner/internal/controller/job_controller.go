@@ -92,10 +92,9 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	}
 
-	now := metav1.Now()
-	if isJobToBeCleaned &&
-		job.Status.CompletionTime != nil &&
-		job.Status.CompletionTime.Before(&now) {
+	// A non-nil CompletionTime is what marks the job as finished; it is
+	// always in the past, so there is nothing further to compare it to.
+	if isJobToBeCleaned && job.Status.CompletionTime != nil {
 		shouldDelete = true
 		deleteReason = "completed initializer/starter job"
 	}
