@@ -198,7 +198,7 @@ export function getResourceFlowClients() {
  *
  * @param {string} identifierPrefix - Prefix for the generated identifier, so
  * resources are traceable to the test that made them. Only a-z, 0-9, _ and -.
- * @returns {ServiceResource} The resource payload.
+ * @returns {import("../../../../clients/resource-registry/types.js").ServiceResource} The resource payload.
  */
 export function createResourcePayload(identifierPrefix) {
     const texts = {

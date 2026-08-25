@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { PolicyRightsDTO } from "../../../clients/resource-registry/types.js";
+
 /**
  * The registry flattens a policy into one right per action, so a policy that
  * arrived intact answers with as many rights as it had actions. More rights than

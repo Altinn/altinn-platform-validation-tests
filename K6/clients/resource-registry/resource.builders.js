@@ -181,9 +181,10 @@ class ServiceResourceBuilder {
      */
     constructor(identifier) {
         /**
-         * The resource under construction.
+         * The resource under construction. Partial until the call site has set
+         * what it needs, which build() hands over as a ServiceResource.
          *
-         * @type {ServiceResource}
+         * @type {Partial<ServiceResource>}
          */
         this.resource = {
             identifier,
@@ -272,7 +273,7 @@ class ServiceResourceBuilder {
     /**
      * Sets the resource type.
      *
-     * @param {string} resourceType See ResourceType.
+     * @param {ResourceType} resourceType See ResourceType.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
     withResourceType(resourceType) {
@@ -308,7 +309,7 @@ class ServiceResourceBuilder {
     /**
      * Sets which party types the resource is available for.
      *
-     * @param {Array<string>} availableForType See ResourcePartyType.
+     * @param {Array<import("./types.js").ResourcePartyType>} availableForType See ResourcePartyType.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
     withAvailableForType(availableForType) {
@@ -320,7 +321,7 @@ class ServiceResourceBuilder {
     /**
      * Sets the access list mode.
      *
-     * @param {string} accessListMode See ResourceAccessListMode.
+     * @param {import("./types.js").ResourceAccessListMode} accessListMode See ResourceAccessListMode.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
     withAccessListMode(accessListMode) {
@@ -333,8 +334,8 @@ class ServiceResourceBuilder {
      * Adds a resource reference. MaskinportenSchema resources need one with
      * referenceType MaskinportenScope.
      *
-     * @param {string} referenceSource See ReferenceSource.
-     * @param {string} referenceType See ReferenceType.
+     * @param {import("./types.js").ReferenceSource} referenceSource See ReferenceSource.
+     * @param {import("./types.js").ReferenceType} referenceType See ReferenceType.
      * @param {string} reference The reference value.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
@@ -367,7 +368,7 @@ class ServiceResourceBuilder {
     /**
      * Adds a contact point.
      *
-     * @param {{category?: string, email?: string, telephone?: string, contactPage?: string}} contactPoint The contact point.
+     * @param {import("./types.js").ContactPoint} contactPoint The contact point.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
     withContactPoint(contactPoint) {
@@ -588,9 +589,18 @@ class ServiceResourceBuilder {
      * @returns {ServiceResource} The result.
      */
     build() {
-        return this.resource;
+        return /** @type {ServiceResource} */ (this.resource);
     }
 }
+
+/**
+ * One permit rule, as collected by withRule.
+ *
+ * @typedef {object} XacmlRule
+ * @property {Array<{attributeId: string, value: string}>} subjects Subjects the rule permits.
+ * @property {Array<string>} actions Actions the subjects are permitted.
+ * @property {string|null} description Rule description, or null for none.
+ */
 
 /**
  * Builder for the XACML policy of a resource.
@@ -618,7 +628,7 @@ class XacmlPolicyBuilder {
         /**
          * Rules added so far.
          *
-         * @type {Array<object>}
+         * @type {Array<XacmlRule>}
          */
         this.rules = [];
 
@@ -791,7 +801,7 @@ function buildMatch(value, attributeId, category, ignoreCase) {
  *
  * @param {string} resourceId Resource identifier. Escaped by buildMatch, like
  * every other value that goes into the policy.
- * @param {object} rule Rule as collected by withRule().
+ * @param {XacmlRule} rule Rule as collected by withRule().
  * @param {number} ruleNumber One based rule number, used in the rule id.
  * @returns {string} The rule element.
  */

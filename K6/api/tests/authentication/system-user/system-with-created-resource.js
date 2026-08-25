@@ -28,6 +28,15 @@ const MINIMUM_AUTHENTICATION_LEVEL = 3;
 const SYSTEM_NAME_PREFIX = "K6-systemuser-resource-";
 
 /**
+ * What the setup arranges, and what the test and the teardown work on.
+ *
+ * @typedef {object} ArrangedResourceSystem
+ * @property {string} resourceIdentifier Identifier of the resource that was created.
+ * @property {string} systemId Identifier of the system that was registered.
+ * @property {Array<object>} rights The rights the system was registered with.
+ */
+
+/**
  * Arranges what the test reads: a resource created on the fly, a policy on it,
  * and a system registered with a right on that resource.
  *
@@ -36,7 +45,7 @@ const SYSTEM_NAME_PREFIX = "K6-systemuser-resource-";
  * not run; teardown does. When the arrange itself gives up, k6 skips the teardown,
  * so each step here removes what the previous ones made before failing.
  *
- * @returns {object} The identifiers the test and the teardown work on.
+ * @returns {ArrangedResourceSystem} The identifiers the test and the teardown work on.
  */
 export function setup() {
     requireEnv([
