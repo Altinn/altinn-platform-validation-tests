@@ -226,6 +226,24 @@ function CheckChangeRequestApproved(approved) {
     return success;
 }
 
+/**
+ * Checks that a change request was withdrawn.
+ *
+ * @param {boolean} deleted - Whether the delete call reported success.
+ * @returns {boolean} True if the change request was withdrawn, false otherwise.
+ */
+function CheckChangeRequestDeleted(deleted) {
+    const success = check(deleted, {
+        "CheckChangeRequestDeleted - Change request was withdrawn": (result) => result === true,
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestDeleted - delete did not report success, got '${deleted}'`);
+    }
+
+    return success;
+}
+
 export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestSystemUserId,
     CheckChangeRequestConfirmUrl,
@@ -237,4 +255,5 @@ export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestId,
     CheckSystemUserToChange,
     CheckChangeRequestApproved,
+    CheckChangeRequestDeleted,
 };

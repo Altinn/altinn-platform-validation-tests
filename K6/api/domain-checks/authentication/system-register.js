@@ -282,7 +282,34 @@ function CheckSystemChangeLog(changeLog, expectedChangeTypes) {
     return success;
 }
 
+/**
+ * Checks that the register lists systems a customer can pick from.
+ *
+ * An empty register is not something a customer can work with, so the check is that
+ * the list holds systems and that they carry the identifiers the portal shows.
+ *
+ * @param {RegisteredSystemDTO[]|null} systems - The registered systems.
+ * @returns {boolean} True if the register listed usable systems, false otherwise.
+ */
+function CheckRegisteredSystemsListed(systems) {
+    const listed = Array.isArray(systems) ? systems : [];
+
+    const success = check(systems, {
+        "CheckRegisteredSystemsListed - The register lists at least one system": () => listed.length > 0,
+        "CheckRegisteredSystemsListed - Every system carries a system id and a vendor": () =>
+            listed.length > 0 && listed.every((system) => system?.systemId && system?.systemVendorOrgNumber),
+    });
+
+    if (!success) {
+        console.error(`CheckRegisteredSystemsListed - the register returned ${listed.length} systems`);
+        console.error(`CheckRegisteredSystemsListed - first system: ${JSON.stringify(listed[0])}`);
+    }
+
+    return success;
+}
+
 export const SystemRegisterDomainChecks = {
+    CheckRegisteredSystemsListed,
     CheckSystemId,
     CheckSystemIdInVendorGetById,
     CheckSystemIsDeleted,
