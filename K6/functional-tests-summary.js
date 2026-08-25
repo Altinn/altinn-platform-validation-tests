@@ -10,17 +10,21 @@ import postSlackMessage from "./slack.js";
 
 // A check that fails once in a few hundred iterations is usually a blip, not a
 // regression, and posting it to Slack trains the team to ignore the channel.
-// A check only earns a Slack message when its pass rate drops below this, which
-// is the same level the Grafana alerts use. Note that a functional test running
-// a single iteration still alerts on its first failure: one fail out of one is
-// a 0% pass rate.
+// A check therefore only earns a Slack message when its pass rate drops below
+// this, which is the same level the Grafana alerts use.
+//
+// The threshold only applies to tests that run more than one iteration. A single
+// iteration has no repetition to tell a blip apart from a break, so there every
+// failure alerts. That also keeps a broken step visible in a test where several
+// steps share one check name: the checks in the summary are not split per step,
+// so one dead step out of forty would otherwise sit at 97.5% and stay silent.
 const DEFAULT_PASS_RATE_THRESHOLD = 0.95;
 
 /**
  * @typedef {object} SummaryCheck
  * @property {string} name Name of the check.
- * @property {number} passes Number of passing iterations.
- * @property {number} fails Number of failing iterations.
+ * @property {number} passes Number of passing observations.
+ * @property {number} fails Number of failing observations.
  */
 
 /**
@@ -31,12 +35,24 @@ const DEFAULT_PASS_RATE_THRESHOLD = 0.95;
  */
 
 /**
+ * @typedef {object} SummaryData
+ * @property {SummaryGroup} root_group Root of the group tree.
+ * @property {Record<string, { values?: Record<string, number> }>} [metrics] Built-in and custom metrics.
+ */
+
+/**
  * @typedef {object} CheckResult
  * @property {string} group Name of the group the check belongs to.
  * @property {string} name Name of the check.
- * @property {number} passes Number of passing iterations.
- * @property {number} fails Number of failing iterations.
- * @property {number} passRate Share of iterations that passed, between 0 and 1.
+ * @property {number} passes Number of passing observations.
+ * @property {number} fails Number of failing observations.
+ * @property {number} passRate Share of observations that passed, between 0 and 1.
+ */
+
+/**
+ * A check with the Slack verdict filled in.
+ *
+ * @typedef {CheckResult & { alerts: boolean }} DecidedCheck
  */
 
 /**
@@ -62,6 +78,22 @@ function passRateThreshold() {
     }
 
     return parsed;
+}
+
+/**
+ * Number of iterations the test ran.
+ *
+ * Falls back to one when the metric is missing, which is the strict end: every
+ * failure alerts. Better a message we did not need than a broken step nobody
+ * hears about.
+ *
+ * @param {SummaryData} data End-of-test summary data from k6.
+ * @returns {number} Iteration count, at least one.
+ */
+function iterationCount(data) {
+    const count = data?.metrics?.iterations?.values?.count;
+
+    return Number.isFinite(count) && count > 1 ? count : 1;
 }
 
 /**
@@ -96,16 +128,33 @@ function collectCheckResults(group, results = []) {
 }
 
 /**
+ * Decide which checks are worth a Slack message.
+ *
+ * Done in one place so the report and the Slack decision cannot drift apart.
+ *
+ * @param {CheckResult[]} results Checks from the summary, without the verdict.
+ * @param {number} threshold Pass rate below which a check alerts.
+ * @param {number} iterations Number of iterations the test ran.
+ * @returns {DecidedCheck[]} The checks with `alerts` filled in.
+ */
+function decideAlerts(results, threshold, iterations) {
+    return results.map((result) => ({
+        ...result,
+        alerts:
+            result.fails > 0 && (iterations <= 1 || result.passRate < threshold),
+    }));
+}
+
+/**
  * Render the report we print to stdout and post to Slack.
  *
  * Failing checks that stay above the threshold are marked with a warning rather
  * than dropped, so the report still shows them even when they do not alert.
  *
- * @param {CheckResult[]} results Checks to render.
- * @param {number} threshold Pass rate below which a check alerts.
+ * @param {DecidedCheck[]} results Checks to render.
  * @returns {string} The rendered report.
  */
-function buildReport(results, threshold) {
+function buildReport(results) {
     const lines = [];
     let currentGroup = null;
 
@@ -121,7 +170,7 @@ function buildReport(results, threshold) {
 
         let icon = "✅";
         if (result.fails > 0) {
-            icon = result.passRate < threshold ? "❌" : "⚠️";
+            icon = result.alerts ? "❌" : "⚠️";
         }
 
         lines.push(
@@ -133,19 +182,22 @@ function buildReport(results, threshold) {
 }
 
 /**
- * @param {{ root_group: SummaryGroup }} data End-of-test summary data from k6.
+ * @param {SummaryData} data End-of-test summary data from k6.
  * @returns {{ stdout: string }} Output written by k6 when the test ends.
  */
 export function handleSummary(data) {
     const runningInK8s = __ENV.RUNNING_IN_K8S == "true";
     const threshold = passRateThreshold();
-    const results = collectCheckResults(data.root_group);
-    const report = buildReport(results, threshold);
-
-    const alerting = results.filter((r) => r.fails > 0 && r.passRate < threshold);
-    const tolerated = results.filter(
-        (r) => r.fails > 0 && r.passRate >= threshold,
+    const iterations = iterationCount(data);
+    const results = decideAlerts(
+        collectCheckResults(data.root_group),
+        threshold,
+        iterations,
     );
+    const report = buildReport(results);
+
+    const alerting = results.filter((r) => r.alerts);
+    const tolerated = results.filter((r) => r.fails > 0 && !r.alerts);
 
     if (runningInK8s) {
         for (const result of tolerated) {
