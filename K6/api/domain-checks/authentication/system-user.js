@@ -3,29 +3,6 @@ import { check } from "k6";
 import { SystemUser } from "../../../clients/authentication/types.js";
 
 /**
- * Checks that an update of a system user was accepted.
- *
- * The endpoint answers 200 with no body, and the service currently persists
- * nothing, so accepted is all there is to check: reading the system user back
- * would return the title it already had. See UpdateSystemUserById in
- * altinn-authentication, where the write is commented out.
- *
- * @param {boolean} updated - Whether the update call reported success.
- * @returns {boolean} True if the update was accepted, false otherwise.
- */
-function CheckSystemUserUpdated(updated) {
-    const success = check(updated, {
-        "CheckSystemUserUpdated - The update was accepted": (result) => result === true,
-    });
-
-    if (!success) {
-        console.error(`CheckSystemUserUpdated - update did not report success, got '${updated}'`);
-    }
-
-    return success;
-}
-
-/**
  * Checks that a lookup found the expected system user.
  *
  * @param {SystemUser} systemUser - The system user the lookup returned.
@@ -76,5 +53,4 @@ function CheckSystemUserArranged(systemUserId) {
 export const SystemUserDomainChecks = {
     CheckSystemUserArranged,
     CheckSystemUserFound,
-    CheckSystemUserUpdated,
 };

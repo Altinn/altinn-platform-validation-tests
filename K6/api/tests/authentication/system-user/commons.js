@@ -1,5 +1,5 @@
 import { Right } from "../../../../clients/authentication/types.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemUserClient } from "../../../authentication-imports.js";
 import { arrangeApprovedSystemUser, pickVendor, resource } from "../change-request-system-user/commons.js";
@@ -31,17 +31,12 @@ const VENDOR_SCOPES = CreateScopeString([
 let clients = undefined;
 
 /**
- * @type {PersonalTokenGenerator | undefined}
- */
-let customerTokenGenerator = undefined;
-
-/**
  * @type {EnterpriseTokenGenerator | undefined}
  */
 let vendorTokenGenerator = undefined;
 
 /**
- * Arranges the system user these tests read and update.
+ * Arranges the system user these tests read.
  *
  * Call from a test's setup. The flow that creates it is the subject of
  * create-and-confirm-system-user-request.js, so it stays out of these tests and is
@@ -65,23 +60,14 @@ export function arrangeSystemUser(systemNamePrefix) {
  * tokens per instance, so building them per iteration refetches every token from
  * the token generator service again.
  *
- * Updating a system user is the customer's own action on its own party, so it goes
- * with a personal token, while the two lookups are the vendor's and go with an
- * enterprise token. Neither is built for anyone in particular: who a run acts as is
- * decided by swapping the options with setTokenGeneratorOptions.
+ * The two lookups are the vendor's own, so there is one enterprise token and no
+ * personal one. It is not built for anyone in particular: which vendor a run acts
+ * as is decided by swapping the options with setTokenGeneratorOptions.
  *
- * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, EnterpriseTokenGenerator]} The vendor's clients and the token generator behind them.
  */
 export function getClients() {
     if (clients === undefined) {
-        customerTokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
-
         vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
@@ -91,32 +77,13 @@ export function getClients() {
         );
 
         clients = {
-            customer: {
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, customerTokenGenerator),
-            },
             vendor: {
                 systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
             },
         };
     }
 
-    return [clients, customerTokenGenerator, vendorTokenGenerator];
-}
-
-/**
- * Token options for acting as the customer that owns the system user.
- *
- * @param {any} customer - The customer this iteration acts on behalf of.
- * @returns Options to hand to setTokenGeneratorOptions.
- */
-export function getCustomerTokenOpts(customer) {
-    return new PersonalTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-        .withUserId(customer.userId)
-        .withPartyUuid(customer.userPartyUuid)
-        .build();
+    return [clients, vendorTokenGenerator];
 }
 
 /**

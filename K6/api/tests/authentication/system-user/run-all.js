@@ -19,9 +19,6 @@ export function setup() {
  * Runs every test in this folder once, in one k6 run, so a change to the shared
  * clients, building blocks or checks can be verified in one go.
  *
- * update-system-user.js is deliberately not here: the endpoint answers 500 for
- * every caller, see the comment in that file.
- *
  * The two files next to this one are aggregates of their own: they reach into
  * change-request-system-user and system-user-request as well, which is useful by
  * hand but is those folders' own run-all.js over again.
