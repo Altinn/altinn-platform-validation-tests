@@ -25,10 +25,18 @@ export function ResourceCreateResource(
         "ResourceCreateResource",
     );
 
-    return check(res, {
-        "ResourceCreateResource - status code is 200": (r) =>
-            r.status === 200,
-        "ResourceCreateResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+    const succeed = check(res, {
+        "ResourceCreateResource - status code is 201": (r) =>
+            r.status === 201,
+        "ResourceCreateResource - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return false;
+    }
+
+    return true;
 }
