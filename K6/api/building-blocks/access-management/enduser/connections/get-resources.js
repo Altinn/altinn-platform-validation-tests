@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetResourcesQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { ResourcePermissionDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets resource permissions.
@@ -23,10 +26,13 @@ export function GetResources(
     },
     labels = null,
 ) {
-    const res = connectionsClient.GetResources(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetResources(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetResources",
     );
 
     /** @type {Array<ResourcePermissionDto>|null} */

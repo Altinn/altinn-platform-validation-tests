@@ -1,14 +1,14 @@
 import { check } from "k6";
 
 import { AccessListMembershipsClient } from "../../../clients/resource-registry/index.js";
+import { AccessListMembershipsQuery, AccessListResourceMembershipWithActionFilterDtoListObject } from "../../../clients/resource-registry/types.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Gets access list memberships for parties and resources.
  *
  * @param {AccessListMembershipsClient} accessListMembershipsClient Client for the Access List Memberships API.
- * @param {object | null} [query] Optional query parameters.
- * @param {Array<string>} [query.party] Parties to include.
- * @param {Array<string>} [query.resource] Resources to include.
+ * @param {AccessListMembershipsQuery|null} [query] Optional query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {AccessListResourceMembershipWithActionFilterDtoListObject|null} Access list memberships.
  */
@@ -17,9 +17,12 @@ export function AccessListMembershipsGetMemberships(
     query = null,
     labels = null,
 ) {
-    const res = accessListMembershipsClient.AccessListMembershipsGetMemberships(
-        query,
-        labels,
+    const res = withRetries(
+        () => accessListMembershipsClient.AccessListMembershipsGetMemberships(
+            query,
+            labels,
+        ),
+        "AccessListMembershipsGetMemberships",
     );
 
     /** @type {AccessListResourceMembershipWithActionFilterDtoListObject|null} */

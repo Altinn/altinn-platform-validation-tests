@@ -9,7 +9,6 @@ test_definitions:
             - authorization-subscription-key-yt01
 
   - test_file: dagl.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -17,7 +16,6 @@ test_definitions:
             - authorization-subscription-key-yt01
 
   - test_file: dagl-direct-delegation.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -33,7 +31,6 @@ test_definitions:
             - authorization-subscription-key-at22
 
   - test_file: dagl-deny.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -41,7 +38,6 @@ test_definitions:
             - authorization-subscription-key-yt01
 
   - test_file: dagl-single-resource.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -49,7 +45,6 @@ test_definitions:
             - authorization-subscription-key-yt01
 
   - test_file: enduser-enduser-instances.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -57,7 +52,6 @@ test_definitions:
             - authorization-subscription-key-yt01
 
   - test_file: org-enduser-instances.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:

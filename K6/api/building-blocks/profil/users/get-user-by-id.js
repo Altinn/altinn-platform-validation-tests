@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { UserProfile } from "../../../../clients/profil/users/users.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the user profile for a given user id.
@@ -15,9 +17,12 @@ export function GetUserById(
     userID,
     labels = null,
 ) {
-    const res = usersClient.GetUserById(
-        userID,
-        labels,
+    const res = withRetries(
+        () => usersClient.GetUserById(
+            userID,
+            labels,
+        ),
+        "GetUserById",
     );
 
     /** @type {UserProfile|null} */

@@ -1,0 +1,8 @@
+namespace: access-management-bff
+base_dir: K6/api/tests/access-management-bff/client-admin
+test_definitions:
+  - test_file: open-client-admin.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02

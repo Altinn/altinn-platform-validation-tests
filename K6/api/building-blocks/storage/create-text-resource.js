@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { TextResource } from "../../../clients/storage/applications.types.js";
 import { TextsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Creates a new text resource.
@@ -19,11 +21,14 @@ export function CreateTextResource(
     textResource,
     labels = null,
 ) {
-    const res = textsClient.CreateTextResource(
-        org,
-        app,
-        textResource,
-        labels,
+    const res = withRetries(
+        () => textsClient.CreateTextResource(
+            org,
+            app,
+            textResource,
+            labels,
+        ),
+        "CreateTextResource",
     );
 
     /** @type {TextResource|null} */

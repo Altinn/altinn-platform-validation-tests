@@ -2,11 +2,10 @@
  * Test for PDP Authorize - Organization to Enduser instance delegations
 */
 import exec from "k6/execution";
-import http from "k6/http";
 
 import { randomIntBetween } from "../../../../common-imports.js";
 import { PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getItemFromList, getNumberOfVUs, getOptions, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
 import { buildInstanceRequest, getClients } from "./common-functions.js";
 
@@ -22,16 +21,15 @@ export const options = getOptions([pdpAuthorizeLabel, pdpAuthorizeLabelDenyPermi
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
     const numberOfVUs = getNumberOfVUs();
-    const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/pdp/${__ENV.ENVIRONMENT}/org-user-instance-delegations.csv`,
-        { tags: { action: "fetch-test-data" } });
-    const segmentedData = segmentData(parseCsvData(res.body), numberOfVUs);
+    const data = fetchTestData(`authorization/pdp-authorize/org-enduser-instances/${__ENV.ENVIRONMENT}/org-user-instance-delegations.csv`);
+    const segmentedData = segmentData(data, numberOfVUs);
     return segmentedData;
 }
 
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organization to enduser instance delegations, one slice per VU.
+ * @param {any[][]} testData Organization to enduser instance delegations, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient] = getClients();

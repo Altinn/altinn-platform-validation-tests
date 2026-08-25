@@ -5,6 +5,7 @@ import {
     AppsInstanceDelegationResponseDto,
 } from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
 import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates delegation rights for an application instance.
@@ -28,11 +29,14 @@ export function CreateDelegation(
     expectedStatus = null,
     labels = null,
 ) {
-    const res = appsInstanceDelegationClient.CreateDelegation(
-        resourceId,
-        instanceId,
-        request,
-        labels,
+    const res = withRetries(
+        () => appsInstanceDelegationClient.CreateDelegation(
+            resourceId,
+            instanceId,
+            request,
+            labels,
+        ),
+        "CreateDelegation",
     );
 
     /** @type {AppsInstanceDelegationResponseDto|null} */

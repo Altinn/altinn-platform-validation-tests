@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { UserProfileFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the profile of the authenticated user.
@@ -10,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {UserProfileFE|null} The user profile.
  */
 export function GetUserProfile(userClient, labels = null) {
-    const res = userClient.GetUserProfile(labels);
+    const res = withRetries(
+        () => userClient.GetUserProfile(labels),
+        "GetUserProfile",
+    );
 
     /** @type {UserProfileFE|null} */
     let userProfile = null;

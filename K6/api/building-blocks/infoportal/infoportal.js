@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Get Authorized Parties
@@ -10,7 +11,10 @@ import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
  * @returns Authorized parties for the user
  */
 export function GetAuthorizedParties(infoPortalApiClient, labels = null) {
-    const res = infoPortalApiClient.GetAuthorizedParties(labels);
+    const res = withRetries(
+        () => infoPortalApiClient.GetAuthorizedParties(labels),
+        "GetAuthorizedParties",
+    );
     checker(res, "GetAuthorizedParties");
     return res.json();
 }
@@ -23,7 +27,10 @@ export function GetAuthorizedParties(infoPortalApiClient, labels = null) {
  * @returns Favorites for the user
  */
 export function GetFavorites(infoPortalApiClient, labels = null) {
-    const res = infoPortalApiClient.GetFavorites(labels);
+    const res = withRetries(
+        () => infoPortalApiClient.GetFavorites(labels),
+        "GetFavorites",
+    );
     checker(res, "GetFavorites");
     return res.json();
 }
@@ -37,7 +44,10 @@ export function GetFavorites(infoPortalApiClient, labels = null) {
  */
 
 export function GetCurrent(infoPortalApiClient, labels = null) {
-    const res = infoPortalApiClient.GetCurrent(labels);
+    const res = withRetries(
+        () => infoPortalApiClient.GetCurrent(labels),
+        "GetCurrent",
+    );
     checker(res, "GetCurrent");
     return res.json();
 }
@@ -45,7 +55,7 @@ export function GetCurrent(infoPortalApiClient, labels = null) {
 /**
  * Function to check common response properties
  *
- * @param {} res - response object
+ * @param {import("k6/http").RefinedResponse<"text">} res - response object
  * @param {*} method - method name for logging
  * @param status_code TODO: description
  * @param status_text TODO: description

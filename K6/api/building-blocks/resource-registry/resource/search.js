@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { ResourceSearchQueryBuilder, ServiceResource } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Searches for resources in the resource registry.
@@ -15,7 +17,10 @@ export function ResourceSearch(
     query = null,
     labels = null,
 ) {
-    const res = resourceClient.ResourceSearch(query, labels);
+    const res = withRetries(
+        () => resourceClient.ResourceSearch(query, labels),
+        "ResourceSearch",
+    );
 
     /** @type {Array<ServiceResource>|null} */
     let resources = null;

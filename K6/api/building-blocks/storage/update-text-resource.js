@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { TextResource } from "../../../clients/storage/applications.types.js";
 import { TextsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Updates an existing text resource.
@@ -21,12 +23,15 @@ export function UpdateTextResource(
     textResource,
     labels = null,
 ) {
-    const res = textsClient.UpdateTextResource(
-        org,
-        app,
-        language,
-        textResource,
-        labels,
+    const res = withRetries(
+        () => textsClient.UpdateTextResource(
+            org,
+            app,
+            language,
+            textResource,
+            labels,
+        ),
+        "UpdateTextResource",
     );
 
     /** @type {TextResource|null} */

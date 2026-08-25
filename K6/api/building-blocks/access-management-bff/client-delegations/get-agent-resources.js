@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetAgentResourcesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { ClientDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resources delegated to an agent, per client.
@@ -18,7 +21,10 @@ export function GetAgentResources(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.GetAgentResources(queryParams, labels);
+    const res = withRetries(
+        () => clientDelegationsClient.GetAgentResources(queryParams, labels),
+        "GetAgentResources",
+    );
 
     /** @type {Array<ClientDelegation>|null} */
     let clientDelegations = null;

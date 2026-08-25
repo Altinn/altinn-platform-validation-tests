@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { CorrespondenceQuery } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a list of correspondences for the authenticated user.
@@ -20,9 +22,12 @@ export function GetCorrespondences(
     queryParams = null,
     labels = null,
 ) {
-    const res = correspondenceClient.GetCorrespondences(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.GetCorrespondences(
+            queryParams,
+            labels,
+        ),
+        "GetCorrespondences",
     );
 
     /** @type {Array<string>} */

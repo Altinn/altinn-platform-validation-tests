@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListResourceConnectionWithVersionDto, UpsertAccessListResourceConnectionDto } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates or updates a resource connection.
@@ -21,12 +23,15 @@ export function AccessListsUpsertResourceConnection(
     request,
     labels = null,
 ) {
-    const res = accessListClient.AccessListsUpsertResourceConnection(
-        owner,
-        identifier,
-        resourceIdentifier,
-        request,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListUpsertResourceConnection(
+            owner,
+            identifier,
+            resourceIdentifier,
+            request,
+            labels,
+        ),
+        "AccessListsUpsertResourceConnection",
     );
 
     /** @type {AccessListResourceConnectionWithVersionDto|null} */

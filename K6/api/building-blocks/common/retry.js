@@ -28,8 +28,8 @@ const TRANSIENT_STATUSES = [
 ];
 
 /**
- * Retries per request, on top of the original one, applied to every test that
- * goes through a wrapped building block.
+ * Retries per request, on top of the original one. Every building block goes
+ * through this helper, so the number applies to every test in the repo.
  *
  * Not configurable on purpose, for now. The knob belongs to the run rather than
  * to the test file, since the same file is a smoke test under one config and a
@@ -59,10 +59,10 @@ const MAX_DELAY_SECONDS = 8;
  * The last response is always returned, so the building block's `check` calls
  * run exactly once regardless of how many tries it took.
  *
- * @param {() => import("k6/http").RefinedResponse} sendRequest
+ * @param {() => import("k6/http").RefinedResponse<"text">} sendRequest
  * Sends the request. Called once per try.
  * @param {string} label Building block name, used in logs and metric tags.
- * @returns {import("k6/http").RefinedResponse} The last response received.
+ * @returns {import("k6/http").RefinedResponse<"text">} The last response received.
  */
 export function withRetries(sendRequest, label) {
     let res = sendRequest();

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { EventsClient } from "../../../../clients/events/events/index.js";
+import { CloudEvent } from "../../../../clients/events/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Posts a new CloudEvent.
@@ -15,9 +17,12 @@ export function EventsCreate(
     event,
     labels = null,
 ) {
-    const res = eventsClient.EventsCreate(
-        event,
-        labels,
+    const res = withRetries(
+        () => eventsClient.EventsCreate(
+            event,
+            labels,
+        ),
+        "EventsCreate",
     );
 
     /** @type {string|null} */

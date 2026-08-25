@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerDialogsQueriesGetSeenLog_SeenLog, V1ServiceOwnerDialogsQueriesSearchSeenLogs_SeenLog } from "../../../../clients/dialogporten/serviceowner/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog seen log
@@ -15,9 +17,12 @@ export function GetDialogSeenLogs(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogSeenLogs(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogSeenLogs(
+            dialogId,
+            labels,
+        ),
+        "GetDialogSeenLogs",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesSearchSeenLogs_SeenLog[]} */
@@ -67,10 +72,13 @@ export function GetDialogSeenLog(
     seenLogEntryId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogSeenLog(
-        dialogId,
-        seenLogEntryId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogSeenLog(
+            dialogId,
+            seenLogEntryId,
+            labels,
+        ),
+        "GetDialogSeenLog",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesGetSeenLog_SeenLog|null} */

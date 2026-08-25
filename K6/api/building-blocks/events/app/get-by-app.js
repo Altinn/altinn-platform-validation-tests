@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
+import { AppEventsByAppQuery, CloudEvent } from "../../../../clients/events/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves events related to an application owner and application.
@@ -8,7 +10,7 @@ import { AppClient } from "../../../../clients/events/app/index.js";
  * @param {AppClient} appClient Client for the App API.
  * @param {string} org Application owner acronym.
  * @param {string} app Application name.
- * @param {object} [query] Optional query parameters.
+ * @param {AppEventsByAppQuery|null} [query] Optional query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
  */
@@ -19,11 +21,14 @@ export function AppGetByApp(
     query = null,
     labels = null,
 ) {
-    const res = appClient.AppGetByApp(
-        org,
-        app,
-        query,
-        labels,
+    const res = withRetries(
+        () => appClient.AppGetByApp(
+            org,
+            app,
+            query,
+            labels,
+        ),
+        "AppGetByApp",
     );
 
     /** @type {CloudEvent[]|null} */

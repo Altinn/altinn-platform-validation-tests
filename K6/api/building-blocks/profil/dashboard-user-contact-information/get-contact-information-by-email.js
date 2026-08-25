@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DashboardUserContactInformationResponse } from "../../../../clients/profil/dashboard-user-contact-information/dashboard-user-contact-information.types.js";
 import { DashboardUserContactInformationClient } from "../../../../clients/profil/dashboard-user-contact-information/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all user contact information for the given email address.
@@ -15,11 +17,13 @@ export function GetContactInformationByEmail(
     emailAddress,
     labels = null,
 ) {
-    const res =
-        dashboardUserContactInformationClient.GetContactInformationByEmail(
+    const res = withRetries(
+        () => dashboardUserContactInformationClient.GetContactInformationByEmail(
             emailAddress,
             labels,
-        );
+        ),
+        "GetContactInformationByEmail",
+    );
 
     /** @type {Array<DashboardUserContactInformationResponse>} */
     let contactInformation = [];

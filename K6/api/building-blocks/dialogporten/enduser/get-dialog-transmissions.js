@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserDialogsQueriesGetTransmission_Transmission, V1EndUserDialogsQueriesSearchTransmissions_Transmission } from "../../../../clients/dialogporten/enduser/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog tranmissions
@@ -15,9 +17,12 @@ export function GetDialogTransmissions(
     dialogId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogTransmissions(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogTransmissions(
+            dialogId,
+            labels,
+        ),
+        "GetDialogTransmissions",
     );
 
     /** @type {V1EndUserDialogsQueriesSearchTransmissions_Transmission[]} */
@@ -68,10 +73,13 @@ export function GetDialogTransmission(
     transmissionId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogTransmission(
-        dialogId,
-        transmissionId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogTransmission(
+            dialogId,
+            transmissionId,
+            labels,
+        ),
+        "GetDialogTransmission",
     );
 
     /** @type {V1EndUserDialogsQueriesGetTransmission_Transmission|null} */

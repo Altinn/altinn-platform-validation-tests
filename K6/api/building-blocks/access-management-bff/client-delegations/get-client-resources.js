@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetClientResourcesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { AgentDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the agents holding resources on a client.
@@ -18,9 +21,12 @@ export function GetClientResources(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.GetClientResources(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.GetClientResources(
+            queryParams,
+            labels,
+        ),
+        "GetClientResources",
     );
 
     /** @type {Array<AgentDelegation>|null} */

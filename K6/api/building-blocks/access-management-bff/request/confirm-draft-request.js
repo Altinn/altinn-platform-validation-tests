@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { ConfirmDraftRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Confirms a draft access request, turning it into a pending request.
@@ -17,7 +19,10 @@ export function ConfirmDraftRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.ConfirmDraftRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.ConfirmDraftRequest(queryParams, labels),
+        "ConfirmDraftRequest",
+    );
 
     let confirmed = false;
 

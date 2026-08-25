@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { User } from "../../../../clients/access-management-bff/common/common.types.js";
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the right holders of a reportee of the authenticated user.
@@ -11,7 +13,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {Array<User>|null} The right holders of the reportee.
  */
 export function GetReporteeList(userClient, partyUuid, labels = null) {
-    const res = userClient.GetReporteeList(partyUuid, labels);
+    const res = withRetries(
+        () => userClient.GetReporteeList(partyUuid, labels),
+        "GetReporteeList",
+    );
 
     /** @type {Array<User>|null} */
     let rightHolders = null;

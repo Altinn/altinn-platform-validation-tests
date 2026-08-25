@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ReporteeClient } from "../../../../clients/access-management-bff/reportee/index.js";
+import { ChangeReporteeAndRedirectQuery } from "../../../../clients/access-management-bff/reportee/reportee.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Changes the reportee of the authenticated user and redirects onwards.
@@ -9,7 +11,7 @@ import { ReporteeClient } from "../../../../clients/access-management-bff/report
  * @param {ChangeReporteeAndRedirectQuery|null} [queryParams] Optional query
  * parameters. Use {@link ChangeReporteeAndRedirectQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function ChangeReporteeAndRedirect(
@@ -17,7 +19,10 @@ export function ChangeReporteeAndRedirect(
     queryParams = null,
     labels = null,
 ) {
-    const res = reporteeClient.ChangeReporteeAndRedirect(queryParams, labels);
+    const res = withRetries(
+        () => reporteeClient.ChangeReporteeAndRedirect(queryParams, labels),
+        "ChangeReporteeAndRedirect",
+    );
 
     const succeed = check(res, {
         "ChangeReporteeAndRedirect - status code is 200": (r) =>

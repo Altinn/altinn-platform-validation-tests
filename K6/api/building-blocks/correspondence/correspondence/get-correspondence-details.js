@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { CorrespondenceDetailsExt } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves detailed information about a correspondence.
@@ -18,9 +20,12 @@ export function GetCorrespondenceDetails(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.GetCorrespondenceDetails(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.GetCorrespondenceDetails(
+            correspondenceId,
+            labels,
+        ),
+        "GetCorrespondenceDetails",
     );
 
     /** @type {CorrespondenceDetailsExt|null} */

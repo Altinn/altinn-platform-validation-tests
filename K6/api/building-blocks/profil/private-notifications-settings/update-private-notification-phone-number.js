@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { PrivateNotificationsSettingsClient } from "../../../../clients/profil/private-notifications-settings/index.js";
+import { PrivateNotificationSettingsUpdateRequest, PrivateNotificationSettingsUpdateResponse } from "../../../../clients/profil/private-notifications-settings/private-notifications-settings.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates the private notification phone number for the current user.
@@ -18,11 +20,13 @@ export function UpdatePrivateNotificationPhoneNumber(
     request,
     labels = null,
 ) {
-    const res =
-        privateNotificationsSettingsClient.UpdatePrivateNotificationPhoneNumber(
+    const res = withRetries(
+        () => privateNotificationsSettingsClient.UpdatePrivateNotificationPhoneNumber(
             request,
             labels,
-        );
+        ),
+        "UpdatePrivateNotificationPhoneNumber",
+    );
 
     /** @type {PrivateNotificationSettingsUpdateResponse|null} */
     let response = null;

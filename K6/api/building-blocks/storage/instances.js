@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { InstancesClient } from "../../../clients/storage/index.js";
+import { DataValues, Instance, InstanceQueryResponse, PresentationTexts, Substatus } from "../../../clients/storage/instances.types.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Queries instances across applications.
@@ -17,10 +19,13 @@ export function QueryInstances(
     instanceOwnerIdentifier = null,
     labels = null,
 ) {
-    const res = instancesClient.QueryInstances(
-        query,
-        instanceOwnerIdentifier,
-        labels,
+    const res = withRetries(
+        () => instancesClient.QueryInstances(
+            query,
+            instanceOwnerIdentifier,
+            labels,
+        ),
+        "QueryInstances",
     );
 
     /** @type {InstanceQueryResponse|null} */
@@ -70,10 +75,13 @@ export function CreateInstance(
     appId = null,
     labels = null,
 ) {
-    const res = instancesClient.CreateInstance(
-        request,
-        appId,
-        labels,
+    const res = withRetries(
+        () => instancesClient.CreateInstance(
+            request,
+            appId,
+            labels,
+        ),
+        "CreateInstance",
     );
 
     /** @type {Instance|null} */
@@ -121,9 +129,12 @@ export function GetInstanceByGuid(
     instanceGuid,
     labels = null,
 ) {
-    const res = instancesClient.GetInstanceByGuid(
-        instanceGuid,
-        labels,
+    const res = withRetries(
+        () => instancesClient.GetInstanceByGuid(
+            instanceGuid,
+            labels,
+        ),
+        "GetInstanceByGuid",
     );
 
     /** @type {Instance|null} */
@@ -173,10 +184,13 @@ export function GetInstance(
     instanceGuid,
     labels = null,
 ) {
-    const res = instancesClient.GetInstance(
-        instanceOwnerPartyId,
-        instanceGuid,
-        labels,
+    const res = withRetries(
+        () => instancesClient.GetInstance(
+            instanceOwnerPartyId,
+            instanceGuid,
+            labels,
+        ),
+        "GetInstance",
     );
 
     /** @type {Instance|null} */
@@ -229,11 +243,14 @@ export function DeleteInstance(
     hard = null,
     labels = null,
 ) {
-    const res = instancesClient.DeleteInstance(
-        instanceOwnerPartyId,
-        instanceGuid,
-        hard,
-        labels,
+    const res = withRetries(
+        () => instancesClient.DeleteInstance(
+            instanceOwnerPartyId,
+            instanceGuid,
+            hard,
+            labels,
+        ),
+        "DeleteInstance",
     );
 
     /** @type {Instance|null} */
@@ -289,10 +306,13 @@ export function CompleteInstance(
     instanceGuid,
     labels = null,
 ) {
-    const res = instancesClient.CompleteInstance(
-        instanceOwnerPartyId,
-        instanceGuid,
-        labels,
+    const res = withRetries(
+        () => instancesClient.CompleteInstance(
+            instanceOwnerPartyId,
+            instanceGuid,
+            labels,
+        ),
+        "CompleteInstance",
     );
 
     /** @type {Instance|null} */
@@ -344,11 +364,14 @@ export function UpdateDataValues(
     request,
     labels = null,
 ) {
-    const res = instancesClient.UpdateDataValues(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => instancesClient.UpdateDataValues(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "UpdateDataValues",
     );
 
     /** @type {Instance|null} */
@@ -400,11 +423,14 @@ export function UpdatePresentationTexts(
     request,
     labels = null,
 ) {
-    const res = instancesClient.UpdatePresentationTexts(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => instancesClient.UpdatePresentationTexts(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "UpdatePresentationTexts",
     );
 
     /** @type {Instance|null} */
@@ -456,11 +482,14 @@ export function UpdateReadStatus(
     status = null,
     labels = null,
 ) {
-    const res = instancesClient.UpdateReadStatus(
-        instanceOwnerPartyId,
-        instanceGuid,
-        status,
-        labels,
+    const res = withRetries(
+        () => instancesClient.UpdateReadStatus(
+            instanceOwnerPartyId,
+            instanceGuid,
+            status,
+            labels,
+        ),
+        "UpdateReadStatus",
     );
 
     /** @type {Instance|null} */
@@ -512,11 +541,14 @@ export function UpdateSubStatus(
     request,
     labels = null,
 ) {
-    const res = instancesClient.UpdateSubStatus(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => instancesClient.UpdateSubStatus(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "UpdateSubStatus",
     );
 
     /** @type {Instance|null} */

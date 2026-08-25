@@ -1,6 +1,10 @@
 import { check } from "k6";
 
+import { CreateAccessPackageQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { AssignmentPackageDto } from "../../../../../clients/access-management/service-owner/connections/connections.types.js";
+import { PersonInput } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates an access package assignment.
@@ -20,10 +24,13 @@ export function CreateAccessPackage(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.CreateAccessPackage(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.CreateAccessPackage(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateAccessPackage",
     );
 
     /** @type {AssignmentPackageDto|null} */

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { DeleteAgentSystemUserQuery } from "../../../../clients/access-management-bff/system-user/system-user.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes an agent system user of an organisation.
@@ -21,20 +23,23 @@ export function DeleteAgentSystemUser(
     queryParams = null,
     labels = null,
 ) {
-    const res = systemUserClient.DeleteAgentSystemUser(
-        partyId,
-        systemUserGuid,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.DeleteAgentSystemUser(
+            partyId,
+            systemUserGuid,
+            queryParams,
+            labels,
+        ),
+        "DeleteAgentSystemUser",
     );
 
     let deleted = false;
 
     const succeed = check(res, {
-        "DeleteAgentSystemUser - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteAgentSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteAgentSystemUser - status code is 202": (r) =>
+            r.status === 202,
+        "DeleteAgentSystemUser - status text is 202 Accepted": (r) =>
+            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {

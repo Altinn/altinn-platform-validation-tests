@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { RejectReceivedRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Rejects an access request a party has received.
@@ -17,7 +19,10 @@ export function RejectReceivedRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.RejectReceivedRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.RejectReceivedRequest(queryParams, labels),
+        "RejectReceivedRequest",
+    );
 
     let rejected = false;
 

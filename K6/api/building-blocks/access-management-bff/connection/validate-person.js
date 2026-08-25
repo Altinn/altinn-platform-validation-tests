@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ValidatePersonInput } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Validates a person before adding them as a right holder.
@@ -19,7 +21,10 @@ export function ValidatePerson(
     body = null,
     labels = null,
 ) {
-    const res = connectionClient.ValidatePerson(partyUuid, body, labels);
+    const res = withRetries(
+        () => connectionClient.ValidatePerson(partyUuid, body, labels),
+        "ValidatePerson",
+    );
 
     /** @type {string|null} */
     let validatedPartyUuid = null;

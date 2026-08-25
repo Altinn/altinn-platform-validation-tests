@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserChangeRequestClient } from "../../../../clients/access-management-bff/system-user-change-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the logout redirect for a system user change request.
@@ -9,7 +10,7 @@ import { SystemUserChangeRequestClient } from "../../../../clients/access-manage
  * for the system user change request endpoints.
  * @param {string} changeRequestId Change request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetChangeRequestLogout(
@@ -17,9 +18,12 @@ export function GetChangeRequestLogout(
     changeRequestId,
     labels = null,
 ) {
-    const res = systemUserChangeRequestClient.GetChangeRequestLogout(
-        changeRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserChangeRequestClient.GetChangeRequestLogout(
+            changeRequestId,
+            labels,
+        ),
+        "GetChangeRequestLogout",
     );
 
     const succeed = check(res, {

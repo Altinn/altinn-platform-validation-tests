@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { OrderClient } from "../../../../clients/notifications/order/index.js";
+import { ComposedEmailRequestExt, NotificationOrderChainResponseExt } from "../../../../clients/notifications/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a new composed email notification order.
@@ -15,7 +17,10 @@ export function OrderCreateComposedEmail(
     request,
     labels = null,
 ) {
-    const res = orderClient.OrderCreateComposedEmail(request, labels);
+    const res = withRetries(
+        () => orderClient.OrderCreateComposedEmail(request, labels),
+        "OrderCreateComposedEmail",
+    );
 
     /** @type {NotificationOrderChainResponseExt|null} */
     let notificationOrder = null;

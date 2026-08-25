@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { ResourceListQueryBuilder, ServiceResource } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all resources.
@@ -15,7 +17,10 @@ export function ResourceGetResourceList(
     query = null,
     labels = null,
 ) {
-    const res = resourceClient.ResourceGetResourceList(query, labels);
+    const res = withRetries(
+        () => resourceClient.ResourceGetResourceList(query, labels),
+        "ResourceGetResourceList",
+    );
 
     /** @type {Array<ServiceResource>|null} */
     let resources = null;

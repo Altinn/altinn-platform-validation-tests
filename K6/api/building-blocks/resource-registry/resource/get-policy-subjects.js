@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { AttributeMatchV2Paginated } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets subjects from policy rules.
@@ -17,10 +19,13 @@ export function ResourceGetPolicySubjects(
     reloadFromXacml = null,
     labels = null,
 ) {
-    const res = resourceClient.ResourceGetPolicySubjects(
-        id,
-        reloadFromXacml,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceGetPolicySubjects(
+            id,
+            reloadFromXacml === null ? null : { reloadFromXacml },
+            labels,
+        ),
+        "ResourceGetPolicySubjects",
     );
 
     /** @type {AttributeMatchV2Paginated|null} */

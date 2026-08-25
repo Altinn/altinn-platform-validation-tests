@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { ProfileSettingPreference, ProfileSettingsPatchRequest } from "../../../../clients/profil/users/users.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Partially updates the profile settings of the current user.
@@ -15,9 +17,12 @@ export function PatchProfileSettings(
     request,
     labels = null,
 ) {
-    const res = usersClient.PatchProfileSettings(
-        request,
-        labels,
+    const res = withRetries(
+        () => usersClient.PatchProfileSettings(
+            request,
+            labels,
+        ),
+        "PatchProfileSettings",
     );
 
     /** @type {ProfileSettingPreference|null} */

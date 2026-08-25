@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { ResourceDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { GetConsumerResourcesQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resources the Maskinporten consumers of a party hold.
@@ -17,7 +20,10 @@ export function GetConsumerResources(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.GetConsumerResources(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.GetConsumerResources(queryParams, labels),
+        "GetConsumerResources",
+    );
 
     /** @type {Array<ResourceDelegation>|null} */
     let resourceDelegations = null;

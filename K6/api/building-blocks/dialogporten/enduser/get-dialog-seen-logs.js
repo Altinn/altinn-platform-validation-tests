@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserDialogsQueriesGetSeenLog_SeenLog, V1EndUserDialogsQueriesSearchSeenLogs_SeenLog } from "../../../../clients/dialogporten/enduser/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog seen log
@@ -15,9 +17,12 @@ export function GetDialogSeenLogs(
     dialogId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogSeenLogs(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogSeenLogs(
+            dialogId,
+            labels,
+        ),
+        "GetDialogSeenLogs",
     );
 
     /** @type {V1EndUserDialogsQueriesSearchSeenLogs_SeenLog[]} */
@@ -68,10 +73,13 @@ export function GetDialogSeenLog(
     seenLogEntryId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogSeenLog(
-        dialogId,
-        seenLogEntryId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogSeenLog(
+            dialogId,
+            seenLogEntryId,
+            labels,
+        ),
+        "GetDialogSeenLog",
     );
 
     /** @type {V1EndUserDialogsQueriesGetSeenLog_SeenLog|null} */

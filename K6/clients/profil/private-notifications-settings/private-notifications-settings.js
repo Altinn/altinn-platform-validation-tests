@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { PrivateNotificationSettingsUpdateRequest } from "./private-notifications-settings.types.js";
+
 const TAGS = {
     UpdatePrivateNotificationPhoneNumber: {
         action: "update-private-notification-phone-number",
@@ -40,7 +42,7 @@ class PrivateNotificationsSettingsClient {
      * {@link PrivateNotificationSettingsUpdateRequestBuilder}.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePrivateNotificationPhoneNumber(request, labels = null) {
         const token = this.tokenGenerator.getToken();

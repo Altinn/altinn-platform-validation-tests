@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { DelegateSingleRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Delegates rights on a resource to a party.
@@ -19,10 +21,13 @@ export function DelegateSingleRights(
     body = null,
     labels = null,
 ) {
-    const res = singleRightClient.DelegateSingleRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => singleRightClient.DelegateSingleRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DelegateSingleRights",
     );
 
     let delegated = false;

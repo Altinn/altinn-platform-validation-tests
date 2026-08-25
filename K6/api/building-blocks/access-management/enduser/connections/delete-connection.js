@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteConnectionQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a connection.
@@ -17,9 +19,12 @@ export function DeleteConnection(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.DeleteConnection(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.DeleteConnection(
+            queryParams,
+            labels,
+        ),
+        "DeleteConnection",
     );
 
     const succeed = check(res, {

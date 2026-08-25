@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetAccessPackageDelegationCheckQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { DelegationCheck } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks which access packages the authenticated user can delegate for a
@@ -19,9 +22,12 @@ export function GetAccessPackageDelegationCheck(
     queryParams = null,
     labels = null,
 ) {
-    const res = accessPackageClient.GetAccessPackageDelegationCheck(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => accessPackageClient.GetAccessPackageDelegationCheck(
+            queryParams,
+            labels,
+        ),
+        "GetAccessPackageDelegationCheck",
     );
 
     /** @type {Array<DelegationCheck>|null} */

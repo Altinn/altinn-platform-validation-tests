@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { DeleteMyClientsQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { DelegationBatchInputDto, DelegationDto } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Revokes the authenticated party's access to a client.
@@ -19,10 +22,13 @@ export function DeleteMyClients(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationClient.DeleteMyClients(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.DeleteMyClients(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteMyClients",
     );
 
     /** @type {Array<DelegationDto>} */

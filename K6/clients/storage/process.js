@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ProcessState, ProcessStateUpdate } from "./instances.types.js";
+
 const TAGS = {
     UpdateProcessState: {
         action: "update-process-state",
@@ -49,7 +51,7 @@ class ProcessClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {ProcessState} request Process state to store.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateProcessState(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -81,7 +83,7 @@ class ProcessClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetProcessHistory(instanceOwnerPartyId, instanceGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -113,7 +115,7 @@ class ProcessClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {ProcessStateUpdate} request Process state and events to store.
      * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateProcessStateAndEvents(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -1,9 +1,11 @@
+import { AccessPackageDelegationCheckQuery, CreateAccessPackageQuery, CreateConnectionQuery, CreateInstanceRightsQuery, CreateResourceRightsQuery, DeleteAccessPackageQuery, DeleteConnectionQuery, DeleteInstanceQuery, DeleteResourceQuery, DeleteRoleQuery, GetAccessPackagesQuery, GetConnectionsQuery, GetConnectionUsersQuery, GetInstanceDelegationCheckQuery, GetInstanceRightsQuery, GetInstancesQuery, GetInstanceUsersQuery, GetResourceDelegationCheckQuery, GetResourceRightsQuery, GetResourcesQuery, GetRolesQuery, UpdateInstanceRightsQuery, UpdateResourceRightsQuery } from "./connections.types.js";
+
 /**
  * Builder for retrieving connections query parameters.
  */
 class GetConnectionsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetConnectionsQuery} */ ({});
     }
 
     /**
@@ -109,7 +111,7 @@ class GetConnectionsQueryBuilder {
  */
 class CreateConnectionQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateConnectionQuery} */ ({});
     }
 
     /**
@@ -149,7 +151,7 @@ class CreateConnectionQueryBuilder {
  */
 class DeleteConnectionQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteConnectionQuery} */ ({});
     }
 
     /**
@@ -211,7 +213,7 @@ class DeleteConnectionQueryBuilder {
  */
 class GetConnectionUsersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetConnectionUsersQuery} */ ({});
     }
 
     /**
@@ -240,7 +242,7 @@ class GetConnectionUsersQueryBuilder {
  */
 class GetAccessPackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAccessPackagesQuery} */ ({});
     }
 
     /**
@@ -291,7 +293,7 @@ class GetAccessPackagesQueryBuilder {
  */
 class CreateAccessPackageQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAccessPackageQuery} */ ({});
     }
 
     /**
@@ -353,7 +355,7 @@ class CreateAccessPackageQueryBuilder {
  */
 class DeleteAccessPackageQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAccessPackageQuery} */ ({});
     }
 
     /**
@@ -426,7 +428,7 @@ class DeleteAccessPackageQueryBuilder {
  */
 class AccessPackageDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AccessPackageDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -477,7 +479,7 @@ class AccessPackageDelegationCheckQueryBuilder {
  */
 class GetRolesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRolesQuery} */ ({});
     }
 
     /**
@@ -528,7 +530,7 @@ class GetRolesQueryBuilder {
  */
 class DeleteRoleQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteRoleQuery} */ ({});
     }
 
     /**
@@ -590,7 +592,7 @@ class DeleteRoleQueryBuilder {
  */
 class GetResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourcesQuery} */ ({});
     }
 
     /**
@@ -652,7 +654,7 @@ class GetResourcesQueryBuilder {
  */
 class DeleteResourceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteResourceQuery} */ ({});
     }
 
     /**
@@ -714,7 +716,7 @@ class DeleteResourceQueryBuilder {
  */
 class GetResourceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceRightsQuery} */ ({});
     }
 
     /**
@@ -776,7 +778,7 @@ class GetResourceRightsQueryBuilder {
  */
 class CreateResourceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateResourceRightsQuery} */ ({});
     }
 
     /**
@@ -827,7 +829,7 @@ class CreateResourceRightsQueryBuilder {
  */
 class UpdateResourceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdateResourceRightsQuery} */ ({});
     }
 
     /**
@@ -878,7 +880,7 @@ class UpdateResourceRightsQueryBuilder {
  */
 class GetResourceDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -918,7 +920,7 @@ class GetResourceDelegationCheckQueryBuilder {
  */
 class GetInstancesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetInstancesQuery} */ ({});
     }
 
     /**
@@ -991,7 +993,7 @@ class GetInstancesQueryBuilder {
  */
 class DeleteInstanceQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteInstanceQuery} */ ({});
     }
 
     /**
@@ -1064,7 +1066,7 @@ class DeleteInstanceQueryBuilder {
  */
 class GetInstanceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetInstanceRightsQuery} */ ({});
     }
 
     /**
@@ -1137,7 +1139,7 @@ class GetInstanceRightsQueryBuilder {
  */
 class CreateInstanceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateInstanceRightsQuery} */ ({});
     }
 
     /**
@@ -1199,7 +1201,7 @@ class CreateInstanceRightsQueryBuilder {
  */
 class UpdateInstanceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdateInstanceRightsQuery} */ ({});
     }
 
     /**
@@ -1258,8 +1260,7 @@ class UpdateInstanceRightsQueryBuilder {
 
 class GetInstanceDelegationCheckQueryBuilder {
     constructor() {
-        /** @type {GetInstanceDelegationCheckQuery} */
-        this.query = {};
+        this.query = /** @type {GetInstanceDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -1299,8 +1300,7 @@ class GetInstanceDelegationCheckQueryBuilder {
 
 class GetInstanceUsersQueryBuilder {
     constructor() {
-        /** @type {GetInstanceUsersQuery} */
-        this.query = {};
+        this.query = /** @type {GetInstanceUsersQuery} */ ({});
     }
 
     /**

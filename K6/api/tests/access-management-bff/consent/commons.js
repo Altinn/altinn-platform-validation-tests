@@ -1,8 +1,7 @@
-import http from "k6/http";
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { getNumberOfVUs, parseCsvData, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /*
@@ -89,7 +88,7 @@ export function getClients() {
  *
  * @param {string} userId - The user the iteration reads as.
  * @param {string} partyUuid - The party that user reads for.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getTokenOpts(userId, partyUuid) {
     return new PersonalTokenBuilder()
@@ -107,17 +106,14 @@ export function getTokenOpts(userId, partyUuid) {
  * Segmented rather than flat, so two VUs do not spend the run reading for the same
  * user and measuring a warm cache.
  *
- * @returns {object[][]} The users, one slice per VU.
+ * @returns {any[][]} The users, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
 
     const numberOfVUs = getNumberOfVUs();
 
-    const res = http.get(
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/orgs-in-${__ENV.ENVIRONMENT}-with-party-uuid-v2.csv`,
-        { tags: { action: "fetch-test-data" } },
-    );
+    const data = fetchTestData(`access-management-bff/consent/${__ENV.ENVIRONMENT}.csv`);
 
-    return segmentData(parseCsvData(res.body), numberOfVUs);
+    return segmentData(data, numberOfVUs);
 }

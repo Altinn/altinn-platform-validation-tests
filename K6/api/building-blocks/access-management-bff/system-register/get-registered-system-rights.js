@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/access-management-bff/system-register/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the rights a registered system asks for.
@@ -9,7 +10,7 @@ import { SystemRegisterClient } from "../../../../clients/access-management-bff/
  * register endpoints.
  * @param {string} systemId System identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The rights of the system. The API does not publish a
+ * @returns {any} The rights of the system. The API does not publish a
  * schema for this response.
  */
 export function GetRegisteredSystemRights(
@@ -17,12 +18,15 @@ export function GetRegisteredSystemRights(
     systemId,
     labels = null,
 ) {
-    const res = systemRegisterClient.GetRegisteredSystemRights(
-        systemId,
-        labels,
+    const res = withRetries(
+        () => systemRegisterClient.GetRegisteredSystemRights(
+            systemId,
+            labels,
+        ),
+        "GetRegisteredSystemRights",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let rights = null;
 
     const succeed = check(res, {

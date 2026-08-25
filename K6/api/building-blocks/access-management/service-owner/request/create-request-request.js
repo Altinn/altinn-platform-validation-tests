@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
+import { RequestDto, RequestResourceDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a resource delegation request.
@@ -15,9 +17,12 @@ export function RequestCreateResourceRequest(
     request,
     labels = null,
 ) {
-    const res = requestClient.RequestCreateResourceRequest(
-        request,
-        labels,
+    const res = withRetries(
+        () => requestClient.RequestCreateResourceRequest(
+            request,
+            labels,
+        ),
+        "RequestCreateResourceRequest",
     );
 
     /** @type {RequestDto|null} */

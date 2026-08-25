@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { FavoritesClient } from "../../../../clients/profil/favorites/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds a party to the favorites group for the current user.
@@ -15,9 +16,12 @@ export function AddFavorite(
     partyUuid,
     labels = null,
 ) {
-    const res = favoritesClient.AddFavorite(
-        partyUuid,
-        labels,
+    const res = withRetries(
+        () => favoritesClient.AddFavorite(
+            partyUuid,
+            labels,
+        ),
+        "AddFavorite",
     );
 
     let added = false;

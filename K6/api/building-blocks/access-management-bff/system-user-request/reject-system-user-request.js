@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Rejects a system user request.
@@ -18,10 +19,13 @@ export function RejectSystemUserRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.RejectSystemUserRequest(
-        partyId,
-        requestId,
-        labels,
+    const res = withRetries(
+        () => systemUserRequestClient.RejectSystemUserRequest(
+            partyId,
+            requestId,
+            labels,
+        ),
+        "RejectSystemUserRequest",
     );
 
     let rejected = false;

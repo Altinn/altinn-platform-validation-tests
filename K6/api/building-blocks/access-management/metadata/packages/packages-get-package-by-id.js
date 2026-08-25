@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { PackageDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets package by id.
@@ -15,7 +17,10 @@ export function PackagesGetPackageById(
     id,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetPackageById(id, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetPackageById(id, labels),
+        "PackagesGetPackageById",
+    );
 
     /** @type {PackageDto|null} */
     let packageDto = null;

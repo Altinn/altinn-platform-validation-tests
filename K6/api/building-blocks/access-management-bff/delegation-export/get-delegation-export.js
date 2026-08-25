@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetDelegationExportQuery } from "../../../../clients/access-management-bff/delegation-export/delegation-export.types.js";
 import { DelegationExportClient } from "../../../../clients/access-management-bff/delegation-export/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Exports the delegations of a party as a spreadsheet.
@@ -10,16 +12,19 @@ import { DelegationExportClient } from "../../../../clients/access-management-bf
  * @param {GetDelegationExportQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetDelegationExportQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the exported file.
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the exported file.
  */
 export function GetDelegationExport(
     delegationExportClient,
     queryParams = null,
     labels = null,
 ) {
-    const res = delegationExportClient.GetDelegationExport(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => delegationExportClient.GetDelegationExport(
+            queryParams,
+            labels,
+        ),
+        "GetDelegationExport",
     );
 
     const succeed = check(res, {

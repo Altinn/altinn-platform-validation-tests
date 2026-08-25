@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { RightCheck } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { GetSingleRightDelegationCheckQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks which rights on a resource the authenticated user can delegate.
@@ -17,9 +20,12 @@ export function GetSingleRightDelegationCheck(
     queryParams = null,
     labels = null,
 ) {
-    const res = singleRightClient.GetSingleRightDelegationCheck(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => singleRightClient.GetSingleRightDelegationCheck(
+            queryParams,
+            labels,
+        ),
+        "GetSingleRightDelegationCheck",
     );
 
     /** @type {Array<RightCheck>|null} */

@@ -1,6 +1,9 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { MaskinportenSuppliersQuery } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
+import { AssignmentDto } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a Maskinporten supplier connection.
@@ -16,9 +19,12 @@ export function CreateMaskinportenSupplier(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenSuppliersClient.CreateMaskinportenSupplier(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenSuppliersClient.CreateMaskinportenSupplier(
+            queryParams,
+            labels,
+        ),
+        "CreateMaskinportenSupplier",
     );
 
     /** @type {AssignmentDto|null} */

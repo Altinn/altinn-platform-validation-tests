@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteInstanceQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes an instance permission.
@@ -17,9 +19,12 @@ export function DeleteInstance(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.DeleteInstance(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.DeleteInstance(
+            queryParams,
+            labels,
+        ),
+        "DeleteInstance",
     );
 
     return check(res, {

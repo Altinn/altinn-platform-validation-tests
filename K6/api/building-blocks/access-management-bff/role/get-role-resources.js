@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { ResourceAM } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { GetRoleResourcesQuery } from "../../../../clients/access-management-bff/role/role.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resources a role grants access to.
@@ -16,7 +19,10 @@ export function GetRoleResources(
     queryParams = null,
     labels = null,
 ) {
-    const res = roleClient.GetRoleResources(queryParams, labels);
+    const res = withRetries(
+        () => roleClient.GetRoleResources(queryParams, labels),
+        "GetRoleResources",
+    );
 
     /** @type {Array<ResourceAM>|null} */
     let resources = null;

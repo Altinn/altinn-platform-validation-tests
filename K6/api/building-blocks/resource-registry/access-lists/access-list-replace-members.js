@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { PartyUrn } from "../../../../clients/register/types.js";
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListMembershipDtoAggregateVersionVersionedPaginated } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Replaces access list members.
@@ -19,11 +22,14 @@ export function AccessListReplaceMembers(
     request,
     labels = null,
 ) {
-    const res = accessListClient.AccessListReplaceMembers(
-        owner,
-        identifier,
-        request,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListReplaceMembers(
+            owner,
+            identifier,
+            request,
+            labels,
+        ),
+        "AccessListReplaceMembers",
     );
 
     /** @type {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} */

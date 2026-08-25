@@ -1,7 +1,7 @@
-import { check } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
+import { InitializeCorrespondencesExt } from "../../../clients/correspondence/correspondence.types.js";
 import {
     BaseCorrespondenceBuilder,
     CorrespondenceClient,
@@ -15,7 +15,7 @@ import {
     PersonalTokenGenerator,
     uuidv4,
 } from "../../../common-imports.js";
-import { getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
+import { fetchTestData, getOptions, requireEnv } from "../../../helpers.js";
 import {
     AltinnScopes,
     CreateScopeString,
@@ -34,7 +34,7 @@ const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
  * request must succeed.
  *
  * @param {{ [key: string]: string }[]} labels Request labels.
- * @returns {object} Strict k6 options for a Correspondence test.
+ * @returns Strict k6 options for a Correspondence test.
  */
 export function getCorrespondenceOptions(labels) {
     const options = getOptions(labels);
@@ -177,26 +177,12 @@ export function setupCorrespondenceTestData() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const configuration = getCorrespondenceTestConfiguration();
 
-    const url =
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/" +
-        `K6/testdata/correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`;
-    const response = http.get(url, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    const fetched = check(response, {
-        "Correspondence test data - status code is 200": (res) =>
-            res.status === 200,
-    });
-
-    if (!fetched) {
-        throw new Error(
-            `Unable to fetch Correspondence test data for ${__ENV.ENVIRONMENT}: HTTP ${response.status}`,
-        );
-    }
+    const rows = fetchTestData(
+        `correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`,
+    );
 
     const seenSsns = new Set();
-    let endUsers = parseCsvData(response.body).filter((item) => {
+    let endUsers = rows.filter((item) => {
         const hasCompleteIdentity =
             item.ssn &&
             item.userId &&
@@ -413,7 +399,7 @@ function getAttachmentPayload(size) {
  * Correspondence attachment.
  *
  * @param {string} recipient Recipient SSN or organization number.
- * @returns {object} Multipart form fields for k6/http.
+ * @returns Multipart form fields for k6/http.
  */
 export function buildUploadCorrespondenceForm(recipient) {
     const configuration = getCorrespondenceTestConfiguration();
@@ -446,3 +432,7 @@ export function buildUploadCorrespondenceForm(recipient) {
         ),
     };
 }
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here.
+export const CorrespondenceTestUser = undefined;

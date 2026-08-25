@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { TypesClient } from "../../../../../clients/access-management/metadata/types/index.js";
+import { SubTypeDto } from "../../../../../clients/access-management/metadata/types/types.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets organization sub types.
@@ -13,7 +15,10 @@ export function TypesGetOrganizationSubTypes(
     typesClient,
     labels = null,
 ) {
-    const res = typesClient.TypesGetOrganizationSubTypes(labels);
+    const res = withRetries(
+        () => typesClient.TypesGetOrganizationSubTypes(labels),
+        "TypesGetOrganizationSubTypes",
+    );
 
     /** @type {Array<SubTypeDto>|null} */
     let subTypes = null;

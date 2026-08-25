@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { AgentDtoPaginatedResult, ClientAccessPackagesQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the access packages held on a client.
@@ -16,9 +18,12 @@ export function GetClientAccessPackages(
     queryParams,
     labels = null,
 ) {
-    const res = clientDelegationClient.GetClientAccessPackages(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.GetClientAccessPackages(
+            queryParams,
+            labels,
+        ),
+        "GetClientAccessPackages",
     );
 
     /** @type {AgentDtoPaginatedResult|null} */

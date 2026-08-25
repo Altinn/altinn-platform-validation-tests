@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerDialogsQueriesGetTransmission_Transmission, V1ServiceOwnerDialogsQueriesSearchTransmissions_Transmission } from "../../../../clients/dialogporten/serviceowner/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog tranmissions
@@ -15,9 +17,12 @@ export function GetDialogTransmissions(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogTransmissions(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogTransmissions(
+            dialogId,
+            labels,
+        ),
+        "GetDialogTransmissions",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesSearchTransmissions_Transmission[]} */
@@ -68,10 +73,13 @@ export function GetDialogTransmission(
     transmissionId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogTransmission(
-        dialogId,
-        transmissionId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogTransmission(
+            dialogId,
+            transmissionId,
+            labels,
+        ),
+        "GetDialogTransmission",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesGetTransmission_Transmission|null} */

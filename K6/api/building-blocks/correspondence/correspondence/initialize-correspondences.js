@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { InitializeCorrespondencesExt, InitializeCorrespondencesResponseExt } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Initializes one or more correspondences.
@@ -21,9 +23,12 @@ export function InitializeCorrespondences(
     requestBody,
     labels = null,
 ) {
-    const res = correspondenceClient.InitializeCorrespondence(
-        requestBody,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.InitializeCorrespondence(
+            requestBody,
+            labels,
+        ),
+        "InitializeCorrespondences",
     );
 
     /** @type {InitializeCorrespondencesResponseExt|null} */

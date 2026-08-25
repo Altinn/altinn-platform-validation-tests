@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { PackageDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets package by URN.
@@ -15,7 +17,10 @@ export function PackagesGetPackageByUrn(
     urnValue,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetPackageByUrn(urnValue, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetPackageByUrn(urnValue, labels),
+        "PackagesGetPackageByUrn",
+    );
 
     /** @type {PackageDto|null} */
     let packageDto = null;

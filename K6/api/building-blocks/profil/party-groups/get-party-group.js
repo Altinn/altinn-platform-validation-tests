@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GroupResponse } from "../../../../clients/profil/favorites/favorites.types.js";
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a party group.
@@ -15,7 +17,10 @@ export function GetPartyGroup(
     groupId,
     labels = null,
 ) {
-    const res = partyGroupsClient.GetPartyGroup(groupId, labels);
+    const res = withRetries(
+        () => partyGroupsClient.GetPartyGroup(groupId, labels),
+        "GetPartyGroup",
+    );
 
     /** @type {GroupResponse|null} */
     let group = null;

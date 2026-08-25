@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { PartyUrn } from "../../../../clients/register/types.js";
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListMembershipDtoAggregateVersionVersionedPaginated } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds members to an access list.
@@ -19,11 +22,14 @@ export function AccessListAddMembers(
     request,
     labels = null,
 ) {
-    const res = accessListClient.AccessListAddMembers(
-        owner,
-        identifier,
-        request,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListAddMembers(
+            owner,
+            identifier,
+            request,
+            labels,
+        ),
+        "AccessListAddMembers",
     );
 
     /** @type {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} */

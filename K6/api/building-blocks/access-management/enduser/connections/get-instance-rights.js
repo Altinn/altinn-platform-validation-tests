@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { ExtInstanceRightDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
+import { GetInstanceRightsQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets instance rights.
@@ -23,10 +26,13 @@ export function GetInstanceRights(
     },
     labels = null,
 ) {
-    const res = connectionsClient.GetInstanceRights(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetInstanceRights(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetInstanceRights",
     );
 
     /** @type {ExtInstanceRightDto|null} */

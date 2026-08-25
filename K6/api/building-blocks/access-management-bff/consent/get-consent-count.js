@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetConsentCountQuery } from "../../../../clients/access-management-bff/consent/consent.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetConsentCountQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetConsentCountQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The consent request count. The API does not publish a
+ * @returns {any} The consent request count. The API does not publish a
  * schema for this response.
  */
 export function GetConsentCount(
@@ -25,7 +26,7 @@ export function GetConsentCount(
         "GetConsentCount",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let count = null;
 
     const succeed = check(res, {

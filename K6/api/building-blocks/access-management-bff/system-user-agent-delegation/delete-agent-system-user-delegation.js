@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { DeleteAgentSystemUserDelegationQuery } from "../../../../clients/access-management-bff/system-user-agent-delegation/system-user-agent-delegation.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a customer delegated to an agent system user.
@@ -23,12 +25,15 @@ export function DeleteAgentSystemUserDelegation(
     queryParams = null,
     labels = null,
 ) {
-    const res = systemUserAgentDelegationClient.DeleteAgentSystemUserDelegation(
-        partyId,
-        systemUserGuid,
-        delegationId,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentDelegationClient.DeleteAgentSystemUserDelegation(
+            partyId,
+            systemUserGuid,
+            delegationId,
+            queryParams,
+            labels,
+        ),
+        "DeleteAgentSystemUserDelegation",
     );
 
     let revoked = false;

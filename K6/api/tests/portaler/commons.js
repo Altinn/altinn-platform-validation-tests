@@ -2,6 +2,7 @@ import { check } from "k6";
 import http from "k6/http";
 
 import { requireEnv } from "../../../helpers.js";
+import { withRetries } from "../../building-blocks/common/retry.js";
 
 export function getInfoCloud(path, labels) {
     requireEnv(["INFO_CLOUD_URL"]);
@@ -9,7 +10,7 @@ export function getInfoCloud(path, labels) {
     const params = {
         tags: labels,
     };
-    const res = http.get(endpoint, params);
+    const res = withRetries(() => http.get(endpoint, params), "getInfoCloud");
 
     const succeed = check(res, {
         "status code is 200": (r) => r.status === 200,
@@ -37,7 +38,7 @@ export function searchInfoCloud(searchWord, labels) {
     const params = {
         tags: tags
     };
-    const res = http.get(endpoint, params);
+    const res = withRetries(() => http.get(endpoint, params), "searchInfoCloud");
 
     const succeed = check(res, {
         "status code is 200": (r) => r.status === 200,

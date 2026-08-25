@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { AttachmentDetailsExt } from "../../../../clients/correspondence/attachment.types.js";
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets attachment details.
@@ -15,9 +17,12 @@ export function GetAttachmentDetails(
     attachmentId,
     labels = null,
 ) {
-    const res = attachmentClient.GetAttachmentDetails(
-        attachmentId,
-        labels,
+    const res = withRetries(
+        () => attachmentClient.GetAttachmentDetails(
+            attachmentId,
+            labels,
+        ),
+        "GetAttachmentDetails",
     );
 
     /** @type {AttachmentDetailsExt|null} */

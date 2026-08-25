@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { AreaGroupDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets access package group.
@@ -13,7 +15,10 @@ export function PackagesGetGroup(
     packagesClient,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetGroup(labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetGroup(labels),
+        "PackagesGetGroup",
+    );
 
     /** @type {AreaGroupDto|null} */
     let areaGroup = null;

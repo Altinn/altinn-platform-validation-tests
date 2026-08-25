@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { RevokeSingleRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes all rights a party holds on a resource.
@@ -17,7 +19,10 @@ export function RevokeSingleRights(
     queryParams = null,
     labels = null,
 ) {
-    const res = singleRightClient.RevokeSingleRights(queryParams, labels);
+    const res = withRetries(
+        () => singleRightClient.RevokeSingleRights(queryParams, labels),
+        "RevokeSingleRights",
+    );
 
     let revoked = false;
 

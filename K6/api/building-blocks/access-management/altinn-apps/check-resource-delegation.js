@@ -4,6 +4,7 @@ import {
     ResourceRightDelegationCheckResultDtoPaginated,
 } from "../../../../clients/access-management/altinn-apps/altinn-apps.types.js";
 import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks whether rights can be delegated for an application instance.
@@ -25,10 +26,13 @@ export function CheckResourceDelegation(
     expectedStatus = null,
     labels = null,
 ) {
-    const res = appsInstanceDelegationClient.CheckResourceDelegation(
-        resourceId,
-        instanceId,
-        labels,
+    const res = withRetries(
+        () => appsInstanceDelegationClient.CheckResourceDelegation(
+            resourceId,
+            instanceId,
+            labels,
+        ),
+        "CheckResourceDelegation",
     );
 
     /** @type {ResourceRightDelegationCheckResultDtoPaginated|null} */

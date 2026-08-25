@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { RequestDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Approves a received request.
@@ -21,11 +23,14 @@ export function ApproveReceivedRequest(
     rights = null,
     labels = null,
 ) {
-    const res = requestClient.ApproveReceivedRequest(
-        party,
-        id,
-        rights,
-        labels,
+    const res = withRetries(
+        () => requestClient.ApproveReceivedRequest(
+            party,
+            id,
+            rights,
+            labels,
+        ),
+        "ApproveReceivedRequest",
     );
 
     /** @type {RequestDto|null} */

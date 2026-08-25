@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Downloads all correspondence attachments as a zip archive.
@@ -11,7 +12,7 @@ import { CorrespondenceClient } from "../../../../clients/correspondence/index.j
  * Correspondence identifier.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {http.RefinedResponse|null}
+ * @returns {import("k6/http").RefinedResponse<"text">|null}
  * Response containing the zip archive, or null if the request failed.
  */
 export function DownloadAllAttachments(
@@ -19,9 +20,12 @@ export function DownloadAllAttachments(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.DownloadAllAttachments(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.DownloadAllAttachments(
+            correspondenceId,
+            labels,
+        ),
+        "DownloadAllAttachments",
     );
 
     const succeed = check(res, {

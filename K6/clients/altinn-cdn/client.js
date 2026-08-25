@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { withRetries } from "../../api/building-blocks/common/retry.js";
 import { requireEnv } from "../../helpers.js";
 
 class AltinnCdnClient {
@@ -33,7 +34,10 @@ class AltinnCdnClient {
             },
         };
 
-        const res = http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params);
+        const res = withRetries(
+            () => http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params),
+            "GetOrgs",
+        );
         console.log(this.BASE_URL + "/orgs/altinn-orgs.json");
         if (res.status == 200) {
             const res_body = JSON.parse(res.body);

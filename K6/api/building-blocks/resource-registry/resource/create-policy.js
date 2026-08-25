@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates or overwrites the XACML policy for a resource.
@@ -17,10 +18,13 @@ export function ResourceCreatePolicy(
     policyFile,
     labels = null,
 ) {
-    const res = resourceClient.ResourceCreatePolicy(
-        id,
-        policyFile,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceCreatePolicy(
+            id,
+            policyFile,
+            labels,
+        ),
+        "ResourceCreatePolicy",
     );
 
     const succeed = check(res, {

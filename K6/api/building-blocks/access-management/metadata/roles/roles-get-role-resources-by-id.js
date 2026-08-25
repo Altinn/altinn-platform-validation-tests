@@ -1,13 +1,16 @@
 import { check } from "k6";
 
+import { ResourceDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { RolesGetRoleResourcesByIdQuery } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets role resources by role id.
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {string} id Role identifier.
- * @param {RolesGetRoleResourcesByIdQueryBuilder | object} query Query parameters.
+ * @param {RolesGetRoleResourcesByIdQuery} query Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {ResourceDto|null} Role resource.
  */
@@ -17,7 +20,10 @@ export function RolesGetRoleResourcesById(
     query,
     labels = null,
 ) {
-    const res = rolesClient.RolesGetRoleResourcesById(id, query, labels);
+    const res = withRetries(
+        () => rolesClient.RolesGetRoleResourcesById(id, query, labels),
+        "RolesGetRoleResourcesById",
+    );
 
     /** @type {ResourceDto|null} */
     let resource = null;

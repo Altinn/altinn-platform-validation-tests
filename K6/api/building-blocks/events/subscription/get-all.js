@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { SubscriptionList } from "../../../../clients/events/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves all subscriptions for the authorized consumer.
@@ -13,7 +15,10 @@ export function SubscriptionGetAll(
     subscriptionClient,
     labels = null,
 ) {
-    const res = subscriptionClient.SubscriptionGetAll(labels);
+    const res = withRetries(
+        () => subscriptionClient.SubscriptionGetAll(labels),
+        "SubscriptionGetAll",
+    );
 
     /** @type {SubscriptionList|null} */
     let subscriptions = null;

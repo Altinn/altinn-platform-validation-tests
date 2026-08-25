@@ -43,7 +43,7 @@ class AuthorizedPartiesClient {
      * {@link EndUserAuthorizedPartiesQueryBuilder} to construct this object.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAuthorizedParties(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -59,9 +59,9 @@ class AuthorizedPartiesClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

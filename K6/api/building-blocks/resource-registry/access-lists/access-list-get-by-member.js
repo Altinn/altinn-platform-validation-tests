@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListInfoDto } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets access lists for a given member.
@@ -15,7 +17,10 @@ export function AccessListGetByMember(
     party,
     labels = null,
 ) {
-    const res = accessListClient.AccessListGetByMember(party, labels);
+    const res = withRetries(
+        () => accessListClient.AccessListGetByMember(party, labels),
+        "AccessListGetByMember",
+    );
 
     /** @type {Array<AccessListInfoDto>|null} */
     let accessLists = null;

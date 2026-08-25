@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { ServiceResourceFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
+import { GetResourceQuery } from "../../../../clients/access-management-bff/resource/resource.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a single resource.
@@ -16,7 +19,10 @@ export function GetResource(
     queryParams = null,
     labels = null,
 ) {
-    const res = resourceClient.GetResource(queryParams, labels);
+    const res = withRetries(
+        () => resourceClient.GetResource(queryParams, labels),
+        "GetResource",
+    );
 
     /** @type {ServiceResourceFE|null} */
     let resource = null;

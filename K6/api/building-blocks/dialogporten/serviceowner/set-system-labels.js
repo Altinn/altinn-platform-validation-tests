@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "../../../../clients/dialogporten/serviceowner/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Sets the end user system labels of a dialog.
@@ -8,7 +10,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * PUT /dialogs/{dialogId}/endusercontext/systemlabels
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
  * @param {string} enduserId - the end user to act on behalf of
  * @param {string} ifMatch - revision to send as the If-Match header
@@ -23,12 +25,15 @@ export function SetEndUserContextSystemLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PutEndUserContextSystemLabels(
-        dialogId,
-        request,
-        enduserId,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PutEndUserContextSystemLabels(
+            dialogId,
+            request,
+            enduserId,
+            ifMatch,
+            labels,
+        ),
+        "SetEndUserContextSystemLabels",
     );
 
     const success = check(res, {
@@ -60,10 +65,13 @@ export function BulkSetEndUserContextSystemLabels(
     enduserId = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostBulkSetSystemLabels(
-        request,
-        enduserId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostBulkSetSystemLabels(
+            request,
+            enduserId,
+            labels,
+        ),
+        "BulkSetEndUserContextSystemLabels",
     );
 
     const success = check(res, {

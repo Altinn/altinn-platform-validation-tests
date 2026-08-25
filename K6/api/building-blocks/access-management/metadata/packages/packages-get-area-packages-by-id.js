@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { PackageDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets packages for an area.
@@ -15,7 +17,10 @@ export function PackagesGetAreaPackagesById(
     id,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetAreaPackagesById(id, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetAreaPackagesById(id, labels),
+        "PackagesGetAreaPackagesById",
+    );
 
     /** @type {PackageDto|null} */
     let packageDto = null;

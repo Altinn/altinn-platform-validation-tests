@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteReporteeConnectionQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a connection between a reportee and a right holder.
@@ -17,7 +19,10 @@ export function DeleteReporteeConnection(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionClient.DeleteReporteeConnection(queryParams, labels);
+    const res = withRetries(
+        () => connectionClient.DeleteReporteeConnection(queryParams, labels),
+        "DeleteReporteeConnection",
+    );
 
     let removed = false;
 

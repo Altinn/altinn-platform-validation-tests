@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GroupResponse } from "../../../../clients/profil/favorites/favorites.types.js";
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds a party to a group.
@@ -17,7 +19,10 @@ export function AddPartyToGroup(
     partyUuid,
     labels = null,
 ) {
-    const res = partyGroupsClient.AddPartyToGroup(groupId, partyUuid, labels);
+    const res = withRetries(
+        () => partyGroupsClient.AddPartyToGroup(groupId, partyUuid, labels),
+        "AddPartyToGroup",
+    );
 
     /** @type {GroupResponse|null} */
     let group = null;

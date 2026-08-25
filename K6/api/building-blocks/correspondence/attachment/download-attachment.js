@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Downloads attachment data.
@@ -15,9 +16,15 @@ export function DownloadAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = attachmentClient.DownloadAttachment(
-        attachmentId,
-        labels,
+    // The download answers with bytes rather than text, which the retry helper,
+    // written for the json endpoints, has no way to express.
+    const res = /** @type {import("k6/http").RefinedResponse<"binary">} */ (
+        /** @type {unknown} */ (withRetries(
+            () => /** @type {import("k6/http").RefinedResponse<"text">} */ (
+                /** @type {unknown} */ (attachmentClient.DownloadAttachment(attachmentId, labels))
+            ),
+            "DownloadAttachment",
+        ))
     );
 
     /** @type {ArrayBuffer|null} */

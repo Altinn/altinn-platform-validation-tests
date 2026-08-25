@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { Application } from "../../../clients/storage/applications.types.js";
 import { ApplicationsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Retrieves a specific application.
@@ -17,10 +19,13 @@ export function GetApplication(
     app,
     labels = null,
 ) {
-    const res = applicationsClient.GetApplication(
-        org,
-        app,
-        labels,
+    const res = withRetries(
+        () => applicationsClient.GetApplication(
+            org,
+            app,
+            labels,
+        ),
+        "GetApplication",
     );
 
     /** @type {Application|null} */

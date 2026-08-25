@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { RolePermission } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { GetRolePermissionsQuery } from "../../../../clients/access-management-bff/role/role.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the roles one party holds for another, with the permissions behind
@@ -17,7 +20,10 @@ export function GetRolePermissions(
     queryParams = null,
     labels = null,
 ) {
-    const res = roleClient.GetRolePermissions(queryParams, labels);
+    const res = withRetries(
+        () => roleClient.GetRolePermissions(queryParams, labels),
+        "GetRolePermissions",
+    );
 
     /** @type {Array<RolePermission>|null} */
     let rolePermissions = null;

@@ -1,13 +1,15 @@
 import { check } from "k6";
 
+import { InitializeCorrespondencesResponseExt } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Initializes correspondences and uploads attachment data as multipart form
  * data.
  *
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
- * @param {object} formData Multipart form fields and attachment data.
+ * @param {{[key: string]: string|import("k6/http").FileData}} formData Multipart form fields and attachment data.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {InitializeCorrespondencesResponseExt|null}
  * Initialized correspondence information or null when request fails.
@@ -17,9 +19,12 @@ export function UploadCorrespondences(
     formData,
     labels = null,
 ) {
-    const res = correspondenceClient.UploadCorrespondences(
-        formData,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.UploadCorrespondences(
+            formData,
+            labels,
+        ),
+        "UploadCorrespondences",
     );
 
     /** @type {InitializeCorrespondencesResponseExt|null} */

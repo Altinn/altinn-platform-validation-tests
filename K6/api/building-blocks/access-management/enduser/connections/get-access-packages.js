@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetAccessPackagesQuery, PackagePermissionDtoPaginatedResult } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves access package permissions for connections.
@@ -20,10 +22,13 @@ export function GetAccessPackages(
     headers = null,
     labels = null,
 ) {
-    const res = connectionsClient.GetAccessPackages(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetAccessPackages(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetAccessPackages",
     );
 
     /** @type {PackagePermissionDtoPaginatedResult|null} */

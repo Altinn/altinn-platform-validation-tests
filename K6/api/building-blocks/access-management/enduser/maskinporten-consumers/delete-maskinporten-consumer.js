@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { MaskinportenConsumersClient } from "../../../../../clients/access-management/enduser/maskinporten-consumers/index.js";
+import { MaskinportenConsumersQuery } from "../../../../../clients/access-management/enduser/maskinporten-consumers/maskinporten-consumers.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a Maskinporten consumer connection for a party.
@@ -16,9 +18,12 @@ export function DeleteMaskinportenConsumer(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenConsumersClient.DeleteMaskinportenConsumer(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenConsumersClient.DeleteMaskinportenConsumer(
+            queryParams,
+            labels,
+        ),
+        "DeleteMaskinportenConsumer",
     );
 
     let deleted = false;

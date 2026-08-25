@@ -2,6 +2,8 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { Subscription } from "../../../../clients/events/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Validates a specific subscription.
@@ -16,9 +18,12 @@ export function SubscriptionValidate(
     id,
     labels = null,
 ) {
-    const res = subscriptionClient.SubscriptionValidate(
-        id,
-        labels,
+    const res = withRetries(
+        () => subscriptionClient.SubscriptionValidate(
+            id,
+            labels,
+        ),
+        "SubscriptionValidate",
     );
 
     /** @type {Subscription|null} */

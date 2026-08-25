@@ -50,3 +50,8 @@
  * @property {boolean} [includePackageResources] Whether to include resources
  * granted through access packages.
  */
+
+export const DeleteRoleQuery = undefined;
+export const GetRolePackagesQuery = undefined;
+export const GetRolePermissionsQuery = undefined;
+export const GetRoleResourcesQuery = undefined;

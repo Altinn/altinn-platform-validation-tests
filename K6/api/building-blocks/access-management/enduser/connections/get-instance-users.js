@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetInstanceUsersQuery, SimplifiedPartyDtoPaginatedResult } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets users with access to an instance.
@@ -23,10 +25,13 @@ export function GetInstanceUsers(
     },
     labels = null,
 ) {
-    const res = connectionsClient.GetInstanceUsers(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetInstanceUsers(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetInstanceUsers",
     );
 
     /** @type {SimplifiedPartyDtoPaginatedResult|null} */

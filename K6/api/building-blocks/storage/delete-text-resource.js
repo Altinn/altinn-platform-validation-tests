@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { TextsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Deletes an existing text resource.
@@ -19,11 +20,14 @@ export function DeleteTextResource(
     language,
     labels = null,
 ) {
-    const res = textsClient.DeleteTextResource(
-        org,
-        app,
-        language,
-        labels,
+    const res = withRetries(
+        () => textsClient.DeleteTextResource(
+            org,
+            app,
+            language,
+            labels,
+        ),
+        "DeleteTextResource",
     );
 
     const succeed = check(res, {

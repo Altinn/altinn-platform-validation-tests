@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { OrganizationsClient } from "../../../../clients/profil/organizations/index.js";
+import { NotificationAddressRequest, NotificationAddressResponse } from "../../../../clients/profil/organizations/organizations.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates a notification address for an organization.
@@ -19,11 +21,14 @@ export function UpdateNotificationAddress(
     request,
     labels = null,
 ) {
-    const res = organizationsClient.UpdateNotificationAddress(
-        organizationNumber,
-        notificationAddressId,
-        request,
-        labels,
+    const res = withRetries(
+        () => organizationsClient.UpdateNotificationAddress(
+            organizationNumber,
+            notificationAddressId,
+            request,
+            labels,
+        ),
+        "UpdateNotificationAddress",
     );
 
     /** @type {NotificationAddressResponse|null} */

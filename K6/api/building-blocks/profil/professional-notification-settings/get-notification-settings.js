@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { NotificationSettingsResponse } from "../../../../clients/profil/professional-notification-settings/professional-notification-settings.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets notification settings for a party.
@@ -17,11 +19,13 @@ export function GetNotificationSettings(
     partyUuid,
     labels = null,
 ) {
-    const res =
-        professionalNotificationSettingsClient.GetNotificationSettings(
+    const res = withRetries(
+        () => professionalNotificationSettingsClient.GetNotificationSettings(
             partyUuid,
             labels,
-        );
+        ),
+        "GetNotificationSettings",
+    );
 
     /** @type {NotificationSettingsResponse|null} */
     let settings = null;

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { WithdrawSentRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Withdraws an access request a party has sent.
@@ -17,7 +19,10 @@ export function WithdrawSentRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.WithdrawSentRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.WithdrawSentRequest(queryParams, labels),
+        "WithdrawSentRequest",
+    );
 
     let withdrawn = false;
 

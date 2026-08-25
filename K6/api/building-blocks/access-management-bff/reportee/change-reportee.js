@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ReporteeClient } from "../../../../clients/access-management-bff/reportee/index.js";
+import { ChangeReporteeQuery } from "../../../../clients/access-management-bff/reportee/reportee.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Changes the reportee of the authenticated user.
@@ -16,7 +18,10 @@ export function ChangeReportee(
     queryParams = null,
     labels = null,
 ) {
-    const res = reporteeClient.ChangeReportee(queryParams, labels);
+    const res = withRetries(
+        () => reporteeClient.ChangeReportee(queryParams, labels),
+        "ChangeReportee",
+    );
 
     let changed = false;
 

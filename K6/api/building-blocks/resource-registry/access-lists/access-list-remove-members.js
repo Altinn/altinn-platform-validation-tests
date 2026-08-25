@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { PartyUrn } from "../../../../clients/register/types.js";
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListMembershipDtoAggregateVersionVersionedPaginated } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes members from an access list.
@@ -19,11 +22,14 @@ export function AccessListRemoveMembers(
     request,
     labels = null,
 ) {
-    const res = accessListClient.AccessListRemoveMembers(
-        owner,
-        identifier,
-        request,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListRemoveMembers(
+            owner,
+            identifier,
+            request,
+            labels,
+        ),
+        "AccessListRemoveMembers",
     );
 
     /** @type {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} */

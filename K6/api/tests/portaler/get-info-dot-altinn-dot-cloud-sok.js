@@ -1,18 +1,8 @@
-import http from "k6/http";
-
-import { getOptions } from "../../../helpers.js";
+import { fetchTestData, getOptions } from "../../../helpers.js";
 import { getInfoCloud, searchInfoCloud } from "./commons.js";
 
 export function setup() {
-    const response = http.get(
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/portaler/words.txt",
-        { tags: { action: "fetch-test-data" } }
-    );
-
-    return response.body
-        .split("\n")
-        .map(w => w.trim())
-        .filter(Boolean);
+    return fetchTestData("portaler/words.txt");
 }
 
 const rootLabel = { step: "get infocloud søk" };

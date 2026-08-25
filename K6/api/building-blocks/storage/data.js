@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { DataClient } from "../../../clients/storage/index.js";
+import { DataElement, DataElementList, FileScanStatus } from "../../../clients/storage/instances.types.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Uploads a new data element to an instance.
@@ -25,14 +27,17 @@ export function CreateData(
     generatedFromTask = null,
     labels = null,
 ) {
-    const res = dataClient.CreateData(
-        instanceOwnerPartyId,
-        instanceGuid,
-        body,
-        dataType,
-        refs,
-        generatedFromTask,
-        labels,
+    const res = withRetries(
+        () => dataClient.CreateData(
+            instanceOwnerPartyId,
+            instanceGuid,
+            body,
+            dataType,
+            refs,
+            generatedFromTask,
+            labels,
+        ),
+        "CreateData",
     );
 
     /** @type {DataElement|null} */
@@ -75,7 +80,7 @@ export function CreateData(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The HTTP response. The body is the file
+ * @returns {import("k6/http").RefinedResponse<"text">} The HTTP response. The body is the file
  * content, so the response is returned rather than a boolean.
  */
 export function GetData(
@@ -85,11 +90,14 @@ export function GetData(
     dataGuid,
     labels = null,
 ) {
-    const res = dataClient.GetData(
-        instanceOwnerPartyId,
-        instanceGuid,
-        dataGuid,
-        labels,
+    const res = withRetries(
+        () => dataClient.GetData(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            labels,
+        ),
+        "GetData",
     );
 
     const success = check(res, {
@@ -127,14 +135,17 @@ export function UpdateData(
     generatedFromTask = null,
     labels = null,
 ) {
-    const res = dataClient.UpdateData(
-        instanceOwnerPartyId,
-        instanceGuid,
-        dataGuid,
-        body,
-        refs,
-        generatedFromTask,
-        labels,
+    const res = withRetries(
+        () => dataClient.UpdateData(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            body,
+            refs,
+            generatedFromTask,
+            labels,
+        ),
+        "UpdateData",
     );
 
     /** @type {DataElement|null} */
@@ -188,12 +199,15 @@ export function DeleteData(
     delay = null,
     labels = null,
 ) {
-    const res = dataClient.DeleteData(
-        instanceOwnerPartyId,
-        instanceGuid,
-        dataGuid,
-        delay,
-        labels,
+    const res = withRetries(
+        () => dataClient.DeleteData(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            delay,
+            labels,
+        ),
+        "DeleteData",
     );
 
     /** @type {DataElement|null} */
@@ -243,10 +257,13 @@ export function GetDataElements(
     instanceGuid,
     labels = null,
 ) {
-    const res = dataClient.GetDataElements(
-        instanceOwnerPartyId,
-        instanceGuid,
-        labels,
+    const res = withRetries(
+        () => dataClient.GetDataElements(
+            instanceOwnerPartyId,
+            instanceGuid,
+            labels,
+        ),
+        "GetDataElements",
     );
 
     /** @type {DataElementList|null} */
@@ -300,12 +317,15 @@ export function UpdateDataElement(
     request,
     labels = null,
 ) {
-    const res = dataClient.UpdateDataElement(
-        instanceOwnerPartyId,
-        instanceGuid,
-        dataGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => dataClient.UpdateDataElement(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            request,
+            labels,
+        ),
+        "UpdateDataElement",
     );
 
     /** @type {DataElement|null} */
@@ -359,12 +379,15 @@ export function UpdateFileScanStatus(
     request,
     labels = null,
 ) {
-    const res = dataClient.UpdateFileScanStatus(
-        instanceOwnerPartyId,
-        instanceGuid,
-        dataGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => dataClient.UpdateFileScanStatus(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            request,
+            labels,
+        ),
+        "UpdateFileScanStatus",
     );
 
     const success = check(res, {

@@ -1,7 +1,34 @@
-import { check, sleep } from "k6";
+import { check, fail, sleep } from "k6";
 import exec from "k6/execution";
+import http from "k6/http";
+import { Counter } from "k6/metrics";
 
+import { withRetries } from "./api/building-blocks/common/retry.js";
 import { papaparse, randomItem } from "./common-imports.js";
+
+/**
+ * Counts test data reads that came up short. Shows up in the k6 summary and in
+ * Grafana as `test_data_fetch_failures`, tagged with the file that was read and
+ * why it failed, so a run that fell over on its test data says so in the metrics
+ * rather than only in the log.
+ *
+ * A read that worked adds 0 instead of adding nothing, so the series exists on a
+ * healthy run too. Without that a dashboard cannot tell "nothing failed" from
+ * "this test never ran", and an alert on the metric has nothing to sit on until
+ * the first failure.
+ */
+const testDataFetchFailures = new Counter("test_data_fetch_failures");
+
+/**
+ * Records the outcome of one test data read.
+ *
+ * @param {string} file The file that was read, as the caller named it.
+ * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @returns {void}
+ */
+function recordTestDataFetch(file, reason = null) {
+    testDataFetchFailures.add(reason ? 1 : 0, { file, reason: reason ?? "none" });
+}
 
 /**
  * Retry a function until it succeeds or all retries fail.
@@ -9,10 +36,9 @@ import { papaparse, randomItem } from "./common-imports.js";
  * Uses `check()` to report pass/fail instead of throwing.
  *
  * @param {Function} conditionFn - Function that returns true on success, false otherwise.
- * @param {object} options - Retry settings.
- * @param {number} options.retries - How many times to retry (default 10).
- * @param {number} options.intervalSeconds - Seconds between attempts (default 5).
- * @param {string} options.testscenario - Prefix used in log/check output.
+ * @param {{retries?: number, intervalSeconds?: number, testscenario?: string}} options
+ * Retry settings: how many times to retry (default 10), seconds between
+ * attempts (default 5) and the prefix used in log/check output.
  * @returns {boolean} - true if success within retry limit, false otherwise.
  */
 export function retry(conditionFn, options = {}) {
@@ -62,9 +88,10 @@ export function readCsv(filename) {
 }
 /**
  *
- * @param listOfItems TODO: description
- * @param randomize TODO: description
- * @returns A random item from the list, or an item based on __ITER if randomize is false
+ * @template T
+ * @param {T[]} listOfItems TODO: description
+ * @param {boolean} randomize TODO: description
+ * @returns {T} A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
     if (randomize) {
@@ -105,7 +132,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
  */
 export function getNumberOfVUs() {
     return (
-        exec.test.options.scenarios.default.vus ??
+        /** @type {any} */ (exec.test.options.scenarios.default).vus ??
         __ENV.BREAKPOINT_STAGE_TARGET ??
         1
     );
@@ -116,7 +143,7 @@ export function getNumberOfVUs() {
  *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {object} TODO: description
+ * @returns {import("k6/options").Options} The k6 options for the run.
  */
 export function getOptions(labels, groups = []) {
     const options = {
@@ -153,7 +180,7 @@ export function checkIp(ip) {
  * Ensures required environment variables exist.
  *
  * @param {string[]} vars - Array of environment variable names
- * @returns {object} key-value map of env vars
+ * @returns {{[key: string]: string}} key-value map of env vars
  */
 export function requireEnv(vars) {
     const missing = [];
@@ -206,4 +233,113 @@ export function pickUnique(list, count) {
     }
 
     return result;
+}
+
+/**
+ * Reads one of the test data files over HTTP.
+ *
+ * A missing file answers 404, and a body that parses into an empty list would only
+ * surface later as an undefined row somewhere in the test. Renaming or moving a
+ * file is enough to cause that, since the read is pinned to main, so this fails on
+ * the spot and names the URL that came up short. Pass failOnDataFetchingFailure as
+ * false for a caller that would rather handle empty data itself.
+ *
+ * Every read reports to `test_data_fetch_failures`, so a broken read is visible
+ * in Grafana and not only in the log of whoever happened to watch the run.
+ *
+ * A .csv comes back as rows, a .json as whatever it holds, and a .txt as its
+ * non-empty lines, trimmed. Any other extension is refused rather than handed back
+ * as a string, so a caller that meant to read a format nobody parses hears about it
+ * here.
+ *
+ * @param {string} filename File name under the test data directory, or an absolute URL.
+ * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
+ * @param {string} branch Branch to read test data from. Defaults to "main".
+ * The shape depends on the file the caller asked for, which is why this says
+ * `any` rather than a union nobody could narrow: a caller reads the columns its
+ * own fixture has.
+ * @returns {any} The parsed test data.
+ */
+export function fetchTestData(
+    filename,
+    failOnDataFetchingFailure = true,
+    branch = "main",
+) {
+    const testDataBaseUrl =
+        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const url = filename.startsWith("http")
+        ? filename
+        : `${testDataBaseUrl}/${filename}`;
+
+    const res = withRetries(
+        () => http.get(url, { tags: { action: "fetch-test-data" } }),
+        "fetch-test-data",
+    );
+
+    if (res.status !== 200) {
+        recordTestDataFetch(filename, `status-${res.status}`);
+
+        const message = `Cannot read test data: ${url} returned ${res.status}`;
+
+        if (failOnDataFetchingFailure) {
+            fail(message);
+        }
+
+        return [];
+    }
+
+    if (filename.endsWith(".csv")) {
+        const rows = parseCsvData(res.body);
+
+        recordTestDataFetch(filename, rows.length === 0 ? "empty" : null);
+
+        if (rows.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no rows`);
+        }
+
+        return rows;
+    }
+
+    if (filename.endsWith(".json")) {
+        try {
+            const parsed = JSON.parse(res.body);
+
+            recordTestDataFetch(filename);
+
+            return parsed;
+        } catch (error) {
+            recordTestDataFetch(filename, "unparseable");
+
+            if (failOnDataFetchingFailure) {
+                fail(`Cannot parse test data: ${url}. Error: ${error}`);
+            }
+
+            return [];
+        }
+    }
+
+    if (filename.endsWith(".txt")) {
+        const lines = res.body
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+
+        recordTestDataFetch(filename, lines.length === 0 ? "empty" : null);
+
+        if (lines.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no lines`);
+        }
+
+        return lines;
+    }
+
+    recordTestDataFetch(filename, "unsupported-file-type");
+
+    const message = `Unsupported test data file type: ${url}`;
+
+    if (failOnDataFetchingFailure) {
+        fail(message);
+    }
+
+    return [];
 }

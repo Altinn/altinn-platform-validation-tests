@@ -1,10 +1,11 @@
-import http from "k6/http";
 
+import { ConsentRequestDto, ConsentRightDto } from "../../../../clients/access-management/consent-enterprise/consent-enterprise.types.js";
 import { ConsentRequestBuilder, EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { ConsentLookupRequestBuilder, MaskinportenClient } from "../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { ConsentLookupRequest } from "../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { parseCsvData } from "../../../../helpers.js";
+import { fetchTestData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
@@ -13,18 +14,24 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
  * organizations and persons instead of hammering one of each.
  *
  * Test data folder (one folder per use case, one file per environment):
- * K6/testdata/authentication/consent/
+ * K6/testdata/access-management/consent
  * - consentee-orgs/<env>.csv       (header: orgNo)
  * - consenter-persons/<env>.csv    (header: ssn,partyUuid)
  * - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
-const TESTDATA_BASE_URL =
-    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/consent";
 
 /**
  * The resource the generated consents are for.
  */
 export const CONSENT_RESOURCE = "samtykke-performance-test";
+
+/**
+ * How long the consents the tests create stay valid, and how long the ones the lookup
+ * test data is generated from stay valid. See {@link consentValidTo} and
+ * {@link lookupConsentValidTo} for why the two differ.
+ */
+const CONSENT_VALID_DAYS = 14;
+const LOOKUP_CONSENT_VALID_DAYS = 1520;
 
 /**
  * Where the consenter is sent after handling the consent request.
@@ -68,11 +75,7 @@ let lookupClient = undefined;
  * @returns {Array<{orgNo: string}>} The consentee organizations.
  */
 export function getConsenteeOrgs(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consentee-orgs/${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`access-management/consent/consentee-orgs/${env}.csv`);
 }
 
 /**
@@ -82,11 +85,7 @@ export function getConsenteeOrgs(env) {
  * @returns {Array<{ssn: string, partyUuid: string}>} The consenter persons.
  */
 export function getConsenterPersons(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/consenter-persons/${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`access-management/consent/consenter-persons/${env}.csv`);;
 }
 
 /**
@@ -97,11 +96,7 @@ export function getConsenterPersons(env) {
  * @returns {Array<{Pid: string, Org: string, ConsentId: string}>} Consents to look up.
  */
 export function getLookupConsents(env) {
-    const res = http.get(`${TESTDATA_BASE_URL}/lookup/${env}.csv`, {
-        tags: { action: "fetch-test-data" },
-    });
-
-    return parseCsvData(res.body);
+    return fetchTestData(`access-management/consent/lookup/${env}.csv`);;;
 }
 
 /**
@@ -124,7 +119,7 @@ export function getLookupConsents(env) {
  * Handling a consent request is what the person does in the portal, so it goes
  * through the bff rather than the enterprise api the organization calls.
  *
- * @returns {[object, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
@@ -208,7 +203,7 @@ export function getLookupClient() {
  * iteration to point it at the organization that iteration drew.
  *
  * @param {string} [orgNo] - The consentee organization, or undefined to leave the token without one.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getConsenteeTokenOpts(orgNo = undefined) {
     const builder = new EnterpriseTokenBuilder()
@@ -233,7 +228,7 @@ export function getConsenteeTokenOpts(orgNo = undefined) {
  * iteration to point it at the organization that iteration drew.
  *
  * @param {string} [orgNo] - The organization, or undefined to leave the token without one.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getEventsTokenOpts(orgNo = undefined) {
     const builder = new EnterpriseTokenBuilder()
@@ -255,7 +250,7 @@ export function getEventsTokenOpts(orgNo = undefined) {
  * to point it at the person that iteration drew.
  *
  * @param {string} [partyUuid] - The consenter, or undefined to leave the token without one.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getConsenterTokenOpts(partyUuid = undefined) {
     const builder = new PersonalTokenBuilder()
@@ -271,35 +266,48 @@ export function getConsenterTokenOpts(partyUuid = undefined) {
 }
 
 /**
+ * The parties and the id a consent request is built for.
+ *
+ * @typedef {object} ConsentRequestParams
+ * @property {string} consentId The id the consent gets.
+ * @property {string} from Party urn of the person giving the consent.
+ * @property {string} to Party urn of the organization receiving it.
+ * @property {string} [validTo] When the consent expires, defaulting to {@link consentValidTo}.
+ */
+
+/**
  * Builds the consent request one iteration asks for.
  *
  * The id is generated by the caller rather than here, since the caller needs it
  * both to create the consent request and to look the consent up afterwards.
  *
- * @param {object} options - The parties and the id this consent request is for.
- * @param {string} options.consentId - The id the consent gets.
- * @param {string} options.from - Party urn of the person giving the consent.
- * @param {string} options.to - Party urn of the organization receiving it.
+ * @param {ConsentRequestParams} options - The parties and the id this consent request is for.
  * @returns {ConsentRequestDto} The consent request payload.
  */
-export function createConsentRequest({ consentId, from, to }) {
+export function createConsentRequest({ consentId, from, to, validTo = consentValidTo() }) {
     return new ConsentRequestBuilder()
         .WithId(consentId)
         .WithFrom(from)
         .WithTo(to)
-        .WithValidTo(consentValidTo())
+        .WithValidTo(validTo)
         .WithConsentRights(consentRights())
         .WithRedirectUrl(REDIRECT_URL)
         .Build();
 }
 
 /**
+ * The consent to look up.
+ *
+ * @typedef {object} ConsentLookupParams
+ * @property {string} consentId Id of the consent.
+ * @property {string} from Party urn of the person who gave the consent.
+ * @property {string} to Party urn of the organization that received it.
+ */
+
+/**
  * Builds the body that looks a consent up the way Maskinporten does.
  *
- * @param {object} options - The consent to look up.
- * @param {string} options.consentId - Id of the consent.
- * @param {string} options.from - Party urn of the person who gave the consent.
- * @param {string} options.to - Party urn of the organization that received it.
+ * @param {ConsentLookupParams} options - The consent to look up.
  * @returns {ConsentLookupRequest} The lookup payload.
  */
 export function createConsentLookupRequest({ consentId, from, to }) {
@@ -322,7 +330,7 @@ export function consentRights() {
             resource: [
                 { type: "urn:altinn:resource", value: CONSENT_RESOURCE },
             ],
-            metaData: { inntektsaar: "2026" },
+            metadata: { inntektsaar: "2026" },
         },
     ];
 }
@@ -349,13 +357,37 @@ export function organizationUrn(orgNo) {
 }
 
 /**
- * `validTo` for generated consents.
+ * `validTo` for the consents the lifecycle test creates.
  *
- * Far enough out that the consents, and the lookup data derived from them, do not
- * go stale between runs.
+ * Short on purpose: every iteration of post-consent.js leaves a consent behind, and
+ * with a long validity the active consents and the consent log of the persons in the
+ * rotation grow with every run until reading them says more about the pile than about
+ * the endpoint. Two weeks is long enough that a consent outlives the run that made it,
+ * short enough that the pile is bounded by the last two weeks of runs.
+ *
+ * @returns {string} Iso timestamp two weeks from now.
+ */
+export function consentValidTo() {
+    return isoDaysFromNow(CONSENT_VALID_DAYS);
+}
+
+/**
+ * `validTo` for the consents testdataGeneration/consent-data.js creates.
+ *
+ * These are generated once and committed as the lookup test data, so they have to
+ * outlive many runs. The pile they leave behind is bounded by how often the data is
+ * regenerated, not by how often the tests run.
  *
  * @returns {string} Iso timestamp roughly four years from now.
  */
-export function consentValidTo() {
-    return new Date(Date.now() + 36500 * 60 * 60 * 1000).toISOString();
+export function lookupConsentValidTo() {
+    return isoDaysFromNow(LOOKUP_CONSENT_VALID_DAYS);
+}
+
+/**
+ * @param {number} days - How far ahead the timestamp should point.
+ * @returns {string} Iso timestamp that many days from now.
+ */
+function isoDaysFromNow(days) {
+    return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 }

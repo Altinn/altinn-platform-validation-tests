@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets supported party URN types.
@@ -13,7 +14,10 @@ export function RequestGetPartyUrns(
     requestClient,
     labels = null,
 ) {
-    const res = requestClient.RequestGetPartyUrns(labels);
+    const res = withRetries(
+        () => requestClient.RequestGetPartyUrns(labels),
+        "RequestGetPartyUrns",
+    );
 
     /** @type {Array<string>|null} */
     let partyUrns = null;

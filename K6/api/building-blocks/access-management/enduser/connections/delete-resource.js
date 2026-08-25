@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteResourceQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a resource permission.
@@ -17,9 +19,12 @@ export function DeleteResource(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.DeleteResource(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.DeleteResource(
+            queryParams,
+            labels,
+        ),
+        "DeleteResource",
     );
 
     const succeed = check(res, {

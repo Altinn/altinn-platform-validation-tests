@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { TextResource } from "../../../clients/storage/applications.types.js";
 import { TextsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Gets a text resource.
@@ -19,11 +21,14 @@ export function GetTextResource(
     language,
     labels = null,
 ) {
-    const res = textsClient.GetTextResource(
-        org,
-        app,
-        language,
-        labels,
+    const res = withRetries(
+        () => textsClient.GetTextResource(
+            org,
+            app,
+            language,
+            labels,
+        ),
+        "GetTextResource",
     );
 
     /** @type {TextResource|null} */

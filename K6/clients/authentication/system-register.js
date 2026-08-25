@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AccessPackage, RegisterSystemRequest, Right } from "./types.js";
+
 const TAGS = {
     SystemRegisterGet: {
         action: "system-register-get",
@@ -69,7 +71,7 @@ class SystemRegisterClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterGet(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -103,7 +105,7 @@ class SystemRegisterClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorGet(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -138,7 +140,7 @@ class SystemRegisterClient {
      * @param {RegisterSystemRequest} request System registration request.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -174,7 +176,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorGetById(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -210,7 +212,7 @@ class SystemRegisterClient {
      * @param {RegisterSystemRequest} request Updated system model.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdate(systemId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -246,7 +248,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorDelete(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -284,7 +286,7 @@ class SystemRegisterClient {
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -326,7 +328,7 @@ class SystemRegisterClient {
      * @param {boolean|null} useOldFormatForApp Whether to use old app format.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterGetAccessPackagesFrontend(
         systemId,
@@ -370,7 +372,7 @@ class SystemRegisterClient {
      * @param {Right[]} rights Rights.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdateRights(systemId, rights, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -407,7 +409,7 @@ class SystemRegisterClient {
      * @param {AccessPackage[]} accessPackages Access packages.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdateAccessPackages(
         systemId,
@@ -447,7 +449,7 @@ class SystemRegisterClient {
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorGetChangeLog(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();

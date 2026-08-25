@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { CreateResourceRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates an access request for a resource.
@@ -10,7 +12,7 @@ import { RequestClient } from "../../../../clients/access-management-bff/request
  * @param {CreateResourceRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreateResourceRequestQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The created request. The API does not publish a
+ * @returns {any} The created request. The API does not publish a
  * schema for this response.
  */
 export function CreateResourceRequest(
@@ -18,9 +20,12 @@ export function CreateResourceRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.CreateResourceRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.CreateResourceRequest(queryParams, labels),
+        "CreateResourceRequest",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let request = null;
 
     const succeed = check(res, {

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { XacmlJsonRequestRootExternal, XacmlRequestApiModel } from "./types.js";
+
 const TAGS = {
     DecisionPost: {
         action: "decision-post",
@@ -47,7 +49,7 @@ class DecisionClient {
      * accepts application/json, application/xml and text/xml.
      * @param {{[key:string]:string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DecisionPost(request, contentType = "application/json", labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -89,7 +91,7 @@ class DecisionClient {
      * @param {XacmlJsonRequestRootExternal} request Authorization request.
      * @param {{[key:string]:string}} [labels]
      * Optional k6 tags that will be merged with the default request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AuthorizePost(request, labels = null) {
         const token = this.tokenGenerator.getToken();

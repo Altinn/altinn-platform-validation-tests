@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { GetSentResourceRequestsQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resource access requests a party has sent.
@@ -10,7 +12,7 @@ import { RequestClient } from "../../../../clients/access-management-bff/request
  * @param {GetSentResourceRequestsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetSentResourceRequestsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The sent resource requests. The API does not publish
+ * @returns {any} The sent resource requests. The API does not publish
  * a schema for this response.
  */
 export function GetSentResourceRequests(
@@ -18,9 +20,12 @@ export function GetSentResourceRequests(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetSentResourceRequests(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.GetSentResourceRequests(queryParams, labels),
+        "GetSentResourceRequests",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let requests = null;
 
     const succeed = check(res, {

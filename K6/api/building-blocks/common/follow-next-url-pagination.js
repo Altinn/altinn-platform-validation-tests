@@ -1,10 +1,12 @@
 import { check } from "k6";
 import http from "k6/http";
 
+import { withRetries } from "./retry.js";
+
 /**
  * Extract `links.next` URL from a JSON response body.
  *
- * @param {string|object} parsedBody - parsed JSON object
+ * @param {{links?: {next?: string|null}}|null} parsedBody - parsed JSON object
  * @returns {string|null} - The next URL or null if not found
  */
 export function extractNextUrl(parsedBody) {
@@ -53,13 +55,16 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = 
             tags = { ...labels, ...tags };
         }
 
-        const res = http.get(currentUrl, {
-            tags: tags,
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            },
-        });
+        const res = withRetries(
+            () => http.get(currentUrl, {
+                tags: tags,
+                headers: {
+                    Authorization: "Bearer " + token,
+                    "Content-type": "application/json",
+                },
+            }),
+            "followNextUrlPagination",
+        );
 
         const ok = check(res, {
             "Next page status is 200.": (r) => r.status === 200,

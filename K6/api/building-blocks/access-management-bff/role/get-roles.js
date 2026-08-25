@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { Role } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the roles the API knows about.
@@ -10,7 +12,10 @@ import { RoleClient } from "../../../../clients/access-management-bff/role/index
  * @returns {Array<Role>|null} The roles.
  */
 export function GetRoles(roleClient, labels = null) {
-    const res = roleClient.GetRoles(labels);
+    const res = withRetries(
+        () => roleClient.GetRoles(labels),
+        "GetRoles",
+    );
 
     /** @type {Array<Role>|null} */
     let roles = null;

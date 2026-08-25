@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ServiceOwnerClient } from "../../../clients/broker/index.js";
+import { ServiceOwnerInitializeExt, ServiceOwnerOverviewExt } from "../../../clients/broker/service-owner.types.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Initializes the service owner for the calling organization within the broker service.
@@ -15,9 +17,12 @@ export function InitializeServiceOwner(
     request,
     labels = null,
 ) {
-    const res = serviceOwnerClient.InitializeServiceOwner(
-        request,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerClient.InitializeServiceOwner(
+            request,
+            labels,
+        ),
+        "InitializeServiceOwner",
     );
 
     return check(res, {
@@ -39,7 +44,10 @@ export function GetServiceOwner(
     serviceOwnerClient,
     labels = null,
 ) {
-    const res = serviceOwnerClient.GetServiceOwner(labels);
+    const res = withRetries(
+        () => serviceOwnerClient.GetServiceOwner(labels),
+        "GetServiceOwner",
+    );
 
     /** @type {ServiceOwnerOverviewExt|null} */
     let serviceOwner = null;

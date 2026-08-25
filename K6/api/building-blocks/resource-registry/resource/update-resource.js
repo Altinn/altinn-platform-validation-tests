@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { ServiceResource } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Updates a resource.
@@ -17,10 +19,13 @@ export function ResourceUpdateResource(
     resource,
     labels = null,
 ) {
-    const res = resourceClient.ResourceUpdateResource(
-        id,
-        resource,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceUpdateResource(
+            id,
+            resource,
+            labels,
+        ),
+        "ResourceUpdateResource",
     );
 
     return check(res, {

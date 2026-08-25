@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ServiceOwnerAccessPackageDelegation } from "../../../../../clients/access-management/service-owner/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/service-owner/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Revokes a service owner access package delegation.
@@ -15,9 +17,12 @@ export function ConnectionsRevokeAccessPackage(
     request,
     labels = null,
 ) {
-    const res = connectionsClient.ConnectionsRevokeAccessPackage(
-        request,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.ConnectionsRevokeAccessPackage(
+            request,
+            labels,
+        ),
+        "ConnectionsRevokeAccessPackage",
     );
 
     const succeed = check(res, {

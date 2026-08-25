@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a single system user of an organisation.
@@ -10,7 +11,7 @@ import { SystemUserClient } from "../../../../clients/access-management-bff/syst
  * @param {number} partyId Party id of the organisation.
  * @param {string} systemUserGuid System user UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The system user. The API does not publish a schema
+ * @returns {any} The system user. The API does not publish a schema
  * for this response.
  */
 export function GetSystemUser(
@@ -19,13 +20,16 @@ export function GetSystemUser(
     systemUserGuid,
     labels = null,
 ) {
-    const res = systemUserClient.GetSystemUser(
-        partyId,
-        systemUserGuid,
-        labels,
+    const res = withRetries(
+        () => systemUserClient.GetSystemUser(
+            partyId,
+            systemUserGuid,
+            labels,
+        ),
+        "GetSystemUser",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let systemUser = null;
 
     const succeed = check(res, {

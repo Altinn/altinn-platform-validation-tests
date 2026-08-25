@@ -1,12 +1,14 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup } from "../../../../clients/dialogporten/serviceowner/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialogLookup
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
+ * @param {{[x: string]: string}} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup|null} Parsed response body, or null when the call failed.
  */
@@ -15,9 +17,12 @@ export function GetDialogLookup(
     queryParams,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogLookup(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogLookup(
+            queryParams,
+            labels,
+        ),
+        "GetDialogLookup",
     );
 
     /** @type {V1CommonIdentifierLookup_ServiceOwnerIdentifierLookup|null} */

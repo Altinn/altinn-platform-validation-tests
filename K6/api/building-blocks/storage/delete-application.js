@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { Application } from "../../../clients/storage/applications.types.js";
 import { ApplicationsClient } from "../../../clients/storage/index.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Deletes application metadata.
@@ -19,11 +21,14 @@ export function DeleteApplication(
     hard = null,
     labels = null,
 ) {
-    const res = applicationsClient.DeleteApplication(
-        org,
-        app,
-        hard,
-        labels,
+    const res = withRetries(
+        () => applicationsClient.DeleteApplication(
+            org,
+            app,
+            hard,
+            labels,
+        ),
+        "DeleteApplication",
     );
 
     /** @type {Application|null} */

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks whether the authenticated user is a main administrator.
@@ -11,7 +12,10 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
  * @returns {boolean|null} True if the user is a main administrator.
  */
 export function GetIsHovedadmin(userClient, party, labels = null) {
-    const res = userClient.GetIsHovedadmin(party, labels);
+    const res = withRetries(
+        () => userClient.GetIsHovedadmin(party, labels),
+        "GetIsHovedadmin",
+    );
 
     /** @type {boolean|null} */
     let isHovedadmin = null;

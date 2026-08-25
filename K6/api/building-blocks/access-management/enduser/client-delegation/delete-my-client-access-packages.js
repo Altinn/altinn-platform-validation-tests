@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { DeleteMyClientAccessPackagesQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { DelegationBatchInputDto, DelegationDto } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Revokes access packages the authenticated party holds on a client.
@@ -19,10 +22,13 @@ export function DeleteMyClientAccessPackages(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationClient.DeleteMyClientAccessPackages(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.DeleteMyClientAccessPackages(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteMyClientAccessPackages",
     );
 
     /** @type {Array<DelegationDto>} */

@@ -20,11 +20,11 @@ const resource = "ttd-dialogporten-performance-test-02";
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organizations with their daglig leder, one slice per VU.
+ * @param {any[][]} testData Organizations with their daglig leder, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient, tokenGenerator] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], (__ENV.RANDOMIZE ?? "true") === "true");
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.ssn));
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
     AuthorizePost(

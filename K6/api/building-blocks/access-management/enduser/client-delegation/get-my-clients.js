@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { MyClientDtoPaginatedResult, MyClientsQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the clients the authenticated party has access to, grouped by
@@ -20,10 +22,13 @@ export function GetMyClients(
     headers = null,
     labels = null,
 ) {
-    const res = clientDelegationClient.GetMyClients(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.GetMyClients(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetMyClients",
     );
 
     /** @type {MyClientDtoPaginatedResult|null} */

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { SystemUserByExternalIdQuery, SystemUserPagedQuery, SystemUserUpdateDto, SystemUserVendorQuery } from "./types.js";
+
 const TAGS = {
     SystemUserGetByExternalId: {
         action: "system-user-get-by-external-id",
@@ -49,14 +51,10 @@ class SystemUserClient {
      *
      * Requires the `altinn:maskinporten/systemuser.read` scope.
      *
-     * @param {object} query Query parameters, with the keys "system-id" and "external-ref".
-     * @param {string} [query.clientId] See the client method.
-     * @param {string} [query.systemProviderOrgNo] See the client method.
-     * @param {string} [query.systemUserOwnerOrgNo] See the client method.
-     * @param {string} [query.externalRef] See the client method.
+     * @param {SystemUserByExternalIdQuery|null} query Query parameters, with the keys "system-id" and "external-ref".
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserGetByExternalId(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -114,7 +112,7 @@ class SystemUserClient {
      * @param {SystemUserUpdateDto} request Updated SystemUser.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserUpdate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -149,11 +147,10 @@ class SystemUserClient {
      *
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
-     * @param {object} query Query parameters.
-     * @param {string} [query.orgno] See the client method.
+     * @param {SystemUserVendorQuery|null} query Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserVendorGetByQuery(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -209,11 +206,10 @@ class SystemUserClient {
      * Requires the `altinn:authentication/systemregister.write` scope.
      *
      * @param {string} systemId System identifier.
-     * @param {object} [query] Query parameters.
-     * @param {Int64Opaque} [query.token] Continuation token.
+     * @param {SystemUserPagedQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserVendorGetBySystem(systemId, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -272,11 +268,10 @@ class SystemUserClient {
      *
      * Requires the `altinn:authentication/systemuser.admin` scope.
      *
-     * @param {object} [query] Query parameters.
-     * @param {Int64Opaque} [query.token] Continuation token.
+     * @param {SystemUserPagedQuery|null} [query] Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserInternalStream(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();

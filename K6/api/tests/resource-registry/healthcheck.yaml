@@ -1,0 +1,10 @@
+namespace: resource-registry
+base_dir: K6/api/tests/resource-registry
+test_definitions:
+  - test_file: get-updated-resources.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+      - environment: prod

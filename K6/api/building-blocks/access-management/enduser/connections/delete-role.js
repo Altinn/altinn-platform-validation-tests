@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteRoleQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a role permission.
@@ -17,9 +19,12 @@ export function DeleteRole(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionsClient.DeleteRole(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.DeleteRole(
+            queryParams,
+            labels,
+        ),
+        "DeleteRole",
     );
 
     const succeed = check(res, {

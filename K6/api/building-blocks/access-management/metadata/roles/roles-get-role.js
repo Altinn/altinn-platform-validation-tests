@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { RoleDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { RolesClient } from "../../../../../clients/access-management/metadata/roles/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets a role.
@@ -8,16 +10,19 @@ import { RolesClient } from "../../../../../clients/access-management/metadata/r
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {string} id Role identifier.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {RoleDto|null} Role.
+ * @returns {RoleDto[]|null} The roles the id resolves to.
  */
 export function RolesGetRole(
     rolesClient,
     id,
     labels = null,
 ) {
-    const res = rolesClient.RolesGetRole(id, labels);
+    const res = withRetries(
+        () => rolesClient.RolesGetRole(id, labels),
+        "RolesGetRole",
+    );
 
-    /** @type {RoleDto|null} */
+    /** @type {RoleDto[]|null} */
     let role = null;
 
     const succeed = check(res, {
@@ -37,7 +42,6 @@ export function RolesGetRole(
         "RolesGetRole - body is valid": (r) => {
             try {
                 role = JSON.parse(r.body);
-
                 return true;
             } catch (err) {
                 console.log("Unable to parse response body");

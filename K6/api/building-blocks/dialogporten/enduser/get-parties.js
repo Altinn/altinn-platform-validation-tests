@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1AccessManagementQueriesGetParties_Parties } from "../../../../clients/dialogporten/enduser/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get parties
@@ -13,8 +15,11 @@ export function GetParties(
     enduserApiClient,
     labels = null,
 ) {
-    const res = enduserApiClient.GetParties(
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetParties(
+            labels,
+        ),
+        "GetParties",
     );
 
     /** @type {V1AccessManagementQueriesGetParties_Parties|null} */

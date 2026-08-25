@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListResourceConnectionWithVersionDto } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a resource connection from an access list.
@@ -19,11 +21,14 @@ export function AccessListsDeleteResourceConnection(
     resourceIdentifier,
     labels = null,
 ) {
-    const res = accessListClient.AccessListsDeleteResourceConnection(
-        owner,
-        identifier,
-        resourceIdentifier,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListDeleteResourceConnection(
+            owner,
+            identifier,
+            resourceIdentifier,
+            labels,
+        ),
+        "AccessListsDeleteResourceConnection",
     );
 
     /** @type {AccessListResourceConnectionWithVersionDto|null} */

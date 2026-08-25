@@ -1,6 +1,8 @@
+import { MaskinportenSupplierDelegationCheckQuery, MaskinportenSupplierResourcesQuery, MaskinportenSuppliersQuery } from "./maskinporten-suppliers.types.js";
+
 class MaskinportenSuppliersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenSuppliersQuery} */ ({});
     }
 
     /**
@@ -39,7 +41,7 @@ class MaskinportenSuppliersQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, supplier?: string, cascade?: boolean}} The built payload.
+     * @returns {MaskinportenSuppliersQuery} The built payload.
      */
     build() {
         return this.query;
@@ -51,7 +53,7 @@ class MaskinportenSuppliersQueryBuilder {
  */
 class MaskinportenSupplierResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenSupplierResourcesQuery} */ ({});
     }
 
     /**
@@ -90,7 +92,7 @@ class MaskinportenSupplierResourcesQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, supplier?: string, resource?: string}} The built payload.
+     * @returns {MaskinportenSupplierResourcesQuery} The built payload.
      */
     build() {
         return this.query;
@@ -102,7 +104,7 @@ class MaskinportenSupplierResourcesQueryBuilder {
  */
 class MaskinportenSupplierDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {MaskinportenSupplierDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -130,7 +132,7 @@ class MaskinportenSupplierDelegationCheckQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {{party: string, resource: string}} The built payload.
+     * @returns {MaskinportenSupplierDelegationCheckQuery} The built payload.
      */
     build() {
         return this.query;

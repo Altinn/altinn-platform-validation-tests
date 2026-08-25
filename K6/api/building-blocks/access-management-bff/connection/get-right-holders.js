@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetRightHoldersQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the connections a party has as right holder or reportee.
@@ -10,7 +12,7 @@ import { ConnectionClient } from "../../../../clients/access-management-bff/conn
  * @param {GetRightHoldersQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRightHoldersQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The connections. The API does not publish a schema
+ * @returns {any} The connections. The API does not publish a schema
  * for this response.
  */
 export function GetRightHolders(
@@ -18,9 +20,12 @@ export function GetRightHolders(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionClient.GetRightHolders(queryParams, labels);
+    const res = withRetries(
+        () => connectionClient.GetRightHolders(queryParams, labels),
+        "GetRightHolders",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let connections = null;
 
     const succeed = check(res, {

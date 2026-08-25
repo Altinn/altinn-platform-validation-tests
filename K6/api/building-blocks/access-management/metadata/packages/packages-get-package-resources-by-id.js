@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ResourceDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets resources for a package.
@@ -15,7 +17,10 @@ export function PackagesGetPackageResourcesById(
     id,
     labels = null,
 ) {
-    const res = packagesClient.PackagesGetPackageResourcesById(id, labels);
+    const res = withRetries(
+        () => packagesClient.PackagesGetPackageResourcesById(id, labels),
+        "PackagesGetPackageResourcesById",
+    );
 
     /** @type {ResourceDto|null} */
     let resource = null;

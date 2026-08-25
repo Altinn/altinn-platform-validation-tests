@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "../../../../clients/dialogporten/enduser/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Sets the system labels of a dialog for the end user.
@@ -8,7 +10,7 @@ import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index
  * PUT /dialogs/{dialogId}/context/systemlabels
  *
  * @param {EnduserApiClient} enduserApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
@@ -21,11 +23,14 @@ export function SetDialogSystemLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = enduserApiClient.PutDialogSystemLabels(
-        dialogId,
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.PutDialogSystemLabels(
+            dialogId,
+            request,
+            ifMatch,
+            labels,
+        ),
+        "SetDialogSystemLabels",
     );
 
     const success = check(res, {
@@ -57,10 +62,13 @@ export function BulkSetDialogSystemLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = enduserApiClient.PostBulkSetSystemLabels(
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.PostBulkSetSystemLabels(
+            request,
+            ifMatch,
+            labels,
+        ),
+        "BulkSetDialogSystemLabels",
     );
 
     const success = check(res, {

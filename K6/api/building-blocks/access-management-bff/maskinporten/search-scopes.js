@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { PaginatedListOfServiceResourceFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { SearchScopesQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Searches the Maskinporten scopes a party can delegate.
@@ -18,7 +21,10 @@ export function SearchScopes(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenClient.SearchScopes(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.SearchScopes(queryParams, labels),
+        "SearchScopes",
+    );
 
     /** @type {PaginatedListOfServiceResourceFE|null} */
     let scopes = null;

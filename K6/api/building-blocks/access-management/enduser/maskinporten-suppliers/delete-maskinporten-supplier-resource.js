@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { MaskinportenSupplierResourcesQuery } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Deletes a resource delegation for a Maskinporten supplier.
@@ -16,9 +18,12 @@ export function DeleteMaskinportenSupplierResource(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenSuppliersClient.DeleteMaskinportenSupplierResource(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenSuppliersClient.DeleteMaskinportenSupplierResource(
+            queryParams,
+            labels,
+        ),
+        "DeleteMaskinportenSupplierResource",
     );
 
     const succeed = check(res, {

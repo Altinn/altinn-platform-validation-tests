@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteMyClientProvidersQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a client provider from the authenticated party.
@@ -17,9 +19,12 @@ export function DeleteMyClientProviders(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.DeleteMyClientProviders(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.DeleteMyClientProviders(
+            queryParams,
+            labels,
+        ),
+        "DeleteMyClientProviders",
     );
 
     let removed = false;

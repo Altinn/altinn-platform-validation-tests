@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { DeleteAgentResourcesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { ResourceDelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes resources on a client from an agent.
@@ -20,10 +23,13 @@ export function DeleteAgentResources(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.DeleteAgentResources(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.DeleteAgentResources(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteAgentResources",
     );
 
     let revoked = false;

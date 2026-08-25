@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { DecisionClient } from "../../../../clients/authorization/decision.js";
+import { XacmlJsonResponseExternal, XacmlRequestApiModel } from "../../../../clients/authorization/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Sends an internal XACML authorization request.
@@ -23,10 +25,13 @@ export function DecisionPost(
     contentType = "application/json",
     labels = null,
 ) {
-    const res = decisionClient.DecisionPost(
-        request,
-        contentType,
-        labels,
+    const res = withRetries(
+        () => decisionClient.DecisionPost(
+            request,
+            contentType,
+            labels,
+        ),
+        "DecisionPost",
     );
 
     /** @type {XacmlJsonResponseExternal|null} */

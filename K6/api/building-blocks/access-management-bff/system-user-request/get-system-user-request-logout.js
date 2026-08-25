@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the logout redirect for a system user request.
@@ -9,7 +10,7 @@ import { SystemUserRequestClient } from "../../../../clients/access-management-b
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetSystemUserRequestLogout(
@@ -17,9 +18,12 @@ export function GetSystemUserRequestLogout(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.GetSystemUserRequestLogout(
-        requestId,
-        labels,
+    const res = withRetries(
+        () => systemUserRequestClient.GetSystemUserRequestLogout(
+            requestId,
+            labels,
+        ),
+        "GetSystemUserRequestLogout",
     );
 
     const succeed = check(res, {

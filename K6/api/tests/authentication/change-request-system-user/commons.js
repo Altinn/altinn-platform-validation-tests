@@ -1,5 +1,4 @@
 import { fail, group } from "k6";
-import http from "k6/http";
 
 import { PackagesClient } from "../../../../clients/access-management/metadata/packages/index.js";
 import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
@@ -12,24 +11,20 @@ import {
     SystemRegisterClient,
     SystemUserClient,
 } from "../../../../clients/authentication/index.js";
+import { AccessPackage, Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { getItemFromList, parseCsvData, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { withRetries } from "../../../building-blocks/common/retry.js";
+import { sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
  */
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-
-/**
- * Where the test data these tests draw from lives.
- */
-const TESTDATA_URL = "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/authentication/change-request";
 
 /**
  * The scopes a vendor acts with. The system user lookup scope is what lets the
@@ -63,20 +58,30 @@ let approverTokenGenerator = undefined;
 let vendorTokenGenerator = undefined;
 
 /**
+ * What a test needs arranged before it runs.
+ *
+ * @typedef {object} ArrangeSystemUserParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {string} vendorOrgNo Organisation number of the vendor to register the system as. Draw it with pickVendor.
+ * @property {Right[]} grantedRights The rights the system user is granted up front.
+ * @property {Right[]} [registeredRights] Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
+ * @property {string[]} [grantedAccessPackages] Urns of the access packages the system user is granted up front.
+ * @property {string[]} [registeredAccessPackages] Urns of every access package the system is registered with. Defaults to the granted ones.
+ */
+
+/**
  * Creates system in system register, requests a system user for it and has the end user approve it.
  * Call from a test's own setup, passing the rights that test cares about, so the
  * test decides what the system user starts with and what is left for it to ask
  * for. Returns only what it created. Clients cannot be returned at all, since k6
  * serializes the setup result to JSON and the prototypes would not survive.
  *
- * @param {object} options - What the calling test needs arranged.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {string} options.vendorOrgNo - Organisation number of the vendor to register the system as. Draw it with pickVendor.
- * @param {Right[]} options.grantedRights - The rights the system user is granted up front.
- * @param {Right[]} [options.registeredRights] - Every right the system is registered with. Defaults to the granted rights, pass more when the test needs a right left over to ask for.
- * @param {string[]} [options.grantedAccessPackages] - Urns of the access packages the system user is granted up front.
- * @param {string[]} [options.registeredAccessPackages] - Urns of every access package the system is registered with. Defaults to the granted ones.
- * @returns {object[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, and the system id so a teardown can remove what was registered.
+ * The prefix a test passes has to be one no other test's prefix starts with: the
+ * sweep in the teardown matches on it with startsWith, so changerequest would take
+ * the systems of changerequestdelete along with its own.
+ *
+ * @param {ArrangeSystemUserParams} options - What the calling test needs arranged.
+ * @returns A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, the system id so a teardown can remove what was registered, and the client id and external ref so a test can look the system user up again.
  */
 export function arrangeApprovedSystemUser({
     systemNamePrefix,
@@ -93,7 +98,7 @@ export function arrangeApprovedSystemUser({
     // an ENK. Built per environment by `yarn tenor:endusers` in
     // altinn-access-management-frontend, since Tenor holds the same synthetic
     // companies everywhere while the Altinn ids differ per environment.
-    const customer = getItemFromList(fetchTestData(`end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
+    const customer = getItemFromList(fetchTestData(`authentication/change-request-system-user/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
 
     const registration = createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages });
 
@@ -110,7 +115,10 @@ export function arrangeApprovedSystemUser({
         {
             customer,
             vendorOrgNo,
+            systemNamePrefix,
             systemId: registration.systemId,
+            clientId: registration.clientId,
+            externalRef: registration.externalRef,
             systemUserId,
             grantedAccessPackages,
             registeredAccessPackages,
@@ -131,25 +139,7 @@ export function arrangeApprovedSystemUser({
  * @returns {string} Organisation number of the vendor to act as.
  */
 export function pickVendor() {
-    return getItemFromList(fetchTestData("vendors.csv"), randomize).orgNo;
-}
-
-/**
- * Fetches one of this test folder's test data files.
- *
- * Read over http from main rather than with k6's open(), which the cloud runner
- * cannot use, so a new file only takes effect once it is merged.
- *
- * @param {string} fileName - File name under the change-request test data folder.
- * @returns {object[]} The rows, keyed by column name.
- */
-function fetchTestData(fileName) {
-    const res = withRetries(
-        () => http.get(`${TESTDATA_URL}/${fileName}`, { tags: { action: "fetch-test-data" } }),
-        "fetch-test-data",
-    );
-
-    return parseCsvData(res.body);
+    return getItemFromList(fetchTestData("authentication/change-request-system-user/vendors.csv"), randomize).orgNo;
 }
 
 /**
@@ -162,7 +152,7 @@ function fetchTestData(fileName) {
  * vendor that registered it. The system goes last, since it is what the system
  * user is built on.
  *
- * @param {object[]} arranged - What arrangeApprovedSystemUser returned.
+ * @param {any[]} arranged - What arrangeApprovedSystemUser returned.
  */
 export function cleanupArranged(arranged) {
     const [apiClients, approverTokenGenerator, vendorTokenGenerator] = getClients();
@@ -172,9 +162,19 @@ export function cleanupArranged(arranged) {
             approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 
-            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+            // An arrange that stopped early leaves no system user to delete, only the
+            // system it had already registered.
+            if (systemUser.systemUserId !== undefined) {
+                DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
+            }
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
+
+            // The delete above takes the system this run arranged. The sweep takes
+            // whatever an earlier run of the same test left in this vendor's
+            // register, which is what happens when the arrange itself broke: k6
+            // skips the teardown when the setup gives up.
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, systemUser.vendorOrgNo, systemUser.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
 }
@@ -194,7 +194,7 @@ export function cleanupArranged(arranged) {
  * with getVendorTokenOpts and the approver with getApproverTokenOpts. The cache
  * is keyed on the options, so each of them still gets its own cached token.
  *
- * @returns {[object, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (clients === undefined) {
@@ -245,7 +245,7 @@ export function getClients() {
  * generator was built with rather than adding to them.
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor this run acts as.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getVendorTokenOpts(vendorOrgNo) {
     return new EnterpriseTokenBuilder()
@@ -259,8 +259,8 @@ export function getVendorTokenOpts(vendorOrgNo) {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {object} customer - The customer this iteration acts on behalf of.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @param {any} customer - The customer this iteration acts on behalf of.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
     return new PersonalTokenBuilder()
@@ -310,6 +310,9 @@ export function findAccessPackages(count, vendorOrgNo) {
         .map((found) => found.urn)
         .sort();
 
+    // Called before anything is registered, so failing outright leaves nothing
+    // behind. The steps that run once a system exists stop instead, see
+    // createApprovedSystemUser.
     if (urns.length < count) {
         fail(`cannot arrange a system user: needed ${count} delegable access packages, the environment has ${urns.length}`);
     }
@@ -335,18 +338,24 @@ export function resource(resource) {
 }
 
 /**
+ * The test specific parts of a system registration.
+ *
+ * @typedef {object} SystemRegistrationParams
+ * @property {string} systemNamePrefix Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @property {string} vendorOrgNo Organisation number of the vendor the system is registered as.
+ * @property {Right[]} registeredRights Every right the system is registered with.
+ * @property {string[]} registeredAccessPackages Urns of every access package the system is registered with.
+ */
+
+/**
  * Builds the identifiers and registration payload for one iteration.
  *
  * Every identifier here is generated fresh, so unlike the clients it cannot be
  * shared. The system is registered with every right in registeredRights, which
  * lets a test grant a subset up front and ask for the rest later.
  *
- * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {string} options.vendorOrgNo - Organisation number of the vendor the system is registered as.
- * @param {Right[]} options.registeredRights - Every right the system is registered with.
- * @param {string[]} options.registeredAccessPackages - Urns of every access package the system is registered with.
- * @returns {object} Identifiers and the registration payload.
+ * @param {SystemRegistrationParams} options - Test specific parts of the registration.
+ * @returns Identifiers and the registration payload.
  */
 function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages }) {
     const systemName = `${systemNamePrefix}${uuidv4()}`;
@@ -392,12 +401,15 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * user, so it stays out of those test files. The flow itself is the subject of
  * create-and-confirm-system-user-request.js, which tests it directly.
  *
- * Keeps its own checks, so an arrange that breaks is visible and points at the
- * step that broke rather than surfacing as a confusing failure later, and fails
- * the iteration rather than letting the test carry on without a system user.
+ * Keeps its own checks, so an arrange that breaks is visible and points at the step
+ * that broke rather than surfacing as a confusing failure later. It stops at that
+ * step and hands back nothing rather than calling fail(), since this runs in setup
+ * and k6 skips the teardown when the setup gives up, which would leave the system
+ * it had just registered in the register. The test is the one that fails, on the
+ * missing system user, and by then the teardown is going to run.
  *
- * @param {object} registration - Registration from createSystemRegistration.
- * @param {object} customer - The customer the system user is created for.
+ * @param {any} registration - Registration from createSystemRegistration.
+ * @param {any} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
  * @returns {string} Identifier of the approved system user.
@@ -411,7 +423,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            fail("cannot arrange a system user: registering the system did not return a system id");
+            return;
         }
 
         const createRequest = new CreateRequestSystemUserBuilder()
@@ -432,7 +444,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         });
 
         if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
-            fail("cannot arrange a system user: creating the system user request returned no id");
+            return;
         }
 
         const approved = ApproveSystemUserRequest(
@@ -444,7 +456,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         // Nothing to look up unless the request was approved, so stop here rather
         // than let the lookup fail as a second, unrelated failure.
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            fail("cannot arrange a system user: approving the system user request failed");
+            return;
         }
 
         const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
@@ -454,11 +466,11 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             externalRef: registration.externalRef,
         });
 
-        systemUserId = systemUser?.id;
-
-        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
-            fail("cannot arrange a system user: the lookup by external ref returned no system user");
+        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser?.id)) {
+            return;
         }
+
+        systemUserId = systemUser.id;
     });
 
     return systemUserId;

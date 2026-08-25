@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { AgentDtoPaginatedResult, AgentsQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the agents of a party.
@@ -19,10 +21,13 @@ export function GetAgents(
     headers = null,
     labels = null,
 ) {
-    const res = clientDelegationClient.GetAgents(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.GetAgents(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetAgents",
     );
 
     /** @type {AgentDtoPaginatedResult|null} */

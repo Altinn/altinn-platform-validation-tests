@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { ServiceResource } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates a resource.
@@ -15,9 +17,12 @@ export function ResourceCreateResource(
     resource,
     labels = null,
 ) {
-    const res = resourceClient.ResourceCreateResource(
-        resource,
-        labels,
+    const res = withRetries(
+        () => resourceClient.ResourceCreateResource(
+            resource,
+            labels,
+        ),
+        "ResourceCreateResource",
     );
 
     return check(res, {

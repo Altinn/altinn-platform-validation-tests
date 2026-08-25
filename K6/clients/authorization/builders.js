@@ -1,3 +1,5 @@
+import { XacmlJsonAttributeExternal, XacmlJsonCategoryExternal, XacmlJsonMultiRequestsExternal, XacmlJsonRequestExternal, XacmlJsonRequestReferenceExternal, XacmlJsonRequestRootExternal, XacmlRequestApiModel } from "./types.js";
+
 /**
  * Creates an XACML JSON Attribute.
  *

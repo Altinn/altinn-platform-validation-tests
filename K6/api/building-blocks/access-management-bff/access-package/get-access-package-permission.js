@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetAccessPackagePermissionQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { AccessPackageFE } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a single access package with the permissions behind it.
@@ -19,10 +22,13 @@ export function GetAccessPackagePermission(
     queryParams = null,
     labels = null,
 ) {
-    const res = accessPackageClient.GetAccessPackagePermission(
-        packageId,
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => accessPackageClient.GetAccessPackagePermission(
+            packageId,
+            queryParams,
+            labels,
+        ),
+        "GetAccessPackagePermission",
     );
 
     /** @type {AccessPackageFE|null} */

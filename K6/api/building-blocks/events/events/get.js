@@ -1,5 +1,9 @@
 import { check } from "k6";
 
+import { EventsClient } from "../../../../clients/events/events/index.js";
+import { CloudEvent, EventsQueryParams } from "../../../../clients/events/types.js";
+import { withRetries } from "../../common/retry.js";
+
 /**
  * Retrieves cloud events based on query parameters.
  *
@@ -15,10 +19,13 @@ export function EventsGet(
     alternativeSubject = null,
     labels = null,
 ) {
-    const res = eventsClient.EventsGet(
-        query,
-        alternativeSubject,
-        labels,
+    const res = withRetries(
+        () => eventsClient.EventsGet(
+            query,
+            alternativeSubject,
+            labels,
+        ),
+        "EventsGet",
     );
 
     /** @type {CloudEvent[]|null} */

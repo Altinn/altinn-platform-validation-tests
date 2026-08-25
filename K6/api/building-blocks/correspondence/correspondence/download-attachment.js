@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Downloads an attachment belonging to a correspondence.
@@ -13,7 +14,7 @@ import { CorrespondenceClient } from "../../../../clients/correspondence/index.j
  * Attachment identifier.
  * @param {{[key: string]: string}} [labels]
  * Optional k6 request labels.
- * @returns {http.RefinedResponse|null}
+ * @returns {import("k6/http").RefinedResponse<"text">|null}
  * Response containing the binary attachment, or null if the request failed.
  */
 export function DownloadAttachment(
@@ -22,10 +23,13 @@ export function DownloadAttachment(
     attachmentId,
     labels = null,
 ) {
-    const res = correspondenceClient.DownloadAttachment(
-        correspondenceId,
-        attachmentId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.DownloadAttachment(
+            correspondenceId,
+            attachmentId,
+            labels,
+        ),
+        "DownloadAttachment",
     );
 
     const succeed = check(res, {

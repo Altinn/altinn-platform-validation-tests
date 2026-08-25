@@ -56,3 +56,7 @@
  * @property {string|null} [detail]
  * @property {string|null} [instance]
  */
+
+export const NotificationAddressRequest = undefined;
+export const NotificationAddressResponse = undefined;
+export const OrganizationResponse = undefined;

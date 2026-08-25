@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserEndUserContextQueriesSearchLabelAssignmentLog_LabelAssignmentLog } from "../../../../clients/dialogporten/enduser/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialog context label log
@@ -15,9 +17,12 @@ export function GetDialogContextLabelLog(
     dialogId,
     labels = null,
 ) {
-    const res = enduserApiClient.GetDialogContextLabellog(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => enduserApiClient.GetDialogContextLabellog(
+            dialogId,
+            labels,
+        ),
+        "GetDialogContextLabelLog",
     );
 
     /** @type {V1EndUserEndUserContextQueriesSearchLabelAssignmentLog_LabelAssignmentLog[]} */

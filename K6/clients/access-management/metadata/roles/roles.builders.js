@@ -1,6 +1,8 @@
+import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleResourcesByIdQuery, RolesGetRoleResourcesQuery } from "./roles.types.js";
+
 class RolesGetRolePackagesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRolePackagesQuery} */ ({});
     }
 
     /**
@@ -34,7 +36,7 @@ class RolesGetRolePackagesQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRolePackagesQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -43,7 +45,7 @@ class RolesGetRolePackagesQueryBuilder {
 
 class RolesGetRoleResourcesQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRoleResourcesQuery} */ ({});
     }
 
     /**
@@ -77,7 +79,7 @@ class RolesGetRoleResourcesQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRoleResourcesQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -86,7 +88,7 @@ class RolesGetRoleResourcesQueryBuilder {
 
 class RolesGetRolePackagesByIdQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRolePackagesByIdQuery} */ ({});
     }
 
     /**
@@ -110,7 +112,7 @@ class RolesGetRolePackagesByIdQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRolePackagesByIdQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -119,7 +121,7 @@ class RolesGetRolePackagesByIdQueryBuilder {
 
 class RolesGetRoleResourcesByIdQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RolesGetRoleResourcesByIdQuery} */ ({});
     }
 
     /**
@@ -143,7 +145,7 @@ class RolesGetRoleResourcesByIdQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {RolesGetRoleResourcesByIdQuery} The built payload.
      */
     Build() {
         return this.query;

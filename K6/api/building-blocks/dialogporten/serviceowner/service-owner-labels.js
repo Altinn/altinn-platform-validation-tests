@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label } from "../../../../clients/dialogporten/serviceowner/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Adds service owner labels to a dialog.
@@ -8,7 +10,7 @@ import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceo
  * POST /dialogs/{dialogId}/context/labels
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label} request - the label to add
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
@@ -21,11 +23,14 @@ export function AddServiceOwnerLabels(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostServiceOwnerLabels(
-        dialogId,
-        request,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostServiceOwnerLabels(
+            dialogId,
+            request,
+            ifMatch,
+            labels,
+        ),
+        "AddServiceOwnerLabels",
     );
 
     const success = check(res, {
@@ -46,7 +51,7 @@ export function AddServiceOwnerLabels(
  * DELETE /dialogs/{dialogId}/context/labels/{label}
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {string} label - the label to remove
  * @param {string} ifMatch - revision to send as the If-Match header
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
@@ -59,11 +64,14 @@ export function RemoveServiceOwnerLabel(
     ifMatch = null,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.DeleteServiceOwnerLabel(
-        dialogId,
-        label,
-        ifMatch,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.DeleteServiceOwnerLabel(
+            dialogId,
+            label,
+            ifMatch,
+            labels,
+        ),
+        "RemoveServiceOwnerLabel",
     );
 
     const success = check(res, {

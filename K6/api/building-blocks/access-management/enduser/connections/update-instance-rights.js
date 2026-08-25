@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { RightKeyListDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
+import { UpdateInstanceRightsQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Updates instance rights.
@@ -20,10 +23,13 @@ export function UpdateInstanceRights(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.UpdateInstanceRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.UpdateInstanceRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "UpdateInstanceRights",
     );
 
     return check(res, {

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/access-management-bff/system-register/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the systems in the system register.
@@ -8,13 +9,16 @@ import { SystemRegisterClient } from "../../../../clients/access-management-bff/
  * @param {SystemRegisterClient} systemRegisterClient Client for the system
  * register endpoints.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The registered systems. The API does not publish a
+ * @returns {any} The registered systems. The API does not publish a
  * schema for this response.
  */
 export function GetRegisteredSystems(systemRegisterClient, labels = null) {
-    const res = systemRegisterClient.GetRegisteredSystems(labels);
+    const res = withRetries(
+        () => systemRegisterClient.GetRegisteredSystems(labels),
+        "GetRegisteredSystems",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let systems = null;
 
     const succeed = check(res, {

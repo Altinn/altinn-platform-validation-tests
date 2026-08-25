@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { UpdateInstanceRightsQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Replaces the rights a party holds on an instance.
@@ -19,7 +21,10 @@ export function UpdateInstanceRights(
     body = null,
     labels = null,
 ) {
-    const res = instanceClient.UpdateInstanceRights(queryParams, body, labels);
+    const res = withRetries(
+        () => instanceClient.UpdateInstanceRights(queryParams, body, labels),
+        "UpdateInstanceRights",
+    );
 
     let updated = false;
 

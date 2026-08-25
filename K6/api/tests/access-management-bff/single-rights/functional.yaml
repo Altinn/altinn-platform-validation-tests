@@ -1,0 +1,14 @@
+namespace: access-management-bff
+base_dir: K6/api/tests/access-management-bff/single-rights
+test_definitions:
+  - test_file: org-to-org.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02
+
+  - test_file: user-to-user.js
+    contexts:
+      - environment: yt01
+      - environment: at23
+      - environment: tt02

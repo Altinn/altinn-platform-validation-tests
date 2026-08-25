@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the pending system user requests of an organisation.
@@ -9,7 +10,7 @@ import { SystemUserClient } from "../../../../clients/access-management-bff/syst
  * endpoints.
  * @param {string} partyUuid Party UUID of the organisation.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The pending system users. The API does not publish a
+ * @returns {any} The pending system users. The API does not publish a
  * schema for this response.
  */
 export function GetPendingSystemUsers(
@@ -17,9 +18,12 @@ export function GetPendingSystemUsers(
     partyUuid,
     labels = null,
 ) {
-    const res = systemUserClient.GetPendingSystemUsers(partyUuid, labels);
+    const res = withRetries(
+        () => systemUserClient.GetPendingSystemUsers(partyUuid, labels),
+        "GetPendingSystemUsers",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let pendingSystemUsers = null;
 
     const succeed = check(res, {

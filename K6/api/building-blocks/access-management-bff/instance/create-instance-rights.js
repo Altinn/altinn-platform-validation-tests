@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { InstanceRightsDelegationDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { CreateInstanceRightsQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Delegates rights on an instance to a person.
@@ -20,7 +23,10 @@ export function CreateInstanceRights(
     body = null,
     labels = null,
 ) {
-    const res = instanceClient.CreateInstanceRights(queryParams, body, labels);
+    const res = withRetries(
+        () => instanceClient.CreateInstanceRights(queryParams, body, labels),
+        "CreateInstanceRights",
+    );
 
     let delegated = false;
 

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { InstantOrdersClient } from "../../../../clients/notifications/instant-orders/index.js";
+import { InstantNotificationOrderResponseExt, InstantSmsNotificationOrderRequestExt } from "../../../../clients/notifications/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates and sends an instant SMS notification.
@@ -15,9 +17,12 @@ export function InstantOrdersCreateSms(
     request,
     labels = null,
 ) {
-    const res = instantOrdersClient.InstantOrdersCreateSms(
-        request,
-        labels,
+    const res = withRetries(
+        () => instantOrdersClient.InstantOrdersCreateSms(
+            request,
+            labels,
+        ),
+        "InstantOrdersCreateSms",
     );
 
     /** @type {InstantNotificationOrderResponseExt|null} */

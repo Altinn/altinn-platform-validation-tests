@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Confirms a correspondence.
@@ -19,9 +20,12 @@ export function ConfirmCorrespondence(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.ConfirmCorrespondence(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.ConfirmCorrespondence(
+            correspondenceId,
+            labels,
+        ),
+        "ConfirmCorrespondence",
     );
 
     /** @type {string|null} */

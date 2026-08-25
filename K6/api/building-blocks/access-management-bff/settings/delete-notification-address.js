@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { NotificationAddressResponse } from "../../../../clients/profil/organizations/organizations.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes a notification address from an organisation.
@@ -18,10 +20,13 @@ export function DeleteNotificationAddress(
     notificationAddressId,
     labels = null,
 ) {
-    const res = settingsClient.DeleteNotificationAddress(
-        orgNumber,
-        notificationAddressId,
-        labels,
+    const res = withRetries(
+        () => settingsClient.DeleteNotificationAddress(
+            orgNumber,
+            notificationAddressId,
+            labels,
+        ),
+        "DeleteNotificationAddress",
     );
 
     /** @type {NotificationAddressResponse|null} */

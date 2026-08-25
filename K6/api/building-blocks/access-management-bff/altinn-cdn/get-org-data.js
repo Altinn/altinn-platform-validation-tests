@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the organisation data the Altinn CDN publishes, keyed by org code.
@@ -8,13 +9,16 @@ import { AltinnCdnClient } from "../../../../clients/access-management-bff/altin
  * @param {AltinnCdnClient} altinnCdnClient Client for the Altinn CDN
  * endpoints.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} Organisation data keyed by org code, each value an
+ * @returns {any} Organisation data keyed by org code, each value an
  * {@link OrgData}.
  */
 export function GetOrgData(altinnCdnClient, labels = null) {
-    const res = altinnCdnClient.GetOrgData(labels);
+    const res = withRetries(
+        () => altinnCdnClient.GetOrgData(labels),
+        "GetOrgData",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let orgData = null;
 
     const succeed = check(res, {

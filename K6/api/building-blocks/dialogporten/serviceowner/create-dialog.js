@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to create a dialog for a party
@@ -21,12 +22,15 @@ export function CreateDialog(
     labels = null,
     noTransmissionsActivities = false,
 ) {
-    const res = serviceOwnerApiClient.PostDialog(
-        partyId,
-        serviceResource,
-        serviceOwner,
-        labels,
-        noTransmissionsActivities,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostDialog(
+            partyId,
+            serviceResource,
+            serviceOwner,
+            labels,
+            noTransmissionsActivities,
+        ),
+        "CreateDialog",
     );
 
     /** @type {string|null} */
@@ -65,7 +69,7 @@ export function CreateDialog(
  * Create a transmission for a dialog
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
+ * @param {string} dialogId - the id of the dialog to create the transmission for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
@@ -74,9 +78,12 @@ export function CreateTransmission(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostTransmission(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostTransmission(
+            dialogId,
+            labels,
+        ),
+        "CreateTransmission",
     );
 
     /** @type {string|null} */
@@ -115,7 +122,7 @@ export function CreateTransmission(
  * Create an activity for a dialog
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {uuidv7} dialogId - the id of the dialog to create the activity for
+ * @param {string} dialogId - the id of the dialog to create the activity for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
@@ -124,9 +131,12 @@ export function CreateActivity(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.PostActivity(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.PostActivity(
+            dialogId,
+            labels,
+        ),
+        "CreateActivity",
     );
 
     /** @type {string|null} */

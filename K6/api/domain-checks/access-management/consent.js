@@ -133,7 +133,7 @@ function CheckConsentApproved(approved) {
  * that the body parsed into something, since a 200 with an unparsable body still
  * reads as a pass on the status code alone.
  *
- * @param {object|null} response - The parsed response.
+ * @param {any} response - The parsed response.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if there is a body to work with, false otherwise.
  */

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { RightKeyListDto, UpdateResourceRightsQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Updates resource rights.
@@ -20,10 +22,13 @@ export function UpdateResourceRights(
     body = null,
     labels = null,
 ) {
-    const res = connectionsClient.UpdateResourceRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.UpdateResourceRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "UpdateResourceRights",
     );
 
     const succeed = check(res, {

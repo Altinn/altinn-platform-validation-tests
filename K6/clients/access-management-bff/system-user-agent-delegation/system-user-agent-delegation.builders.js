@@ -1,9 +1,12 @@
+import { AgentDelegationRequestFE, ClientRoleAccessPackages } from "../common/common.types.js";
+import { CreateAgentSystemUserDelegationQuery, CreateAgentSystemUserSelfDelegationQuery, DeleteAgentSystemUserDelegationQuery, DeleteAgentSystemUserSelfDelegationQuery, GetAgentSystemUserCustomersQuery, GetAgentSystemUserDelegationsQuery, GetAgentSystemUserSelfDelegationQuery } from "./system-user-agent-delegation.types.js";
+
 /**
  * Builder for the query parameters of {@link GetAgentSystemUserCustomers}.
  */
 class GetAgentSystemUserCustomersQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentSystemUserCustomersQuery} */ ({});
     }
 
     /**
@@ -33,7 +36,7 @@ class GetAgentSystemUserCustomersQueryBuilder {
  */
 class GetAgentSystemUserDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentSystemUserDelegationsQuery} */ ({});
     }
 
     /**
@@ -63,7 +66,7 @@ class GetAgentSystemUserDelegationsQueryBuilder {
  */
 class CreateAgentSystemUserDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentSystemUserDelegationQuery} */ ({});
     }
 
     /**
@@ -93,7 +96,7 @@ class CreateAgentSystemUserDelegationQueryBuilder {
  */
 class DeleteAgentSystemUserDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentSystemUserDelegationQuery} */ ({});
     }
 
     /**
@@ -124,7 +127,7 @@ class DeleteAgentSystemUserDelegationQueryBuilder {
  */
 class CreateAgentSystemUserSelfDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {CreateAgentSystemUserSelfDelegationQuery} */ ({});
     }
 
     /**
@@ -156,7 +159,7 @@ class CreateAgentSystemUserSelfDelegationQueryBuilder {
  */
 class DeleteAgentSystemUserSelfDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentSystemUserSelfDelegationQuery} */ ({});
     }
 
     /**
@@ -188,7 +191,7 @@ class DeleteAgentSystemUserSelfDelegationQueryBuilder {
  */
 class GetAgentSystemUserSelfDelegationQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetAgentSystemUserSelfDelegationQuery} */ ({});
     }
 
     /**
@@ -218,7 +221,7 @@ class GetAgentSystemUserSelfDelegationQueryBuilder {
  */
 class AgentDelegationRequestFEBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {AgentDelegationRequestFE} */ ({});
     }
 
     /**

@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { RightCheck } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { GetInstanceDelegationCheckQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Checks which rights on an instance the authenticated user can delegate.
@@ -17,7 +20,10 @@ export function GetInstanceDelegationCheck(
     queryParams = null,
     labels = null,
 ) {
-    const res = instanceClient.GetInstanceDelegationCheck(queryParams, labels);
+    const res = withRetries(
+        () => instanceClient.GetInstanceDelegationCheck(queryParams, labels),
+        "GetInstanceDelegationCheck",
+    );
 
     /** @type {Array<RightCheck>|null} */
     let rightChecks = null;

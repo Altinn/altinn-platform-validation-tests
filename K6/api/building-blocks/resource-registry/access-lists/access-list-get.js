@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListInfoDto } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets an access list by owner and identifier.
@@ -17,10 +19,13 @@ export function AccessListGet(
     identifier,
     labels = null,
 ) {
-    const res = accessListClient.AccessListGet(
-        owner,
-        identifier,
-        labels,
+    const res = withRetries(
+        () => accessListClient.AccessListGet(
+            owner,
+            identifier,
+            labels,
+        ),
+        "AccessListGet",
     );
 
     /** @type {AccessListInfoDto|null} */

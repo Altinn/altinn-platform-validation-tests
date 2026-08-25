@@ -1,0 +1,11 @@
+namespace: access-management-bff
+base_dir: K6/api/tests/access-management-bff/export
+test_definitions:
+  - test_file: delegation-export.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: ../conf.json
+      - environment: at23

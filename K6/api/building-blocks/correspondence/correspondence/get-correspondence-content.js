@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the message body of a correspondence using a client configured with
@@ -16,9 +17,12 @@ export function GetCorrespondenceContent(
     correspondenceId,
     labels = null,
 ) {
-    const res = correspondenceClient.GetCorrespondenceContent(
-        correspondenceId,
-        labels,
+    const res = withRetries(
+        () => correspondenceClient.GetCorrespondenceContent(
+            correspondenceId,
+            labels,
+        ),
+        "GetCorrespondenceContent",
     );
 
     const succeed = check(res, {

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteAgentQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Removes an agent from a party.
@@ -17,7 +19,10 @@ export function DeleteAgent(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.DeleteAgent(queryParams, labels);
+    const res = withRetries(
+        () => clientDelegationsClient.DeleteAgent(queryParams, labels),
+        "DeleteAgent",
+    );
 
     let removed = false;
 

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { UpdateSingleRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Replaces the rights a party holds on a resource.
@@ -19,10 +21,13 @@ export function UpdateSingleRights(
     body = null,
     labels = null,
 ) {
-    const res = singleRightClient.UpdateSingleRights(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => singleRightClient.UpdateSingleRights(
+            queryParams,
+            body,
+            labels,
+        ),
+        "UpdateSingleRights",
     );
 
     let updated = false;

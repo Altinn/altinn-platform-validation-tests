@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { AuthorizeClient } from "../../../../clients/authorization/authorize.js";
+import { XacmlJsonRequestRootExternal, XacmlJsonResponseExternal } from "../../../../clients/authorization/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Authorizes an external XACML request.
@@ -21,9 +23,12 @@ export function AuthorizePost(
     expectedDecision = null,
     labels = null,
 ) {
-    const res = authorizeClient.AuthorizePost(
-        request,
-        labels,
+    const res = withRetries(
+        () => authorizeClient.AuthorizePost(
+            request,
+            labels,
+        ),
+        "AuthorizePost",
     );
 
     /** @type {XacmlJsonResponseExternal|null} */

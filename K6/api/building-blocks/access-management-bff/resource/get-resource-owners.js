@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { ResourceOwnerFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
+import { GetResourceOwnersQuery } from "../../../../clients/access-management-bff/resource/resource.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resource owners that have delegable resources.
@@ -16,7 +19,10 @@ export function GetResourceOwners(
     queryParams = null,
     labels = null,
 ) {
-    const res = resourceClient.GetResourceOwners(queryParams, labels);
+    const res = withRetries(
+        () => resourceClient.GetResourceOwners(queryParams, labels),
+        "GetResourceOwners",
+    );
 
     /** @type {Array<ResourceOwnerFE>|null} */
     let resourceOwners = null;

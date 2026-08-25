@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DashboardNotificationAddressResponse } from "../../../../clients/profil/dashboard/dashboard.types.js";
 import { DashboardClient } from "../../../../clients/profil/dashboard/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets all notification addresses for the given email address.
@@ -15,9 +17,12 @@ export function GetNotificationAddressesByEmail(
     emailAddress,
     labels = null,
 ) {
-    const res = dashboardClient.GetNotificationAddressesByEmail(
-        emailAddress,
-        labels,
+    const res = withRetries(
+        () => dashboardClient.GetNotificationAddressesByEmail(
+            emailAddress,
+            labels,
+        ),
+        "GetNotificationAddressesByEmail",
     );
 
     /** @type {Array<DashboardNotificationAddressResponse>} */

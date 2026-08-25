@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { DelegateSingleRightsQuery, GetResourceDelegationsQuery, GetResourceRightsQuery, GetRightsMetaQuery, GetSingleRightDelegationCheckQuery, RevokeSingleRightsQuery, UpdateSingleRightsQuery } from "./single-right.types.js";
+
 const TAGS = {
     GetSingleRightDelegationCheck: {
         action: "get-single-right-delegation-check",
@@ -60,7 +62,7 @@ class SingleRightClient {
      * @param {GetSingleRightDelegationCheckQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetSingleRightDelegationCheckQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSingleRightDelegationCheck(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -109,7 +111,7 @@ class SingleRightClient {
      * @param {GetRightsMetaQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetRightsMetaQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRightsMeta(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -159,7 +161,7 @@ class SingleRightClient {
      * Prefer using {@link DelegateSingleRightsQueryBuilder}.
      * @param {Array<string>|null} [body] Keys of the rights to delegate.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DelegateSingleRights(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -213,7 +215,7 @@ class SingleRightClient {
      * @param {GetResourceDelegationsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetResourceDelegationsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceDelegations(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -262,7 +264,7 @@ class SingleRightClient {
      * @param {GetResourceRightsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetResourceRightsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceRights(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -311,7 +313,7 @@ class SingleRightClient {
      * @param {RevokeSingleRightsQuery|null} [query] Optional query parameters.
      * Prefer using {@link RevokeSingleRightsQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RevokeSingleRights(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -365,7 +367,7 @@ class SingleRightClient {
      * Prefer using {@link UpdateSingleRightsQueryBuilder}.
      * @param {Array<string>|null} [body] Keys of the rights to keep.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateSingleRights(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();

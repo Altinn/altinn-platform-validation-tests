@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
+import { RequestDto, RequestPackageDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a package delegation request.
@@ -15,9 +17,12 @@ export function RequestCreatePackageRequest(
     request,
     labels = null,
 ) {
-    const res = requestClient.RequestCreatePackageRequest(
-        request,
-        labels,
+    const res = withRetries(
+        () => requestClient.RequestCreatePackageRequest(
+            request,
+            labels,
+        ),
+        "RequestCreatePackageRequest",
     );
 
     /** @type {RequestDto|null} */

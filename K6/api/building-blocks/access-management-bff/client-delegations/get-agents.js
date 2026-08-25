@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetAgentsQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { AgentDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the agents of a party.
@@ -17,7 +20,10 @@ export function GetAgents(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.GetAgents(queryParams, labels);
+    const res = withRetries(
+        () => clientDelegationsClient.GetAgents(queryParams, labels),
+        "GetAgents",
+    );
 
     /** @type {Array<AgentDelegation>|null} */
     let agents = null;

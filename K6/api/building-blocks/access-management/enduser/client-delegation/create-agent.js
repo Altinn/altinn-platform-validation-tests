@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { CreateAgentQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
+import { AssignmentDto, PersonInput } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Adds an agent to a party.
@@ -19,10 +22,13 @@ export function CreateAgent(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationClient.CreateAgent(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationClient.CreateAgent(
+            queryParams,
+            body,
+            labels,
+        ),
+        "CreateAgent",
     );
 
     /** @type {AssignmentDto|null} */

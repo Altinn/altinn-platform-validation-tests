@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteAccessPackageDelegationQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes a delegated access package.
@@ -17,9 +19,12 @@ export function DeleteAccessPackageDelegation(
     queryParams = null,
     labels = null,
 ) {
-    const res = accessPackageClient.DeleteAccessPackageDelegation(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => accessPackageClient.DeleteAccessPackageDelegation(
+            queryParams,
+            labels,
+        ),
+        "DeleteAccessPackageDelegation",
     );
 
     let revoked = false;

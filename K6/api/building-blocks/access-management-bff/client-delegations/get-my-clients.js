@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { GetMyClientsQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { MyClientDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the clients of the authenticated party, grouped by client provider.
@@ -18,7 +21,10 @@ export function GetMyClients(
     queryParams = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.GetMyClients(queryParams, labels);
+    const res = withRetries(
+        () => clientDelegationsClient.GetMyClients(queryParams, labels),
+        "GetMyClients",
+    );
 
     /** @type {Array<MyClientDelegation>|null} */
     let myClients = null;

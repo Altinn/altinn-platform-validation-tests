@@ -1,12 +1,14 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog, PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem, V1ServiceOwnerDialogsQueriesGet_Dialog } from "../../../../clients/dialogporten/serviceowner/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialogs
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
+ * @param {{[x: string]: string}} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog|null} Parsed response body, or null when the call failed.
  */
@@ -15,9 +17,12 @@ export function GetDialogs(
     queryParams,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialogs(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialogs(
+            queryParams,
+            labels,
+        ),
+        "GetDialogs",
     );
 
     /** @type {PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog|null} */
@@ -65,9 +70,12 @@ export function GetDialog(
     dialogId,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetDialog(
-        dialogId,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetDialog(
+            dialogId,
+            labels,
+        ),
+        "GetDialog",
     );
 
     /** @type {V1ServiceOwnerDialogsQueriesGet_Dialog|null} */
@@ -106,7 +114,7 @@ export function GetDialog(
  * Function to get enduser context
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
+ * @param {{[x: string]: string}} queryParams - query parameters for the request
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem|null} Parsed response body, or null when the call failed.
  */
@@ -115,9 +123,12 @@ export function GetEndUserContext(
     queryParams,
     labels = null,
 ) {
-    const res = serviceOwnerApiClient.GetEndUserContext(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => serviceOwnerApiClient.GetEndUserContext(
+            queryParams,
+            labels,
+        ),
+        "GetEndUserContext",
     );
 
     /** @type {PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem|null} */

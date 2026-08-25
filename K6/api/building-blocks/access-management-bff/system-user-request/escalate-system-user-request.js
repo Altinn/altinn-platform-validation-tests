@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Escalates a system user request to someone who can approve it.
@@ -18,10 +19,13 @@ export function EscalateSystemUserRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.EscalateSystemUserRequest(
-        partyId,
-        requestId,
-        labels,
+    const res = withRetries(
+        () => systemUserRequestClient.EscalateSystemUserRequest(
+            partyId,
+            requestId,
+            labels,
+        ),
+        "EscalateSystemUserRequest",
     );
 
     let escalated = false;

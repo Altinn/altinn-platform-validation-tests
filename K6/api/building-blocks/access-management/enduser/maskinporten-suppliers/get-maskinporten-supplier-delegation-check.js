@@ -1,6 +1,9 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { MaskinportenSupplierDelegationCheckQuery } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
+import { ResourceCheckDto } from "../../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Checks whether a Maskinporten supplier resource can be delegated.
@@ -16,9 +19,12 @@ export function GetMaskinportenSupplierDelegationCheck(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenSuppliersClient.GetMaskinportenSupplierDelegationCheck(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenSuppliersClient.GetMaskinportenSupplierDelegationCheck(
+            queryParams,
+            labels,
+        ),
+        "GetMaskinportenSupplierDelegationCheck",
     );
 
     /** @type {ResourceCheckDto|null} */

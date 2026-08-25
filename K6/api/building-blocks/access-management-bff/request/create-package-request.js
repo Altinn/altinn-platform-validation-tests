@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { CreatePackageRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates an access request for an access package.
@@ -10,7 +12,7 @@ import { RequestClient } from "../../../../clients/access-management-bff/request
  * @param {CreatePackageRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreatePackageRequestQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The created request. The API does not publish a
+ * @returns {any} The created request. The API does not publish a
  * schema for this response.
  */
 export function CreatePackageRequest(
@@ -18,9 +20,12 @@ export function CreatePackageRequest(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.CreatePackageRequest(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.CreatePackageRequest(queryParams, labels),
+        "CreatePackageRequest",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let request = null;
 
     const succeed = check(res, {

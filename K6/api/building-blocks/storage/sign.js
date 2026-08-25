@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { SignClient } from "../../../clients/storage/index.js";
+import { SignRequest } from "../../../clients/storage/instances.types.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Creates a signature for data elements of an instance.
@@ -19,11 +21,14 @@ export function SignInstance(
     request,
     labels = null,
 ) {
-    const res = signClient.SignInstance(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => signClient.SignInstance(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "SignInstance",
     );
 
     const success = check(res, {

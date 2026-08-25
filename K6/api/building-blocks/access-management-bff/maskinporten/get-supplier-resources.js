@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { ResourceDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { GetSupplierResourcesQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resources delegated to the Maskinporten suppliers of a party.
@@ -17,7 +20,10 @@ export function GetSupplierResources(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.GetSupplierResources(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.GetSupplierResources(queryParams, labels),
+        "GetSupplierResources",
+    );
 
     /** @type {Array<ResourceDelegation>|null} */
     let resourceDelegations = null;

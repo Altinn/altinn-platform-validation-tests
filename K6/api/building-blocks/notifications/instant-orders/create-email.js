@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { InstantOrdersClient } from "../../../../clients/notifications/instant-orders/index.js";
+import { InstantEmailNotificationOrderRequestExt, InstantNotificationOrderResponseExt } from "../../../../clients/notifications/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Creates and sends an instant email notification.
@@ -15,9 +17,12 @@ export function InstantOrdersCreateEmail(
     request,
     labels = null,
 ) {
-    const res = instantOrdersClient.InstantOrdersCreateEmail(
-        request,
-        labels,
+    const res = withRetries(
+        () => instantOrdersClient.InstantOrdersCreateEmail(
+            request,
+            labels,
+        ),
+        "InstantOrdersCreateEmail",
     );
 
     /** @type {InstantNotificationOrderResponseExt|null} */

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { GetReceivedResourceRequestsQuery } from "../../../../clients/access-management-bff/request/request.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the resource access requests a party has received.
@@ -10,7 +12,7 @@ import { RequestClient } from "../../../../clients/access-management-bff/request
  * @param {GetReceivedResourceRequestsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetReceivedResourceRequestsQueryBuilder}.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The received resource requests. The API does not
+ * @returns {any} The received resource requests. The API does not
  * publish a schema for this response.
  */
 export function GetReceivedResourceRequests(
@@ -18,9 +20,12 @@ export function GetReceivedResourceRequests(
     queryParams = null,
     labels = null,
 ) {
-    const res = requestClient.GetReceivedResourceRequests(queryParams, labels);
+    const res = withRetries(
+        () => requestClient.GetReceivedResourceRequests(queryParams, labels),
+        "GetReceivedResourceRequests",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let requests = null;
 
     const succeed = check(res, {

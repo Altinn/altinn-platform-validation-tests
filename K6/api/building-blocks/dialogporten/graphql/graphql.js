@@ -1,7 +1,11 @@
+/**
+ * @typedef {import("../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js").DialogSearchVariables} DialogSearchVariables
+ */
 import { check } from "k6";
 
-import { DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/dialogs-search-variables-builder.js";
+import { DialogByIdVariables } from "../../../../clients/dialogporten/graphql/dialog-by-id-variables-builder.js";
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get all dialogs for a party
@@ -9,12 +13,15 @@ import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param variables TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
-    const res = graphqlClient.GetAllDialogsForParty(variables, labels);
+    const res = withRetries(
+        () => graphqlClient.GetAllDialogsForParty(variables, labels),
+        "GetAllDialogsForParty",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
@@ -37,15 +44,18 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * Function to get all dialogs for a party, with expanded check to see if a specific dialogId is present in the response
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {DialogSearchVariablesBuilder} variables - search variables to use in the query
- * @param {uuidv7} dialogId TODO: description
+ * @param {DialogSearchVariables} variables - search variables to use in the query
+ * @param {string} dialogId TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
-    const res = graphqlClient.GetAllDialogsForParty(variables, labels);
+    const res = withRetries(
+        () => graphqlClient.GetAllDialogsForParty(variables, labels),
+        "GetAllDialogsForPartyCheckForDialogId",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
@@ -80,14 +90,17 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  * Function to get a dialog by id
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built with {@link DialogByIdVariablesBuilder}
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
-export function GetDialogById(graphqlClient, dialogId, labels = null) {
-    const res = graphqlClient.GetDialogById(dialogId, labels);
+export function GetDialogById(graphqlClient, variables, labels = null) {
+    const res = withRetries(
+        () => graphqlClient.GetDialogById(variables, labels),
+        "GetDialogById",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
@@ -110,14 +123,17 @@ export function GetDialogById(graphqlClient, dialogId, labels = null) {
  * Function to get a dialog by id and verify that the response contains the correct dialogId
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {uuidv7} dialogId - id of the dialog to get
+ * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built with {@link DialogByIdVariablesBuilder}
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
-export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
-    const res = graphqlClient.GetDialogById(dialogId, labels);
+export function GetAndVerifyDialogById(graphqlClient, variables, labels = null) {
+    const res = withRetries(
+        () => graphqlClient.GetDialogById(variables, labels),
+        "GetAndVerifyDialogById",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
@@ -127,11 +143,16 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
             if (res_body === null || res_body === undefined) {
                 return false;
             }
-            if (!res_body.data || res_body.data?.dialogById?.dialog?.id !== dialogId) {
-                // TODO: Is this needed? or just noise?
-                // console.log(`DialogId ${dialogId} not found in dialogById-response`);
-                return true;
+            const returnedId = res_body.data?.dialogById?.dialog?.id;
+
+            if (returnedId !== variables.id) {
+                // Unlike the search this is a lookup by id, so there is no indexing lag
+                // to wait out: either the dialog is readable for this caller or it is not.
+                console.log(`Expected dialogId ${variables.id} in dialogById-response, got ${returnedId}`);
+
+                return false;
             }
+
             return true;
         }
     });
@@ -149,12 +170,15 @@ export function GetAndVerifyDialogById(graphqlClient, dialogId, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetParties(graphqlClient, labels = null) {
-    const res = graphqlClient.GetParties(labels);
+    const res = withRetries(
+        () => graphqlClient.GetParties(labels),
+        "GetParties",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetParties - status code is 200": (r) => r.status === 200,
@@ -178,12 +202,15 @@ export function GetParties(graphqlClient, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
- * @returns {object|null} Parsed GraphQL response, or null when the call failed.
+ * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {
-    const res = graphqlClient.GetFilterServiceResources(labels);
+    const res = withRetries(
+        () => graphqlClient.GetFilterServiceResources(labels),
+        "GetFilterServiceResources",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let res_body = null;
     const succeed = check(res, {
         "GetFilteredServiceResources - status code is 200": (r) => r.status === 200,

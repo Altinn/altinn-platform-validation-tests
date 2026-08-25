@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets an agent system user request.
@@ -9,7 +10,7 @@ import { SystemUserAgentRequestClient } from "../../../../clients/access-managem
  * for the agent system user request endpoints.
  * @param {string} agentRequestId Agent request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The agent request. The API does not publish a schema
+ * @returns {any} The agent request. The API does not publish a schema
  * for this response.
  */
 export function GetAgentRequest(
@@ -17,12 +18,15 @@ export function GetAgentRequest(
     agentRequestId,
     labels = null,
 ) {
-    const res = systemUserAgentRequestClient.GetAgentRequest(
-        agentRequestId,
-        labels,
+    const res = withRetries(
+        () => systemUserAgentRequestClient.GetAgentRequest(
+            agentRequestId,
+            labels,
+        ),
+        "GetAgentRequest",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let agentRequest = null;
 
     const succeed = check(res, {

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { IdPortenAuthorizationClient } from "../../../../clients/access-management-bff/idporten-authorization/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the ID-porten authorizations of the authenticated user.
@@ -8,16 +9,19 @@ import { IdPortenAuthorizationClient } from "../../../../clients/access-manageme
  * @param {IdPortenAuthorizationClient} idPortenAuthorizationClient Client for
  * the ID-porten authorization endpoints.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The authorizations. The API does not publish a schema
+ * @returns {any} The authorizations. The API does not publish a schema
  * for this response.
  */
 export function GetIdPortenAuthorizations(
     idPortenAuthorizationClient,
     labels = null,
 ) {
-    const res = idPortenAuthorizationClient.GetIdPortenAuthorizations(labels);
+    const res = withRetries(
+        () => idPortenAuthorizationClient.GetIdPortenAuthorizations(labels),
+        "GetIdPortenAuthorizations",
+    );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let authorizations = null;
 
     const succeed = check(res, {

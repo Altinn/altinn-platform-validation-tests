@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { RequestDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Confirms a draft request.
@@ -17,10 +19,13 @@ export function ConfirmDraftRequest(
     id,
     labels = null,
 ) {
-    const res = requestClient.ConfirmDraftRequest(
-        party,
-        id,
-        labels,
+    const res = withRetries(
+        () => requestClient.ConfirmDraftRequest(
+            party,
+            id,
+            labels,
+        ),
+        "ConfirmDraftRequest",
     );
 
     /** @type {RequestDto|null} */

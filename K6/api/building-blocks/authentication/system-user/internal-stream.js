@@ -1,14 +1,14 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/authentication/index.js";
+import { SystemUserPagedQuery, SystemUserRegisterDTOItemStream } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves SystemUsers from the internal stream endpoint.
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
- * @param {object} [query] Query parameters.
- * @param {Int64Opaque} [query.token] Continuation token.
+ * @param {SystemUserPagedQuery|null} [query] Query parameters.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {SystemUserRegisterDTOItemStream|null} Stream result.
  */

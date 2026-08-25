@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { CreateSupplierResourceQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Delegates a resource to a Maskinporten supplier.
@@ -17,7 +19,10 @@ export function CreateSupplierResource(
     queryParams,
     labels = null,
 ) {
-    const res = maskinportenClient.CreateSupplierResource(queryParams, labels);
+    const res = withRetries(
+        () => maskinportenClient.CreateSupplierResource(queryParams, labels),
+        "CreateSupplierResource",
+    );
 
     /** @type {boolean|null} */
     let delegated = null;

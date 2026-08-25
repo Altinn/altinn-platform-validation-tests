@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { SimplifiedParty } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { GetInstanceSimplifiedUsersQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the users an instance can be delegated to.
@@ -17,7 +20,10 @@ export function GetInstanceSimplifiedUsers(
     queryParams = null,
     labels = null,
 ) {
-    const res = instanceClient.GetInstanceSimplifiedUsers(queryParams, labels);
+    const res = withRetries(
+        () => instanceClient.GetInstanceSimplifiedUsers(queryParams, labels),
+        "GetInstanceSimplifiedUsers",
+    );
 
     /** @type {Array<SimplifiedParty>|null} */
     let parties = null;

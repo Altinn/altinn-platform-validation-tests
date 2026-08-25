@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { PartyFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the party of the authenticated user.
@@ -10,7 +12,10 @@ import { LookupClient } from "../../../../clients/access-management-bff/lookup/i
  * @returns {PartyFE|null} The party of the authenticated user.
  */
 export function GetPartyForAuthenticatedUser(lookupClient, labels = null) {
-    const res = lookupClient.GetPartyForAuthenticatedUser(labels);
+    const res = withRetries(
+        () => lookupClient.GetPartyForAuthenticatedUser(labels),
+        "GetPartyForAuthenticatedUser",
+    );
 
     /** @type {PartyFE|null} */
     let party = null;

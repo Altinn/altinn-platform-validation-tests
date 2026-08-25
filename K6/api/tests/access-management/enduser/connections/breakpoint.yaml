@@ -1,8 +1,7 @@
-namespace: authorization
+namespace: access-management
 base_dir: K6/api/tests/access-management/enduser/connections
 test_definitions:
   - test_file: get-connections-to.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -13,7 +12,6 @@ test_definitions:
               value: 100
 
   - test_file: get-connections-from.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -24,7 +22,6 @@ test_definitions:
               value: 100
 
   - test_file: get-access-packages-to.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:
@@ -35,7 +32,6 @@ test_definitions:
               value: 100
 
   - test_file: get-access-packages-from.js
-    env_file: common.env
     contexts:
       - environment: yt01
         test_run:

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { UserProfileFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Looks up a user profile by user UUID.
@@ -11,7 +13,10 @@ import { LookupClient } from "../../../../clients/access-management-bff/lookup/i
  * @returns {UserProfileFE|null} The user profile.
  */
 export function GetUser(lookupClient, uuid, labels = null) {
-    const res = lookupClient.GetUser(uuid, labels);
+    const res = withRetries(
+        () => lookupClient.GetUser(uuid, labels),
+        "GetUser",
+    );
 
     /** @type {UserProfileFE|null} */
     let userProfile = null;

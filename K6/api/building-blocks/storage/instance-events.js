@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { InstanceEventsClient } from "../../../clients/storage/index.js";
+import { InstanceEvent, InstanceEventList } from "../../../clients/storage/instances.types.js";
+import { withRetries } from "../common/retry.js";
 
 /**
  * Adds an event to an instance.
@@ -19,11 +21,14 @@ export function CreateInstanceEvent(
     request,
     labels = null,
 ) {
-    const res = instanceEventsClient.CreateInstanceEvent(
-        instanceOwnerPartyId,
-        instanceGuid,
-        request,
-        labels,
+    const res = withRetries(
+        () => instanceEventsClient.CreateInstanceEvent(
+            instanceOwnerPartyId,
+            instanceGuid,
+            request,
+            labels,
+        ),
+        "CreateInstanceEvent",
     );
 
     /** @type {string|null} */
@@ -79,13 +84,16 @@ export function GetInstanceEvents(
     to = null,
     labels = null,
 ) {
-    const res = instanceEventsClient.GetInstanceEvents(
-        instanceOwnerPartyId,
-        instanceGuid,
-        eventTypes,
-        from,
-        to,
-        labels,
+    const res = withRetries(
+        () => instanceEventsClient.GetInstanceEvents(
+            instanceOwnerPartyId,
+            instanceGuid,
+            eventTypes,
+            from,
+            to,
+            labels,
+        ),
+        "GetInstanceEvents",
     );
 
     /** @type {InstanceEventList|null} */
@@ -137,11 +145,14 @@ export function GetInstanceEvent(
     eventGuid,
     labels = null,
 ) {
-    const res = instanceEventsClient.GetInstanceEvent(
-        instanceOwnerPartyId,
-        instanceGuid,
-        eventGuid,
-        labels,
+    const res = withRetries(
+        () => instanceEventsClient.GetInstanceEvent(
+            instanceOwnerPartyId,
+            instanceGuid,
+            eventGuid,
+            labels,
+        ),
+        "GetInstanceEvent",
     );
 
     /** @type {InstanceEvent|null} */

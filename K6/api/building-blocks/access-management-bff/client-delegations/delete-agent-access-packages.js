@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { DeleteAgentAccessPackagesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { DelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Revokes access packages on a client from an agent.
@@ -20,10 +23,13 @@ export function DeleteAgentAccessPackages(
     body = null,
     labels = null,
 ) {
-    const res = clientDelegationsClient.DeleteAgentAccessPackages(
-        queryParams,
-        body,
-        labels,
+    const res = withRetries(
+        () => clientDelegationsClient.DeleteAgentAccessPackages(
+            queryParams,
+            body,
+            labels,
+        ),
+        "DeleteAgentAccessPackages",
     );
 
     let revoked = false;

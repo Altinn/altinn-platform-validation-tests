@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets a system user request.
@@ -9,7 +10,7 @@ import { SystemUserRequestClient } from "../../../../clients/access-management-b
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The request. The API does not publish a schema for
+ * @returns {any} The request. The API does not publish a schema for
  * this response.
  */
 export function GetSystemUserRequest(
@@ -17,12 +18,15 @@ export function GetSystemUserRequest(
     requestId,
     labels = null,
 ) {
-    const res = systemUserRequestClient.GetSystemUserRequest(
-        requestId,
-        labels,
+    const res = withRetries(
+        () => systemUserRequestClient.GetSystemUserRequest(
+            requestId,
+            labels,
+        ),
+        "GetSystemUserRequest",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let systemUserRequest = null;
 
     const succeed = check(res, {

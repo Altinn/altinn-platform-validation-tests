@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { SimplifiedConnection } from "../../../../clients/access-management-bff/common/common.types.js";
+import { GetSimplifiedConnectionsQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the connections of a party in a simplified form.
@@ -17,7 +20,10 @@ export function GetSimplifiedConnections(
     queryParams = null,
     labels = null,
 ) {
-    const res = connectionClient.GetSimplifiedConnections(queryParams, labels);
+    const res = withRetries(
+        () => connectionClient.GetSimplifiedConnections(queryParams, labels),
+        "GetSimplifiedConnections",
+    );
 
     /** @type {Array<SimplifiedConnection>|null} */
     let connections = null;

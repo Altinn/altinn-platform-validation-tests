@@ -1,6 +1,8 @@
 
 import http from "k6/http";
 
+import { StatusFeedQuery } from "../types.js";
+
 const TAGS = {
     StatusGetShipment: {
         action: "status-get-shipment",
@@ -42,7 +44,7 @@ class StatusClient {
      * @param {string} id Notification order identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     StatusGetShipment(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -78,7 +80,7 @@ class StatusClient {
      * @param {StatusFeedQuery|null} queryParams Optional feed query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     StatusGetFeed(queryParams = null, labels = null) {
         const token = this.tokenGenerator.getToken();

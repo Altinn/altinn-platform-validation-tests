@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { AssignmentPackageDto, ServiceOwnerAccessPackageDelegation } from "../../../../../clients/access-management/service-owner/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/service-owner/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Creates a service owner access package delegation.
@@ -15,9 +17,12 @@ export function ConnectionsCreateAccessPackage(
     request,
     labels = null,
 ) {
-    const res = connectionsClient.ConnectionsCreateAccessPackage(
-        request,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.ConnectionsCreateAccessPackage(
+            request,
+            labels,
+        ),
+        "ConnectionsCreateAccessPackage",
     );
 
     /** @type {AssignmentPackageDto|null} */

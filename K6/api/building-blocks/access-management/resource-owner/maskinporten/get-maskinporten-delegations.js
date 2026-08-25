@@ -1,6 +1,9 @@
 import { check } from "k6";
 
+import { MaskinportenDelegation } from "../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 import { MaskinportenClient } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { MaskinportenDelegationsQuery } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves Maskinporten delegations.
@@ -16,9 +19,12 @@ export function GetMaskinportenDelegations(
     queryParams = null,
     labels = null,
 ) {
-    const res = maskinportenClient.GetMaskinportenDelegations(
-        queryParams,
-        labels,
+    const res = withRetries(
+        () => maskinportenClient.GetMaskinportenDelegations(
+            queryParams,
+            labels,
+        ),
+        "GetMaskinportenDelegations",
     );
 
     /** @type {Array<MaskinportenDelegation>} */

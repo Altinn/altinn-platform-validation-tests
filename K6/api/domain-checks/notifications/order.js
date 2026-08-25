@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { NotificationOrderChainResponseExt } from "../../../clients/notifications/types.js";
+
 /**
  * Verifies that the order response carries a shipment ID.
  *

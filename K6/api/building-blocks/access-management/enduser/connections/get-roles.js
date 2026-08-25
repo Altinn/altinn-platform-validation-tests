@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetRolesQuery, RolePermissionDtoPaginatedResult } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets role permissions.
@@ -23,10 +25,13 @@ export function GetRoles(
     },
     labels = null,
 ) {
-    const res = connectionsClient.GetRoles(
-        queryParams,
-        headers,
-        labels,
+    const res = withRetries(
+        () => connectionsClient.GetRoles(
+            queryParams,
+            headers,
+            labels,
+        ),
+        "GetRoles",
     );
 
     /** @type {RolePermissionDtoPaginatedResult|null} */
