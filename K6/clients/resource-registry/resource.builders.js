@@ -594,6 +594,19 @@ class ServiceResourceBuilder {
 }
 
 /**
+ * What a caller hands withRule. The subjects come from any of the three lists,
+ * and a rule needs at least one subject and one action.
+ *
+ * @typedef {object} XacmlRuleInput
+ * @property {Array<string>} [roles] Altinn role codes that get access.
+ * @property {Array<string>} [accessPackages] Access packages that get access.
+ * @property {Array<{attributeId: string, value: string}>} [subjects] Subjects
+ * expressed directly, for anything the two above do not cover.
+ * @property {Array<string>} [actions] Actions the subjects are permitted. Defaults to read.
+ * @property {string|null} [description] Rule description, or null for none.
+ */
+
+/**
  * One permit rule, as collected by withRule.
  *
  * @typedef {object} XacmlRule
@@ -644,13 +657,7 @@ class XacmlPolicyBuilder {
     /**
      * Adds a permit rule.
      *
-     * @param {object} rule The rule.
-     * @param {Array<string>} [rule.roles] Altinn role codes that get access.
-     * @param {Array<string>} [rule.accessPackages] Access packages that get access.
-     * @param {Array<{attributeId: string, value: string}>} [rule.subjects] Subjects
-     * expressed directly, for anything the two above do not cover.
-     * @param {Array<string>} [rule.actions] Actions the subjects are permitted.
-     * @param {string} [rule.description] Rule description.
+     * @param {XacmlRuleInput} rule The rule.
      * @returns {XacmlPolicyBuilder} This builder, for chaining.
      */
     withRule({

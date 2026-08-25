@@ -127,7 +127,16 @@ const RESOURCE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" : "9918
 export const RESOURCE_FLOW_VENDOR_ORG_NO = "312605031";
 
 /**
- * @type {any | undefined}
+ * The clients the resource flow acts with.
+ *
+ * @typedef {object} ResourceFlowClients
+ * @property {{resourceClient: ResourceClient}} resourceOwner The service owner that owns the resource.
+ * @property {{systemRegisterClient: SystemRegisterClient}} vendor The vendor that registers the system.
+ * @property {{systemRegisterClient: SystemRegisterClient}} enduser The consumer view of the system.
+ */
+
+/**
+ * @type {ResourceFlowClients | undefined}
  */
 let resourceFlowClients = undefined;
 
@@ -140,7 +149,7 @@ let resourceFlowClients = undefined;
  * on the vendor org, and reading the rights the way a consumer sees them wants
  * the portal enduser scope.
  *
- * @returns {any} Clients grouped by who they act as.
+ * @returns {ResourceFlowClients} Clients grouped by who they act as.
  */
 export function getResourceFlowClients() {
     if (resourceFlowClients === undefined) {

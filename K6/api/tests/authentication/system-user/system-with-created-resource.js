@@ -33,7 +33,7 @@ const SYSTEM_NAME_PREFIX = "K6-systemuser-resource-";
  * @typedef {object} ArrangedResourceSystem
  * @property {string} resourceIdentifier Identifier of the resource that was created.
  * @property {string} systemId Identifier of the system that was registered.
- * @property {Array<object>} rights The rights the system was registered with.
+ * @property {import("../../../../clients/authentication/types.js").Right[]} rights The rights the system was registered with.
  */
 
 /**
