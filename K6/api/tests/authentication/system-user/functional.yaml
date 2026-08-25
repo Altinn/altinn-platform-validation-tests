@@ -5,3 +5,10 @@ test_definitions:
     contexts:
       - environment: tt02
       - environment: at22
+
+  - test_file: get-system-user-by-query.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01

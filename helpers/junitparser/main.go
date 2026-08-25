@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -13,12 +14,12 @@ import (
 
 type TestSuites struct {
 	XMLName  xml.Name `xml:"testsuites"`
-	ID       string   `xml:"id,attr"`   // Doesn't look like this is set
-	Name     string   `xml:"name,attr"` // Doesn't look like this is set
+	ID       string   `xml:"id,attr"`
+	Name     string   `xml:"name,attr"`
 	Tests    int      `xml:"tests,attr"`
-	Failures int      `xml:"failures,attr"` // Test ran, assertion failed
+	Failures int      `xml:"failures,attr"`
 	Skipped  int      `xml:"skipped,attr"`
-	Errors   int      `xml:"errors,attr"` // Test did not complete due to unexpected issue
+	Errors   int      `xml:"errors,attr"`
 	Time     float64  `xml:"time,attr"`
 
 	TestSuites []TestSuite `xml:"testsuite"`
@@ -43,11 +44,10 @@ type TestCase struct {
 	ClassName string  `xml:"classname,attr"`
 	Time      float64 `xml:"time,attr"`
 
-	SystemOut string `xml:"system-out"` // Not worth parsing
-
-	Failure *Failure `xml:"failure"`
-	Error   *Error   `xml:"error"`
-	Skipped *Skipped `xml:"skipped"`
+	SystemOut string   `xml:"system-out"`
+	Failure   *Failure `xml:"failure"`
+	Error     *Error   `xml:"error"`
+	Skipped   *Skipped `xml:"skipped"`
 }
 
 type Failure struct {
@@ -59,7 +59,7 @@ type Failure struct {
 type Error struct {
 	Message string `xml:"message,attr"`
 	Type    string `xml:"type,attr"`
-	Text    string `xml:",chardata"` // Not worth parsing
+	Text    string `xml:",chardata"`
 }
 
 type Skipped struct {
@@ -67,51 +67,92 @@ type Skipped struct {
 }
 
 var (
+	// -------------------------------------------------------------------------
+	// Suite-level metrics
+	// -------------------------------------------------------------------------
+
 	suiteDuration = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_suite_duration_seconds",
 			Help: "Duration of the test suite in seconds",
 		},
-		[]string{"suite"},
+		[]string{"suite", "deploy_env"},
 	)
+
 	suiteTotal = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_tests_total",
 			Help: "Total number of tests in the suite",
 		},
-		[]string{"suite"},
+		[]string{"suite", "deploy_env"},
 	)
+
+	suitePassed = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "playwright_tests_passed",
+			Help: "Total number of passed tests in the suite",
+		},
+		[]string{"suite", "deploy_env"},
+	)
+
 	suiteFailed = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_tests_failed_total",
 			Help: "Total number of failed tests in the suite (failures + errors)",
 		},
-		[]string{"suite"},
+		[]string{"suite", "deploy_env"},
 	)
+
 	suiteSkipped = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_tests_skipped_total",
 			Help: "Total number of skipped tests in the suite",
 		},
-		[]string{"suite"},
+		[]string{"suite", "deploy_env"},
 	)
+
+	// -------------------------------------------------------------------------
+	// Individual test metrics
+	// -------------------------------------------------------------------------
+
 	testDuration = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_test_duration_seconds",
 			Help: "Duration of individual testcases in seconds",
 		},
-		[]string{"suite", "test", "status"},
+		[]string{"suite", "test", "status", "deploy_env"},
 	)
+
 	testStatus = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "playwright_test_status",
 			Help: "Status of individual testcases (0=passed,1=failed,2=skipped)",
 		},
-		[]string{"suite", "test"},
+		[]string{"suite", "test", "deploy_env"},
+	)
+
+	// -------------------------------------------------------------------------
+	// Test-run-level metrics
+	// -------------------------------------------------------------------------
+
+	testRunTimestamp = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "playwright_test_run_timestamp_seconds",
+			Help: "Unix timestamp of the latest Playwright test run",
+		},
+		[]string{"deploy_env"},
+	)
+
+	testRunStatus = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "playwright_test_run_status",
+			Help: "Status of the latest Playwright test run (0=passed,1=failed)",
+		},
+		[]string{"deploy_env"},
 	)
 )
 
-func parseJUnit(file string) bool {
+func parseJUnit(file string, deployEnv string) bool {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		log.Fatal(err)
@@ -122,17 +163,56 @@ func parseJUnit(file string) bool {
 	if err := xml.Unmarshal(data, &testSuites); err != nil {
 		log.Fatal(err)
 	}
+
 	hasFailedTests := false
+
 	for _, suite := range testSuites.TestSuites {
 		fmt.Println(suite.Name)
-		suiteDuration.WithLabelValues(suite.Name).Set(suite.Time)
-		suiteTotal.WithLabelValues(suite.Name).Set(float64(suite.Tests))
-		suiteFailed.WithLabelValues(suite.Name).Set(float64(suite.Failures + suite.Errors))
-		suiteSkipped.WithLabelValues(suite.Name).Set(float64(suite.Skipped))
+
+		// failures + errors are considered failed tests.
+		failed := suite.Failures + suite.Errors
+
+		// A passed test is one that wasn't failed or skipped.
+		passed := suite.Tests - failed - suite.Skipped
+
+		// Protect against malformed JUnit data.
+		if passed < 0 {
+			passed = 0
+		}
+
+		suiteDuration.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(suite.Time)
+
+		suiteTotal.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(suite.Tests))
+
+		suitePassed.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(passed))
+
+		suiteFailed.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(failed))
+
+		suiteSkipped.WithLabelValues(
+			suite.Name,
+			deployEnv,
+		).Set(float64(suite.Skipped))
+
+		if failed > 0 {
+			hasFailedTests = true
+		}
 
 		for _, tc := range suite.TestCases {
 			status := "passed"
 			statusValue := 0.0
+
 			if tc.Failure != nil || tc.Error != nil {
 				hasFailedTests = true
 				status = "failed"
@@ -142,29 +222,93 @@ func parseJUnit(file string) bool {
 				statusValue = 2
 			}
 
-			testDuration.WithLabelValues(suite.Name, tc.Name, status).Set(tc.Time)
-			testStatus.WithLabelValues(suite.Name, tc.Name).Set(statusValue)
+			testDuration.WithLabelValues(
+				suite.Name,
+				tc.Name,
+				status,
+				deployEnv,
+			).Set(tc.Time)
+
+			testStatus.WithLabelValues(
+				suite.Name,
+				tc.Name,
+				deployEnv,
+			).Set(statusValue)
 		}
 	}
+
 	return hasFailedTests
 }
 
 func main() {
-	xmlFile := flag.String("xml", "test-results.xml", "Path to JUnit XML file")
-	promPushGatewayEndpoint := flag.String("prometheus-pushgateway-endpoint", "http://prometheus-pushgateway.monitoring:9091", "The Prometheus Push Gateway Endpoint")
+	xmlFile := flag.String(
+		"xml",
+		"test-results.xml",
+		"Path to JUnit XML file",
+	)
+
+	promPushGatewayEndpoint := flag.String(
+		"prometheus-pushgateway-endpoint",
+		"http://prometheus-pushgateway.monitoring:9091",
+		"The Prometheus Push Gateway Endpoint",
+	)
+
 	flag.Parse()
 
-	reg := prometheus.NewRegistry()
-	reg.MustRegister(suiteDuration, suiteTotal, suiteFailed, suiteSkipped, testDuration, testStatus)
+	deployEnv := os.Getenv("DEPLOY_ENV")
+	if deployEnv == "" {
+		log.Fatal("DEPLOY_ENV environment variable is not set")
+	}
 
-	hasFailedTests := parseJUnit(*xmlFile)
+	reg := prometheus.NewRegistry()
+
+	reg.MustRegister(
+		// Suite metrics
+		suiteDuration,
+		suiteTotal,
+		suitePassed,
+		suiteFailed,
+		suiteSkipped,
+
+		// Test metrics
+		testDuration,
+		testStatus,
+
+		// Run metrics
+		testRunTimestamp,
+		testRunStatus,
+	)
+
+	hasFailedTests := parseJUnit(*xmlFile, deployEnv)
+
 	/*
 		http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 		log.Println("Serving metrics on :8080/metrics")
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	*/
 
-	if err := push.New(*promPushGatewayEndpoint, "playwright_tests").
+	// Record when this test run completed.
+	testRunTimestamp.
+		WithLabelValues(deployEnv).
+		Set(float64(time.Now().Unix()))
+
+	// 0 = passed, 1 = failed.
+	runStatus := 0.0
+	if hasFailedTests {
+		runStatus = 1.0
+	}
+
+	testRunStatus.
+		WithLabelValues(deployEnv).
+		Set(runStatus)
+
+	// TODO: Remove deploy_env from metric labels and use the Pushgateway
+	// grouping key as the canonical environment label.
+	// This will require updating the Prometheus scrape configuration
+	// (honor_labels)
+	if err := push.
+		New(*promPushGatewayEndpoint, "playwright_tests").
+		Grouping("environment", deployEnv).
 		Gatherer(reg).
 		Push(); err != nil {
 		log.Fatalf("Could not push metrics: %v", err)
@@ -175,5 +319,4 @@ func main() {
 	if hasFailedTests {
 		os.Exit(53)
 	}
-
 }

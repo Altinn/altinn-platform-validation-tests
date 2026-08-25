@@ -1,14 +1,14 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/authentication/index.js";
+import { SystemUser, SystemUserVendorQuery } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves a SystemUser by vendor query.
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
- * @param {object} query Query parameters, with the keys "system-id" and "external-ref".
- * @param {string} [query.orgno] Reportee organisation number.
+ * @param {SystemUserVendorQuery|null} query Query parameters, with the keys "system-id" and "external-ref".
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
  * @returns {SystemUser|null} System user.
  */

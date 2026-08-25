@@ -5,6 +5,7 @@ import { IdportenInnlogging } from "../pages/felles/idporten-innlogging";
 import { Meny } from "../pages/felles/meny";
 import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { Side } from "../pages/side";
+import { gjeldendeMiljo } from "../miljo";
 
 /**
  * Innlogging går på tvers av alle flatene, og ligger derfor her framfor i et av
@@ -38,6 +39,19 @@ export class Innlogging {
             await this.meny.clickLoginButton();
         }
         await this.idporten.login(user);
+    }
+
+    /**
+     * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
+     * går det gjennom ID-porten-skjermbildene.
+     */
+    async viaInnloggingsflyten(landing: Side, user: TestUser) {
+        if (gjeldendeMiljo() === 'prod') {
+            await this.syntetisk.login(landing.url, user);
+            return;
+        }
+
+        await this.viaIdporten(user);
     }
 
     async assertOnIdportenLogin() {

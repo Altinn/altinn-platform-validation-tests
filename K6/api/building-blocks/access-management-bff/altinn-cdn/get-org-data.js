@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AltinnCdnClient} altinnCdnClient Client for the Altinn CDN
  * endpoints.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} Organisation data keyed by org code, each value an
+ * @returns {any} Organisation data keyed by org code, each value an
  * {@link OrgData}.
  */
 export function GetOrgData(altinnCdnClient, labels = null) {
@@ -18,7 +18,7 @@ export function GetOrgData(altinnCdnClient, labels = null) {
         "GetOrgData",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let orgData = null;
 
     const succeed = check(res, {

@@ -43,7 +43,7 @@ class SystemRegisterClient {
      * Gets the systems in the system register.
      *
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRegisteredSystems(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,7 +77,7 @@ class SystemRegisterClient {
      *
      * @param {string} systemId System identifier.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRegisteredSystemRights(systemId, labels = null) {
         const token = this.tokenGenerator.getToken();

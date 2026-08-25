@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { GetDelegationExportQuery } from "./delegation-export.types.js";
+
 const TAGS = {
     GetDelegationExport: {
         action: "get-delegation-export",
@@ -42,7 +44,7 @@ class DelegationExportClient {
      * @param {GetDelegationExportQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetDelegationExportQueryBuilder}.
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDelegationExport(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -56,9 +58,9 @@ class DelegationExportClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

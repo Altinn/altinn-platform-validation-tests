@@ -79,6 +79,11 @@ export const AltinnScopes = {
         WRITE: "altinn:brokerservice.write"
     },
 
+    CLIENTDELEGATIONS: {
+        READ: "altinn:clientdelegations.read",
+        WRITE: "altinn:clientdelegations.write"
+    },
+
     CONSENTREQUESTS: {
         READ: "altinn:consentrequests.read",
         WRITE: "altinn:consentrequests.write"

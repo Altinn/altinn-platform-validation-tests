@@ -1,13 +1,16 @@
 import { fail, group } from "k6";
 
 import { XacmlPolicyBuilder } from "../../../../clients/resource-registry/index.js";
-import { SystemRegisterBuildingBlocks, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
+import { uuidv4 } from "../../../../common-imports.js";
+import { requireEnv } from "../../../../helpers.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
 import {
     ResourceCreatePolicy,
     ResourceCreateResource,
     ResourceDeleteResource,
 } from "../../../building-blocks/resource-registry/resource/index.js";
-import { createResourcePayload, createSystemRegistration, getClients, resourceRight } from "./commons.js";
+import { resource as resourceRight } from "../change-request-system-user/commons.js";
+import { createResourcePayload, getResourceFlowClients, RESOURCE_FLOW_VENDOR_ORG_NO } from "./commons.js";
 
 /**
  * The action the system asks for on the resource. It has to be one the resource
@@ -22,105 +25,165 @@ const ROLES = ["DAGL"];
 
 const MINIMUM_AUTHENTICATION_LEVEL = 3;
 
-const createResourceLabel = { step: "1. Create the resource" };
-const createPolicyLabel = { step: "2. Publish the policy" };
-const deleteResourceLabel = { step: "6. Delete the resource" };
+const SYSTEM_NAME_PREFIX = "K6-systemuser-resource-";
 
-export { setup } from "./commons.js";
+/**
+ * Arranges what the test reads: a resource created on the fly, a policy on it,
+ * and a system registered with a right on that resource.
+ *
+ * The arrange sits in setup rather than in the test body so the teardown can
+ * remove it. A failure in the body aborts the iteration, and inline cleanup would
+ * not run; teardown does. When the arrange itself gives up, k6 skips the teardown,
+ * so each step here removes what the previous ones made before failing.
+ *
+ * @returns {object} The identifiers the test and the teardown work on.
+ */
+export function setup() {
+    requireEnv([
+        "BASE_URL",
+        "ENVIRONMENT",
+        "TOKEN_GENERATOR_USERNAME",
+        "TOKEN_GENERATOR_PASSWORD",
+    ]);
+
+    const clients = getResourceFlowClients();
+    const resource = createResourcePayload("k6-systemuser-resource-");
+
+    const rights = [
+        {
+            ...resourceRight(resource.identifier),
+            action: ACTION,
+        },
+    ];
+
+    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
+    const systemId = `${RESOURCE_FLOW_VENDOR_ORG_NO}_${systemName}`;
+
+    group("Arrange - create the resource and register a system with a right on it", function () {
+        if (!ResourceCreateResource(
+            clients.resourceOwner.resourceClient,
+            resource,
+            { step: "1. Create the resource" },
+        )) {
+            fail("cannot continue: the resource was not created");
+        }
+
+        const policyFile = new XacmlPolicyBuilder(resource.identifier)
+            .withRule({
+                roles: ROLES,
+                actions: [ACTION],
+                description: "Roles that get access to the K6 system user resource",
+            })
+            .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
+            .buildFile();
+
+        if (!ResourceCreatePolicy(
+            clients.resourceOwner.resourceClient,
+            resource.identifier,
+            policyFile,
+            { step: "2. Publish the policy" },
+        )) {
+            ResourceDeleteResource(
+                clients.resourceOwner.resourceClient,
+                resource.identifier,
+                { step: "Cleanup - delete the resource" },
+            );
+
+            fail("cannot continue: the policy was not published, so the resource has no rights to ask for");
+        }
+
+        const registerSystemRequest = new RegisterSystemRequestBuilder()
+            .withId(systemId)
+            .withVendor(`0192:${RESOURCE_FLOW_VENDOR_ORG_NO}`)
+            .withName({
+                en: systemName,
+                nb: systemName,
+                nn: systemName,
+            })
+            .withDescription({
+                en: "Created by a K6 test to check that a resource created on the fly can be used as a right on a system.",
+                nb: "Opprettet av en K6-test for å sjekke at en ressurs opprettet underveis kan brukes som rettighet på et system.",
+                nn: "Oppretta av ein K6-test for å sjekke at ein ressurs oppretta undervegs kan brukast som rett på eit system.",
+            })
+            .withRights(rights)
+            .withClientId([uuidv4()])
+            .withVisibility(false)
+            .withAllowedRedirectUrls(["https://altinn.no"])
+            .build();
+
+        const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(
+            clients.vendor.systemRegisterClient,
+            registerSystemRequest,
+        );
+
+        if (createdSystemId === null) {
+            ResourceDeleteResource(
+                clients.resourceOwner.resourceClient,
+                resource.identifier,
+                { step: "Cleanup - delete the resource" },
+            );
+
+            fail("cannot continue: registering the system did not return a system id");
+        }
+    });
+
+    return {
+        resourceIdentifier: resource.identifier,
+        systemId,
+        rights,
+    };
+}
 
 /**
  * Test: a resource created on the fly is usable as a right on a system.
  *
- * Nothing here leans on a resource somebody provisioned by hand. The test
- * creates a delegable generic resource, gives it a policy, registers a system
- * that asks for a right on it, and reads the right back the way a consumer sees
- * it. Both the system and the resource are removed again, so a passing run
- * leaves nothing behind.
+ * Nothing here leans on a resource somebody provisioned by hand. The setup
+ * creates a delegable generic resource, gives it a policy and registers a system
+ * that asks for a right on it, and this reads the right back the way a consumer
+ * sees it.
  *
- * The system register rejects a right on a resource that does not exist, so a
- * green run says the resource was accepted rather than merely ignored.
+ * The system register rejects a right on a resource that does not exist, so the
+ * arrange getting this far already says the resource was accepted rather than
+ * merely ignored.
+ *
+ * @param {ReturnType<typeof setup>} data What the setup arranged.
  */
-export default function () {
-    const clients = getClients();
+export default function (data) {
+    const clients = getResourceFlowClients();
 
-    const resource = createResourcePayload("k6-systemuser-resource-");
+    group("The right on the system points at the resource created on the fly", function () {
+        const registeredRights = SystemRegisterBuildingBlocks.GetRightsFrontend(
+            clients.enduser.systemRegisterClient,
+            data.systemId,
+        );
 
-    const rights = [
-        resourceRight(resource.identifier, ACTION),
-    ];
-
-    const { systemId, registerSystemRequest } = createSystemRegistration({
-        systemNamePrefix: "K6-systemuser-resource-",
-        registeredRights: rights,
+        SystemRegisterDomainChecks.CheckRights(registeredRights, data.rights);
     });
+}
 
-    group("A system can be registered with a right on a resource created on the fly", function () {
-        group("1. Create the resource", function () {
-            if (!ResourceCreateResource(
-                clients.resourceOwner.resourceClient,
-                resource,
-                createResourceLabel,
-            )) {
-                fail("cannot continue: the resource was not created");
-            }
-        });
+/**
+ * k6 teardown stage. Removes the system and the resource the setup arranged.
+ *
+ * The system goes first, since it is the one holding the right on the resource.
+ *
+ * @param {ReturnType<typeof setup>} data What the setup arranged.
+ */
+export function teardown(data) {
+    const clients = getResourceFlowClients();
 
-        group("2. Publish the policy for the resource", function () {
-            const policyFile = new XacmlPolicyBuilder(resource.identifier)
-                .withRule({
-                    roles: ROLES,
-                    actions: [ACTION],
-                    description: "Roles that get access to the K6 system user resource",
-                })
-                .withMinimumAuthenticationLevel(MINIMUM_AUTHENTICATION_LEVEL)
-                .buildFile();
+    group("Cleanup - delete the system and the resource", function () {
+        const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(
+            clients.vendor.systemRegisterClient,
+            data.systemId,
+        );
 
-            if (!ResourceCreatePolicy(
-                clients.resourceOwner.resourceClient,
-                resource.identifier,
-                policyFile,
-                createPolicyLabel,
-            )) {
-                fail("cannot continue: the policy was not published, so the resource has no rights to ask for");
-            }
-        });
+        SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
 
-        group("3. Register a system with a right on the resource", function () {
-            const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(
-                clients.vendor.systemRegisterClient,
-                registerSystemRequest,
-            );
-
-            if (createdSystemId === null) {
-                fail("cannot continue: registering the system did not return a system id");
-            }
-        });
-
-        group("4. The right on the system points at the resource", function () {
-            const registeredRights = SystemRegisterBuildingBlocks.GetRightsFrontend(
-                clients.enduser.systemRegisterClient,
-                systemId,
-            );
-
-            SystemRegisterDomainChecks.CheckRights(registeredRights, rights);
-        });
-
-        group("5. Delete the system", function () {
-            const deleteResult = SystemRegisterBuildingBlocks.VendorDelete(
-                clients.vendor.systemRegisterClient,
-                systemId,
-            );
-
-            SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
-        });
-
-        group("6. Delete the resource", function () {
-            ResourceDeleteResource(
-                clients.resourceOwner.resourceClient,
-                resource.identifier,
-                deleteResourceLabel,
-            );
-        });
+        ResourceDeleteResource(
+            clients.resourceOwner.resourceClient,
+            data.resourceIdentifier,
+            { step: "Delete the resource" },
+        );
     });
 }
 

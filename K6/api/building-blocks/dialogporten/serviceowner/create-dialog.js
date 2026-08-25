@@ -69,7 +69,7 @@ export function CreateDialog(
  * Create a transmission for a dialog
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
+ * @param {string} dialogId - the id of the dialog to create the transmission for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
@@ -122,7 +122,7 @@ export function CreateTransmission(
  * Create an activity for a dialog
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {uuidv7} dialogId - the id of the dialog to create the activity for
+ * @param {string} dialogId - the id of the dialog to create the activity for
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */

@@ -71,3 +71,11 @@
  * @typedef {object} GetAgentSystemUserSelfDelegationQuery
  * @property {string} [partyUuid] Party UUID of the organisation.
  */
+
+export const CreateAgentSystemUserDelegationQuery = undefined;
+export const CreateAgentSystemUserSelfDelegationQuery = undefined;
+export const DeleteAgentSystemUserDelegationQuery = undefined;
+export const DeleteAgentSystemUserSelfDelegationQuery = undefined;
+export const GetAgentSystemUserCustomersQuery = undefined;
+export const GetAgentSystemUserDelegationsQuery = undefined;
+export const GetAgentSystemUserSelfDelegationQuery = undefined;

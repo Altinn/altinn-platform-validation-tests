@@ -1,11 +1,13 @@
+import { AuthorizedPartiesRequest } from "./authorized-parties.types.js";
+
 /**
  * Builder for creating authorized parties lookup requests.
  */
 class AuthorizedPartiesRequestBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {AuthorizedPartiesRequest} */ ({
             partyFilter: null,
-        };
+        });
     }
 
     /**

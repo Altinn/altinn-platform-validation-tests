@@ -40,7 +40,7 @@ class AltinnCdnClient {
      * Gets the organisation data the Altinn CDN publishes, keyed by org code.
      *
      * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetOrgData(labels = null) {
         const token = this.tokenGenerator.getToken();

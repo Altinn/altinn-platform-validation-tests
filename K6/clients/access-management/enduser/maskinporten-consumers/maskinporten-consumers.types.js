@@ -141,3 +141,6 @@
  * @property {Array<ConnectionInstanceDto>|null} instances
  * @property {Array<ConnectionDto>|null} connections
  */
+
+export const MaskinportenConsumerResourcesQuery = undefined;
+export const MaskinportenConsumersQuery = undefined;

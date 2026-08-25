@@ -1,3 +1,5 @@
+import { SystemUserUpdateDto } from "./types.js";
+
 export class SystemUserUpdateDtoBuilder {
     constructor() {
         /** @type {SystemUserUpdateDto} */

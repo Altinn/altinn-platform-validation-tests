@@ -23,7 +23,7 @@ export const afUrl = (() => {
  * Function to get a cookie object for the given PID.
  *
  * @param user TODO: description
- * @returns {object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
+ * @returns {{name: string, value: string, domain: string, path: string, httpOnly: boolean, secure: boolean, sameSite: string, url: string}} - The cookie for the arbeidsflate session.
  * *
  */
 export function getCookie(user) {
@@ -76,7 +76,7 @@ function getToken(pid, userId, partyId, partyUuid) {
 /**
  * Function to initialize a session with the given token.
  *
- * @param {F} token - The personal token to initialize the session.
+ * @param {string} token - The personal token to initialize the session.
  * @returns sessionId
  */
 function getSessionId(token) {
@@ -96,14 +96,14 @@ function getSessionId(token) {
         console.error(resp.status_text);
         return null; // Handle error appropriately
     }
-    const sessionId = resp.json().cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
+    const sessionId = /** @type {{cookie: string}} */ (resp.json()).cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
     return sessionId;
 }
 
 /**
  * Async function to wait for the page to load.
  *
- * @param {object} page - The page object to interact with.
+ * @param {any} page - The page object to interact with.
  * @param {number} empties - Number of empty checks to perform (default is 1).
  * @returns {Promise<void>} - A promise that resolves when the page is loaded.
  */

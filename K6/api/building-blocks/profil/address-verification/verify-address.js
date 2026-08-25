@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { AddressVerificationRequest } from "../../../../clients/profil/address-verification/address-verification.types.js";
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
 import { withRetries } from "../../common/retry.js";
 

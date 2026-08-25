@@ -25,7 +25,7 @@ export default function (data) {
     tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
     const variables = new DialogSearchVariablesBuilder()
         .withParties([endUser.ssn])
-        .withOrg([serviceOwner])
+        .withOrgs([serviceOwner])
         .build();
     GetAllDialogsForParty(
         graphqlClient,

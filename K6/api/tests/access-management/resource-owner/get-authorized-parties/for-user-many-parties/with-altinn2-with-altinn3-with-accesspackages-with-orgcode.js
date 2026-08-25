@@ -96,7 +96,6 @@ export default function () {
         authorizedPartiesClient,
         request,
         queryParams,
-        null,
         { unique_id: userParty.label },
     );
 }

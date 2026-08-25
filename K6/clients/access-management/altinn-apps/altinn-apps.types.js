@@ -157,39 +157,27 @@
  * @property {string=} instance
  */
 
-export const PartyUuidUrn = undefined;
-export const OrganizationIdentifierUrn = undefined;
-export const PartyUrnUrnJsonTypeValue = undefined;
-
 export const ActionIdUrn = undefined;
 export const ActionUrnUrnJsonTypeValue = undefined;
-
-export const UrnJsonTypeValue = undefined;
-
-export const RightDto = undefined;
-
 export const AppsInstanceDelegationRequestDto = undefined;
-
-export const DelegationStatusExternal = undefined;
-export const DelegableStatusExternal = undefined;
-export const RevokeStatusExternal = undefined;
-export const DetailCodeExternal = undefined;
-
-export const AttributeMatchExternal = undefined;
-export const DetailExternal = undefined;
-
-export const RightDelegationResultDto = undefined;
-export const RightRevokeResultDto = undefined;
-
-export const ResourceRightDelegationCheckResultDto = undefined;
-
 export const AppsInstanceDelegationResponseDto = undefined;
-export const AppsInstanceRevokeResponseDto = undefined;
-
-export const PaginatedLinks = undefined;
-
 export const AppsInstanceDelegationResponseDtoPaginated = undefined;
+export const AppsInstanceRevokeResponseDto = undefined;
 export const AppsInstanceRevokeResponseDtoPaginated = undefined;
-export const ResourceRightDelegationCheckResultDtoPaginated = undefined;
-
+export const AttributeMatchExternal = undefined;
+export const DelegableStatusExternal = undefined;
+export const DelegationStatusExternal = undefined;
+export const DetailCodeExternal = undefined;
+export const DetailExternal = undefined;
+export const OrganizationIdentifierUrn = undefined;
+export const PaginatedLinks = undefined;
+export const PartyUrnUrnJsonTypeValue = undefined;
+export const PartyUuidUrn = undefined;
 export const ProblemDetails = undefined;
+export const ResourceRightDelegationCheckResultDto = undefined;
+export const ResourceRightDelegationCheckResultDtoPaginated = undefined;
+export const RevokeStatusExternal = undefined;
+export const RightDelegationResultDto = undefined;
+export const RightDto = undefined;
+export const RightRevokeResultDto = undefined;
+export const UrnJsonTypeValue = undefined;

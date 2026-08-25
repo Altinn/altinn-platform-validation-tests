@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { PackagesSearchQuery } from "./packages.types.js";
+
 const TAGS = {
     PackagesSearch: {
         action: "packages-search",
@@ -62,10 +64,10 @@ class PackagesClient {
     /**
      * Searches access packages.
      *
-     * @param {PackagesSearchQueryBuilder | object} query Query parameters.
+     * @param {PackagesSearchQuery} query Query parameters.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -129,7 +131,7 @@ class PackagesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesExport(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -163,7 +165,7 @@ class PackagesClient {
      *
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetGroup(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -198,7 +200,7 @@ class PackagesClient {
      * @param {string} id Group identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetGroupById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -233,7 +235,7 @@ class PackagesClient {
      * @param {string} id Group identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetGroupAreasById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -268,7 +270,7 @@ class PackagesClient {
      * @param {string} id Area identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetAreaById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -303,7 +305,7 @@ class PackagesClient {
      * @param {string} id Area identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetAreaPackagesById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -338,7 +340,7 @@ class PackagesClient {
      * @param {string} id Package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetPackageById(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -373,7 +375,7 @@ class PackagesClient {
      * @param {string} urnValue Package URN.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetPackageByUrn(urnValue, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -408,7 +410,7 @@ class PackagesClient {
      * @param {string} id Package identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetPackageResourcesById(id, labels = null) {
         const token = this.tokenGenerator.getToken();

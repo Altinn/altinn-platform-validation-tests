@@ -1,4 +1,4 @@
-import { RegisterSystemRequestBuilder, SystemRegisterClient, SystemUserClient } from "../../../../clients/authentication/index.js";
+import { Right } from "../../../../clients/authentication/types.js";
 import {
     ResourceClient,
     ResourcePartyType,
@@ -6,68 +6,144 @@ import {
     ServiceResourceBuilder,
 } from "../../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { SystemRegisterClient, SystemUserClient } from "../../../authentication-imports.js";
+import { arrangeApprovedSystemUser, pickVendor, resource } from "../change-request-system-user/commons.js";
 
 /**
- * The service owner that owns the resources these tests create. The registry
- * compares the owner organization number against the consumer claim in the
- * token, so the two have to be the same. yt01 runs on a different org.
+ * The rights the arranged system user is granted.
+ *
+ * Published in every environment these tests run in, so registering the system
+ * works everywhere.
+ *
+ * @type {Right[]}
+ */
+const GRANTED_RIGHTS = [resource("k6-instancedelegation-test")];
+
+/**
+ * The scopes a vendor reads system users with.
+ *
+ * The vendor lookups are the two this folder tests: byquery sits behind the system
+ * user request scope, and byExternalId behind the maskinporten lookup scope.
+ */
+const VENDOR_SCOPES = CreateScopeString([
+    AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
+    AltinnScopes.MASKINPORTEN.SYSTEMUSER.READ,
+]);
+
+/**
+ * @type {any | undefined}
+ */
+let clients = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let vendorTokenGenerator = undefined;
+
+/**
+ * Arranges the system user these tests read.
+ *
+ * Call from a test's setup. The flow that creates it is the subject of
+ * create-and-confirm-system-user-request.js, so it stays out of these tests and is
+ * reused from the change request tests, which arrange the same thing.
+ *
+ * @param {string} systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
+ * @returns {any[]} A single arranged system user, as a list so a test picks from it with getItemFromList like any other test data.
+ */
+export function arrangeSystemUser(systemNamePrefix) {
+    return arrangeApprovedSystemUser({
+        systemNamePrefix,
+        vendorOrgNo: pickVendor(),
+        grantedRights: GRANTED_RIGHTS,
+    });
+}
+
+/**
+ * Creates and caches the clients these tests use.
+ *
+ * Built once per VU and reused across its iterations. The token generators cache
+ * tokens per instance, so building them per iteration refetches every token from
+ * the token generator service again.
+ *
+ * The two lookups are the vendor's own, so there is one enterprise token and no
+ * personal one. It is not built for anyone in particular: which vendor a run acts
+ * as is decided by swapping the options with setTokenGeneratorOptions.
+ *
+ * @returns {[any, EnterpriseTokenGenerator]} The vendor's clients and the token generator behind them.
+ */
+export function getClients() {
+    if (clients === undefined) {
+        vendorTokenGenerator = new EnterpriseTokenGenerator(
+            new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(VENDOR_SCOPES)
+                .build(),
+        );
+
+        clients = {
+            vendor: {
+                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            },
+        };
+    }
+
+    return [clients, vendorTokenGenerator];
+}
+
+/**
+ * Token options for acting as the vendor that owns the system.
+ *
+ * The scopes have to be repeated here, since the options replace the ones the
+ * generator was built with rather than adding to them.
+ *
+ * @param {string} vendorOrgNo - Organisation number of the vendor this iteration acts as.
+ * @returns Options to hand to setTokenGeneratorOptions.
+ */
+export function getVendorTokenOpts(vendorOrgNo) {
+    return new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(VENDOR_SCOPES)
+        .withOrganizationNumber(vendorOrgNo)
+        .build();
+}
+
+export { cleanupArranged } from "../change-request-system-user/commons.js";
+
+/**
+ * The service owner that owns the resource the resource flow creates. The registry
+ * compares the owner organization number against the consumer claim in the token,
+ * so the two have to be the same. yt01 runs on a different org.
  */
 const RESOURCE_OWNER_ORG = "ttd";
 const RESOURCE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" : "991825827";
 
 /**
- * The vendor these tests act as. Owns the systems they register.
+ * The vendor the resource flow registers its system as. Not read from vendors.csv
+ * like pickVendor does, since this flow needs no Maskinporten client of its own.
  */
-export const SYSTEM_OWNER = "312605031";
+export const RESOURCE_FLOW_VENDOR_ORG_NO = "312605031";
 
 /**
- * An existing system of the vendor above, with enough system users on it to page
- * through. Read only, so the tests that use it create nothing.
+ * @type {any | undefined}
  */
-export const PAGINATION_SYSTEM_ID = "312605031_Virksomhetsbruker";
+let resourceFlowClients = undefined;
 
 /**
- * Every system registered by these tests allows the same redirect url.
+ * Creates and caches the clients the resource flow uses.
+ *
+ * Separate from getClients above, which hands out the vendor lookups the read
+ * tests share. These three cannot share a token: the registry only lets the
+ * resource owner write, the vendor endpoints sit behind the system register scope
+ * on the vendor org, and reading the rights the way a consumer sees them wants
+ * the portal enduser scope.
+ *
+ * @returns {any} Clients grouped by who they act as.
  */
-const REDIRECT_URL = "https://altinn.no";
-
-/**
- * @type {object | undefined}
- */
-let clients = undefined;
-
-export function setup() {
-    requireEnv([
-        "BASE_URL",
-        "ENVIRONMENT",
-        "TOKEN_GENERATOR_USERNAME",
-        "TOKEN_GENERATOR_PASSWORD",
-    ]);
-
-    return;
-}
-
-/**
- * Creates and caches the clients this test folder uses.
- *
- * Built once per VU and reused across its iterations. The token generators cache
- * tokens per instance, so building them per iteration refetches every token from
- * the token generator service each time.
- *
- * Three different callers show up here, and they cannot share a token: the
- * registry only lets the resource owner write, the vendor endpoints sit behind
- * the system register scope on the vendor org, and reading the rights the way a
- * consumer sees them wants the portal enduser scope.
- *
- * The vendor token generator itself is handed out alongside its clients, since
- * following next links means signing requests the clients do not make.
- *
- * @returns {object} Clients grouped by who they act as.
- */
-export function getClients() {
-    if (clients === undefined) {
+export function getResourceFlowClients() {
+    if (resourceFlowClients === undefined) {
         const resourceOwnerTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
@@ -84,7 +160,7 @@ export function getClients() {
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
                 .withTtl(3600)
-                .withOrganizationNumber(SYSTEM_OWNER)
+                .withOrganizationNumber(RESOURCE_FLOW_VENDOR_ORG_NO)
                 .withScopes(CreateScopeString([
                     AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
                 ]))
@@ -100,14 +176,12 @@ export function getClients() {
                 .build(),
         );
 
-        clients = {
+        resourceFlowClients = {
             resourceOwner: {
                 resourceClient: new ResourceClient(__ENV.BASE_URL, resourceOwnerTokenGenerator),
             },
             vendor: {
                 systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                tokenGenerator: vendorTokenGenerator,
             },
             enduser: {
                 systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator),
@@ -115,34 +189,12 @@ export function getClients() {
         };
     }
 
-    return clients;
+    return resourceFlowClients;
 }
 
 /**
- * Builds a right on a resource, the shape a system is registered with.
- *
- * @param {string} resource - The resource identifier.
- * @param {string} action - The action asked for on the resource. It has to be one
- * the resource policy grants, since a right is a resource and action pair.
- * @returns {object} The right.
- */
-export function resourceRight(resource, action) {
-    return {
-        action,
-        resource: [
-            {
-                id: "urn:altinn:resource",
-                value: resource,
-            },
-        ],
-    };
-}
-
-/**
- * Builds a delegable generic resource for one iteration, owned by the service
- * owner the resource client authenticates as.
- *
- * Unique per iteration, so unlike the clients it cannot be shared.
+ * Builds a delegable generic resource, owned by the service owner the resource
+ * client authenticates as.
  *
  * @param {string} identifierPrefix - Prefix for the generated identifier, so
  * resources are traceable to the test that made them. Only a-z, 0-9, _ and -.
@@ -176,45 +228,4 @@ export function createResourcePayload(identifierPrefix) {
         .withVisible(false)
         .withKeyword("k6")
         .build();
-}
-
-/**
- * Builds the identifiers and registration payload for one iteration.
- *
- * @param {object} options - Test specific parts of the registration.
- * @param {string} options.systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @param {Array<object>} options.registeredRights - Every right the system is registered with.
- * @returns {object} Identifiers and the registration payload.
- */
-export function createSystemRegistration({ systemNamePrefix, registeredRights }) {
-    const systemName = `${systemNamePrefix}${uuidv4()}`;
-    const systemId = `${SYSTEM_OWNER}_${systemName}`;
-    const clientId = uuidv4();
-
-    const registerSystemRequest = new RegisterSystemRequestBuilder()
-        .withId(systemId)
-        .withVendor(`0192:${SYSTEM_OWNER}`)
-        .withName({
-            en: systemName,
-            nb: systemName,
-            nn: systemName,
-        })
-        .withDescription({
-            en: "This is auto generated by an integration test. Some data is randomized, but some is not - like this description",
-            nb: "Integrasjonstest. Noe er randomisert her, men mye blir likt.",
-            nn: "integrasjonstest på nynorsk. Noe er randomisert her, men mye blir likt.",
-        })
-        .withRights(registeredRights)
-        .withClientId([clientId])
-        .withVisibility(false)
-        .withAllowedRedirectUrls([REDIRECT_URL])
-        .build();
-
-    return {
-        systemOwner: SYSTEM_OWNER,
-        systemId,
-        systemName,
-        clientId,
-        registerSystemRequest,
-    };
 }

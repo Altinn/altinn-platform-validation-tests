@@ -1,9 +1,11 @@
+import { ChangeReporteeAndRedirectQuery, ChangeReporteeQuery } from "./reportee.types.js";
+
 /**
  * Builder for the query parameters of {@link ChangeReporteeAndRedirect}.
  */
 class ChangeReporteeAndRedirectQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ChangeReporteeAndRedirectQuery} */ ({});
     }
 
     /**
@@ -65,7 +67,7 @@ class ChangeReporteeAndRedirectQueryBuilder {
  */
 class ChangeReporteeQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ChangeReporteeQuery} */ ({});
     }
 
     /**

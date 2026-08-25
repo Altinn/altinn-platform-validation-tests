@@ -75,3 +75,10 @@
  * @property {string} [party] Party UUID of the party the request is made on
  * behalf of.
  */
+
+export const CreateAccessPackageDelegationQuery = undefined;
+export const DeleteAccessPackageDelegationQuery = undefined;
+export const GetAccessPackageDelegationCheckQuery = undefined;
+export const GetAccessPackageDelegationsQuery = undefined;
+export const GetAccessPackagePermissionQuery = undefined;
+export const SearchAccessPackagesQuery = undefined;

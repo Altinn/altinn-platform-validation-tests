@@ -32,7 +32,7 @@ class SystemUserClientDelegationClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/enduser/systemuser";
+        this.BASE_PATH = "/authentication/api/v1/enduser/systemuser";
 
         /**
          * Fully-qualified API path.
@@ -50,7 +50,7 @@ class SystemUserClientDelegationClient {
      * @param {string} [agent] System user id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAvailableClients(agent = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -92,7 +92,7 @@ class SystemUserClientDelegationClient {
      * @param {string} [agent] System user id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClients(agent = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -135,7 +135,7 @@ class SystemUserClientDelegationClient {
      * @param {string} client Client id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DelegateClient(agent, client, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -178,7 +178,7 @@ class SystemUserClientDelegationClient {
      * @param {string} client Client id.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RemoveClient(agent, client, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -220,7 +220,7 @@ class SystemUserClientDelegationClient {
      * @param {string} [party] Party identifier.
      * @param {{[key: string]: string}} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgents(party = null, labels = null) {
         const token = this.tokenGenerator.getToken();

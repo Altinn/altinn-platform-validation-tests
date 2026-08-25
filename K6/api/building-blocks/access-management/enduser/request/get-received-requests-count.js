@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { ReceivedRequestsQuery } from "../../../../../clients/access-management/enduser/request/request.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**

@@ -10,3 +10,5 @@
  * @typedef {object} DeleteAgentSystemUserQuery
  * @property {string} [partyUuid] Party UUID of the organisation.
  */
+
+export const DeleteAgentSystemUserQuery = undefined;

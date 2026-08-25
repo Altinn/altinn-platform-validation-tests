@@ -16,20 +16,30 @@
 
 /**
  * @typedef {object} PackageDtoSearchObject
- * @property {PackageDto} object
+ * @property {import("../roles/roles.types.js").PackageDto} object
  * @property {number} score
  * @property {Array<SearchField>|null} fields
+ */
+
+/**
+ * Query parameters for {@link PackagesSearchQueryBuilder}.
+ *
+ * @typedef {object} PackagesSearchQuery
+ * @property {string} [term] Search term.
+ * @property {Array<string>} [resourceProviderCode] Resource provider code filters.
+ * @property {boolean} [searchInResources] Whether to search in resources.
+ * @property {string} [typeName] Package type name filter.
+ * @property {boolean} [simpleSearch] Whether to use simple search.
+ * @property {boolean} [strict] Whether to use strict matching.
  */
 
 /**
  * Builder for creating query parameters for searching access packages.
  *
  * @typedef {object} PackagesSearchQueryBuilder
- * @property {object} query The underlying query parameter object.
- * @property {string} [query.term] Search term.
- * @property {Array<string>} [query.resourceProviderCode] Resource provider code filters.
- * @property {boolean} [query.searchInResources] Whether to search in resources.
- * @property {string} [query.typeName] Package type name filter.
- * @property {boolean} [query.simpleSearch] Whether to use simple search.
- * @property {boolean} [query.strict] Whether to use strict matching.
+ * @property {PackagesSearchQuery} query The underlying query parameter object.
  */
+
+export const PackageDtoSearchObject = undefined;
+export const PackagesSearchQuery = undefined;
+export const PackagesSearchQueryBuilder = undefined;

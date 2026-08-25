@@ -274,3 +274,21 @@
  * @property {string} party Party UUID.
  * @property {string} from Client party UUID.
  */
+
+export const AgentAccessPackagesQuery = undefined;
+export const AgentClientAccessPackagesQuery = undefined;
+export const AgentDtoPaginatedResult = undefined;
+export const AgentsQuery = undefined;
+export const ClientAccessPackagesQuery = undefined;
+export const ClientDtoPaginatedResult = undefined;
+export const ClientsQuery = undefined;
+export const CreateAgentQuery = undefined;
+export const DelegationBatchInputDto = undefined;
+export const DeleteAgentClientsQuery = undefined;
+export const DeleteAgentQuery = undefined;
+export const DeleteMyClientAccessPackagesQuery = undefined;
+export const DeleteMyClientProviderQuery = undefined;
+export const DeleteMyClientsQuery = undefined;
+export const MyClientDtoPaginatedResult = undefined;
+export const MyClientsQuery = undefined;
+export const PersonInput = undefined;

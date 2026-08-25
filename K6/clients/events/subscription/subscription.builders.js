@@ -1,3 +1,5 @@
+import { SubscriptionRequestModel } from "../types.js";
+
 /**
  * Builder for creating subscription request payloads.
  *

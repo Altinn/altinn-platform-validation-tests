@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { InstanceDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { GetInstanceDelegationsQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**

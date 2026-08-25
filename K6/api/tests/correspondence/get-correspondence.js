@@ -9,15 +9,7 @@ import {
 } from "../../building-blocks/correspondence/correspondence/index.js";
 import { GetDialog } from "../../building-blocks/dialogporten/enduser/index.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
-import {
-    getCorrespondenceOptions,
-    getCorrespondenceTestConfiguration,
-    getDialogportenClient,
-    getDialogTokenCorrespondenceClient,
-    getEndUser,
-    getRecipientClient,
-    setupCorrespondenceTestData,
-} from "./commons.js";
+import { CorrespondenceTestUser, getCorrespondenceOptions, getCorrespondenceTestConfiguration, getDialogportenClient, getDialogTokenCorrespondenceClient, getEndUser, getRecipientClient, setupCorrespondenceTestData } from "./commons.js";
 
 const listLabel = { step: "List correspondence ids" };
 const overviewLabel = { step: "Get correspondence overview for content" };
@@ -39,7 +31,7 @@ export function setup() {
  * Test: list a recipient's correspondences, resolve the Dialogporten dialog
  * token for each one, and fetch its message content.
  *
- * @param {Array<{ssn: string}>} endUsers Shared end-user test data.
+ * @param {CorrespondenceTestUser[]} endUsers Shared end-user test data.
  */
 export default function (endUsers) {
     const configuration = getCorrespondenceTestConfiguration();

@@ -16,3 +16,6 @@
  * @property {string|null} value
  * Phone number in international format.
  */
+
+export const PrivateNotificationSettingsUpdateRequest = undefined;
+export const PrivateNotificationSettingsUpdateResponse = undefined;

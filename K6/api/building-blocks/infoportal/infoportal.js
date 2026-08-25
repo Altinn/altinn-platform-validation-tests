@@ -55,7 +55,7 @@ export function GetCurrent(infoPortalApiClient, labels = null) {
 /**
  * Function to check common response properties
  *
- * @param {} res - response object
+ * @param {import("k6/http").RefinedResponse<"text">} res - response object
  * @param {*} method - method name for logging
  * @param status_code TODO: description
  * @param status_text TODO: description

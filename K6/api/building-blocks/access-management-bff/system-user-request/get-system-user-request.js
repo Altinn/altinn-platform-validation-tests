@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
  * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The request. The API does not publish a schema for
+ * @returns {any} The request. The API does not publish a schema for
  * this response.
  */
 export function GetSystemUserRequest(
@@ -26,7 +26,7 @@ export function GetSystemUserRequest(
         "GetSystemUserRequest",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let systemUserRequest = null;
 
     const succeed = check(res, {

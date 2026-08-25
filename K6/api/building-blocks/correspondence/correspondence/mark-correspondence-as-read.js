@@ -21,7 +21,7 @@ export function MarkCorrespondenceAsRead(
     labels = null,
 ) {
     const res = withRetries(
-        () => correspondenceClient.MarkCorrespondenceAsRead(
+        () => correspondenceClient.MarkAsRead(
             correspondenceId,
             labels,
         ),

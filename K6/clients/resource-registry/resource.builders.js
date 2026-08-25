@@ -1,29 +1,21 @@
 import http from "k6/http";
 
 import { SubjectAttribute } from "./resource.constants.js";
+import { ResourceSearchQuery, ResourceType, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
 
 /**
  * Builder for creating query parameters for searching resources.
- *
- * @typedef {object} ResourceSearchQueryBuilder
- * @property {object} query The underlying search query parameters.
- * @property {string|null} query.Id Resource identifier filter.
- * @property {string|null} query.Title Title filter.
- * @property {string|null} query.Description Description filter.
- * @property {ResourceType|null} query.ResourceType Resource type filter.
- * @property {string|null} query.Keyword Keyword filter.
- * @property {string|null} query.Reference Reference filter.
  */
 class ResourceSearchQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {ResourceSearchQuery} */ ({
             Id: null,
             Title: null,
             Description: null,
             ResourceType: null,
             Keyword: null,
             Reference: null,
-        };
+        });
     }
 
     /**
@@ -101,7 +93,7 @@ class ResourceSearchQueryBuilder {
     /**
      * Builds the query object.
      *
-     * @returns {object} The result.
+     * @returns {ResourceSearchQuery} The result.
      */
     build() {
         return this.query;
@@ -110,16 +102,10 @@ class ResourceSearchQueryBuilder {
 
 /**
  * Builder for creating query parameters for retrieving updated resources.
- *
- * @typedef {object} ResourceUpdatedQueryBuilder
- * @property {object} query The underlying query parameter object.
- * @property {string} [query.since] Date time used for filtering.
- * @property {string} [query.token] Opaque continuation token.
- * @property {number} [query.limit] Maximum number of pairs returned.
  */
 class ResourceUpdatedQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdatedResourceSubjectsQuery} */ ({});
     }
 
     /**
@@ -161,7 +147,7 @@ class ResourceUpdatedQueryBuilder {
     /**
      * Returns the built query object.
      *
-     * @returns {object} The result.
+     * @returns {UpdatedResourceSubjectsQuery} The result.
      */
     build() {
         return this.query;
@@ -381,7 +367,7 @@ class ServiceResourceBuilder {
     /**
      * Adds a contact point.
      *
-     * @param {ContactPoint} contactPoint The contact point.
+     * @param {{category?: string, email?: string, telephone?: string, contactPage?: string}} contactPoint The contact point.
      * @returns {ServiceResourceBuilder} This builder, for chaining.
      */
     withContactPoint(contactPoint) {
@@ -676,6 +662,18 @@ class XacmlPolicyBuilder {
             ...subjects,
         ];
 
+        if (allSubjects.length === 0) {
+            throw new Error(
+                "XacmlPolicyBuilder: a rule needs at least one subject. Pass roles, accessPackages or subjects.",
+            );
+        }
+
+        if (actions.length === 0) {
+            throw new Error(
+                "XacmlPolicyBuilder: a rule needs at least one action.",
+            );
+        }
+
         this.rules.push({
             subjects: allSubjects,
             actions,
@@ -704,7 +702,7 @@ class XacmlPolicyBuilder {
      * @returns {string} The policy XML.
      */
     build() {
-        const id = escapeXml(this.resourceId);
+        const id = this.resourceId;
 
         const rules = this.rules.map((rule, index) => buildRule(id, rule, index + 1));
 
@@ -720,7 +718,7 @@ class XacmlPolicyBuilder {
 `;
 
         return `<?xml version="1.0" encoding="utf-8"?>
-<xacml:Policy xmlns:xsl="http://www.w3.org/2001/XMLSchema-instance" xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:altinn:resource:${id}:policyid:1" Version="1.0" RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-overrides">
+<xacml:Policy xmlns:xsl="http://www.w3.org/2001/XMLSchema-instance" xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:altinn:resource:${escapeXml(id)}:policyid:1" Version="1.0" RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-overrides">
   <xacml:Target/>
 ${rules.join("")}${obligations}</xacml:Policy>
 `;
@@ -791,7 +789,8 @@ function buildMatch(value, attributeId, category, ignoreCase) {
 /**
  * Builds a single XACML permit rule.
  *
- * @param {string} resourceId Escaped resource identifier.
+ * @param {string} resourceId Resource identifier. Escaped by buildMatch, like
+ * every other value that goes into the policy.
  * @param {object} rule Rule as collected by withRule().
  * @param {number} ruleNumber One based rule number, used in the rule id.
  * @returns {string} The rule element.
@@ -827,7 +826,7 @@ function buildRule(resourceId, rule, ruleNumber) {
         : `    <xacml:Description>${escapeXml(rule.description)}</xacml:Description>
 `;
 
-    return `  <xacml:Rule RuleId="urn:altinn:resource:${resourceId}:ruleid:${ruleNumber}" Effect="Permit">
+    return `  <xacml:Rule RuleId="urn:altinn:resource:${escapeXml(resourceId)}:ruleid:${ruleNumber}" Effect="Permit">
 ${description}    <xacml:Target>
       <xacml:AnyOf>
 ${subjects}      </xacml:AnyOf>
@@ -846,3 +845,4 @@ export {
     ServiceResourceBuilder,
     XacmlPolicyBuilder
 };
+

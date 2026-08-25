@@ -1,0 +1,12 @@
+$env:TOKEN_GENERATOR_USERNAME=""
+$env:TOKEN_GENERATOR_PASSWORD=""
+
+$env:BASE_URL="https://platform.yt01.altinn.cloud"
+$env:ALTINN2_BASE_URL="https://yt01.ai.basefarm.net"
+$env:ALTINN_CDN_BASE_URL="https://altinncdn.no"
+$env:AM_UI_BASE_URL="https://am.ui.yt01.altinn.cloud"
+$env:AF_UI_BASE_URL="https://af.yt01.altinn.cloud"
+$env:INFO_CLOUD_URL="https://info.yt01.altinn.cloud"
+$env:DEPLOY_ENV="yt01"
+$env:ENV_TYPE="perf"
+$env:ENVIRONMENT="yt01"

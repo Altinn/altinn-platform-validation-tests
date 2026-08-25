@@ -1,17 +1,19 @@
+import { AuthorizedPartiesQuery } from "./authorized-parties.types.js";
+
 /**
  * Builder for query parameters for the
  * POST /resourceowner/authorizedparties endpoint.
  */
 export class AuthorizedPartiesQueryBuilder {
     constructor() {
-        this.query = {
+        this.query = /** @type {AuthorizedPartiesQuery} */ ({
             includeAltinn2: false,
             includeAltinn3: true,
             includeRoles: true,
             includeAccessPackages: false,
             includeResources: true,
             includeInstances: true
-        };
+        });
     }
 
     /**
@@ -226,7 +228,7 @@ export class AuthorizedPartiesQueryBuilder {
     /**
      * Build the query parameter object.
      *
-     * @returns {object} Query parameters for the authorized parties endpoint.
+     * @returns {AuthorizedPartiesQuery} Query parameters for the authorized parties endpoint.
      */
     build() {
         return this.query;

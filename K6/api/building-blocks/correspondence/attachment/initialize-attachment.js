@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { InitializeAttachmentExt } from "../../../../clients/correspondence/attachment.types.js";
 import { AttachmentClient } from "../../../../clients/correspondence/index.js";
 import { withRetries } from "../../common/retry.js";
 

@@ -30,7 +30,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Enduser to enduser instance delegations, one slice per VU.
+ * @param {any[][]} testData Enduser to enduser instance delegations, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient] = getClients();

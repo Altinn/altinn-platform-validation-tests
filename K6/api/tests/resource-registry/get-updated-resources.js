@@ -1,7 +1,7 @@
-import { ResourceClient, ResourceUpdatedQueryBuilder } from "../../../../clients/resource-registry/index.js";
-import { requireEnv } from "../../../../helpers.js";
-import { ResourceUpdated } from "../../../building-blocks/resource-registry/resource/index.js";
-import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
+import { ResourceClient, ResourceUpdatedQueryBuilder } from "../../../clients/resource-registry/index.js";
+import { requireEnv } from "../../../helpers.js";
+import { ResourceUpdated } from "../../building-blocks/resource-registry/resource/index.js";
+import { PaginationDomainChecks } from "../../domain-checks/common/pagination.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -30,4 +30,4 @@ export default function () {
 }
 
 // add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";
+export { handleSummary } from "../../../common-imports.js";

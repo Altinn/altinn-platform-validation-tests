@@ -1,6 +1,8 @@
+import { ConsentPortalViewMode, ConsentRequestDto, ConsentRequestEventsQuery, ConsentRightDto } from "./consent-enterprise.types.js";
+
 class ConsentRequestBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {ConsentRequestDto} */ ({
             id: null,
             from: null,
             requiredDelegator: null,
@@ -10,7 +12,7 @@ class ConsentRequestBuilder {
             requestMessage: null,
             redirectUrl: null,
             portalViewMode: null,
-        };
+        });
     }
 
     /**
@@ -112,7 +114,7 @@ class ConsentRequestBuilder {
 }
 class ConsentRequestEventsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {ConsentRequestEventsQuery} */ ({});
     }
 
     /**
@@ -166,7 +168,7 @@ class ConsentRequestEventsQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {ConsentRequestEventsQuery} The built payload.
      */
     Build() {
         return this.query;
