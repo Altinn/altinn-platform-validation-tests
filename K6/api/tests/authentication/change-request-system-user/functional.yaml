@@ -7,10 +7,6 @@ test_definitions:
         test_run:
           secrets:
             - authorization-subscription-key-at22
-      - environment: at23
-        test_run:
-          secrets:
-            - authorization-subscription-key-at23
       - environment: tt02
         test_run:
           secrets:
