@@ -43,9 +43,7 @@ export class Innlogging {
 
     /**
      * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-     * går det gjennom ID-porten-skjermbildene. I prod finnes ikke TestID-innlogging,
-     * så der går innloggingen via mockporten: samme sesjon, men landingssiden kommer
-     * fra testen framfor fra flaten vi startet på.
+     * går det gjennom ID-porten-skjermbildene.
      */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
         if (gjeldendeMiljo() === 'prod') {
