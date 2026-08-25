@@ -1,4 +1,4 @@
-name: Tests
+name: Cleanup Operator - Tests
 
 on:
   push:

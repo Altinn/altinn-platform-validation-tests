@@ -1,4 +1,4 @@
-name: E2E Tests
+name: Cleanup Operator - E2E Tests
 
 on:
   push:

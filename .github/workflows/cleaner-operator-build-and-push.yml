@@ -1,4 +1,4 @@
-name: Build and Push Cleanup Operator
+name: Cleanup Operator - Build and Push
 
 on:
   push:
@@ -8,10 +8,12 @@ on:
   workflow_dispatch:
 
 permissions:
+  id-token: write
   contents: read
 
 env:
   REGISTRY: altinnplatformvalidationtests.azurecr.io
+  REGISTRY_NAME: altinnplatformvalidationtests
   IMAGE_NAME: cleanup-controller
 
 jobs:
@@ -37,7 +39,7 @@ jobs:
 
       - name: Login to ACR
         run: |
-          az acr login --name ${{ env.REGISTRY }}
+          az acr login --name "$REGISTRY_NAME"
 
       - name: Set image tag
         id: vars
