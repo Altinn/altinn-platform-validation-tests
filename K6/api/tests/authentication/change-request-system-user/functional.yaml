@@ -1,6 +1,21 @@
 namespace: authentication
 base_dir: K6/api/tests/authentication/change-request-system-user
 test_definitions:
+  - test_file: access-after-change-request.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+      - environment: at23
+        test_run:
+          secrets:
+            - authorization-subscription-key-at23
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02
+
   - test_file: create-and-approve-change-request.js
     contexts:
       - environment: at22
