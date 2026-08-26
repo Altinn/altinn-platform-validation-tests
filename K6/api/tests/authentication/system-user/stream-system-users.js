@@ -57,25 +57,25 @@ export default function () {
     const [systemUserClient, tokenGenerator] = getStreamClients();
 
     group("As Register, I can stream every system user and follow the stream on", function () {
-        let firstPage;
-
-        group("Fetch the first page of the stream", function () {
-            firstPage = SystemUserBuildingBlocks.InternalStream(systemUserClient);
+        const firstPage = group("Fetch the first page of the stream", function () {
+            const page = SystemUserBuildingBlocks.InternalStream(systemUserClient);
 
             // Everything below reads off the page, so one that is missing or shaped
             // wrong ends the iteration here rather than failing every check on the
             // same cause.
-            if (!PaginationDomainChecks.CheckPaginatedShape(firstPage, OPERATION)) {
+            if (!PaginationDomainChecks.CheckPaginatedShape(page, OPERATION)) {
                 fail("cannot follow the stream: the first page is not a paginated response");
             }
 
-            SystemUserDomainChecks.CheckStreamStats(firstPage, OPERATION);
+            SystemUserDomainChecks.CheckStreamStats(page, OPERATION);
+
+            return page;
         });
 
         group("Follow the stream to the next pages", function () {
             // The stats, and not the environment, decide whether there is anything
-            // left to follow.
-            if (!SystemUserDomainChecks.CheckStreamHasMore(firstPage, OPERATION)) {
+            // left to follow. fail() above means there is a page to read them off.
+            if (firstPage === null || !SystemUserDomainChecks.CheckStreamHasMore(firstPage, OPERATION)) {
                 return;
             }
 

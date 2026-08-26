@@ -56,10 +56,9 @@ function CheckSystemUserArranged(systemUserId) {
  * A stream is read with a continuation token rather than a page number, so the stats
  * are what tells a caller how far it has come and how much is left.
  *
- * Every check below needs all three numbers, so they are read once and the rest
- * short circuit on that. Otherwise a missing number would fall back to something
- * the comparisons happen to accept, and stats that plainly do not describe the page
- * would come back green.
+ * Every check below needs its numbers to be numbers, and says so itself. A fallback
+ * would let a missing number land on a value the comparison happens to accept, and
+ * stats that plainly do not describe the page would come back green.
  *
  * @param {{stats?: {pageStart?: number, pageEnd?: number, sequenceMax?: number}|null, data?: unknown[]|null}|null} page - A page of the stream.
  * @param {string} operation - Name of the operation, used in the check name and logs.
@@ -69,19 +68,21 @@ function CheckStreamStats(page, operation) {
     const stats = page?.stats;
     const items = page?.data ?? [];
 
-    const described = typeof stats?.pageStart === "number" &&
-        typeof stats?.pageEnd === "number" &&
-        typeof stats?.sequenceMax === "number";
+    // Read once, and null for anything that is not a number, so no comparison below
+    // can fall back to a value that happens to satisfy it.
+    const pageStart = typeof stats?.pageStart === "number" ? stats.pageStart : null;
+    const pageEnd = typeof stats?.pageEnd === "number" ? stats.pageEnd : null;
+    const sequenceMax = typeof stats?.sequenceMax === "number" ? stats.sequenceMax : null;
 
     const success = check(page, {
         [`CheckStreamStats - ${operation} reports where in the stream the page sits`]: () =>
-            described,
+            pageStart !== null && pageEnd !== null && sequenceMax !== null,
         [`CheckStreamStats - ${operation} ends the page no earlier than it starts`]: () =>
-            described && stats.pageEnd >= stats.pageStart,
+            pageStart !== null && pageEnd !== null && pageEnd >= pageStart,
         [`CheckStreamStats - ${operation} holds at least what the page does`]: () =>
-            described && stats.sequenceMax >= stats.pageEnd,
+            pageEnd !== null && sequenceMax !== null && sequenceMax >= pageEnd,
         [`CheckStreamStats - ${operation} puts no more items on the page than the stats say`]: () =>
-            described && items.length <= stats.pageEnd - stats.pageStart + 1,
+            pageStart !== null && pageEnd !== null && items.length <= pageEnd - pageStart + 1,
     });
 
     if (!success) {
