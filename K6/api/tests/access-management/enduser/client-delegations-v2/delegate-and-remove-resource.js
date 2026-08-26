@@ -69,11 +69,11 @@ function arrangeDelegationTarget(clientDelegation, party) {
  * Test: a resource can be delegated from a client to an agent, is visible from
  * both sides afterwards, and can be removed again.
  *
- * @param {{party: string, resourceRefId: string}} data What the setup arranged.
+ * @param {{party: string, userId: string, userPartyUuid: string, resourceRefId: string}} data What the setup arranged.
  * @returns {void}
  */
 export default function (data) {
-    const { clientDelegation, clientDelegationV2 } = getClients(data.party);
+    const { clientDelegation, clientDelegationV2 } = getClients(data);
 
     let target = null;
 

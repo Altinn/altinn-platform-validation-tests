@@ -11,15 +11,21 @@ import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
  * has to be a party that has at least one client and at least one agent, since
  * the test delegates from the former to the latter.
  *
+ * `userId` and `userPartyUuid` identify a person who administers that
+ * organisation. The token has to carry that person while the request names the
+ * organisation: a token whose only identity is the organisation's own party uuid
+ * is rejected with 403 by `/clients` and `/agents`, whichever organisation it
+ * names. `open-client-admin.js` splits them the same way.
+ *
  * `resourceRefId` is the resource that gets delegated and then removed. It has
  * to be a resource the client's role can actually delegate, which the API
  * decides, so it cannot be discovered from the outside.
  *
- * Both values are environment specific and neither survives being guessed. Fill
- * in an environment before enabling the test for it, rather than adding an entry
+ * Every value is environment specific and none survives being guessed. Fill in
+ * an environment before enabling the test for it, rather than adding an entry
  * with placeholder values.
  *
- * @type {{[environment: string]: {party: string, resourceRefId: string}}}
+ * @type {{[environment: string]: {party: string, userId: string, userPartyUuid: string, resourceRefId: string}}}
  */
 const TEST_DATA = {};
 
@@ -48,7 +54,7 @@ let clients = undefined;
 /**
  * Returns the test data for the environment the run is against.
  *
- * @returns {{party: string, resourceRefId: string}} The party and resource to work with.
+ * @returns {{party: string, userId: string, userPartyUuid: string, resourceRefId: string}} The organisation, the person acting for it, and the resource to work with.
  * @throws {Error} If the environment has no test data configured.
  */
 export function getTestData() {
@@ -57,7 +63,7 @@ export function getTestData() {
 
     if (data === undefined) {
         throw new Error(
-            `No client delegation v2 test data for ${environment}. Add a party and a resourceRefId for it in commons.js.`,
+            `No client delegation v2 test data for ${environment}. Add a party, a userId, a userPartyUuid and a resourceRefId for it in commons.js.`,
         );
     }
 
@@ -65,17 +71,22 @@ export function getTestData() {
 }
 
 /**
- * Builds the enduser token options for a party.
+ * Builds the enduser token options for the person acting for the organisation.
  *
- * @param {string} partyUuid Party uuid the caller acts as.
+ * The token identifies the person, not the organisation. The organisation is
+ * named per request instead, through the `party` query parameter.
+ *
+ * @param {string} userId User id of the person administering the organisation.
+ * @param {string} userPartyUuid That person's own party uuid.
  * @returns {object} Token generator options.
  */
-export function getTokenOpts(partyUuid) {
+export function getTokenOpts(userId, userPartyUuid) {
     return new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
         .withScopes(SCOPES)
-        .withPartyUuid(partyUuid)
+        .withUserId(userId)
+        .withPartyUuid(userPartyUuid)
         .build();
 }
 
@@ -86,14 +97,16 @@ export function getTokenOpts(partyUuid) {
  * delegation goes between, which v2 has no endpoint of its own for, and v2 does
  * the resource work.
  *
- * @param {string} partyUuid Party uuid the caller acts as.
+ * @param {{userId: string, userPartyUuid: string}} data Test data naming the person to act as.
  * @returns {{clientDelegation: ClientDelegationClient, clientDelegationV2: ClientDelegationV2Client}} The clients.
  */
-export function getClients(partyUuid) {
+export function getClients(data) {
+    const opts = getTokenOpts(data.userId, data.userPartyUuid);
+
     if (tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator(getTokenOpts(partyUuid));
+        tokenGenerator = new PersonalTokenGenerator(opts);
     } else {
-        tokenGenerator.setTokenGeneratorOptions(getTokenOpts(partyUuid));
+        tokenGenerator.setTokenGeneratorOptions(opts);
     }
 
     if (clients === undefined) {
@@ -109,7 +122,7 @@ export function getClients(partyUuid) {
 /**
  * k6 setup stage. Declares what the tests in this folder need.
  *
- * @returns {{party: string, resourceRefId: string}} The test data for the environment.
+ * @returns {{party: string, userId: string, userPartyUuid: string, resourceRefId: string}} The test data for the environment.
  */
 export function setup() {
     requireEnv([
