@@ -61,8 +61,8 @@ function CheckRequestStatus(request, expectedStatus) {
  * A group that needs one cannot say anything useful without it, so a caller that
  * gets false back should fail() and stop the run at the step that broke.
  *
- * @param {string|undefined} requestId - The request id the earlier step should have produced.
- * @returns {boolean} True if there is a request to act on, false otherwise.
+ * @param {string|null|undefined} requestId - The request id the earlier step should have produced.
+ * @returns {requestId is string} True if there is a request to act on, false otherwise.
  */
 function CheckRequestId(requestId) {
     const success = check(requestId, {

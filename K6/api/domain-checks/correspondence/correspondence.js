@@ -84,8 +84,8 @@ function CheckInitializedCorrespondences(response, expectedRecipients) {
  * Checks that a list operation returned correspondence ids to use in follow-up
  * calls.
  *
- * @param {string[]} correspondenceIds Correspondence ids from the list API.
- * @returns {boolean} True if at least one valid id was returned.
+ * @param {string[]|null} correspondenceIds Correspondence ids from the list API.
+ * @returns {correspondenceIds is string[]} True if at least one valid id was returned.
  */
 function CheckCorrespondenceIds(correspondenceIds) {
     const ids = Array.isArray(correspondenceIds) ? correspondenceIds : [];
@@ -160,8 +160,8 @@ function FindDialogId(overview) {
 /**
  * Checks that a Correspondence overview provided a Dialogporten dialog id.
  *
- * @param {string|null} dialogId Dialog id found in an overview.
- * @returns {boolean} True if the dialog id is present.
+ * @param {string|null|undefined} dialogId Dialog id found in an overview.
+ * @returns {dialogId is string} True if the dialog id is present.
  */
 function CheckDialogId(dialogId) {
     const success = check(dialogId, {
@@ -181,8 +181,8 @@ function CheckDialogId(dialogId) {
 /**
  * Checks that Dialogporten returned a dialog token.
  *
- * @param {{dialogToken?: string}|null} dialog Dialogporten dialog response.
- * @returns {boolean} True if a dialog token is present.
+ * @param {{dialogToken?: string|null}|null} dialog Dialogporten dialog response.
+ * @returns {dialog is {dialogToken: string}} True if a dialog token is present.
  */
 function CheckDialogToken(dialog) {
     const success = check(dialog, {

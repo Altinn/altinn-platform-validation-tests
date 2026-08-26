@@ -217,6 +217,11 @@ export function getClients() {
         };
     }
 
+    if (approverTokenGenerator === undefined || vendorTokenGenerator === undefined) {
+        // Only reachable if the block above stops building all three together.
+        fail("getClients did not build the token generators");
+    }
+
     return [clients, approverTokenGenerator, vendorTokenGenerator];
 }
 
@@ -290,6 +295,7 @@ export function findAccessPackages(count, vendorOrgNo) {
         .map((result) => result.object)
         .filter((found) => found?.urn && found.isDelegable && found.isAssignable)
         .map((found) => found.urn)
+        .filter((urn) => urn !== null && urn !== undefined)
         .sort();
 
     if (urns.length < count) {
@@ -393,9 +399,7 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
     const [apiClients] = getClients();
 
-    let systemUserId;
-
-    group("Arrange - the customer has an approved system user", function () {
+    return group("Arrange - the customer has an approved system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
@@ -442,12 +446,12 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             externalRef: registration.externalRef,
         });
 
-        systemUserId = systemUser?.id;
+        const systemUserId = systemUser?.id;
 
         if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
             fail("cannot arrange a system user: the lookup by external ref returned no system user");
         }
-    });
 
-    return systemUserId;
+        return systemUserId;
+    });
 }

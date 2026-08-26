@@ -172,11 +172,9 @@ export default function (data) {
     } = getClients(serviceOwnerOrgNo);
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources);
-    let dialogId = null;
-
     // create a dialog to have an instance to delegate on, and to be able to test with a realistic instance in the access management API
-    group(group0Label, function () {
-        const resp = CreateDialog(
+    const dialogId = group(group0Label, function () {
+        return CreateDialog(
             serviceOwnerApiClient,
             from.ssn,
             resource,
@@ -184,7 +182,6 @@ export default function (data) {
             createDialog,
             false,
         );
-        dialogId = resp;
     });
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));

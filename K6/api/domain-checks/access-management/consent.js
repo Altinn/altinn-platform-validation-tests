@@ -91,8 +91,8 @@ function CheckConsentRights(consentRequest, expectedResources) {
  * A group that needs one cannot say anything useful without it, so a caller that
  * gets false back should fail() and stop the run at the step that broke.
  *
- * @param {string|undefined} consentRequestId - The consent request id the earlier step should have produced.
- * @returns {boolean} True if there is a consent request to act on, false otherwise.
+ * @param {string|null|undefined} consentRequestId - The consent request id the earlier step should have produced.
+ * @returns {consentRequestId is string} True if there is a consent request to act on, false otherwise.
  */
 function CheckConsentRequestId(consentRequestId) {
     const success = check(consentRequestId, {

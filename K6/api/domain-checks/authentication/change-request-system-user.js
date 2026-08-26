@@ -171,8 +171,8 @@ function CheckChangeRequestUnwantedAccessPackages(changeRequest, expectedAccessP
  * A group that needs one cannot say anything useful without it, so a caller that
  * gets false back should fail() and stop the run at the step that broke.
  *
- * @param {string|undefined} changeRequestId - The change request id the earlier step should have produced.
- * @returns {boolean} True if there is a change request to act on, false otherwise.
+ * @param {string|null|undefined} changeRequestId - The change request id the earlier step should have produced.
+ * @returns {changeRequestId is string} True if there is a change request to act on, false otherwise.
  */
 function CheckChangeRequestId(changeRequestId) {
     const success = check(changeRequestId, {
@@ -191,8 +191,8 @@ function CheckChangeRequestId(changeRequestId) {
 /**
  * Checks that the customer has a system user for a change request to act on.
  *
- * @param {string|undefined} systemUserId - The system user the arrange step should have produced.
- * @returns {boolean} True if there is a system user to change, false otherwise.
+ * @param {string|null|undefined} systemUserId - The system user the arrange step should have produced.
+ * @returns {systemUserId is string} True if there is a system user to change, false otherwise.
  */
 function CheckSystemUserToChange(systemUserId) {
     const success = check(systemUserId, {
