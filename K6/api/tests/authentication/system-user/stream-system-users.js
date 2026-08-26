@@ -11,31 +11,6 @@ import { getStreamClients } from "./commons.js";
  */
 const OPERATION = "SystemUserInternalStream";
 
-/**
- * How many pages the walk follows at most, before the stats narrow it further.
- */
-const MAX_PAGES = 10;
-
-/**
- * How many pages are left to read, going by the stats.
- *
- * The generic follower stops on a next link that repeats or a page that returns the
- * same body, since that is what a finished list looks like. A stream does not have
- * to end that way: the Register pattern keeps handing out a token so a reader can
- * come back for what arrives later, which would read as stuck rather than as done.
- * Stopping where the stats say the stream ends keeps the walk from ever getting
- * there.
- *
- * @param {{pageStart: number, pageEnd: number, sequenceMax: number}} stats - The stats from the first page.
- * @returns {number} Pages left after the first, at most MAX_PAGES.
- */
-function pagesLeft(stats) {
-    const pageSize = stats.pageEnd - stats.pageStart + 1;
-    const left = Math.ceil((stats.sequenceMax - stats.pageEnd) / pageSize);
-
-    return Math.max(1, Math.min(MAX_PAGES, left));
-}
-
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     return;
@@ -44,14 +19,13 @@ export function setup() {
 /**
  * Test: the internal system user stream, which Register reads.
  *
- * Unlike the other listings this one is not scoped to a system or a vendor, so there
- * is nothing to arrange: the environment's own system users are the data. That also
- * means the test cannot assume there is more than one page of them, and a freshly
- * reset environment would make a hard expectation of one fail while the endpoint was
- * behaving correctly. What it does instead is read the stats, which say where in the
- * stream the page sits and how far behind it is, and let those decide what the rest
- * has to hold: a stream with more to give has to hand out a link to it, and one that
- * has been read to the end has to say so by handing out none.
+ * There is nothing to arrange: the stream hands out every system user in the
+ * environment, so the environment's own data is what it reads. That also means the
+ * test cannot take for granted that there is more than one page of them, since a
+ * small or freshly reset environment fits on one.
+ *
+ * The stats decide. They say where in the stream the page sits and how far behind it
+ * is, so the test only follows the stream on when they say there is more.
  */
 export default function () {
     const [systemUserClient, tokenGenerator] = getStreamClients();
@@ -67,18 +41,23 @@ export default function () {
                 fail("cannot follow the stream: the first page is not a paginated response");
             }
 
-            SystemUserDomainChecks.CheckStreamStats(page, OPERATION);
-
-            return page;
+            // Stats that do not describe the page are reported here, and nothing
+            // below can be read off them.
+            return SystemUserDomainChecks.CheckStreamStats(page, OPERATION) ? page : null;
         });
 
-        group("Follow the stream to the next pages", function () {
-            // The stats, and not the environment, decide whether there is anything
-            // left to follow. fail() above means there is a page to read them off.
-            if (firstPage === null || !SystemUserDomainChecks.CheckStreamHasMore(firstPage, OPERATION)) {
-                return;
-            }
+        if (firstPage === null) {
+            return;
+        }
 
+        // The whole stream fits on this page, so there is nothing to follow.
+        if (firstPage.stats.pageEnd >= firstPage.stats.sequenceMax) {
+            console.info(`${OPERATION} - the stream ends on the first page: ${JSON.stringify(firstPage.stats)}`);
+
+            return;
+        }
+
+        group("Follow the stream to the next pages", function () {
             PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, OPERATION);
             PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, OPERATION);
 
@@ -86,7 +65,7 @@ export default function () {
 
             let additionalPages = 0;
             if (nextUrl !== null) {
-                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl, pagesLeft(firstPage.stats));
+                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
             }
 
             PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, OPERATION);

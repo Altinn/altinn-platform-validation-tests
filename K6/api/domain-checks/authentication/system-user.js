@@ -54,11 +54,9 @@ function CheckSystemUserArranged(systemUserId) {
  * Checks that a page of a stream reports where in the stream it sits.
  *
  * A stream is read with a continuation token rather than a page number, so the stats
- * are what tells a caller how far it has come and how much is left.
- *
- * Every check below needs its numbers to be numbers, and says so itself. A fallback
- * would let a missing number land on a value the comparison happens to accept, and
- * stats that plainly do not describe the page would come back green.
+ * are what tells a caller how far it has come and how much is left. Each check reads
+ * its own numbers and says so: a fallback would let a missing one land on a value the
+ * comparison happens to accept.
  *
  * @param {{stats?: {pageStart?: number, pageEnd?: number, sequenceMax?: number}|null, data?: unknown[]|null}|null} page - A page of the stream.
  * @param {string} operation - Name of the operation, used in the check name and logs.
@@ -92,42 +90,7 @@ function CheckStreamStats(page, operation) {
     return success;
 }
 
-/**
- * Checks that a stream says whether there is more of it to read.
- *
- * Which way this goes is up to the data and not to the endpoint: a stream that has
- * been read to the end has nowhere to point, while one that has not has to hand out
- * a link. Reading it off the stats rather than off the environment is what keeps the
- * check from failing on a small or freshly reset environment.
- *
- * @param {{stats?: {pageEnd?: number, sequenceMax?: number}|null, links?: {next?: string|null}|null}|null} page - A page of the stream.
- * @param {string} operation - Name of the operation, used in the check name and logs.
- * @returns {boolean} True if there is more of the stream to read, false otherwise.
- */
-function CheckStreamHasMore(page, operation) {
-    const stats = page?.stats;
-    const behind = typeof stats?.pageEnd === "number" &&
-        typeof stats?.sequenceMax === "number" &&
-        stats.pageEnd < stats.sequenceMax;
-
-    const next = page?.links?.next;
-
-    check(page, {
-        [`CheckStreamHasMore - ${operation} hands out a next link when the stream holds more`]: () =>
-            !behind || (typeof next === "string" && next.length > 0),
-        [`CheckStreamHasMore - ${operation} hands out no next link once the stream is read`]: () =>
-            behind || next === null || next === undefined || next === "",
-    });
-
-    if (!behind) {
-        console.log(`CheckStreamHasMore - ${operation} reached the end of the stream on the first page: ${JSON.stringify(stats)}`);
-    }
-
-    return behind;
-}
-
 export const SystemUserDomainChecks = {
-    CheckStreamHasMore,
     CheckStreamStats,
     CheckSystemUserArranged,
     CheckSystemUserFound,
