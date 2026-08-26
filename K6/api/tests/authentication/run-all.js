@@ -1,4 +1,5 @@
 import runChangeRequestSystemUser, { setup as setupChangeRequestSystemUser, teardown as teardownChangeRequestSystemUser } from "./change-request-system-user/run-all.js";
+import runIntrospection, { setup as setupIntrospection } from "./introspection/run-all.js";
 import runSystemRegister, { setup as setupSystemRegister, teardown as teardownSystemRegister } from "./system-register/run-all.js";
 import runSystemUser, { setup as setupSystemUser, teardown as teardownSystemUser } from "./system-user/run-all.js";
 import runSystemUserClientDelegation, { setup as setupSystemUserClientDelegation, teardown as teardownSystemUserClientDelegation } from "./system-user-client-delegation/run-all.js";
@@ -17,6 +18,7 @@ import runTokenExchange, { setup as setupTokenExchange } from "./token-exchange/
 export async function setup() {
     return {
         changeRequestSystemUser: setupChangeRequestSystemUser(),
+        introspection: setupIntrospection(),
         systemRegister: await setupSystemRegister(),
         systemUser: setupSystemUser(),
         systemUserClientDelegation: setupSystemUserClientDelegation(),
@@ -46,6 +48,7 @@ export default async function (data) {
     runChangeRequestSystemUser(data.changeRequestSystemUser);
     runSystemUserClientDelegation(data.systemUserClientDelegation);
     runTokenExchange(data.tokenExchange);
+    runIntrospection();
 }
 
 /**
