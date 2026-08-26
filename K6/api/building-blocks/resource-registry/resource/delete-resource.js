@@ -24,10 +24,18 @@ export function ResourceDeleteResource(
         "ResourceDeleteResource",
     );
 
-    return check(res, {
-        "ResourceDeleteResource - status code is 200": (r) =>
-            r.status === 200,
-        "ResourceDeleteResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+    const succeed = check(res, {
+        "ResourceDeleteResource - status code is 204": (r) =>
+            r.status === 204,
+        "ResourceDeleteResource - status text is 204 No Content": (r) =>
+            r.status_text === "204 No Content",
     });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return false;
+    }
+
+    return true;
 }

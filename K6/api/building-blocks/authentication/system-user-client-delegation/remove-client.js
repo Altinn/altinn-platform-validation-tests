@@ -1,7 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClientDelegationClient } from "../../../../clients/authentication/index.js";
-import { DelegationResponse } from "../../../../clients/authentication/types.js";
+import { ClientDelegationResponse } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} agent System user id.
  * @param {string} client Client id.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {DelegationResponse[]|null} Delegations.
+ * @returns {ClientDelegationResponse|null} Delegation response.
  */
 export function RemoveClient(
     systemUserClientDelegationClient,
@@ -29,8 +29,8 @@ export function RemoveClient(
         "RemoveClient",
     );
 
-    /** @type {DelegationResponse[]|null} */
-    let delegations = null;
+    /** @type {ClientDelegationResponse|null} */
+    let delegation = null;
 
     const succeed = check(res, {
         "RemoveClient - status code is 200": (r) =>
@@ -42,13 +42,13 @@ export function RemoveClient(
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return delegations;
+        return delegation;
     }
 
     check(res, {
         "RemoveClient - body is valid": (r) => {
             try {
-                delegations = JSON.parse(r.body);
+                delegation = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -60,5 +60,5 @@ export function RemoveClient(
         },
     });
 
-    return delegations;
+    return delegation;
 }

@@ -1,16 +1,18 @@
 import { check } from "k6";
 
 import { ChangeRequestSystemUserClient } from "../../../../clients/authentication/index.js";
-import { ChangeRequestResponse } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes a change request by id.
  *
+ * The endpoint answers 202 with no body, so there is nothing to hand back but
+ * whether it was accepted.
+ *
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
  * @param {string} requestId Request identifier.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {ChangeRequestResponse|null} Change request response.
+ * @returns {boolean} Whether the change request was deleted.
  */
 export function ChangeRequestSystemUserVendorDelete(
     changeRequestSystemUserClient,
@@ -26,36 +28,17 @@ export function ChangeRequestSystemUserVendorDelete(
         "ChangeRequestSystemUserVendorDelete",
     );
 
-    /** @type {ChangeRequestResponse|null} */
-    let changeRequestResponse = null;
-
     const succeed = check(res, {
-        "ChangeRequestSystemUserVendorDelete - status code is 200": (r) =>
-            r.status === 200,
-        "ChangeRequestSystemUserVendorDelete - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "ChangeRequestSystemUserVendorDelete - status code is 202": (r) =>
+            r.status === 202,
+        "ChangeRequestSystemUserVendorDelete - status text is 202 Accepted": (r) =>
+            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return changeRequestResponse;
     }
 
-    check(res, {
-        "ChangeRequestSystemUserVendorDelete - body is valid": (r) => {
-            try {
-                changeRequestResponse = JSON.parse(r.body);
-
-                return true;
-            } catch (err) {
-                console.log("Unable to parse response body");
-                console.log(r.body);
-
-                return false;
-            }
-        },
-    });
-
-    return changeRequestResponse;
+    return succeed;
 }
