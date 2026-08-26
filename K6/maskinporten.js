@@ -100,6 +100,7 @@ export class MaskinportenAccessTokenGenerator {
     #maskinportenClientId;
     #clientPem;
     #cache = new Map();
+    /** @type {CryptoKey|null} */
     #signingKey = null;
 
     /**
@@ -177,7 +178,9 @@ export class MaskinportenAccessTokenGenerator {
      * @returns {Promise<string>} A Maskinporten access token.
      */
     async ensureToken() {
-        const scopes = this.tokenGeneratorOptions.scopes;
+        // The builder defaults this, but the typedef leaves it optional, and an
+        // empty scope string is what the token endpoint would reject anyway.
+        const scopes = this.tokenGeneratorOptions.scopes ?? "";
         const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
         const cached = this.#cache.get(cacheKey);
 

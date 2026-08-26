@@ -11,7 +11,7 @@ import { Party } from "../../../clients/register/types.js";
  *
  * @param {Array<Party>|null} parties - What the lookup returned.
  * @param {string} lookedUpBy - What the lookup was keyed on, for the failure text.
- * @returns {boolean} True if there is exactly one party, false otherwise.
+ * @returns {parties is [Party]} True if there is exactly one party, false otherwise.
  */
 function CheckSinglePartyFound(parties, lookedUpBy) {
     const success = check(parties, {

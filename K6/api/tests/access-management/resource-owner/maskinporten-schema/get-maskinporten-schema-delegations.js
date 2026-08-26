@@ -189,6 +189,15 @@ function getQueryParams(list) {
     return [queryParams.build(), label];
 }
 
+/**
+ * Draws one organization from the list, optionally avoiding a specific one.
+ *
+ * @template {{ssn: string, orgNo: string}} T
+ * @param {T[]} list Organizations available to this VU.
+ * @param {boolean} [randomize] Whether to draw at random rather than by iteration.
+ * @param {{ssn: string, orgNo: string}} [avoidItem] An organization to leave out of the draw.
+ * @returns {T} The drawn organization.
+ */
 function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "" }) {
     if (!randomize) {
         return getItemFromList(list);

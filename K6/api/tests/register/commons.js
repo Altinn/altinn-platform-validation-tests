@@ -181,7 +181,9 @@ export function getCustomerOrganizationNumbers(
         return null;
     }
 
-    return customers.map((customer) => customer.organizationIdentifier);
+    return customers
+        .map((customer) => customer.organizationIdentifier)
+        .filter((identifier) => identifier !== undefined);
 }
 
 /**
