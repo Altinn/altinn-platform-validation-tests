@@ -22,7 +22,7 @@ const OPERATION = "ChangeRequestSystemUserVendorGetBySystem";
  * It does not pass yet, and that is the finding rather than a fault in the test. The
  * first page is correct, fifty items and a next link, but following that link answers
  * the same fifty items and the same token again, in at22, at23, tt02 and yt01 alike.
- * The endpoint ignores the continuation token it hands out, tracked in #471.
+ * The endpoint ignores the continuation token it hands out, tracked as Altinn/altinn-authentication#2156.
  */
 export default function () {
     const [changeRequestClient, tokenGenerator] = getPaginationClients();
