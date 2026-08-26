@@ -81,7 +81,7 @@ export function setup() {
  * @returns {[any, PersonalTokenGenerator]} Clients grouped by who they act as, and the approver token generator.
  */
 export function getClients() {
-    if (clients === undefined) {
+    if (clients === undefined || approverTokenGenerator === undefined) {
         const vendorScopes = CreateScopeString([
             AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
             AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.WRITE,
@@ -224,7 +224,7 @@ export function createSystemRegistration({ systemNamePrefix, registeredRights })
  * @returns {[RequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
  */
 export function getPaginationClients() {
-    if (paginationClient === undefined) {
+    if (paginationClient === undefined || paginationTokenGenerator === undefined) {
         paginationTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
