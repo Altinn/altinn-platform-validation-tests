@@ -418,7 +418,8 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * @param {any} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
- * @returns {string} Identifier of the approved system user.
+ * @returns {string|undefined} Identifier of the approved system user, or
+ * undefined when a step of the arrange did not get that far.
  */
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
     const [apiClients] = getClients();

@@ -99,7 +99,7 @@ function CheckRequestApproved(approved) {
 /**
  * Checks that a lookup found the request an earlier step created.
  *
- * @param {RequestSystemResponse|AgentRequestSystemResponse} request - The request the lookup returned.
+ * @param {RequestSystemResponse|AgentRequestSystemResponse|null} request - The request the lookup returned.
  * @param {string|undefined} expectedId - Id of the request the earlier step created.
  * @returns {boolean} True if the lookup found that request, false otherwise.
  */

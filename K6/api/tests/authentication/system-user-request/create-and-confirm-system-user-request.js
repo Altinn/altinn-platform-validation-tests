@@ -112,7 +112,7 @@ export default function (data) {
                 externalRef: registration.externalRef,
             });
 
-            if (systemUser?.id !== undefined) {
+            if (systemUser?.id !== undefined && systemUser.id !== null) {
                 DeleteSystemUser(clients.approver.bffSystemUserClient, customer.partyId, systemUser.id);
             }
 

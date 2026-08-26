@@ -99,7 +99,7 @@ function CheckChangeRequestRequiredRights(changeRequest, expectedRights) {
  * while reusing the correlation id answers with the first one.
  *
  * @param {ChangeRequestResponse|null} changeRequest - The change request returned by the second call.
- * @param {string} expectedId - Id of the change request the first call created.
+ * @param {string|null|undefined} expectedId - Id of the change request the first call created.
  * @returns {boolean} True if the same change request came back, false otherwise.
  */
 function CheckSameChangeRequest(changeRequest, expectedId) {

@@ -80,6 +80,10 @@ export default function (data) {
         fail("cannot ask for more rights: the setup produced no system user");
     }
 
+    // Bound after the guard, so the groups below read a value the compiler knows is
+    // there rather than one narrowed outside their own scope.
+    const systemUserId = systemUser.systemUserId;
+
     group("As a vendor, I can ask an existing system user for more rights", function () {
         const correlationId = uuidv4();
 
@@ -96,11 +100,11 @@ export default function (data) {
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
-                systemUser.systemUserId,
+                systemUserId,
                 201,
             );
 
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUser.systemUserId);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUserId);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestConfirmUrl(changeRequestResponse);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequestResponse, REQUESTED_RIGHTS);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredAccessPackages(changeRequestResponse, addedAccessPackages);
@@ -125,7 +129,7 @@ export default function (data) {
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
-                systemUser.systemUserId,
+                systemUserId,
                 200,
             );
 

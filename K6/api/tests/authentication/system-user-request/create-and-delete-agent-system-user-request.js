@@ -57,9 +57,7 @@ export default function (data) {
             }
         });
 
-        let requestId;
-
-        group("Create the agent system user request", function () {
+        const requestId = group("Create the agent system user request", function () {
             const createRequest = new CreateAgentRequestSystemUserBuilder()
                 .withExternalRef(registration.externalRef)
                 .withSystemId(registration.systemId)
@@ -76,7 +74,7 @@ export default function (data) {
                 externalRef: registration.externalRef,
             });
 
-            requestId = createdRequest?.id;
+            return createdRequest?.id;
         });
 
         group("Find the agent request by its external ref", function () {
@@ -101,6 +99,10 @@ export default function (data) {
         });
 
         group("Withdraw the agent request", function () {
+            if (!SystemUserRequestDomainChecks.CheckRequestId(requestId)) {
+                fail("cannot withdraw: creating the agent system user request returned no id");
+            }
+
             const deleted = RequestSystemUserBuildingBlocks.VendorDelete(clients.vendor.requestSystemUserClient, requestId);
 
             SystemUserRequestDomainChecks.CheckRequestDeleted(deleted);
