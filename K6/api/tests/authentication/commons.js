@@ -21,6 +21,7 @@ import { ChangeRequestSystemUserBuildingBlocks, RequestSystemUserBuildingBlocks,
  * @param {string} vendorOrgNo - Organisation number of that vendor, which every system id starts with.
  * @param {string} systemNamePrefix - The prefix the test names its systems with.
  * @param {RequestSystemUserClient|null} [requestSystemUserClient] - Client for the requests, for a test that makes them. Pass it and the pending requests on a leftover system go too.
+ * @param {ChangeRequestSystemUserClient|null} [changeRequestSystemUserClient] - Client for the change requests, for a test that makes them. Pass it and the pending change requests go too.
  * @returns {number} How many systems were swept up.
  */
 export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, systemNamePrefix, requestSystemUserClient = null, changeRequestSystemUserClient = null) {
