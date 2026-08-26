@@ -5,20 +5,31 @@ export class Meny {
 
     constructor(private page: Page) { }
 
+    /**
+     * Venter på at knappen er aktivert og ikke bare synlig. Headeren rendrer den
+     * `disabled` mens den henter det den trenger, og `click()` blokkerer da uten
+     * egen timeout til hele testbudsjettet er brukt opp. Det har skjedd, se
+     * `helpers/junitparser/example-junit-report.xml`.
+     */
     async clickMenuButton() {
-        await expect(this.menuButton()).toBeVisible({ timeout: 10_000 });
+        await expect(
+            this.menuButton(),
+            'Menyknappen i hovednavigasjonen er klar'
+        ).toBeEnabled({ timeout: 15_000 });
+
         await this.menuButton().click();
     }
 
     /**
      * Menyknappen i hovednavigasjonen finnes bare når brukeren er innlogget;
-     * utlogget står det "Logg inn" der i stedet.
+     * utlogget står det "Logg inn" der i stedet. Sjekker at den er aktivert, slik at
+     * innlogget betyr en header som er til å bruke og ikke bare en som er rendret.
      */
     async assertLoggedIn() {
         await expect(
             this.menuButton(),
-            'Menyknappen i hovednavigasjonen vises'
-        ).toBeVisible({ timeout: 15_000 });
+            'Menyknappen i hovednavigasjonen er klar'
+        ).toBeEnabled({ timeout: 15_000 });
     }
 
     private menuButton() {
@@ -33,13 +44,19 @@ export class Meny {
         }).click();
     }
 
+    /**
+     * Utloggingen ligger i menyen, så den må åpnes først. Navnet er forankret, slik
+     * menyknappens er: uforankret ville et framtidig "Logg ut av alle enheter" også
+     * truffet.
+     */
     async clickLogoutButton() {
-        // vent på logout
+        await this.clickMenuButton();
+
         const logoutButton = this.page.getByRole('button', {
-            name: /logg ut|log out/i,
-        });
-        await expect(logoutButton).toBeVisible({ timeout: 10000 });
-        // klikk logout
+            name: /^(logg ut|log out)$/i,
+        }).first();
+
+        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled({ timeout: 10_000 });
         await logoutButton.click();
     }
 

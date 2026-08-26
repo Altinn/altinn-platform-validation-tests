@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import { baseUrls, TestUser } from "../../config/environment";
+import { gaaTil } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class InfoportalForside implements Side {
@@ -7,23 +8,9 @@ export class InfoportalForside implements Side {
 
     constructor(private page: Page) { }
 
-    // Infoportalen avbryter av og til navigeringen med net::ERR_ABORTED, uten at
-    // siden faktisk feiler, så første forsøk får lov til å ryke.
-    async navigateTo(maxAttempts = 3) {
-        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-            try {
-                await this.page.goto(this.url, { timeout: 15_000 });
-                return;
-            } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
-
-                if (!message.includes('net::ERR_ABORTED') || attempt === maxAttempts) {
-                    throw error;
-                }
-
-                console.warn(`Navigering avbrutt (${attempt}/${maxAttempts}): ${this.url}`);
-            }
-        }
+    // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.
+    async navigateTo() {
+        await gaaTil(this.page, this.url, 15_000);
     }
 
     // Infoportalen har ingen egen innloggingsindikator, så navnet på brukeren er
@@ -34,6 +21,25 @@ export class InfoportalForside implements Side {
             this.page.getByText(user.name).first(),
             'Brukeren er innlogget på infoportalen'
         ).toBeVisible({ timeout: 10_000 });
+    }
+
+    /**
+     * Infoportalen er åpen, så en utlogget bruker blir stående på siden. Det er
+     * innloggingsknappen som sier at siden faktisk har rendret utlogget, siden et
+     * navn som ikke er der ennå ser likt ut som et navn som er borte.
+     */
+    async assertLoggedOut(user: TestUser) {
+        await this.assertOnPage();
+
+        await expect(
+            this.page.getByRole('button', { name: /logg inn|login/i }).first(),
+            'Innloggingsknappen vises på infoportalen'
+        ).toBeVisible({ timeout: 15_000 });
+
+        await expect(
+            this.page.getByText(user.name).first(),
+            'Brukeren er ikke innlogget på infoportalen'
+        ).toBeHidden();
     }
 
     async assertOnPage() {
