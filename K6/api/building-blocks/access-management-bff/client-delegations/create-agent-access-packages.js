@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link CreateAgentAccessPackagesQueryBuilder}.
  * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
  * delegate. Use {@link DelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DelegationDto>|null} The resulting delegations.
  */
 export function CreateAgentAccessPackages(

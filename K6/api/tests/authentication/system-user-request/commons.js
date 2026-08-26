@@ -126,7 +126,11 @@ export function sweepSystems(vendorOrgNo, systemNamePrefix) {
  * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
-    if (clients === undefined) {
+    if (
+        clients === undefined ||
+        approverTokenGenerator === undefined ||
+        vendorTokenGenerator === undefined
+    ) {
         vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
@@ -285,7 +289,7 @@ export function createSystemRegistration({ systemNamePrefix, vendorOrgNo, regist
  * @returns {[RequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
  */
 export function getPaginationClients() {
-    if (paginationClient === undefined) {
+    if (paginationClient === undefined || paginationTokenGenerator === undefined) {
         paginationTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)

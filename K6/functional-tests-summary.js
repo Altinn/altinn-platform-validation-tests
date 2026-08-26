@@ -93,7 +93,7 @@ function passRateThreshold() {
 function iterationCount(data) {
     const count = data?.metrics?.iterations?.values?.count;
 
-    return Number.isFinite(count) && count > 1 ? count : 1;
+    return typeof count === "number" && Number.isFinite(count) && count > 1 ? count : 1;
 }
 
 /**

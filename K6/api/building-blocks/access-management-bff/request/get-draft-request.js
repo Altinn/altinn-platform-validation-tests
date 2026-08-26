@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RequestClient} requestClient Client for the access request
  * endpoints.
  * @param {string} id Request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The draft access request. The API does not publish a
  * schema for this response.
  */

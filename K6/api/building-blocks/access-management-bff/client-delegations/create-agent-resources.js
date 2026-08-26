@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link CreateAgentResourcesQueryBuilder}.
  * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
  * delegate. Use {@link ResourceDelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegationDto>|null} The resulting resource
  * delegations.
  */

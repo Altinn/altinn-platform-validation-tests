@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1CommonIdentifierLookup_EndUserIdentifierLookup|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogLookup(

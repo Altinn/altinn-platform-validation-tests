@@ -216,66 +216,118 @@ export class PersonalTokenBuilder {
         this.options.ttl = 3600;
     }
 
+    /**
+     * @param {string} environment Environment the token is issued for.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withEnvironment(environment) {
         this.options.env = environment;
         return this;
     }
 
+    /**
+     * @param {string} scopes Space separated scopes.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withScopes(scopes) {
         this.options.scopes = scopes;
         return this;
     }
 
+    /**
+     * @param {string|number} userId Altinn user id.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withUserId(userId) {
         this.options.userId = userId;
         return this;
     }
 
+    /**
+     * @param {string|number} partyId Altinn party id.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withPartyId(partyId) {
         this.options.partyId = partyId;
         return this;
     }
 
+    /**
+     * @param {string} pid Person identifier, 11 digits.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withPid(pid) {
         this.options.pid = pid;
         return this;
     }
 
+    /**
+     * @param {string|number} count Number of tokens to ask for in one call.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withBulkCount(count) {
         this.options.bulkCount = count;
         return this;
     }
 
+    /**
+     * @param {string|number} level Authentication level.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withAuthLevel(level) {
         this.options.authLvl = level;
         return this;
     }
 
+    /**
+     * @param {string} orgNo Organisation number of the consumer.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withConsumerOrganizationNumber(orgNo) {
         this.options.consumerOrgNo = orgNo;
         return this;
     }
 
+    /**
+     * @param {string} uuid Party UUID.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withPartyUuid(uuid) {
         this.options.partyuuid = uuid;
         return this;
     }
 
+    /**
+     * @param {string} username Self identified user name.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withUsername(username) {
         this.options.userName = username;
         return this;
     }
 
+    /**
+     * @param {string} clientAmr Client authentication method.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withClientAmr(clientAmr) {
         this.options.clientAmr = clientAmr;
         return this;
     }
 
+    /**
+     * @param {string|number} ttl Lifetime in seconds.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withTtl(ttl) {
         this.options.ttl = ttl;
         return this;
     }
 
+    /**
+     * @param {string} source Source system of the delegation.
+     * @returns {PersonalTokenBuilder} This builder, for chaining.
+     */
     withDelegationSource(source) {
         this.options.delegationSource = source;
         return this;
@@ -307,61 +359,109 @@ export class EnterpriseTokenBuilder {
         this.options.ttl = 3600;
     }
 
+    /**
+     * @param {string} environment Environment the token is issued for.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withEnvironment(environment) {
         this.options.env = environment;
         return this;
     }
 
+    /**
+     * @param {string} scopes Space separated scopes.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withScopes(scopes) {
         this.options.scopes = scopes;
         return this;
     }
 
+    /**
+     * @param {string} organization Organisation the token acts as.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withOrganization(organization) {
         this.options.org = organization;
         return this;
     }
 
+    /**
+     * @param {string} name Name of that organisation.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withOrganizationName(name) {
         this.options.orgName = name;
         return this;
     }
 
+    /**
+     * @param {string} orgNo Organisation number, 9 digits.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withOrganizationNumber(orgNo) {
         this.options.orgNo = orgNo;
         return this;
     }
 
+    /**
+     * @param {string} orgNo Organisation number of the supplier.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withSupplierOrganizationNumber(orgNo) {
         this.options.supplierOrgNo = orgNo;
         return this;
     }
 
+    /**
+     * @param {string|number} partyId Altinn party id.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withPartyId(partyId) {
         this.options.partyId = partyId;
         return this;
     }
 
+    /**
+     * @param {string|number} userId Altinn user id.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withUserId(userId) {
         this.options.userId = userId;
         return this;
     }
 
+    /**
+     * @param {string} uuid Party UUID.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withPartyUuid(uuid) {
         this.options.partyuuid = uuid;
         return this;
     }
 
+    /**
+     * @param {string} username Self identified user name.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withUsername(username) {
         this.options.userName = username;
         return this;
     }
 
+    /**
+     * @param {string|number} ttl Lifetime in seconds.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withTtl(ttl) {
         this.options.ttl = ttl;
         return this;
     }
 
+    /**
+     * @param {string} source Source system of the delegation.
+     * @returns {EnterpriseTokenBuilder} This builder, for chaining.
+     */
     withDelegationSource(source) {
         this.options.delegationSource = source;
         return this;
@@ -393,27 +493,43 @@ export class PlatformTokenBuilder {
     static defaultTtl = 60000;
 
     constructor() {
-        this.options = {
+        this.options = /** @type {PlatformTokenOptions} */ ({
             app: PlatformTokenBuilder.defaultApp,
             ttl: PlatformTokenBuilder.defaultTtl,
-        };
+        });
     }
 
+    /**
+     * @param {string} environment Environment the token is issued for.
+     * @returns {PlatformTokenBuilder} This builder, for chaining.
+     */
     withEnvironment(environment) {
         this.options.env = environment;
         return this;
     }
 
+    /**
+     * @param {string} application Application the token is issued for.
+     * @returns {PlatformTokenBuilder} This builder, for chaining.
+     */
     withApplication(application) {
         this.options.app = application;
         return this;
     }
 
+    /**
+     * @param {string} organization Organisation the token acts as.
+     * @returns {PlatformTokenBuilder} This builder, for chaining.
+     */
     withOrganization(organization) {
         this.options.org = organization;
         return this;
     }
 
+    /**
+     * @param {string|number} ttl Lifetime in seconds.
+     * @returns {PlatformTokenBuilder} This builder, for chaining.
+     */
     withTtl(ttl) {
         this.options.ttl = ttl;
         return this;

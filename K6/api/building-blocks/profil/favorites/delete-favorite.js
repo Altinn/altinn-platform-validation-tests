@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {FavoritesClient} favoritesClient Client for the Favorites API.
  * @param {string} partyUuid Party UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the party was successfully removed.
  */
 export function DeleteFavorite(

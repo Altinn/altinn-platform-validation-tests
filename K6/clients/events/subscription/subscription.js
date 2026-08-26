@@ -50,7 +50,7 @@ class SubscriptionClient {
      * Register a subscription for events.
      *
      * @param {SubscriptionRequestModel} request Subscription payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -85,7 +85,7 @@ class SubscriptionClient {
     /**
      * Get all subscriptions for the authorized consumer.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -120,7 +120,7 @@ class SubscriptionClient {
      * Get a specific subscription.
      *
      * @param {number} id Subscription id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -155,7 +155,7 @@ class SubscriptionClient {
      * Delete a given subscription.
      *
      * @param {number} id Subscription id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -190,7 +190,7 @@ class SubscriptionClient {
      * Validate a specific subscription.
      *
      * @param {number} id Subscription id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

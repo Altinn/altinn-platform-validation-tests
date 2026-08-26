@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
  * @param {string} systemId System identifier.
  * @param {GuidOpaque|null} [token] Optional continuation token.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponsePaginated|null} Paginated change request response.
  */
 export function ChangeRequestSystemUserVendorGetBySystem(

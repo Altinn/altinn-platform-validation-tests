@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {AccessListGetByOwnerQuery|null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDtoPaginated|null} Paginated access lists.
  */
 export function AccessListGetByOwner(

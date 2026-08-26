@@ -3,6 +3,10 @@
  */
 
 /**
+ * @typedef {import("./dialog-by-id-variables-builder.js").DialogByIdVariables} DialogByIdVariables
+ */
+
+/**
  * GraphQL queries for Dialogporten
  * TODO: These can be moved to separate files if the number of queries grows too large
  */
@@ -10,7 +14,7 @@
 /**
  * Get dialog by id
  *
- * @param variables TODO: description
+ * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built using the DialogByIdVariablesBuilder class
  * @returns graphql query to get dialog by id
  */
 export function getDialogById(variables) {

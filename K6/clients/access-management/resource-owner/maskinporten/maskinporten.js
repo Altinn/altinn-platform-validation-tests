@@ -56,7 +56,7 @@ class MaskinportenClient {
      * @param {MaskinportenDelegationsQuery|null} [query]
      * Optional query parameters. Prefer using
      * {@link MaskinportenDelegationsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -116,7 +116,7 @@ class MaskinportenClient {
      *
      * @param {ConsentLookupRequest} request Consent to look up. Prefer using
      * {@link ConsentLookupRequestBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

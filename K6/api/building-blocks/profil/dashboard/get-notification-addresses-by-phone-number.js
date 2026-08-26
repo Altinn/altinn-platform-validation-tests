@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} phoneNumber Phone number.
  * @param {{countrycode?: string}|null} [query]
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DashboardNotificationAddressResponse>} Notification addresses for the phone number.
  */
 export function GetNotificationAddressesByPhoneNumber(

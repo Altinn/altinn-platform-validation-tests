@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UsersClient} usersClient Client for the Users API.
  * @param {string} userUuid User uuid.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfile|null} User profile.
  */
 export function GetUserByUuid(

@@ -73,7 +73,7 @@ export function arrangeSystemUser(systemNamePrefix) {
  * @returns {[any, EnterpriseTokenGenerator]} The vendor's clients and the token generator behind them.
  */
 export function getClients() {
-    if (clients === undefined) {
+    if (clients === undefined || vendorTokenGenerator === undefined) {
         vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)

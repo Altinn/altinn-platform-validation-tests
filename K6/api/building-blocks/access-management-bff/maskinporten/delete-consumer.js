@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {DeleteConsumerQuery} queryParams Query parameters. Use
  * {@link DeleteConsumerQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the consumer was removed.
  */
 export function DeleteConsumer(

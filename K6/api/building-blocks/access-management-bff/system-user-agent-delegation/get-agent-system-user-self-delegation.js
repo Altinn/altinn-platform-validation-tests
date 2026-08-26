@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} systemUserGuid System user UUID.
  * @param {GetAgentSystemUserSelfDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetAgentSystemUserSelfDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The delegation. The API does not publish a schema for
  * this response.
  */

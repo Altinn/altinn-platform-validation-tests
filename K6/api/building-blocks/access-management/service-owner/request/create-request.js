@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RequestClient} requestClient Client for the Request API.
  * @param {CreateServiceOwnerRequest} request Request payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */
 export function RequestCreateRequest(

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ResourceClient} resourceClient Client for the resource endpoints.
  * @param {GetResourceQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetResourceQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ServiceResourceFE|null} The resource.
  */
 export function GetResource(

@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClientDelegationClient} systemUserClientDelegationClient Client for SystemUserClientDelegation API.
  * @param {string|null} party Party identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemUser[]|null} System users.
  */
 export function GetAgents(

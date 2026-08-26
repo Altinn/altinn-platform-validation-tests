@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {string} requestId Request identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the request was deleted.
  */
 export function RequestSystemUserVendorDelete(

@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ConsentClient} consentClient Client for the consent endpoints.
  * @param {string} consentRequestId Consent request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */

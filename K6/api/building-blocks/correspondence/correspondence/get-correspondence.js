@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {string} correspondenceId Correspondence UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CorrespondenceOverviewExt|null} Correspondence overview or null when request fails.
  */
 export function GetCorrespondence(

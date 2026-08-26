@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetInstanceDelegationCheckQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<RightCheck>|null} Delegation check results.
  */
 export function GetInstanceDelegationCheck(

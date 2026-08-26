@@ -16,9 +16,9 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
  * @param {AppsInstanceDelegationRequestDto} request Delegation request.
- * @param {string} [expectedStatus] Expected status for every delegated right,
+ * @param {string|null} [expectedStatus] Expected status for every delegated right,
  * e.g. Delegated or NotDelegated. Only checked when set.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {AppsInstanceDelegationResponseDto|null} Delegation response.
  */
 export function CreateDelegation(
@@ -71,7 +71,7 @@ export function CreateDelegation(
 
     if (parsed && expectedStatus !== null) {
         check(delegation, {
-            [`CreateDelegation - every right is ${expectedStatus}`]: (b) => {
+            [`CreateDelegation - every right is ${expectedStatus}`]: (/** @type {AppsInstanceDelegationResponseDto|null} */ b) => {
                 const rights = b?.rights ?? [];
 
                 return rights.length > 0

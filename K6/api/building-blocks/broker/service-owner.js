@@ -9,7 +9,7 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {ServiceOwnerClient} serviceOwnerClient Client for the Broker Service Owner API.
  * @param {ServiceOwnerInitializeExt} request Service owner initialization request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the service owner was successfully initialized.
  */
 export function InitializeServiceOwner(
@@ -37,7 +37,7 @@ export function InitializeServiceOwner(
  * Retrieves the service owner for the calling organization within the broker service.
  *
  * @param {ServiceOwnerClient} serviceOwnerClient Client for the Broker Service Owner API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ServiceOwnerOverviewExt|null} Service owner overview information.
  */
 export function GetServiceOwner(

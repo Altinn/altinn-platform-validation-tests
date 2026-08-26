@@ -11,9 +11,9 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetResourcesQuery|null} [queryParams]
  * Query parameters. Use {@link GetResourcesQueryBuilder}.
- * @param {{[key: string]: string|number}} [headers]
+ * @param {{[key: string]: string|number}|null} [headers]
  * Optional request headers.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<ResourcePermissionDto>|null} Retrieved resource permissions.
  */

@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SettingsClient} settingsClient Client for the settings endpoints.
  * @param {string} orgNumber Organisation number.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<NotificationAddressResponse>|null} The notification
  * addresses.
  */

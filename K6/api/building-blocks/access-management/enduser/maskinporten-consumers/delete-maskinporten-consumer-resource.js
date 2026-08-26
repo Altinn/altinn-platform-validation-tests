@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenConsumersClient} maskinportenConsumersClient Client for the Maskinporten Consumers API.
  * @param {MaskinportenConsumerResourcesQuery} queryParams
  * Query parameters. Use {@link MaskinportenConsumerResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the resource delegation was successfully deleted.
  */
 export function DeleteMaskinportenConsumerResource(
