@@ -180,6 +180,7 @@ func main() {
 		// after the manager stops then its usage might be unsafe.
 		// LeaderElectionReleaseOnCancel: true,
 		Cache: cache.Options{
+			// TODO: Read via config
 			DefaultNamespaces: map[string]cache.Config{
 				"access-management":     {},
 				"access-management-bff": {},

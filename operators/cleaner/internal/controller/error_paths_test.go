@@ -64,11 +64,11 @@ func expiredMeta(name string) metav1.ObjectMeta {
 	return metav1.ObjectMeta{
 		Name:      name,
 		Namespace: "default",
-		CreationTimestamp: metav1.Time{
-			Time: time.Now().UTC().Add(
-				-(time.Duration(DeletionThreshold) + 10) * time.Minute,
+		CreationTimestamp: metav1.NewTime(
+			time.Now().UTC().Add(
+				-(DeletionThreshold + 10*time.Minute),
 			),
-		},
+		),
 	}
 }
 
