@@ -23,6 +23,7 @@ export {
     ChangeRequestSystemUserClient,
     CreateAgentRequestSystemUserBuilder,
     CreateRequestSystemUserBuilder,
+    IntrospectionClient,
     RegisterSystemRequestBuilder,
     RequestSystemUserClient,
     SystemRegisterClient,
@@ -32,11 +33,13 @@ export {
 export { SystemUserUpdateDtoBuilder } from "../clients/authentication/system-user.builders.js";
 export { AuthenticationBuildingBlocks } from "./building-blocks/authentication/authentication/index.js";
 export { ChangeRequestSystemUserBuildingBlocks } from "./building-blocks/authentication/change-request-system-user/index.js";
+export { IntrospectionBuildingBlocks } from "./building-blocks/authentication/introspection/index.js";
 export { RequestSystemUserBuildingBlocks } from "./building-blocks/authentication/request-system-user/index.js";
 export { SystemRegisterBuildingBlocks } from "./building-blocks/authentication/system-register/index.js";
 export { SystemUserBuildingBlocks } from "./building-blocks/authentication/system-user/index.js";
 export { SystemUserClientDelegationBuildingBlocks } from "./building-blocks/authentication/system-user-client-delegation/index.js";
 export { ChangeRequestSystemUserDomainChecks } from "./domain-checks/authentication/change-request-system-user.js";
+export { IntrospectionDomainChecks } from "./domain-checks/authentication/introspection.js";
 export { SystemRegisterDomainChecks } from "./domain-checks/authentication/system-register.js";
 export { SystemUserDomainChecks } from "./domain-checks/authentication/system-user.js";
 export { SystemUserClientDelegationDomainChecks } from "./domain-checks/authentication/system-user-client-delegation.js";

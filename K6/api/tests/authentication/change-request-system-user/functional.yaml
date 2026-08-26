@@ -14,3 +14,10 @@ test_definitions:
       - environment: at23
       - environment: tt02
       - environment: yt01
+
+  - test_file: list-change-requests-by-system.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01

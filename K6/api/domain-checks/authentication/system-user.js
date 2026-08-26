@@ -50,7 +50,48 @@ function CheckSystemUserArranged(systemUserId) {
     return success;
 }
 
+/**
+ * Checks that a page of a stream reports where in the stream it sits.
+ *
+ * A stream is read with a continuation token rather than a page number, so the stats
+ * are what tells a caller how far it has come and how much is left. Each check reads
+ * its own numbers and says so: a fallback would let a missing one land on a value the
+ * comparison happens to accept.
+ *
+ * @param {{stats?: {pageStart?: number, pageEnd?: number, sequenceMax?: number}|null, data?: unknown[]|null}|null} page - A page of the stream.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if the stats describe the page, false otherwise.
+ */
+function CheckStreamStats(page, operation) {
+    const stats = page?.stats;
+    const items = page?.data ?? [];
+
+    // Read once, and null for anything that is not a number, so no comparison below
+    // can fall back to a value that happens to satisfy it.
+    const pageStart = typeof stats?.pageStart === "number" ? stats.pageStart : null;
+    const pageEnd = typeof stats?.pageEnd === "number" ? stats.pageEnd : null;
+    const sequenceMax = typeof stats?.sequenceMax === "number" ? stats.sequenceMax : null;
+
+    const success = check(page, {
+        [`CheckStreamStats - ${operation} reports where in the stream the page sits`]: () =>
+            pageStart !== null && pageEnd !== null && sequenceMax !== null,
+        [`CheckStreamStats - ${operation} ends the page no earlier than it starts`]: () =>
+            pageStart !== null && pageEnd !== null && pageEnd >= pageStart,
+        [`CheckStreamStats - ${operation} holds at least what the page does`]: () =>
+            pageEnd !== null && sequenceMax !== null && sequenceMax >= pageEnd,
+        [`CheckStreamStats - ${operation} puts no more items on the page than the stats say`]: () =>
+            pageStart !== null && pageEnd !== null && items.length <= pageEnd - pageStart + 1,
+    });
+
+    if (!success) {
+        console.error(`CheckStreamStats - ${operation} stats: ${JSON.stringify(stats)}, items on the page: ${items.length}`);
+    }
+
+    return success;
+}
+
 export const SystemUserDomainChecks = {
+    CheckStreamStats,
     CheckSystemUserArranged,
     CheckSystemUserFound,
 };
