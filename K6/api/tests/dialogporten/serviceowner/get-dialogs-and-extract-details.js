@@ -1,3 +1,5 @@
+import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import {
     GetDialog,
@@ -57,6 +59,13 @@ export default function (data) {
     drilldown(serviceOwnerApiClient, res);
 }
 
+/**
+ * Reads one dialog from the search result, then everything hanging off it.
+ *
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient Client for the API.
+ * @param {PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog|null} dialogs The search result to pick a dialog from.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function drilldown(serviceOwnerApiClient, dialogs) {
     if (!dialogs?.items?.length) {
         console.log("No dialogs found, skipping GetDialog");
@@ -78,6 +87,11 @@ function drilldown(serviceOwnerApiClient, dialogs) {
     GetDialogLookup(serviceOwnerApiClient, queryParams, getDialogLookupLabel);
 }
 
+/**
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient Client for the API.
+ * @param {string} dialogId The dialog to read the activities of.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function getActivities(serviceOwnerApiClient, dialogId) {
     const activities = GetDialogActivities(
         serviceOwnerApiClient,
@@ -94,6 +108,11 @@ function getActivities(serviceOwnerApiClient, dialogId) {
     };
 }
 
+/**
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient Client for the API.
+ * @param {string} dialogId The dialog to read the transmissions of.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function getTransmissions(serviceOwnerApiClient, dialogId) {
     const transmissions = GetDialogTransmissions(
         serviceOwnerApiClient,
@@ -110,6 +129,11 @@ function getTransmissions(serviceOwnerApiClient, dialogId) {
     };
 }
 
+/**
+ * @param {ServiceOwnerApiClient} serviceOwnerApiClient Client for the API.
+ * @param {string} dialogId The dialog to read the seen logs of.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function getSeenLogs(serviceOwnerApiClient, dialogId) {
     const seenLogs = GetDialogSeenLogs(
         serviceOwnerApiClient,

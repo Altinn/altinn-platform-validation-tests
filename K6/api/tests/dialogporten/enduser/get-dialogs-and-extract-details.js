@@ -6,7 +6,9 @@
  *
  */
 
+import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 import { DialogSearchParamsBuilder } from "../../../../clients/dialogporten/enduser/index.js";
+import { PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog } from "../../../../clients/dialogporten/enduser/types.js";
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import {
     GetDialog,
@@ -65,6 +67,13 @@ export default function (data) {
     drilldown(enduserApiClient, res);
 }
 
+/**
+ * Reads one dialog from the search result, then everything hanging off it.
+ *
+ * @param {EnduserApiClient} enduserApiClient Client for the API.
+ * @param {PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog|null} dialogs The search result to pick a dialog from.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function drilldown(enduserApiClient, dialogs) {
     if (!dialogs?.items?.length) {
         console.log("No dialogs found, skipping GetDialog");
@@ -83,6 +92,11 @@ function drilldown(enduserApiClient, dialogs) {
     GetDialogLookup(enduserApiClient, dialogId, getDialogLookupLabel);
 }
 
+/**
+ * @param {EnduserApiClient} enduserApiClient Client for the API.
+ * @param {string} dialogId The dialog to read the activities of.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function getActivities(enduserApiClient, dialogId) {
     const activities = GetDialogActivities(
         enduserApiClient,
@@ -99,6 +113,11 @@ function getActivities(enduserApiClient, dialogId) {
     };
 }
 
+/**
+ * @param {EnduserApiClient} enduserApiClient Client for the API.
+ * @param {string} dialogId The dialog to read the transmissions of.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function getTransmissions(enduserApiClient, dialogId) {
     const transmissions = GetDialogTransmissions(
         enduserApiClient,
@@ -115,6 +134,11 @@ function getTransmissions(enduserApiClient, dialogId) {
     };
 }
 
+/**
+ * @param {EnduserApiClient} enduserApiClient Client for the API.
+ * @param {string} dialogId The dialog to read the seen logs of.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 function getSeenLogs(enduserApiClient, dialogId) {
     const seenLogs = GetDialogSeenLogs(
         enduserApiClient,
