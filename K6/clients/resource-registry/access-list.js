@@ -81,10 +81,9 @@ class AccessListClient {
             return "";
         }
 
-        const params = [];
+        const params = /** @type {string[]} */ ([]);
 
-        Object.keys(query).forEach((key) => {
-            const value = query[key];
+        Object.entries(query).forEach(([key, value]) => {
 
             if (value === undefined || value === null) {
                 return;

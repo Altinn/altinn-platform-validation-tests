@@ -88,7 +88,7 @@ class StatusClient {
         let url = `${this.FULL_PATH}/feed`;
 
         if (queryParams !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
             const queryKeys = {
                 Seq: queryParams.seq,

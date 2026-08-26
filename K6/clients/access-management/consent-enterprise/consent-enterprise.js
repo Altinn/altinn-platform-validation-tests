@@ -132,10 +132,9 @@ class EnterpriseClient {
         let url = `${this.FULL_PATH}/consentrequests/events`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;

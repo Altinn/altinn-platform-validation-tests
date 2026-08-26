@@ -104,7 +104,7 @@ class AppClient {
         };
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {
@@ -164,10 +164,10 @@ class AppClient {
                 name: url,
                 action: TAGS.AppGetByParty.action,
             },
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
-            },
+            }),
         };
 
         if (person !== null) {
@@ -175,7 +175,7 @@ class AppClient {
         }
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {

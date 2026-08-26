@@ -94,10 +94,10 @@ class EventsClient {
                 name: url,
                 action: TAGS.EventsGet.action,
             },
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: `Bearer ${token}`,
                 Accept: "application/cloudevents+json",
-            },
+            }),
         };
 
         if (alternativeSubject !== null) {
@@ -106,7 +106,7 @@ class EventsClient {
         }
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {

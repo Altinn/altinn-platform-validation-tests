@@ -74,7 +74,7 @@ class SystemUserClient {
         };
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {
@@ -170,7 +170,7 @@ class SystemUserClient {
         };
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {
@@ -229,7 +229,7 @@ class SystemUserClient {
         };
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {
@@ -291,7 +291,7 @@ class SystemUserClient {
         };
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {

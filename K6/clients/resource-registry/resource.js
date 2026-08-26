@@ -94,10 +94,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/resourcelist`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -183,10 +182,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -459,10 +457,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy/subjects`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -621,10 +618,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/Search`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -673,7 +669,9 @@ class ResourceClient {
     ResourceUpdated(query = null, labels = null) {
         // The endpoint is public, so the client may be built without a token
         // generator. That is what lets this run as a healthcheck in prod.
-        const headers = { Accept: "application/json" };
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/json",
+        });
         const token = this.tokenGenerator?.getToken();
 
         if (token) {
@@ -683,10 +681,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/updated`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
