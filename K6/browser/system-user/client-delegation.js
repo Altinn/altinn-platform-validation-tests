@@ -162,8 +162,8 @@ export default async function () {
 
         const response = RequestSystemUserBuildingBlocks.VendorAgentCreate(requestSystemUserClient, agentRequest);
 
-        if (response === null) {
-            fail("Cannot drive the browser flow: creating the agent system user request returned no response");
+        if (!response?.confirmUrl) {
+            fail("Cannot drive the browser flow: creating the agent system user request returned no confirm url");
         }
 
         const page = await browser.newPage();
