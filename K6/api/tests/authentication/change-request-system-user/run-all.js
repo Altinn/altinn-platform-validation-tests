@@ -1,6 +1,7 @@
 import { cleanupArranged } from "./commons.js";
 import runCreateAndApproveChangeRequest, { setup as setupCreateAndApprove } from "./create-and-approve-change-request.js";
 import runCreateAndDeleteChangeRequest, { setup as setupCreateAndDelete } from "./create-and-delete-change-request.js";
+import runListChangeRequestsBySystem, { setup as setupListBySystem } from "./list-change-requests-by-system.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
@@ -12,6 +13,7 @@ export function setup() {
     return {
         createAndApprove: setupCreateAndApprove(),
         createAndDelete: setupCreateAndDelete(),
+        listBySystem: setupListBySystem(),
     };
 }
 
@@ -24,6 +26,7 @@ export function setup() {
 export default function (data) {
     runCreateAndApproveChangeRequest(data.createAndApprove);
     runCreateAndDeleteChangeRequest(data.createAndDelete);
+    runListChangeRequestsBySystem(data.listBySystem);
 }
 
 /**
@@ -34,6 +37,7 @@ export default function (data) {
 export function teardown(data) {
     cleanupArranged(data.createAndApprove);
     cleanupArranged(data.createAndDelete);
+    cleanupArranged(data.listBySystem);
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

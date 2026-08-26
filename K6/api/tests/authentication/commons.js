@@ -1,7 +1,7 @@
 import { group } from "k6";
 
-import { RequestSystemUserClient, SystemRegisterClient } from "../../../clients/authentication/index.js";
-import { RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
+import { ChangeRequestSystemUserClient, RequestSystemUserClient, SystemRegisterClient } from "../../../clients/authentication/index.js";
+import { ChangeRequestSystemUserBuildingBlocks, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
 
 /**
  * Deletes the systems a test left in a vendor's register.
@@ -21,9 +21,10 @@ import { RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from ".
  * @param {string} vendorOrgNo - Organisation number of that vendor, which every system id starts with.
  * @param {string} systemNamePrefix - The prefix the test names its systems with.
  * @param {RequestSystemUserClient} [requestSystemUserClient] - Client for the requests, for a test that makes them. Pass it and the pending requests on a leftover system go too.
+ * @param {ChangeRequestSystemUserClient} [changeRequestSystemUserClient] - Client for the change requests, for a test that makes them. Pass it and the pending change requests go too.
  * @returns {number} How many systems were swept up.
  */
-export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, systemNamePrefix, requestSystemUserClient = null) {
+export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, systemNamePrefix, requestSystemUserClient = null, changeRequestSystemUserClient = null) {
     let swept = 0;
 
     group(`Teardown - remove the systems left in the register by ${systemNamePrefix}`, function () {
@@ -35,6 +36,10 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
         for (const system of leftovers) {
             if (requestSystemUserClient !== null) {
                 sweepPendingRequests(requestSystemUserClient, system.systemId);
+            }
+
+            if (changeRequestSystemUserClient !== null) {
+                sweepPendingChangeRequests(changeRequestSystemUserClient, system.systemId);
             }
 
             SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, system.systemId);
@@ -79,6 +84,40 @@ function sweepPendingRequests(requestSystemUserClient, systemId) {
 
     if (pending.length > 0) {
         console.info(`sweepPendingRequests - withdrew ${pending.length} pending request(s) on ${systemId}`);
+    }
+
+    return pending.length;
+}
+
+/**
+ * Withdraws the change requests still pending on a system.
+ *
+ * Same job as sweepPendingRequests, for the other kind. A change request that
+ * nobody acted on stays listed for the system even after the system user it was
+ * made for and the system itself are deleted, so a run that stopped between
+ * creating one and withdrawing it leaves it behind for good. Nothing else in the
+ * repo picks those up.
+ *
+ * Only the ones still waiting: an accepted change request has been applied to the
+ * system user, and asking to withdraw it only answers an error.
+ *
+ * Only the first page: a system these tests make carries a handful of change
+ * requests per run, so a second page means something other than leftovers.
+ *
+ * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient - Client authenticated as the vendor that made the change requests.
+ * @param {string} systemId - The system whose change requests are withdrawn.
+ * @returns {number} How many change requests were withdrawn.
+ */
+export function sweepPendingChangeRequests(changeRequestSystemUserClient, systemId) {
+    const pending = (ChangeRequestSystemUserBuildingBlocks.VendorGetBySystem(changeRequestSystemUserClient, systemId)?.data ?? [])
+        .filter((changeRequest) => changeRequest?.status === "New");
+
+    for (const changeRequest of pending) {
+        ChangeRequestSystemUserBuildingBlocks.VendorDelete(changeRequestSystemUserClient, changeRequest.id);
+    }
+
+    if (pending.length > 0) {
+        console.info(`sweepPendingChangeRequests - withdrew ${pending.length} pending change request(s) on ${systemId}`);
     }
 
     return pending.length;

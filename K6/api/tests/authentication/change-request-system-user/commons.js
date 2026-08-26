@@ -19,7 +19,7 @@ import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, Re
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { sweepRegisteredSystems } from "../commons.js";
+import { sweepPendingChangeRequests, sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -162,6 +162,12 @@ export function cleanupArranged(arranged) {
             approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 
+            // Before the system user goes: a change request left pending outlives
+            // both it and the system, and stays listed for a system that no longer
+            // exists. An iteration that stopped between creating one and withdrawing
+            // it leaves it behind otherwise, and nothing else picks it up.
+            sweepPendingChangeRequests(apiClients.vendor.changeRequestClient, systemUser.systemId);
+
             // An arrange that stopped early leaves no system user to delete, only the
             // system it had already registered.
             if (systemUser.systemUserId !== undefined) {
@@ -173,8 +179,16 @@ export function cleanupArranged(arranged) {
             // The delete above takes the system this run arranged. The sweep takes
             // whatever an earlier run of the same test left in this vendor's
             // register, which is what happens when the arrange itself broke: k6
-            // skips the teardown when the setup gives up.
-            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, systemUser.vendorOrgNo, systemUser.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
+            // skips the teardown when the setup gives up. Those systems get their
+            // pending change requests withdrawn too, the same way the one above
+            // did.
+            sweepRegisteredSystems(
+                apiClients.vendor.systemRegisterClient,
+                systemUser.vendorOrgNo,
+                systemUser.systemNamePrefix,
+                apiClients.vendor.requestSystemUserClient,
+                apiClients.vendor.changeRequestClient,
+            );
         }
     });
 }

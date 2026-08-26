@@ -166,6 +166,82 @@ function CheckChangeRequestUnwantedAccessPackages(changeRequest, expectedAccessP
 }
 
 /**
+ * Checks that asking several times created that many separate change requests.
+ *
+ * The listing is only read on a list because the test asks for more than one, and a
+ * change request is idempotent on the correlation id rather than on its contents. If
+ * that ever changes, or if a create fails, the ids collapse or come up short and the
+ * listing quietly becomes a list of one. Nothing else in the suite holds that
+ * assumption to account.
+ *
+ * @param {string[]} created - Ids of the change requests that came back.
+ * @param {number} expected - How many were asked for.
+ * @returns {boolean} True if that many separate change requests were created, false otherwise.
+ */
+function CheckChangeRequestsCreated(created, expected) {
+    const success = check(created, {
+        [`CheckChangeRequestsCreated - Asking ${expected} times created ${expected} change requests`]: (ids) =>
+            ids.length === expected,
+        [`CheckChangeRequestsCreated - The ${expected} change requests are separate ones`]: (ids) =>
+            new Set(ids).size === expected,
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestsCreated - expected ${expected} separate ids, got ${JSON.stringify(created)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that none of the change requests are listed for the system any more.
+ *
+ * @param {{data?: ChangeRequestResponse[]|null}|null} listed - The change requests listed for the system.
+ * @param {string[]} withdrawnIds - Ids of the change requests that were withdrawn.
+ * @returns {boolean} True if none of them are in the list, false otherwise.
+ */
+function CheckChangeRequestsGone(listed, withdrawnIds) {
+    const ids = (listed?.data ?? []).map((changeRequest) => changeRequest.id);
+    const left = withdrawnIds.filter((withdrawn) => ids.includes(withdrawn));
+
+    const success = check(listed, {
+        "CheckChangeRequestsGone - A withdrawn change request is no longer listed for its system": () =>
+            left.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestsGone - still listed: ${JSON.stringify(left)}`);
+        console.error(`CheckChangeRequestsGone - ids returned: ${JSON.stringify(ids)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that every change request that was created for a system is listed for it.
+ *
+ * @param {{data?: ChangeRequestResponse[]|null}|null} listed - The change requests listed for the system.
+ * @param {string[]} expectedIds - Ids of the change requests that were created for it.
+ * @returns {boolean} True if all of them are in the list, false otherwise.
+ */
+function CheckChangeRequestsListed(listed, expectedIds) {
+    const ids = (listed?.data ?? []).map((changeRequest) => changeRequest.id);
+    const missing = expectedIds.filter((expected) => !ids.includes(expected));
+
+    const success = check(listed, {
+        "CheckChangeRequestsListed - Every change request that was created is listed for its system": () =>
+            expectedIds.length > 0 && missing.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckChangeRequestsListed - missing ids: ${JSON.stringify(missing)}`);
+        console.error(`CheckChangeRequestsListed - ids returned: ${JSON.stringify(ids)}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that an earlier step produced a change request to act on.
  *
  * A group that needs one cannot say anything useful without it, so a caller that
@@ -252,6 +328,9 @@ export const ChangeRequestSystemUserDomainChecks = {
     CheckChangeRequestRequiredAccessPackages,
     CheckChangeRequestUnwantedAccessPackages,
     CheckSameChangeRequest,
+    CheckChangeRequestsCreated,
+    CheckChangeRequestsGone,
+    CheckChangeRequestsListed,
     CheckChangeRequestId,
     CheckSystemUserToChange,
     CheckChangeRequestApproved,
