@@ -131,10 +131,36 @@ function CheckNextLink(paginated, expectedBaseUrl, operation) {
     return success;
 }
 
+/**
+ * Checks that a page does not hand out a next link.
+ *
+ * The counterpart to CheckNextLink, for a listing that holds everything there is:
+ * a next link there would send a caller to a page that cannot exist.
+ *
+ * @param {PaginatedResponse|null} paginated - The paginated response.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if there is no next link, false otherwise.
+ */
+function CheckNoNextLink(paginated, operation) {
+    const nextLink = paginated?.links?.next;
+
+    const success = check(paginated, {
+        [`CheckNoNextLink - ${operation} hands out no next link`]: () =>
+            nextLink === null || nextLink === undefined || nextLink === "",
+    });
+
+    if (!success) {
+        console.error(`CheckNoNextLink - ${operation} next link: ${nextLink}`);
+    }
+
+    return success;
+}
+
 export const PaginationDomainChecks = {
     CheckPaginatedShape,
     CheckPaginatedNotEmpty,
     CheckMultiplePages,
     CheckItemsBelongToSystem,
     CheckNextLink,
+    CheckNoNextLink,
 };
