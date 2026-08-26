@@ -5,38 +5,37 @@ export class Meny {
 
     constructor(private page: Page) { }
 
+    /**
+     * Venter på at knappen er aktivert og ikke bare synlig. Headeren rendrer den
+     * `disabled` mens den henter det den trenger, og `click()` blokkerer da uten
+     * egen timeout til hele testbudsjettet er brukt opp. Det har skjedd, se
+     * `helpers/junitparser/example-junit-report.xml`.
+     */
     async clickMenuButton() {
-        await expect(this.menuButton()).toBeVisible({ timeout: 10_000 });
+        await expect(
+            this.menuButton(),
+            'Menyknappen i hovednavigasjonen er klar'
+        ).toBeEnabled({ timeout: 15_000 });
+
         await this.menuButton().click();
     }
 
     /**
      * Menyknappen i hovednavigasjonen finnes bare når brukeren er innlogget;
-     * utlogget står det "Logg inn" der i stedet.
+     * utlogget står det "Logg inn" der i stedet. Sjekker at den er aktivert, slik at
+     * innlogget betyr en header som er til å bruke og ikke bare en som er rendret.
      */
     async assertLoggedIn() {
         await expect(
             this.menuButton(),
-            'Menyknappen i hovednavigasjonen vises'
-        ).toBeVisible({ timeout: 15_000 });
+            'Menyknappen i hovednavigasjonen er klar'
+        ).toBeEnabled({ timeout: 15_000 });
     }
 
     private menuButton() {
         return this.page.getByRole('banner').getByRole('button', {
             name: /^(meny|menu)$/i,
         });
-    }
-
-    /**
-     * Menyknappen finnes bare innlogget, og utloggingen kan ende hvor som helst,
-     * også på en side uten hovednavigasjon. At knappen er borte er derfor det
-     * eneste som kan sjekkes uansett hvor brukeren lander.
-     */
-    async assertLoggedOut() {
-        await expect(
-            this.menuButton(),
-            'Menyknappen i hovednavigasjonen vises ikke'
-        ).toBeHidden({ timeout: 15_000 });
     }
 
     async clickLoginButton() {
@@ -46,16 +45,18 @@ export class Meny {
     }
 
     /**
-     * Utloggingen ligger i menyen, så den må åpnes først.
+     * Utloggingen ligger i menyen, så den må åpnes først. Navnet er forankret, slik
+     * menyknappens er: uforankret ville et framtidig "Logg ut av alle enheter" også
+     * truffet.
      */
     async clickLogoutButton() {
         await this.clickMenuButton();
 
         const logoutButton = this.page.getByRole('button', {
-            name: /logg ut|log out/i,
-        });
+            name: /^(logg ut|log out)$/i,
+        }).first();
 
-        await expect(logoutButton, 'Logg ut ligger i menyen').toBeVisible({ timeout: 10_000 });
+        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled({ timeout: 10_000 });
         await logoutButton.click();
     }
 

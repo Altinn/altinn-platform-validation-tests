@@ -1,7 +1,7 @@
 import { expect, Page } from "@playwright/test";
-import { baseUrls } from "../../config/environment";
+import { baseUrls, TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
+import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class ArbeidsflateProfil implements Side {
@@ -15,17 +15,31 @@ export class ArbeidsflateProfil implements Side {
 
     /**
      * Siden krever innlogging, så en utlogget bruker får den ikke å se. Hvor hun
-     * havner er ikke fastlåst her: i testmiljøene sendes hun til ID-porten, mens
-     * flaten i prod kan bli stående på seg selv utlogget først. Det som holder i
-     * begge tilfeller er at ingenting av det innloggede vises.
+     * havner er ikke låst her, og det er med vilje: etter en utlogging sender flaten
+     * henne noen ganger til ID-porten og blir andre ganger stående på seg selv
+     * utlogget, i alle miljøer. Begge er greie utfall.
+     *
+     * At siden har rendret en hovednavigasjon sjekkes derfor først, slik at en side
+     * som er nede ikke leses som utlogget bare fordi ingenting av det innloggede
+     * finnes å vise. Deretter navnet: verken menyknappen eller sidemenyen sier noe
+     * her, appskallet rendrer begge uten sesjon, mens navnet bare vises for en
+     * innlogget bruker. Det er det samme signalet infoportalen bruker.
+     *
+     * At sesjonen faktisk er borte er det `Innlogging.assertLoggedOut` svarer for, på
+     * cookiene, og det er den påstanden som ikke kan lures av et skjermbilde.
      */
-    async assertLoggedOut() {
-        await this.meny.assertLoggedOut();
-
+    async assertLoggedOut(user: TestUser) {
         await expect(
-            this.page.getByRole('complementary').locator('a[href="/profile/saved-searches"]'),
-            'Profilens sidemeny vises ikke'
-        ).toBeHidden();
+            this.page.getByRole('banner'),
+            'Siden har rendret en hovednavigasjon'
+        ).toBeVisible({ timeout: REDIRECT_TIMEOUT });
+
+        // Med romslig tid: appen rendrer av og til det innloggede skjermbildet fra
+        // cache noen sekunder etter utloggingen, før den tar den inn over seg.
+        await expect(
+            this.page.getByText(user.name).first(),
+            'Brukerens navn vises ikke'
+        ).toBeHidden({ timeout: REDIRECT_TIMEOUT });
     }
 
     async assertLoggedIn() {

@@ -8,8 +8,9 @@ export class InfoportalForside implements Side {
 
     constructor(private page: Page) { }
 
+    // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.
     async navigateTo() {
-        await gaaTil(this.page, this.url);
+        await gaaTil(this.page, this.url, 15_000);
     }
 
     // Infoportalen har ingen egen innloggingsindikator, så navnet på brukeren er
