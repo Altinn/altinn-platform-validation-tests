@@ -10,6 +10,24 @@ import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
 
 import postSlackMessage from "./slack.js";
 
+/**
+ * The part of a k6 summary group this summary reads.
+ *
+ * @typedef {object} SummaryGroup
+ * @property {string} [name] Name of the group, absent for the root group.
+ * @property {{name: string, passes: number, fails: number}[]} [checks] Checks recorded directly in this group.
+ * @property {SummaryGroup[]} [groups] Nested groups.
+ */
+
+/**
+ * Appends one line per check in the group, then recurses into its subgroups.
+ *
+ * @param {SummaryGroup} group Group to read checks from.
+ * @param {string[]} lines Lines collected so far, appended to in place.
+ * @param {boolean} onlyFailures Kept for the recursive calls; every check is
+ * listed either way, and the caller decides what to do with the failures.
+ * @returns {void} Nothing. The lines are collected in the array passed in.
+ */
 function collectGroupChecksLines(group, lines, onlyFailures = false) {
     const groupName = group?.name || "(Ikke tilknyttet group)";
     const checks = Array.isArray(group?.checks) ? group.checks : [];
@@ -31,9 +49,14 @@ function collectGroupChecksLines(group, lines, onlyFailures = false) {
     }
 }
 
+/**
+ * @param {{root_group: SummaryGroup}} data The k6 end-of-test summary.
+ * @returns {{stdout: string}} What k6 writes to stdout.
+ */
 export function handleSummary(data) {
     const runningInK8s = __ENV.RUNNING_IN_K8S == "true";
     const onlyFailures = runningInK8s;
+    /** @type {string[]} */
     const lines = [];
     collectGroupChecksLines(data.root_group, lines, onlyFailures);
 
