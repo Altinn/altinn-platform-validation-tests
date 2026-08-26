@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * Use {@link DeleteMyClientsQueryBuilder}.
  * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
  * revoke. Use {@link DelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the access was revoked.
  */
 export function DeleteMyClients(

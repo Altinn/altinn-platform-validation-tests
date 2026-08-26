@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSingleRightDelegationCheckQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetSingleRightDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<RightCheck>|null} Delegation check results.
  */
 export function GetSingleRightDelegationCheck(

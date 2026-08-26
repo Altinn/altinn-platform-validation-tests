@@ -25,6 +25,9 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 export { setup } from "./commons.js";
 
+/**
+ * @param {ReturnType<typeof import("./commons.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
     const customer = getItemFromList(data.customers, randomize);
@@ -53,9 +56,7 @@ export default function (data) {
             }
         });
 
-        let requestId;
-
-        group("Create the system user request", function () {
+        const requestId = group("Create the system user request", function () {
             const createRequest = new CreateRequestSystemUserBuilder()
                 .withExternalRef(registration.externalRef)
                 .withSystemId(registration.systemId)
@@ -72,7 +73,7 @@ export default function (data) {
                 externalRef: registration.externalRef,
             });
 
-            requestId = createdRequest?.id;
+            return createdRequest?.id;
         });
 
         group("Approve the request as the customer", function () {
@@ -111,7 +112,7 @@ export default function (data) {
                 externalRef: registration.externalRef,
             });
 
-            if (systemUser?.id !== undefined) {
+            if (systemUser?.id !== undefined && systemUser.id !== null) {
                 DeleteSystemUser(clients.approver.bffSystemUserClient, customer.partyId, systemUser.id);
             }
 

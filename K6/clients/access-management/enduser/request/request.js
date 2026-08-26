@@ -67,7 +67,7 @@ class RequestClient {
      * Page size header.
      * @param {number|null} [pageNumber]
      * Page number header.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -128,7 +128,7 @@ class RequestClient {
      *
      * @param {ReceivedRequestsQuery|null} [query]
      * Query parameters. Prefer using {@link ReceivedRequestsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -180,7 +180,7 @@ class RequestClient {
      * @param {string} id Request UUID.
      * @param {Array<string>|null} [body]
      * Optional resource rights.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -229,7 +229,7 @@ class RequestClient {
      *
      * @param {string} party Party UUID.
      * @param {string} id Request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -275,7 +275,7 @@ class RequestClient {
      * @param {string} resource Resource identifier.
      * @param {Array<string>|null} [body]
      * Optional rights.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -327,7 +327,7 @@ class RequestClient {
      * @param {string} party Party UUID.
      * @param {string} to Party UUID.
      * @param {string} packageId Access package identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -375,7 +375,7 @@ class RequestClient {
      * Page size header.
      * @param {number|null} [pageNumber]
      * Page number header.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -436,7 +436,7 @@ class RequestClient {
      *
      * @param {SentRequestsQuery|null} [query]
      * Query parameters. Prefer using {@link SentRequestsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -486,7 +486,7 @@ class RequestClient {
      *
      * @param {string} party Party UUID.
      * @param {string} id Request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -529,7 +529,7 @@ class RequestClient {
      *
      * @param {string} party Party UUID.
      * @param {string} id Request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -571,7 +571,7 @@ class RequestClient {
      * Gets a draft request.
      *
      * @param {string} id Request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -612,7 +612,7 @@ class RequestClient {
      *
      * @param {string} party Party UUID.
      * @param {string} id Request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

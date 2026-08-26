@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
  * @param {PackagesSearchQuery} query Query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<PackageDtoSearchObject>|null} Search results.
  */
 export function PackagesSearch(

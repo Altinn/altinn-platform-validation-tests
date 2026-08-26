@@ -38,20 +38,20 @@ export default function (orgs) {
     eventsTokenGenerator.setTokenGeneratorOptions(getEventsTokenOpts(org.orgNo));
 
     group("As an organization, I can read my consent request events and follow pagination", function () {
-        let firstPage;
-
-        group("Fetch the first page of consent request events", function () {
+        const firstPage = group("Fetch the first page of consent request events", function () {
             // No filters: walk every event the organization has.
             const query = new ConsentRequestEventsQueryBuilder().Build();
 
-            firstPage = EnterpriseGetConsentRequestEvents(
+            const page = EnterpriseGetConsentRequestEvents(
                 eventsClient,
                 query,
                 getConsentRequestEventsLabel,
             );
 
-            PaginationDomainChecks.CheckPaginatedShape(firstPage, "EnterpriseGetConsentRequestEvents");
-            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "EnterpriseGetConsentRequestEvents");
+            PaginationDomainChecks.CheckPaginatedShape(page, "EnterpriseGetConsentRequestEvents");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(page, "EnterpriseGetConsentRequestEvents");
+
+            return page;
         });
 
         group("Follow the next-link pagination", function () {

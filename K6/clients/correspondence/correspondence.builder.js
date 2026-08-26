@@ -1,4 +1,4 @@
-import { BaseCorrespondenceExt, CorrespondenceContentExt, CorrespondenceQuery, CorrespondenceReplyOptionExt, CorrespondencesRoleType, CorrespondenceStatusExt, CustomNotificationRecipientExt, EmailContentType, ExternalReferenceExt, InitializeCorrespondenceNotificationExt, InitializeCorrespondencesExt, NotificationChannelExt, NotificationRecipientExt, NotificationTemplateExt } from "./correspondence.types.js";
+import { BaseCorrespondenceExt, CorrespondenceQuery, CorrespondenceReplyOptionExt, CorrespondencesRoleType, CorrespondenceStatusExt, CustomNotificationRecipientExt, EmailContentType, ExternalReferenceExt, InitializeCorrespondenceContentExt, InitializeCorrespondenceNotificationExt, InitializeCorrespondencesExt, NotificationChannelExt, NotificationRecipientExt, NotificationTemplateExt } from "./correspondence.types.js";
 
 /**
  * Builder for CorrespondenceQuery.
@@ -131,12 +131,12 @@ class CorrespondenceQueryBuilder {
  */
 class InitializeCorrespondencesBuilder {
     constructor() {
-        this.model = {
+        this.model = /** @type {InitializeCorrespondencesExt} */ (/** @type {unknown} */ ({
             correspondence: null,
             recipients: null,
             existingAttachments: [],
             idempotentKey: null,
-        };
+        }));
     }
 
     /**
@@ -197,7 +197,7 @@ class InitializeCorrespondencesBuilder {
         }
 
         if (
-            this.model.idempotentKey !== null &&
+            this.model.idempotentKey &&
             !this.isGuid(this.model.idempotentKey)
         ) {
             throw new Error(
@@ -232,7 +232,7 @@ class InitializeCorrespondencesBuilder {
  */
 class BaseCorrespondenceBuilder {
     constructor() {
-        this.model = {
+        this.model = /** @type {BaseCorrespondenceExt} */ (/** @type {unknown} */ ({
             resourceId: null,
             sendersReference: null,
             messageSender: null,
@@ -246,7 +246,7 @@ class BaseCorrespondenceBuilder {
             ignoreReservation: null,
             isConfirmationNeeded: false,
             isConfidential: false,
-        };
+        }));
     }
 
     /**
@@ -277,7 +277,7 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
-     * @param {CorrespondenceContentExt} content See the client method.
+     * @param {InitializeCorrespondenceContentExt} content See the client method.
      * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
      */
     withContent(content) {
@@ -413,7 +413,7 @@ class BaseCorrespondenceBuilder {
  */
 class NotificationBuilder {
     constructor() {
-        this.model = {
+        this.model = /** @type {InitializeCorrespondenceNotificationExt} */ (/** @type {unknown} */ ({
             notificationTemplate: null,
             emailSubject: null,
             emailBody: null,
@@ -431,7 +431,7 @@ class NotificationBuilder {
             customRecipient: null,
             customNotificationRecipients: null,
             overrideRegisteredContactInformation: false,
-        };
+        }));
     }
 
     /**
@@ -603,7 +603,7 @@ class NotificationBuilder {
         }
 
         if (
-            this.model.emailSubject !== null &&
+            this.model.emailSubject &&
             this.model.emailSubject.length > 512
         ) {
             throw new Error(
@@ -612,7 +612,7 @@ class NotificationBuilder {
         }
 
         if (
-            this.model.emailBody !== null &&
+            this.model.emailBody &&
             this.model.emailBody.length > 10000
         ) {
             throw new Error(
@@ -621,7 +621,7 @@ class NotificationBuilder {
         }
 
         if (
-            this.model.smsBody !== null &&
+            this.model.smsBody &&
             this.model.smsBody.length > 2144
         ) {
             throw new Error(
@@ -630,7 +630,7 @@ class NotificationBuilder {
         }
 
         if (
-            this.model.reminderEmailSubject !== null &&
+            this.model.reminderEmailSubject &&
             this.model.reminderEmailSubject.length > 512
         ) {
             throw new Error(
@@ -639,7 +639,7 @@ class NotificationBuilder {
         }
 
         if (
-            this.model.reminderEmailBody !== null &&
+            this.model.reminderEmailBody &&
             this.model.reminderEmailBody.length > 10000
         ) {
             throw new Error(
@@ -648,7 +648,7 @@ class NotificationBuilder {
         }
 
         if (
-            this.model.reminderSmsBody !== null &&
+            this.model.reminderSmsBody &&
             this.model.reminderSmsBody.length > 2144
         ) {
             throw new Error(

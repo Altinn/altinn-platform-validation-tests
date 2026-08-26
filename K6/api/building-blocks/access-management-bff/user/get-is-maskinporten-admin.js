@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UserClient} userClient Client for the user endpoints.
  * @param {string} party Party UUID of the reportee.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean|null} True if the user is a Maskinporten administrator.
  */
 export function GetIsMaskinportenAdmin(userClient, party, labels = null) {

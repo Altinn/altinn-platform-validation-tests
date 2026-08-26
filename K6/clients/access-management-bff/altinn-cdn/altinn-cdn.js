@@ -39,7 +39,7 @@ class AltinnCdnClient {
     /**
      * Gets the organisation data the Altinn CDN publishes, keyed by org code.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetOrgData(labels = null) {

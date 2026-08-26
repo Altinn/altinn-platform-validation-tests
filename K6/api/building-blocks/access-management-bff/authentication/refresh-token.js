@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AuthenticationClient} authenticationClient Client for the
  * authentication endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the token was refreshed.
  */
 export function RefreshToken(authenticationClient, labels = null) {

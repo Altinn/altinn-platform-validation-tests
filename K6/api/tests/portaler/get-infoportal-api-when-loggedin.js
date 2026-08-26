@@ -59,7 +59,7 @@ export function setup() {
 /**
  * Main test function that runs for each VU, will run for each iteration. Calls the tree info portal api endpoints, same as a logged in user would do via the browser.
  *
- * @param data TODO: description
+ * @param {ReturnType<typeof setup>} data Users segmented per VU by setup.
  */
 export default function (data) {
     const user = getItemFromList(data[exec.vu.idInTest - 1], randomize);
@@ -95,7 +95,7 @@ let personalTokenGenerator = undefined;
  * ]} Tuple containing the Info Portal API client and token generator.
  */
 function getClients() {
-    if (infoPortalApiClient === undefined) {
+    if (infoPortalApiClient === undefined || personalTokenGenerator === undefined) {
         const scopes = CreateScopeString([
             AltinnScopes.PDP.AUTHORIZE.ENDUSER
         ]);

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} org Application owner acronym.
  * @param {string} app Application name.
  * @param {AppEventsByAppQuery|null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
  */
 export function AppGetByApp(

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSentRequestsQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetSentRequestsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The sent requests. The API does not publish a schema
  * for this response.
  */

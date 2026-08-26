@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {WithdrawSentRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link WithdrawSentRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the request was withdrawn.
  */
 export function WithdrawSentRequest(

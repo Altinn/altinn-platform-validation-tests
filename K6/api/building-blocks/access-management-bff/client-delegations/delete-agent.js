@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {DeleteAgentQuery|null} [queryParams] Optional query parameters. Use
  * {@link DeleteAgentQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the agent was removed.
  */
 export function DeleteAgent(

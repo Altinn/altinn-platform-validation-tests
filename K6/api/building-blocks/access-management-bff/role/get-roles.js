@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the roles the API knows about.
  *
  * @param {RoleClient} roleClient Client for the role endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Role>|null} The roles.
  */
 export function GetRoles(roleClient, labels = null) {

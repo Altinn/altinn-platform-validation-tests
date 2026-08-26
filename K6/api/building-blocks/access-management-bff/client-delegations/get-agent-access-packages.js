@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetAgentAccessPackagesQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAgentAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ClientDelegation>|null} Clients with the access packages the
  * agent holds on them.
  */

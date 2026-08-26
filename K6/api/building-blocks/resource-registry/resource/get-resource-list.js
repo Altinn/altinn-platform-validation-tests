@@ -8,8 +8,8 @@ import { withRetries } from "../../common/retry.js";
  * Gets all resources.
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
- * @param {ResourceListQueryBuilder | object} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {ResourceListQueryBuilder | object|null} [query] Optional query parameters.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ServiceResource>|null} List of resources.
  */
 export function ResourceGetResourceList(

@@ -23,7 +23,7 @@ let requestApiClient = undefined;
  * Each CSV row holds an organization (Virksomhet) and its daglig leder:
  * pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
  *
- * @returns {{ users: Array, packages: string[] }} Test input: parsed CSV rows
+ * @returns {{ users: any[], packages: string[] }} Test input: parsed CSV rows
  * and the URNs of packages that can be requested (Organisasjon, delegable and
  * assignable).
  */
@@ -62,7 +62,7 @@ function fetchAssignablePackages() {
     const groups = PackagesExport(metaApiClient, { action: "fetch-access-packages" });
 
     const urns = [];
-    for (const group of groups) {
+    for (const group of groups ?? []) {
         if (group.type !== "Organisasjon") continue;
         for (const area of group.areas ?? []) {
             for (const pkg of area.packages ?? []) {
@@ -99,8 +99,8 @@ export function getClients() {
 /**
  * Builds enduser personal-token options for a given user.
  *
- * @param {string=} pid - the user's national identity number
- * @param {string=} partyUuid - the user's party uuid
+ * @param {string|null} [pid] - the user's national identity number
+ * @param {string|null} [partyUuid] - the user's party uuid
  * @returns Token generator options for the given user.
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {

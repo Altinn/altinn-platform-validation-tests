@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetInstanceRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceRightsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {InstanceRights|null} The rights on the instance.
  */
 export function GetInstanceRights(

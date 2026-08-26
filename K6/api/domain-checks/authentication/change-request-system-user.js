@@ -6,7 +6,7 @@ import { missingRights } from "../common/rights.js";
 /**
  * Checks that a change request is for the expected system user.
  *
- * @param {ChangeRequestResponse} changeRequest - The created change request.
+ * @param {ChangeRequestResponse|null} changeRequest - The created change request.
  * @param {string} expectedSystemUserId - The system user the change request was made for.
  * @returns {boolean} True if the change request is for that system user, false otherwise.
  */
@@ -28,7 +28,7 @@ function CheckChangeRequestSystemUserId(changeRequest, expectedSystemUserId) {
 /**
  * Checks that a change request carries the url the customer is sent to in order to approve it.
  *
- * @param {ChangeRequestResponse} changeRequest - The created change request.
+ * @param {ChangeRequestResponse|null} changeRequest - The created change request.
  * @returns {boolean} True if the confirm url is there, false otherwise.
  */
 function CheckChangeRequestConfirmUrl(changeRequest) {
@@ -49,7 +49,7 @@ function CheckChangeRequestConfirmUrl(changeRequest) {
 /**
  * Checks that a change request has the expected status.
  *
- * @param {ChangeRequestResponse} changeRequest - The change request to check.
+ * @param {ChangeRequestResponse|null} changeRequest - The change request to check.
  * @param {string} expectedStatus - The status the change request is expected to have.
  * @returns {boolean} True if the status matches, false otherwise.
  */
@@ -70,7 +70,7 @@ function CheckChangeRequestStatus(changeRequest, expectedStatus) {
 /**
  * Checks that a change request asks for the rights it was created with.
  *
- * @param {ChangeRequestResponse} changeRequest - The change request to check.
+ * @param {ChangeRequestResponse|null} changeRequest - The change request to check.
  * @param {Right[]} expectedRights - The rights the change request should require.
  * @returns {boolean} True if all expected rights are required, false otherwise.
  */
@@ -98,8 +98,8 @@ function CheckChangeRequestRequiredRights(changeRequest, expectedRights) {
  * same rights sent with a fresh correlation id creates a second change request,
  * while reusing the correlation id answers with the first one.
  *
- * @param {ChangeRequestResponse} changeRequest - The change request returned by the second call.
- * @param {string} expectedId - Id of the change request the first call created.
+ * @param {ChangeRequestResponse|null} changeRequest - The change request returned by the second call.
+ * @param {string|null|undefined} expectedId - Id of the change request the first call created.
  * @returns {boolean} True if the same change request came back, false otherwise.
  */
 function CheckSameChangeRequest(changeRequest, expectedId) {
@@ -120,7 +120,7 @@ function CheckSameChangeRequest(changeRequest, expectedId) {
 /**
  * Checks that a change request asks for the expected access packages.
  *
- * @param {ChangeRequestResponse} changeRequest - The change request to check.
+ * @param {ChangeRequestResponse|null} changeRequest - The change request to check.
  * @param {AccessPackage[]} expectedAccessPackages - The access packages the change request should ask for.
  * @returns {boolean} True if all of them are asked for, false otherwise.
  */
@@ -144,7 +144,7 @@ function CheckChangeRequestRequiredAccessPackages(changeRequest, expectedAccessP
 /**
  * Checks that a change request gives up the expected access packages.
  *
- * @param {ChangeRequestResponse} changeRequest - The change request to check.
+ * @param {ChangeRequestResponse|null} changeRequest - The change request to check.
  * @param {AccessPackage[]} expectedAccessPackages - The access packages the change request should give up.
  * @returns {boolean} True if all of them are given up, false otherwise.
  */
@@ -171,8 +171,8 @@ function CheckChangeRequestUnwantedAccessPackages(changeRequest, expectedAccessP
  * A group that needs one cannot say anything useful without it, so a caller that
  * gets false back should fail() and stop the run at the step that broke.
  *
- * @param {string|undefined} changeRequestId - The change request id the earlier step should have produced.
- * @returns {boolean} True if there is a change request to act on, false otherwise.
+ * @param {string|null|undefined} changeRequestId - The change request id the earlier step should have produced.
+ * @returns {changeRequestId is string} True if there is a change request to act on, false otherwise.
  */
 function CheckChangeRequestId(changeRequestId) {
     const success = check(changeRequestId, {
@@ -191,8 +191,8 @@ function CheckChangeRequestId(changeRequestId) {
 /**
  * Checks that the customer has a system user for a change request to act on.
  *
- * @param {string|undefined} systemUserId - The system user the arrange step should have produced.
- * @returns {boolean} True if there is a system user to change, false otherwise.
+ * @param {string|null|undefined} systemUserId - The system user the arrange step should have produced.
+ * @returns {systemUserId is string} True if there is a system user to change, false otherwise.
  */
 function CheckSystemUserToChange(systemUserId) {
     const success = check(systemUserId, {

@@ -13,6 +13,7 @@ const environment = __ENV.ENVIRONMENT || "yt01";
 // Note that the testdata is not deterministic, and the number of clients for each user may change over time.
 // Add for other environments as needed, but be aware that the testdata may change over time,
 // and the test may need to be updated accordingly.
+/** @type {{[environment: string]: {uuid: string, label: string}[]}} */
 const endUsersByEnvironment = {
     yt01: [
         { uuid: "275d26bf-ad2b-4da6-a872-01828ed2efa1", label: "a_systemuser_78k" },

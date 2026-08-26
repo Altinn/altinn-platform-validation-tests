@@ -41,7 +41,7 @@ class AuthorizedPartiesClient {
      * @param {EndUserAuthorizedPartiesQuery|null} [query]
      * Optional query parameters. Prefer using
      * {@link EndUserAuthorizedPartiesQueryBuilder} to construct this object.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

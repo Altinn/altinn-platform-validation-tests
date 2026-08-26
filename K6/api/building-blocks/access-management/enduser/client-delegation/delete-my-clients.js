@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link DeleteMyClientsQueryBuilder}.
  * @param {DelegationBatchInputDto|null} [body]
  * Request body. Use {@link DelegationBatchInputBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DelegationDto>} The delegations that were revoked.
  */
 export function DeleteMyClients(

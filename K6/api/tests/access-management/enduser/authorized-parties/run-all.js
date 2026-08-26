@@ -12,6 +12,9 @@ export function setup() {
     return CommonSetup();
 };
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     DaglAFaarPersonAIAktoerlista(data);
     DaglBFaarHovedenhetAIAktoerlista(data);

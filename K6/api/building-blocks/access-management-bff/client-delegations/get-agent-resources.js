@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetAgentResourcesQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAgentResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ClientDelegation>|null} Clients with the resources the agent
  * holds on them.
  */

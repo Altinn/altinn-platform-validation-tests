@@ -47,9 +47,9 @@ class AuthenticationClient {
      * @param {object} [options] What to send.
      * @param {string|null} [options.token] The token to exchange. Defaults to the one the generator serves, and null sends no Authorization header at all.
      * @param {boolean} [options.test] Only relevant for Maskinporten: asks for the org to be treated as ttd when the consumer is digdir.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ExchangeToken(tokenProvider, options = {}, labels = null) {
         const token = "token" in options
@@ -77,9 +77,9 @@ class AuthenticationClient {
             };
         }
 
-        const headers = {
+        const headers = /** @type {{[key: string]: string}} */ ({
             Accept: "application/json",
-        };
+        });
 
         if (token !== null && token !== undefined) {
             headers.Authorization = `Bearer ${token}`;
