@@ -1,7 +1,7 @@
 import { fail, group } from "k6";
 
 import { IntrospectionBuildingBlocks, IntrospectionDomainChecks } from "../../../authentication-imports.js";
-import { getClient } from "./commons.js";
+import { getClient, getPlatformAccessToken, PLATFORM_TOKEN_ISSUER } from "./commons.js";
 
 export { setup } from "./commons.js";
 
@@ -21,20 +21,36 @@ const EMPTY_TOKEN_REFUSAL = /token/i;
  * says why, and anything it can be handed comes back as an answer rather than as a
  * 500.
  *
- * It deliberately does not assert that a valid token comes back active. No token
- * this repo can mint does, not even one whose `iss` is the environment's own
- * authentication service, so what makes a token active is an open question for the
- * authentication team rather than something to pin down in a check. See #463.
+ * Both answers are covered, which is what makes the negative ones worth anything:
+ * a token that comes back active proves the endpoint reads what it is handed, so an
+ * inactive answer elsewhere is a refusal rather than an endpoint that never looked.
  *
- * That gap is worth knowing when reading the groups below. Until it is closed,
- * nothing here separates an endpoint that read the token and found it invalid from
- * one that never read it at all, so the groups are named for what they do verify
- * rather than for what a reader would expect them to.
+ * Which token comes back active is narrower than it first appears. The endpoint
+ * tries its validators in turn and answers active for the first that accepts the
+ * token, and only one is wired up: the eFormidling access token validator, which
+ * takes platform access tokens. Ordinary Altinn bearers are not that, so the
+ * enterprise and personal tokens the rest of this repo runs on come back inactive,
+ * and so does an Altinn token off the exchange. See #463.
  */
 export default function () {
     const introspectionClient = getClient();
 
     group("As a caller, I can ask whether a token is valid", function () {
+        group("A platform access token is reported active", function () {
+            // The bearer stays the client's own enterprise token. Only the
+            // introspected token is swapped, since the two are separate concerns
+            // here and the endpoint answers about the one in the body.
+            const introspection = IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, {
+                token: getPlatformAccessToken(),
+            });
+
+            if (introspection === null) {
+                fail("cannot read the answer: the introspection call did not return one");
+            }
+
+            IntrospectionDomainChecks.CheckTokenActive(introspection, PLATFORM_TOKEN_ISSUER);
+        });
+
         group("Introspecting a token answers whether it is active", function () {
             // The hint is what a caller that knows what it holds sends along.
             const introspection = IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, { tokenTypeHint: "access_token" });
