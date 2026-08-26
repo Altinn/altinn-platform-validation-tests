@@ -57,7 +57,7 @@ export function setup() {
 /**
  * Test: a vendor can ask for more rights on an existing system user.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -80,11 +80,14 @@ export default function (data) {
         fail("cannot ask for more rights: the setup produced no system user");
     }
 
+    // Bound after the guard, so the groups below read a value the compiler knows is
+    // there rather than one narrowed outside their own scope.
+    const systemUserId = systemUser.systemUserId;
+
     group("As a vendor, I can ask an existing system user for more rights", function () {
-        let changeRequestId;
         const correlationId = uuidv4();
 
-        group("Ask for a right the system user does not have", function () {
+        const changeRequestId = group("Ask for a right the system user does not have", function () {
 
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(REQUESTED_RIGHTS)
@@ -97,17 +100,17 @@ export default function (data) {
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
-                systemUser.systemUserId,
+                systemUserId,
                 201,
             );
 
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUser.systemUserId);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUserId);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestConfirmUrl(changeRequestResponse);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequestResponse, REQUESTED_RIGHTS);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredAccessPackages(changeRequestResponse, addedAccessPackages);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestUnwantedAccessPackages(changeRequestResponse, removedAccessPackages);
 
-            changeRequestId = changeRequestResponse?.id;
+            return changeRequestResponse?.id;
         });
 
         group("Asking again with the same correlation id returns the same change request", function () {
@@ -126,7 +129,7 @@ export default function (data) {
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
-                systemUser.systemUserId,
+                systemUserId,
                 200,
             );
 
@@ -166,7 +169,7 @@ export default function (data) {
  * deleted from the test itself without pulling them out from under the
  * iterations that follow.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

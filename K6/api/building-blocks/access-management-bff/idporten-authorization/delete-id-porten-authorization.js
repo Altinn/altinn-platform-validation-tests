@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {IdPortenAuthorizationClient} idPortenAuthorizationClient Client for
  * the ID-porten authorization endpoints.
  * @param {string} id Authorization identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the authorization was deleted.
  */
 export function DeleteIdPortenAuthorization(

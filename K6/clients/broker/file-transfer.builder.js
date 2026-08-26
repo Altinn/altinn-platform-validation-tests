@@ -16,8 +16,8 @@ import { FileTransferInitalizeExt, FileTransferQuery, FileTransferStatusExt, Rec
  */
 class FileTransferInitializeRequestBuilder {
     constructor() {
-        /** @type {FileTransferInitalizeExt} */
-        this.request = {
+        // The model is filled in by the setters, so the required fields start out null.
+        this.request = /** @type {FileTransferInitalizeExt} */ (/** @type {unknown} */ ({
             fileName: null,
             resourceId: null,
             sender: null,
@@ -26,7 +26,7 @@ class FileTransferInitializeRequestBuilder {
             propertyList: null,
             checksum: null,
             disableVirusScan: null,
-        };
+        }));
     }
 
     /**

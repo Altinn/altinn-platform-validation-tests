@@ -44,7 +44,7 @@ class AppClient {
      * Inserts a new event.
      *
      * @param {AppCloudEventRequestModel} request Event payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -82,7 +82,7 @@ class AppClient {
      * @param {string} org Application owner acronym.
      * @param {string} app Application name.
      * @param {AppEventsByAppQuery|null} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -104,7 +104,7 @@ class AppClient {
         };
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {
@@ -148,8 +148,8 @@ class AppClient {
      * Retrieves events related to a party.
      *
      * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
-     * @param {string} [person] Person number header value.
-     * @param {{[key: string]: string}} [labels]
+     * @param {string|null} [person] Person number header value.
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -164,10 +164,10 @@ class AppClient {
                 name: url,
                 action: TAGS.AppGetByParty.action,
             },
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
-            },
+            }),
         };
 
         if (person !== null) {
@@ -175,7 +175,7 @@ class AppClient {
         }
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {

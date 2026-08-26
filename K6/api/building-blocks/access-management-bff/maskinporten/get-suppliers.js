@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSuppliersQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetSuppliersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<MaskinportenConnection>|null} The Maskinporten suppliers.
  */
 export function GetSuppliers(

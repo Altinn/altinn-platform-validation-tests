@@ -16,7 +16,7 @@ import { withRetries } from "../../common/retry.js";
  * query parameters. Use {@link CreateAgentSystemUserDelegationQueryBuilder}.
  * @param {AgentDelegationRequestFE|null} [body] The customer and access to
  * delegate. Use {@link AgentDelegationRequestFEBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The created delegation. The API does not publish a
  * schema for this response.
  */

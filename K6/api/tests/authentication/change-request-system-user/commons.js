@@ -235,6 +235,11 @@ export function getClients() {
         };
     }
 
+    if (approverTokenGenerator === undefined || vendorTokenGenerator === undefined) {
+        // Only reachable if the block above stops building all three together.
+        fail("getClients did not build the token generators");
+    }
+
     return [clients, approverTokenGenerator, vendorTokenGenerator];
 }
 
@@ -308,6 +313,7 @@ export function findAccessPackages(count, vendorOrgNo) {
         .map((result) => result.object)
         .filter((found) => found?.urn && found.isDelegable && found.isAssignable)
         .map((found) => found.urn)
+        .filter((urn) => urn !== null && urn !== undefined)
         .sort();
 
     // Called before anything is registered, so failing outright leaves nothing
@@ -412,14 +418,13 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * @param {any} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
- * @returns {string} Identifier of the approved system user.
+ * @returns {string|undefined} Identifier of the approved system user, or
+ * undefined when a step of the arrange did not get that far.
  */
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
     const [apiClients] = getClients();
 
-    let systemUserId;
-
-    group("Arrange - the customer has an approved system user", function () {
+    return group("Arrange - the customer has an approved system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
@@ -466,12 +471,12 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
             externalRef: registration.externalRef,
         });
 
-        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser?.id)) {
-            return;
+        const systemUserId = systemUser?.id;
+
+        if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
+            return undefined;
         }
 
-        systemUserId = systemUser.id;
+        return systemUserId;
     });
-
-    return systemUserId;
 }

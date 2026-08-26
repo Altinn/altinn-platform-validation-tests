@@ -66,7 +66,7 @@ class TusFileTransferClient {
      * OPTIONS /filetransfer/upload/tus/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUploadOptions(fileTransferId, labels = null) {
@@ -102,10 +102,10 @@ class TusFileTransferClient {
      * POST /filetransfer/upload/tus/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {number} [uploadLength] Total length of the upload in bytes.
-     * @param {string} [uploadConcat] Tus concatenation header, e.g. "partial"
+     * @param {number|null} [uploadLength] Total length of the upload in bytes.
+     * @param {string|null} [uploadConcat] Tus concatenation header, e.g. "partial"
      * or "final;/url1 /url2".
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreatePartialUpload(
@@ -129,10 +129,10 @@ class TusFileTransferClient {
             };
         }
 
-        const headers = {
+        const headers = /** @type {{[key: string]: string}} */ ({
             Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
             "Tus-Resumable": TUS_VERSION,
-        };
+        });
 
         if (uploadLength !== null) {
             headers["Upload-Length"] = `${uploadLength}`;
@@ -154,7 +154,7 @@ class TusFileTransferClient {
      * HEAD /filetransfer/upload/tus/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUploadStatus(fileTransferId, labels = null) {
@@ -192,7 +192,7 @@ class TusFileTransferClient {
      * @param {string} fileTransferId File transfer UUID.
      * @param {number} uploadOffset Offset in bytes the chunk starts at.
      * @param {*} body Chunk of binary file content.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadChunk(fileTransferId, uploadOffset, body, labels = null) {
@@ -230,7 +230,7 @@ class TusFileTransferClient {
      * DELETE /filetransfer/upload/tus/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteUpload(fileTransferId, labels = null) {
@@ -267,7 +267,7 @@ class TusFileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {string} partialUploadId Partial upload identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartialUploadStatus(fileTransferId, partialUploadId, labels = null) {
@@ -306,7 +306,7 @@ class TusFileTransferClient {
      * @param {string} partialUploadId Partial upload identifier.
      * @param {number} uploadOffset Offset in bytes the chunk starts at.
      * @param {*} body Chunk of binary file content.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadPartialChunk(
@@ -351,7 +351,7 @@ class TusFileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {string} partialUploadId Partial upload identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeletePartialUpload(fileTransferId, partialUploadId, labels = null) {

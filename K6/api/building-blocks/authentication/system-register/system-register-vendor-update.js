@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
  * @param {RegisterSystemRequest} request Updated system model.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemRegisterUpdateResult|null} Update result.
  */
 export function SystemRegisterVendorUpdate(

@@ -70,6 +70,7 @@ const REDIRECT_URL = "https://digdir.no";
  * of the test data rather than of the test, which is why the facilitator csv only
  * holds property managers that have property clients.
  */
+/** @type {{[orgType: string]: string[]}} */
 const ACCESS_PACKAGES_BY_ORG_TYPE = {
     regnskapsforer: [
         "urn:altinn:accesspackage:regnskapsforer-med-signeringsrettighet",
@@ -118,7 +119,11 @@ let vendorTokenGenerator = undefined;
  * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
-    if (clients === undefined) {
+    if (
+        clients === undefined ||
+        facilitatorTokenGenerator === undefined ||
+        vendorTokenGenerator === undefined
+    ) {
         vendorTokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
@@ -235,13 +240,11 @@ export function arrangeAgentSystemUser() {
 
     const registration = createSystemRegistration(vendorOrgNo, accessPackages);
 
-    let systemUserId;
-
-    group("Arrange - the facilitator has an approved agent system user", function () {
+    const systemUserId = group("Arrange - the facilitator has an approved agent system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            return;
+            return undefined;
         }
 
         const agentRequest = new CreateAgentRequestSystemUserBuilder()
@@ -250,14 +253,14 @@ export function arrangeAgentSystemUser() {
             .withPartyOrgNo(facilitator.orgNo)
             // The agent request takes access package objects, while the system
             // registration below takes the bare urns.
-            .withAccessPackages(accessPackages.map((urn) => ({ urn })))
+            .withAccessPackages(accessPackages.map((/** @type {string} */ urn) => ({ urn })))
             .withRedirectUrl(REDIRECT_URL)
             .build();
 
         const created = RequestSystemUserBuildingBlocks.VendorAgentCreate(apiClients.vendor.requestSystemUserClient, agentRequest);
 
         if (!created?.id) {
-            return;
+            return undefined;
         }
 
         // From here on the facilitator is the one acting, so the token has to be
@@ -265,20 +268,23 @@ export function arrangeAgentSystemUser() {
         tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, facilitator.partyId, created.id)) {
-            return;
+            return undefined;
         }
 
         // The system id is nested under system, not on the system user itself.
         const systemUsers = GetAgentSystemUsers(apiClients.facilitator.bffSystemUserClient, facilitator.partyId) ?? [];
-        const systemUser = systemUsers.find((candidate) => candidate.system?.systemId === registration.systemId);
+        const systemUser = systemUsers.find(
+            (/** @type {{id?: string, system?: {systemId?: string}}} */ candidate) =>
+                candidate.system?.systemId === registration.systemId,
+        );
 
         if (systemUser === undefined) {
             console.error(`arrangeAgentSystemUser - agent system users returned: ${JSON.stringify(systemUsers)}`);
 
-            return;
+            return undefined;
         }
 
-        systemUserId = systemUser.id;
+        return systemUser.id;
     });
 
     return [

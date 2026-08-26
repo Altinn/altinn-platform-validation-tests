@@ -42,7 +42,7 @@ class OrderClient {
      * Creates a new notification order with zero or more reminders.
      *
      * @param {NotificationOrderChainRequestExt} request Notification order request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -78,7 +78,7 @@ class OrderClient {
      * Creates a new composed email notification order.
      *
      * @param {ComposedEmailRequestExt} request Composed email order request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

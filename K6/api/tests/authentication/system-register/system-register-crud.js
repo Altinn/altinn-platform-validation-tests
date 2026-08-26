@@ -12,6 +12,10 @@ const SYSTEM_NAME_PREFIX = "K6-super-system-";
 
 export { setup } from "./commons.js";
 
+/**
+ * @param {Awaited<ReturnType<typeof import("./commons.js").setup>>} data Test data from setup.
+ * @returns {Promise<void>} Resolves when the iteration is done.
+ */
 export default async function (data) {
     const systemRegisterClient = getVendorClient(data.vendorToken);
 

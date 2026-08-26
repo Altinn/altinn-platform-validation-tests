@@ -17,6 +17,10 @@ export const options = getOptions([
     currentLabel,
 ]);
 
+/**
+ * @param {string[]} words The words to search for, one drawn per iteration.
+ * @returns {void} Nothing. The checks record what came back.
+ */
 export default function (words) {
     const randomWord = words[Math.floor(Math.random() * words.length)];
     searchInfoCloud(randomWord, rootLabel);

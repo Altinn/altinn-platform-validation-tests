@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} party Party UUID.
  * @param {string} to Party UUID.
  * @param {string} packageId Package identifier.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */

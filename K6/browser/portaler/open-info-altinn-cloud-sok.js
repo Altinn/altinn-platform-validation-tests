@@ -13,6 +13,10 @@ export function setup() {
     return fetchTestData("portaler/words.txt");
 }
 
+/**
+ * @param {string[]} words The words to search for, one drawn per iteration.
+ * @returns {Promise<void>} Resolves when the search page has been read.
+ */
 export default async function (words) {
     const randomWord = words[Math.floor(Math.random() * words.length)];
     const encodedWord = encodeURIComponent(randomWord);
@@ -43,7 +47,7 @@ export default async function (words) {
             .textContent();
 
         check(text, {
-            "Text includes Søk på altinn.no": (h) => h.includes("Søk på altinn.no"),
+            "Text includes Søk på altinn.no": (h) => h?.includes("Søk på altinn.no") === true,
         });
     }
     catch (error) {

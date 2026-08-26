@@ -23,7 +23,7 @@ const testDataFetchFailures = new Counter("test_data_fetch_failures");
  * Records the outcome of one test data read.
  *
  * @param {string} file The file that was read, as the caller named it.
- * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @param {string|null} [reason] Why the read failed, or omitted when it worked.
  * @returns {void}
  */
 function recordTestDataFetch(file, reason = null) {
@@ -79,10 +79,22 @@ export function retry(conditionFn, options = {}) {
     return success;
 }
 
+/**
+ * Parses CSV text with a header row into one object per row.
+ *
+ * @param {string} data The CSV text.
+ * @returns {{[column: string]: string}[]} One object per row, keyed by column.
+ */
 export function parseCsvData(data) {
     return papaparse.parse(data, { header: true, skipEmptyLines: true }).data;
 }
 
+/**
+ * Reads a local CSV file with a header row.
+ *
+ * @param {string} filename Path to the file.
+ * @returns {{[column: string]: string}[]} One object per row, keyed by column.
+ */
 export function readCsv(filename) {
     return parseCsvData(open(filename));
 }
@@ -106,11 +118,13 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  *
- * @param listOfItems TODO: description
- * @param numberOfSublists TODO: description
- * @returns A list with numberOfSublists lists.
+ * @template T
+ * @param {T[]} listOfItems The items to divide.
+ * @param {number} numberOfSublists How many sublists to divide them into.
+ * @returns {T[][]} A list with numberOfSublists lists.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
+    /** @type {T[][]} */
     const sublists = [];
     const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
     const remainder = listOfItems.length % numberOfSublists;
@@ -132,7 +146,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
  */
 export function getNumberOfVUs() {
     return (
-        /** @type {any} */ (exec.test.options.scenarios.default).vus ??
+        /** @type {any} */ (exec.test.options.scenarios?.default).vus ??
         __ENV.BREAKPOINT_STAGE_TARGET ??
         1
     );
@@ -143,12 +157,15 @@ export function getNumberOfVUs() {
  *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {import("k6/options").Options} The k6 options for the run.
+ * @returns {import("k6/options").Options & {thresholds: {[name: string]: import("k6/options").Threshold[]}}}
+ * The k6 options for the run. thresholds is always populated, so a caller can
+ * add its own without checking.
  */
 export function getOptions(labels, groups = []) {
     const options = {
         summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
+        /** @type {{[name: string]: import("k6/options").Threshold[]}} */
         thresholds: {},
     };
 
@@ -167,6 +184,10 @@ export function getOptions(labels, groups = []) {
     return options;
 }
 
+/**
+ * @param {string} ip Address to validate.
+ * @returns {boolean} True when the address is a valid IPv4 or IPv6 address.
+ */
 export function checkIp(ip) {
     const ipv4 =
         /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -184,6 +205,7 @@ export function checkIp(ip) {
  */
 export function requireEnv(vars) {
     const missing = [];
+    /** @type {{[key: string]: string}} */
     const result = {};
 
     for (const name of vars) {

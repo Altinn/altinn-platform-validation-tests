@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} id Resource identifier.
  * @param {ResourcePolicyRightsQuery|null} [query] Query parameters.
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels] See the API documentation.
+ * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
  * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
  */

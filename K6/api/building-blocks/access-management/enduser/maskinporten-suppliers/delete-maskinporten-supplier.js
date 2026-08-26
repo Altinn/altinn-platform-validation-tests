@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenSuppliersClient} maskinportenSuppliersClient Client for the Maskinporten Suppliers API.
  * @param {MaskinportenSuppliersQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenSuppliersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the supplier connection was successfully deleted.
  */
 export function DeleteMaskinportenSupplier(

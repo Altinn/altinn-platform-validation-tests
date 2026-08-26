@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {Array<string>} subjects List of subjects for resource information.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SubjectResourcesPaginated|null} Resources grouped by subject.
  */
 export function ResourceGetResourcesBySubjects(

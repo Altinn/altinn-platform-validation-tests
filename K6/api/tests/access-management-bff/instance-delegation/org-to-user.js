@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 import exec from "k6/execution";
 
 import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../../clients/access-management-bff/access-package/index.js";
@@ -168,11 +168,9 @@ export default function (data) {
     } = getClients(serviceOwnerOrgNo);
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources);
-    let dialogId = null;
-
     // create a dialog to have an instance to delegate on, and to be able to test with a realistic instance in the access management API
-    group(group0Label, function () {
-        const resp = CreateDialog(
+    const dialogId = group(group0Label, function () {
+        return CreateDialog(
             serviceOwnerApiClient,
             from.orgNo,
             resource,
@@ -180,8 +178,11 @@ export default function (data) {
             createDialog,
             false,
         );
-        dialogId = resp;
     });
+
+    if (dialogId === null) {
+        fail("cannot delegate on an instance: creating the dialog returned no dialog id");
+    }
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 

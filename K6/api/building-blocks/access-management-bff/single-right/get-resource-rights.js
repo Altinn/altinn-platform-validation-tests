@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetResourceRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetResourceRightsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceRight|null} The rights on the resource.
  */
 export function GetResourceRights(

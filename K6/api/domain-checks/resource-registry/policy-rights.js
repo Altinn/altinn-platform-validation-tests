@@ -3,11 +3,16 @@ import { check } from "k6";
 import { PolicyRightsDTO } from "../../../clients/resource-registry/types.js";
 
 /**
+ * @typedef {import("../../../clients/resource-registry/types.js").PolicySubjectDTO} PolicySubjectDTO
+ * @typedef {import("../../../clients/resource-registry/types.js").UrnJsonTypeValue} UrnJsonTypeValue
+ */
+
+/**
  * The registry flattens a policy into one right per action, so a policy that
  * arrived intact answers with as many rights as it had actions. More rights than
  * that means the policy granted something it was not asked to.
  *
- * @param {Array<PolicyRightsDTO>} rights - The rights returned by the API.
+ * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedActions - The actions the policy asked for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if there is one right per action, false otherwise.
@@ -30,7 +35,7 @@ function CheckOneRightPerAction(rights, expectedActions, operation) {
  * Checks that every right is scoped to the resource that was asked about, so a
  * policy written against the wrong resource does not pass unnoticed.
  *
- * @param {Array<PolicyRightsDTO>} rights - The rights returned by the API.
+ * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {string} resourceId - The resource the rights were asked for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every right is for the resource, false otherwise.
@@ -56,7 +61,7 @@ function CheckRightsForResource(rights, resourceId, operation) {
 /**
  * Checks that the rights cover every action the policy asked for.
  *
- * @param {Array<PolicyRightsDTO>} rights - The rights returned by the API.
+ * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedActions - The actions the policy asked for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every action is covered, false otherwise.
@@ -82,15 +87,17 @@ function CheckRightsCoverActions(rights, expectedActions, operation) {
  * Checks that every right lists the subjects the policy granted it to. Reads the
  * subject attribute values, so it works for role codes and access packages alike.
  *
- * @param {Array<PolicyRightsDTO>} rights - The rights returned by the API.
+ * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedSubjects - The subject values the policy granted,
  * for instance role codes.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every right lists every subject, false otherwise.
  */
 function CheckRightsGrantSubjects(rights, expectedSubjects, operation) {
-    const subjectValues = (right) => (right.subjects ?? []).flatMap(
-        (subject) => (subject.subjectAttributes ?? []).map((attribute) => attribute.value),
+    const subjectValues = (/** @type {PolicyRightsDTO} */ right) => (right.subjects ?? []).flatMap(
+        (/** @type {PolicySubjectDTO} */ subject) => (subject.subjectAttributes ?? []).map(
+            (/** @type {UrnJsonTypeValue} */ attribute) => attribute.value,
+        ),
     );
 
     const incomplete = (rights ?? []).filter((right) => {
@@ -118,15 +125,17 @@ function CheckRightsGrantSubjects(rights, expectedSubjects, operation) {
  * without this a policy that granted an access package but landed as a role code
  * would still look correct.
  *
- * @param {Array<PolicyRightsDTO>} rights - The rights returned by the API.
+ * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedTypes - The subject attribute types expected,
  * for instance urn:altinn:rolecode and urn:altinn:accesspackage.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every right carries every type, false otherwise.
  */
 function CheckRightsSubjectTypes(rights, expectedTypes, operation) {
-    const typesOf = (right) => (right.subjects ?? []).flatMap(
-        (subject) => (subject.subjectAttributes ?? []).map((attribute) => attribute.type),
+    const typesOf = (/** @type {PolicyRightsDTO} */ right) => (right.subjects ?? []).flatMap(
+        (/** @type {PolicySubjectDTO} */ subject) => (subject.subjectAttributes ?? []).map(
+            (/** @type {UrnJsonTypeValue} */ attribute) => attribute.type,
+        ),
     );
 
     const incomplete = (rights ?? []).filter((right) => {

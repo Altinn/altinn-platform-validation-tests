@@ -36,7 +36,7 @@ let tokenGenerator = undefined;
  * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
  */
 function getClients() {
-    if (systemUserClient === undefined) {
+    if (systemUserClient === undefined || tokenGenerator === undefined) {
         // The vendor endpoint sits behind the system register scope, not a system user one.
         tokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()
@@ -67,20 +67,20 @@ export default function () {
     const [systemUserClient, tokenGenerator] = getClients();
 
     group("As a vendor, I can list system users by system id and follow pagination", function () {
-        let firstPage;
-
-        group("Fetch the first page of system users", function () {
-            firstPage = SystemUserBuildingBlocks.VendorGetBySystem(systemUserClient, SYSTEM_ID);
+        const firstPage = group("Fetch the first page of system users", function () {
+            const page = SystemUserBuildingBlocks.VendorGetBySystem(systemUserClient, SYSTEM_ID);
 
             // Following next links needs a page to follow them from, so a first page
             // that is missing or shaped wrong ends the iteration here rather than
             // failing every check below on the same cause.
-            if (!PaginationDomainChecks.CheckPaginatedShape(firstPage, "VendorGetBySystem")) {
+            if (!PaginationDomainChecks.CheckPaginatedShape(page, "VendorGetBySystem")) {
                 fail("cannot follow pagination: the first page of system users is not a paginated response");
             }
 
-            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "VendorGetBySystem");
-            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, SYSTEM_ID, "system user");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(page, "VendorGetBySystem");
+            PaginationDomainChecks.CheckItemsBelongToSystem(page, SYSTEM_ID, "system user");
+
+            return page;
         });
 
         group("Follow the next-link pagination", function () {

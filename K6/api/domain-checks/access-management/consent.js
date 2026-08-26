@@ -6,13 +6,14 @@ import { ConsentRequestDetailsDto } from "../../../clients/access-management/con
  * Checks that a created consent request echoes what it was asked for and carries
  * the fields the consentee needs to take the consenter through approval.
  *
- * @param {ConsentRequestDetailsDto} consentRequest - The created consent request.
+ * @param {ConsentRequestDetailsDto|null} consentRequest - The created consent request.
  * @param {{id: string, from: string, to: string}} expected - What the consent request was created with.
  * @returns {boolean} True if the consent request matches, false otherwise.
  */
 function CheckConsentRequestCreated(consentRequest, expected) {
     const required = ["id", "status", "viewUri"];
-    const missing = required.filter((field) => consentRequest?.[field] === undefined || consentRequest?.[field] === null);
+    const fields = /** @type {{[field: string]: unknown}} */ (consentRequest ?? {});
+    const missing = required.filter((field) => fields[field] === undefined || fields[field] === null);
 
     const success = check(consentRequest, {
         "CheckConsentRequestCreated - Consent request echoes the id and the parties": (created) =>
@@ -37,7 +38,7 @@ function CheckConsentRequestCreated(consentRequest, expected) {
 /**
  * Checks that a consent request has the expected status.
  *
- * @param {ConsentRequestDetailsDto} consentRequest - The consent request to check.
+ * @param {ConsentRequestDetailsDto|null} consentRequest - The consent request to check.
  * @param {string} expectedStatus - The status the consent request is expected to have.
  * @returns {boolean} True if the status matches, false otherwise.
  */
@@ -61,7 +62,7 @@ function CheckConsentRequestStatus(consentRequest, expectedStatus) {
  * metadata are what the resource itself defines, so a mismatch there is a
  * resource problem rather than a consent problem.
  *
- * @param {ConsentRequestDetailsDto} consentRequest - The consent request to check.
+ * @param {ConsentRequestDetailsDto|null} consentRequest - The consent request to check.
  * @param {string[]} expectedResources - The resources the rights were asked for.
  * @returns {boolean} True if every expected resource is granted, false otherwise.
  */
@@ -90,8 +91,8 @@ function CheckConsentRights(consentRequest, expectedResources) {
  * A group that needs one cannot say anything useful without it, so a caller that
  * gets false back should fail() and stop the run at the step that broke.
  *
- * @param {string|undefined} consentRequestId - The consent request id the earlier step should have produced.
- * @returns {boolean} True if there is a consent request to act on, false otherwise.
+ * @param {string|null|undefined} consentRequestId - The consent request id the earlier step should have produced.
+ * @returns {consentRequestId is string} True if there is a consent request to act on, false otherwise.
  */
 function CheckConsentRequestId(consentRequestId) {
     const success = check(consentRequestId, {

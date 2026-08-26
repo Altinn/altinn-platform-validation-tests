@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RoleClient} roleClient Client for the role endpoints.
  * @param {GetRolePackagesQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRolePackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AccessPackage>|null} The access packages.
  */
 export function GetRolePackages(
