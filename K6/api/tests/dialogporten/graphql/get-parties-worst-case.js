@@ -9,6 +9,7 @@ import { getClient, getDialogportenOpts } from "./common-functions.js";
 // labels and pids for users with many parties, grouped by environment
 // labels are in the format of "a_<pid>_<total_number_of_parties>_<number_of_parties_returned>"
 // number_of_parties_returned will be lower than total_number_of_parties if the profile option show assosiated parties is set to false for the user
+/** @type {{[environment: string]: {pid: string, label: {unique_id: string}}[]}} */
 const endUsersByEnvironment = {
     yt01: [
         { pid: "20041065185", label: { unique_id: "a_20041065185_95k_95k" } },
