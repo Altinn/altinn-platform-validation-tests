@@ -10,7 +10,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} org Organization identifier.
  * @param {string} app Application identifier.
  * @param {string} language Language code.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True when deletion succeeds.
  */
 export function DeleteTextResource(

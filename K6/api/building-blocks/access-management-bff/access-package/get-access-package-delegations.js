@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {GetAccessPackageDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAccessPackageDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} Access package delegations grouped by area. The API
  * does not publish a schema for this response.
  */

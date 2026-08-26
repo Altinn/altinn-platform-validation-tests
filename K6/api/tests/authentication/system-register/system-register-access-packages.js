@@ -27,6 +27,10 @@ export async function setup() {
     return await commonsSetup();
 }
 
+/**
+ * @param {Awaited<ReturnType<typeof import("./commons.js").setup>>} data Test data from setup.
+ * @returns {Promise<void>} Resolves when the iteration is done.
+ */
 export default async function (data) {
     const systemRegisterClient = getVendorClient(data.vendorToken);
 

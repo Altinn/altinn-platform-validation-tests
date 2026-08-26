@@ -15,7 +15,7 @@ import { withRetries } from "../../../common/retry.js";
  * Page size header.
  * @param {number|null} [pageNumber]
  * Page number header.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<RequestDto>} Received requests.
  */

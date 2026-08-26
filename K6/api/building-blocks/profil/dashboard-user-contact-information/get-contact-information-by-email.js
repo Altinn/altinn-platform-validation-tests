@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {DashboardUserContactInformationClient} dashboardUserContactInformationClient Client for the Dashboard User Contact Information API.
  * @param {string} emailAddress Email address.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DashboardUserContactInformationResponse>} User contact information for the email address.
  */
 export function GetContactInformationByEmail(

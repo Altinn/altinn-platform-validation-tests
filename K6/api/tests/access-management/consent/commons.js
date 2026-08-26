@@ -122,7 +122,7 @@ export function getLookupConsents(env) {
  * @returns {[any, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
-    if (clients === undefined) {
+    if (clients === undefined || consenteeTokenGenerator === undefined || consenterTokenGenerator === undefined) {
         consenteeTokenGenerator = new EnterpriseTokenGenerator(
             getConsenteeTokenOpts(),
         );
@@ -157,7 +157,7 @@ export function getClients() {
  * @returns {[EnterpriseClient, EnterpriseTokenGenerator]} The client, and the generator whose organization is swapped per iteration.
  */
 export function getEventsClient() {
-    if (eventsClient === undefined) {
+    if (eventsClient === undefined || eventsTokenGenerator === undefined) {
         eventsTokenGenerator = new EnterpriseTokenGenerator(
             getEventsTokenOpts(),
         );

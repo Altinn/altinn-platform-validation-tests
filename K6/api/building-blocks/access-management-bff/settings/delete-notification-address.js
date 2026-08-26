@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SettingsClient} settingsClient Client for the settings endpoints.
  * @param {string} orgNumber Organisation number.
  * @param {number} notificationAddressId Notification address id.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} The removed notification
  * address.
  */

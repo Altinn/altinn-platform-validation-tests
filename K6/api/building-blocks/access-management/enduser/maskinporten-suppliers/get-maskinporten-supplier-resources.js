@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenSuppliersClient} maskinportenSuppliersClient Client for the Maskinporten Suppliers API.
  * @param {MaskinportenSupplierResourcesQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenSupplierResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourcePermissionDto>} Maskinporten supplier resource permissions.
  */
 export function GetMaskinportenSupplierResources(

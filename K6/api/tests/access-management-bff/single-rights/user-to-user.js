@@ -512,14 +512,18 @@ export default function (segmentedData) {
 /**
  * Helper function to extract rights from rights metadata response
  *
- * @param {Array<Right>} rightsMeta The rights the resource defines, as returned
- * by GetRightsMeta.
- * @returns list of rights
+ * @param {Array<Right>|null} rightsMeta The rights the resource defines, as
+ * returned by GetRightsMeta. Null when that call failed, which leaves nothing
+ * to delegate.
+ * @returns {string[]} The keys of those rights.
  */
 function getRights(rightsMeta) {
+    /** @type {string[]} */
     const rights = [];
-    for (const right of rightsMeta) {
-        rights.push(right.key);
+    for (const right of rightsMeta ?? []) {
+        if (right.key !== null) {
+            rights.push(right.key);
+        }
     }
     return rights;
 }

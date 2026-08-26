@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {UpdateInstanceRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link UpdateInstanceRightsQueryBuilder}.
  * @param {Array<string>|null} [body] Keys of the rights to keep.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the rights were updated.
  */
 export function UpdateInstanceRights(

@@ -47,8 +47,8 @@ class SystemUserClientDelegationClient {
     /**
      * Get clients who can delegate to the system user.
      *
-     * @param {string} [agent] System user id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {string|null} [agent] System user id.
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -89,8 +89,8 @@ class SystemUserClientDelegationClient {
     /**
      * Get clients delegated to the specified system user.
      *
-     * @param {string} [agent] System user id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {string|null} [agent] System user id.
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -133,7 +133,7 @@ class SystemUserClientDelegationClient {
      *
      * @param {string} agent System user id.
      * @param {string} client Client id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -176,7 +176,7 @@ class SystemUserClientDelegationClient {
      *
      * @param {string} agent System user id.
      * @param {string} client Client id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -217,8 +217,8 @@ class SystemUserClientDelegationClient {
     /**
      * Retrieves agent system users associated with the authenticated party.
      *
-     * @param {string} [party] Party identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {string|null} [party] Party identifier.
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {CreateAccessPackageDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link CreateAccessPackageDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the access package was delegated.
  */
 export function CreateAccessPackageDelegation(

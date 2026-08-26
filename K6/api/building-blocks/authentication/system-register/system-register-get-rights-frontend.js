@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
  * @param {boolean|null} [useOldFormatForApp] Whether to use old app format.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Right[]|null} Rights.
  */
 export function SystemRegisterGetRightsFrontend(

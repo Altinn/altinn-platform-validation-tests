@@ -9,7 +9,7 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {AccessListMembershipsClient} accessListMembershipsClient Client for the Access List Memberships API.
  * @param {AccessListMembershipsQuery|null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceMembershipWithActionFilterDtoListObject|null} Access list memberships.
  */
 export function AccessListMembershipsGetMemberships(

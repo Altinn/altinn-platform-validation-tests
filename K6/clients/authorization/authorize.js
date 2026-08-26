@@ -51,7 +51,7 @@ class AuthorizeClient {
      * POST /authorize
      *
      * @param {XacmlJsonRequestRootExternal} request Authorization request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

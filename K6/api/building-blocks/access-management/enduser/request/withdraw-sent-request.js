@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {RequestClient} requestClient Client for the Request API.
  * @param {string} party Party identifier.
  * @param {string} id Request identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestDto|null} Withdrawn request.
  */
 export function WithdrawSentRequest(

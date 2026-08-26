@@ -63,9 +63,7 @@ export default function (data) {
     }
 
     group("As a vendor, I can find a change request by external ref and withdraw it", function () {
-        let changeRequestId;
-
-        group("Ask for a right the system user does not have", function () {
+        const changeRequestId = group("Ask for a right the system user does not have", function () {
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(REQUESTED_RIGHTS)
                 .withRedirectUrl(REDIRECT_URL)
@@ -79,7 +77,7 @@ export default function (data) {
                 201,
             );
 
-            changeRequestId = changeRequest?.id;
+            return changeRequest?.id;
         });
 
         group("Find the change request by the external ref the system user carries", function () {
