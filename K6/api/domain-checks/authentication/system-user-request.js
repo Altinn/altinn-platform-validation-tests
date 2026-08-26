@@ -1,18 +1,19 @@
 import { check } from "k6";
 
-import { RequestSystemResponse } from "../../../clients/authentication/types.js";
+import { AgentRequestSystemResponse, RequestSystemResponse } from "../../../clients/authentication/types.js";
 
 /**
  * Checks that a created request echoes what it was asked for and carries the fields
  * the vendor needs to take the customer through approval.
  *
- * @param {RequestSystemResponse} request - The created request.
+ * @param {RequestSystemResponse|AgentRequestSystemResponse|null} request - The created request. Either kind, since the checks below only read the fields both carry.
  * @param {{systemId: string, partyOrgNo: string, externalRef: string}} expected - What the request was created with.
  * @returns {boolean} True if the request matches, false otherwise.
  */
 function CheckRequestCreated(request, expected) {
     const required = ["id", "status", "confirmUrl"];
-    const missing = required.filter((field) => request?.[field] === undefined || request?.[field] === null);
+    const fields = /** @type {{[field: string]: unknown}} */ (request ?? {});
+    const missing = required.filter((field) => fields[field] === undefined || fields[field] === null);
 
     const success = check(request, {
         "CheckRequestCreated - Request echoes the system, party and external ref": (created) =>
@@ -37,7 +38,7 @@ function CheckRequestCreated(request, expected) {
 /**
  * Checks that a request has the expected status.
  *
- * @param {RequestSystemResponse} request - The request to check.
+ * @param {RequestSystemResponse|AgentRequestSystemResponse|null} request - The request to check.
  * @param {string} expectedStatus - The status the request is expected to have.
  * @returns {boolean} True if the status matches, false otherwise.
  */
@@ -60,8 +61,8 @@ function CheckRequestStatus(request, expectedStatus) {
  * A group that needs one cannot say anything useful without it, so a caller that
  * gets false back should fail() and stop the run at the step that broke.
  *
- * @param {string|undefined} requestId - The request id the earlier step should have produced.
- * @returns {boolean} True if there is a request to act on, false otherwise.
+ * @param {string|null|undefined} requestId - The request id the earlier step should have produced.
+ * @returns {requestId is string} True if there is a request to act on, false otherwise.
  */
 function CheckRequestId(requestId) {
     const success = check(requestId, {
@@ -95,9 +96,49 @@ function CheckRequestApproved(approved) {
     return success;
 }
 
+/**
+ * Checks that a lookup found the request an earlier step created.
+ *
+ * @param {RequestSystemResponse|AgentRequestSystemResponse|null} request - The request the lookup returned.
+ * @param {string|undefined} expectedId - Id of the request the earlier step created.
+ * @returns {boolean} True if the lookup found that request, false otherwise.
+ */
+function CheckSameRequest(request, expectedId) {
+    const success = check(request, {
+        "CheckSameRequest - The lookup found the request that was created": (found) =>
+            found !== null && found?.id === expectedId,
+    });
+
+    if (!success) {
+        console.error(`CheckSameRequest - expected request '${expectedId}', got '${request?.id}'`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that a system user request was withdrawn.
+ *
+ * @param {boolean} deleted - Whether the delete call reported success.
+ * @returns {boolean} True if the request was withdrawn, false otherwise.
+ */
+function CheckRequestDeleted(deleted) {
+    const success = check(deleted, {
+        "CheckRequestDeleted - Request was withdrawn": (result) => result === true,
+    });
+
+    if (!success) {
+        console.error(`CheckRequestDeleted - delete did not report success, got '${deleted}'`);
+    }
+
+    return success;
+}
+
 export const SystemUserRequestDomainChecks = {
     CheckRequestCreated,
     CheckRequestStatus,
     CheckRequestApproved,
     CheckRequestId,
+    CheckRequestDeleted,
+    CheckSameRequest,
 };

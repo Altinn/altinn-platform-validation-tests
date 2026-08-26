@@ -1,13 +1,14 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserServiceResourcesQueriesSearch_AuthorizedServiceResources } from "../../../../clients/dialogporten/enduser/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get service resources
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserServiceResourcesQueriesSearch_AuthorizedServiceResources|null} Parsed response body, or null when the call failed.
  */
 export function GetServiceResources(

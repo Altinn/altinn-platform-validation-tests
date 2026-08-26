@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DashboardNotificationAddressResponse } from "../../../../clients/profil/dashboard/dashboard.types.js";
 import { DashboardClient } from "../../../../clients/profil/dashboard/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {DashboardClient} dashboardClient Client for the Dashboard API.
  * @param {string} emailAddress Email address.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DashboardNotificationAddressResponse>} Notification addresses for the email address.
  */
 export function GetNotificationAddressesByEmail(

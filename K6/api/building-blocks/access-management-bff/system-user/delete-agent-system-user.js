@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
+import { DeleteAgentSystemUserQuery } from "../../../../clients/access-management-bff/system-user/system-user.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -12,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} systemUserGuid System user UUID.
  * @param {DeleteAgentSystemUserQuery|null} [queryParams] Optional query
  * parameters. Use {@link DeleteAgentSystemUserQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the agent system user was deleted.
  */
 export function DeleteAgentSystemUser(
@@ -35,10 +36,10 @@ export function DeleteAgentSystemUser(
     let deleted = false;
 
     const succeed = check(res, {
-        "DeleteAgentSystemUser - status code is 200": (r) =>
-            r.status === 200,
-        "DeleteAgentSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "DeleteAgentSystemUser - status code is 202": (r) =>
+            r.status === 202,
+        "DeleteAgentSystemUser - status text is 202 Accepted": (r) =>
+            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceEventsClient } from "../../../clients/storage/index.js";
+import { InstanceEvent, InstanceEventList } from "../../../clients/storage/instances.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {InstanceEvent} request Event to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateInstanceEvent(
@@ -68,10 +69,10 @@ export function CreateInstanceEvent(
  * @param {InstanceEventsClient} instanceEventsClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {Array<string>} eventTypes Event types to include.
- * @param {string} from Only include events from this timestamp.
- * @param {string} to Only include events up to this timestamp.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {Array<string>|null} [eventTypes] Event types to include.
+ * @param {string|null} [from] Only include events from this timestamp.
+ * @param {string|null} [to] Only include events up to this timestamp.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {InstanceEventList|null} Parsed response body, or null when the call failed.
  */
 export function GetInstanceEvents(
@@ -134,7 +135,7 @@ export function GetInstanceEvents(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {string} eventGuid Event UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {InstanceEvent|null} Parsed response body, or null when the call failed.
  */
 export function GetInstanceEvent(

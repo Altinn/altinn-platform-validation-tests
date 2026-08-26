@@ -2,6 +2,7 @@ import http from "k6/http";
 
 import { uuidv4 } from "../../../common-imports.js";
 import { getActivityBody, getDialogBody, getDialogBodyWithoutTransmissionsAndActivities, getTransmissionBody } from "./request-body-templates.js";
+import { JsonPatchOperations_Operation, V1ServiceOwnerDialogsCommandsUpdate_Dialog, V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest, V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest, V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label } from "./types.js";
 
 const TAGS = {
     GetDialogsQueriesNotificationCondition: { action: "get-dialogs-queries-notification-condition" },
@@ -67,8 +68,8 @@ class ServiceOwnerApiClient {
      * @param { string } conditionType TODO: description
      * @param { string } activityType TODO: description
      * @param { string } transmissionId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogsQueriesNotificationCondition(
         dialogId,
@@ -94,10 +95,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -109,9 +110,13 @@ class ServiceOwnerApiClient {
 
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Dialog
-     * * @param { Object } requestBody
-     * * @param { string } label
-     * * @returns http.RefinedResponse
+     *
+     * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
+     * @param {string} serviceResource - the service resource for the dialog
+     * @param {string} serviceOwner - the org number of the service owner
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @param {boolean} [noTransmissionsActivities] - whether to leave transmissions and activities out of the body
+     * @returns http.RefinedResponse<"text">
      */
 
     PostDialog(
@@ -133,10 +138,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         let requestBody = null;
@@ -154,9 +159,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Transmission
      *
-     * @param { string } dialogId
-     * @param { string } label
-     * @returns http.RefinedResponse
+     * @param {string} dialogId - id of the dialog the transmission belongs to
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
 
     PostTransmission(
@@ -177,10 +182,10 @@ class ServiceOwnerApiClient {
 
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         const requestBody = getTransmissionBody();
@@ -194,9 +199,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsCommandsCreate_Activity
      *
-     * @param { string } dialogId
-     * @param { string } label
-     * @returns http.RefinedResponse
+     * @param {string} dialogId - id of the dialog the activity belongs to
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
 
     PostActivity(
@@ -218,10 +223,10 @@ class ServiceOwnerApiClient {
 
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         const requestBody = getActivityBody();
@@ -235,10 +240,10 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearch_Dialog
      *
-     * @param queryParams - object containing query parameters for the request
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}} queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-
     GetDialogs(
         queryParams,
         labels = null,
@@ -260,10 +265,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -277,8 +282,8 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesGet_Dialog
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialog(
         dialogId,
@@ -297,10 +302,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -314,8 +319,8 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchActivities_DialogActivity
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogActivities(
         dialogId,
@@ -334,10 +339,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -352,8 +357,8 @@ class ServiceOwnerApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } activityId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogActivity(
         dialogId,
@@ -373,10 +378,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -390,8 +395,8 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabel_ServiceOwnerLabel
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetServiceOwnerLabels(
         dialogId,
@@ -410,10 +415,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -427,8 +432,8 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchSeenLogs_DialogSeenLog
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLogs(
         dialogId,
@@ -447,10 +452,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -465,8 +470,8 @@ class ServiceOwnerApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } seenLogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLog(
         dialogId,
@@ -486,10 +491,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -503,8 +508,8 @@ class ServiceOwnerApiClient {
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogTransmission
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmissions(
         dialogId,
@@ -523,10 +528,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -541,8 +546,8 @@ class ServiceOwnerApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } transmissionId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmission(
         dialogId,
@@ -562,10 +567,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -577,9 +582,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContext
      *
-     * @param queryParams - object containing query parameters for the request
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}} queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetEndUserContext(
         queryParams,
@@ -602,10 +607,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -618,9 +623,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogLookupQueriesGet_DialogLookup
      *
-     * @param queryParams - object containing query parameters for the request
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {{[x: string]: string}} queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDialogLookup(
         queryParams,
@@ -643,10 +648,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -661,11 +666,11 @@ class ServiceOwnerApiClient {
      *
      * PUT /dialogs/{dialogId}
      *
-     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} dialogId - id of the dialog
      * @param {V1ServiceOwnerDialogsCommandsUpdate_Dialog} request - the dialog to store
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PutDialog(dialogId, request, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -681,10 +686,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -703,11 +708,11 @@ class ServiceOwnerApiClient {
      *
      * PATCH /dialogs/{dialogId}
      *
-     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} dialogId - id of the dialog
      * @param {JsonPatchOperations_Operation[]} operations - the patch operations to apply
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PatchDialog(dialogId, operations, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -723,10 +728,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -745,10 +750,10 @@ class ServiceOwnerApiClient {
      *
      * DELETE /dialogs/{dialogId}
      *
-     * @param {uuidv7} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string} dialogId - id of the dialog
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     DeleteDialog(dialogId, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -764,9 +769,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -785,12 +790,12 @@ class ServiceOwnerApiClient {
      *
      * PUT /dialogs/{dialogId}/transmissions/{transmissionId}
      *
-     * @param {uuidv7} dialogId - id of the dialog
-     * @param {uuidv7} transmissionId - id of the transmission
+     * @param {string} dialogId - id of the dialog
+     * @param {string} transmissionId - id of the transmission
      * @param {V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest} request - the transmission to store
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PutTransmission(dialogId, transmissionId, request, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -806,10 +811,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -828,10 +833,10 @@ class ServiceOwnerApiClient {
      *
      * POST /dialogs/{dialogId}/actions/purge
      *
-     * @param {uuidv7} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string} dialogId - id of the dialog
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PurgeDialog(dialogId, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -847,9 +852,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -868,10 +873,10 @@ class ServiceOwnerApiClient {
      *
      * POST /dialogs/{dialogId}/actions/restore
      *
-     * @param {uuidv7} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string} dialogId - id of the dialog
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     RestoreDialog(dialogId, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -887,9 +892,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -908,10 +913,10 @@ class ServiceOwnerApiClient {
      *
      * POST /dialogs/{dialogId}/actions/freeze
      *
-     * @param {uuidv7} dialogId - id of the dialog
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string} dialogId - id of the dialog
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     FreezeDialog(dialogId, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -927,9 +932,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -948,11 +953,11 @@ class ServiceOwnerApiClient {
      *
      * POST /dialogs/{dialogId}/context/labels
      *
-     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} dialogId - id of the dialog
      * @param {V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label} request - the label to add
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PostServiceOwnerLabels(dialogId, request, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -968,10 +973,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -990,11 +995,11 @@ class ServiceOwnerApiClient {
      *
      * DELETE /dialogs/{dialogId}/context/labels/{label}
      *
-     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} dialogId - id of the dialog
      * @param {string} label - the label to remove
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     DeleteServiceOwnerLabel(dialogId, label, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1010,9 +1015,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -1031,12 +1036,12 @@ class ServiceOwnerApiClient {
      *
      * PUT /dialogs/{dialogId}/endusercontext/systemlabels
      *
-     * @param {uuidv7} dialogId - id of the dialog
+     * @param {string} dialogId - id of the dialog
      * @param {V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
-     * @param {string} enduserId - the end user to act on behalf of
-     * @param {string} ifMatch - revision to send as the If-Match header, for concurrency control
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [enduserId] - the end user to act on behalf of
+     * @param {string|null} [ifMatch] - revision to send as the If-Match header, for concurrency control
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PutEndUserContextSystemLabels(dialogId, request, enduserId = null, ifMatch = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1056,10 +1061,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -1079,9 +1084,9 @@ class ServiceOwnerApiClient {
      * POST /dialogs/endusercontext/systemlabels/actions/bulkset
      *
      * @param {V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
-     * @param {string} enduserId - the end user to act on behalf of
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse
+     * @param {string|null} [enduserId] - the end user to act on behalf of
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns http.RefinedResponse<"text">
      */
     PostBulkSetSystemLabels(request, enduserId = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -1101,10 +1106,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {

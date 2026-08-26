@@ -1,0 +1,14 @@
+import runBeOmTilgang from "./be-om-tilgang.js";
+import { setup } from "./common-functions.js";
+
+export { setup };
+
+/**
+ * Runs the folder's only test, so every folder has the same entry point. A second
+ * test in here goes in the list below.
+ *
+ * @param {ReturnType<typeof setup>} data Whatever setup returned.
+ */
+export default function (data) {
+    runBeOmTilgang(data);
+}

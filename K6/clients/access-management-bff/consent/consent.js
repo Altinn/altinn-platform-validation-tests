@@ -1,5 +1,8 @@
 import http from "k6/http";
 
+import { ApproveConsentContext } from "../common/common.types.js";
+import { GetConsentCountQuery } from "./consent.types.js";
+
 const TAGS = {
     GetConsentRequest: {
         action: "get-consent-request",
@@ -70,8 +73,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentRequest(consentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -108,8 +111,8 @@ class ConsentClient {
      * @param {string} consentRequestId Consent request UUID.
      * @param {ApproveConsentContext|null} [body] Context for the approval. Prefer
      * using {@link ApproveConsentContextBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveConsentRequest(consentRequestId, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -151,8 +154,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectConsentRequest(consentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -195,8 +198,8 @@ class ConsentClient {
      * @param {string} party Party UUID.
      * @param {GetConsentCountQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetConsentCountQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentCount(party, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -245,8 +248,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} party Party UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActiveConsents(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -281,8 +284,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} party Party UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentLog(party, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -317,8 +320,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentId Consent UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsent(consentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -353,8 +356,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentId Consent UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RevokeConsent(consentId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -393,8 +396,8 @@ class ConsentClient {
      * Requires a personal token with the `altinn:portal/enduser` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentRequestLogout(consentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();

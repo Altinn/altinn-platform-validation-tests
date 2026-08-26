@@ -2,7 +2,7 @@
  * Represents a paginated response containing authorized parties.
  *
  * @typedef {object} AuthorizedPartyDtoListPaginatedResult
- * @property {Array<Array<AuthorizedPartyDto>>|null} data Authorized parties grouped by result page.
+ * @property {Array<AuthorizedPartyDto>|null} data The authorized parties on this page.
  * @property {PaginatedResultLinks} links Pagination links.
  */
 
@@ -60,8 +60,8 @@
  * @property {Array<string>} [anyOfResourceIds] Filter by resource identifiers.
  */
 
-export const AuthorizedPartyDtoListPaginatedResult = undefined;
-export const PaginatedResultLinks = undefined;
 export const AuthorizedPartyDto = undefined;
+export const AuthorizedPartyDtoListPaginatedResult = undefined;
 export const AuthorizedPartyResourceInstance = undefined;
 export const EndUserAuthorizedPartiesQuery = undefined;
+export const PaginatedResultLinks = undefined;

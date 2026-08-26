@@ -53,8 +53,8 @@ class SystemUserAgentRequestClient {
      * Gets an agent system user request.
      *
      * @param {string} agentRequestId Agent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentRequest(agentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -88,8 +88,8 @@ class SystemUserAgentRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} agentRequestId Agent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveAgentRequest(partyId, agentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -129,8 +129,8 @@ class SystemUserAgentRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} agentRequestId Agent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectAgentRequest(partyId, agentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -170,8 +170,8 @@ class SystemUserAgentRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} requestId Agent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EscalateAgentRequest(partyId, requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -210,8 +210,8 @@ class SystemUserAgentRequestClient {
      * Gets the logout redirect for an agent system user request.
      *
      * @param {string} agentRequestId Agent request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentRequestLogout(agentRequestId, labels = null) {
         const token = this.tokenGenerator.getToken();

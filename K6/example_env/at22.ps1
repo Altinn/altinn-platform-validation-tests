@@ -1,0 +1,12 @@
+$env:TOKEN_GENERATOR_USERNAME=""
+$env:TOKEN_GENERATOR_PASSWORD=""
+
+$env:BASE_URL="https://platform.at22.altinn.cloud"
+$env:ALTINN2_BASE_URL="https://at22.altinn.cloud"
+$env:ALTINN_CDN_BASE_URL="https://altinncdn.no"
+$env:AM_UI_BASE_URL="https://am.ui.at22.altinn.cloud"
+$env:AF_UI_BASE_URL="https://af.at22.altinn.cloud"
+$env:INFO_CLOUD_URL="https://info.at22.altinn.cloud"
+$env:DEPLOY_ENV="at22"
+$env:ENV_TYPE="dev"
+$env:ENVIRONMENT="at22"

@@ -117,12 +117,11 @@
 
 export const AuthorizedPartiesQuery = undefined;
 export const AuthorizedPartiesRequest = undefined;
-export const UrnAttribute = undefined;
-export const AuthorizedResource = undefined;
-export const AuthorizedParty = undefined;
-export const MaskinportenDelegation = undefined;
-export const ProblemDetails = undefined;
-export const ValidationProblemDetails = undefined;
-
 export const AuthorizedPartiesResponse = undefined;
+export const AuthorizedParty = undefined;
+export const AuthorizedResource = undefined;
+export const MaskinportenDelegation = undefined;
 export const MaskinportenDelegationsResponse = undefined;
+export const ProblemDetails = undefined;
+export const UrnAttribute = undefined;
+export const ValidationProblemDetails = undefined;

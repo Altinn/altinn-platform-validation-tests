@@ -23,7 +23,7 @@ const testDataFetchFailures = new Counter("test_data_fetch_failures");
  * Records the outcome of one test data read.
  *
  * @param {string} file The file that was read, as the caller named it.
- * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @param {string|null} [reason] Why the read failed, or omitted when it worked.
  * @returns {void}
  */
 function recordTestDataFetch(file, reason = null) {
@@ -36,10 +36,9 @@ function recordTestDataFetch(file, reason = null) {
  * Uses `check()` to report pass/fail instead of throwing.
  *
  * @param {Function} conditionFn - Function that returns true on success, false otherwise.
- * @param {object} options - Retry settings.
- * @param {number} options.retries - How many times to retry (default 10).
- * @param {number} options.intervalSeconds - Seconds between attempts (default 5).
- * @param {string} options.testscenario - Prefix used in log/check output.
+ * @param {{retries?: number, intervalSeconds?: number, testscenario?: string}} options
+ * Retry settings: how many times to retry (default 10), seconds between
+ * attempts (default 5) and the prefix used in log/check output.
  * @returns {boolean} - true if success within retry limit, false otherwise.
  */
 export function retry(conditionFn, options = {}) {
@@ -80,18 +79,31 @@ export function retry(conditionFn, options = {}) {
     return success;
 }
 
+/**
+ * Parses CSV text with a header row into one object per row.
+ *
+ * @param {string} data The CSV text.
+ * @returns {{[column: string]: string}[]} One object per row, keyed by column.
+ */
 export function parseCsvData(data) {
     return papaparse.parse(data, { header: true, skipEmptyLines: true }).data;
 }
 
+/**
+ * Reads a local CSV file with a header row.
+ *
+ * @param {string} filename Path to the file.
+ * @returns {{[column: string]: string}[]} One object per row, keyed by column.
+ */
 export function readCsv(filename) {
     return parseCsvData(open(filename));
 }
 /**
  *
- * @param listOfItems TODO: description
- * @param randomize TODO: description
- * @returns A random item from the list, or an item based on __ITER if randomize is false
+ * @template T
+ * @param {T[]} listOfItems TODO: description
+ * @param {boolean} randomize TODO: description
+ * @returns {T} A random item from the list, or an item based on __ITER if randomize is false
  */
 export function getItemFromList(listOfItems, randomize = false) {
     if (randomize) {
@@ -106,11 +118,13 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  *
- * @param listOfItems TODO: description
- * @param numberOfSublists TODO: description
- * @returns A list with numberOfSublists lists.
+ * @template T
+ * @param {T[]} listOfItems The items to divide.
+ * @param {number} numberOfSublists How many sublists to divide them into.
+ * @returns {T[][]} A list with numberOfSublists lists.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
+    /** @type {T[][]} */
     const sublists = [];
     const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
     const remainder = listOfItems.length % numberOfSublists;
@@ -132,7 +146,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
  */
 export function getNumberOfVUs() {
     return (
-        exec.test.options.scenarios.default.vus ??
+        /** @type {any} */ (exec.test.options.scenarios?.default).vus ??
         __ENV.BREAKPOINT_STAGE_TARGET ??
         1
     );
@@ -143,12 +157,15 @@ export function getNumberOfVUs() {
  *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {object} TODO: description
+ * @returns {import("k6/options").Options & {thresholds: {[name: string]: import("k6/options").Threshold[]}}}
+ * The k6 options for the run. thresholds is always populated, so a caller can
+ * add its own without checking.
  */
 export function getOptions(labels, groups = []) {
     const options = {
         summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
+        /** @type {{[name: string]: import("k6/options").Threshold[]}} */
         thresholds: {},
     };
 
@@ -167,6 +184,10 @@ export function getOptions(labels, groups = []) {
     return options;
 }
 
+/**
+ * @param {string} ip Address to validate.
+ * @returns {boolean} True when the address is a valid IPv4 or IPv6 address.
+ */
 export function checkIp(ip) {
     const ipv4 =
         /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -180,10 +201,11 @@ export function checkIp(ip) {
  * Ensures required environment variables exist.
  *
  * @param {string[]} vars - Array of environment variable names
- * @returns {object} key-value map of env vars
+ * @returns {{[key: string]: string}} key-value map of env vars
  */
 export function requireEnv(vars) {
     const missing = [];
+    /** @type {{[key: string]: string}} */
     const result = {};
 
     for (const name of vars) {
@@ -247,10 +269,18 @@ export function pickUnique(list, count) {
  * Every read reports to `test_data_fetch_failures`, so a broken read is visible
  * in Grafana and not only in the log of whoever happened to watch the run.
  *
+ * A .csv comes back as rows, a .json as whatever it holds, and a .txt as its
+ * non-empty lines, trimmed. Any other extension is refused rather than handed back
+ * as a string, so a caller that meant to read a format nobody parses hears about it
+ * here.
+ *
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
  * @param {string} branch Branch to read test data from. Defaults to "main".
- * @returns {Array<object>|object} The parsed test data.
+ * The shape depends on the file the caller asked for, which is why this says
+ * `any` rather than a union nobody could narrow: a caller reads the columns its
+ * own fixture has.
+ * @returns {any} The parsed test data.
  */
 export function fetchTestData(
     filename,
@@ -308,6 +338,21 @@ export function fetchTestData(
 
             return [];
         }
+    }
+
+    if (filename.endsWith(".txt")) {
+        const lines = res.body
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+
+        recordTestDataFetch(filename, lines.length === 0 ? "empty" : null);
+
+        if (lines.length === 0 && failOnDataFetchingFailure) {
+            fail(`Cannot read test data: ${url} contains no lines`);
+        }
+
+        return lines;
     }
 
     recordTestDataFetch(filename, "unsupported-file-type");

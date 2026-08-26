@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SubscriptionClient } from "../../../../clients/events/subscription/index.js";
+import { Subscription, SubscriptionRequestModel } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SubscriptionClient} subscriptionClient Client for the Subscription API.
  * @param {SubscriptionRequestModel} request Subscription payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Subscription|null} Created subscription.
  */
 export function SubscriptionCreate(

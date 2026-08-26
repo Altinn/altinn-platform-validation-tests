@@ -1,9 +1,11 @@
 import { check } from "k6";
 
+import { NotificationOrderChainResponseExt } from "../../../clients/notifications/types.js";
+
 /**
  * Verifies that the order response carries a shipment ID.
  *
- * @param {NotificationOrderChainResponseExt} notificationOrderChainResponseExt Response to check.
+ * @param {NotificationOrderChainResponseExt|null} notificationOrderChainResponseExt Response to check.
  * @returns {boolean} True when the check passed.
  */
 function CheckResponseContainsShipmentID(notificationOrderChainResponseExt) {
@@ -21,7 +23,7 @@ function CheckResponseContainsShipmentID(notificationOrderChainResponseExt) {
 /**
  * Verifies that the order response carries a notification order ID.
  *
- * @param {NotificationOrderChainResponseExt} notificationOrderChainResponseExt Response to check.
+ * @param {NotificationOrderChainResponseExt|null} notificationOrderChainResponseExt Response to check.
  * @returns {boolean} True when the check passed.
  */
 function CheckResponseContainsNotificationOrderID(notificationOrderChainResponseExt) {
@@ -39,7 +41,7 @@ function CheckResponseContainsNotificationOrderID(notificationOrderChainResponse
 /**
  * Verifies that the order response includes a reminders array.
  *
- * @param {NotificationOrderChainResponseExt} notificationOrderChainResponseExt Response to check.
+ * @param {NotificationOrderChainResponseExt|null} notificationOrderChainResponseExt Response to check.
  * @returns {boolean} True when the check passed.
  */
 function CheckResponseContainsReminders(notificationOrderChainResponseExt) {
@@ -57,7 +59,7 @@ function CheckResponseContainsReminders(notificationOrderChainResponseExt) {
 /**
  * Verifies that every reminder in the response carries a shipment ID.
  *
- * @param {NotificationOrderChainResponseExt} notificationOrderChainResponseExt Response to check.
+ * @param {NotificationOrderChainResponseExt|null} notificationOrderChainResponseExt Response to check.
  * @returns {boolean} True when the check passed.
  */
 function CheckResponseRemindersAllContainShipmentIDs(notificationOrderChainResponseExt) {
@@ -76,7 +78,7 @@ function CheckResponseRemindersAllContainShipmentIDs(notificationOrderChainRespo
 /**
  * Verifies that the number of reminders in the response matches the request.
  *
- * @param {NotificationOrderChainResponseExt} notificationOrderChainResponseExt Response to check.
+ * @param {NotificationOrderChainResponseExt|null} notificationOrderChainResponseExt Response to check.
  * @param {number} expected Number of reminders sent in the request.
  * @returns {boolean} True when the check passed.
  */

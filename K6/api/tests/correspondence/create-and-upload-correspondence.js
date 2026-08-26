@@ -4,13 +4,7 @@ import { handleSummary } from "../../../common-imports.js";
 import { UploadCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
 import { AttachmentDomainChecks } from "../../domain-checks/correspondence/attachment.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
-import {
-    buildUploadCorrespondenceForm,
-    getCorrespondenceOptions,
-    getEndUser,
-    getEnterpriseSenderClient,
-    setupCorrespondenceTestData,
-} from "./commons.js";
+import { buildUploadCorrespondenceForm, CorrespondenceTestUser, getCorrespondenceOptions, getEndUser, getEnterpriseSenderClient, setupCorrespondenceTestData } from "./commons.js";
 
 const uploadLabel = { step: "Initialize and upload correspondence" };
 
@@ -24,7 +18,7 @@ export function setup() {
  * Test: initialize a correspondence with a 50 KiB attachment using a service
  * owner enterprise token.
  *
- * @param {Array<{ssn: string}>} endUsers Shared end-user test data.
+ * @param {CorrespondenceTestUser[]} endUsers Shared end-user test data.
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers).ssn;

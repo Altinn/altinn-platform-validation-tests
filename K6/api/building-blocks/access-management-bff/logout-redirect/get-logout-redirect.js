@@ -8,8 +8,8 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {LogoutRedirectClient} logoutRedirectClient Client for the logout
  * redirect endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The raw response, holding the redirect
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
 export function GetLogoutRedirect(logoutRedirectClient, labels = null) {

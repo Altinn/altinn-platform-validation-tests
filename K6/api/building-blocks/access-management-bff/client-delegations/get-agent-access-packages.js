@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetAgentAccessPackagesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { ClientDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetAgentAccessPackagesQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAgentAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ClientDelegation>|null} Clients with the access packages the
  * agent holds on them.
  */

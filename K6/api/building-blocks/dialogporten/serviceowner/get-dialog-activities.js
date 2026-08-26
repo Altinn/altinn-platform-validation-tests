@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerDialogsQueriesGetActivity_Activity, V1ServiceOwnerDialogsQueriesSearchActivities_Activity } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get activities for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerDialogsQueriesSearchActivities_Activity[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogActivities(
@@ -61,9 +62,8 @@ export function GetDialogActivities(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog the activity belongs to
- * param {string} activityId - id of the activity to get
- * @param activityId TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} activityId - id of the activity to get
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerDialogsQueriesGetActivity_Activity|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogActivity(

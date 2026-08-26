@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { AddressCodeSendRequest } from "../../../../clients/profil/address-verification/address-verification.types.js";
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
  * @param {AddressCodeSendRequest} request
  * Request body. Use {@link AddressCodeSendRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the verification code was successfully generated and sent.
  */
 export function SendVerificationCode(

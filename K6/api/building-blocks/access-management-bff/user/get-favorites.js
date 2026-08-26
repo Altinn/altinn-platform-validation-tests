@@ -7,7 +7,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the favourite actors of the authenticated user.
  *
  * @param {UserClient} userClient Client for the user endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<string>|null} Party UUIDs of the favourite actors.
  */
 export function GetFavorites(userClient, labels = null) {

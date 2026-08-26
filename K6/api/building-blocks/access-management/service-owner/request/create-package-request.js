@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/service-owner/request/index.js";
+import { RequestDto, RequestPackageDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RequestClient} requestClient Client for the Request API.
  * @param {RequestPackageDto} request Request payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */
 export function RequestCreatePackageRequest(

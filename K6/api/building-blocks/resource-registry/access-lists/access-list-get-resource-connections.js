@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListPagedQuery, AccessListResourceConnectionDtoAggregateVersionVersionedPaginated } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,8 +10,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
- * @param {object | null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {AccessListPagedQuery|null} [query] Optional query parameters.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceConnectionDtoAggregateVersionVersionedPaginated|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsGetResourceConnections(
@@ -21,7 +22,7 @@ export function AccessListsGetResourceConnections(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsGetResourceConnections(
+        () => accessListClient.AccessListGetResourceConnections(
             owner,
             identifier,
             query,

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { AgentDtoPaginatedResult, ClientAccessPackagesQuery } from "../../../../../clients/access-management/enduser/client-delegation/client-delegation.types.js";
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -9,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ClientDelegationClient} clientDelegationClient Client for the Client Delegation API.
  * @param {ClientAccessPackagesQuery} queryParams
  * Query parameters. Use {@link ClientAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AgentDtoPaginatedResult|null} Paginated access packages result.
  */
 export function GetClientAccessPackages(

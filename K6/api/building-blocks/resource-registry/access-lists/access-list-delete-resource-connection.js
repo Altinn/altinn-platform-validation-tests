@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListResourceConnectionWithVersionDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {string} resourceIdentifier Resource identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsDeleteResourceConnection(
@@ -21,7 +22,7 @@ export function AccessListsDeleteResourceConnection(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListsDeleteResourceConnection(
+        () => accessListClient.AccessListDeleteResourceConnection(
             owner,
             identifier,
             resourceIdentifier,

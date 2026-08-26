@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { ReceivedRequestsQuery } from "../../../../../clients/access-management/enduser/request/request.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {RequestClient} requestClient Client for the Access Management Request API.
  * @param {ReceivedRequestsQuery|null} [queryParams]
  * Query parameters. Use {@link ReceivedRequestsQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {number} Number of received requests.
  */

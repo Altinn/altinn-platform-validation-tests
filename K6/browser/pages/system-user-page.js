@@ -1,4 +1,6 @@
-import { Page } from "k6/browser";
+/**
+ * @typedef {import("k6/browser").Page} Page
+ */
 
 const noNb = {
     "common": {
@@ -725,6 +727,10 @@ export class SystemUserPage {
         });
     }
 
+    /**
+     * @param {string} system Name of the system to create a system user for.
+     * @returns {Promise<void>} Resolves once the system user has been created.
+     */
     async selectSystem(system) {
         await this.page.getByPlaceholder("Velg").fill(system.slice(0, -1)); //If you type in the entire length it's auto selected
         await this.page.getByLabel(system).waitFor({ state: "visible" });

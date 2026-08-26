@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { ValidatePersonInput } from "../../../../clients/access-management-bff/common/common.types.js";
+import { CreateRightHolderQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -14,7 +16,7 @@ import { withRetries } from "../../common/retry.js";
  * {@link ValidatePersonInputBuilder}.
  * @param {CreateRightHolderQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreateRightHolderQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Party UUID of the added right holder.
  */
 export function CreateRightHolder(

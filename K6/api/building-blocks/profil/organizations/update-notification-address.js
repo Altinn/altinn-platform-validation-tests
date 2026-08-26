@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { OrganizationsClient } from "../../../../clients/profil/organizations/index.js";
+import { NotificationAddressRequest, NotificationAddressResponse } from "../../../../clients/profil/organizations/organizations.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} organizationNumber Organization number.
  * @param {number} notificationAddressId Notification address identifier.
  * @param {NotificationAddressRequest} request Notification address request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} Updated notification address.
  */
 export function UpdateNotificationAddress(

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EventsClient } from "../../../../clients/events/events/index.js";
+import { CloudEvent } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {CloudEvent} event CloudEvent payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Created event identifier.
  */
 export function EventsCreate(

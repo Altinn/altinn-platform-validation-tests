@@ -9,8 +9,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClient} systemUserClient Client for the system user
  * endpoints.
  * @param {string} partyUuid Party UUID of the organisation.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The pending system users. The API does not publish a
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The pending system users. The API does not publish a
  * schema for this response.
  */
 export function GetPendingSystemUsers(
@@ -23,7 +23,7 @@ export function GetPendingSystemUsers(
         "GetPendingSystemUsers",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let pendingSystemUsers = null;
 
     const succeed = check(res, {

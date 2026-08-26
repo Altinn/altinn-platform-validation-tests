@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ReporteeClient } from "../../../../clients/access-management-bff/reportee/index.js";
+import { ChangeReporteeQuery } from "../../../../clients/access-management-bff/reportee/reportee.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ReporteeClient} reporteeClient Client for the reportee endpoints.
  * @param {ChangeReporteeQuery|null} [queryParams] Optional query parameters.
  * Use {@link ChangeReporteeQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the reportee was changed.
  */
 export function ChangeReportee(

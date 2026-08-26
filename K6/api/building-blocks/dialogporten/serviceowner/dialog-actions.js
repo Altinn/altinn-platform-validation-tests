@@ -9,9 +9,9 @@ import { withRetries } from "../../common/retry.js";
  * POST /dialogs/{dialogId}/actions/purge
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} dialogId - id of the dialog
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function PurgeDialog(
@@ -47,9 +47,9 @@ export function PurgeDialog(
  * POST /dialogs/{dialogId}/actions/restore
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} dialogId - id of the dialog
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function RestoreDialog(
@@ -85,9 +85,9 @@ export function RestoreDialog(
  * POST /dialogs/{dialogId}/actions/freeze
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} dialogId - id of the dialog
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function FreezeDialog(

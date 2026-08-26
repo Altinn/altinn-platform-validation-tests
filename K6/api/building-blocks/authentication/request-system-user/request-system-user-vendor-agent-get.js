@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../clients/authentication/index.js";
+import { AgentRequestSystemResponse } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {string} requestId Request identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AgentRequestSystemResponse|null} Agent request response.
  */
 export function RequestSystemUserVendorAgentGet(

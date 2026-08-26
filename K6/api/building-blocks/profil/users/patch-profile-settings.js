@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { ProfileSettingPreference, ProfileSettingsPatchRequest } from "../../../../clients/profil/users/users.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UsersClient} usersClient Client for the Users API.
  * @param {ProfileSettingsPatchRequest} request Profile settings patch request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ProfileSettingPreference|null} Updated profile settings.
  */
 export function PatchProfileSettings(

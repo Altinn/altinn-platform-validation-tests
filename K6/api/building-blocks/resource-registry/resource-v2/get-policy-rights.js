@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
+import { ResourceDecomposedDto, ResourcePolicyRightsQuery } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,9 +9,9 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceV2Client} resourceV2Client Client for the Resource V2 API.
  * @param {string} id Resource identifier.
- * @param {object | null} [query] Query parameters.
+ * @param {ResourcePolicyRightsQuery|null} [query] Query parameters.
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels] See the API documentation.
+ * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
  * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
  */

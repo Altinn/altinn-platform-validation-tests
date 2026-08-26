@@ -56,6 +56,23 @@
  *
  * @type {{[key: string]: RequestStatus}}
  */
+/**
+ * @typedef {object} ReceivedRequestsQuery
+ * @property {string} party Party UUID.
+ * @property {string} [from] Sender party UUID.
+ * @property {Array<RequestStatus>} [status] Request status filters.
+ * @property {string} [type] Request type.
+ */
+
+/**
+ * @typedef {object} SentRequestsQuery
+ * @property {string} party Party UUID.
+ * @property {string} [to] Receiver party UUID.
+ * @property {Array<RequestStatus>} [status] Request status filters.
+ * @property {string} [type] Request type.
+ */
+
+/** @type {{[K in RequestStatus]: RequestStatus}} */
 export const RequestStatus = {
     None: "None",
     Draft: "Draft",
@@ -64,3 +81,5 @@ export const RequestStatus = {
     Rejected: "Rejected",
     Withdrawn: "Withdrawn",
 };
+export const ReceivedRequestsQuery = undefined;
+export const SentRequestsQuery = undefined;

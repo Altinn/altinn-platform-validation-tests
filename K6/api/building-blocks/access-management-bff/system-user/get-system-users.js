@@ -9,8 +9,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClient} systemUserClient Client for the system user
  * endpoints.
  * @param {number} partyId Party id of the organisation.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The system users. The API does not publish a schema
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The system users. The API does not publish a schema
  * for this response.
  */
 export function GetSystemUsers(systemUserClient, partyId, labels = null) {
@@ -19,7 +19,7 @@ export function GetSystemUsers(systemUserClient, partyId, labels = null) {
         "GetSystemUsers",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let systemUsers = null;
 
     const succeed = check(res, {

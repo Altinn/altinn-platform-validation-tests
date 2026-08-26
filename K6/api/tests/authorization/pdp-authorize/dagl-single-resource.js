@@ -26,11 +26,11 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Single right delegations, one slice per VU.
+ * @param {any[][]} testData Single right delegations, one slice per VU.
  */
 export default function (testData) {
     const [authorizeClient] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], (__ENV.RANDOMIZE ?? "true") === "true");
     const [action, label, expectedResponse] = getActionLabelAndExpectedResponse(pdpAuthorizeLabelDenyPermit, pdpAuthorizeLabel);
     AuthorizePost(
         authorizeClient,
@@ -46,7 +46,7 @@ export default function (testData) {
  *
  * @param {{[key: string]: string}} denyLabel Label used for the requests that are expected to be denied.
  * @param {{[key: string]: string}} permitLabel Label used for the requests that are expected to be permitted.
- * @returns {Array} [action, label, expectedResponse]
+ * @returns {[string, {[key: string]: string}, string]} [action, label, expectedResponse]
  */
 function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);

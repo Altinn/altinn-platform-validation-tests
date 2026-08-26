@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { PaginatedListOfServiceResourceFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { SearchScopesQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {SearchScopesQuery|null} [queryParams] Optional query parameters. Use
  * {@link SearchScopesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PaginatedListOfServiceResourceFE|null} Paginated list of matching
  * scopes.
  */

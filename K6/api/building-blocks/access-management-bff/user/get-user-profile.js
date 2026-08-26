@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { UserProfileFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -7,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the profile of the authenticated user.
  *
  * @param {UserClient} userClient Client for the user endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfileFE|null} The user profile.
  */
 export function GetUserProfile(userClient, labels = null) {

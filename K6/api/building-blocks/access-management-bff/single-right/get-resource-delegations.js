@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ResourceDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { GetResourceDelegationsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetResourceDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetResourceDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegation>|null} The resource delegations.
  */
 export function GetResourceDelegations(

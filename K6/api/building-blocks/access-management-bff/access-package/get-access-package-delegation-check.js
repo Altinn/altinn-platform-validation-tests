@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetAccessPackageDelegationCheckQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { DelegationCheck } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -11,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {GetAccessPackageDelegationCheckQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetAccessPackageDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DelegationCheck>|null} Delegation check results per access
  * package.
  */

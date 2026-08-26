@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { SearchAccessPackagesQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
+import { AccessAreaFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {SearchAccessPackagesQuery|null} [queryParams] Optional query
  * parameters. Use {@link SearchAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AccessAreaFE>|null} Access areas with their packages.
  */
 export function SearchAccessPackages(

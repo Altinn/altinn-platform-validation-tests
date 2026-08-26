@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { AccessListMembershipsQuery } from "./types.js";
+
 const TAGS = {
     AccessListMembershipsGetMemberships: {
         action: "access-list-memberships-get-memberships",
@@ -35,13 +37,10 @@ class AccessListMembershipsClient {
     /**
      * Gets memberships for parties and resources.
      *
-     * @param {object | null} [query] Query parameters.
-     * Optional query parameters.
-     * @param {Array<string>} [query.party] Parties to include.
-     * @param {Array<string>} [query.resource] Resources to include.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {AccessListMembershipsQuery|null} [query] Optional query parameters.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListMembershipsGetMemberships(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -49,10 +48,9 @@ class AccessListMembershipsClient {
         let url = this.FULL_PATH;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;

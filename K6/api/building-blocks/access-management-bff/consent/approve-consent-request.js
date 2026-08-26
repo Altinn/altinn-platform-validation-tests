@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ApproveConsentContext } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} consentRequestId Consent request UUID.
  * @param {ApproveConsentContext|null} [body] Context for the approval. Use
  * {@link ApproveConsentContextBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the consent request was approved.
  */
 export function ApproveConsentRequest(

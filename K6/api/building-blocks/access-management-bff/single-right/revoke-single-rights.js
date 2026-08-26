@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { RevokeSingleRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {RevokeSingleRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link RevokeSingleRightsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the rights were revoked.
  */
 export function RevokeSingleRights(

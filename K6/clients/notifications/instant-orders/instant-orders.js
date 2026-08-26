@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { InstantEmailNotificationOrderRequestExt, InstantNotificationOrderRequestExt, InstantSmsNotificationOrderRequestExt } from "../types.js";
+
 const TAGS = {
     InstantOrdersCreate: {
         action: "instant-orders-create",
@@ -42,9 +44,9 @@ class InstantOrdersClient {
      * Creates and sends an instant SMS notification to a single recipient.
      *
      * @param {InstantSmsNotificationOrderRequestExt} request SMS notification payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreateSms(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -78,9 +80,9 @@ class InstantOrdersClient {
      * Creates and sends an instant email notification to a single recipient.
      *
      * @param {InstantEmailNotificationOrderRequestExt} request Email notification payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreateEmail(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -116,9 +118,9 @@ class InstantOrdersClient {
      * POST /future/orders/instant
      *
      * @param {InstantNotificationOrderRequestExt} request Instant order.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();

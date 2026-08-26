@@ -1,7 +1,7 @@
-import { check } from "k6";
 import exec from "k6/execution";
 import http from "k6/http";
 
+import { InitializeCorrespondencesExt } from "../../../clients/correspondence/correspondence.types.js";
 import {
     BaseCorrespondenceBuilder,
     CorrespondenceClient,
@@ -15,13 +15,12 @@ import {
     PersonalTokenGenerator,
     uuidv4,
 } from "../../../common-imports.js";
-import { getOptions, parseCsvData, requireEnv } from "../../../helpers.js";
+import { fetchTestData, getOptions, requireEnv } from "../../../helpers.js";
 import {
     AltinnScopes,
     CreateScopeString,
     DigDirScopes,
 } from "../../../scopes.js";
-import { withRetries } from "../../building-blocks/common/retry.js";
 
 const DEFAULT_ATTACHMENT_SIZE_BYTES = 50 * 1024;
 const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
@@ -35,7 +34,7 @@ const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
  * request must succeed.
  *
  * @param {{ [key: string]: string }[]} labels Request labels.
- * @returns {object} Strict k6 options for a Correspondence test.
+ * @returns Strict k6 options for a Correspondence test.
  */
 export function getCorrespondenceOptions(labels) {
     const options = getOptions(labels);
@@ -47,9 +46,23 @@ export function getCorrespondenceOptions(labels) {
 }
 
 /**
+ * The sender identity a Correspondence test uses in one environment.
+ *
+ * Every property is optional, since an environment that is not listed falls back
+ * to whatever the env vars set.
+ *
+ * @typedef {object} CorrespondenceEnvironmentDefaults
+ * @property {string} [resourceId] Correspondence resource to send on.
+ * @property {string} [serviceOwnerOrg] Service owner org code.
+ * @property {string} [serviceOwnerOrgNo] Service owner organisation number.
+ */
+
+/**
  * Defaults migrated from the existing Correspondence performance test data.
  * The YT01 resource differs because the old resource is not a Correspondence
  * service and cannot authorize these calls.
+ *
+ * @type {{[environment: string]: CorrespondenceEnvironmentDefaults}}
  */
 const TEST_CONFIGURATION = {
     at23: {
@@ -69,6 +82,11 @@ const TEST_CONFIGURATION = {
     },
 };
 
+/**
+ * @param {string|undefined} value The env var as it was set, if it was set.
+ * @param {boolean} defaultValue What to use when it was not.
+ * @returns {boolean} The parsed value.
+ */
 function parseBoolean(value, defaultValue) {
     if (value === undefined || value === "") {
         return defaultValue;
@@ -85,6 +103,12 @@ function parseBoolean(value, defaultValue) {
     throw new Error(`Expected a boolean value, got '${value}'`);
 }
 
+/**
+ * @param {string|undefined} value The env var as it was set, if it was set.
+ * @param {number} defaultValue What to use when it was not.
+ * @param {string} name Name of the env var, for the error message.
+ * @returns {number} The parsed value.
+ */
 function parsePositiveInteger(value, defaultValue, name) {
     const parsed = Number(value ?? defaultValue);
 
@@ -110,6 +134,7 @@ function parsePositiveInteger(value, defaultValue, name) {
  * }} Test configuration for the active environment.
  */
 export function getCorrespondenceTestConfiguration() {
+    /** @type {CorrespondenceEnvironmentDefaults} */
     const defaults = TEST_CONFIGURATION[__ENV.ENVIRONMENT] ?? {};
     const configuration = {
         resourceId: __ENV.CORRESPONDENCE_RESOURCE_ID ?? defaults.resourceId,
@@ -178,29 +203,13 @@ export function setupCorrespondenceTestData() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const configuration = getCorrespondenceTestConfiguration();
 
-    const url =
-        "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/" +
-        `K6/testdata/correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`;
-    const response = withRetries(
-        () => http.get(url, {
-            tags: { action: "fetch-test-data" },
-        }),
-        "fetch-test-data",
+    /** @type {CorrespondenceTestUser[]} */
+    const rows = fetchTestData(
+        `correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`,
     );
 
-    const fetched = check(response, {
-        "Correspondence test data - status code is 200": (res) =>
-            res.status === 200,
-    });
-
-    if (!fetched) {
-        throw new Error(
-            `Unable to fetch Correspondence test data for ${__ENV.ENVIRONMENT}: HTTP ${response.status}`,
-        );
-    }
-
     const seenSsns = new Set();
-    let endUsers = parseCsvData(response.body).filter((item) => {
+    let endUsers = rows.filter((item) => {
         const hasCompleteIdentity =
             item.ssn &&
             item.userId &&
@@ -255,10 +264,15 @@ export function getEndUser(endUsers, singleUser = false) {
     return endUsers[index];
 }
 
+/** @type {CorrespondenceClient|undefined} */
 let enterpriseSenderClient;
+/** @type {CorrespondenceClient|undefined} */
 let recipientClient;
+/** @type {PersonalTokenGenerator|undefined} */
 let recipientTokenGenerator;
+/** @type {EnduserApiClient|undefined} */
 let dialogportenClient;
+/** @type {PersonalTokenGenerator|undefined} */
 let dialogportenTokenGenerator;
 
 /**
@@ -310,7 +324,7 @@ export function getRecipientClient(endUser) {
         .withPartyUuid(endUser.partyUuid)
         .build();
 
-    if (recipientClient === undefined) {
+    if (recipientClient === undefined || recipientTokenGenerator === undefined) {
         recipientTokenGenerator = new PersonalTokenGenerator(options);
         recipientClient = new CorrespondenceClient(
             __ENV.BASE_URL,
@@ -341,7 +355,7 @@ export function getDialogportenClient(endUser) {
         .withPartyUuid(endUser.partyUuid)
         .build();
 
-    if (dialogportenClient === undefined) {
+    if (dialogportenClient === undefined || dialogportenTokenGenerator === undefined) {
         dialogportenTokenGenerator = new PersonalTokenGenerator(options);
         dialogportenClient = new EnduserApiClient(
             __ENV.BASE_URL,
@@ -396,8 +410,13 @@ export function buildInitializeCorrespondenceRequest(recipient) {
         .build();
 }
 
+/** @type {ArrayBuffer|undefined} */
 let attachmentPayload;
 
+/**
+ * @param {number} size Attachment size in bytes.
+ * @returns {ArrayBuffer} A payload of that size, reused across iterations.
+ */
 function getAttachmentPayload(size) {
     if (attachmentPayload === undefined || attachmentPayload.byteLength !== size) {
         const bytes = new Uint8Array(size);
@@ -417,7 +436,7 @@ function getAttachmentPayload(size) {
  * Correspondence attachment.
  *
  * @param {string} recipient Recipient SSN or organization number.
- * @returns {object} Multipart form fields for k6/http.
+ * @returns Multipart form fields for k6/http.
  */
 export function buildUploadCorrespondenceForm(recipient) {
     const configuration = getCorrespondenceTestConfiguration();
@@ -450,3 +469,7 @@ export function buildUploadCorrespondenceForm(recipient) {
         ),
     };
 }
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here.
+export const CorrespondenceTestUser = undefined;

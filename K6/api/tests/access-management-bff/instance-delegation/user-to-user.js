@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 import exec from "k6/execution";
 
 import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../../clients/access-management-bff/access-package/index.js";
@@ -133,7 +133,7 @@ export const options = getOptions([
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Users to delegate instances between, one slice per VU.
+ * @returns {any[][]} Users to delegate instances between, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -152,7 +152,7 @@ export function setup() {
  * by using the dialogporten graphql API to get the dialog by id.
  * (The groups are not used for anything else than to be able to see the flow of the test)
  *
- * @param {object[][]} data Users to delegate instances between, one slice per VU.
+ * @param {any[][]} data Users to delegate instances between, one slice per VU.
  */
 export default function (data) {
     const {
@@ -172,21 +172,21 @@ export default function (data) {
     } = getClients(serviceOwnerOrgNo);
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources);
-    let dialogId = null;
-
     // create a dialog to have an instance to delegate on, and to be able to test with a realistic instance in the access management API
-    group(group0Label, function () {
-        const resp = CreateDialog(
+    const dialogId = group(group0Label, function () {
+        return CreateDialog(
             serviceOwnerApiClient,
             from.ssn,
             resource,
             serviceOwnerOrgNo,
             createDialog,
             false,
-            `Dialog created for instance delegation test with resource ${resource}`,
         );
-        dialogId = resp;
     });
+
+    if (dialogId === null) {
+        fail("cannot delegate on an instance: creating the dialog returned no dialog id");
+    }
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 

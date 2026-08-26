@@ -18,6 +18,9 @@ export const options = getOptions([
     getDialogslabel,
 ]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
     const endUser = getItemFromList(data, randomize);
@@ -25,7 +28,7 @@ export default function (data) {
     tokenGenerator.setTokenGeneratorOptions(getDialogportenOpts(endUser.ssn));
     const variables = new DialogSearchVariablesBuilder()
         .withParties([endUser.ssn])
-        .withOrg([serviceOwner])
+        .withOrgs([serviceOwner])
         .build();
     GetAllDialogsForParty(
         graphqlClient,

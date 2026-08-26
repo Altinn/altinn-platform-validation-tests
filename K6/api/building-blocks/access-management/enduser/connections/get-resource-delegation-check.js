@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { GetResourceDelegationCheckQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { ResourceCheckDto } from "../../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -9,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetResourceDelegationCheckQuery|null} [queryParams]
  * Query parameters. Use {@link GetResourceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {ResourceCheckDto|null} Resource delegation check result.
  */

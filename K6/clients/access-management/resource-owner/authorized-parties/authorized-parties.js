@@ -44,9 +44,9 @@ class AuthorizedPartiesClient {
      * Get Authorized Parties.
      *
      * @param {AuthorizedPartiesRequest} request Authorized parties request.
-     * @param {AuthorizedPartiesQuery} queryParams Query parameters.
+     * @param {AuthorizedPartiesQuery|null} queryParams Query parameters.
      * @param {{[key:string]:string}|null} labels Request labels.
-     * @returns {http.RefinedResponse} HTTP response.
+     * @returns {http.RefinedResponse<"text">} HTTP response.
      */
     GetAuthorizedParties(request, queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -55,21 +55,11 @@ class AuthorizedPartiesClient {
             `${this.FULL_PATH}/resourceowner/authorizedparties`
         );
 
-        for (const key in queryParams) {
-            const value = queryParams[key];
-
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            // Array values have to be appended one at a time. Handing the array
-            // straight to append() stringifies it into a single comma joined
-            // parameter, which the API binds as one bogus value rather than a
-            // list, so anyOfResourceIds would silently filter on nothing.
-            if (Array.isArray(value)) {
-                value.forEach((entry) => url.searchParams.append(key, entry));
-            } else {
-                url.searchParams.append(key, value);
+        if (queryParams !== null) {
+            for (const [key, value] of Object.entries(queryParams)) {
+                // The query takes booleans as well as strings, and they go on the
+                // URL as their JSON spelling either way.
+                url.searchParams.append(key, String(value));
             }
         }
 

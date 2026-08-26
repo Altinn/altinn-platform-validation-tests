@@ -1,9 +1,12 @@
+import { ApproveConsentContext, ConsentRequestStatusType } from "../common/common.types.js";
+import { GetConsentCountQuery } from "./consent.types.js";
+
 /**
  * Builder for the query parameters of {@link GetConsentCount}.
  */
 class GetConsentCountQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetConsentCountQuery} */ ({});
     }
 
     /**
@@ -32,7 +35,7 @@ class GetConsentCountQueryBuilder {
  */
 class ApproveConsentContextBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {ApproveConsentContext} */ ({});
     }
 
     /**

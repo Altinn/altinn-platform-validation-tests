@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { Application } from "../../../clients/storage/applications.types.js";
 import { ApplicationsClient } from "../../../clients/storage/index.js";
 import { withRetries } from "../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} org Application owner organization.
  * @param {string} app Application identifier.
  * @param {Application} application Updated application metadata.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Application|null} Updated application.
  */
 export function UpdateApplication(

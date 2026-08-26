@@ -1,3 +1,4 @@
+
 // -----------------------------------------------------------------------------
 // Query models
 // -----------------------------------------------------------------------------
@@ -8,7 +9,7 @@
  * Use {@link GetResourceOwnersQueryBuilder} to construct this object.
  *
  * @typedef {object} GetResourceOwnersQuery
- * @property {Array<ResourceType>} [relevantResourceTypes] Resource types to
+ * @property {Array<import("../common/common.types.js").ResourceType>} [relevantResourceTypes] Resource types to
  * include.
  */
 
@@ -35,3 +36,7 @@
  * @property {number} [ResultsPerPage] Page size of the search result.
  * @property {number} [Page] Page number of the search result.
  */
+
+export const GetResourceOwnersQuery = undefined;
+export const GetResourceQuery = undefined;
+export const SearchResourcesQuery = undefined;

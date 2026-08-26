@@ -39,8 +39,8 @@ class AuthenticationClient {
     /**
      * Refreshes the authentication cookie of the authenticated user.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RefreshToken(labels = null) {
         const token = this.tokenGenerator.getToken();

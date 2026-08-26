@@ -27,5 +27,10 @@
  * @property {number|null} status HTTP status code.
  * @property {string|null} detail Problem details.
  * @property {string|null} instance Problem instance.
- * @property {ErrorCode|null} code Error code.
+ * @property {string|null} code Error code.
  */
+
+export const AccessPackageUrn = undefined;
+export const AssignmentPackageDto = undefined;
+export const ServiceOwnerAccessPackageDelegation = undefined;
+export const ServiceOwnerConnectionPartyUrn = undefined;

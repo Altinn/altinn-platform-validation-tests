@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { StatusClient } from "../../../../clients/notifications/status/index.js";
+import { StatusFeedExt, StatusFeedQuery } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {StatusClient} statusClient Client for the Status API.
  * @param {StatusFeedQuery|null} queryParams Optional status feed query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {StatusFeedExt[]|null} Status feed entries.
  */
 export function StatusGetFeed(

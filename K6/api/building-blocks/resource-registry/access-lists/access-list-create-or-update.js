@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListInfoDto, CreateAccessListModel } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {CreateAccessListModel} request Access list payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDto|null} Access list information.
  */
 export function AccessListCreateOrUpdate(
@@ -21,10 +22,11 @@ export function AccessListCreateOrUpdate(
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListClient.AccessListCreateOrUpdate(
+        () => accessListClient.AccessListUpsert(
             owner,
             identifier,
             request,
+            {},
             labels,
         ),
         "AccessListCreateOrUpdate",

@@ -19,6 +19,11 @@ const allOrganizationsTime = new Trend("all_organizations_time", true);
  * The endUsersByEnvironment object contains the test users for each environment (YT01, TT02, AT23) along with their details such as pid, label, userId, partyId, and partyUuid.
  * The labels are named with a format that includes the pid, number of enterprises, and number of dialogs to easily identify the users during testing and analysis of results.
  */
+/**
+ * @typedef {import("./arbeidsflate-utils.js").ArbeidsflateEndUser} ArbeidsflateEndUser
+ */
+
+/** @type {{[environment: string]: ArbeidsflateEndUser[]}} */
 const endUsersByEnvironment = {
     yt01: [
         { pid: "09856699762", label: "a_09856699762_82_22k", userId: "4543406", partyId: "61711995", partyUuid: "fe2071c7-772b-4210-857e-5f0ff5178fd5" },
@@ -95,6 +100,7 @@ function getOptions() {
                 },
             },
         },
+        /** @type {{[name: string]: import("k6/options").Threshold[]}} */
         thresholds: {},
     };
 
@@ -109,19 +115,20 @@ function getOptions() {
 /**
  * The default function is the main entry point for the test and is called for each iteration.
  *
- * @param {} data TODO: description
+ * @param {ReturnType<typeof setup>} data TODO: description
  */
 export default async function (data) {
     const testData = getItemFromList(data);
-    const label = endUsersByEnvironment[environment].find(user => user.pid === testData.pid)?.label;
+    // setup carried the label along with the cookie, so there is nothing to look up.
+    const label = testData.label;
     const context = await browser.newContext();
     const page = await context.newPage();
-    let startTime;
-    let endTime;
+    let startTime = 0;
+    let endTime = 0;
 
     try {
         await context.addCookies([testData.cookie]);
-        startTime = new Date();
+        startTime = Date.now();
         await page.goto(afUrl + "?mock=true"); // The mock is to avoid a popup telling about the new arbeidsflate
 
         // Check if we are on the right page
@@ -131,7 +138,7 @@ export default async function (data) {
         });
         // Wait for the page to load
         await waitForPageLoaded(page);
-        endTime = new Date();
+        endTime = Date.now();
         pageLoadingTime.add(endTime - startTime, { pid_avgivere_dialogs: label });
         await selectAllEnterprises(page, allOrganizationsTime, { pid_avgivere_dialogs: label });
 
@@ -148,7 +155,7 @@ export default async function (data) {
 /**
  * Async function to select "Alle virksomheter/All enterprises" and measure the time taken to load the page after clicking it.
  *
- * @param {} page TODO: description
+ * @param {import("k6/browser").Page} page TODO: description
  * @param {*} trend TODO: description
  * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
  * @returns TODO: description
@@ -168,5 +175,5 @@ export async function selectAllEnterprises(page, trend, labels) {
 
     await waitForPageLoaded(page, 2);
     const endTime = new Date();
-    trend.add(endTime - startTime, labels);
+    trend.add(endTime.getTime() - startTime.getTime(), labels);
 }

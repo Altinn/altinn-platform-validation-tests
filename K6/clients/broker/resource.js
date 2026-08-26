@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ResourceExt } from "./resource.types.js";
+
 const TAGS = {
     GetResource: {
         action: "get-resource",
@@ -39,9 +41,9 @@ class ResourceClient {
      * Gets information about a broker resource configuration.
      *
      * @param {string} resourceId Resource identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResource(resourceId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,9 +79,9 @@ class ResourceClient {
      * @param {ResourceExt} request
      * Resource configuration. Prefer using
      * {@link ResourceRequestBuilder} to construct this object.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PutResource(resourceId, request, labels = null) {
         const token = this.tokenGenerator.getToken();

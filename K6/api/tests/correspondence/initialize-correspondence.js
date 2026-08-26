@@ -3,13 +3,7 @@ import { group } from "k6";
 import { handleSummary } from "../../../common-imports.js";
 import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
-import {
-    buildInitializeCorrespondenceRequest,
-    getCorrespondenceOptions,
-    getEndUser,
-    getEnterpriseSenderClient,
-    setupCorrespondenceTestData,
-} from "./commons.js";
+import { buildInitializeCorrespondenceRequest, CorrespondenceTestUser, getCorrespondenceOptions, getEndUser, getEnterpriseSenderClient, setupCorrespondenceTestData } from "./commons.js";
 
 const initializeLabel = { step: "Initialize correspondence" };
 
@@ -22,7 +16,7 @@ export function setup() {
 /**
  * Test: initialize a correspondence for one end user per VU iteration.
  *
- * @param {Array<{ssn: string}>} endUsers Shared end-user test data.
+ * @param {CorrespondenceTestUser[]} endUsers Shared end-user test data.
  */
 export default function (endUsers) {
     const recipient = getEndUser(endUsers).ssn;

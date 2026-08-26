@@ -1,5 +1,8 @@
 import http from "k6/http";
 
+import { AgentDelegationRequestFE } from "../common/common.types.js";
+import { CreateAgentSystemUserDelegationQuery, CreateAgentSystemUserSelfDelegationQuery, DeleteAgentSystemUserDelegationQuery, DeleteAgentSystemUserSelfDelegationQuery, GetAgentSystemUserCustomersQuery, GetAgentSystemUserDelegationsQuery, GetAgentSystemUserSelfDelegationQuery } from "./system-user-agent-delegation.types.js";
+
 const TAGS = {
     GetAgentSystemUserCustomers: {
         action: "get-agent-system-user-customers",
@@ -62,8 +65,8 @@ class SystemUserAgentDelegationClient {
      * @param {string} systemUserGuid System user UUID.
      * @param {GetAgentSystemUserCustomersQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetAgentSystemUserCustomersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUserCustomers(
         partyId,
@@ -120,8 +123,8 @@ class SystemUserAgentDelegationClient {
      * @param {string} systemUserGuid System user UUID.
      * @param {GetAgentSystemUserDelegationsQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetAgentSystemUserDelegationsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUserDelegations(
         partyId,
@@ -181,8 +184,8 @@ class SystemUserAgentDelegationClient {
      * {@link CreateAgentSystemUserDelegationQueryBuilder}.
      * @param {AgentDelegationRequestFE|null} [body] The customer and access to
      * delegate. Prefer using {@link AgentDelegationRequestFEBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgentSystemUserDelegation(
         partyId,
@@ -247,8 +250,8 @@ class SystemUserAgentDelegationClient {
      * @param {DeleteAgentSystemUserDelegationQuery|null} [query] Optional query
      * parameters. Prefer using
      * {@link DeleteAgentSystemUserDelegationQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentSystemUserDelegation(
         partyId,
@@ -311,8 +314,8 @@ class SystemUserAgentDelegationClient {
      * @param {CreateAgentSystemUserSelfDelegationQuery|null} [query] Optional
      * query parameters. Prefer using
      * {@link CreateAgentSystemUserSelfDelegationQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgentSystemUserSelfDelegation(
         partyId,
@@ -374,8 +377,8 @@ class SystemUserAgentDelegationClient {
      * @param {DeleteAgentSystemUserSelfDelegationQuery|null} [query] Optional
      * query parameters. Prefer using
      * {@link DeleteAgentSystemUserSelfDelegationQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentSystemUserSelfDelegation(
         partyId,
@@ -437,8 +440,8 @@ class SystemUserAgentDelegationClient {
      * @param {GetAgentSystemUserSelfDelegationQuery|null} [query] Optional query
      * parameters. Prefer using
      * {@link GetAgentSystemUserSelfDelegationQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUserSelfDelegation(
         partyId,

@@ -30,3 +30,5 @@
  * @property {string|null} [instance]
  * @property {{[key: string]: Array<string>}|null} [errors]
  */
+
+export const DashboardUserContactInformationResponse = undefined;

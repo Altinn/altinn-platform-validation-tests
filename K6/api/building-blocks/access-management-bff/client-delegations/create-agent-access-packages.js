@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { CreateAgentAccessPackagesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { DelegationBatchInputDto, DelegationDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -12,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link CreateAgentAccessPackagesQueryBuilder}.
  * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
  * delegate. Use {@link DelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DelegationDto>|null} The resulting delegations.
  */
 export function CreateAgentAccessPackages(

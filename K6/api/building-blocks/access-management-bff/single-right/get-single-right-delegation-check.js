@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { RightCheck } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { GetSingleRightDelegationCheckQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSingleRightDelegationCheckQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetSingleRightDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<RightCheck>|null} Delegation check results.
  */
 export function GetSingleRightDelegationCheck(

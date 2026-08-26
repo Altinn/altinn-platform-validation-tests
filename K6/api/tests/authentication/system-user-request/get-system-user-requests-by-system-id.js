@@ -20,20 +20,20 @@ export default function () {
     const [requestSystemUserClient, tokenGenerator] = getPaginationClients();
 
     group("As a vendor, I can list system user requests by system id and follow pagination", function () {
-        let firstPage;
-
-        group("Fetch the first page of system user requests", function () {
-            firstPage = RequestSystemUserBuildingBlocks.VendorGetBySystem(requestSystemUserClient, PAGINATION_SYSTEM_ID);
+        const firstPage = group("Fetch the first page of system user requests", function () {
+            const page = RequestSystemUserBuildingBlocks.VendorGetBySystem(requestSystemUserClient, PAGINATION_SYSTEM_ID);
 
             // Following next links needs a page to follow them from, so a first page
             // that is missing or shaped wrong ends the iteration here rather than
             // failing every check below on the same cause.
-            if (!PaginationDomainChecks.CheckPaginatedShape(firstPage, "RequestSystemUserVendorGetBySystem")) {
+            if (!PaginationDomainChecks.CheckPaginatedShape(page, "RequestSystemUserVendorGetBySystem")) {
                 fail("cannot follow pagination: the first page of system user requests is not a paginated response");
             }
 
-            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "RequestSystemUserVendorGetBySystem");
-            PaginationDomainChecks.CheckItemsBelongToSystem(firstPage, PAGINATION_SYSTEM_ID, "system user request");
+            PaginationDomainChecks.CheckPaginatedNotEmpty(page, "RequestSystemUserVendorGetBySystem");
+            PaginationDomainChecks.CheckItemsBelongToSystem(page, PAGINATION_SYSTEM_ID, "system user request");
+
+            return page;
         });
 
         group("Follow the next-link pagination", function () {

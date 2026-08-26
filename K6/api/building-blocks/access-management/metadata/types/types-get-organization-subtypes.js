@@ -1,13 +1,14 @@
 import { check } from "k6";
 
 import { TypesClient } from "../../../../../clients/access-management/metadata/types/index.js";
+import { SubTypeDto } from "../../../../../clients/access-management/metadata/types/types.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
  * Gets organization sub types.
  *
  * @param {TypesClient} typesClient Client for the Types API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<SubTypeDto>|null} Organization sub types.
  */
 export function TypesGetOrganizationSubTypes(

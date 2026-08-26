@@ -18,11 +18,11 @@ export const options = getOptions([getConnectionsFromLabel, tokenGeneratorLabel]
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} testData Organizations with a party uuid, one slice per VU.
+ * @param {any[][]} testData Organizations with a party uuid, one slice per VU.
  */
 export default function (testData) {
     const [connectionsApiClient, tokenGenerator] = getClients();
-    const party = getItemFromList(testData[exec.vu.idInTest - 1], __ENV.RANDOMIZE);
+    const party = getItemFromList(testData[exec.vu.idInTest - 1], (__ENV.RANDOMIZE ?? "true") === "true");
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.userId));
     const queryParamsFrom = new GetConnectionsQueryBuilder()
         .withParty(party.orgUuid)

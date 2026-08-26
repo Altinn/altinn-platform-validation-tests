@@ -4,12 +4,21 @@ import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../com
 import { fetchTestData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
-/** @type {EnterpriseTokenGenerator|null} */
+/** @type {PersonalTokenGenerator|null} */
 let tokenGenerator = null;
 
 /** @type {AuthorizedPartiesClient|null} */
 let authorizedPartiesClient = null;
 
+/**
+ * Creates and caches the client this test folder uses.
+ *
+ * @param {string} userId Altinn user id of the end user.
+ * @param {string} partyId Altinn party id of that user.
+ * @param {string} partyUuid Party UUID of that user.
+ * @param {string} pid Person identifier of that user.
+ * @returns {[AuthorizedPartiesClient]} The client, as a single item list.
+ */
 export function getClients(userId, partyId, partyUuid, pid) {
 
     if (tokenGenerator == null || authorizedPartiesClient == null) {

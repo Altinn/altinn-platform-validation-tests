@@ -12,13 +12,16 @@ import { getClients } from "./common.js";
 // av hovedenhet B skal se hovedenhet A i aktørlista.
 const groupLabel = "dagl-B-får-hovedenhet-A-i-aktørlista";
 
+/**
+ * @param {ReturnType<typeof import("./common.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const dagligleder = data.testdata.authParties_hovedenhetB.dagligleder;
     let [authorizedPartiesClient] = getClients(dagligleder.userid, dagligleder.partyid, dagligleder.partyuuid, dagligleder.pid);
 
     group(groupLabel, function () {
         const queryParams = new EndUserAuthorizedPartiesQueryBuilder()
-            .includePartiesViaKeyRoles(true)
+            .includePartiesViaKeyRoles("true")
             .build();
 
         const authorizedParties = GetAuthorizedParties(authorizedPartiesClient, queryParams);

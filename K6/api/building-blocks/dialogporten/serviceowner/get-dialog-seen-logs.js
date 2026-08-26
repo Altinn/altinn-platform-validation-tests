@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerDialogsQueriesGetSeenLog_SeenLog, V1ServiceOwnerDialogsQueriesSearchSeenLogs_SeenLog } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get seen log for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerDialogsQueriesSearchSeenLogs_SeenLog[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogSeenLogs(
@@ -62,7 +63,7 @@ export function GetDialogSeenLogs(
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog the seen log entry belongs to
  * @param {string} seenLogEntryId - id of the seen log entry to get
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerDialogsQueriesGetSeenLog_SeenLog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogSeenLog(

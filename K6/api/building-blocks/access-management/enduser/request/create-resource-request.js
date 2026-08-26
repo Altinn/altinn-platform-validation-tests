@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { RequestDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -12,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} resource Resource identifier.
  * @param {Array<string>|null} [rights]
  * Optional rights.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */

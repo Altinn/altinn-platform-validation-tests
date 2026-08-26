@@ -12,6 +12,9 @@ import { getClients } from "./common.js";
 // aktørlista.
 const groupLabel = "Person-B-får-person-A-i-aktørlista";
 
+/**
+ * @param {ReturnType<typeof import("./common.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const personB = data.testdata.authParties_personB;
     let [authorizedPartiesClient] = getClients(personB.userid, personB.partyid, personB.partyuuid, personB.pid);

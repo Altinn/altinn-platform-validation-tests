@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { FileTransferInitalizeExt, FileTransferInitializeResponseExt, FileTransferOverviewExt, FileTransferQuery, FileTransferStatusDetailsExt, FileTransferUploadResponseExt } from "../../../clients/broker/file-transfer.types.js";
 import { FileTransferClient } from "../../../clients/broker/index.js";
 import { withRetries } from "../common/retry.js";
 
@@ -8,7 +9,7 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {FileTransferInitalizeExt} request File transfer metadata.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {FileTransferInitializeResponseExt|null} Parsed response body, or null when the call failed.
  */
 export function InitializeFileTransfer(
@@ -63,7 +64,7 @@ export function InitializeFileTransfer(
  *
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {string} fileTransferId File transfer UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {FileTransferOverviewExt|null} Parsed response body, or null when the call failed.
  */
 export function GetFileTransfer(
@@ -118,7 +119,7 @@ export function GetFileTransfer(
  *
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {string} fileTransferId File transfer UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {FileTransferStatusDetailsExt|null} Parsed response body, or null when the call failed.
  */
 export function GetFileTransferDetails(
@@ -173,7 +174,7 @@ export function GetFileTransferDetails(
  *
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {FileTransferQuery|null} queryParams TODO: Description
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Array<string>} Parsed response body, or null when the call failed.
  */
 export function GetFileTransfers(
@@ -228,7 +229,7 @@ export function GetFileTransfers(
  *
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {string} fileTransferId File transfer UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Parsed response body, or null when the call failed.
  */
 export function ConfirmDownload(
@@ -258,7 +259,7 @@ export function ConfirmDownload(
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {string} fileTransferId File transfer UUID.
  * @param {*} body Binary file content.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {FileTransferUploadResponseExt|null} Parsed response body, or null when the call failed.
  */
 export function UploadFileTransfer(
@@ -316,8 +317,8 @@ export function UploadFileTransfer(
  *
  * @param {FileTransferClient} fileTransferClient Client for the File Transfer API.
  * @param {string} fileTransferId File transfer UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
- * @returns {http.RefinedResponse} The HTTP response. The body is the file
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+ * @returns {import("k6/http").RefinedResponse<"text">} The HTTP response. The body is the file
  * content, so the response is returned rather than a boolean.
  */
 export function DownloadFileTransfer(

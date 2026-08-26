@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { StatusClient } from "../../../../clients/notifications/status/index.js";
+import { NotificationDeliveryManifestExt } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {StatusClient} statusClient Client for the Status API.
  * @param {string} id Notification order identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationDeliveryManifestExt|null} Delivery manifest.
  */
 export function StatusGetShipment(

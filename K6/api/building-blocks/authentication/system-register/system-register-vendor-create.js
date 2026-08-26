@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/authentication/index.js";
+import { RegisterSystemRequest } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {RegisterSystemRequest} request System registration request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Created system identifier.
  */
 export function SystemRegisterVendorCreate(

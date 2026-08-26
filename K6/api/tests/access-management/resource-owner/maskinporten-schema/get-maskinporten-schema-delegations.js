@@ -1,6 +1,7 @@
 import exec from "k6/execution";
 
 import { MaskinportenClient, MaskinportenDelegationsQueryBuilder } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
+import { MaskinportenDelegationsQuery } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../../common-imports.js";
 import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
@@ -72,7 +73,7 @@ export const options = getOptions(
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations with a party uuid, one slice per VU.
+ * @returns {any[][]} Organizations with a party uuid, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -86,6 +87,9 @@ export function setup() {
  * Main function executed by each VU.
  */
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     const segmentedData = data;
     const maskinportenSchemaApiClient = getClients();
@@ -131,14 +135,15 @@ function getClients() {
  * Picks one of the seven supported filter combinations at random and builds the
  * matching query parameters.
  *
- * @param {object[]} list Organizations available to this VU.
+ * @param {any[]} list Organizations available to this VU.
  * @returns {[MaskinportenDelegationsQuery, {[key: string]: string}]} The query
  * parameters and the label describing the combination.
  */
 function getQueryParams(list) {
     const queryParams = new MaskinportenDelegationsQueryBuilder();
     let supplierOrg = undefined;
-    let label = "";
+    /** @type {{[key: string]: string}} */
+    let label = {};
     const randomValue = randomIntBetween(0, 6);
     switch (randomValue) {
         case 0:
@@ -184,6 +189,15 @@ function getQueryParams(list) {
     return [queryParams.build(), label];
 }
 
+/**
+ * Draws one organization from the list, optionally avoiding a specific one.
+ *
+ * @template {{ssn: string, orgNo: string}} T
+ * @param {T[]} list Organizations available to this VU.
+ * @param {boolean} [randomize] Whether to draw at random rather than by iteration.
+ * @param {{ssn: string, orgNo: string}} [avoidItem] An organization to leave out of the draw.
+ * @returns {T} The drawn organization.
+ */
 function getOrganization(list, randomize = true, avoidItem = { ssn: "", orgNo: "" }) {
     if (!randomize) {
         return getItemFromList(list);

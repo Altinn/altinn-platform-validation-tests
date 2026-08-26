@@ -1,0 +1,17 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/token-exchange
+test_definitions:
+  - test_file: exchange-maskinporten-token.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: at23
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client

@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { PrivateNotificationsSettingsClient } from "../../../../clients/profil/private-notifications-settings/index.js";
+import { PrivateNotificationSettingsUpdateRequest, PrivateNotificationSettingsUpdateResponse } from "../../../../clients/profil/private-notifications-settings/private-notifications-settings.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * Client for the Private Notifications Settings API.
  * @param {PrivateNotificationSettingsUpdateRequest} request
  * Request body. Use {@link PrivateNotificationSettingsUpdateRequestBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {PrivateNotificationSettingsUpdateResponse|null} Parsed response body, or null when the call failed.
  */

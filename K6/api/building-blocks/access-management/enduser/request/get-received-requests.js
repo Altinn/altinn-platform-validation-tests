@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
+import { ReceivedRequestsQuery } from "../../../../../clients/access-management/enduser/request/request.types.js";
+import { RequestDto } from "../../../../../clients/access-management/service-owner/request/request.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -13,7 +15,7 @@ import { withRetries } from "../../../common/retry.js";
  * Page size header.
  * @param {number|null} [pageNumber]
  * Page number header.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<RequestDto>} Received requests.
  */

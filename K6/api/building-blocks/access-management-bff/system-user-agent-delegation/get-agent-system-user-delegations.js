@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { GetAgentSystemUserDelegationsQuery } from "../../../../clients/access-management-bff/system-user-agent-delegation/system-user-agent-delegation.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -12,8 +13,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} systemUserGuid System user UUID.
  * @param {GetAgentSystemUserDelegationsQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetAgentSystemUserDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The delegations. The API does not publish a schema
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The delegations. The API does not publish a schema
  * for this response.
  */
 export function GetAgentSystemUserDelegations(
@@ -33,7 +34,7 @@ export function GetAgentSystemUserDelegations(
         "GetAgentSystemUserDelegations",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let delegations = null;
 
     const succeed = check(res, {

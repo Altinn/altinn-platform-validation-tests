@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { SignRequest } from "./instances.types.js";
+
 const TAGS = {
     SignInstance: {
         action: "sign-instance",
@@ -42,8 +44,8 @@ class SignClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {SignRequest} request Signature request.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SignInstance(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();

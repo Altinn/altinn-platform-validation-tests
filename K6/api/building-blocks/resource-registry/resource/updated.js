@@ -1,15 +1,16 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { UpdatedResourceSubjectPaginated, UpdatedResourceSubjectsQuery } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets updated resources since the provided last updated time.
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
- * @param {ResourceUpdatedQueryBuilder | object} [query] Query parameters.
+ * @param {UpdatedResourceSubjectsQuery|null} [query] Query parameters.
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels] See the API documentation.
+ * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
  * @returns {UpdatedResourceSubjectPaginated|null} Parsed response body, or null when the call failed.
  */

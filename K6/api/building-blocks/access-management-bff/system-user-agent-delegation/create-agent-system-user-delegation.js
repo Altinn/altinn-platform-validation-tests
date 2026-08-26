@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { AgentDelegationRequestFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { CreateAgentSystemUserDelegationQuery } from "../../../../clients/access-management-bff/system-user-agent-delegation/system-user-agent-delegation.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -14,8 +16,8 @@ import { withRetries } from "../../common/retry.js";
  * query parameters. Use {@link CreateAgentSystemUserDelegationQueryBuilder}.
  * @param {AgentDelegationRequestFE|null} [body] The customer and access to
  * delegate. Use {@link AgentDelegationRequestFEBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The created delegation. The API does not publish a
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The created delegation. The API does not publish a
  * schema for this response.
  */
 export function CreateAgentSystemUserDelegation(
@@ -37,7 +39,7 @@ export function CreateAgentSystemUserDelegation(
         "CreateAgentSystemUserDelegation",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let delegation = null;
 
     const succeed = check(res, {

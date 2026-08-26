@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../clients/broker/index.js";
+import { ResourceExt } from "../../../clients/broker/resource.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} resourceId Altinn resource identifier.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceExt|null} Parsed response body, or null when the call failed.
  */
 export function GetResource(
@@ -65,7 +66,7 @@ export function GetResource(
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} resourceId Altinn resource identifier.
  * @param {ResourceExt} request Resource to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the call succeeded.
  */
 export function PutResource(

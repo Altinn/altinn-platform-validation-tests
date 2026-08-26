@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ServiceOwnerInitializeExt } from "./service-owner.types.js";
+
 const TAGS = {
     InitializeServiceOwner: {
         action: "initialize-service-owner",
@@ -40,9 +42,9 @@ class ServiceOwnerClient {
      *
      * @param {ServiceOwnerInitializeExt} request
      * Service owner initialization request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeServiceOwner(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,9 +79,9 @@ class ServiceOwnerClient {
     /**
      * Gets the service owner for the calling organization within the broker service.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse<ServiceOwnerOverviewExt>}
+     * @returns {http.RefinedResponse<"text">}
      * Service owner overview information.
      */
     GetServiceOwner(labels = null) {

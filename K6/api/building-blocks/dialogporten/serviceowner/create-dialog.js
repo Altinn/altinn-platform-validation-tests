@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} partyId - either a pid/ssn (11 digits) or a organization number (9 digits)
  * @param {string} serviceResource - the service resource for the dialog
  * @param {string} serviceOwner - the service owner for the dialog. an organization nunber (9 digits)
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @param noTransmissionsActivities TODO: description
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
@@ -69,8 +69,8 @@ export function CreateDialog(
  * Create a transmission for a dialog
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {uuidv7} dialogId - the id of the dialog to create the transmission for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} dialogId - the id of the dialog to create the transmission for
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateTransmission(
@@ -122,8 +122,8 @@ export function CreateTransmission(
  * Create an activity for a dialog
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
- * @param {uuidv7} dialogId - the id of the dialog to create the activity for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} dialogId - the id of the dialog to create the activity for
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {string|null} Parsed response body, or null when the call failed.
  */
 export function CreateActivity(

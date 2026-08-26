@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ResourceCheckDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { GetSupplierResourceDelegationCheckQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSupplierResourceDelegationCheckQuery} queryParams Query
  * parameters. Use {@link GetSupplierResourceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceCheckDto|null} The delegation check result.
  */
 export function GetSupplierResourceDelegationCheck(

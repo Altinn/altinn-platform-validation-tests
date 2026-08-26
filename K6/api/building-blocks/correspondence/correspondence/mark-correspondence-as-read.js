@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * Client for the Correspondence API.
  * @param {string} correspondenceId
  * Correspondence identifier.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {string|null}
  * The correspondence id, or null if the request failed.
@@ -21,7 +21,7 @@ export function MarkCorrespondenceAsRead(
     labels = null,
 ) {
     const res = withRetries(
-        () => correspondenceClient.MarkCorrespondenceAsRead(
+        () => correspondenceClient.MarkAsRead(
             correspondenceId,
             labels,
         ),

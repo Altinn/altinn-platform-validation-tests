@@ -1,9 +1,11 @@
+import { PrivateNotificationSettingsUpdateRequest } from "./private-notifications-settings.types.js";
+
 /**
  * Builder for PrivateNotificationSettingsUpdateRequest.
  */
 class PrivateNotificationSettingsUpdateRequestBuilder {
     constructor() {
-        this.request = {};
+        this.request = /** @type {PrivateNotificationSettingsUpdateRequest} */ ({});
     }
 
     /**
