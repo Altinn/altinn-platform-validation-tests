@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Altinn/altinn-platform-validation-tests/operators/cleaner/internal/metrics"
 	k6iov1alpha1 "github.com/grafana/k6-operator/api/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -69,6 +70,7 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 				log.Error(err, "Unable to delete old testrun", "TestRun", testRun)
 				return ctrl.Result{}, err
 			}
+			metrics.TestRunDeletionsTotal.Inc()
 		} else {
 			// log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
 			return ctrl.Result{
