@@ -3,31 +3,18 @@ import { ClientDelegationV2Client } from "../../../../../clients/access-manageme
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
+import { REQUIRED_FIELDS, TEST_DATA } from "./testdata.js";
 
 /**
- * Test data per environment.
+ * Reads a dotted path off an object.
  *
- * `party` is the organisation whose clients and agents the test works with. It
- * has to be a party that has at least one client and at least one agent, since
- * the test delegates from the former to the latter.
- *
- * `userId` and `userPartyUuid` identify a person who administers that
- * organisation. The token has to carry that person while the request names the
- * organisation: a token whose only identity is the organisation's own party uuid
- * is rejected with 403 by `/clients` and `/agents`, whichever organisation it
- * names. `open-client-admin.js` splits them the same way.
- *
- * `resourceRefId` is the resource that gets delegated and then removed. It has
- * to be a resource the client's role can actually delegate, which the API
- * decides, so it cannot be discovered from the outside.
- *
- * Every value is environment specific and none survives being guessed. Fill in
- * an environment before enabling the test for it, rather than adding an entry
- * with placeholder values.
- *
- * @type {{[environment: string]: {party: string, userId: string, userPartyUuid: string, resourceRefId: string}}}
+ * @param {object} source Object to read from.
+ * @param {string} path Dotted path, as listed in REQUIRED_FIELDS.
+ * @returns {*} The value, or undefined when any step is missing.
  */
-const TEST_DATA = {};
+function readPath(source, path) {
+    return path.split(".").reduce((value, key) => (value ?? {})[key], source);
+}
 
 /**
  * The scopes the v2 resource endpoints ask for.
@@ -54,8 +41,12 @@ let clients = undefined;
 /**
  * Returns the test data for the environment the run is against.
  *
- * @returns {{party: string, userId: string, userPartyUuid: string, resourceRefId: string}} The organisation, the person acting for it, and the resource to work with.
- * @throws {Error} If the environment has no test data configured.
+ * An entry that exists but is still blank fails here rather than deeper in, so
+ * a half-filled environment reports which fields it is missing instead of a
+ * 400 from the API.
+ *
+ * @returns {import("./testdata.js").ClientDelegationV2TestData} The actors and the resource to work with.
+ * @throws {Error} If the environment has no test data, or has blank required fields.
  */
 export function getTestData() {
     const environment = __ENV.ENVIRONMENT;
@@ -63,7 +54,15 @@ export function getTestData() {
 
     if (data === undefined) {
         throw new Error(
-            `No client delegation v2 test data for ${environment}. Add a party, a userId, a userPartyUuid and a resourceRefId for it in commons.js.`,
+            `No client delegation v2 test data for ${environment}. Add an entry for it in testdata.js.`,
+        );
+    }
+
+    const missing = REQUIRED_FIELDS.filter((field) => !readPath(data, field));
+
+    if (missing.length > 0) {
+        throw new Error(
+            `Client delegation v2 test data for ${environment} is missing ${missing.join(", ")}. Fill it in in testdata.js.`,
         );
     }
 
@@ -97,11 +96,11 @@ export function getTokenOpts(userId, userPartyUuid) {
  * delegation goes between, which v2 has no endpoint of its own for, and v2 does
  * the resource work.
  *
- * @param {{userId: string, userPartyUuid: string}} data Test data naming the person to act as.
+ * @param {import("./testdata.js").ClientDelegationV2TestData} data Test data naming the person to act as.
  * @returns {{clientDelegation: ClientDelegationClient, clientDelegationV2: ClientDelegationV2Client}} The clients.
  */
 export function getClients(data) {
-    const opts = getTokenOpts(data.userId, data.userPartyUuid);
+    const opts = getTokenOpts(data.facilitator.user.userId, data.facilitator.user.partyUuid);
 
     if (tokenGenerator === undefined) {
         tokenGenerator = new PersonalTokenGenerator(opts);
@@ -122,7 +121,7 @@ export function getClients(data) {
 /**
  * k6 setup stage. Declares what the tests in this folder need.
  *
- * @returns {{party: string, userId: string, userPartyUuid: string, resourceRefId: string}} The test data for the environment.
+ * @returns {import("./testdata.js").ClientDelegationV2TestData} The test data for the environment.
  */
 export function setup() {
     requireEnv([

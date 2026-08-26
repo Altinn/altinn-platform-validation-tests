@@ -69,7 +69,7 @@ function arrangeDelegationTarget(clientDelegation, party) {
  * Test: a resource can be delegated from a client to an agent, is visible from
  * both sides afterwards, and can be removed again.
  *
- * @param {{party: string, userId: string, userPartyUuid: string, resourceRefId: string}} data What the setup arranged.
+ * @param {import("./testdata.js").ClientDelegationV2TestData} data What the setup arranged.
  * @returns {void}
  */
 export default function (data) {
@@ -78,7 +78,7 @@ export default function (data) {
     let target = null;
 
     group("Arrange - find a client, an agent and a role to delegate through", function () {
-        target = arrangeDelegationTarget(clientDelegation, data.party);
+        target = arrangeDelegationTarget(clientDelegation, data.facilitator.partyUuid);
     });
 
     // Nothing below says anything without a client and an agent, and no write has
@@ -88,13 +88,13 @@ export default function (data) {
     }
 
     const delegationQuery = new DelegateAgentResourcesQueryBuilder()
-        .withParty(data.party)
+        .withParty(data.facilitator.partyUuid)
         .withClient(target.clientId)
         .withAgent(target.agentId)
         .build();
 
     const payload = new ResourceDelegationBatchInputBuilder()
-        .addPermission(target.roleCode, [data.resourceRefId])
+        .addPermission(target.roleCode, [data.resource])
         .build();
 
     let delegated = false;
@@ -121,7 +121,7 @@ export default function (data) {
             const resources = GetAgentResources(
                 clientDelegationV2,
                 new AgentResourcesQueryBuilder()
-                    .withParty(data.party)
+                    .withParty(data.facilitator.partyUuid)
                     .withAgent(target.agentId)
                     .build(),
                 null,
@@ -130,7 +130,7 @@ export default function (data) {
 
             ClientDelegationV2DomainChecks.CheckResourceDelegated(
                 resources,
-                data.resourceRefId,
+                data.resource,
                 "GetAgentResources",
             );
             ClientDelegationV2DomainChecks.CheckResourcesGrantedViaRole(
@@ -144,7 +144,7 @@ export default function (data) {
             const resources = GetClientResources(
                 clientDelegationV2,
                 new ClientResourcesQueryBuilder()
-                    .withParty(data.party)
+                    .withParty(data.facilitator.partyUuid)
                     .withClient(target.clientId)
                     .build(),
                 null,
@@ -153,7 +153,7 @@ export default function (data) {
 
             ClientDelegationV2DomainChecks.CheckResourceDelegated(
                 resources,
-                data.resourceRefId,
+                data.resource,
                 "GetClientResources",
             );
         });
@@ -177,7 +177,7 @@ export default function (data) {
             const resources = GetAgentResources(
                 clientDelegationV2,
                 new AgentResourcesQueryBuilder()
-                    .withParty(data.party)
+                    .withParty(data.facilitator.partyUuid)
                     .withAgent(target.agentId)
                     .build(),
                 null,
@@ -186,7 +186,7 @@ export default function (data) {
 
             ClientDelegationV2DomainChecks.CheckResourceNotDelegated(
                 resources,
-                data.resourceRefId,
+                data.resource,
                 "GetAgentResources",
             );
         });
