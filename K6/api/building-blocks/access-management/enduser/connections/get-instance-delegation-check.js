@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { InstanceCheckDto } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
+import { GetInstanceDelegationCheckQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -9,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetInstanceDelegationCheckQuery|null} [queryParams]
  * Query parameters. Use {@link GetInstanceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {InstanceCheckDto|null} Instance delegation check.
  */

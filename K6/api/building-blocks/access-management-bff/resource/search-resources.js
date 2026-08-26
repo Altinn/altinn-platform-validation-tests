@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { PaginatedListOfServiceResourceFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ResourceClient } from "../../../../clients/access-management-bff/resource/index.js";
+import { SearchResourcesQuery } from "../../../../clients/access-management-bff/resource/resource.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ResourceClient} resourceClient Client for the resource endpoints.
  * @param {SearchResourcesQuery|null} [queryParams] Optional query parameters.
  * Use {@link SearchResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PaginatedListOfServiceResourceFE|null} Paginated list of matching
  * resources.
  */

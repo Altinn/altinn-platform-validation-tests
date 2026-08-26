@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { TextResource } from "./applications.types.js";
+
 const TAGS = {
     CreateTextResource: {
         action: "create-text-resource",
@@ -51,8 +53,8 @@ class TextsClient {
      * @param {string} org Application owner, e.g. ttd.
      * @param {string} app Application name.
      * @param {TextResource} request Text resource to create.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateTextResource(org, app, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -84,8 +86,8 @@ class TextsClient {
      * @param {string} org Application owner, e.g. ttd.
      * @param {string} app Application name.
      * @param {string} language Language code, e.g. nb.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetTextResource(org, app, language, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -117,8 +119,8 @@ class TextsClient {
      * @param {string} app Application name.
      * @param {string} language Language code, e.g. nb.
      * @param {TextResource} request Text resource to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateTextResource(org, app, language, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -150,8 +152,8 @@ class TextsClient {
      * @param {string} org Application owner, e.g. ttd.
      * @param {string} app Application name.
      * @param {string} language Language code, e.g. nb.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteTextResource(org, app, language, labels = null) {
         const token = this.tokenGenerator.getToken();

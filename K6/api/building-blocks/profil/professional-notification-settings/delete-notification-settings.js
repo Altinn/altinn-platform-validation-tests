@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { NotificationSettingsResponse } from "../../../../clients/profil/professional-notification-settings/professional-notification-settings.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -14,7 +15,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ProfessionalNotificationSettingsClient} professionalNotificationSettingsClient
  * Client for the Professional Notification Settings API.
  * @param {string} partyUuid Party UUID.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True if the settings were deleted.
  */

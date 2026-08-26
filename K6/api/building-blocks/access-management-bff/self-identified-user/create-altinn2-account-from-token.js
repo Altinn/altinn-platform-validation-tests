@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { Altinn2AccountFromTokenRequest } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SelfIdentifiedUserClient } from "../../../../clients/access-management-bff/self-identified-user/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * self identified user endpoints.
  * @param {Altinn2AccountFromTokenRequest|null} [body] The token to create the
  * account from. Use {@link Altinn2AccountFromTokenRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the account was created.
  */
 export function CreateAltinn2AccountFromToken(

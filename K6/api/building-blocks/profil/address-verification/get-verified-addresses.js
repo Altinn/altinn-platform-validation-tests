@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { VerifiedAddressResponse } from "../../../../clients/profil/address-verification/address-verification.types.js";
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -7,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets all verified addresses for the current user.
  *
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<VerifiedAddressResponse>} Verified addresses for the current user.
  */
 export function GetVerifiedAddresses(

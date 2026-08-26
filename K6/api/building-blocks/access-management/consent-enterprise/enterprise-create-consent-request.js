@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ConsentRequestDetailsDto, ConsentRequestDto } from "../../../../clients/access-management/consent-enterprise/consent-enterprise.types.js";
 import { EnterpriseClient } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnterpriseClient} enterpriseClient Client for the Enterprise API.
  * @param {ConsentRequestDto} request Consent request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ConsentRequestDetailsDto|null} Created consent request details.
  */
 export function EnterpriseCreateConsentRequest(

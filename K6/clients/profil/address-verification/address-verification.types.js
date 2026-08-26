@@ -45,3 +45,9 @@
  * Gets or sets the address to verify, either an email or a phone number.
  * @property {AddressType} type
  */
+
+export const AddressCodeResendRequest = undefined;
+export const AddressCodeSendRequest = undefined;
+export const AddressType = undefined;
+export const AddressVerificationRequest = undefined;
+export const VerifiedAddressResponse = undefined;

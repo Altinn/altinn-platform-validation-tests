@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ResourceClient } from "../../../../clients/resource-registry/index.js";
+import { ServiceResource } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,8 +9,8 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{versionId?: number} | object} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{versionId?: number} | object|null} [query] Optional query parameters.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ServiceResource|null} Resource.
  */
 export function ResourceGetResource(

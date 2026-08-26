@@ -11,3 +11,5 @@
  * @property {Array<string>|null} [parties]
  * Array of party IDs that belong to this group.
  */
+
+export const GroupResponse = undefined;

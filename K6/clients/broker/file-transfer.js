@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { FileTransferInitalizeExt, FileTransferQuery } from "./file-transfer.types.js";
+
 const TAGS = {
     InitializeFileTransfer: {
         action: "initialize-file-transfer",
@@ -60,8 +62,8 @@ class FileTransferClient {
      *
      * @param {FileTransferInitalizeExt} body File transfer metadata.
      * Prefer using {@link FileTransferInitializeRequestBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeFileTransfer(body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -99,8 +101,8 @@ class FileTransferClient {
      * @param {FileTransferQuery|null} [query]
      * Optional query parameters. Prefer using
      * {@link FileTransferQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransfers(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -114,9 +116,9 @@ class FileTransferClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -150,8 +152,8 @@ class FileTransferClient {
      *
      * @param {string} fileTransferId File transfer UUID.
      * @param {*} body Binary file content.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadFileTransfer(fileTransferId, body, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -194,13 +196,15 @@ class FileTransferClient {
      * "Metadata.FileName", "Metadata.ResourceId", "Metadata.Sender" and
      * "Metadata.Recipients".
      * @param {*} file File part, as returned by http.file().
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeAndUploadFileTransfer(metadata, file, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const body = { FileTransfer: file };
+        // The metadata is flattened onto the multipart body by name, so the body
+        // is read through an index signature rather than a fixed shape.
+        const body = /** @type {http.StructuredRequestBody} */ ({ FileTransfer: file });
 
         for (const [key, value] of Object.entries(metadata)) {
             if (value === undefined || value === null) {
@@ -248,8 +252,8 @@ class FileTransferClient {
      * GET /filetransfer/{fileTransferId}
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransfer(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -284,8 +288,8 @@ class FileTransferClient {
      * GET /filetransfer/{fileTransferId}/details
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransferDetails(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -320,8 +324,8 @@ class FileTransferClient {
      * GET /filetransfer/{fileTransferId}/download
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadFileTransfer(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -355,8 +359,8 @@ class FileTransferClient {
      * POST /filetransfer/{fileTransferId}/confirmdownload
      *
      * @param {string} fileTransferId File transfer UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmDownload(fileTransferId, labels = null) {
         const token = this.tokenGenerator.getToken();

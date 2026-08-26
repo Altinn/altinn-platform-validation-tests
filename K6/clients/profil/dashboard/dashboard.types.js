@@ -25,3 +25,5 @@
  * @property {string|null} [detail]
  * @property {string|null} [instance]
  */
+
+export const DashboardNotificationAddressResponse = undefined;

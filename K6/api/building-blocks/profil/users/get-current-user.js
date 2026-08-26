@@ -1,13 +1,14 @@
 import { check } from "k6";
 
 import { UsersClient } from "../../../../clients/profil/users/index.js";
+import { UserProfile } from "../../../../clients/profil/users/users.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the current user based on the request context.
  *
  * @param {UsersClient} usersClient Client for the Users API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfile|null} User profile.
  */
 export function GetCurrentUser(

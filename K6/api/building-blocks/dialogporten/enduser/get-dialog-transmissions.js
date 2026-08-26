@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserDialogsQueriesGetTransmission_Transmission, V1EndUserDialogsQueriesSearchTransmissions_Transmission } from "../../../../clients/dialogporten/enduser/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get transmissions for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesSearchTransmissions_Transmission[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogTransmissions(
@@ -61,9 +62,8 @@ export function GetDialogTransmissions(
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog the transmission belongs to
- * param {string} transmissionId - id of the transmission to get
- * @param transmissionId TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} transmissionId - id of the transmission to get
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesGetTransmission_Transmission|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogTransmission(

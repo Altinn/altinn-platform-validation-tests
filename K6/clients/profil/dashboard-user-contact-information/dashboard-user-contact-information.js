@@ -42,9 +42,9 @@ class DashboardUserContactInformationClient {
      * Gets all user contact information for the given organization.
      *
      * @param {string} organizationNumber Organization number.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetContactInformation(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -77,9 +77,9 @@ class DashboardUserContactInformationClient {
      * Gets all user contact information for the given email address.
      *
      * @param {string} emailAddress Email address.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetContactInformationByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -114,9 +114,9 @@ class DashboardUserContactInformationClient {
      * @param {string} phoneNumber Phone number. Must contain between 5 and 15 digits.
      * @param {{countrycode?: string}|null} [query]
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetContactInformationByPhoneNumber(
         phoneNumber,

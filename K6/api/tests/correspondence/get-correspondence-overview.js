@@ -7,13 +7,7 @@ import {
     GetCorrespondences,
 } from "../../building-blocks/correspondence/correspondence/index.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
-import {
-    getCorrespondenceOptions,
-    getCorrespondenceTestConfiguration,
-    getEndUser,
-    getRecipientClient,
-    setupCorrespondenceTestData,
-} from "./commons.js";
+import { CorrespondenceTestUser, getCorrespondenceOptions, getCorrespondenceTestConfiguration, getEndUser, getRecipientClient, setupCorrespondenceTestData } from "./commons.js";
 
 const listLabel = { step: "List correspondence ids" };
 const overviewLabel = { step: "Get correspondence overview" };
@@ -28,7 +22,7 @@ export function setup() {
  * Test: list the selected recipient's correspondences and fetch their
  * overviews.
  *
- * @param {Array<{ssn: string}>} endUsers Shared end-user test data.
+ * @param {CorrespondenceTestUser[]} endUsers Shared end-user test data.
  */
 export default function (endUsers) {
     const configuration = getCorrespondenceTestConfiguration();
@@ -41,10 +35,8 @@ export default function (endUsers) {
         .withOnBehalfOf(recipient)
         .build();
 
-    let correspondenceIds = [];
-
-    group("A recipient can list correspondence ids", function () {
-        correspondenceIds = GetCorrespondences(
+    const correspondenceIds = group("A recipient can list correspondence ids", function () {
+        return GetCorrespondences(
             correspondenceClient,
             query,
             listLabel,

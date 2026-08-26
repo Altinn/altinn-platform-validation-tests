@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestSystemUserClient } from "../../../../clients/authentication/index.js";
+import { GuidOpaque, RequestSystemResponsePaginated } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {string} systemId System identifier.
  * @param {GuidOpaque|null} [token] Continuation token.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponsePaginated|null} Paginated request responses.
  */
 export function RequestSystemUserVendorGetBySystem(

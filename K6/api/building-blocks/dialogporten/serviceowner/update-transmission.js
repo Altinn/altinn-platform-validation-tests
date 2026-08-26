@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,11 +10,11 @@ import { withRetries } from "../../common/retry.js";
  * PUT /dialogs/{dialogId}/transmissions/{transmissionId}
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
- * @param {uuidv7} transmissionId - id of the transmission
+ * @param {string} dialogId - id of the dialog
+ * @param {string} transmissionId - id of the transmission
  * @param {V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest} request - the transmission to store
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateTransmission(

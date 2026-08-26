@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleResourcesByIdQuery, RolesGetRoleResourcesQuery } from "./roles.types.js";
+
 const TAGS = {
     RolesGetRoles: {
         action: "roles-get-roles",
@@ -50,9 +52,9 @@ class RolesClient {
     /**
      * Gets roles.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRoles(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -85,9 +87,9 @@ class RolesClient {
      * Gets a role.
      *
      * @param {string} id Role identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRole(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -119,11 +121,11 @@ class RolesClient {
     /**
      * Gets role packages.
      *
-     * @param {RolesGetRolePackagesQueryBuilder | object} query
+     * @param {RolesGetRolePackagesQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRolePackages(query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -131,10 +133,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/packages`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -185,11 +186,11 @@ class RolesClient {
     /**
      * Gets role resources.
      *
-     * @param {RolesGetRoleResourcesQueryBuilder | object} query
+     * @param {RolesGetRoleResourcesQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRoleResources(query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -197,10 +198,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/resources`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -252,11 +252,11 @@ class RolesClient {
      * Gets role packages by role id.
      *
      * @param {string} id Role identifier.
-     * @param {RolesGetRolePackagesByIdQueryBuilder | object} query
+     * @param {RolesGetRolePackagesByIdQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRolePackagesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -264,10 +264,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/${id}/packages`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -309,11 +308,11 @@ class RolesClient {
      * Gets role resources by role id.
      *
      * @param {string} id Role identifier.
-     * @param {RolesGetRoleResourcesByIdQueryBuilder | object} query
+     * @param {RolesGetRoleResourcesByIdQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRoleResourcesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -321,10 +320,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/${id}/resources`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;

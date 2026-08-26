@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { AddressVerificationRequest } from "../../../../clients/profil/address-verification/address-verification.types.js";
 import { AddressVerificationClient } from "../../../../clients/profil/address-verification/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -16,9 +17,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
  * @param {AddressVerificationRequest} request
  * Request body. Use {@link AddressVerificationRequestBuilder}.
- * @param {number[]} [expectedStatuses] Status codes counted as the expected outcome. Defaults to [204].
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {boolean} True if the call answered one of the expected statuses.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {boolean} True if the address was successfully verified.
  */
 export function VerifyAddress(
     addressVerificationClient,

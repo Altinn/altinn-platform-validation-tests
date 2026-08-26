@@ -12,6 +12,9 @@ const label = { step: "getAuthorizedPartiesForUserIncludePartiesViaKeyRole" };
 
 export const options = getOptions([label]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
     const userParty = getItemFromList(data, randomize);
@@ -22,7 +25,7 @@ export default function (data) {
 
     const queryParams = new AuthorizedPartiesQueryBuilder()
         .includeAltinn2(false)
-        .includePartiesViaKeyRoles(true)
+        .includePartiesViaKeyRoles("true")
         .build();
 
     GetAuthorizedParties(

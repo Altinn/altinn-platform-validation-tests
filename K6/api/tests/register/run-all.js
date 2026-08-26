@@ -11,6 +11,9 @@ export function setup() {
     };
 }
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     runLookUpOnUsername(data.runLookUpOnUsername);
     runLookUpOnIdportenEmail();

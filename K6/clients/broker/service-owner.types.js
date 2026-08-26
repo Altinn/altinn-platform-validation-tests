@@ -34,8 +34,8 @@
  * @typedef {"NotStarted"|"DeployingResources"|"Ready"} DeploymentStatusExt
  */
 
+export const DeploymentStatusExt = undefined;
 export const ServiceOwnerInitializeExt = undefined;
 export const ServiceOwnerOverviewExt = undefined;
 export const StorageProviderExt = undefined;
 export const StorageProviderTypeExt = undefined;
-export const DeploymentStatusExt = undefined;

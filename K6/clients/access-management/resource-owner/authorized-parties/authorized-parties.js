@@ -34,7 +34,7 @@ class AuthorizedPartiesClient {
     /**
      * Default request tags used by the client.
      *
-     * @returns {object} Default k6 tags.
+     * @returns {typeof TAGS} Default k6 tags.
      */
     static get TAGS() {
         return TAGS;
@@ -44,9 +44,9 @@ class AuthorizedPartiesClient {
      * Get Authorized Parties.
      *
      * @param {AuthorizedPartiesRequest} request Authorized parties request.
-     * @param {AuthorizedPartiesQuery} queryParams Query parameters.
+     * @param {AuthorizedPartiesQuery|null} queryParams Query parameters.
      * @param {{[key:string]:string}|null} labels Request labels.
-     * @returns {http.RefinedResponse} HTTP response.
+     * @returns {http.RefinedResponse<"text">} HTTP response.
      */
     GetAuthorizedParties(request, queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -55,8 +55,12 @@ class AuthorizedPartiesClient {
             `${this.FULL_PATH}/resourceowner/authorizedparties`
         );
 
-        for (const key in queryParams) {
-            url.searchParams.append(key, queryParams[key]);
+        if (queryParams !== null) {
+            for (const [key, value] of Object.entries(queryParams)) {
+                // The query takes booleans as well as strings, and they go on the
+                // URL as their JSON spelling either way.
+                url.searchParams.append(key, String(value));
+            }
         }
 
         const tags = {

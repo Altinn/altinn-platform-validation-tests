@@ -9,15 +9,7 @@ import {
 } from "../../building-blocks/correspondence/correspondence/index.js";
 import { GetDialog } from "../../building-blocks/dialogporten/enduser/index.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
-import {
-    getCorrespondenceOptions,
-    getCorrespondenceTestConfiguration,
-    getDialogportenClient,
-    getDialogTokenCorrespondenceClient,
-    getEndUser,
-    getRecipientClient,
-    setupCorrespondenceTestData,
-} from "./commons.js";
+import { CorrespondenceTestUser, getCorrespondenceOptions, getCorrespondenceTestConfiguration, getDialogportenClient, getDialogTokenCorrespondenceClient, getEndUser, getRecipientClient, setupCorrespondenceTestData } from "./commons.js";
 
 const listLabel = { step: "List correspondence ids" };
 const overviewLabel = { step: "Get correspondence overview for content" };
@@ -39,7 +31,7 @@ export function setup() {
  * Test: list a recipient's correspondences, resolve the Dialogporten dialog
  * token for each one, and fetch its message content.
  *
- * @param {Array<{ssn: string}>} endUsers Shared end-user test data.
+ * @param {CorrespondenceTestUser[]} endUsers Shared end-user test data.
  */
 export default function (endUsers) {
     const configuration = getCorrespondenceTestConfiguration();
@@ -53,10 +45,8 @@ export default function (endUsers) {
         .withOnBehalfOf(recipient)
         .build();
 
-    let correspondenceIds = [];
-
-    group("A recipient can list correspondence ids", function () {
-        correspondenceIds = GetCorrespondences(
+    const correspondenceIds = group("A recipient can list correspondence ids", function () {
+        return GetCorrespondences(
             correspondenceClient,
             query,
             listLabel,
@@ -75,10 +65,8 @@ export default function (endUsers) {
     );
 
     for (const correspondenceId of selectedIds) {
-        let overview;
-
-        group("Get the correspondence's Dialogporten reference", function () {
-            overview = GetCorrespondence(
+        const overview = group("Get the correspondence's Dialogporten reference", function () {
+            return GetCorrespondence(
                 correspondenceClient,
                 correspondenceId,
                 overviewLabel,
@@ -101,10 +89,8 @@ export default function (endUsers) {
             continue;
         }
 
-        let dialog;
-
-        group("Get the matching Dialogporten dialog token", function () {
-            dialog = GetDialog(
+        const dialog = group("Get the matching Dialogporten dialog token", function () {
+            return GetDialog(
                 dialogportenClient,
                 dialogId,
                 dialogLabel,

@@ -61,3 +61,8 @@
  * @property {PartyEntityDto} to
  * @property {PartyEntityDto} by
  */
+
+export const CreateServiceOwnerRequest = undefined;
+export const RequestDto = undefined;
+export const RequestPackageDto = undefined;
+export const RequestResourceDto = undefined;

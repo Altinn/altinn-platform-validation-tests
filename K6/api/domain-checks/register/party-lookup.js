@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { Party } from "../../../clients/register/types.js";
+
 /**
  * Checks that a lookup found exactly one party.
  *
@@ -7,9 +9,9 @@ import { check } from "k6";
  * so a caller that gets false back should fail() rather than assert on whatever
  * happened to be first.
  *
- * @param {Array<object>|null} parties - What the lookup returned.
+ * @param {Array<Party>|null} parties - What the lookup returned.
  * @param {string} lookedUpBy - What the lookup was keyed on, for the failure text.
- * @returns {boolean} True if there is exactly one party, false otherwise.
+ * @returns {parties is [Party]} True if there is exactly one party, false otherwise.
  */
 function CheckSinglePartyFound(parties, lookedUpBy) {
     const success = check(parties, {
@@ -34,7 +36,7 @@ function CheckSinglePartyFound(parties, lookedUpBy) {
  * lookup is case insensitive, so an uppercased query has to come back with the
  * original casing.
  *
- * @param {object} party - The party the lookup returned.
+ * @param {Party|null} party - The party the lookup returned.
  * @param {string} expectedUsername - The username from the test data.
  * @returns {boolean} True if the party matches, false otherwise.
  */
@@ -65,7 +67,7 @@ function CheckPartyMatchesUsername(party, expectedUsername) {
  * email user created in A3 has none, and look-up-on-username.js covers usernames
  * against a legacy self-identified user anyway.
  *
- * @param {object} party - The party the lookup returned.
+ * @param {Party|null} party - The party the lookup returned.
  * @param {string} expectedEmail - The email the lookup was keyed on.
  * @returns {boolean} True if the party matches, false otherwise.
  */

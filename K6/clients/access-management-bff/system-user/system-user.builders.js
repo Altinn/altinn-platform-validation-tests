@@ -1,9 +1,12 @@
+import { NewSystemUserRequest } from "../common/common.types.js";
+import { DeleteAgentSystemUserQuery } from "./system-user.types.js";
+
 /**
  * Builder for the query parameters of {@link DeleteAgentSystemUser}.
  */
 class DeleteAgentSystemUserQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DeleteAgentSystemUserQuery} */ ({});
     }
 
     /**
@@ -32,7 +35,7 @@ class DeleteAgentSystemUserQueryBuilder {
  */
 class NewSystemUserRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {NewSystemUserRequest} */ ({});
     }
 
     /**

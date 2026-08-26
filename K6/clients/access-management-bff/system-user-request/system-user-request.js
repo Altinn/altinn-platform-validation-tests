@@ -53,8 +53,8 @@ class SystemUserRequestClient {
      * Gets a system user request.
      *
      * @param {string} requestId System user request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSystemUserRequest(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -88,8 +88,8 @@ class SystemUserRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} requestId System user request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveSystemUserRequest(partyId, requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -129,8 +129,8 @@ class SystemUserRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} requestId System user request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectSystemUserRequest(partyId, requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -170,8 +170,8 @@ class SystemUserRequestClient {
      *
      * @param {number} partyId Party id of the organisation.
      * @param {string} requestId System user request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EscalateSystemUserRequest(partyId, requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -210,8 +210,8 @@ class SystemUserRequestClient {
      * Gets the logout redirect for a system user request.
      *
      * @param {string} requestId System user request UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSystemUserRequestLogout(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -207,6 +207,7 @@ export const CcrHolderRoles = {
  * The keys are the values of CcrCustomerRoles, which is what lets a test draw a
  * role once and use it against both services.
  *
+ * @type {{[roleName: string]: string}}
  * @readonly
  */
 export const ErRoleFieldTypes = {
@@ -217,6 +218,7 @@ export const ErRoleFieldTypes = {
 
 // Value exports so a building block can name the type it returns in an import
 // and have the JSDoc reference resolve. There is nothing to import at runtime.
+
 export const Party = undefined;
 export const PartyFieldInclude = undefined;
 export const PartyHistoricalAggregate = undefined;

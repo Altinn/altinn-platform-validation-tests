@@ -19,6 +19,7 @@ import {
     GetClientAccessPackagesQueryBuilder,
     GetClientsQueryBuilder,
 } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { DelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     CreateRightHolderQueryBuilder,
@@ -158,7 +159,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations and a user to act as agent, one slice per VU.
+ * @returns {any[][]} Organizations and a user to act as agent, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -171,7 +172,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
+ * @param {any[][]} segmentedData Organizations and a user to act as agent, one slice per VU.
  */
 export default function (segmentedData) {
     // testdata. [0] contains segmented user data for each VU, [1] contains access packages
@@ -347,6 +348,13 @@ function buildAccessPackageBatch(accessPackage) {
         .build();
 }
 
+/**
+ * @param {ConnectionClient} connectionsApiClient Client for the API.
+ * @param {{orgUuid: string}} from The organization the access came from.
+ * @param {{partyUuid: string}} to The party the access was given to.
+ * @param {{[x: string]: string}} labels k6 request tags.
+ * @returns {any} The connections, as GetRightHolders returns them.
+ */
 function getRightHolders(connectionsApiClient, from, to, labels) {
     const respBody = GetRightHolders(
         connectionsApiClient,
@@ -362,6 +370,12 @@ function getRightHolders(connectionsApiClient, from, to, labels) {
     return respBody;
 }
 
+/**
+ * @param {ConnectionClient} connectionsApiClient Client for the API.
+ * @param {{orgUuid: string}} party The organization to read the connections of.
+ * @param {{[x: string]: string}} labels k6 request tags.
+ * @returns {any} The connections, as GetRightHolders returns them.
+ */
 function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
     const respBody = GetRightHolders(
         connectionsApiClient,
@@ -376,6 +390,11 @@ function getRightHoldersWithoutTo(connectionsApiClient, party, labels) {
     return respBody;
 }
 
+/**
+ * @template T
+ * @param {T[]} list Organizations available to this VU.
+ * @returns {{from: T, to: T, user: T}} Three distinct entries from the list.
+ */
 function getFromToUser(list) {
     const [from, to, user] = pickUnique(list, 3);
     return { from, to, user };

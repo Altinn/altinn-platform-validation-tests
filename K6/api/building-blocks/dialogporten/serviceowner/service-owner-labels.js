@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,10 +10,10 @@ import { withRetries } from "../../common/retry.js";
  * POST /dialogs/{dialogId}/context/labels
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label} request - the label to add
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function AddServiceOwnerLabels(
@@ -50,10 +51,10 @@ export function AddServiceOwnerLabels(
  * DELETE /dialogs/{dialogId}/context/labels/{label}
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
- * @param {uuidv7} dialogId - id of the dialog
+ * @param {string} dialogId - id of the dialog
  * @param {string} label - the label to remove
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function RemoveServiceOwnerLabel(

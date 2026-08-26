@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetRolesQuery, RolePermissionDtoPaginatedResult } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -9,9 +10,9 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetRolesQuery|null} [queryParams]
  * Query parameters. Use {@link GetRolesQueryBuilder}.
- * @param {{[key: string]: string|number}} [headers]
+ * @param {{[key: string]: string|number}|null} [headers]
  * Optional request headers.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RolePermissionDtoPaginatedResult|null} Retrieved role permissions.
  */

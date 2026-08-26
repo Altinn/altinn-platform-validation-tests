@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { CreateAgentResourcesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { ResourceDelegationBatchInputDto, ResourceDelegationDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -12,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link CreateAgentResourcesQueryBuilder}.
  * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
  * delegate. Use {@link ResourceDelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegationDto>|null} The resulting resource
  * delegations.
  */

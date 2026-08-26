@@ -1,19 +1,19 @@
 import { check } from "k6";
 
-import { RegisteredSystemDTO, RegisteredSystemResponse } from "../../../clients/authentication/types.js";
+import { AccessPackage, RegisteredSystemDTO, RegisteredSystemResponse, Right, SystemChangeLog, SystemChangeType, SystemRegisterUpdateResult } from "../../../clients/authentication/types.js";
 import { accessPackageUrns, missingRights } from "../common/rights.js";
 
 /**
  * Checks if a system with the specified ID exists in the list of vendor systems.
  *
- * @param {RegisteredSystemDTO[]} vendorSystems - The list of vendor systems.
+ * @param {RegisteredSystemDTO[]|null} vendorSystems - The list of vendor systems.
  * @param {string} expectedSystemId - The ID of the system to check for.
  * @returns {boolean} True if the system exists, false otherwise.
  */
 function CheckSystemId(vendorSystems, expectedSystemId) {
     const success = check(vendorSystems, {
         "CheckSystemId - System with expected ID exists": (systems) => {
-            return systems.some((system) => system.systemId === expectedSystemId);
+            return systems?.some((system) => system.systemId === expectedSystemId) === true;
         },
     });
 
@@ -32,14 +32,14 @@ function CheckSystemId(vendorSystems, expectedSystemId) {
 /**
  * Checks if the system with the specified ID is returned in the vendor get by ID response.
  *
- * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
+ * @param {RegisteredSystemResponse|null} registeredSystemResponse - The response from the vendor get by ID call.
  * @param {string} expectedSystemId - The ID of the system to check for.
  * @returns {boolean} True if the system is returned, false otherwise.
  */
 function CheckSystemIdInVendorGetById(registeredSystemResponse, expectedSystemId) {
     const success = check(registeredSystemResponse, {
         "CheckSystemIdInVendorGetById - System with expected ID is returned": (system) => {
-            return system.id === expectedSystemId;
+            return system?.id === expectedSystemId;
         },
     });
 
@@ -54,7 +54,7 @@ function CheckSystemIdInVendorGetById(registeredSystemResponse, expectedSystemId
 /**
  * Checks that an update endpoint reported success.
  *
- * @param {SystemRegisterUpdateResult} updateResult - The result from an update call.
+ * @param {SystemRegisterUpdateResult|null} updateResult - The result from an update call.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if the update succeeded, false otherwise.
  */
@@ -75,7 +75,7 @@ function CheckUpdateSucceeded(updateResult, operation) {
 /**
  * Checks that the localized descriptions on a system match the expected ones.
  *
- * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
+ * @param {RegisteredSystemResponse|null} registeredSystemResponse - The response from the vendor get by ID call.
  * @param {{[key: string]: string}} expectedDescription - The expected localized descriptions.
  * @returns {boolean} True if all expected descriptions match, false otherwise.
  */
@@ -105,7 +105,7 @@ function CheckSystemDescription(registeredSystemResponse, expectedDescription) {
 /**
  * Checks that the rights on a system contain all the expected rights.
  *
- * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
+ * @param {RegisteredSystemResponse|null} registeredSystemResponse - The response from the vendor get by ID call.
  * @param {Right[]} expectedRights - The rights the system is expected to have.
  * @returns {boolean} True if all expected rights are present, false otherwise.
  */
@@ -131,7 +131,7 @@ function CheckSystemRights(registeredSystemResponse, expectedRights) {
  * For the `/{systemId}/rights` endpoint, which returns the rights on their own rather
  * than as part of a system.
  *
- * @param {Right[]} rights - The rights returned by the API.
+ * @param {Right[]|null} rights - The rights returned by the API.
  * @param {Right[]} expectedRights - The rights expected.
  * @returns {boolean} True if all expected rights are present, false otherwise.
  */
@@ -153,7 +153,7 @@ function CheckRights(rights, expectedRights) {
 /**
  * Checks that the access packages on a system are exactly the expected ones.
  *
- * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
+ * @param {RegisteredSystemResponse|null} registeredSystemResponse - The response from the vendor get by ID call.
  * @param {AccessPackage[]} expectedAccessPackages - The access packages the system is expected to have.
  * @returns {boolean} True if the access packages match, false otherwise.
  */
@@ -181,7 +181,7 @@ function CheckSystemAccessPackages(registeredSystemResponse, expectedAccessPacka
  * For the `/{systemId}/accesspackages` endpoint, which returns the access packages on
  * their own rather than as part of a system.
  *
- * @param {AccessPackage[]} accessPackages - The access packages returned by the API.
+ * @param {AccessPackage[]|null} accessPackages - The access packages returned by the API.
  * @param {AccessPackage[]} expectedAccessPackages - The access packages expected.
  * @returns {boolean} True if the access packages match, false otherwise.
  */
@@ -206,7 +206,7 @@ function CheckAccessPackages(accessPackages, expectedAccessPackages) {
 /**
  * Checks that a system is marked as deleted.
  *
- * @param {RegisteredSystemResponse} registeredSystemResponse - The response from the vendor get by ID call.
+ * @param {RegisteredSystemResponse|null} registeredSystemResponse - The response from the vendor get by ID call.
  * @returns {boolean} True if the system is marked as deleted, false otherwise.
  */
 function CheckSystemIsDeleted(registeredSystemResponse) {
@@ -227,7 +227,7 @@ function CheckSystemIsDeleted(registeredSystemResponse) {
 /**
  * Checks that a system is not part of the list of registered systems.
  *
- * @param {RegisteredSystemDTO[]} systems - The list of registered systems.
+ * @param {RegisteredSystemDTO[]|null} systems - The list of registered systems.
  * @param {string} systemId - The ID of the system that should be absent.
  * @returns {boolean} True if the system is absent, false otherwise.
  */
@@ -256,7 +256,7 @@ function CheckSystemIdIsAbsent(systems, systemId) {
  * The API returns the log newest first, so it is reversed before comparing. Pass the
  * expected changes chronologically, in the order the test made them.
  *
- * @param {SystemChangeLog[]} changeLog - The change log for a system, newest first.
+ * @param {SystemChangeLog[]|null} changeLog - The change log for a system, newest first.
  * @param {SystemChangeType[]} expectedChangeTypes - The change types expected, oldest first.
  * @returns {boolean} True if the log matches, false otherwise.
  */
@@ -282,7 +282,34 @@ function CheckSystemChangeLog(changeLog, expectedChangeTypes) {
     return success;
 }
 
+/**
+ * Checks that the register lists systems a customer can pick from.
+ *
+ * An empty register is not something a customer can work with, so the check is that
+ * the list holds systems and that they carry the identifiers the portal shows.
+ *
+ * @param {RegisteredSystemDTO[]|null} systems - The registered systems.
+ * @returns {boolean} True if the register listed usable systems, false otherwise.
+ */
+function CheckRegisteredSystemsListed(systems) {
+    const listed = Array.isArray(systems) ? systems : [];
+
+    const success = check(systems, {
+        "CheckRegisteredSystemsListed - The register lists at least one system": () => listed.length > 0,
+        "CheckRegisteredSystemsListed - Every system carries a system id and a vendor": () =>
+            listed.length > 0 && listed.every((system) => system?.systemId && system?.systemVendorOrgNumber),
+    });
+
+    if (!success) {
+        console.error(`CheckRegisteredSystemsListed - the register returned ${listed.length} systems`);
+        console.error(`CheckRegisteredSystemsListed - first system: ${JSON.stringify(listed[0])}`);
+    }
+
+    return success;
+}
+
 export const SystemRegisterDomainChecks = {
+    CheckRegisteredSystemsListed,
     CheckSystemId,
     CheckSystemIdInVendorGetById,
     CheckSystemIsDeleted,

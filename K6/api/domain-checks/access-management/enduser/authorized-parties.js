@@ -5,7 +5,7 @@ import { AuthorizedPartyDto } from "../../../../clients/access-management/enduse
 /**
  * Flattens a party hierarchy into a single list, parents before their subunits.
  *
- * @param {AuthorizedPartyDto[]} parties - The parties to flatten.
+ * @param {AuthorizedPartyDto[]|null} parties - The parties to flatten.
  * @returns {AuthorizedPartyDto[]} Every party in the hierarchy.
  */
 function FlattenParties(parties) {
@@ -15,7 +15,7 @@ function FlattenParties(parties) {
 /**
  * Finds a party anywhere in the hierarchy by its UUID.
  *
- * @param {AuthorizedPartyDto[]} parties - The parties to search.
+ * @param {AuthorizedPartyDto[]|null} parties - The parties to search.
  * @param {string} partyUuid - The UUID of the party to find.
  * @returns {AuthorizedPartyDto|undefined} The party, or undefined if it is not present.
  */
@@ -51,7 +51,7 @@ function InstanceKey(instance) {
 /**
  * Checks that the expected party is returned as a top level party.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} expectedPartyUuid - The UUID of the party that is expected to be present.
  * @returns {boolean} True if the party is present, false otherwise.
  */
@@ -73,7 +73,7 @@ function CheckPartyIsPresent(parties, expectedPartyUuid) {
 /**
  * Checks that the expected sub party is returned as a subunit of the given parent party.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} parentPartyUuid - The UUID of the party expected to hold the subunit.
  * @param {string} expectedSubPartyUuid - The UUID of the subunit that is expected to be present.
  * @returns {boolean} True if the subunit is present under the parent party, false otherwise.
@@ -103,7 +103,7 @@ function CheckSubPartyIsPresent(parties, parentPartyUuid, expectedSubPartyUuid) 
  * Checks that the given party is returned without any access, meaning it holds no
  * access packages, resources, roles or instances.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The UUID of the party that is expected to have no access.
  * @returns {boolean} True if the party is present and has no access, false otherwise.
  */
@@ -139,7 +139,7 @@ function CheckPartyHasNoAccess(parties, partyUuid) {
 /**
  * Checks that the given party holds exactly the expected access packages.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The UUID of the party to inspect.
  * @param {Array<string>} expectedAccessPackages - The access packages the party is expected to hold.
  * @returns {boolean} True if the party is present and holds exactly those access packages, false otherwise.
@@ -169,7 +169,7 @@ function CheckPartyHasAccessPackages(parties, partyUuid, expectedAccessPackages)
 /**
  * Checks that the given party holds exactly the expected resources.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The UUID of the party to inspect.
  * @param {Array<string>} expectedResources - The resources the party is expected to hold.
  * @returns {boolean} True if the party is present and holds exactly those resources, false otherwise.
@@ -199,7 +199,7 @@ function CheckPartyHasResources(parties, partyUuid, expectedResources) {
 /**
  * Checks that the given party holds exactly the expected roles.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The UUID of the party to inspect.
  * @param {Array<string>} expectedRoles - The roles the party is expected to hold.
  * @returns {boolean} True if the party is present and holds exactly those roles, false otherwise.
@@ -229,7 +229,7 @@ function CheckPartyHasRoles(parties, partyUuid, expectedRoles) {
 /**
  * Checks that the given party holds exactly the expected resource instances.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The UUID of the party to inspect.
  * @param {Array<{resourceId: string, instanceRef: string}>} expectedInstances - The instances the party is expected to hold.
  * @returns {boolean} True if the party is present and holds exactly those instances, false otherwise.
@@ -260,7 +260,7 @@ function CheckPartyHasInstances(parties, partyUuid, expectedInstances) {
 /**
  * Checks that the given party is returned without any subunits.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {string} partyUuid - The UUID of the party that is expected to have no subunits.
  * @returns {boolean} True if the party is present and holds no subunits, false otherwise.
  */
@@ -287,7 +287,7 @@ function CheckPartyHasNoSubParties(parties, partyUuid) {
 /**
  * Checks that the response holds exactly the expected top level parties and nothing else.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @param {Array<string>} expectedPartyUuids - The UUIDs of the only parties expected at the top level.
  * @returns {boolean} True if exactly those parties are returned, false otherwise.
  */
@@ -311,7 +311,7 @@ function CheckOnlyExpectedPartiesArePresent(parties, expectedPartyUuids) {
 /**
  * Checks that no party is returned more than once, subunits included.
  *
- * @param {AuthorizedPartyDto[]} parties - The authorized parties returned by the API.
+ * @param {AuthorizedPartyDto[]|null} parties - The authorized parties returned by the API.
  * @returns {boolean} True if every party is returned exactly once, false otherwise.
  */
 function CheckNoDuplicateParties(parties) {

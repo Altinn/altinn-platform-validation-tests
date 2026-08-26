@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AppClient } from "../../../../clients/events/app/index.js";
+import { AppCloudEventRequestModel } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AppClient} appClient Client for the App API.
  * @param {AppCloudEventRequestModel} request Event payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Created event identifier.
  */
 export function AppCreate(

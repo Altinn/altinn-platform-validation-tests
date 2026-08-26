@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { MaskinportenSupplierResourcesQuery } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenSuppliersClient} maskinportenSuppliersClient Client for the Maskinporten Suppliers API.
  * @param {MaskinportenSupplierResourcesQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenSupplierResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the resource delegation was successfully deleted.
  */
 export function DeleteMaskinportenSupplierResource(

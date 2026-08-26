@@ -146,3 +146,16 @@
  * @property {string} consumer Consumer organisation number.
  * @property {string} resource Resource identifier.
  */
+
+export const CreateSupplierQuery = undefined;
+export const CreateSupplierResourceQuery = undefined;
+export const DeleteConsumerQuery = undefined;
+export const DeleteConsumerResourceQuery = undefined;
+export const DeleteSupplierQuery = undefined;
+export const DeleteSupplierResourceQuery = undefined;
+export const GetConsumerResourcesQuery = undefined;
+export const GetConsumersQuery = undefined;
+export const GetSupplierResourceDelegationCheckQuery = undefined;
+export const GetSupplierResourcesQuery = undefined;
+export const GetSuppliersQuery = undefined;
+export const SearchScopesQuery = undefined;

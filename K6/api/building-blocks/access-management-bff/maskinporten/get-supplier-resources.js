@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { ResourceDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
+import { GetSupplierResourcesQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSupplierResourcesQuery} queryParams Query parameters. Use
  * {@link GetSupplierResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegation>|null} The delegated resources.
  */
 export function GetSupplierResources(

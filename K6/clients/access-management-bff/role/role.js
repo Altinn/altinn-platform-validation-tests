@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { DeleteRoleQuery, GetRolePackagesQuery, GetRolePermissionsQuery, GetRoleResourcesQuery } from "./role.types.js";
+
 const TAGS = {
     GetRolePermissions: {
         action: "get-role-permissions",
@@ -54,8 +56,8 @@ class RoleClient {
      *
      * @param {GetRolePermissionsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetRolePermissionsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRolePermissions(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -69,9 +71,9 @@ class RoleClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -101,8 +103,8 @@ class RoleClient {
     /**
      * Gets the roles the API knows about.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRoles(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -136,8 +138,8 @@ class RoleClient {
      *
      * @param {GetRolePackagesQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetRolePackagesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRolePackages(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -151,9 +153,9 @@ class RoleClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -185,8 +187,8 @@ class RoleClient {
      *
      * @param {DeleteRoleQuery|null} [query] Optional query parameters. Prefer
      * using {@link DeleteRoleQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteRole(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -200,9 +202,9 @@ class RoleClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -238,8 +240,8 @@ class RoleClient {
      *
      * @param {GetRoleResourcesQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetRoleResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRoleResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -253,9 +255,9 @@ class RoleClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

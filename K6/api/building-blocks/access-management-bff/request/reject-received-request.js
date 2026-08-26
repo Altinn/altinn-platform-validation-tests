@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { RejectReceivedRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {RejectReceivedRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link RejectReceivedRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the request was rejected.
  */
 export function RejectReceivedRequest(

@@ -1,10 +1,12 @@
+import { NotificationAddressModel, SettingsControllerUpdateSelectedLanguageRequest } from "../common/common.types.js";
+
 /**
  * Builder for the {@link SettingsControllerUpdateSelectedLanguageRequest}
  * request body.
  */
 class SettingsControllerUpdateSelectedLanguageRequestBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {SettingsControllerUpdateSelectedLanguageRequest} */ ({});
     }
 
     /**
@@ -35,7 +37,7 @@ class SettingsControllerUpdateSelectedLanguageRequestBuilder {
  */
 class NotificationAddressModelBuilder {
     constructor() {
-        this.body = {};
+        this.body = /** @type {NotificationAddressModel} */ ({});
     }
 
     /**

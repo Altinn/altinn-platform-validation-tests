@@ -68,7 +68,7 @@ let tokenGenerator = undefined;
  * @returns {[ConsentClient, PersonalTokenGenerator]} The client, and the generator whose user is swapped per iteration.
  */
 export function getClients() {
-    if (consentClient === undefined) {
+    if (consentClient === undefined || tokenGenerator === undefined) {
         tokenGenerator = new PersonalTokenGenerator(
             new PersonalTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
@@ -88,7 +88,7 @@ export function getClients() {
  *
  * @param {string} userId - The user the iteration reads as.
  * @param {string} partyUuid - The party that user reads for.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getTokenOpts(userId, partyUuid) {
     return new PersonalTokenBuilder()
@@ -106,7 +106,7 @@ export function getTokenOpts(userId, partyUuid) {
  * Segmented rather than flat, so two VUs do not spend the run reading for the same
  * user and measuring a warm cache.
  *
- * @returns {object[][]} The users, one slice per VU.
+ * @returns {any[][]} The users, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);

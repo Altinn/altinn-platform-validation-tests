@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DeleteAccessPackageQuery } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -9,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {DeleteAccessPackageQuery|null} [queryParams]
  * Query parameters. Use {@link DeleteAccessPackageQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True if the access package assignment was deleted successfully.
  */

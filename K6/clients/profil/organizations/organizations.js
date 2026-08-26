@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { NotificationAddressRequest } from "./organizations.types.js";
+
 const TAGS = {
     GetNotificationAddresses: {
         action: "get-notification-addresses",
@@ -48,9 +50,9 @@ class OrganizationsClient {
      * Gets notification addresses for an organization.
      *
      * @param {string} organizationNumber Organization number.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -84,9 +86,9 @@ class OrganizationsClient {
      *
      * @param {string} organizationNumber Organization number.
      * @param {NotificationAddressRequest} request Notification address request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateNotificationAddress(
         organizationNumber,
@@ -125,9 +127,9 @@ class OrganizationsClient {
      *
      * @param {string} organizationNumber Organization number.
      * @param {number} notificationAddressId Notification address identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationAddress(
         organizationNumber,
@@ -166,9 +168,9 @@ class OrganizationsClient {
      * @param {string} organizationNumber Organization number.
      * @param {number} notificationAddressId Notification address identifier.
      * @param {NotificationAddressRequest} request Notification address request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateNotificationAddress(
         organizationNumber,
@@ -208,9 +210,9 @@ class OrganizationsClient {
      *
      * @param {string} organizationNumber Organization number.
      * @param {number} notificationAddressId Notification address identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteNotificationAddress(
         organizationNumber,

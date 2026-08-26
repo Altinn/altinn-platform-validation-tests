@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { WithdrawSentRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {WithdrawSentRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link WithdrawSentRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the request was withdrawn.
  */
 export function WithdrawSentRequest(

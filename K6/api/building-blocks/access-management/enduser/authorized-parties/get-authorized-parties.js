@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { EndUserAuthorizedPartiesQuery } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
+import { AuthorizedPartyDtoListPaginatedResult, EndUserAuthorizedPartiesQuery } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties.types.js";
 import { EndUserAuthorizedPartiesQueryBuilder } from "../../../../../clients/access-management/enduser/authorized-parties/authorized-parties-query-builder.js";
 import { AuthorizedPartiesClient } from "../../../../../clients/access-management/enduser/authorized-parties/index.js";
 import { withRetries } from "../../../common/retry.js";
@@ -8,13 +8,13 @@ import { withRetries } from "../../../common/retry.js";
 /**
  * Retrieves the parties the authenticated end user is authorized to represent.
  *
- * @param {AuthorizedPartiesClient|null} [authorizedPartiesClient] TODO: description
+ * @param {AuthorizedPartiesClient} authorizedPartiesClient Client for the API.
  * @param {EndUserAuthorizedPartiesQuery|null} [queryParams]
  * Optional query parameters. Prefer using
  * {@link EndUserAuthorizedPartiesQueryBuilder} to construct this object.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request tags.
- * @returns {AuthorizedPartyDtoListPaginatedResult} TODO: description
+ * @returns {AuthorizedPartyDtoListPaginatedResult|null} Parsed response body, or null when the call failed.
  */
 export function GetAuthorizedParties(
     authorizedPartiesClient,

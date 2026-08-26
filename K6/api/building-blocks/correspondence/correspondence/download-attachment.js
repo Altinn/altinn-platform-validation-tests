@@ -12,9 +12,9 @@ import { withRetries } from "../../common/retry.js";
  * Correspondence identifier.
  * @param {string} attachmentId
  * Attachment identifier.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
- * @returns {http.RefinedResponse|null}
+ * @returns {import("k6/http").RefinedResponse<"text">|null}
  * Response containing the binary attachment, or null if the request failed.
  */
 export function DownloadAttachment(

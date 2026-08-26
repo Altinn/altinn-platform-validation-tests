@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { EventsClient } from "../../../../clients/events/events/index.js";
+import { CloudEvent, EventsQueryParams } from "../../../../clients/events/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {EventsQueryParams|null} [query] Optional query parameters.
  * @param {string|null} [alternativeSubject] Optional alternative subject header.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
  */
 export function EventsGet(

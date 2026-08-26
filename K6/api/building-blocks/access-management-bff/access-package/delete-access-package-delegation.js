@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DeleteAccessPackageDelegationQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {DeleteAccessPackageDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link DeleteAccessPackageDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the access package delegation was revoked.
  */
 export function DeleteAccessPackageDelegation(

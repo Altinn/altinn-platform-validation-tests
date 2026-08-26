@@ -8,8 +8,8 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ConsentClient} consentClient Client for the consent endpoints.
  * @param {string} party Party UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The active consents. The API does not publish a
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The active consents. The API does not publish a
  * schema for this response.
  */
 export function GetActiveConsents(consentClient, party, labels = null) {
@@ -18,7 +18,7 @@ export function GetActiveConsents(consentClient, party, labels = null) {
         "GetActiveConsents",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let consents = null;
 
     const succeed = check(res, {

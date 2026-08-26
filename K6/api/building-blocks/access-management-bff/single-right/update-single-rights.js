@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
+import { UpdateSingleRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {UpdateSingleRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link UpdateSingleRightsQueryBuilder}.
  * @param {Array<string>|null} [body] Keys of the rights to keep.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the rights were updated.
  */
 export function UpdateSingleRights(

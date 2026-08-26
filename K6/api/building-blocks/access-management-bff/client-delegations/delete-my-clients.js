@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteMyClientsQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { DelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -12,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * Use {@link DeleteMyClientsQueryBuilder}.
  * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
  * revoke. Use {@link DelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the access was revoked.
  */
 export function DeleteMyClients(

@@ -1,6 +1,8 @@
 import { check } from "k6";
 
 import { MaskinportenSuppliersClient } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/index.js";
+import { MaskinportenSupplierDelegationCheckQuery } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
+import { ResourceCheckDto } from "../../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -9,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenSuppliersClient} maskinportenSuppliersClient Client for the Maskinporten Suppliers API.
  * @param {MaskinportenSupplierDelegationCheckQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenSupplierDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceCheckDto|null} Resource delegation check result.
  */
 export function GetMaskinportenSupplierDelegationCheck(

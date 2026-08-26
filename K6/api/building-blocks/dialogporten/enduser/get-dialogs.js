@@ -1,14 +1,16 @@
 import { check } from "k6";
 
+import { DialogSearchParams } from "../../../../clients/dialogporten/enduser/dialogs-search-params-builder.js";
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog, V1EndUserDialogsQueriesGet_Dialog } from "../../../../clients/dialogporten/enduser/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Function to get dialogs
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
- * @param {string} queryParams - query parameters for the request
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {DialogSearchParams} queryParams - query parameters for the request
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogs(enduserApiClient, queryParams, labels = null) {
@@ -54,7 +56,7 @@ export function GetDialogs(enduserApiClient, queryParams, labels = null) {
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesGet_Dialog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialog(enduserApiClient, dialogId, labels = null) {

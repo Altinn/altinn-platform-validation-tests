@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { InstanceEvent } from "./instances.types.js";
+
 const TAGS = {
     CreateInstanceEvent: {
         action: "create-instance-event",
@@ -48,8 +50,8 @@ class InstanceEventsClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {InstanceEvent} request Event to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceEvent(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -80,11 +82,11 @@ class InstanceEventsClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {Array<string>} eventTypes Event types to include.
-     * @param {string} from Only include events from this timestamp.
-     * @param {string} to Only include events up to this timestamp.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {Array<string>|null} [eventTypes] Event types to include.
+     * @param {string|null} [from] Only include events from this timestamp.
+     * @param {string|null} [to] Only include events up to this timestamp.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceEvents(instanceOwnerPartyId, instanceGuid, eventTypes = null, from = null, to = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -92,7 +94,7 @@ class InstanceEventsClient {
         const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events`);
 
         if (eventTypes !== null) {
-            url.searchParams.append("eventTypes", eventTypes);
+            url.searchParams.append("eventTypes", eventTypes.join(","));
         }
 
         if (from !== null) {
@@ -127,8 +129,8 @@ class InstanceEventsClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {string} eventGuid Event UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceEvent(instanceOwnerPartyId, instanceGuid, eventGuid, labels = null) {
         const token = this.tokenGenerator.getToken();

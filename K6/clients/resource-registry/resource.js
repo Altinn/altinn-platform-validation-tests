@@ -1,12 +1,8 @@
 import http from "k6/http";
 
+import { ResourceListQuery, ResourceSearchQuery, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
+
 const TAGS = {
-    ResourceGetResourceList: {
-        action: "resource-get-resource-list",
-    },
-    ResourceExport: {
-        action: "resource-export",
-    },
     ResourceGetResourceList: {
         action: "resource-get-resource-list",
     },
@@ -60,9 +56,10 @@ const TAGS = {
 class ResourceClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} [tokenGenerator] Generates bearer tokens. The public endpoints
+     * are readable without one.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator = null) {
         /**
          * Generates authentication tokens.
          */
@@ -86,13 +83,10 @@ class ResourceClient {
     /**
      * Gets all resources.
      *
-     * @param {object} [query] Optional query parameters.
-     * @param {boolean} [query.includeApps] Whether to include apps.
-     * @param {boolean} [query.includeAltinn2] Whether to include altinn2.
-     * @param {boolean} [query.includeMigratedApps] Whether to include migrated apps.
-     * @param {{[key:string]:string}} [labels] See the API documentation.
+     * @param {ResourceListQuery|null} [query] Optional query parameters.
+     * @param {{[key:string]:string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourceList(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -100,10 +94,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/resourcelist`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -144,9 +137,9 @@ class ResourceClient {
     /**
      * Exports all resources as RDF/XML.
      *
-     * @param {{[key:string]:string}} [labels] See the API documentation.
+     * @param {{[key:string]:string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceExport(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -179,9 +172,9 @@ class ResourceClient {
      * Gets a single resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{versionId?: number} | object} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{versionId?: number} | object|null} [query] Optional query parameters.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResource(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -189,10 +182,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -234,8 +226,8 @@ class ResourceClient {
      * Creates a resource.
      *
      * @param {ServiceResource} resource Resource payload.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreateResource(resource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -270,8 +262,8 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {ServiceResource} resource Updated resource.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdateResource(id, resource, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -305,8 +297,8 @@ class ResourceClient {
      * Deletes a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceDeleteResource(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -339,8 +331,8 @@ class ResourceClient {
      * Gets the XACML policy for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicy(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -374,8 +366,8 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreatePolicy(id, policyFile, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -415,8 +407,8 @@ class ResourceClient {
      *
      * @param {string} id Resource identifier.
      * @param {*} policyFile XACML policy file created with http.file().
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdatePolicy(id, policyFile, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -455,9 +447,9 @@ class ResourceClient {
      * Gets policy subjects.
      *
      * @param {string} id Resource identifier.
-     * @param {{reloadFromXacml?: boolean} | object} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{reloadFromXacml?: boolean}|null} [query] Optional query parameters.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicySubjects(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -465,10 +457,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy/subjects`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -510,9 +501,9 @@ class ResourceClient {
      * Gets flattened policy rules for a resource.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicyRules(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -545,9 +536,9 @@ class ResourceClient {
      * Gets rights from a resource policy.
      *
      * @param {string} id Resource identifier.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicyRights(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -580,9 +571,9 @@ class ResourceClient {
      * Gets resources connected to subjects.
      *
      * @param {Array<string>} subjects List of subjects for resource information.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourcesBySubjects(subjects, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -615,11 +606,11 @@ class ResourceClient {
     /**
      * Searches for resources in the resource registry.
      *
-     * @param {ResourceSearchQueryBuilder | object | null} [query] Query parameters.
+     * @param {ResourceSearchQuery|null} [query] Query parameters.
      * Optional search query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -627,10 +618,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/Search`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -670,16 +660,18 @@ class ResourceClient {
     /**
      * Gets the updated resources since the provided last updated time.
      *
-     * @param {ResourceUpdatedQueryBuilder | object} [query] Query parameters.
+     * @param {UpdatedResourceSubjectsQuery|null} [query] Query parameters.
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdated(query = null, labels = null) {
         // The endpoint is public, so the client may be built without a token
         // generator. That is what lets this run as a healthcheck in prod.
-        const headers = { Accept: "application/json" };
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/json",
+        });
         const token = this.tokenGenerator?.getToken();
 
         if (token) {
@@ -689,10 +681,9 @@ class ResourceClient {
         let url = `${this.FULL_PATH}/updated`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;

@@ -23,6 +23,9 @@ export function setup() {
     return domains;
 }
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default async function (data) {
     console.log(`Querying ${data.length} domains`);
     for (let [org, deploy_env, domain] of data) {

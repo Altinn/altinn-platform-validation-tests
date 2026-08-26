@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GroupResponse } from "../../../../clients/profil/favorites/favorites.types.js";
 import { PartyGroupsClient } from "../../../../clients/profil/party-groups/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {PartyGroupsClient} partyGroupsClient Client for the API.
  * @param {number} groupId See the client method.
  * @param {string} partyUuid See the client method.
- * @param {{[key: string]: string}} [labels] See the client method.
+ * @param {{[key: string]: string}|null} [labels] See the client method.
  * @returns {GroupResponse|null} Parsed response body, or null when the call failed.
  */
 export function AddPartyToGroup(

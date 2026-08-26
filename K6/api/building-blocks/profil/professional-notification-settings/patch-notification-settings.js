@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
+import { NotificationSettingsPatchRequest } from "../../../../clients/profil/professional-notification-settings/professional-notification-settings.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} partyUuid Party UUID.
  * @param {NotificationSettingsPatchRequest} request
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} Parsed response body, or null when the call failed.
  */

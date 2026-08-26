@@ -7,6 +7,7 @@ import {
     SearchAccessPackagesQueryBuilder,
 } from "../../../../clients/access-management-bff/access-package/index.js";
 import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
+import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
     CreateRightHolderQueryBuilder,
@@ -254,7 +255,7 @@ function getClients() {
 /**
  * Setup function to segment data for VUs.
  *
- * @returns {object[][]} Organizations to delegate between, one slice per VU.
+ * @returns {any[][]} Organizations to delegate between, one slice per VU.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "AM_UI_BASE_URL"]);
@@ -267,7 +268,7 @@ export function setup() {
 /**
  * Main function executed by each VU.
  *
- * @param {object[][]} segmentedData Organizations to delegate between, one slice per VU.
+ * @param {any[][]} segmentedData Organizations to delegate between, one slice per VU.
  */
 export default function (segmentedData) {
     const [
@@ -581,14 +582,18 @@ export default function (segmentedData) {
 /**
  * Helper function to extract rights from rights metadata response
  *
- * @param {Array<Right>} rightsMeta The rights the resource defines, as returned
- * by GetRightsMeta.
- * @returns list of rights
+ * @param {Array<Right>|null} rightsMeta The rights the resource defines, as
+ * returned by GetRightsMeta. Null when that call failed, which leaves nothing
+ * to delegate.
+ * @returns {string[]} The keys of those rights.
  */
 function getRights(rightsMeta) {
+    /** @type {string[]} */
     const rights = [];
-    for (const right of rightsMeta) {
-        rights.push(right.key);
+    for (const right of rightsMeta ?? []) {
+        if (right.key !== null) {
+            rights.push(right.key);
+        }
     }
     return rights;
 }

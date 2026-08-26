@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { RolePermission } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { GetRolePermissionsQuery } from "../../../../clients/access-management-bff/role/role.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RoleClient} roleClient Client for the role endpoints.
  * @param {GetRolePermissionsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetRolePermissionsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<RolePermission>|null} The role permissions.
  */
 export function GetRolePermissions(

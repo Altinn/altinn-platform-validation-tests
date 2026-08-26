@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { DataValues, Instance, PresentationTexts, Substatus } from "./instances.types.js";
+
 const TAGS = {
     QueryInstances: {
         action: "query-instances",
@@ -66,10 +68,10 @@ class InstancesClient {
      *
      * GET /instances
      *
-     * @param {{[key: string]: *}} query Query parameters, e.g. org, appId, process.currentTask, instanceOwner.partyId, continuationToken, size, order and includeDataElements.
-     * @param {string} instanceOwnerIdentifier Value for the X-Ai-InstanceOwnerIdentifier header.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: *}|null} [query] Query parameters, e.g. org, appId, process.currentTask, instanceOwner.partyId, continuationToken, size, order and includeDataElements.
+     * @param {string|null} [instanceOwnerIdentifier] Value for the X-Ai-InstanceOwnerIdentifier header.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     QueryInstances(query = null, instanceOwnerIdentifier = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -83,9 +85,9 @@ class InstancesClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -97,10 +99,10 @@ class InstancesClient {
             action: TAGS.QueryInstances.action,
         };
 
-        const requestHeaders = {
+        const requestHeaders = /** @type {{[key: string]: string}} */ ({
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
-        };
+        });
 
         if (instanceOwnerIdentifier !== null) {
             requestHeaders["X-Ai-InstanceOwnerIdentifier"] = instanceOwnerIdentifier;
@@ -118,9 +120,9 @@ class InstancesClient {
      * POST /instances
      *
      * @param {Instance} request Instance to create.
-     * @param {string} appId Application id, e.g. ttd/my-app.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {string|null} [appId] Application id, e.g. ttd/my-app.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstance(request, appId = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -154,8 +156,8 @@ class InstancesClient {
      * GET /instances/{instanceGuid}
      *
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceByGuid(instanceGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -185,8 +187,8 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -216,9 +218,9 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {boolean} hard Whether to hard delete the instance.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {boolean|null} [hard] Whether to hard delete the instance.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstance(instanceOwnerPartyId, instanceGuid, hard = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -226,7 +228,7 @@ class InstancesClient {
         const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`);
 
         if (hard !== null) {
-            url.searchParams.append("hard", hard);
+            url.searchParams.append("hard", String(hard));
         }
 
         const tags = {
@@ -252,8 +254,8 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CompleteInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -284,8 +286,8 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {DataValues} request Data values to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateDataValues(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -317,8 +319,8 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {PresentationTexts} request Presentation texts to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePresentationTexts(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -349,9 +351,9 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {string} status Read status to set, e.g. Read or Unread.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {string|null} [status] Read status to set, e.g. Read or Unread.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateReadStatus(instanceOwnerPartyId, instanceGuid, status = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -386,8 +388,8 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {Substatus} request Substatus to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateSubStatus(instanceOwnerPartyId, instanceGuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();

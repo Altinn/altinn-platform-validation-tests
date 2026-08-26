@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { TextResource } from "../../../clients/storage/applications.types.js";
 import { TextsClient } from "../../../clients/storage/index.js";
 import { withRetries } from "../common/retry.js";
 
@@ -11,7 +12,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} app Application identifier.
  * @param {string} language Language code.
  * @param {TextResource} textResource Updated text resource.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {TextResource|null} Updated text resource.
  */
 export function UpdateTextResource(

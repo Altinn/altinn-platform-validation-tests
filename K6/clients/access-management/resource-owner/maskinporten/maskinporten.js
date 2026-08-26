@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ConsentLookupRequest, MaskinportenDelegationsQuery } from "./maskinporten.types.js";
+
 const TAGS = {
     GetMaskinportenDelegations: {
         action: "get-maskinporten-delegations",
@@ -54,9 +56,9 @@ class MaskinportenClient {
      * @param {MaskinportenDelegationsQuery|null} [query]
      * Optional query parameters. Prefer using
      * {@link MaskinportenDelegationsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenDelegations(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -114,9 +116,9 @@ class MaskinportenClient {
      *
      * @param {ConsentLookupRequest} request Consent to look up. Prefer using
      * {@link ConsentLookupRequestBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     LookupConsent(request, labels = null) {
         const token = this.tokenGenerator.getToken();

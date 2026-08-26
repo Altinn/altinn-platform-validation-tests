@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetAccessPackageDelegationsQuery } from "../../../../clients/access-management-bff/access-package/access-package.types.js";
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,8 +11,8 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {GetAccessPackageDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAccessPackageDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} Access package delegations grouped by area. The API
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} Access package delegations grouped by area. The API
  * does not publish a schema for this response.
  */
 export function GetAccessPackageDelegations(
@@ -27,7 +28,7 @@ export function GetAccessPackageDelegations(
         "GetAccessPackageDelegations",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let delegations = null;
 
     const succeed = check(res, {

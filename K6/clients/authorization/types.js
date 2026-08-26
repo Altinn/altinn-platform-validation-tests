@@ -104,3 +104,12 @@
  * @typedef {object} XacmlJsonRequestReferenceExternal
  * @property {string[]|null} [referenceId]
  */
+
+export const XacmlJsonAttributeExternal = undefined;
+export const XacmlJsonCategoryExternal = undefined;
+export const XacmlJsonMultiRequestsExternal = undefined;
+export const XacmlJsonRequestExternal = undefined;
+export const XacmlJsonRequestReferenceExternal = undefined;
+export const XacmlJsonRequestRootExternal = undefined;
+export const XacmlJsonResponseExternal = undefined;
+export const XacmlRequestApiModel = undefined;

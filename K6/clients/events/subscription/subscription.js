@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { SubscriptionRequestModel } from "../types.js";
+
 const TAGS = {
     SubscriptionCreate: {
         action: "subscription-create",
@@ -48,9 +50,9 @@ class SubscriptionClient {
      * Register a subscription for events.
      *
      * @param {SubscriptionRequestModel} request Subscription payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -83,9 +85,9 @@ class SubscriptionClient {
     /**
      * Get all subscriptions for the authorized consumer.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionGetAll(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -118,9 +120,9 @@ class SubscriptionClient {
      * Get a specific subscription.
      *
      * @param {number} id Subscription id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionGet(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -153,9 +155,9 @@ class SubscriptionClient {
      * Delete a given subscription.
      *
      * @param {number} id Subscription id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionDelete(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -188,9 +190,9 @@ class SubscriptionClient {
      * Validate a specific subscription.
      *
      * @param {number} id Subscription id.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionValidate(id, labels = null) {
         const token = this.tokenGenerator.getToken();

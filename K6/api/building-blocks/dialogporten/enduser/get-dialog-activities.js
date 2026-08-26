@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
+import { V1EndUserDialogsQueriesGetActivity_Activity, V1EndUserDialogsQueriesSearchActivities_Activity } from "../../../../clients/dialogporten/enduser/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get activities for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesSearchActivities_Activity[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogActivities(
@@ -61,9 +62,8 @@ export function GetDialogActivities(
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog the activity belongs to
- * param {string} activityId - id of the activity to get
- * @param activityId TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string} activityId - id of the activity to get
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesGetActivity_Activity|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogActivity(

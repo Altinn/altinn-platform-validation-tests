@@ -9,8 +9,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserChangeRequestClient} systemUserChangeRequestClient Client
  * for the system user change request endpoints.
  * @param {string} changeRequestId Change request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The change request. The API does not publish a schema
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The change request. The API does not publish a schema
  * for this response.
  */
 export function GetChangeRequest(
@@ -26,7 +26,7 @@ export function GetChangeRequest(
         "GetChangeRequest",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let changeRequest = null;
 
     const succeed = check(res, {

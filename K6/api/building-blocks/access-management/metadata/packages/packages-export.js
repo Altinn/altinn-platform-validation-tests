@@ -1,14 +1,15 @@
 import { check } from "k6";
 
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
+import { AreaGroupDto } from "../../../../../clients/access-management/metadata/roles/roles.types.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
  * Exports access packages.
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {AreaGroupDto|null} Access package groups.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {AreaGroupDto[]|null} Access package groups.
  */
 export function PackagesExport(
     packagesClient,
@@ -19,7 +20,7 @@ export function PackagesExport(
         "PackagesExport",
     );
 
-    /** @type {AreaGroupDto|null} */
+    /** @type {AreaGroupDto[]|null} */
     let areaGroup = null;
 
     const succeed = check(res, {

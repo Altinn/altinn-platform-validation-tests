@@ -1,5 +1,8 @@
 import http from "k6/http";
 
+import { DelegationBatchInputDto, ResourceDelegationBatchInputDto, ValidatePersonInput } from "../common/common.types.js";
+import { CreateAgentAccessPackagesQuery, CreateAgentQuery, CreateAgentResourcesQuery, DeleteAgentAccessPackagesQuery, DeleteAgentQuery, DeleteAgentResourcesQuery, DeleteMyClientProvidersQuery, DeleteMyClientResourcesQuery, DeleteMyClientsQuery, GetAgentAccessPackagesQuery, GetAgentResourcesQuery, GetAgentsQuery, GetClientAccessPackagesQuery, GetClientResourcesQuery, GetClientsQuery, GetMyClientsQuery } from "./client-delegations.types.js";
+
 const TAGS = {
     GetMyClients: {
         action: "get-my-clients",
@@ -86,8 +89,8 @@ class ClientDelegationsClient {
      *
      * @param {GetMyClientsQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetMyClientsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMyClients(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -137,8 +140,8 @@ class ClientDelegationsClient {
      * using {@link DeleteMyClientsQueryBuilder}.
      * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
      * revoke. Prefer using {@link DelegationBatchInputDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMyClients(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -191,8 +194,8 @@ class ClientDelegationsClient {
      *
      * @param {DeleteMyClientProvidersQuery|null} [query] Optional query
      * parameters. Prefer using {@link DeleteMyClientProvidersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMyClientProviders(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -244,8 +247,8 @@ class ClientDelegationsClient {
      *
      * @param {GetClientsQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetClientsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClients(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -293,8 +296,8 @@ class ClientDelegationsClient {
      *
      * @param {GetAgentsQuery|null} [query] Optional query parameters. Prefer using
      * {@link GetAgentsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgents(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -345,8 +348,8 @@ class ClientDelegationsClient {
      * Prefer using {@link ValidatePersonInputBuilder}.
      * @param {CreateAgentQuery|null} [query] Optional query parameters. Prefer
      * using {@link CreateAgentQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgent(body = null, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -399,8 +402,8 @@ class ClientDelegationsClient {
      *
      * @param {DeleteAgentQuery|null} [query] Optional query parameters. Prefer
      * using {@link DeleteAgentQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgent(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -452,8 +455,8 @@ class ClientDelegationsClient {
      *
      * @param {GetAgentAccessPackagesQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetAgentAccessPackagesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentAccessPackages(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -503,8 +506,8 @@ class ClientDelegationsClient {
      * parameters. Prefer using {@link CreateAgentAccessPackagesQueryBuilder}.
      * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
      * delegate. Prefer using {@link DelegationBatchInputDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgentAccessPackages(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -559,8 +562,8 @@ class ClientDelegationsClient {
      * parameters. Prefer using {@link DeleteAgentAccessPackagesQueryBuilder}.
      * @param {DelegationBatchInputDto|null} [body] Roles and access packages to
      * revoke. Prefer using {@link DelegationBatchInputDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentAccessPackages(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -613,8 +616,8 @@ class ClientDelegationsClient {
      *
      * @param {GetClientAccessPackagesQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetClientAccessPackagesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClientAccessPackages(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -662,8 +665,8 @@ class ClientDelegationsClient {
      *
      * @param {GetAgentResourcesQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetAgentResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -713,8 +716,8 @@ class ClientDelegationsClient {
      * Prefer using {@link CreateAgentResourcesQueryBuilder}.
      * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
      * delegate. Prefer using {@link ResourceDelegationBatchInputDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgentResources(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -769,8 +772,8 @@ class ClientDelegationsClient {
      * Prefer using {@link DeleteAgentResourcesQueryBuilder}.
      * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
      * revoke. Prefer using {@link ResourceDelegationBatchInputDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentResources(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -823,8 +826,8 @@ class ClientDelegationsClient {
      *
      * @param {GetClientResourcesQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetClientResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClientResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -874,8 +877,8 @@ class ClientDelegationsClient {
      * parameters. Prefer using {@link DeleteMyClientResourcesQueryBuilder}.
      * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
      * revoke. Prefer using {@link ResourceDelegationBatchInputDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMyClientResources(query = null, body = null, labels = null) {
         const token = this.tokenGenerator.getToken();

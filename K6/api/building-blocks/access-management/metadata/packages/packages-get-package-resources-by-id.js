@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ResourceDto } from "../../../../../clients/access-management/enduser/maskinporten-suppliers/maskinporten-suppliers.types.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -8,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
  * @param {string} id Package identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceDto|null} Resource.
  */
 export function PackagesGetPackageResourcesById(

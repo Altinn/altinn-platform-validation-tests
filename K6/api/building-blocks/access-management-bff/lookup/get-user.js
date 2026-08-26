@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { UserProfileFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { LookupClient } from "../../../../clients/access-management-bff/lookup/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {LookupClient} lookupClient Client for the lookup endpoints.
  * @param {string} uuid User UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfileFE|null} The user profile.
  */
 export function GetUser(lookupClient, uuid, labels = null) {

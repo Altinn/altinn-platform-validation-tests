@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { NotificationSettingsPatchRequest, NotificationSettingsRequest } from "./professional-notification-settings.types.js";
+
 const TAGS = {
     GetNotificationSettings: {
         action: "get-notification-settings",
@@ -48,9 +50,9 @@ class ProfessionalNotificationSettingsClient {
      * Gets notification settings for a party.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationSettings(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -85,9 +87,9 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {NotificationSettingsRequest} request
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateOrUpdateNotificationSettings(
         partyUuid,
@@ -127,9 +129,9 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {NotificationSettingsPatchRequest} request
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PatchNotificationSettings(partyUuid, request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -163,9 +165,9 @@ class ProfessionalNotificationSettingsClient {
      * Deletes notification settings for a party.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteNotificationSettings(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -197,9 +199,9 @@ class ProfessionalNotificationSettingsClient {
     /**
      * Gets notification settings for all parties.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAllNotificationSettings(labels = null) {
         const token = this.tokenGenerator.getToken();

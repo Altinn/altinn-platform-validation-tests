@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { DeleteAgentResourcesQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
+import { ResourceDelegationBatchInputDto } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -12,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link DeleteAgentResourcesQueryBuilder}.
  * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
  * revoke. Use {@link ResourceDelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the resources were revoked.
  */
 export function DeleteAgentResources(

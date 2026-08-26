@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ValidatePersonInput } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} partyUuid Party UUID of the reportee.
  * @param {ValidatePersonInput|null} [body] The person to validate. Use
  * {@link ValidatePersonInputBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Party UUID of the validated person.
  */
 export function ValidatePerson(

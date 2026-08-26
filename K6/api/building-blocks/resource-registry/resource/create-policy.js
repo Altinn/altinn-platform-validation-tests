@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
  * @param {*} policyFile XACML policy file.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the policy was successfully created.
  */
 export function ResourceCreatePolicy(
@@ -28,10 +28,10 @@ export function ResourceCreatePolicy(
     );
 
     const succeed = check(res, {
-        "ResourceCreatePolicy - status code is 200": (r) =>
-            r.status === 200,
-        "ResourceCreatePolicy - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+        "ResourceCreatePolicy - status code is 201": (r) =>
+            r.status === 201,
+        "ResourceCreatePolicy - status text is 201 Created": (r) =>
+            r.status_text === "201 Created",
     });
 
     if (!succeed) {

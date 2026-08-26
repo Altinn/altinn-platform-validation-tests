@@ -1,5 +1,9 @@
 import crypto from "k6/crypto";
 
+/**
+ * @param {number} b A single byte.
+ * @returns {string} The byte as two hex digits.
+ */
 function hex2(b) {
     return b.toString(16).padStart(2, "0");
 }
@@ -392,10 +396,11 @@ export function getDialogBody(partyId, serviceResource, serviceOwner) {
  *
  * @param {string} partyId - either a pid/ssn (11 digits) or an org number (9 digits)
  * @param {string} serviceResource - the service resource
+ * @param {string} serviceOwner - the org number of the service owner
  * @returns json object to be used as body when creating a dialog via the API, without transmissions and activities.
  */
-export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource) {
-    let body = getDialogBody(partyId, serviceResource);
+export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource, serviceOwner) {
+    let body = getDialogBody(partyId, serviceResource, serviceOwner);
     body.transmissions = [];
     body.activities = [];
     return body;
@@ -404,11 +409,16 @@ export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceR
 /**
  * Get a transmission body, used for testing creation of transmissions. By default, the transmission will not be related to any other transmission, but you can provide an id of a transmission to relate it to.
  *
- * @param {uuidv7} relatedTransmissionId - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
+ * @param {string|number} [relatedTransmissionId] - the id of a transmission to relate this transmission to. If 0 or not provided, the transmission will not be related to any other transmission.
  * @returns json object to be used as body when creating a transmission via the API.
  */
 export function getTransmissionBody(relatedTransmissionId = 0) {
+    // relatedTransmissionId is declared here rather than added afterwards, so the
+    // literal carries the property. JSON.stringify leaves it out while it is
+    // undefined, which is what an unrelated transmission needs.
     let transmission = {
+        /** @type {string|number|undefined} */
+        "relatedTransmissionId": undefined,
         "id": uuidv7(),
         "createdAt": new Date().toISOString(),
         "authorizationAttribute": "element1",

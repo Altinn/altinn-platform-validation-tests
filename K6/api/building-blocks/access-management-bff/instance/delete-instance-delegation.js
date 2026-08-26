@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { DeleteInstanceDelegationQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {DeleteInstanceDelegationQuery|null} [queryParams] Optional query
  * parameters. Use {@link DeleteInstanceDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the instance delegation was revoked.
  */
 export function DeleteInstanceDelegation(

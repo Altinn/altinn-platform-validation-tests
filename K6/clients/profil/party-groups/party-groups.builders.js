@@ -1,10 +1,11 @@
+import { GroupRequest } from "./party-groups.types.js";
+
 /**
  * Builder for GroupRequest.
  */
 class GroupRequestBuilder {
     constructor() {
-        /** @type {GroupRequest} */
-        this.request = {};
+        this.request = /** @type {GroupRequest} */ ({});
     }
 
     /**

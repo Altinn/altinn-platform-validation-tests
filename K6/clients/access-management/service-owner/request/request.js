@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { CreateServiceOwnerRequest, RequestPackageDto, RequestResourceDto } from "./request.types.js";
+
 const TAGS = {
     RequestGetPartyUrns: {
         action: "request-get-party-urns",
@@ -50,9 +52,9 @@ class RequestClient {
     /**
      * Gets supported party URN types.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestGetPartyUrns(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -85,9 +87,9 @@ class RequestClient {
      * Gets request status.
      *
      * @param {string} id Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestGetRequestStatus(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -120,9 +122,9 @@ class RequestClient {
      * Withdraws a delegation request.
      *
      * @param {string} id Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestWithdrawRequest(id, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -155,9 +157,9 @@ class RequestClient {
      * Creates a resource delegation request.
      *
      * @param {RequestResourceDto} request Request payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreateResourceRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -191,9 +193,9 @@ class RequestClient {
      * Creates a package delegation request.
      *
      * @param {RequestPackageDto} request Request payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreatePackageRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -227,9 +229,9 @@ class RequestClient {
      * Creates a delegation request.
      *
      * @param {CreateServiceOwnerRequest} request Request payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreateRequest(request, labels = null) {
         const token = this.tokenGenerator.getToken();

@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { ServiceOwnerAccessPackageDelegation } from "../../../../../clients/access-management/service-owner/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/service-owner/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -8,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the operation succeeded.
  */
 export function ConnectionsRevokeAccessPackage(

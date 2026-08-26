@@ -1,36 +1,26 @@
 import { fail, group } from "k6";
 
-import { MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
-import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
+import { uuidv4 } from "../../../../common-imports.js";
+import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
+import { getVendorClient, sweepSystems, VENDOR_ID } from "./commons.js";
 
-export function setup() {
-    requireEnv(["BASE_URL"]);
-    return;
-}
+/**
+ * What this test names its systems, which is also what its teardown sweeps up.
+ * Unique per test, or two tests running at once would delete each other's systems.
+ */
+const SYSTEM_NAME_PREFIX = "K6-super-system-";
 
-export default async function () {
-    const scopes = CreateScopeString([
-        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
-    ]);
+export { setup } from "./commons.js";
 
-    const options = new MaskinportenTokenBuilder()
-        .withScopes(scopes)
-        .build();
+/**
+ * @param {Awaited<ReturnType<typeof import("./commons.js").setup>>} data Test data from setup.
+ * @returns {Promise<void>} Resolves when the iteration is done.
+ */
+export default async function (data) {
+    const systemRegisterClient = getVendorClient(data.vendorToken);
 
-    const tokenGenerator
-        = new MaskinportenAccessTokenGenerator(options);
-
-    // Signing the grant goes through SubtleCrypto, so the token has to be fetched
-    // before the client starts asking for it.
-    await tokenGenerator.ensureToken();
-
-    const systemRegisterClient
-        = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
-
-    const vendorId = 313175650;
-    const systemName = `K6-super-system-${uuidv4()}`;
+    const vendorId = VENDOR_ID;
+    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
 
     const systemId = `${vendorId}_${systemName}`;
 
@@ -204,6 +194,22 @@ export default async function () {
             ]);
         });
     });
+}
+
+/**
+ * k6 teardown stage. Removes the systems this test left in the register.
+ *
+ * Deleting the system is a step of the test itself, so on the way it was meant to
+ * go there is nothing here to do. An iteration that gave up half way is what this
+ * is for: fail() skips the delete, and the system would stay behind.
+ *
+ * Async, since the sweep signs its own Maskinporten grant rather than reusing the
+ * token setup fetched.
+ *
+ * @returns {Promise<void>} Resolves once the register is swept.
+ */
+export async function teardown() {
+    await sweepSystems(SYSTEM_NAME_PREFIX);
 }
 
 // add the custom reporting for this test to the default summary

@@ -1,6 +1,8 @@
+import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery, ContentType } from "../types.js";
+
 class AppCloudEventRequestModelBuilder {
     constructor() {
-        this.request = {
+        this.request = /** @type {AppCloudEventRequestModel} */ ({
             source: null,
             specversion: null,
             type: null,
@@ -9,7 +11,7 @@ class AppCloudEventRequestModelBuilder {
             data: null,
             dataschema: null,
             contenttype: null,
-        };
+        });
     }
 
     /**
@@ -101,7 +103,7 @@ class AppCloudEventRequestModelBuilder {
 }
 class AppEventsByAppQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AppEventsByAppQuery} */ ({});
     }
 
     /**
@@ -185,7 +187,7 @@ class AppEventsByAppQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {AppEventsByAppQuery} The built payload.
      */
     Build() {
         return this.query;
@@ -194,7 +196,7 @@ class AppEventsByAppQueryBuilder {
 
 class AppPartyEventsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {AppPartyEventsQuery} */ ({});
     }
 
     /**
@@ -288,7 +290,7 @@ class AppPartyEventsQueryBuilder {
     }
 
     /**
-     * @returns {object} The built payload.
+     * @returns {AppPartyEventsQuery} The built payload.
      */
     Build() {
         return this.query;

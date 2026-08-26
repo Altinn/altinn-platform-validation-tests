@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListInfoDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDto|null} Deleted access list information.
  */
 export function AccessListDelete(

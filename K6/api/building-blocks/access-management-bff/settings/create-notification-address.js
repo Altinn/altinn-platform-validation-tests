@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { NotificationAddressModel } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SettingsClient } from "../../../../clients/access-management-bff/settings/index.js";
+import { NotificationAddressResponse } from "../../../../clients/profil/organizations/organizations.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} orgNumber Organisation number.
  * @param {NotificationAddressModel|null} [body] The notification address to
  * add. Use {@link NotificationAddressModelBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} The created notification
  * address.
  */

@@ -72,9 +72,7 @@ export default function (data) {
     const to = organizationUrn(org.orgNo);
 
     group("As an organization, I can ask a person for a consent and use it once it is granted", function () {
-        let consentRequestId;
-
-        group("Request the consent", function () {
+        const consentRequestId = group("Request the consent", function () {
             const consentRequest = createConsentRequest({ consentId, from, to });
 
             const createdRequest = EnterpriseCreateConsentRequest(
@@ -86,7 +84,7 @@ export default function (data) {
             ConsentDomainChecks.CheckConsentRequestCreated(createdRequest, { id: consentId, from, to });
             ConsentDomainChecks.CheckConsentRights(createdRequest, [CONSENT_RESOURCE]);
 
-            consentRequestId = createdRequest?.id;
+            return createdRequest?.id;
         });
 
         group("Approve the consent as the person it was asked of", function () {

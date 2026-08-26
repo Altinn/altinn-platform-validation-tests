@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DeleteReporteeConnectionQuery } from "../../../../clients/access-management-bff/connection/connection.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {DeleteReporteeConnectionQuery|null} [queryParams] Optional query
  * parameters. Use {@link DeleteReporteeConnectionQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the connection was removed.
  */
 export function DeleteReporteeConnection(

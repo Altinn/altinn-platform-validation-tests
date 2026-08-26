@@ -22,7 +22,7 @@ let tokenGenerator = undefined;
  *
  * The CSV contains SSNs for the target environment.
  *
- * @returns {Array} Parsed CSV data used as test input.
+ * @returns {any[]} Parsed CSV data used as test input.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -42,7 +42,7 @@ export function setup() {
  * ]} Tuple containing the API client and token generator.
  */
 export function getClient() {
-    if (enduserApiClient === undefined) {
+    if (enduserApiClient === undefined || tokenGenerator === undefined) {
         const baseUrl = __ENV.BASE_URL;
         const tokenOpts = getDialogportenOpts();
 

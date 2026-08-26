@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { InstantOrdersClient } from "../../../../clients/notifications/instant-orders/index.js";
+import { InstantEmailNotificationOrderRequestExt, InstantNotificationOrderResponseExt } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -8,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {InstantOrdersClient} instantOrdersClient Client for the Instant Orders API.
  * @param {InstantEmailNotificationOrderRequestExt} request Email notification payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {InstantNotificationOrderResponseExt|null} Notification order response.
  */
 export function InstantOrdersCreateEmail(

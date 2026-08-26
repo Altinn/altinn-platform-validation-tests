@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { InitializeCorrespondencesExt, InitializeCorrespondencesResponseExt } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -12,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {InitializeCorrespondencesExt} requestBody Correspondence initialization payload.
  * Use {@link InitializeCorrespondencesBuilder} to construct this object.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {InitializeCorrespondencesResponseExt|null}
  * Initialized correspondence information or null when request fails.

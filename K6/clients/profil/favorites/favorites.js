@@ -32,9 +32,9 @@ class FavoritesClient {
     /**
      * Gets the favorite parties for the current user.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -67,9 +67,9 @@ class FavoritesClient {
      * Adds a party to the favorites group for the current user.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AddFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -102,9 +102,9 @@ class FavoritesClient {
      * Removes a party from the favorites group for the current user.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteFavorite(partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();

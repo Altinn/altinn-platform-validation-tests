@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { SystemUserAgentDelegationClient } from "../../../../clients/access-management-bff/system-user-agent-delegation/index.js";
+import { DeleteAgentSystemUserSelfDelegationQuery } from "../../../../clients/access-management-bff/system-user-agent-delegation/system-user-agent-delegation.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -13,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {DeleteAgentSystemUserSelfDelegationQuery|null} [queryParams]
  * Optional query parameters. Use
  * {@link DeleteAgentSystemUserSelfDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the delegation was revoked.
  */
 export function DeleteAgentSystemUserSelfDelegation(

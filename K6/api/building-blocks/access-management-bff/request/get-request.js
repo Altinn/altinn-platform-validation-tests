@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RequestClient } from "../../../../clients/access-management-bff/request/index.js";
+import { GetRequestQuery } from "../../../../clients/access-management-bff/request/request.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -11,8 +12,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} id Request UUID.
  * @param {GetRequestQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
- * @returns {object|null} The access request. The API does not publish a schema
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
+ * @returns {any} The access request. The API does not publish a schema
  * for this response.
  */
 export function GetRequest(
@@ -26,7 +27,7 @@ export function GetRequest(
         "GetRequest",
     );
 
-    /** @type {object|null} */
+    /** @type {any} */
     let request = null;
 
     const succeed = check(res, {

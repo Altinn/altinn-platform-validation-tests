@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { GetInstanceUsersQuery, SimplifiedPartyDtoPaginatedResult } from "../../../../../clients/access-management/enduser/connections/connections.types.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { withRetries } from "../../../common/retry.js";
 
@@ -9,9 +10,9 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetInstanceUsersQuery|null} [queryParams]
  * Query parameters. Use {@link GetInstanceUsersQueryBuilder}.
- * @param {{[key: string]: string|number}} [headers]
+ * @param {{[key: string]: string|number}|null} [headers]
  * Optional request headers.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {SimplifiedPartyDtoPaginatedResult|null} Instance users.
  */

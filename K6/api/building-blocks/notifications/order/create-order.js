@@ -2,6 +2,7 @@
 import { check } from "k6";
 
 import { OrderClient } from "../../../../clients/notifications/order/index.js";
+import { NotificationOrderChainRequestExt, NotificationOrderChainResponseExt } from "../../../../clients/notifications/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {OrderClient} orderClient Client for the Order API.
  * @param {NotificationOrderChainRequestExt} request Notification order request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationOrderChainResponseExt|null} Created notification order response.
  */
 export function OrderCreateOrder(

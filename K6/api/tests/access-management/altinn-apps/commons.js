@@ -50,7 +50,7 @@ let wrongAppClient = undefined;
 /**
  * Token options for the app that owns the resource.
  *
- * @returns {object} Built platform token options.
+ * @returns Built platform token options.
  */
 export function getAppTokenOpts() {
     return new PlatformTokenBuilder()
@@ -70,7 +70,7 @@ export function getAppTokenOpts() {
  * @returns {[AppsInstanceDelegationClient, PlatformTokenGenerator]} The client, and the generator behind it.
  */
 export function getClients() {
-    if (appsInstanceDelegationClient === undefined) {
+    if (appsInstanceDelegationClient === undefined || appTokenGenerator === undefined) {
         appTokenGenerator = new PlatformTokenGenerator(getAppTokenOpts());
 
         appsInstanceDelegationClient = new AppsInstanceDelegationClient(

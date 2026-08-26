@@ -1,7 +1,11 @@
+/**
+ * @typedef {import("./dialogs-search-variables-builder.js").DialogSearchVariables} DialogSearchVariables
+ */
+/**
+ * @typedef {import("./dialog-by-id-variables-builder.js").DialogByIdVariables} DialogByIdVariables
+ */
 import http from "k6/http";
 
-import { DialogByIdVariablesBuilder } from "./dialog-by-id-variables-builder.js";
-import { DialogSearchVariablesBuilder } from "./dialogs-search-variables-builder.js";
 import { getAllDialogsForParties, getDialogById, getFilterServiceResources, getParties } from "./graphql-queries.js";
 
 const TAGS = {
@@ -42,8 +46,8 @@ class GraphqlClient {
     /**
      * Get all dialogs based on variables
      *
-     * @param {DialogSearchVariablesBuilder} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {DialogSearchVariables} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetAllDialogsForParty(variables, labels = null) {
@@ -72,8 +76,8 @@ class GraphqlClient {
     /**
      * Get dialog by id
      *
-     * @param {DialogByIdVariablesBuilder} variables - the id of the dialog to get
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {DialogByIdVariables} variables - the variables naming the dialog to get
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetDialogById(variables, labels = null) {
@@ -100,7 +104,7 @@ class GraphqlClient {
     /**
      * Get parties for a user
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      * */
     GetParties(labels = null) {
@@ -127,7 +131,7 @@ class GraphqlClient {
     /**
      * Get filtered service resources for a user
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetFilterServiceResources(labels = null) {

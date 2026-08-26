@@ -39,8 +39,8 @@ class InfoPortalApiClient {
     /**
      * Get authorized parties for the user
      *
-     * @param {object} labels - k6 check tags
-     * @returns http.RefinedResponse
+     * @param {{[key: string]: string}|null} [labels] - k6 check tags
+     * @returns http.RefinedResponse<"text">
      */
     GetAuthorizedParties(labels = null) {
 
@@ -54,8 +54,8 @@ class InfoPortalApiClient {
     /**
      * Get favorites for the user
      *
-     * @param {object} labels - k6 check tags
-     * @returns http.RefinedResponse
+     * @param {{[key: string]: string}|null} [labels] - k6 check tags
+     * @returns http.RefinedResponse<"text">
      */
     GetFavorites(labels = null) {
         const url = this.FULL_PATH + "/favorites";
@@ -68,8 +68,8 @@ class InfoPortalApiClient {
     /**
      * Get current user info
      *
-     * @param {object} labels - k6 check tags
-     * @returns http.RefinedResponse
+     * @param {{[key: string]: string}|null} [labels] - k6 check tags
+     * @returns http.RefinedResponse<"text">
      */
     GetCurrent(labels = null) {
         const url = this.FULL_PATH + "/current";
@@ -82,7 +82,7 @@ class InfoPortalApiClient {
     /**
      * Method to do the actuel http call to the api, used by all the public methods in this class
      *
-     * @param {url} url TODO: Description
+     * @param {string} url Full url of the endpoint to call.
      * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
      * @returns TODO: description
      */

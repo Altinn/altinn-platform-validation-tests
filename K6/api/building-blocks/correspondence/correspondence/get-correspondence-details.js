@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { CorrespondenceDetailsExt } from "../../../../clients/correspondence/correspondence.types.js";
 import { CorrespondenceClient } from "../../../../clients/correspondence/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -11,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {string} correspondenceId Correspondence UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CorrespondenceDetailsExt|null} Correspondence details or null when request fails.
  */
 export function GetCorrespondenceDetails(

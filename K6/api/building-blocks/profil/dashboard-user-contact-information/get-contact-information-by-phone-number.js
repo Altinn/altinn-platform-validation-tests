@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { DashboardUserContactInformationResponse } from "../../../../clients/profil/dashboard-user-contact-information/dashboard-user-contact-information.types.js";
 import { DashboardUserContactInformationClient } from "../../../../clients/profil/dashboard-user-contact-information/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} phoneNumber Phone number.
  * @param {{countrycode?: string}|null} [query]
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DashboardUserContactInformationResponse>} User contact information for the phone number.
  */
 export function GetContactInformationByPhoneNumber(

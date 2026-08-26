@@ -1,9 +1,11 @@
+import { DelegateSingleRightsQuery, GetResourceDelegationsQuery, GetResourceRightsQuery, GetRightsMetaQuery, GetSingleRightDelegationCheckQuery, RevokeSingleRightsQuery, UpdateSingleRightsQuery } from "./single-right.types.js";
+
 /**
  * Builder for the query parameters of {@link GetSingleRightDelegationCheck}.
  */
 class GetSingleRightDelegationCheckQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetSingleRightDelegationCheckQuery} */ ({});
     }
 
     /**
@@ -45,7 +47,7 @@ class GetSingleRightDelegationCheckQueryBuilder {
  */
 class GetRightsMetaQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetRightsMetaQuery} */ ({});
     }
 
     /**
@@ -74,7 +76,7 @@ class GetRightsMetaQueryBuilder {
  */
 class DelegateSingleRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {DelegateSingleRightsQuery} */ ({});
     }
 
     /**
@@ -137,7 +139,7 @@ class DelegateSingleRightsQueryBuilder {
  */
 class GetResourceDelegationsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceDelegationsQuery} */ ({});
     }
 
     /**
@@ -189,7 +191,7 @@ class GetResourceDelegationsQueryBuilder {
  */
 class GetResourceRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {GetResourceRightsQuery} */ ({});
     }
 
     /**
@@ -252,7 +254,7 @@ class GetResourceRightsQueryBuilder {
  */
 class RevokeSingleRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {RevokeSingleRightsQuery} */ ({});
     }
 
     /**
@@ -315,7 +317,7 @@ class RevokeSingleRightsQueryBuilder {
  */
 class UpdateSingleRightsQueryBuilder {
     constructor() {
-        this.query = {};
+        this.query = /** @type {UpdateSingleRightsQuery} */ ({});
     }
 
     /**

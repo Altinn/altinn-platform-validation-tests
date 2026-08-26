@@ -1,13 +1,14 @@
 import { check } from "k6";
 
 import { SystemRegisterClient } from "../../../../clients/authentication/index.js";
+import { RegisteredSystemDTO } from "../../../../clients/authentication/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Retrieves all vendor registered systems.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RegisteredSystemDTO[]|null} Registered systems.
  */
 export function SystemRegisterVendorGet(

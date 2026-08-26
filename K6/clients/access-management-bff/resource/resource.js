@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { GetResourceOwnersQuery, GetResourceQuery, SearchResourcesQuery } from "./resource.types.js";
+
 const TAGS = {
     GetResourceOwners: {
         action: "get-resource-owners",
@@ -47,8 +49,8 @@ class ResourceClient {
      *
      * @param {GetResourceOwnersQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetResourceOwnersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceOwners(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -62,9 +64,9 @@ class ResourceClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -96,8 +98,8 @@ class ResourceClient {
      *
      * @param {GetResourceQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetResourceQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResource(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -111,9 +113,9 @@ class ResourceClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -145,8 +147,8 @@ class ResourceClient {
      *
      * @param {SearchResourcesQuery|null} [query] Optional query parameters. Prefer
      * using {@link SearchResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SearchResources(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -160,9 +162,9 @@ class ResourceClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

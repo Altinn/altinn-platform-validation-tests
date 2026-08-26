@@ -1,5 +1,6 @@
 import { fail, group } from "k6";
 
+import { Right } from "../../../../clients/authentication/types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
@@ -33,7 +34,7 @@ const REQUESTED_RIGHTS = [resource("ttd-dialogporten-dummy")];
  * The system is registered with both sets, so the system user starts with the
  * granted rights and the change request has something left to ask for.
  *
- * @returns {object[]} The system user to change, as a single item list.
+ * @returns The system user to change, as a single item list.
  */
 export function setup() {
     // Drawn once here rather than per iteration, since the system belongs to the
@@ -44,7 +45,7 @@ export function setup() {
     const [grantedPackage, requestedPackage] = findAccessPackages(2, vendorOrgNo);
 
     return arrangeApprovedSystemUser({
-        systemNamePrefix: "changerequest",
+        systemNamePrefix: "changerequestapprove",
         vendorOrgNo,
         grantedRights: GRANTED_RIGHTS,
         registeredRights: [...GRANTED_RIGHTS, ...REQUESTED_RIGHTS],
@@ -56,7 +57,7 @@ export function setup() {
 /**
  * Test: a vendor can ask for more rights on an existing system user.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -72,11 +73,21 @@ export default function (data) {
         .filter((urn) => !systemUser.grantedAccessPackages.includes(urn))
         .map(accessPackage);
 
+    // The arrange hands back a system user id only when every step of it worked,
+    // rather than failing the run, so that its teardown gets to remove what it did
+    // create. Nothing below says anything without one.
+    if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser.systemUserId)) {
+        fail("cannot ask for more rights: the setup produced no system user");
+    }
+
+    // Bound after the guard, so the groups below read a value the compiler knows is
+    // there rather than one narrowed outside their own scope.
+    const systemUserId = systemUser.systemUserId;
+
     group("As a vendor, I can ask an existing system user for more rights", function () {
-        let changeRequestId;
         const correlationId = uuidv4();
 
-        group("Ask for a right the system user does not have", function () {
+        const changeRequestId = group("Ask for a right the system user does not have", function () {
 
             const request = new ChangeRequestSystemUserBuilder()
                 .withRequiredRights(REQUESTED_RIGHTS)
@@ -89,17 +100,17 @@ export default function (data) {
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
-                systemUser.systemUserId,
+                systemUserId,
                 201,
             );
 
-            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUser.systemUserId);
+            ChangeRequestSystemUserDomainChecks.CheckChangeRequestSystemUserId(changeRequestResponse, systemUserId);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestConfirmUrl(changeRequestResponse);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredRights(changeRequestResponse, REQUESTED_RIGHTS);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestRequiredAccessPackages(changeRequestResponse, addedAccessPackages);
             ChangeRequestSystemUserDomainChecks.CheckChangeRequestUnwantedAccessPackages(changeRequestResponse, removedAccessPackages);
 
-            changeRequestId = changeRequestResponse?.id;
+            return changeRequestResponse?.id;
         });
 
         group("Asking again with the same correlation id returns the same change request", function () {
@@ -118,7 +129,7 @@ export default function (data) {
                 clients.vendor.changeRequestClient,
                 request,
                 correlationId,
-                systemUser.systemUserId,
+                systemUserId,
                 200,
             );
 
@@ -158,7 +169,7 @@ export default function (data) {
  * deleted from the test itself without pulling them out from under the
  * iterations that follow.
  *
- * @param {object[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

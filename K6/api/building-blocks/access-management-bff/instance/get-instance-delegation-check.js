@@ -1,6 +1,8 @@
 import { check } from "k6";
 
+import { RightCheck } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
+import { GetInstanceDelegationCheckQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -10,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetInstanceDelegationCheckQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<RightCheck>|null} Delegation check results.
  */
 export function GetInstanceDelegationCheck(

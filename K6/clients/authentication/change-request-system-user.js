@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { ChangeRequestSystemUser, GuidOpaque } from "./types.js";
+
 const TAGS = {
     ChangeRequestSystemUserVendorCreate: {
         action: "change-request-system-user-vendor-create",
@@ -52,9 +54,9 @@ class ChangeRequestSystemUserClient {
      * @param {ChangeRequestSystemUser} request Change request payload.
      * @param {string|null} correlationId Correlation identifier.
      * @param {string|null} systemUserId System user identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorCreate(
         request,
@@ -113,9 +115,9 @@ class ChangeRequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGet(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -150,9 +152,9 @@ class ChangeRequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorDelete(requestId, labels = null) {
         const token = this.tokenGenerator.getToken();
@@ -189,9 +191,9 @@ class ChangeRequestSystemUserClient {
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organisation number.
      * @param {string} externalRef External reference.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGetByExternalRef(
         systemId,
@@ -232,9 +234,9 @@ class ChangeRequestSystemUserClient {
      *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @returns {http.RefinedResponse} Exposes body with best possible type.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGetBySystem(
         systemId,

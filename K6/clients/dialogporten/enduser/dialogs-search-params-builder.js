@@ -32,8 +32,7 @@
  */
 export class DialogSearchParamsBuilder {
     constructor() {
-        this.params = {
-        };
+        this.params = /** @type {DialogSearchParams} */ ({});
     }
 
     /**
@@ -278,3 +277,7 @@ export class DialogSearchParamsBuilder {
         return { ...this.params };
     }
 }
+
+// Runtime stub, so a file documenting this typedef has something to import and an
+// editor can follow the name back here.
+export const DialogSearchParams = undefined;

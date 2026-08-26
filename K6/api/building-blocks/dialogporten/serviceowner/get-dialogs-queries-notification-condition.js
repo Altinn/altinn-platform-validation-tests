@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
+import { V1ServiceOwnerDialogsQueriesNotificationCondition_NotificationCondition } from "../../../../clients/dialogporten/serviceowner/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param { string } conditionType TODO: description
  * @param { string } activityType TODO: description
  * @param { string } transmissionId TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerDialogsQueriesNotificationCondition_NotificationCondition|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogsQueriesNotificationCondition(

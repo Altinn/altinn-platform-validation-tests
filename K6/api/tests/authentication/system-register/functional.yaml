@@ -45,3 +45,10 @@ test_definitions:
         test_run:
           secrets:
             - 313175650-maskinporten-client
+
+  - test_file: get-registered-systems.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01

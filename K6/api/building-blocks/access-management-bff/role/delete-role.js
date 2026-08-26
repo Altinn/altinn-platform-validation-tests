@@ -1,6 +1,7 @@
 import { check } from "k6";
 
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
+import { DeleteRoleQuery } from "../../../../clients/access-management-bff/role/role.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -9,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RoleClient} roleClient Client for the role endpoints.
  * @param {DeleteRoleQuery|null} [queryParams] Optional query parameters. Use
  * {@link DeleteRoleQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the role was revoked.
  */
 export function DeleteRole(roleClient, queryParams = null, labels = null) {

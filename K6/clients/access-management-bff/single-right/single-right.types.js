@@ -85,3 +85,11 @@
  * @property {string} [to] Party UUID the access is given to.
  * @property {string} [resourceId] Resource identifier.
  */
+
+export const DelegateSingleRightsQuery = undefined;
+export const GetResourceDelegationsQuery = undefined;
+export const GetResourceRightsQuery = undefined;
+export const GetRightsMetaQuery = undefined;
+export const GetSingleRightDelegationCheckQuery = undefined;
+export const RevokeSingleRightsQuery = undefined;
+export const UpdateSingleRightsQuery = undefined;

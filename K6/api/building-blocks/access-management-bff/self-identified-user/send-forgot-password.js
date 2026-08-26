@@ -1,5 +1,6 @@
 import { check } from "k6";
 
+import { Altinn2ForgotPasswordRequest } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SelfIdentifiedUserClient } from "../../../../clients/access-management-bff/self-identified-user/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * self identified user endpoints.
  * @param {Altinn2ForgotPasswordRequest|null} [body] The account to recover the
  * password for. Use {@link Altinn2ForgotPasswordRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the password recovery was started.
  */
 export function SendForgotPassword(
