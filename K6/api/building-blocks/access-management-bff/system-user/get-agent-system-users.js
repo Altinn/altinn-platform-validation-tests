@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClient} systemUserClient Client for the system user
  * endpoints.
  * @param {number} partyId Party id of the organisation.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The agent system users. The API does not publish a
  * schema for this response.
  */

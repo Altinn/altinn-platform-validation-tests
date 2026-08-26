@@ -1,3 +1,5 @@
+import { fail } from "k6";
+
 import { getItemFromList, getOptions } from "../../../../helpers.js";
 import { CreateActivity, CreateDialog, CreateTransmission } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getClients, orgNo, serviceResources } from "./common-functions.js";
@@ -12,6 +14,9 @@ const create_activity_label = { step: "create-activity" };
 
 export const options = getOptions([create_dialog_label, create_transmission_label, create_activity_label]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
     const noTransmissionsActivities = true;
@@ -23,6 +28,10 @@ export default function (data) {
         create_dialog_label,
         noTransmissionsActivities,
     );
+    if (dialogId === null) {
+        fail("cannot create a transmission: creating the dialog returned no dialog id");
+    }
+
     CreateTransmission(
         serviceOwnerApiClient,
         dialogId,

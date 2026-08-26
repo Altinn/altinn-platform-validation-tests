@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the organization list.
  *
  * @param {ResourceOwnerClient} resourceOwnerClient Client for the Resource Owner API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {OrgList|null} Parsed response body, or null when the call failed.
  */
 export function ResourceOwnerGetOrgs(

@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the actor list of the authenticated user.
  *
  * @param {UserClient} userClient Client for the user endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Connection>|null} The actor list.
  */
 export function GetActorList(userClient, labels = null) {

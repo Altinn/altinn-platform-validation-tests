@@ -2,7 +2,7 @@ import { ConsentPortalViewMode, ConsentRequestDto, ConsentRequestEventsQuery, Co
 
 class ConsentRequestBuilder {
     constructor() {
-        this.request = /** @type {ConsentRequestDto} */ ({
+        this.request = /** @type {ConsentRequestDto} */ (/** @type {unknown} */ ({
             id: null,
             from: null,
             requiredDelegator: null,
@@ -12,7 +12,7 @@ class ConsentRequestBuilder {
             requestMessage: null,
             redirectUrl: null,
             portalViewMode: null,
-        });
+        }));
     }
 
     /**

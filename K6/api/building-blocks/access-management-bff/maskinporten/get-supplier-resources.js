@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSupplierResourcesQuery} queryParams Query parameters. Use
  * {@link GetSupplierResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegation>|null} The delegated resources.
  */
 export function GetSupplierResources(

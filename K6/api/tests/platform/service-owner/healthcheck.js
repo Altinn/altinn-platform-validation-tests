@@ -29,6 +29,9 @@ export function setup() {
     return endpoints;
 }
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     console.log(`Querying ${data.length} endpoints`);
     for (let [org, deploy_env, endpoint] of data) {

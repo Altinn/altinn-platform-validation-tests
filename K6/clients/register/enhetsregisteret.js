@@ -61,7 +61,7 @@ class EnhetsregisteretClient {
      * e.g. "revisor" for felttype REVI.
      * @param {string} clientOrg Organization number of the organization getting a facilitator.
      * @param {string} facilitatorOrg Organization number of the facilitator.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds the ER batch response XML.
      */
     AddCcrRole(
@@ -136,7 +136,7 @@ class EnhetsregisteretClient {
      * e.g. "regnskapsforer" for felttype REGN.
      * @param {string} clientOrg Organization number of the organization losing a facilitator.
      * @param {string} facilitatorOrg Organization number of the facilitator.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds the ER batch response XML.
      */
     RemoveCcrRole(

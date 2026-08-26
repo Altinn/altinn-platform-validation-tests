@@ -17,7 +17,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} tokenProvider The provider that issued the token, e.g. "maskinporten".
  * @param {object} [options] What to send. See the client method.
  * @param {number} [expectedStatus] Status the caller expects. Defaults to 200.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} The Altinn token, or null when the call did not answer with one.
  */
 export function ExchangeToken(

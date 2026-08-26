@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ConsentClient} consentClient Client for the consent endpoints.
  * @param {string} consentId Consent UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the consent was revoked.
  */
 export function RevokeConsent(consentClient, consentId, labels = null) {

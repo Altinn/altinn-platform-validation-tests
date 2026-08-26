@@ -46,15 +46,35 @@ export function createDefaultPayload() {
     };
 }
 
+/**
+ * @param {unknown} data The k6 summary data. Passed through from the caller;
+ * the message body comes from report rather than from this.
+ * @param {string} report The rendered report to put in the message body.
+ * @returns {ReturnType<typeof createDefaultPayload>} The Slack payload to post.
+ */
 function buildPayload(data, report) {
     var payload = createDefaultPayload();
     let sectionBlocks = payload.attachments.find(
         (attachments) => attachments.blocks[1].type === "section",
     );
 
-    sectionBlocks.blocks[0].text.text = sectionBlocks.blocks[0].text.text + ` for <https://github.com/Altinn/altinn-platform-validation-tests/blob/main/${__ENV.TESTFILENAME}|${__ENV.TESTFILENAME}> \n`;
-    sectionBlocks.blocks[0].text.text = sectionBlocks.blocks[0].text.text + `Environment: ${__ENV.ENVIRONMENT} \n`;
-    sectionBlocks.blocks[1].text.text = report;
+    if (!sectionBlocks) {
+        // createDefaultPayload always builds this attachment, so this only trips
+        // if that payload is changed without updating this function.
+        throw new Error("Slack payload has no section attachment to fill in");
+    }
+
+    // The blocks the report fills in: the heading, the report body and the
+    // actions row holding the link to the logs. The third block is the divider.
+    const [headingBlock, reportBlock, , actionsBlock] = sectionBlocks.blocks;
+
+    if (!headingBlock?.text || !reportBlock?.text || !actionsBlock?.elements) {
+        throw new Error("Slack payload does not have the blocks the report fills in");
+    }
+
+    headingBlock.text.text = headingBlock.text.text + ` for <https://github.com/Altinn/altinn-platform-validation-tests/blob/main/${__ENV.TESTFILENAME}|${__ENV.TESTFILENAME}> \n`;
+    headingBlock.text.text = headingBlock.text.text + `Environment: ${__ENV.ENVIRONMENT} \n`;
+    reportBlock.text.text = report;
 
     const grafanaBaseUrl = "https://grafana.altinn.cloud/d/cf5uw0ahcsj5sf/k6-logs-test-playground?orgId=1";
     let urlToLogs = grafanaBaseUrl + `&from=${__ENV.MANIFEST_GENERATION_TIMESTAMP}`;
@@ -64,7 +84,7 @@ function buildPayload(data, report) {
     urlToLogs = urlToLogs + `&var-testid=${__ENV.TESTID}`;
     urlToLogs = urlToLogs + `&&var-test_scope=${__ENV.TEST_SCOPE}`;
 
-    sectionBlocks.blocks[3].elements[0].url = urlToLogs;
+    actionsBlock.elements[0].url = urlToLogs;
 
     return payload;
 }
@@ -78,6 +98,13 @@ function buildHeaders() {
     };
 }
 
+/**
+ * Posts the report to the Slack webhook, unless the run is blacklisted.
+ *
+ * @param {unknown} data The k6 summary data.
+ * @param {string|null} [report] The rendered report to post.
+ * @returns {void} Nothing. Failures are logged rather than thrown.
+ */
 export default function postSlackMessage(data, report = null) {
     if (isBlacklisted()) {
         return;
@@ -93,7 +120,7 @@ export default function postSlackMessage(data, report = null) {
     const headers = buildHeaders();
     let payload;
 
-    payload = buildPayload(data, report);
+    payload = buildPayload(data, report ?? "");
 
     const body = JSON.stringify(payload);
 

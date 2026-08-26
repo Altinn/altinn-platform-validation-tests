@@ -52,7 +52,7 @@ class RolesClient {
     /**
      * Gets roles.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -87,7 +87,7 @@ class RolesClient {
      * Gets a role.
      *
      * @param {string} id Role identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -123,7 +123,7 @@ class RolesClient {
      *
      * @param {RolesGetRolePackagesQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -133,10 +133,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/packages`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -189,7 +188,7 @@ class RolesClient {
      *
      * @param {RolesGetRoleResourcesQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -199,10 +198,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/resources`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -256,7 +254,7 @@ class RolesClient {
      * @param {string} id Role identifier.
      * @param {RolesGetRolePackagesByIdQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -266,10 +264,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/${id}/packages`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
@@ -313,7 +310,7 @@ class RolesClient {
      * @param {string} id Role identifier.
      * @param {RolesGetRoleResourcesByIdQuery} query
      * Query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -323,10 +320,9 @@ class RolesClient {
         let url = `${this.FULL_PATH}/meta/info/roles/${id}/resources`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;

@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {LookupClient} lookupClient Client for the lookup endpoints.
  * @param {string} orgNummer Organisation number.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PartyFE|null} The party of the organisation.
  */
 export function GetOrganization(lookupClient, orgNummer, labels = null) {

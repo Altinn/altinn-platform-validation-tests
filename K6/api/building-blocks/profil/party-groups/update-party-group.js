@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {PartyGroupsClient} partyGroupsClient Client for the API.
  * @param {number} groupId See the client method.
  * @param {GroupRequest} request See the client method.
- * @param {{[key: string]: string}} [labels] See the client method.
+ * @param {{[key: string]: string}|null} [labels] See the client method.
  * @returns {GroupResponse|null} Parsed response body, or null when the call failed.
  */
 export function UpdatePartyGroup(

@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} delegationId Delegation UUID.
  * @param {DeleteAgentSystemUserDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link DeleteAgentSystemUserDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the delegation was revoked.
  */
 export function DeleteAgentSystemUserDelegation(

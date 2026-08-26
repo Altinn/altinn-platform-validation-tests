@@ -36,6 +36,7 @@
 //   { testId: "at22-get-resources-smoke",
 //     reason: "smoke run trips thresholds by design" }
 
+/** @type {{[field: string]: string}} */
 const ENV_BY_FIELD = {
     namespace: "NAMESPACE",
     environment: "ENVIRONMENT",
@@ -116,7 +117,11 @@ function entryMatches(entry) {
     }
 
     return matchable.every((field) =>
-        fieldMatches(field, entry[field], __ENV[ENV_BY_FIELD[field]]),
+        fieldMatches(
+            field,
+            /** @type {{[field: string]: string}} */ (entry)[field],
+            __ENV[ENV_BY_FIELD[field]],
+        ),
     );
 }
 

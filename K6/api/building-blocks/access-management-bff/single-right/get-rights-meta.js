@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetRightsMetaQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRightsMetaQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Right>|null} The rights of the resource.
  */
 export function GetRightsMeta(

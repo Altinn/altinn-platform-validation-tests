@@ -41,7 +41,7 @@ class EventsClient {
      * Posts a new CloudEvent.
      *
      * @param {CloudEvent} request CloudEvent payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -75,11 +75,11 @@ class EventsClient {
     /**
      * Retrieves cloud events based on query parameters.
      *
-     * @param {EventsQueryParams} [query]
+     * @param {EventsQueryParams|null} [query]
      * Optional event filters.
-     * @param {string} [alternativeSubject]
+     * @param {string|null} [alternativeSubject]
      * Alternative subject header value.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -94,10 +94,10 @@ class EventsClient {
                 name: url,
                 action: TAGS.EventsGet.action,
             },
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: `Bearer ${token}`,
                 Accept: "application/cloudevents+json",
-            },
+            }),
         };
 
         if (alternativeSubject !== null) {
@@ -106,7 +106,7 @@ class EventsClient {
         }
 
         if (query !== null) {
-            const queryParams = [];
+            const queryParams = /** @type {string[]} */ ([]);
 
             Object.entries(query).forEach(([key, value]) => {
                 if (value === null || value === undefined) {

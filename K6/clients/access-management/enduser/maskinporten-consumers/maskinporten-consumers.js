@@ -49,7 +49,7 @@ class MaskinportenConsumersClient {
      * @param {MaskinportenConsumersQuery|null} [query]
      * Optional query parameters. Prefer using
      * {@link MaskinportenConsumersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -100,7 +100,7 @@ class MaskinportenConsumersClient {
      * @param {MaskinportenConsumersQuery|null} [query]
      * Query parameters. Prefer using
      * {@link MaskinportenConsumersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -151,7 +151,7 @@ class MaskinportenConsumersClient {
      * @param {MaskinportenConsumerResourcesQuery|null} [query]
      * Query parameters. Prefer using
      * {@link MaskinportenConsumerResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -202,7 +202,7 @@ class MaskinportenConsumersClient {
      * @param {MaskinportenConsumerResourcesQuery|null} [query]
      * Query parameters. Prefer using
      * {@link MaskinportenConsumerResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

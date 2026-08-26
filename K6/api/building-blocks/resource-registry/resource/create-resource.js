@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {ServiceResource} resource Resource payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the operation succeeded.
  */
 export function ResourceCreateResource(

@@ -12,7 +12,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} id Request UUID.
  * @param {Array<string>|null} [rights]
  * Optional rights to approve.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Approved request.
  */

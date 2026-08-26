@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Retrieves all party groups for the current user.
  *
  * @param {PartyGroupsClient} partyGroupsClient Client for the API.
- * @param {{[key: string]: string}} [labels] See the client method.
+ * @param {{[key: string]: string}|null} [labels] See the client method.
  * @returns {Array<GroupResponse>|null} Parsed response body, or null when the call failed.
  */
 export function GetPartyGroups(

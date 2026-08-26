@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {RequestClient} requestClient Client for the Access Management Request API.
  * @param {string} party Party UUID.
  * @param {string} id Request UUID.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Rejected request.
  */

@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {DelegateSingleRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link DelegateSingleRightsQueryBuilder}.
  * @param {Array<string>|null} [body] Keys of the rights to delegate.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the rights were delegated.
  */
 export function DelegateSingleRights(

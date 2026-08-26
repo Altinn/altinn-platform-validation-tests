@@ -64,7 +64,7 @@ class RequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {CreateRequestSystemUser} request Request model.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -102,7 +102,7 @@ class RequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {CreateAgentRequestSystemUser} request Agent request model.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -140,7 +140,7 @@ class RequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -177,7 +177,7 @@ class RequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -214,7 +214,7 @@ class RequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -253,7 +253,7 @@ class RequestSystemUserClient {
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organization number.
      * @param {string} externalRef External reference.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -297,7 +297,7 @@ class RequestSystemUserClient {
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organization number.
      * @param {string} externalRef External reference.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -340,7 +340,7 @@ class RequestSystemUserClient {
      *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -382,7 +382,7 @@ class RequestSystemUserClient {
      *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

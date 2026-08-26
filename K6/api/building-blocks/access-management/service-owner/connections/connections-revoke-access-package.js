@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the operation succeeded.
  */
 export function ConnectionsRevokeAccessPackage(

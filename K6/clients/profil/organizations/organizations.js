@@ -50,7 +50,7 @@ class OrganizationsClient {
      * Gets notification addresses for an organization.
      *
      * @param {string} organizationNumber Organization number.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -86,7 +86,7 @@ class OrganizationsClient {
      *
      * @param {string} organizationNumber Organization number.
      * @param {NotificationAddressRequest} request Notification address request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -127,7 +127,7 @@ class OrganizationsClient {
      *
      * @param {string} organizationNumber Organization number.
      * @param {number} notificationAddressId Notification address identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -168,7 +168,7 @@ class OrganizationsClient {
      * @param {string} organizationNumber Organization number.
      * @param {number} notificationAddressId Notification address identifier.
      * @param {NotificationAddressRequest} request Notification address request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -210,7 +210,7 @@ class OrganizationsClient {
      *
      * @param {string} organizationNumber Organization number.
      * @param {number} notificationAddressId Notification address identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

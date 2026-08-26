@@ -1,9 +1,25 @@
+import { fail } from "k6";
 import http from "k6/http";
 
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../common-imports.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
+/**
+ * One end user a browser test signs in as.
+ *
+ * The ids are per environment, so the tests keep their own lists keyed on the
+ * environment they run in.
+ *
+ * @typedef {object} ArbeidsflateEndUser
+ * @property {string} pid Person identifier.
+ * @property {string} label Label the metrics are tagged with.
+ * @property {string} userId Altinn user id.
+ * @property {string} partyId Altinn party id.
+ * @property {string} partyUuid Party UUID.
+ */
+
+/** @type {PersonalTokenGenerator|undefined} */
 let tokenGenerator = undefined;
 
 export const afUrl = (() => {
@@ -22,12 +38,12 @@ export const afUrl = (() => {
 /**
  * Function to get a cookie object for the given PID.
  *
- * @param user TODO: description
- * @returns {{name: string, value: string, domain: string, path: string, httpOnly: boolean, secure: boolean, sameSite: string, url: string}} - The cookie for the arbeidsflate session.
- * *
+ * @param {ArbeidsflateEndUser} user - The end user to sign in as.
+ * @returns {import("k6/browser").Cookie} - The cookie for the arbeidsflate session.
  */
 export function getCookie(user) {
     const token = getToken(user.pid, user.userId, user.partyId, user.partyUuid);
+    /** @type {import("k6/browser").Cookie} */
     const cookie = {
         name: "arbeidsflate",
         value: getSessionId(token),
@@ -38,7 +54,9 @@ export function getCookie(user) {
         path: "/",
         httpOnly: true,
         secure: false,
-        sameSite: "",
+        // Lax is what k6 falls back to when the cookie does not say, which is
+        // what the empty string this used to send amounted to.
+        sameSite: "Lax",
         url: "",
     };
     return cookie;
@@ -48,9 +66,9 @@ export function getCookie(user) {
  * Function to get a personal token for a given PID.
  *
  * @param {string} pid - The personal identification number (PID) of the user.
- * @param userId TODO: description
- * @param partyId TODO: description
- * @param partyUuid TODO: description
+ * @param {string} userId - The Altinn user id of the user.
+ * @param {string} partyId - The Altinn party id of the user.
+ * @param {string} partyUuid - The party UUID of the user.
  * @returns {string} - The generated personal token.
  **/
 function getToken(pid, userId, partyId, partyUuid) {
@@ -77,7 +95,7 @@ function getToken(pid, userId, partyId, partyUuid) {
  * Function to initialize a session with the given token.
  *
  * @param {string} token - The personal token to initialize the session.
- * @returns sessionId
+ * @returns {string} The session id to put in the arbeidsflate cookie.
  */
 function getSessionId(token) {
     const url = new URL(`${afUrl}/api/init-session`);
@@ -93,8 +111,9 @@ function getSessionId(token) {
     };
     const resp = http.post(url.toString(), body, params);
     if (resp.status !== 200) {
-        console.error(resp.status_text);
-        return null; // Handle error appropriately
+        // A cookie without a session id opens an anonymous page, which fails
+        // later on as something that reads like an unrelated problem.
+        fail(`cannot start an arbeidsflate session: init-session returned ${resp.status} ${resp.status_text}`);
     }
     const sessionId = /** @type {{cookie: string}} */ (resp.json()).cookie.split("=")[1]; // Assuming the session ID is the first part of the response body
     return sessionId;

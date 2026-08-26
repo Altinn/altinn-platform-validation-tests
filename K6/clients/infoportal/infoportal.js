@@ -39,7 +39,7 @@ class InfoPortalApiClient {
     /**
      * Get authorized parties for the user
      *
-     * @param {{[key: string]: string}} labels - k6 check tags
+     * @param {{[key: string]: string}|null} [labels] - k6 check tags
      * @returns http.RefinedResponse<"text">
      */
     GetAuthorizedParties(labels = null) {
@@ -54,7 +54,7 @@ class InfoPortalApiClient {
     /**
      * Get favorites for the user
      *
-     * @param {{[key: string]: string}} labels - k6 check tags
+     * @param {{[key: string]: string}|null} [labels] - k6 check tags
      * @returns http.RefinedResponse<"text">
      */
     GetFavorites(labels = null) {
@@ -68,7 +68,7 @@ class InfoPortalApiClient {
     /**
      * Get current user info
      *
-     * @param {{[key: string]: string}} labels - k6 check tags
+     * @param {{[key: string]: string}|null} [labels] - k6 check tags
      * @returns http.RefinedResponse<"text">
      */
     GetCurrent(labels = null) {

@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {OrganizationsClient} organizationsClient Client for the Organizations API.
  * @param {string} organizationNumber Organization number.
  * @param {number} notificationAddressId Notification address identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} Notification address.
  */
 export function GetNotificationAddress(

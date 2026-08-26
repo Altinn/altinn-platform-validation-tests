@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {number} notificationAddressId Notification address id.
  * @param {NotificationAddressModel|null} [body] The new notification address
  * values. Use {@link NotificationAddressModelBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} The updated notification
  * address.
  */
