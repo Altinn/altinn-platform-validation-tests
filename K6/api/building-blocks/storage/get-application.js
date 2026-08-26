@@ -10,7 +10,7 @@ import { withRetries } from "../common/retry.js";
  * @param {ApplicationsClient} applicationsClient Applications API client.
  * @param {string} org Organization identifier.
  * @param {string} app Application identifier.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Application|null} Parsed response body, or null when the call failed.
  */
 export function GetApplication(

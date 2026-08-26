@@ -11,6 +11,9 @@ const label = { step: "getAuthorizedPartiesForUserDPWithFilter" };
 
 export const options = getOptions([label]);
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
 
     const [authorizedPartiesClient] = getClients();

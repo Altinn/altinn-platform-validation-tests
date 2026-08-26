@@ -2,10 +2,10 @@ import { EmailContentType, InstantEmailContentExt, InstantEmailDetailsExt, Insta
 
 class ShortMessageContentBuilder {
     constructor() {
-        this.request = /** @type {ShortMessageContentExt} */ ({
+        this.request = /** @type {ShortMessageContentExt} */ (/** @type {unknown} */ ({
             sender: null,
             body: null,
-        });
+        }));
     }
 
     /**
@@ -42,11 +42,11 @@ class ShortMessageContentBuilder {
 
 class ShortMessageDeliveryDetailsBuilder {
     constructor() {
-        this.request = /** @type {ShortMessageDeliveryDetailsExt} */ ({
+        this.request = /** @type {ShortMessageDeliveryDetailsExt} */ (/** @type {unknown} */ ({
             phoneNumber: null,
             timeToLiveInSeconds: null,
             smsSettings: null,
-        });
+        }));
     }
 
     /**
@@ -125,11 +125,11 @@ class ShortMessageDeliveryDetailsBuilder {
  */
 class InstantSmsNotificationOrderRequestBuilder {
     constructor() {
-        this.request = /** @type {InstantSmsNotificationOrderRequestExt} */ ({
+        this.request = /** @type {InstantSmsNotificationOrderRequestExt} */ (/** @type {unknown} */ ({
             idempotencyId: null,
             sendersReference: null,
             recipientSms: null,
-        });
+        }));
     }
 
     /**
@@ -184,12 +184,12 @@ class InstantSmsNotificationOrderRequestBuilder {
 
 class InstantEmailContentBuilder {
     constructor() {
-        this.request = /** @type {InstantEmailContentExt} */ ({
+        this.request = /** @type {InstantEmailContentExt} */ (/** @type {unknown} */ ({
             subject: null,
             body: null,
             senderEmailAddress: null,
             contentType: null,
-        });
+        }));
     }
 
     /**
@@ -250,10 +250,10 @@ class InstantEmailContentBuilder {
 
 class InstantEmailDetailsBuilder {
     constructor() {
-        this.request = /** @type {InstantEmailDetailsExt} */ ({
+        this.request = /** @type {InstantEmailDetailsExt} */ (/** @type {unknown} */ ({
             emailAddress: null,
             emailSettings: null,
-        });
+        }));
     }
 
     /**
@@ -312,11 +312,11 @@ class InstantEmailDetailsBuilder {
  */
 class InstantEmailNotificationOrderRequestBuilder {
     constructor() {
-        this.request = /** @type {InstantEmailNotificationOrderRequestExt} */ ({
+        this.request = /** @type {InstantEmailNotificationOrderRequestExt} */ (/** @type {unknown} */ ({
             idempotencyId: null,
             sendersReference: null,
             recipientEmail: null,
-        });
+        }));
     }
 
     /**

@@ -2,6 +2,7 @@
 // The labels include the approximate number of authorized parties for each user.
 // The labels are prefixed with a letter to ensure consistent ordering in test reports.
 
+/** @type {{[environment: string]: {pid: string, label: string}[]}} */
 const endUsersByEnvironment = {
     yt01: [
         { pid: "14022216091", label: "a_14022216091_80k" },

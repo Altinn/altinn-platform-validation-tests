@@ -49,7 +49,7 @@ class LookupClient {
      * Looks up a party by organisation number.
      *
      * @param {string} orgNummer Organisation number.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetOrganization(orgNummer, labels = null) {
@@ -83,7 +83,7 @@ class LookupClient {
      * Looks up a party by party UUID.
      *
      * @param {string} uuid Party UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetParty(uuid, labels = null) {
@@ -117,7 +117,7 @@ class LookupClient {
      * Looks up a user profile by user UUID.
      *
      * @param {string} uuid User UUID.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUser(uuid, labels = null) {
@@ -150,7 +150,7 @@ class LookupClient {
     /**
      * Gets the party of the authenticated user.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartyForAuthenticatedUser(labels = null) {

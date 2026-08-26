@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetInstanceDelegationCheckQuery|null} [queryParams]
  * Query parameters. Use {@link GetInstanceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {InstanceCheckDto|null} Instance delegation check.
  */

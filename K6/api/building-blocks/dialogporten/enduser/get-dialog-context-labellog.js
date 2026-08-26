@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get context label log for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserEndUserContextQueriesSearchLabelAssignmentLog_LabelAssignmentLog[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetDialogContextLabelLog(

@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {CorrespondenceQuery|null} [queryParams]
  * Query parameters for filtering correspondences.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<string>} Correspondence ids. Empty array when request fails.
  */
@@ -55,7 +55,8 @@ export function GetCorrespondences(
                 if (
                     !Array.isArray(body?.ids) ||
                     !body.ids.every(
-                        (id) => typeof id === "string" && id.length > 0,
+                        (/** @type {unknown} */ id) =>
+                            typeof id === "string" && id.length > 0,
                     )
                 ) {
                     return false;

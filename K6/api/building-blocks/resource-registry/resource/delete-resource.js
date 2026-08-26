@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the operation succeeded.
  */
 export function ResourceDeleteResource(
@@ -24,10 +24,18 @@ export function ResourceDeleteResource(
         "ResourceDeleteResource",
     );
 
-    return check(res, {
-        "ResourceDeleteResource - status code is 200": (r) =>
-            r.status === 200,
-        "ResourceDeleteResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
+    const succeed = check(res, {
+        "ResourceDeleteResource - status code is 204": (r) =>
+            r.status === 204,
+        "ResourceDeleteResource - status text is 204 No Content": (r) =>
+            r.status_text === "204 No Content",
     });
+
+    if (!succeed) {
+        console.log(res.status);
+        console.log(res.body);
+        return false;
+    }
+
+    return true;
 }

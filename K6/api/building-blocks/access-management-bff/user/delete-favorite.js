@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UserClient} userClient Client for the user endpoints.
  * @param {string} partyUuid Party UUID of the actor.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the actor was removed from the favourites.
  */
 export function DeleteFavorite(userClient, partyUuid, labels = null) {

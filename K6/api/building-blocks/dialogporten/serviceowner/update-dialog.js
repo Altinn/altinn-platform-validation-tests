@@ -12,8 +12,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
  * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerDialogsCommandsUpdate_Dialog} request - the dialog to store
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateDialog(
@@ -53,8 +53,8 @@ export function UpdateDialog(
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
  * @param {string} dialogId - id of the dialog
  * @param {JsonPatchOperations_Operation[]} operations - the patch operations to apply
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function PatchDialog(
@@ -93,8 +93,8 @@ export function PatchDialog(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
  * @param {string} dialogId - id of the dialog
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function DeleteDialog(

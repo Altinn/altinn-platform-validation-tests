@@ -11,8 +11,8 @@ import { withRetries } from "../../common/retry.js";
  * Function to get all dialogs for a party
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param variables TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {DialogSearchVariables} variables - the search variables, built using the DialogSearchVariablesBuilder class
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
@@ -46,7 +46,7 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {DialogSearchVariables} variables - search variables to use in the query
  * @param {string} dialogId TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, dialogId, labels = null) {
@@ -65,7 +65,9 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
             if (res_body === null || res_body === undefined) {
                 return false;
             }
-            const dialogIds = res_body.data.searchDialogs.items.map(dialog => dialog.id);
+            const dialogIds = res_body.data.searchDialogs.items.map(
+                (/** @type {{id: string}} */ dialog) => dialog.id,
+            );
             if (!dialogIds.includes(dialogId)) {
                 // console.log(`DialogId ${dialogId} not found in response`);
                 // suppressing this failure as the dialogId might not be present in the response if it belongs to another party,
@@ -91,7 +93,7 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built with {@link DialogByIdVariablesBuilder}
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetDialogById(graphqlClient, variables, labels = null) {
@@ -124,7 +126,7 @@ export function GetDialogById(graphqlClient, variables, labels = null) {
  *
  * @param {GraphqlClient} graphqlClient TODO: description
  * @param {DialogByIdVariables} variables - the variables naming the dialog to get, built with {@link DialogByIdVariablesBuilder}
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetAndVerifyDialogById(graphqlClient, variables, labels = null) {
@@ -169,7 +171,7 @@ export function GetAndVerifyDialogById(graphqlClient, variables, labels = null) 
  * Function to get parties for a user
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetParties(graphqlClient, labels = null) {
@@ -201,7 +203,7 @@ export function GetParties(graphqlClient, labels = null) {
  * Function to get filtered service resources for a user
  *
  * @param {GraphqlClient} graphqlClient TODO: description
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {any} Parsed GraphQL response, or null when the call failed.
  */
 export function GetFilterServiceResources(graphqlClient, labels = null) {

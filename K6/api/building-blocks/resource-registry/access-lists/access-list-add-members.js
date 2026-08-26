@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {{data:Array<PartyUrn>}} request Members payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} Access list members.
  */
 export function AccessListAddMembers(

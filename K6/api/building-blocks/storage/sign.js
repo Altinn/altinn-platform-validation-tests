@@ -11,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {SignRequest} request Signature request.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the call succeeded.
  */
 export function SignInstance(

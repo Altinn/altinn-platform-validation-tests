@@ -14,7 +14,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link CreateAccessPackageQueryBuilder}.
  * @param {PersonInput|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {AssignmentPackageDto|null} Created access package assignment.
  */

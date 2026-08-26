@@ -43,7 +43,7 @@ class DelegationExportClient {
      *
      * @param {GetDelegationExportQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetDelegationExportQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDelegationExport(query = null, labels = null) {

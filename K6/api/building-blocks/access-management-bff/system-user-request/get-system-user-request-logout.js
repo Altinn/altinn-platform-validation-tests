@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserRequestClient} systemUserRequestClient Client for the
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */

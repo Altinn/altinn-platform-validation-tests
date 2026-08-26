@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ConsentClient} consentClient Client for the consent endpoints.
  * @param {string} party Party UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The active consents. The API does not publish a
  * schema for this response.
  */

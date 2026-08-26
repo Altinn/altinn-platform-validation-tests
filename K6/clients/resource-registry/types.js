@@ -221,7 +221,10 @@
  */
 
 /**
- * @typedef {0|1|2|4|8|16|32|64|128} ResourceType
+ * Serialized as a string by the registry, and the values live in
+ * resource.constants.js.
+ *
+ * @typedef {"Default"|"Systemresource"|"MaskinportenSchema"|"Altinn2Service"|"AltinnApp"|"GenericAccessResource"|"BrokerService"|"CorrespondenceService"|"Consent"|"MigratedApp"} ResourceType
  */
 
 /**

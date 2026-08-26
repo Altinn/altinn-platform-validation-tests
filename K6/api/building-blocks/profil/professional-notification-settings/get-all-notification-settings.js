@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ProfessionalNotificationSettingsClient} professionalNotificationSettingsClient
  * Client for the Professional Notification Settings API.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<NotificationSettingsResponse>|null} Parsed response body, or null when the call failed.
  */

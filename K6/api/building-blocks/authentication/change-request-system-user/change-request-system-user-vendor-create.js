@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string|null} [systemUserId] System user identifier.
  * @param {number|null} [expectedStatus] Status the caller expects. Pass 201 for a new
  * change request and 200 when reusing a correlation id, and leave it out to accept either.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponse|null} Change request response.
  */
 export function ChangeRequestSystemUserVendorCreate(

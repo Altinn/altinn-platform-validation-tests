@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link UpdateInstanceRightsQueryBuilder}.
  * @param {RightKeyListDto|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True if update succeeded.
  */

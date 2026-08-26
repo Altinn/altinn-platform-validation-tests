@@ -68,7 +68,7 @@ let tokenGenerator = undefined;
  * @returns {[ConsentClient, PersonalTokenGenerator]} The client, and the generator whose user is swapped per iteration.
  */
 export function getClients() {
-    if (consentClient === undefined) {
+    if (consentClient === undefined || tokenGenerator === undefined) {
         tokenGenerator = new PersonalTokenGenerator(
             new PersonalTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)

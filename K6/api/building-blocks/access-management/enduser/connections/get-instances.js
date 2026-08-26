@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetInstancesQuery|null} [queryParams]
  * Query parameters. Use {@link GetInstancesQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<InstancePermissionDto>|null} Instance permissions.
  */

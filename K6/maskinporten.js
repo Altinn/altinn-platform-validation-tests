@@ -38,6 +38,17 @@ function utf8Bytes(value) {
     return encoding.b64decode(encoding.b64encode(value));
 }
 
+/**
+ * Reads the message off a caught value, which the runtime does not guarantee
+ * to be an `Error`.
+ *
+ * @param {unknown} error - The caught value.
+ * @returns {string} The error message, or the value rendered as a string.
+ */
+function errorMessage(error) {
+    return error instanceof Error ? error.message : String(error);
+}
+
 const TAGS = {
     getToken: {
         token_generator: "maskinporten-token-generator",
@@ -89,6 +100,7 @@ export class MaskinportenAccessTokenGenerator {
     #maskinportenClientId;
     #clientPem;
     #cache = new Map();
+    /** @type {CryptoKey|null} */
     #signingKey = null;
 
     /**
@@ -166,7 +178,9 @@ export class MaskinportenAccessTokenGenerator {
      * @returns {Promise<string>} A Maskinporten access token.
      */
     async ensureToken() {
-        const scopes = this.tokenGeneratorOptions.scopes;
+        // The builder defaults this, but the typedef leaves it optional, and an
+        // empty scope string is what the token endpoint would reject anyway.
+        const scopes = this.tokenGeneratorOptions.scopes ?? "";
         const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
         const cached = this.#cache.get(cacheKey);
 
@@ -242,7 +256,7 @@ export class MaskinportenAccessTokenGenerator {
             return JSON.parse(String(response.body)).access_token;
         } catch (e) {
             throw new Error(
-                `Unable to parse Maskinporten token: ${e.message}`,
+                `Unable to parse Maskinporten token: ${errorMessage(e)}`,
                 { cause: e },
             );
         }
@@ -311,7 +325,7 @@ export class MaskinportenAccessTokenGenerator {
             );
         } catch (e) {
             throw new Error(
-                `Unable to import MASKINPORTEN_CLIENT_PEM as a PKCS#8 ${WEBCRYPTO_ALGORITHM.name} key: ${e.message}`,
+                `Unable to import MASKINPORTEN_CLIENT_PEM as a PKCS#8 ${WEBCRYPTO_ALGORITHM.name} key: ${errorMessage(e)}`,
                 { cause: e },
             );
         }
@@ -347,7 +361,7 @@ export class MaskinportenAccessTokenGenerator {
             expirationTimestamp = payload.exp * 1000;
         } catch (e) {
             throw new Error(
-                `Failed to decode JWT payload for expiration: ${e.message}`,
+                `Failed to decode JWT payload for expiration: ${errorMessage(e)}`,
                 { cause: e },
             );
         }

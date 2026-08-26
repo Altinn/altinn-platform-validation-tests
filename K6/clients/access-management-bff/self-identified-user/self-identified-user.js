@@ -50,7 +50,7 @@ class SelfIdentifiedUserClient {
      *
      * @param {Altinn2AccountRequest|null} [body] The account to create. Prefer
      * using {@link Altinn2AccountRequestBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAltinn2Account(body = null, labels = null) {
@@ -90,7 +90,7 @@ class SelfIdentifiedUserClient {
      *
      * @param {Altinn2ForgotPasswordRequest|null} [body] The account to recover the
      * password for. Prefer using {@link Altinn2ForgotPasswordRequestBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SendForgotPassword(body = null, labels = null) {
@@ -130,7 +130,7 @@ class SelfIdentifiedUserClient {
      *
      * @param {Altinn2AccountFromTokenRequest|null} [body] The token to create the
      * account from. Prefer using {@link Altinn2AccountFromTokenRequestBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAltinn2AccountFromToken(body = null, labels = null) {

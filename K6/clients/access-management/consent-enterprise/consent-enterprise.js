@@ -46,7 +46,7 @@ class EnterpriseClient {
      * Requires an organization token with the `altinn:consentrequests.write` scope.
      *
      * @param {ConsentRequestDto} request Consent request payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -84,7 +84,7 @@ class EnterpriseClient {
      * Requires an organization token with the `altinn:consentrequests.read` scope.
      *
      * @param {string} consentRequestId Consent request UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -122,7 +122,7 @@ class EnterpriseClient {
      *
      * @param {ConsentRequestEventsQuery|null} [query]
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -132,10 +132,9 @@ class EnterpriseClient {
         let url = `${this.FULL_PATH}/consentrequests/events`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;
