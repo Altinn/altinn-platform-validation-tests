@@ -1,5 +1,9 @@
 import crypto from "k6/crypto";
 
+/**
+ * @param {number} b A single byte.
+ * @returns {string} The byte as two hex digits.
+ */
 function hex2(b) {
     return b.toString(16).padStart(2, "0");
 }
@@ -409,7 +413,12 @@ export function getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceR
  * @returns json object to be used as body when creating a transmission via the API.
  */
 export function getTransmissionBody(relatedTransmissionId = 0) {
+    // relatedTransmissionId is declared here rather than added afterwards, so the
+    // literal carries the property. JSON.stringify leaves it out while it is
+    // undefined, which is what an unrelated transmission needs.
     let transmission = {
+        /** @type {string|number|undefined} */
+        "relatedTransmissionId": undefined,
         "id": uuidv7(),
         "createdAt": new Date().toISOString(),
         "authorizationAttribute": "element1",

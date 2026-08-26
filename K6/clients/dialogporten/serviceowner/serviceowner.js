@@ -95,10 +95,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -138,10 +138,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         let requestBody = null;
@@ -182,10 +182,10 @@ class ServiceOwnerApiClient {
 
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         const requestBody = getTransmissionBody();
@@ -223,10 +223,10 @@ class ServiceOwnerApiClient {
 
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         const requestBody = getActivityBody();
@@ -240,10 +240,10 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearch_Dialog
      *
-     * @param queryParams - object containing query parameters for the request
-     * @returns http.RefinedResponse<"text">
+     * @param {{[x: string]: string}} queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-
     GetDialogs(
         queryParams,
         labels = null,
@@ -265,10 +265,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -302,10 +302,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -339,10 +339,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -378,10 +378,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -415,10 +415,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -452,10 +452,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -491,10 +491,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -528,10 +528,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -567,10 +567,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -582,9 +582,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContext
      *
-     * @param queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}} queryParams - object containing query parameters for the request
      * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse<"text">
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetEndUserContext(
         queryParams,
@@ -607,10 +607,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -623,9 +623,9 @@ class ServiceOwnerApiClient {
     /**
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/Serviceowner/V1ServiceOwnerDialogLookupQueriesGet_DialogLookup
      *
-     * @param queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}} queryParams - object containing query parameters for the request
      * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
-     * @returns http.RefinedResponse<"text">
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDialogLookup(
         queryParams,
@@ -648,10 +648,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -686,10 +686,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -728,10 +728,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -769,9 +769,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -811,10 +811,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -852,9 +852,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -892,9 +892,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -932,9 +932,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -973,10 +973,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -1015,9 +1015,9 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -1061,10 +1061,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -1106,10 +1106,10 @@ class ServiceOwnerApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {

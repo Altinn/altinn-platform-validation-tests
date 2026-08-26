@@ -1,6 +1,7 @@
 import http from "k6/http";
 
 import { uuidv4 } from "../../../common-imports.js";
+import { DialogSearchParams } from "./dialogs-search-params-builder.js";
 import { V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "./types.js";
 
 const TAGS = {
@@ -49,10 +50,10 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/SearchDialogs
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/End/V1ServiceOwnerDialogsQueriesSearch_Dialog
      *
-     * @param DialogSearchParamsBuilder - object containing query parameters for the request
-     * @returns http.RefinedResponse<"text">
+     * @param {DialogSearchParams} queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-
     GetDialogs(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
@@ -64,7 +65,7 @@ class EnduserApiClient {
                     url.searchParams.append(key, item);
                 }
             } else {
-                url.searchParams.append(key, value);
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -78,10 +79,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 Accept: "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -113,10 +114,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 Accept: "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -151,10 +152,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -191,10 +192,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -229,10 +230,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -269,10 +270,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -307,10 +308,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -347,10 +348,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -384,10 +385,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -420,10 +421,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -456,10 +457,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -496,10 +497,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -533,10 +534,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -573,10 +574,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
