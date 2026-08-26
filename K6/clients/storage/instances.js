@@ -68,7 +68,7 @@ class InstancesClient {
      *
      * GET /instances
      *
-     * @param {{[key: string]: *}} query Query parameters, e.g. org, appId, process.currentTask, instanceOwner.partyId, continuationToken, size, order and includeDataElements.
+     * @param {{[key: string]: *}|null} [query] Query parameters, e.g. org, appId, process.currentTask, instanceOwner.partyId, continuationToken, size, order and includeDataElements.
      * @param {string|null} [instanceOwnerIdentifier] Value for the X-Ai-InstanceOwnerIdentifier header.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
@@ -99,10 +99,10 @@ class InstancesClient {
             action: TAGS.QueryInstances.action,
         };
 
-        const requestHeaders = {
+        const requestHeaders = /** @type {{[key: string]: string}} */ ({
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
-        };
+        });
 
         if (instanceOwnerIdentifier !== null) {
             requestHeaders["X-Ai-InstanceOwnerIdentifier"] = instanceOwnerIdentifier;

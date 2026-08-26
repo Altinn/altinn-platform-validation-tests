@@ -83,14 +83,14 @@ class CreateRequestSystemUserBuilder {
  */
 class CreateAgentRequestSystemUserBuilder {
     constructor() {
-        /** @type {CreateAgentRequestSystemUser} */
-        this.request = {
+        // The model is filled in by the setters, so the required fields start out null.
+        this.request = /** @type {CreateAgentRequestSystemUser} */ (/** @type {unknown} */ ({
             externalRef: null,
             systemId: null,
             partyOrgNo: null,
             accessPackages: [],
             redirectUrl: null,
-        };
+        }));
     }
 
     /**

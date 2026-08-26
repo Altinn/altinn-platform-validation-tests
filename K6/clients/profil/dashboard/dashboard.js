@@ -7,6 +7,9 @@ const TAGS = {
     GetNotificationAddressesByEmail: {
         action: "get-notification-addresses-by-email",
     },
+    GetNotificationAddressesByPhoneNumber: {
+        action: "get-notification-addresses-by-phone-number",
+    },
 };
 
 class DashboardClient {

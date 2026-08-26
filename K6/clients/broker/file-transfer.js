@@ -202,7 +202,9 @@ class FileTransferClient {
     InitializeAndUploadFileTransfer(metadata, file, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const body = { FileTransfer: file };
+        // The metadata is flattened onto the multipart body by name, so the body
+        // is read through an index signature rather than a fixed shape.
+        const body = /** @type {http.StructuredRequestBody} */ ({ FileTransfer: file });
 
         for (const [key, value] of Object.entries(metadata)) {
             if (value === undefined || value === null) {

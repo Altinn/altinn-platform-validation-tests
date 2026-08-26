@@ -55,8 +55,10 @@ class AuthorizedPartiesClient {
             `${this.FULL_PATH}/resourceowner/authorizedparties`
         );
 
-        for (const key in queryParams) {
-            url.searchParams.append(key, queryParams[key]);
+        for (const [key, value] of Object.entries(queryParams)) {
+            // The query takes booleans as well as strings, and they go on the URL
+            // as their JSON spelling either way.
+            url.searchParams.append(key, String(value));
         }
 
         const tags = {

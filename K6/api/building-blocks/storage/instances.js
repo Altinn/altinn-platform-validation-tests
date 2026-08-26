@@ -8,7 +8,7 @@ import { withRetries } from "../common/retry.js";
  * Queries instances across applications.
  *
  * @param {InstancesClient} instancesClient Client for the API.
- * @param {{[key: string]: *}} query Optional query parameters.
+ * @param {{[key: string]: *}|null} [query] Optional query parameters.
  * @param {string|null} [instanceOwnerIdentifier] Value for the X-Ai-InstanceOwnerIdentifier header.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {InstanceQueryResponse|null} Parsed response body, or null when the call failed.

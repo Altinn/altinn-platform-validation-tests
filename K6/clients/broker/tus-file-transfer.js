@@ -129,10 +129,10 @@ class TusFileTransferClient {
             };
         }
 
-        const headers = {
+        const headers = /** @type {{[key: string]: string}} */ ({
             Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
             "Tus-Resumable": TUS_VERSION,
-        };
+        });
 
         if (uploadLength !== null) {
             headers["Upload-Length"] = `${uploadLength}`;

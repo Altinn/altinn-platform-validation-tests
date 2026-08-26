@@ -12,15 +12,18 @@ import { ChannelSchema, ComposedEmailRequestExt, ComposedEmailSendingOptionsExt,
  * @returns {T} The payload without the properties that are still null.
  */
 function withoutUnsetProperties(request) {
-    const payload = /** @type {T} */ ({});
+    // The properties are copied by name, so both sides are read through an index
+    // signature. The caller gets the T the request came in as.
+    const state = /** @type {{[key: string]: unknown}} */ (request);
+    const payload = /** @type {{[key: string]: unknown}} */ ({});
 
-    for (const key of Object.keys(request)) {
-        if (request[key] !== null) {
-            payload[key] = request[key];
+    for (const key of Object.keys(state)) {
+        if (state[key] !== null) {
+            payload[key] = state[key];
         }
     }
 
-    return payload;
+    return /** @type {T} */ (payload);
 }
 
 class NotificationOrderChainRequestExtBuilder {
