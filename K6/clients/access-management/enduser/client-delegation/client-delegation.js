@@ -339,7 +339,7 @@ class ClientDelegationClient {
     /**
      * Gets the clients of a party.
      *
-     * @param {ClientsQuery} query
+     * @param {ClientsQuery|null} query
      * Query parameters. Prefer using {@link ClientsQueryBuilder}.
      * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
@@ -450,7 +450,7 @@ class ClientDelegationClient {
     /**
      * Gets the agents of a party.
      *
-     * @param {AgentsQuery} query
+     * @param {AgentsQuery|null} query
      * Query parameters. Prefer using {@link AgentsQueryBuilder}.
      * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.

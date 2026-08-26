@@ -6,13 +6,14 @@ import { RequestSystemResponse } from "../../../clients/authentication/types.js"
  * Checks that a created request echoes what it was asked for and carries the fields
  * the vendor needs to take the customer through approval.
  *
- * @param {RequestSystemResponse} request - The created request.
+ * @param {RequestSystemResponse|null} request - The created request.
  * @param {{systemId: string, partyOrgNo: string, externalRef: string}} expected - What the request was created with.
  * @returns {boolean} True if the request matches, false otherwise.
  */
 function CheckRequestCreated(request, expected) {
     const required = ["id", "status", "confirmUrl"];
-    const missing = required.filter((field) => request?.[field] === undefined || request?.[field] === null);
+    const fields = /** @type {{[field: string]: unknown}} */ (request ?? {});
+    const missing = required.filter((field) => fields[field] === undefined || fields[field] === null);
 
     const success = check(request, {
         "CheckRequestCreated - Request echoes the system, party and external ref": (created) =>
@@ -37,7 +38,7 @@ function CheckRequestCreated(request, expected) {
 /**
  * Checks that a request has the expected status.
  *
- * @param {RequestSystemResponse} request - The request to check.
+ * @param {RequestSystemResponse|null} request - The request to check.
  * @param {string} expectedStatus - The status the request is expected to have.
  * @returns {boolean} True if the status matches, false otherwise.
  */

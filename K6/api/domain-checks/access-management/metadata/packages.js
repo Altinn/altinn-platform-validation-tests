@@ -3,7 +3,7 @@ import { check } from "k6";
 import { PackageDto } from "../../../../clients/access-management/metadata/roles/roles.types.js";
 
 /**
- * @param {PackageDto[]} packages - Array of packages to search.
+ * @param {PackageDto[]|null} packages - Array of packages to search.
  * @param {string} id - The package id to look for.
  * @returns {PackageDto|undefined} - The package with the specified id, or undefined if not found.
  */
@@ -12,7 +12,7 @@ function FindPackage(packages, id) {
 }
 
 /**
- * @param {PackageDto[]} packages - Array of packages to search.
+ * @param {PackageDto[]|null} packages - Array of packages to search.
  * @param {string} id - The package id to look for.
  * @returns {boolean} True if a package with the given id exists in the array.
  */
@@ -30,7 +30,7 @@ function CheckPackageExists(packages, id) {
 }
 
 /**
- * @param {PackageDto} pkg - The package to check.
+ * @param {PackageDto|null} pkg - The package to check.
  * @param {string} expected - Expected id.
  * @returns {boolean} True if the package has the expected id.
  */
@@ -47,7 +47,7 @@ function CheckPackageId(pkg, expected) {
 }
 
 /**
- * @param {PackageDto} pkg - The package to check.
+ * @param {PackageDto|null} pkg - The package to check.
  * @param {string} expected - Expected name.
  * @returns {boolean} True if the package has the expected name.
  */
@@ -64,7 +64,7 @@ function CheckPackageName(pkg, expected) {
 }
 
 /**
- * @param {PackageDto} pkg - The package to check.
+ * @param {PackageDto|null} pkg - The package to check.
  * @param {string} expected - Expected URN.
  * @returns {boolean} True if the package has the expected URN.
  */
@@ -81,7 +81,7 @@ function CheckPackageUrn(pkg, expected) {
 }
 
 /**
- * @param {PackageDto} pkg - The package to check.
+ * @param {PackageDto|null} pkg - The package to check.
  * @param {string} expected - Expected area name.
  * @returns {boolean} True if the package has the expected area name.
  */
@@ -98,7 +98,7 @@ function CheckPackageAreaName(pkg, expected) {
 }
 
 /**
- * @param {PackageDto} pkg - The package to check.
+ * @param {PackageDto|null} pkg - The package to check.
  * @param {string} expected - Expected area URN.
  * @returns {boolean} True if the package has the expected area URN.
  */
@@ -115,7 +115,7 @@ function CheckPackageAreaUrn(pkg, expected) {
 }
 
 /**
- * @param {PackageDto} pkg - The package to check.
+ * @param {PackageDto|null} pkg - The package to check.
  * @param {string} expected - Expected type name.
  * @returns {boolean} True if the package has the expected type name.
  */
@@ -132,7 +132,7 @@ function CheckPackageTypeName(pkg, expected) {
 }
 
 /**
- * @param {PackageDto[]} packages - Array of packages to check.
+ * @param {PackageDto[]|null} packages - Array of packages to check.
  * @param {number} expected - Expected number of packages.
  * @returns {boolean} True if the array contains the expected number of packages.
  */

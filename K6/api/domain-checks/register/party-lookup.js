@@ -36,7 +36,7 @@ function CheckSinglePartyFound(parties, lookedUpBy) {
  * lookup is case insensitive, so an uppercased query has to come back with the
  * original casing.
  *
- * @param {Party} party - The party the lookup returned.
+ * @param {Party|null} party - The party the lookup returned.
  * @param {string} expectedUsername - The username from the test data.
  * @returns {boolean} True if the party matches, false otherwise.
  */
@@ -67,7 +67,7 @@ function CheckPartyMatchesUsername(party, expectedUsername) {
  * email user created in A3 has none, and look-up-on-username.js covers usernames
  * against a legacy self-identified user anyway.
  *
- * @param {Party} party - The party the lookup returned.
+ * @param {Party|null} party - The party the lookup returned.
  * @param {string} expectedEmail - The email the lookup was keyed on.
  * @returns {boolean} True if the party matches, false otherwise.
  */

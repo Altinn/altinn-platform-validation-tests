@@ -44,7 +44,7 @@ class AuthorizedPartiesClient {
      * Get Authorized Parties.
      *
      * @param {AuthorizedPartiesRequest} request Authorized parties request.
-     * @param {AuthorizedPartiesQuery} queryParams Query parameters.
+     * @param {AuthorizedPartiesQuery|null} queryParams Query parameters.
      * @param {{[key:string]:string}|null} labels Request labels.
      * @returns {http.RefinedResponse<"text">} HTTP response.
      */
@@ -55,10 +55,12 @@ class AuthorizedPartiesClient {
             `${this.FULL_PATH}/resourceowner/authorizedparties`
         );
 
-        for (const [key, value] of Object.entries(queryParams)) {
-            // The query takes booleans as well as strings, and they go on the URL
-            // as their JSON spelling either way.
-            url.searchParams.append(key, String(value));
+        if (queryParams !== null) {
+            for (const [key, value] of Object.entries(queryParams)) {
+                // The query takes booleans as well as strings, and they go on the
+                // URL as their JSON spelling either way.
+                url.searchParams.append(key, String(value));
+            }
         }
 
         const tags = {

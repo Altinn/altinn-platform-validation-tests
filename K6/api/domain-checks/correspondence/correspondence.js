@@ -5,6 +5,11 @@ import {
     InitializeCorrespondencesResponseExt,
 } from "../../../clients/correspondence/correspondence.types.js";
 
+/**
+ * @param {string} recipient A recipient as written in a request, either 11 or 9
+ * digits, the latter optionally prefixed with "0192:".
+ * @returns {string} The recipient as the urn the API echoes back.
+ */
 function NormalizeRecipient(recipient) {
     if (/^\d{11}$/.test(recipient)) {
         return `urn:altinn:person:identifier-no:${recipient}`;
@@ -17,6 +22,12 @@ function NormalizeRecipient(recipient) {
     return recipient;
 }
 
+/**
+ * @template T
+ * @param {T[]} actual The values returned.
+ * @param {T[]} expected The values asked for.
+ * @returns {boolean} True when both hold the same values, in any order.
+ */
 function SameMembers(actual, expected) {
     const actualSorted = [...actual].sort();
     const expectedSorted = [...expected].sort();
@@ -31,7 +42,7 @@ function SameMembers(actual, expected) {
  * Checks the initialized correspondence records returned by a create or upload
  * operation.
  *
- * @param {InitializeCorrespondencesResponseExt} response API response.
+ * @param {InitializeCorrespondencesResponseExt|null} response API response.
  * @param {string[]} expectedRecipients Recipients supplied in the request.
  * @returns {boolean} True if the expected correspondences were returned.
  */
