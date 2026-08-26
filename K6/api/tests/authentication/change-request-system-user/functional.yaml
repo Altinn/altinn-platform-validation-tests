@@ -21,3 +21,10 @@ test_definitions:
       - environment: at23
       - environment: tt02
       - environment: yt01
+
+  - test_file: get-change-requests-by-system-id.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
