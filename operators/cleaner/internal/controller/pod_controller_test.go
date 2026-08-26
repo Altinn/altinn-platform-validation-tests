@@ -79,7 +79,7 @@ var _ = Describe("Pod Controller", func() {
 					Namespace: "default",
 					CreationTimestamp: metav1.Time{
 						Time: time.Now().UTC().Add(
-							-(time.Duration(DeletionThreshold) + 1) * time.Minute,
+							-(DeletionThreshold + time.Minute),
 						),
 					},
 				},
@@ -113,7 +113,7 @@ var _ = Describe("Pod Controller", func() {
 
 	When("the Pod is younger than the deletion threshold", func() {
 		It("should requeue the reconciliation", func() {
-			const minutesUntilDeletion = 10
+			const minutesUntilDeletion = 10 * time.Minute
 
 			pod := &corev1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
@@ -121,8 +121,7 @@ var _ = Describe("Pod Controller", func() {
 					Namespace: "default",
 					CreationTimestamp: metav1.Time{
 						Time: time.Now().UTC().Add(
-							-(time.Duration(DeletionThreshold) -
-								minutesUntilDeletion) * time.Minute,
+							-(DeletionThreshold - minutesUntilDeletion),
 						),
 					},
 				},
@@ -141,10 +140,13 @@ var _ = Describe("Pod Controller", func() {
 
 			// Reconcile adds one minute to the calculated remaining
 			// lifetime before requeueing.
-			Expect(result.RequeueAfter).To(BeNumerically(
-				"==",
-				time.Duration(minutesUntilDeletion+1)*time.Minute,
-			))
+			Expect(result.RequeueAfter).To(
+				BeNumerically(
+					"~",
+					minutesUntilDeletion+time.Minute,
+					time.Second,
+				),
+			)
 
 			var existingPod corev1.Pod
 			Expect(k8sClient.Get(
@@ -166,7 +168,7 @@ var _ = Describe("Pod Controller", func() {
 					Namespace: "default",
 					CreationTimestamp: metav1.Time{
 						Time: time.Now().UTC().Add(
-							-time.Duration(DeletionThreshold) * time.Minute,
+							-DeletionThreshold,
 						),
 					},
 				},

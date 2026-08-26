@@ -35,10 +35,6 @@ type TestRunReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-var (
-	DeletionThreshold = 60
-)
-
 // +kubebuilder:rbac:groups=k6.io,resources=testruns,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=k6.io,resources=testruns/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=k6.io,resources=testruns/finalizers,verbs=update
@@ -63,8 +59,8 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		log.Error(err, "Unable to fetch TestRun", "namespace", req.Namespace, "name", req.Name)
 		return ctrl.Result{}, err
 	} else {
-		minutesSince := int(time.Now().UTC().Sub(testRun.CreationTimestamp.Time).Minutes())
-		if minutesSince >= DeletionThreshold {
+		elapsedTime := time.Since(testRun.CreationTimestamp.Time)
+		if elapsedTime >= DeletionThreshold {
 			log.Info(fmt.Sprintf("Test run %s should be deleted", testRun.Name))
 			if err := r.Delete(ctx, &testRun); err != nil {
 				if apierrors.IsNotFound(err) {
@@ -76,7 +72,7 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		} else {
 			// log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
 			return ctrl.Result{
-				RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
+				RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
 			}, nil
 		}
 	}

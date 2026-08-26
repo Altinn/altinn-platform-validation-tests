@@ -70,15 +70,15 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	deleteReason := ""
 
 	// Delete jobs older than the configured threshold.
-	minutesSince := int(time.Now().UTC().Sub(job.CreationTimestamp.Time).Minutes())
-	if minutesSince >= DeletionThreshold {
+	elapsedTime := time.Since(job.CreationTimestamp.Time)
+
+	if elapsedTime >= DeletionThreshold {
 		shouldDelete = true
 		deleteReason = "exceeded age threshold"
 	}
 
 	// Delete completed jobs ending in -initializer or -starter.
 	// These are created by the k6-operator so they can be deleted faster
-	// I might want to add a small delay, e.g. in case we need to debug the k6 options.
 	cleanupSuffixes := []string{
 		"-initializer",
 		"-starter",
@@ -92,15 +92,14 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 	}
 
-	/*
-		TODO: now + 5 mins for example?
-		now := metav1.Now()
-		if isJobToBeCleaned &&
-			job.Status.CompletionTime != nil &&
-			job.Status.CompletionTime.Before(&now) {
-	*/
-	// A non-nil CompletionTime is what marks the job as finished;
-	if isJobToBeCleaned && job.Status.CompletionTime != nil {
+	now := metav1.Now()
+	minimumTimeForDeletion := metav1.NewTime(
+		now.Add(-SupportingPodsDeletionThreshold),
+	)
+
+	if isJobToBeCleaned &&
+		job.Status.CompletionTime != nil &&
+		job.Status.CompletionTime.Before(&minimumTimeForDeletion) {
 		shouldDelete = true
 		deleteReason = "completed initializer/starter job"
 	}
@@ -126,7 +125,7 @@ func (r *JobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	}
 
 	return ctrl.Result{
-		RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
+		RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
 	}, nil
 }
 

@@ -90,7 +90,7 @@ var _ = Describe("TestRun Controller", func() {
 
 			testRun.CreationTimestamp = metav1.Time{
 				Time: time.Now().UTC().Add(
-					-(time.Duration(DeletionThreshold) + 1) * time.Minute,
+					-(DeletionThreshold + time.Minute),
 				),
 			}
 
@@ -122,6 +122,8 @@ var _ = Describe("TestRun Controller", func() {
 
 	When("the TestRun is younger than the deletion threshold", func() {
 		It("should requeue the reconciliation", func() {
+			const minutesUntilDeletion = 10
+
 			testRun := &k6iov1alpha1.TestRun{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "young-test-run",
@@ -131,7 +133,7 @@ var _ = Describe("TestRun Controller", func() {
 
 			testRun.CreationTimestamp = metav1.Time{
 				Time: time.Now().UTC().Add(
-					-(time.Duration(DeletionThreshold) - 10) * time.Minute,
+					-(DeletionThreshold - time.Duration(minutesUntilDeletion)*time.Minute),
 				),
 			}
 
@@ -145,11 +147,12 @@ var _ = Describe("TestRun Controller", func() {
 			})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(result.RequeueAfter).To(BeNumerically(">", 0))
-			Expect(result.RequeueAfter).To(BeNumerically(
-				"==",
-				11*time.Minute,
-			))
+
+			// The reconciler adds one minute to the calculated
+			// remaining lifetime before requeueing.
+			Expect(result.RequeueAfter).To(
+				BeNumerically("~", time.Duration(minutesUntilDeletion+1)*time.Minute, time.Second),
+			)
 
 			var existingTestRun k6iov1alpha1.TestRun
 			Expect(k8sClient.Get(
@@ -174,7 +177,7 @@ var _ = Describe("TestRun Controller", func() {
 
 			testRun.CreationTimestamp = metav1.Time{
 				Time: time.Now().UTC().Add(
-					-time.Duration(DeletionThreshold) * time.Minute,
+					-DeletionThreshold,
 				),
 			}
 

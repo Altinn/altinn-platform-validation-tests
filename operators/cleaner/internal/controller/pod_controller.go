@@ -59,8 +59,8 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		log.Error(err, "Unable to fetch Pod", "namespace", req.Namespace, "name", req.Name)
 		return ctrl.Result{}, err
 	} else {
-		minutesSince := int(time.Now().UTC().Sub(pod.CreationTimestamp.Time).Minutes())
-		if minutesSince >= DeletionThreshold {
+		elapsedTime := time.Since(pod.CreationTimestamp.Time)
+		if elapsedTime >= DeletionThreshold {
 			log.Info(fmt.Sprintf("Pod %s should be deleted", pod.Name))
 			if err := r.Delete(ctx, &pod); err != nil {
 				if apierrors.IsNotFound(err) {
@@ -72,7 +72,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		} else {
 			// log.Info(fmt.Sprintf("Pod will be deleted in %d minutes", DeletionThreshold-minutesSince))
 			return ctrl.Result{
-				RequeueAfter: time.Duration(DeletionThreshold-minutesSince+1) * time.Minute,
+				RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
 			}, nil
 		}
 	}

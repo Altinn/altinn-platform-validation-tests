@@ -185,6 +185,7 @@ func main() {
 				"access-management-bff": {},
 				"authentication":        {},
 				"authorization":         {},
+				"arbeidsflate":          {},
 				"broker":                {},
 				"core":                  {},
 				"correspondence":        {},
