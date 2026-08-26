@@ -64,7 +64,11 @@ export function AuthorizePost(
     });
 
     if (parsed && expectedDecision !== null) {
-        check(response, {
+        // response is filled in from inside the check callback above, which the
+        // compiler cannot follow, so the type is restated here.
+        const decided = /** @type {XacmlJsonResponseExternal|null} */ (response);
+
+        check(decided, {
             [`AuthorizePost - decision is ${expectedDecision}`]: (b) =>
                 b?.response?.[0]?.decision === expectedDecision,
         });

@@ -62,8 +62,7 @@ export function GetDialogSeenLogs(
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog the seen log entry belongs to
- * param {string} seenLogEntryId - id of the seen log entry to get
- * @param seenLogEntryId TODO: description
+ * @param {string} seenLogEntryId - id of the seen log entry to get
  * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesGetSeenLog_SeenLog|null} Parsed response body, or null when the call failed.
  */

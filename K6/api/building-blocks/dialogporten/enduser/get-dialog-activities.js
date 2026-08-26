@@ -62,8 +62,7 @@ export function GetDialogActivities(
  *
  * @param {EnduserApiClient} enduserApiClient TODO: description
  * @param {string} dialogId - id of the dialog the activity belongs to
- * param {string} activityId - id of the activity to get
- * @param activityId TODO: description
+ * @param {string} activityId - id of the activity to get
  * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1EndUserDialogsQueriesGetActivity_Activity|null} Parsed response body, or null when the call failed.
  */

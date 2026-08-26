@@ -55,7 +55,8 @@ export function GetCorrespondences(
                 if (
                     !Array.isArray(body?.ids) ||
                     !body.ids.every(
-                        (id) => typeof id === "string" && id.length > 0,
+                        (/** @type {unknown} */ id) =>
+                            typeof id === "string" && id.length > 0,
                     )
                 ) {
                     return false;
