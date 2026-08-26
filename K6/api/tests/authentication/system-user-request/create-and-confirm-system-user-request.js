@@ -38,9 +38,7 @@ export default function (data) {
             }
         });
 
-        let requestId;
-
-        group("Create the system user request", function () {
+        const requestId = group("Create the system user request", function () {
             const createRequest = new CreateRequestSystemUserBuilder()
                 .withExternalRef(registration.externalRef)
                 .withSystemId(registration.systemId)
@@ -57,7 +55,7 @@ export default function (data) {
                 externalRef: registration.externalRef,
             });
 
-            requestId = createdRequest?.id;
+            return createdRequest?.id;
         });
 
         group("Approve the request as the customer", function () {

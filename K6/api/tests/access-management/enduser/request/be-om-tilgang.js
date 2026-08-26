@@ -19,7 +19,7 @@
  * Testdata er tilfeldige utvalgte brukere i Tenor med tilhørende tilgangsstyrer
  */
 
-import { check, group } from "k6";
+import { check, fail, group } from "k6";
 
 import { CreateConnectionQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { ReceivedRequestsQueryBuilder, RequestStatus } from "../../../../../clients/access-management/enduser/request/index.js";
@@ -89,10 +89,14 @@ export default function (data) {
         );
 
         // Verifiser at forespørselen fra steg 2 faktisk er blant de mottatte.
-        const receivedRequest = received.find((r) => r.id === request.id);
-        check(receivedRequest, {
+        const receivedRequest = received.find((r) => r.id === request?.id);
+        const wasReceived = check(receivedRequest, {
             "Received contains the created request": (r) => r !== undefined,
         });
+
+        if (!wasReceived || receivedRequest === undefined) {
+            fail("kan ikke godkjenne: forespørselen fra steg 2 er ikke blant de mottatte");
+        }
 
         // Steg 4: Bruker B godkjenner forespørselen på vegne av Virksomhet B.
         // Tom body ([]) godkjenner hele pakkeforespørselen; body-en brukes bare til godkjenning av enkeltrettigheter

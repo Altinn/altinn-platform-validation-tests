@@ -36,7 +36,7 @@ let tokenGenerator = undefined;
  * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
  */
 function getClients() {
-    if (systemUserClient === undefined) {
+    if (systemUserClient === undefined || tokenGenerator === undefined) {
         // The vendor endpoint sits behind the system register scope, not a system user one.
         tokenGenerator = new EnterpriseTokenGenerator(
             new EnterpriseTokenBuilder()

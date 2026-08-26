@@ -62,7 +62,7 @@ function fetchAssignablePackages() {
     const groups = PackagesExport(metaApiClient, { action: "fetch-access-packages" });
 
     const urns = [];
-    for (const group of groups) {
+    for (const group of groups ?? []) {
         if (group.type !== "Organisasjon") continue;
         for (const area of group.areas ?? []) {
             for (const pkg of area.packages ?? []) {

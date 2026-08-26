@@ -43,7 +43,7 @@ export function setup() {
  * ]} Tuple containing the GraphQL client and token generator.
  */
 export function getClient() {
-    if (graphqlClient === undefined) {
+    if (graphqlClient === undefined || tokenGenerator === undefined) {
         const baseUrl = __ENV.BASE_URL;
         const tokenOpts = getDialogportenOpts();
 
