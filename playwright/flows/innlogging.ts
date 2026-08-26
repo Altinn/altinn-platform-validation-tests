@@ -54,6 +54,18 @@ export class Innlogging {
         await this.viaIdporten(user);
     }
 
+    /**
+     * Logger ut fra flaten brukeren står på. Utloggingen er felles for flatene, på
+     * samme måte som innloggingen.
+     */
+    async logOut() {
+        await this.meny.clickLogoutButton();
+    }
+
+    async assertLoggedOut() {
+        await this.meny.assertLoggedOut();
+    }
+
     async assertOnIdportenLogin() {
         await this.idporten.assertOnPage();
     }

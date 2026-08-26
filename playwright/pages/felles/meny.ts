@@ -27,19 +27,35 @@ export class Meny {
         });
     }
 
+    /**
+     * Menyknappen finnes bare innlogget, og utloggingen kan ende hvor som helst,
+     * også på en side uten hovednavigasjon. At knappen er borte er derfor det
+     * eneste som kan sjekkes uansett hvor brukeren lander.
+     */
+    async assertLoggedOut() {
+        await expect(
+            this.menuButton(),
+            'Menyknappen i hovednavigasjonen vises ikke'
+        ).toBeHidden({ timeout: 15_000 });
+    }
+
     async clickLoginButton() {
         await this.page.getByRole('button', {
             name: /logg inn|login/i,
         }).click();
     }
 
+    /**
+     * Utloggingen ligger i menyen, så den må åpnes først.
+     */
     async clickLogoutButton() {
-        // vent på logout
+        await this.clickMenuButton();
+
         const logoutButton = this.page.getByRole('button', {
             name: /logg ut|log out/i,
         });
-        await expect(logoutButton).toBeVisible({ timeout: 10000 });
-        // klikk logout
+
+        await expect(logoutButton, 'Logg ut ligger i menyen').toBeVisible({ timeout: 10_000 });
         await logoutButton.click();
     }
 

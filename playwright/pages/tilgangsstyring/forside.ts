@@ -3,6 +3,7 @@ import { baseUrls } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
 import { Meny } from "../felles/meny";
+import { gaaTil } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class TilgangsstyringForside implements Side {
@@ -16,7 +17,22 @@ export class TilgangsstyringForside implements Side {
     ) { }
 
     async navigateTo() {
-        await this.page.goto(this.url);
+        await gaaTil(this.page, this.url);
+    }
+
+    /**
+     * Siden krever innlogging, så en utlogget bruker får den ikke å se. Hvor hun
+     * havner er ikke fastlåst her: i testmiljøene sendes hun til ID-porten, mens
+     * flaten i prod kan bli stående på seg selv utlogget først. Det som holder i
+     * begge tilfeller er at ingenting av det innloggede vises.
+     */
+    async assertLoggedOut() {
+        await this.meny.assertLoggedOut();
+
+        await expect(
+            this.page.getByRole('complementary').locator('a[href="/accessmanagement/ui/users"]'),
+            'Tilgangsstyringens sidemeny vises ikke'
+        ).toBeHidden();
     }
 
     async assertLoggedIn() {
