@@ -4,11 +4,18 @@ import http from "k6/http";
 import { requireEnv } from "../../../helpers.js";
 import { withRetries } from "../../building-blocks/common/retry.js";
 
+/**
+ * Reads one page off info.altinn.cloud and checks that it came back.
+ *
+ * @param {string} path Path under INFO_CLOUD_URL, starting with a slash.
+ * @param {{[x: string]: string}|null} [labels] Optional k6 request tags.
+ * @returns {void} Nothing. The checks record what came back.
+ */
 export function getInfoCloud(path, labels) {
     requireEnv(["INFO_CLOUD_URL"]);
     const endpoint = `${__ENV.INFO_CLOUD_URL}${path}`;
     const params = {
-        tags: labels,
+        tags: labels ?? undefined,
     };
     const res = withRetries(() => http.get(endpoint, params), "getInfoCloud");
 
@@ -23,6 +30,13 @@ export function getInfoCloud(path, labels) {
     }
 }
 
+/**
+ * Searches info.altinn.cloud for one word and checks that it came back.
+ *
+ * @param {string} searchWord The word to search for.
+ * @param {{[x: string]: string}|null} [labels] Optional k6 request tags.
+ * @returns {void} Nothing. The checks record what came back.
+ */
 export function searchInfoCloud(searchWord, labels) {
     requireEnv(["INFO_CLOUD_URL"]);
     const encodedWord = encodeURIComponent(searchWord);

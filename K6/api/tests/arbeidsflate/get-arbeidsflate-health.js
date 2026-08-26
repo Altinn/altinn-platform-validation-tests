@@ -28,10 +28,19 @@ export default function () {
         return;
     }
 
-    let body;
+    /**
+     * The part of the health response this test reads.
+     *
+     * @typedef {object} ArbeidsflateHealth
+     * @property {string} [status] Overall status of the service.
+     * @property {{[name: string]: {status?: string}}} [healthChecks] One entry per dependency.
+     */
+
+    /** @type {ArbeidsflateHealth} */
+    let body = {};
 
     try {
-        body = res.json();
+        body = /** @type {ArbeidsflateHealth} */ (res.json());
         check(null, {
             "response is valid JSON": () => true,
         });
@@ -46,7 +55,7 @@ export default function () {
     const overallOk = check(body, {
         "overall status is ok": (b) => b?.status === "ok",
         "health checks are present": (b) =>
-            b?.healthChecks &&
+            b?.healthChecks !== undefined &&
             typeof b.healthChecks === "object" &&
             !Array.isArray(b.healthChecks),
     });

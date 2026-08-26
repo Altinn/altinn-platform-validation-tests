@@ -11,6 +11,11 @@ const label = { step: "test-lookup-on-username" };
 
 export const options = getOptions([label]);
 
+/**
+ * @param {Array<import("../../../clients/register/types.js").Party>|null} parties What the lookup returned.
+ * @param {string} expectedUsername The username the lookup was keyed on.
+ * @returns {void} Nothing. Fails the iteration when the lookup found no single party.
+ */
 function assertLookupResult(parties, expectedUsername) {
     if (!PartyLookupDomainChecks.CheckSinglePartyFound(parties, `username '${expectedUsername}'`)) {
         fail("Register lookup did not return a single party");
@@ -25,6 +30,10 @@ export function setup() {
     return getUsernames(__ENV.ENVIRONMENT);
 }
 
+/**
+ * @param {ReturnType<typeof setup>} usernames The usernames from setup.
+ * @returns {void} Nothing. The checks record what the lookups returned.
+ */
 export default function (usernames) {
     const registerClient = getLookupClient();
 

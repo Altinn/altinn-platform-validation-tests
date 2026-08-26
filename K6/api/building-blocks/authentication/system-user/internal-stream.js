@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
  * @param {SystemUserPagedQuery|null} [query] Query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemUserRegisterDTOItemStream|null} Stream result.
  */
 export function SystemUserInternalStream(

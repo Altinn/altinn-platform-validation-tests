@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link DeleteAgentResourcesQueryBuilder}.
  * @param {ResourceDelegationBatchInputDto|null} [body] Roles and resources to
  * revoke. Use {@link ResourceDelegationBatchInputDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the resources were revoked.
  */
 export function DeleteAgentResources(

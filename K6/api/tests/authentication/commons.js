@@ -20,8 +20,7 @@ import { ChangeRequestSystemUserBuildingBlocks, RequestSystemUserBuildingBlocks,
  * @param {SystemRegisterClient} systemRegisterClient - Client authenticated as the vendor that owns the systems.
  * @param {string} vendorOrgNo - Organisation number of that vendor, which every system id starts with.
  * @param {string} systemNamePrefix - The prefix the test names its systems with.
- * @param {RequestSystemUserClient} [requestSystemUserClient] - Client for the requests, for a test that makes them. Pass it and the pending requests on a leftover system go too.
- * @param {ChangeRequestSystemUserClient} [changeRequestSystemUserClient] - Client for the change requests, for a test that makes them. Pass it and the pending change requests go too.
+ * @param {RequestSystemUserClient|null} [requestSystemUserClient] - Client for the requests, for a test that makes them. Pass it and the pending requests on a leftover system go too.
  * @returns {number} How many systems were swept up.
  */
 export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, systemNamePrefix, requestSystemUserClient = null, changeRequestSystemUserClient = null) {
@@ -34,7 +33,11 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
             .filter((system) => `${system?.systemId}`.startsWith(prefix));
 
         for (const system of leftovers) {
-            if (requestSystemUserClient !== null) {
+            if (system.systemId === null || system.systemId === undefined) {
+                continue;
+            }
+
+            if (requestSystemUserClient !== null && requestSystemUserClient !== undefined) {
                 sweepPendingRequests(requestSystemUserClient, system.systemId);
             }
 

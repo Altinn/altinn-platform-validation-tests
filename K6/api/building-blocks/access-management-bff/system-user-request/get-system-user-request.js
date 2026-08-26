@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserRequestClient} systemUserRequestClient Client for the
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The request. The API does not publish a schema for
  * this response.
  */

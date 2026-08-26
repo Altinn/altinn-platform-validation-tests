@@ -167,6 +167,11 @@ export default function (segmentedData) {
     });
 }
 
+/**
+ * @param {ConnectionClient} connectionsApiClient Client for the API.
+ * @param {{partyUuid: string}} party The party to read the connections of.
+ * @returns {any} The connections, as GetRightHolders returns them.
+ */
 function getRightHolders(connectionsApiClient, party) {
     const respBody = GetRightHolders(
         connectionsApiClient,
@@ -182,6 +187,11 @@ function getRightHolders(connectionsApiClient, party) {
     return respBody;
 }
 
+/**
+ * @param {ConnectionClient} connectionsApiClient Client for the API.
+ * @param {{partyUuid: string}} party The party to read the connections of.
+ * @returns {any} The connections, as GetRightHolders returns them.
+ */
 function getRightHoldersWithoutTo(connectionsApiClient, party) {
     const respBody = GetRightHolders(
         connectionsApiClient,

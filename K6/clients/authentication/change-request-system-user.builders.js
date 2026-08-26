@@ -4,6 +4,7 @@ class ChangeRequestSystemUserBuilder {
     constructor() {
         // The API requires all four sets to be present, so they default to empty
         // rather than null. Leaving all four empty means no change is needed.
+        /** @type {ChangeRequestSystemUser} */
         this.request = {
             requiredRights: [],
             unwantedRights: [],

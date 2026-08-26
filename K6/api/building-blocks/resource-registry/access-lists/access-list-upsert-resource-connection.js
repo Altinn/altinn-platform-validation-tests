@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} identifier Access list identifier.
  * @param {string} resourceIdentifier Resource identifier.
  * @param {UpsertAccessListResourceConnectionDto} request Resource connection payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsUpsertResourceConnection(

@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} resource Resource identifier.
  * @param {Array<string>|null} [rights]
  * Optional rights.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */

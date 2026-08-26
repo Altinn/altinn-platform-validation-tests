@@ -32,8 +32,7 @@
  */
 export class DialogSearchParamsBuilder {
     constructor() {
-        this.params = {
-        };
+        this.params = /** @type {DialogSearchParams} */ ({});
     }
 
     /**

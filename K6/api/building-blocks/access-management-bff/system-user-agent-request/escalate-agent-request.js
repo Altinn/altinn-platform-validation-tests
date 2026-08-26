@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * for the agent system user request endpoints.
  * @param {number} partyId Party id of the organisation.
  * @param {string} requestId Agent request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the agent request was escalated.
  */
 export function EscalateAgentRequest(

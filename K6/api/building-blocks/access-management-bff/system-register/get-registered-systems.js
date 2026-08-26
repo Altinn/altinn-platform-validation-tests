@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the system
  * register endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The registered systems. The API does not publish a
  * schema for this response.
  */

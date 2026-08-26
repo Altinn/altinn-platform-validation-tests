@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {RolesGetRoleResourcesQuery} query Query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceDto|null} Role resource.
  */
 export function RolesGetRoleResources(

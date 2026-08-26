@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} systemUserGuid System user UUID.
  * @param {DeleteAgentSystemUserQuery|null} [queryParams] Optional query
  * parameters. Use {@link DeleteAgentSystemUserQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the agent system user was deleted.
  */
 export function DeleteAgentSystemUser(

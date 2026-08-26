@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenClient} maskinportenClient Client for the Maskinporten API.
  * @param {ConsentLookupRequest} request Consent to look up. Use
  * {@link ConsentLookupRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The looked up consent.
  */
 export function LookupConsent(maskinportenClient, request, labels = null) {

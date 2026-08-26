@@ -1,0 +1,50 @@
+name: Deploy Cleanup Operator
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (e.g. sha, semver, latest)"
+        required: true
+        type: string
+
+permissions:
+  contents: "read"
+  id-token: "write"
+
+env:
+  REGISTRY: altinnplatformvalidationtests.azurecr.io
+  IMAGE_NAME: cleanup-controller
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: test
+    defaults:
+      run:
+        working-directory: ./operators/cleaner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+        with:
+          go-version-file: ./operators/cleaner/go.mod
+
+      - name: Setup k8s client
+        uses: ./.github/actions/setup-k8s
+        with:
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build full image reference
+        id: img
+        run: |
+          echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
+
+      - name: Deploy operator
+        run: |
+          make deploy IMG=${{ steps.img.outputs.image }}

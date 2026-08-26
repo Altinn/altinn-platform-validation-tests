@@ -11,9 +11,9 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AuthorizeClient} authorizeClient Client for the Authorize API.
  * @param {XacmlJsonRequestRootExternal} request Authorization request.
- * @param {string} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
+ * @param {string|null} [expectedDecision] Expected XACML decision, e.g. Permit, Deny
  * or NotApplicable. The decision is only checked when this is set.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {XacmlJsonResponseExternal|null} Authorization response.
  */
@@ -64,7 +64,11 @@ export function AuthorizePost(
     });
 
     if (parsed && expectedDecision !== null) {
-        check(response, {
+        // response is filled in from inside the check callback above, which the
+        // compiler cannot follow, so the type is restated here.
+        const decided = /** @type {XacmlJsonResponseExternal|null} */ (response);
+
+        check(decided, {
             [`AuthorizePost - decision is ${expectedDecision}`]: (b) =>
                 b?.response?.[0]?.decision === expectedDecision,
         });

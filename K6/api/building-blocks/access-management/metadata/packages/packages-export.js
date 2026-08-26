@@ -8,7 +8,7 @@ import { withRetries } from "../../../common/retry.js";
  * Exports access packages.
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AreaGroupDto[]|null} Access package groups.
  */
 export function PackagesExport(

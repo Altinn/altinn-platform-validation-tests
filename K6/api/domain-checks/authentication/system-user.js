@@ -5,7 +5,7 @@ import { SystemUser } from "../../../clients/authentication/types.js";
 /**
  * Checks that a lookup found the expected system user.
  *
- * @param {SystemUser} systemUser - The system user the lookup returned.
+ * @param {SystemUser|null} systemUser - The system user the lookup returned.
  * @param {{id: string, systemId: string}} expected - The system user the lookup was made for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if the lookup found that system user, false otherwise.

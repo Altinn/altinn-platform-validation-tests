@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {CreateSupplierQuery} queryParams Query parameters. Use
  * {@link CreateSupplierQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AssignmentDto|null} The created assignment.
  */
 export function CreateSupplier(

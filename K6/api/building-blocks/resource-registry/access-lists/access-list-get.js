@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDto|null} Access list information.
  */
 export function AccessListGet(

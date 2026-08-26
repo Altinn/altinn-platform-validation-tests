@@ -48,9 +48,7 @@ export default function (data) {
             SystemUserClientDelegationDomainChecks.CheckAgentSystemUserListed(agents, arranged.systemUserId);
         });
 
-        let clientId;
-
-        group("The facilitator has clients that can be delegated", function () {
+        const clientId = group("The facilitator has clients that can be delegated", function () {
             const available = SystemUserClientDelegationBuildingBlocks.GetAvailableClients(delegationClient, arranged.systemUserId);
 
             // Nothing below says anything without a client to delegate, so an empty
@@ -60,8 +58,12 @@ export default function (data) {
                 fail("cannot delegate a client: the facilitator has none available");
             }
 
-            clientId = available.data[0]?.clientId;
+            return available?.data?.[0]?.clientId;
         });
+
+        if (clientId === undefined) {
+            fail("cannot delegate a client: the available clients carried no client id");
+        }
 
         group("Delegate the client to the agent system user", function () {
             const delegation = SystemUserClientDelegationBuildingBlocks.DelegateClient(delegationClient, arranged.systemUserId, clientId);

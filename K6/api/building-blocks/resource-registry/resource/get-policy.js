@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the policy was successfully retrieved.
  */
 export function ResourceGetPolicy(resourceClient, id, labels = null) {
