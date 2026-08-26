@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: "read"
-  # Required by the OIDC login in ./.github/actions/setup-k8s.
   id-token: "write"
 
 env:
