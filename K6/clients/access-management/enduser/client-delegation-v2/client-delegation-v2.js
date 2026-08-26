@@ -54,7 +54,7 @@ class ClientDelegationV2Client {
      *
      * @param {AgentResourcesQuery|null} [query] Query parameters. Prefer using AgentResourcesQueryBuilder.
      * @param {{[key: string]: string|number}|null} [headers] Optional request headers.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentResources(query = null, headers = null, labels = null) {
@@ -66,7 +66,7 @@ class ClientDelegationV2Client {
      *
      * @param {ClientResourcesQuery|null} [query] Query parameters. Prefer using ClientResourcesQueryBuilder.
      * @param {{[key: string]: string|number}|null} [headers] Optional request headers.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClientResources(query = null, headers = null, labels = null) {
@@ -78,7 +78,7 @@ class ClientDelegationV2Client {
      *
      * @param {DelegateAgentResourcesQuery} query Query parameters. Prefer using DelegateAgentResourcesQueryBuilder.
      * @param {ResourceDelegationBatchInputDto|null} [body] The resources to delegate. Prefer using ResourceDelegationBatchInputBuilder.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DelegateAgentResources(query, body = null, labels = null) {
@@ -92,7 +92,7 @@ class ClientDelegationV2Client {
      *
      * @param {DelegateAgentResourcesQuery} query Query parameters. Prefer using DelegateAgentResourcesQueryBuilder.
      * @param {ResourceDelegationBatchInputDto|null} [body] The resources to remove. Prefer using ResourceDelegationBatchInputBuilder.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentResources(query, body = null, labels = null) {

@@ -139,7 +139,7 @@ class DelegateAgentResourcesQueryBuilder {
  */
 class ResourceDelegationBatchInputBuilder {
     constructor() {
-        this.body = { values: [] };
+        this.body = /** @type {ResourceDelegationBatchInputDto} */ ({ values: [] });
     }
 
     /**

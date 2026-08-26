@@ -56,10 +56,19 @@ function arrangeDelegationTarget(clientDelegation, party) {
         return null;
     }
 
+    // The find above already established that one of these carries a role code,
+    // but it has to be read out again for the result to be typed as a string.
+    const roleCode = (client.access ?? []).find((access) => access?.role?.code)?.role?.code;
+
+    if (!roleCode) {
+        console.error(`arrangeDelegationTarget - party ${party} has no role code to delegate through`);
+        return null;
+    }
+
     return {
         clientId: client.client.id,
         agentId: agent.agent.id,
-        roleCode: client.access.find((access) => access?.role?.code).role.code,
+        roleCode,
     };
 }
 
@@ -75,10 +84,8 @@ function arrangeDelegationTarget(clientDelegation, party) {
 export default function (data) {
     const { clientDelegation, clientDelegationV2 } = getClients(data);
 
-    let target = null;
-
-    group("Arrange - find a client, an agent and a role to delegate through", function () {
-        target = arrangeDelegationTarget(clientDelegation, data.facilitator.partyUuid);
+    const target = group("Arrange - find a client, an agent and a role to delegate through", function () {
+        return arrangeDelegationTarget(clientDelegation, data.facilitator.partyUuid);
     });
 
     // Nothing below says anything without a client and an agent, and no write has

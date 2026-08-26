@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ClientDelegationV2Client} clientDelegationV2Client Client for the v2 Client Delegation API.
  * @param {DelegateAgentResourcesQuery} queryParams Query parameters. Use DelegateAgentResourcesQueryBuilder.
  * @param {ResourceDelegationBatchInputDto|null} [body] The resources to remove. Use ResourceDelegationBatchInputBuilder.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegationDto>} The delegations that were removed.
  */
 export function DeleteAgentResources(

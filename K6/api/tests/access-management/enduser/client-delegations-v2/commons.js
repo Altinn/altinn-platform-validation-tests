@@ -13,7 +13,10 @@ import { REQUIRED_FIELDS, TEST_DATA } from "./testdata.js";
  * @returns {*} The value, or undefined when any step is missing.
  */
 function readPath(source, path) {
-    return path.split(".").reduce((value, key) => (value ?? {})[key], source);
+    return path.split(".").reduce(
+        (/** @type {*} */ value, key) => (value === null || value === undefined ? undefined : value[key]),
+        /** @type {*} */ (source),
+    );
 }
 
 /**

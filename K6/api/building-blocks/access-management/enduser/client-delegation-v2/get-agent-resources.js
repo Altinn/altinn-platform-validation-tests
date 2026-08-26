@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ClientDelegationV2Client} clientDelegationV2Client Client for the v2 Client Delegation API.
  * @param {AgentResourcesQuery|null} [queryParams] Query parameters. Use AgentResourcesQueryBuilder.
  * @param {{[key: string]: string|number}|null} [headers] Optional request headers, for example paging headers.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ClientResourcesDtoPaginatedResult|null} Paginated resources, grouped by client.
  */
 export function GetAgentResources(
