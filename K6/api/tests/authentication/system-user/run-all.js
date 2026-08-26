@@ -1,6 +1,7 @@
 import { cleanupArranged } from "./commons.js";
 import runGetSystemUserByQuery, { setup as setupGetSystemUserByQuery } from "./get-system-user-by-query.js";
 import runGetSystemUsersBySystemId, { setup as setupGetSystemUsersBySystemId } from "./get-system-users-by-system-id.js";
+import runStreamSystemUsers, { setup as setupStreamSystemUsers } from "./stream-system-users.js";
 import runSystemWithCreatedResource, { setup as setupSystemWithCreatedResource, teardown as teardownSystemWithCreatedResource } from "./system-with-created-resource.js";
 
 /**
@@ -13,6 +14,7 @@ export function setup() {
     return {
         getSystemUserByQuery: setupGetSystemUserByQuery(),
         getSystemUsersBySystemId: setupGetSystemUsersBySystemId(),
+        streamSystemUsers: setupStreamSystemUsers(),
         systemWithCreatedResource: setupSystemWithCreatedResource(),
     };
 }
@@ -31,6 +33,10 @@ export default function (data) {
     runGetSystemUsersBySystemId();
     runGetSystemUserByQuery(data.getSystemUserByQuery);
     runSystemWithCreatedResource(data.systemWithCreatedResource);
+
+    // Last, like in run-paginated-systemuser-tests.js: the stream fail()s on a first
+    // page it cannot read, and that ends the whole iteration.
+    runStreamSystemUsers();
 }
 
 /**

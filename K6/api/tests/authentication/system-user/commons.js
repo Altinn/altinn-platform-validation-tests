@@ -110,6 +110,45 @@ export function getVendorTokenOpts(vendorOrgNo) {
         .build();
 }
 
+/**
+ * @type {SystemUserClient | undefined}
+ */
+let streamClient = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let streamTokenGenerator = undefined;
+
+/**
+ * Creates and caches the client the stream test reads with.
+ *
+ * A wider token than the vendor one: the stream is not scoped to a vendor or a
+ * system, it hands out every system user in the environment, and the admin scope is
+ * what opens it. The narrower system user scopes are answered with 403. No
+ * organisation is set for the same reason, there is no one vendor to act as.
+ *
+ * Cached at module scope, so a VU builds it once and keeps the token it fetched
+ * rather than refetching on every iteration.
+ *
+ * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow the stream on.
+ */
+export function getStreamClients() {
+    if (streamClient === undefined || streamTokenGenerator === undefined) {
+        streamTokenGenerator = new EnterpriseTokenGenerator(
+            new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.ADMIN]))
+                .build(),
+        );
+
+        streamClient = new SystemUserClient(__ENV.BASE_URL, streamTokenGenerator);
+    }
+
+    return [streamClient, streamTokenGenerator];
+}
+
 export { cleanupArranged } from "../change-request-system-user/commons.js";
 
 /**
