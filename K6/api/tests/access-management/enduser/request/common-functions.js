@@ -23,7 +23,7 @@ let requestApiClient = undefined;
  * Each CSV row holds an organization (Virksomhet) and its daglig leder:
  * pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
  *
- * @returns {{ users: Array, packages: string[] }} Test input: parsed CSV rows
+ * @returns {{ users: any[], packages: string[] }} Test input: parsed CSV rows
  * and the URNs of packages that can be requested (Organisasjon, delegable and
  * assignable).
  */

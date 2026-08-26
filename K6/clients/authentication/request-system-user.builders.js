@@ -6,14 +6,14 @@ import { AccessPackage, CreateAgentRequestSystemUser, CreateRequestSystemUser, R
 class CreateRequestSystemUserBuilder {
     constructor() {
         // The model is filled in by the setters, so the required fields start out null.
-        this.request = /** @type {CreateRequestSystemUser} */ ({
+        this.request = /** @type {CreateRequestSystemUser} */ (/** @type {unknown} */ ({
             externalRef: null,
             systemId: null,
             partyOrgNo: null,
             rights: [],
             accessPackages: [],
             redirectUrl: null,
-        });
+        }));
     }
 
     /**

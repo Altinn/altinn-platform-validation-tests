@@ -22,7 +22,7 @@ let tokenGenerator = undefined;
  *
  * The CSV contains SSNs for the target environment.
  *
- * @returns {Array} Parsed CSV data used as test input.
+ * @returns {any[]} Parsed CSV data used as test input.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

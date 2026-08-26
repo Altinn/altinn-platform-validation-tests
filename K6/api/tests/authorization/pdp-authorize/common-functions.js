@@ -246,7 +246,7 @@ function buildAuthorizeRequest(action, subjectAttributes, resourceAttributes) {
  *
  * @param {{[key: string]: string}} denyLabel Label used for the requests that are expected to be denied.
  * @param {{[key: string]: string}} permitLabel Label used for the requests that are expected to be permitted.
- * @returns {Array} [action, label, expectedResponse]
+ * @returns {[string, {[key: string]: string}, string]} [action, label, expectedResponse]
  */
 export function getActionLabelAndExpectedResponse(denyLabel, permitLabel) {
     const randNumber = randomIntBetween(0, 10);

@@ -25,7 +25,7 @@ function withoutUnsetProperties(request) {
 
 class NotificationOrderChainRequestExtBuilder {
     constructor() {
-        this.request = /** @type {NotificationOrderChainRequestExt} */ ({
+        this.request = /** @type {NotificationOrderChainRequestExt} */ (/** @type {unknown} */ ({
             sendersReference: null,
             requestedSendTime: null,
             conditionEndpoint: null,
@@ -33,7 +33,7 @@ class NotificationOrderChainRequestExtBuilder {
             idempotencyId: null,
             recipient: null,
             reminders: null,
-        });
+        }));
     }
 
     /**
@@ -144,14 +144,14 @@ class NotificationOrderChainRequestExtBuilder {
 
 class ComposedEmailRequestExtBuilder {
     constructor() {
-        this.request = /** @type {ComposedEmailRequestExt} */ ({
+        this.request = /** @type {ComposedEmailRequestExt} */ (/** @type {unknown} */ ({
             sendersReference: null,
             requestedSendTime: null,
             conditionEndpoint: null,
             dialogportenAssociation: null,
             idempotencyId: null,
             recipient: null,
-        });
+        }));
     }
 
     /**
@@ -251,13 +251,13 @@ class ComposedEmailRequestExtBuilder {
 
 class NotificationRecipientExtBuilder {
     constructor() {
-        this.request = /** @type {NotificationRecipientExt} */ ({
+        this.request = /** @type {NotificationRecipientExt} */ (/** @type {unknown} */ ({
             recipientEmail: null,
             recipientSms: null,
             recipientPerson: null,
             recipientOrganization: null,
             recipientExternalIdentity: null,
-        });
+        }));
     }
 
     /**
@@ -334,10 +334,10 @@ class NotificationRecipientExtBuilder {
 
 class RecipientEmailExtBuilder {
     constructor() {
-        this.request = /** @type {RecipientEmailExt} */ ({
+        this.request = /** @type {RecipientEmailExt} */ (/** @type {unknown} */ ({
             emailAddress: null,
             emailSettings: null,
-        });
+        }));
     }
 
     /**
@@ -378,10 +378,10 @@ class RecipientEmailExtBuilder {
 
 class RecipientSmsExtBuilder {
     constructor() {
-        this.request = /** @type {RecipientSmsExt} */ ({
+        this.request = /** @type {RecipientSmsExt} */ (/** @type {unknown} */ ({
             phoneNumber: null,
             smsSettings: null,
-        });
+        }));
     }
 
     /**
@@ -422,7 +422,7 @@ class RecipientSmsExtBuilder {
 
 class RecipientPersonExtBuilder {
     constructor() {
-        this.request = /** @type {RecipientPersonExt} */ ({
+        this.request = /** @type {RecipientPersonExt} */ (/** @type {unknown} */ ({
             emailSettings: null,
             smsSettings: null,
             resourceId: null,
@@ -431,7 +431,7 @@ class RecipientPersonExtBuilder {
             channelSchema: null,
             ignoreReservation: null,
             useStaleContactInformation: null,
-        });
+        }));
     }
 
     /**
@@ -535,14 +535,14 @@ class RecipientPersonExtBuilder {
 
 class RecipientOrganizationExtBuilder {
     constructor() {
-        this.request = /** @type {RecipientOrganizationExt} */ ({
+        this.request = /** @type {RecipientOrganizationExt} */ (/** @type {unknown} */ ({
             emailSettings: null,
             smsSettings: null,
             resourceId: null,
             resourceAction: null,
             orgNumber: null,
             channelSchema: null,
-        });
+        }));
     }
 
     /**
@@ -625,14 +625,14 @@ class RecipientOrganizationExtBuilder {
 
 class RecipientExternalIdentityExtBuilder {
     constructor() {
-        this.request = /** @type {RecipientExternalIdentityExt} */ ({
+        this.request = /** @type {RecipientExternalIdentityExt} */ (/** @type {unknown} */ ({
             emailSettings: null,
             smsSettings: null,
             resourceId: null,
             resourceAction: null,
             externalIdentity: null,
             channelSchema: null,
-        });
+        }));
     }
 
     /**
@@ -717,10 +717,10 @@ class RecipientExternalIdentityExtBuilder {
 
 class RecipientComposedEmailExtBuilder {
     constructor() {
-        this.request = /** @type {RecipientComposedEmailExt} */ ({
+        this.request = /** @type {RecipientComposedEmailExt} */ (/** @type {unknown} */ ({
             emailAddress: null,
             emailSettings: null,
-        });
+        }));
     }
 
     /**
@@ -765,13 +765,13 @@ class RecipientComposedEmailExtBuilder {
 
 class EmailSendingOptionsExtBuilder {
     constructor() {
-        this.request = /** @type {EmailSendingOptionsExt} */ ({
+        this.request = /** @type {EmailSendingOptionsExt} */ (/** @type {unknown} */ ({
             senderEmailAddress: null,
             subject: null,
             body: null,
             contentType: null,
             sendingTimePolicy: null,
-        });
+        }));
     }
 
     /**
@@ -842,11 +842,11 @@ class EmailSendingOptionsExtBuilder {
 
 class SmsSendingOptionsExtBuilder {
     constructor() {
-        this.request = /** @type {SmsSendingOptionsExt} */ ({
+        this.request = /** @type {SmsSendingOptionsExt} */ (/** @type {unknown} */ ({
             sender: null,
             body: null,
             sendingTimePolicy: null,
-        });
+        }));
     }
 
     /**
@@ -893,14 +893,14 @@ class SmsSendingOptionsExtBuilder {
 
 class ComposedEmailSendingOptionsExtBuilder {
     constructor() {
-        this.request = /** @type {ComposedEmailSendingOptionsExt} */ ({
+        this.request = /** @type {ComposedEmailSendingOptionsExt} */ (/** @type {unknown} */ ({
             senderEmailAddress: null,
             subject: null,
             body: null,
             contentType: null,
             sendingTimePolicy: null,
             attachments: null,
-        });
+        }));
     }
 
     /**
@@ -985,11 +985,11 @@ class ComposedEmailSendingOptionsExtBuilder {
 
 class SasFileReferenceExtBuilder {
     constructor() {
-        this.request = /** @type {SasFileReferenceExt} */ ({
+        this.request = /** @type {SasFileReferenceExt} */ (/** @type {unknown} */ ({
             filename: null,
             mimeType: null,
             sasUrl: null,
-        });
+        }));
     }
 
     /**
