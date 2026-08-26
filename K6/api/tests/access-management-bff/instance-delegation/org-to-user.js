@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 import exec from "k6/execution";
 
 import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../../clients/access-management-bff/access-package/index.js";
@@ -179,6 +179,10 @@ export default function (data) {
             false,
         );
     });
+
+    if (dialogId === null) {
+        fail("cannot delegate on an instance: creating the dialog returned no dialog id");
+    }
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 

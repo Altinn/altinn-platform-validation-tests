@@ -7,10 +7,10 @@ import { RoleDto } from "../../../../clients/access-management/metadata/roles/ro
  *
  * @param {RoleDto[]|null} roles - Array of roles to search.
  * @param {string} id - The id of the role to find.
- * @returns {RoleDto|undefined} - The role with the specified id, or undefined if not found.
+ * @returns {RoleDto|null} - The role with the specified id, or null if not found.
  */
 function FindRole(roles, id) {
-    return (roles ?? []).find((role) => role.id === id);
+    return (roles ?? []).find((role) => role.id === id) ?? null;
 }
 
 /**

@@ -5,10 +5,10 @@ import { PackageDto } from "../../../../clients/access-management/metadata/roles
 /**
  * @param {PackageDto[]|null} packages - Array of packages to search.
  * @param {string} id - The package id to look for.
- * @returns {PackageDto|undefined} - The package with the specified id, or undefined if not found.
+ * @returns {PackageDto|null} - The package with the specified id, or null if not found.
  */
 function FindPackage(packages, id) {
-    return (packages ?? []).find((pkg) => pkg.id === id);
+    return (packages ?? []).find((pkg) => pkg.id === id) ?? null;
 }
 
 /**
