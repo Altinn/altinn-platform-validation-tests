@@ -40,7 +40,7 @@ const PARTY_TYPES = ["None", "Person", "Organization", "SelfIdentified"];
 /**
  * Flattens a party hierarchy into a single list, parents before their subunits.
  *
- * @param {AuthorizedParty[]} parties - The parties to flatten.
+ * @param {AuthorizedParty[]|null} parties - The parties to flatten.
  * @returns {AuthorizedParty[]} Every party in the hierarchy.
  */
 function FlattenParties(parties) {
@@ -125,10 +125,10 @@ function SameMembers(actual, expected) {
 /**
  * Runs one assertion under the name the check is reported by.
  *
- * @param {string} name - The check name, either the check's own or the caller's override.
+ * @param {string} name - The check name.
  * @param {*} target - The value the assertion reads.
- * @param {Function} assertion - Returns true when the check held.
- * @param {Function} diagnose - Returns lines to log when it did not.
+ * @param {(value: any) => boolean} assertion - Returns true when the check held.
+ * @param {() => string[]} diagnose - Returns lines to log when it did not.
  * @returns {boolean} True if the check held.
  */
 function Assert(name, target, assertion, diagnose) {
@@ -211,6 +211,7 @@ function CheckResponseIsEmptyPartyArray(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckEveryPartyMatchesContract(parties) {
+    /** @type {string[]} */
     const problems = [];
 
     for (const party of FlattenParties(parties)) {
@@ -239,8 +240,10 @@ function CheckEveryPartyMatchesContract(parties) {
             problems.push(`${party.partyUuid} onlyHierarchyElementWithNoAccess is not a boolean`);
         }
 
+        const byName = /** @type {{[key: string]: unknown}} */ (/** @type {unknown} */ (party));
+
         for (const collection of ["authorizedAccessPackages", "authorizedResources", "authorizedRoles", "authorizedInstances", "subunits"]) {
-            if (!Array.isArray(party[collection])) {
+            if (!Array.isArray(byName[collection])) {
                 problems.push(`${party.partyUuid} ${collection} is not an array`);
             }
         }
@@ -474,7 +477,7 @@ function CheckPartyIncludesRole(parties, partyUuid, expectedRole) {
 
     return Assert(`CheckPartyIncludesRole - '${partyUuid}' holds the role ${expectedRole}`, party,
         (found) => found !== undefined &&
-            (found.authorizedRoles ?? []).some((role) => String(role).toLowerCase() === wanted),
+            (found.authorizedRoles ?? []).some((/** @type {*} */ role) => String(role).toLowerCase() === wanted),
         () => [`expected role '${expectedRole}' on '${partyUuid}', got: ${JSON.stringify(party?.authorizedRoles ?? [])}`]);
 }
 
@@ -544,7 +547,7 @@ function CheckSubunitIsNestedUnderMainUnit(parties, mainUnitPartyUuid, subunitPa
     const wanted = Normalise(subunitPartyUuid);
 
     return Assert(`CheckSubunitIsNestedUnderMainUnit - '${subunitPartyUuid}' is nested under '${mainUnitPartyUuid}'`, mainUnit,
-        (found) => (found?.subunits ?? []).some((subunit) => Normalise(subunit.partyUuid) === wanted),
+        (found) => (found?.subunits ?? []).some((/** @type {*} */ subunit) => Normalise(subunit.partyUuid) === wanted),
         () => mainUnit === undefined
             ? [`main unit '${mainUnitPartyUuid}' was not in the party list`]
             : [
@@ -609,6 +612,7 @@ function CheckSomeMainUnitHoldsInstancesAndHasSubunits(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckNoSubunitInheritsInstances(parties) {
+    /** @type {string[]} */
     const problems = [];
     let inspected = 0;
 

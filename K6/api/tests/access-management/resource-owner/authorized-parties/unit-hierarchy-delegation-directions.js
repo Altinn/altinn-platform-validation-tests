@@ -57,7 +57,7 @@ export default function (data) {
         .includeInstances()
         .build();
 
-    const lookUp = (pid) => GetAuthorizedParties(
+    const lookUp = (/** @type {string} */ pid) => GetAuthorizedParties(
         authorizedPartiesClient,
         new AuthorizedPartiesRequestBuilder().withPerson(pid).build(),
         queryParams,

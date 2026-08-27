@@ -3,6 +3,7 @@ export { setup } from "./common.js";
 
 import { group } from "k6";
 
+import { AuthorizedPartiesRequest } from "../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks, PartyUuidList } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
@@ -36,7 +37,7 @@ export default function (data) {
 
         const queryParams = new AuthorizedPartiesQueryBuilder().includeAccessPackages().build();
 
-        const lookup = (request) => GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
+        const lookup = (/** @type {AuthorizedPartiesRequest} */ request) => GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
         // Each baseline is the group's return value rather than a variable assigned inside
         // the callback, which control flow analysis does not follow.

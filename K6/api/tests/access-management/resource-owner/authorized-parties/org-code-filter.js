@@ -29,7 +29,7 @@ export default function (data) {
         const ownOrgCode = data.sharedTestData.serviceOwners.digdir.org;
         const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
 
-        const filteredOnOrgCode = (orgCode) => new AuthorizedPartiesQueryBuilder()
+        const filteredOnOrgCode = (/** @type {string} */ orgCode) => new AuthorizedPartiesQueryBuilder()
             .includeAccessPackages()
             .withOrgCode(orgCode)
             .build();

@@ -32,7 +32,7 @@ export default function (data) {
 
         const queryParams = new AuthorizedPartiesQueryBuilder().includeAccessPackages().build();
 
-        const filteredOn = (partyUuid) => new AuthorizedPartiesRequestBuilder()
+        const filteredOn = (/** @type {string} */ partyUuid) => new AuthorizedPartiesRequestBuilder()
             .withPerson(firm.dagligleder.pid)
             .withPartyUuidFilter(partyUuid)
             .build();

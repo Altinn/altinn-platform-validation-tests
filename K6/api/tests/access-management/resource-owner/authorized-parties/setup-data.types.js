@@ -13,19 +13,21 @@
  */
 
 /**
- * A party as the fixtures record one. Which fields are present varies: an organisation
- * carries `orgno`, a person carries `pid`, and only some carry `userId` or `partyId`.
+ * A party as the accounting firm fixture records one. `name` and `partyUuid` are on every
+ * one of them, so they are required here; what distinguishes a kind is not. An
+ * organisation carries `orgno`, a person carries `pid`, and only some carry `userId`.
+ *
+ * The hierarchy fixture spells the same fields differently and is modelled separately,
+ * by {@link HierarchyParty}. Carrying both spellings on one type made every read optional
+ * and pushed an undefined check onto every use.
  *
  * @typedef {object} FixtureParty
  * @property {string} name Display name.
+ * @property {string} partyUuid Party uuid, lower cased to match what the API returns.
  * @property {string} [orgno] Organisation number, on organisations.
  * @property {string} [pid] National identity number, on people.
- * @property {string} [partyUuid] Party uuid, lower cased to match what the API returns.
- * @property {string} [partyuuid] Party uuid, as the hierarchy fixture spells it.
  * @property {number} [partyId] Party id.
- * @property {number} [partyid] Party id, as the hierarchy fixture spells it.
  * @property {number} [userId] User id.
- * @property {string} [org_no] Organisation number, as the hierarchy fixture spells it.
  * @property {string} [clientId] Client id, on system users.
  * @property {string} [emailId] Email the ID-porten user is registered by.
  * @property {string} [username] User name, on enterprise users.
@@ -39,6 +41,44 @@
  */
 
 /**
+ * A person in the accounting firm fixture, where `pid` is what the scenarios look up by.
+ *
+ * @typedef {FixtureParty & {pid: string, userId: number, partyId: number}} FixturePerson
+ */
+
+/**
+ * An organisation in the accounting firm fixture.
+ *
+ * @typedef {FixtureParty & {orgno: string}} FixtureOrganisation
+ */
+
+/**
+ * A party as the hierarchy fixture records one. Every party there carries `partyuuid` and
+ * `partyid`; the rest depends on the kind.
+ *
+ * @typedef {object} HierarchyParty
+ * @property {string} partyuuid Party uuid.
+ * @property {number} partyid Party id.
+ * @property {string} [name] Display name, on organisations.
+ * @property {string} [lastname] Surname, on people.
+ * @property {string} [org_no] Organisation number, on organisations.
+ * @property {string} [pid] National identity number, on people.
+ * @property {number} [userid] User id, on people.
+ */
+
+/**
+ * A person in the hierarchy fixture.
+ *
+ * @typedef {HierarchyParty & {pid: string}} HierarchyPerson
+ */
+
+/**
+ * An organisation in the hierarchy fixture.
+ *
+ * @typedef {HierarchyParty & {org_no: string, name: string}} HierarchyOrganisation
+ */
+
+/**
  * The accounting firm tree, keyed by the fixture names the scenarios read.
  *
  * @typedef {object} AccountingFirmFixture
@@ -47,9 +87,9 @@
  * @property {AccountingFirm} REGN_ULASTELIG_RETTFERDIG_TIGER
  * The firm, its daily leader, subunit, clients, rightholders, deleted sole
  * proprietorships and system user.
- * @property {FixtureParty} a2BrunoSIUser A self identified user.
- * @property {FixtureParty} a2BrunoECUser An enterprise user.
- * @property {FixtureParty} idportenEmailUser An ID-porten user registered by email.
+ * @property {FixtureParty & {userId: number}} a2BrunoSIUser A self identified user.
+ * @property {FixtureParty & {username: string, userId: number}} a2BrunoECUser An enterprise user.
+ * @property {FixtureParty & {userId: number, emailId: string}} idportenEmailUser An ID-porten user registered by email.
  * @property {BusinessManagerFirm} forretningsforerNonfigurativEmosjonellPuma
  * A business manager firm, its daily leader and its housing company clients.
  */
@@ -62,19 +102,19 @@
  * @property {string} orgno Organisation number.
  * @property {number} partyId Party id.
  * @property {string} partyUuid Party uuid.
- * @property {FixtureParty} dagligleder The daily leader of the firm.
- * @property {FixtureParty} subunit The subunit of the firm.
- * @property {FixtureParty} client_USENSUELL_UVIRKSOM_TIGER A client organisation with a subunit.
- * @property {FixtureParty} client_ENK_HUMAN_TOPP_KATT_BIL A sole proprietorship client.
- * @property {FixtureParty} client_WITHOUT_CLIENTDELEGATION A client without a client delegation.
- * @property {FixtureParty} client_rightholderOrg2 A client with a package and a resource delegated on.
- * @property {FixtureParty} client_ENK_DELETED_2025_11_27_InnehaverAccess
+ * @property {FixturePerson} dagligleder The daily leader of the firm.
+ * @property {FixtureOrganisation} subunit The subunit of the firm.
+ * @property {FixtureOrganisation & {subunit: FixtureOrganisation}} client_USENSUELL_UVIRKSOM_TIGER A client organisation with a subunit.
+ * @property {FixtureOrganisation & {innehaver: FixturePerson}} client_ENK_HUMAN_TOPP_KATT_BIL A sole proprietorship client.
+ * @property {FixtureOrganisation} client_WITHOUT_CLIENTDELEGATION A client without a client delegation.
+ * @property {FixtureOrganisation & {packageDelegatedToPerson: string, resourceIdDelegatedToPerson: string}} client_rightholderOrg2 A client with a package and a resource delegated on.
+ * @property {FixtureOrganisation & {innehaver: FixturePerson, deletedDate: string}} client_ENK_DELETED_2025_11_27_InnehaverAccess
  * A deleted sole proprietorship its owner still reaches.
- * @property {FixtureParty} client_ENK_DELETED_2023_11_01_NoInnehaverAccess
+ * @property {FixtureOrganisation & {innehaver: FixturePerson, deletedDate: string}} client_ENK_DELETED_2023_11_01_NoInnehaverAccess
  * A deleted sole proprietorship its owner no longer reaches.
  * @property {FixtureParty} systemuser_tilgangsstyrer The system user of the firm.
- * @property {FixtureParty} employee_rightholderWithPackages An employee holding access packages.
- * @property {FixtureParty} employee_rightholderWithoutPackages An employee holding none.
+ * @property {FixturePerson & {directPackageToDelegate: string}} employee_rightholderWithPackages An employee holding access packages.
+ * @property {FixturePerson} employee_rightholderWithoutPackages An employee holding none.
  */
 
 /**
@@ -85,9 +125,9 @@
  * @property {string} orgno Organisation number.
  * @property {number} partyId Party id.
  * @property {string} partyUuid Party uuid.
- * @property {FixtureParty} dagligleder The daily leader of the firm.
- * @property {FixtureParty} esekClient A housing company client.
- * @property {FixtureParty} nonBrlEsekClient A client that is not a housing company.
+ * @property {FixturePerson} dagligleder The daily leader of the firm.
+ * @property {FixtureOrganisation & {clientPackage: string}} esekClient A housing company client.
+ * @property {FixtureOrganisation} nonBrlEsekClient A client that is not a housing company.
  */
 
 /**
@@ -96,28 +136,28 @@
  *
  * @typedef {object} HierarchyFixture
  * @property {string} [env] The environment, carried over from Bruno and read by nothing.
- * @property {FixtureParty} authParties_personA A person who both delegates and receives.
- * @property {FixtureParty} authParties_personB A person who receives from person A.
- * @property {HierarchyMainUnit} authParties_hovedenhetA Main unit A, its daily leader, subunit and person C.
+ * @property {HierarchyPerson} authParties_personA A person who both delegates and receives.
+ * @property {HierarchyPerson} authParties_personB A person who receives from person A.
+ * @property {HierarchyMainUnit & {authParties_underenhetA: HierarchyOrganisation, authParties_personC: HierarchyPerson}} authParties_hovedenhetA Main unit A, its daily leader, subunit and person C.
  * @property {HierarchyMainUnit} authParties_hovedenhetB Main unit B and its daily leader.
- * @property {HierarchyMainUnit} authParties_hovedenhetC Main unit C, its daily leader and subunit.
- * @property {HierarchyMainUnit} authParties_hovedenhetD Main unit D, its daily leader and subunit.
+ * @property {HierarchyMainUnit & {authParties_underenhetC: HierarchyOrganisation}} authParties_hovedenhetC Main unit C, its daily leader and subunit.
+ * @property {HierarchyMainUnit & {authParties_underenhetD: HierarchyOrganisation}} authParties_hovedenhetD Main unit D, its daily leader and subunit.
  * @property {{[key: string]: string}} [instancer] Instance identifiers used by the enduser suite.
  */
 
 /**
- * A main unit and what hangs off it. Which subunit and person a unit carries differs
- * per unit, so everything but the daily leader is optional.
+ * A main unit and what hangs off it. Every unit is an organisation with a daily leader,
+ * so those fields are required; which subunit and person it carries differs per unit.
  *
  * @typedef {object} HierarchyMainUnit
- * @property {string} [org_no] Organisation number.
- * @property {string} [partyuuid] Party uuid.
- * @property {number} [partyid] Party id.
- * @property {FixtureParty} dagligleder The daily leader of the unit.
- * @property {FixtureParty} [authParties_underenhetA] Subunit of main unit A.
- * @property {FixtureParty} [authParties_underenhetC] Subunit of main unit C.
- * @property {FixtureParty} [authParties_underenhetD] Subunit of main unit D.
- * @property {FixtureParty} [authParties_personC] A person main unit A delegates to.
+ * @property {string} org_no Organisation number.
+ * @property {string} partyuuid Party uuid.
+ * @property {number} partyid Party id.
+ * @property {HierarchyPerson} dagligleder The daily leader of the unit.
+ * @property {HierarchyOrganisation} [authParties_underenhetA] Subunit of main unit A.
+ * @property {HierarchyOrganisation} [authParties_underenhetC] Subunit of main unit C.
+ * @property {HierarchyOrganisation} [authParties_underenhetD] Subunit of main unit D.
+ * @property {HierarchyPerson} [authParties_personC] A person main unit A delegates to.
  */
 
 /**

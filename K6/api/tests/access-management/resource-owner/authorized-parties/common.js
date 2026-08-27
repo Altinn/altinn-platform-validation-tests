@@ -43,7 +43,9 @@ const clientsByScope = new Map();
 function getClientForScopes(scopes) {
     const scopeString = CreateScopeString(scopes);
 
-    if (!clientsByScope.has(scopeString)) {
+    let client = clientsByScope.get(scopeString);
+
+    if (client === undefined) {
         const options = new EnterpriseTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withOrganization(SERVICE_OWNER.org)
@@ -52,13 +54,15 @@ function getClientForScopes(scopes) {
             .withTtl(3600)
             .build();
 
-        clientsByScope.set(scopeString, new AuthorizedPartiesClient(
+        client = new AuthorizedPartiesClient(
             __ENV.BASE_URL,
             new EnterpriseTokenGenerator(options),
-        ));
+        );
+
+        clientsByScope.set(scopeString, client);
     }
 
-    return clientsByScope.get(scopeString);
+    return client;
 }
 
 /**
