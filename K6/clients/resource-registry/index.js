@@ -1,6 +1,7 @@
 export { AccessListClient } from "./access-list.js";
 export { AccessListMembershipsClient } from "./access-list-memberships.js";
 export {
+    ResourceChangesQueryBuilder,
     ResourceSearchQueryBuilder,
     ResourceUpdatedQueryBuilder,
     ServiceResourceBuilder,

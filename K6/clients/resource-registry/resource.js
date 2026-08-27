@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { ResourceListQuery, ResourceSearchQuery, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
+import { ResourceChangesQuery, ResourceListQuery, ResourceSearchQuery, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
 
 const TAGS = {
     ResourceGetResourceList: {
@@ -49,6 +49,9 @@ const TAGS = {
 
     ResourceUpdated: {
         action: "resource-updated",
+    },
+    ResourceChanges: {
+        action: "resource-changes",
     },
 
 };
@@ -716,6 +719,72 @@ class ResourceClient {
             // The query stays out of the name tag, or metrics get one series per value.
             name: `${this.FULL_PATH}/updated`,
             action: TAGS.ResourceUpdated.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers,
+        });
+    }
+
+    /**
+     * Gets the feed of resources that have changed, ordered by change.
+     *
+     * Only resources that have had a policy uploaded at least once are in the
+     * feed, and each resource appears at most once, at the position of its
+     * latest change.
+     *
+     * @param {ResourceChangesQuery|null} [query] Query parameters.
+     * Optional query parameters.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    ResourceChanges(query = null, labels = null) {
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run as a healthcheck in prod.
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/json",
+        });
+        const token = this.tokenGenerator?.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
+        let url = `${this.FULL_PATH}/changes`;
+
+        if (query !== null) {
+            const params = /** @type {string[]} */ ([]);
+
+            Object.entries(query).forEach(([key, value]) => {
+
+                if (value === undefined || value === null) {
+                    return;
+                }
+
+                params.push(
+                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+                );
+            });
+
+            if (params.length > 0) {
+                url = `${url}?${params.join("&")}`;
+            }
+        }
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/changes`,
+            // The query stays out of the name tag, or metrics get one series per value.
+            name: `${this.FULL_PATH}/changes`,
+            action: TAGS.ResourceChanges.action,
         };
 
         if (labels !== null) {

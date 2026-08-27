@@ -1,3 +1,5 @@
+export { ResourceChanges } from "./changes.js";
+export { ResourceChangesRefused } from "./changes-refused.js";
 export { ResourceCreatePolicy } from "./create-policy.js";
 export { ResourceCreateResource } from "./create-resource.js";
 export { ResourceDeleteResource } from "./delete-resource.js";

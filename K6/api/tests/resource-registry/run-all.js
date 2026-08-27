@@ -1,4 +1,5 @@
 import runCreateResourceAndPolicy, { setup as setupCreateResourceAndPolicy } from "./create-resource-and-policy.js";
+import runGetResourceChanges, { setup as setupGetResourceChanges } from "./get-resource-changes.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 import runListAndSearchResources, { setup as setupListAndSearchResources } from "./list-and-search-resources.js";
 
@@ -10,6 +11,7 @@ import runListAndSearchResources, { setup as setupListAndSearchResources } from 
 export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
+        getResourceChanges: setupGetResourceChanges(),
         listAndSearchResources: setupListAndSearchResources(),
         createResourceAndPolicy: setupCreateResourceAndPolicy(),
     };
@@ -24,6 +26,7 @@ export function setup() {
  */
 export default function () {
     runGetUpdatedResources();
+    runGetResourceChanges();
     runListAndSearchResources();
     runCreateResourceAndPolicy();
 }

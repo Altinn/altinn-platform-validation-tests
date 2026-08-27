@@ -386,6 +386,57 @@
  */
 
 /**
+ * An entry in the resource changes feed.
+ *
+ * @typedef {object} ResourceChange
+ * @property {string} resourceId
+ * @property {string} changedAt
+ */
+
+/**
+ * @typedef {object} ResourceChangePaginated
+ * @property {Array<ResourceChange>|null} data
+ * @property {PaginatedLinks} links
+ */
+
+/**
+ * Query parameters for the resource changes feed.
+ *
+ * @typedef {object} ResourceChangesQuery
+ * @property {string|null} [token] Opaque continuation token from a previous page.
+ * @property {number|null} [limit] Maximum number of resources, 1 to 1000.
+ */
+
+/**
+ * Builder for query parameters for the resource changes feed.
+ *
+ * @typedef {object} ResourceChangesQueryBuilder
+ * @property {ResourceChangesQuery} query The underlying query parameter object.
+ */
+
+/**
+ * One of the validation errors in an Altinn problem body.
+ *
+ * @typedef {object} AltinnValidationError
+ * @property {string|null} code
+ * @property {string|null} title
+ * @property {Array<string>|null} paths The parts of the request the error is about.
+ * @property {string|null} detail
+ */
+
+/**
+ * The problem body the registry answers a refused request with.
+ *
+ * @typedef {object} AltinnValidationProblem
+ * @property {string|null} type
+ * @property {string|null} title
+ * @property {number|null} status
+ * @property {string|null} code
+ * @property {string|null} traceId
+ * @property {Array<AltinnValidationError>|null} validationErrors
+ */
+
+/**
  * @typedef {object} UpdatedResourceSubjectPaginated
  * @property {Array<UpdatedResourceSubject>|null} data
  * @property {PaginatedLinks} links
@@ -483,12 +534,16 @@ export const AccessListPagedQuery = undefined;
 export const AccessListResourceConnectionDtoAggregateVersionVersionedPaginated = undefined;
 export const AccessListResourceConnectionWithVersionDto = undefined;
 export const AccessListResourceMembershipWithActionFilterDtoListObject = undefined;
+export const AltinnValidationProblem = undefined;
 export const AttributeMatchV2Paginated = undefined;
 export const CreateAccessListModel = undefined;
 export const JsonPatchOperation = undefined;
 export const OrgList = undefined;
 export const PolicyRightsDTO = undefined;
 export const PolicyRuleDTO = undefined;
+export const ResourceChange = undefined;
+export const ResourceChangePaginated = undefined;
+export const ResourceChangesQuery = undefined;
 export const ResourceDecomposedDto = undefined;
 export const ResourceListQuery = undefined;
 export const ResourceListQueryBuilder = undefined;

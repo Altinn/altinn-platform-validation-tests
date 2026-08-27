@@ -18,3 +18,10 @@ test_definitions:
       - environment: tt02
       - environment: yt01
       - environment: prod
+  - test_file: get-resource-changes.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+      - environment: prod
