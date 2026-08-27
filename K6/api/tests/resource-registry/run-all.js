@@ -1,4 +1,5 @@
 import runCreateResourceAndPolicy, { setup as setupCreateResourceAndPolicy } from "./create-resource-and-policy.js";
+import runExportResources, { setup as setupExportResources } from "./export-resources.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
 /**
@@ -9,6 +10,7 @@ import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get
 export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
+        exportResources: setupExportResources(),
         createResourceAndPolicy: setupCreateResourceAndPolicy(),
     };
 }
@@ -22,6 +24,7 @@ export function setup() {
  */
 export default function () {
     runGetUpdatedResources();
+    runExportResources();
     runCreateResourceAndPolicy();
 }
 

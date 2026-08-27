@@ -8,3 +8,13 @@ test_definitions:
       - environment: tt02
       - environment: yt01
       - environment: prod
+  # The export hands out the whole catalogue in one response, so the size follows
+  # the number of resources in the environment: around 70 to 90 kB in at22 and
+  # at23, 570 kB in yt01, 2.2 MB in prod and 3.3 MB in tt02.
+  - test_file: export-resources.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+      - environment: prod
