@@ -72,6 +72,13 @@ export function setup() {
  * Test: a resource can be created and given a policy, and the registry reports
  * back the rights the policy granted.
  *
+ * Not scheduled, and deliberately not wired into run-all.js either. Deleting a
+ * resource leaves its rows in resourceregistry.resourcesubjects behind with
+ * deleted set to false, and nothing cleans them up, reported as
+ * Altinn/altinn-resource-registry#848 and concluded in #488. Every run leaks a
+ * couple of rows, so run this one on purpose and not by habit until #848 is
+ * fixed.
+ *
  * Writing to the registry needs an enterprise token with the resource.write
  * scope, and the registry only lets the owner write: it compares the resource
  * owner organization number against the consumer claim in the token.
