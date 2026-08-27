@@ -108,7 +108,11 @@ class OpenidClient {
             Accept: "application/json",
         });
 
-        return http.get(target, { tags, headers });
+        // Redirects are not followed. The point of passing the advertised jwks_uri in
+        // is to read exactly what the document names, and k6 would otherwise chase up
+        // to ten hops, so a validated URL answering 302 could still land on another
+        // environment's key set without any check noticing.
+        return http.get(target, { tags, headers, redirects: 0 });
     }
 }
 

@@ -9,8 +9,10 @@ import { withRetries } from "../../common/retry.js";
  *
  * The URL is a parameter so a test can follow the `jwks_uri` it read from the
  * discovery document instead of a URL this repo built. Reading it the way a relying
- * party would is the only thing that proves the advertised URL serves keys, and it
- * is also what catches a document that points at another environment.
+ * party would is what proves the advertised URL serves keys. It does not say the URL
+ * points at the right place: following a URL never checks it, so a document naming
+ * another environment's key set is caught by comparing the URL, which
+ * CheckEndpointsBelongToThisEnvironment does before this is called.
  *
  * @param {OpenidClient} openidClient Client for the OpenID metadata endpoints.
  * @param {string|null} [url] Absolute URL to read. Defaults to the path under the client's base URL.

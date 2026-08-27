@@ -39,6 +39,21 @@ const SUPPORT_FIELDS = [
 ];
 
 /**
+ * Builds the prefix a URL has to start with to belong to the environment.
+ *
+ * The trailing slash is what makes this an origin test rather than a substring
+ * test. Without it `https://platform.at22.altinn.no.example/` starts with the at22
+ * base url and would pass, which is exactly the kind of host a misdirected document
+ * would name.
+ *
+ * @param {string} baseUrl - Base URL of the environment under test.
+ * @returns {string} The prefix, ending in a single slash.
+ */
+function originPrefix(baseUrl) {
+    return `${baseUrl.replace(/\/+$/, "")}/`;
+}
+
+/**
  * Checks that the discovery document says who issues the tokens.
  *
  * The issuer is what a relying party compares the `iss` claim against, so it has to
@@ -52,43 +67,57 @@ const SUPPORT_FIELDS = [
  * @returns {boolean} True if the issuer names this environment, false otherwise.
  */
 function CheckIssuerIsThisEnvironment(discovery, baseUrl) {
+    const prefix = originPrefix(baseUrl);
+
     const success = check(discovery, {
         "CheckIssuerIsThisEnvironment - The issuer names the environment under test": (document) =>
             typeof document?.issuer === "string"
-            && document.issuer.startsWith(baseUrl),
+            && document.issuer.startsWith(prefix),
     });
 
     if (!success) {
-        console.error(`CheckIssuerIsThisEnvironment - expected an issuer under ${baseUrl}, got: ${discovery?.issuer}`);
+        console.error(`CheckIssuerIsThisEnvironment - expected an issuer under ${prefix}, got: ${discovery?.issuer}`);
     }
 
     return success;
 }
 
 /**
- * Checks that every endpoint the document names is an absolute URL.
+ * Checks that every endpoint the document names is an absolute URL under this
+ * environment.
  *
- * A relying party reads these and calls them without a base to resolve against, so
- * a relative or missing value makes the document unusable even though it parses.
- * The scheme is required to be https because these are all public Altinn endpoints
- * and none of them is served over anything else.
+ * Two things at once, because for these fields they are the same requirement. A
+ * relying party reads them and calls them without a base to resolve against, so a
+ * relative or missing value makes the document unusable even though it parses. And
+ * OpenID Connect Discovery has the metadata describe the issuer that serves it, so
+ * none of these may point out of the environment.
+ *
+ * The origin check is what catches the case the test is really here for. A document
+ * with the right issuer but a `jwks_uri` pointing at another environment reads as
+ * well-formed the whole way through: the URL is https, it answers 200, and it holds
+ * a perfectly good RSA key. It is just the wrong key, so every relying party in the
+ * environment ends up unable to verify the tokens the environment issues. Following
+ * the advertised URL does not catch that. Comparing it does.
  *
  * @param {DiscoveryDocument|null} discovery - The discovery document.
- * @returns {boolean} True if all the expected endpoints are absolute https URLs, false otherwise.
+ * @param {string} baseUrl - Base URL of the environment under test.
+ * @returns {boolean} True if all the expected endpoints are absolute URLs under this environment, false otherwise.
  */
-function CheckEndpointsAreAbsolute(discovery) {
+function CheckEndpointsBelongToThisEnvironment(discovery, baseUrl) {
+    const prefix = originPrefix(baseUrl);
+
     let success = true;
 
     for (const field of ENDPOINT_FIELDS) {
         const value = discovery?.[field];
 
         const present = check(discovery, {
-            [`CheckEndpointsAreAbsolute - ${field} is an absolute https URL`]: () =>
-                typeof value === "string" && value.startsWith("https://"),
+            [`CheckEndpointsBelongToThisEnvironment - ${field} is an absolute URL under this environment`]: () =>
+                typeof value === "string" && value.startsWith(prefix),
         });
 
         if (!present) {
-            console.error(`CheckEndpointsAreAbsolute - ${field} was: ${JSON.stringify(value)}`);
+            console.error(`CheckEndpointsBelongToThisEnvironment - expected ${field} under ${prefix}, got: ${JSON.stringify(value)}`);
             success = false;
         }
     }
@@ -145,7 +174,7 @@ function CheckSupportedValuesAreListed(discovery) {
 function CheckKeySetCanVerifySignatures(keySet) {
     const success = check(keySet, {
         "CheckKeySetCanVerifySignatures - The set holds a complete RSA signing key": (document) =>
-            (document?.keys ?? []).some((key) =>
+            Array.isArray(document?.keys) && document.keys.some((key) =>
                 key.kty === "RSA"
                 && key.use === "sig"
                 && typeof key.kid === "string" && key.kid.length > 0
@@ -162,7 +191,7 @@ function CheckKeySetCanVerifySignatures(keySet) {
 
 export const OpenidDomainChecks = {
     CheckIssuerIsThisEnvironment,
-    CheckEndpointsAreAbsolute,
+    CheckEndpointsBelongToThisEnvironment,
     CheckSupportedValuesAreListed,
     CheckKeySetCanVerifySignatures,
 };

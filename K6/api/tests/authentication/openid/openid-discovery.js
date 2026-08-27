@@ -19,7 +19,8 @@ export { setup } from "./commons.js";
  * Both endpoints are anonymous, so there is nothing here about who is asking.
  *
  * What is asserted is kept to what holds in every environment: the issuer belongs
- * to the environment under test, the endpoints named are absolute URLs, the
+ * to the environment under test, the endpoints named are absolute URLs under that
+ * same environment, the
  * supported-values lists are non-empty, and the key set holds a usable RSA signing
  * key. The concrete algorithms, key ids and endpoint paths are deployment details
  * that may legitimately differ, so they are not pinned down. Fields the OpenID
@@ -41,7 +42,7 @@ export default function () {
             }
 
             OpenidDomainChecks.CheckIssuerIsThisEnvironment(discovery, __ENV.BASE_URL);
-            OpenidDomainChecks.CheckEndpointsAreAbsolute(discovery);
+            OpenidDomainChecks.CheckEndpointsBelongToThisEnvironment(discovery, __ENV.BASE_URL);
             OpenidDomainChecks.CheckSupportedValuesAreListed(discovery);
         });
 
