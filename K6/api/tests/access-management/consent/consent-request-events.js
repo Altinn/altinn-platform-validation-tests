@@ -4,11 +4,16 @@ import { ConsentRequestEventsQueryBuilder } from "../../../../clients/access-man
 import { randomItem } from "../../../../common-imports.js";
 import { getOptions, requireEnv } from "../../../../helpers.js";
 import { EnterpriseGetConsentRequestEvents } from "../../../building-blocks/access-management/consent-enterprise/index.js";
-import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { collectNextUrlPages, extractNextUrl } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 import { getConsenteeOrgs, getEventsClient, getEventsTokenOpts } from "./commons.js";
 
 const getConsentRequestEventsLabel = { step: "Get Consent Request Events" };
+
+/**
+ * Name the checks report under.
+ */
+const OPERATION = "EnterpriseGetConsentRequestEvents";
 
 // Safety bound on how many pages to follow per iteration.
 const MAX_PAGES = __ENV.MAX_PAGES ? parseInt(__ENV.MAX_PAGES) : 10;
@@ -48,26 +53,46 @@ export default function (orgs) {
                 getConsentRequestEventsLabel,
             );
 
-            PaginationDomainChecks.CheckPaginatedShape(page, "EnterpriseGetConsentRequestEvents");
-            PaginationDomainChecks.CheckPaginatedNotEmpty(page, "EnterpriseGetConsentRequestEvents");
+            PaginationDomainChecks.CheckPaginatedShape(page, OPERATION);
+            PaginationDomainChecks.CheckPaginatedNotEmpty(page, OPERATION);
 
             return page;
         });
 
-        group("Follow the next-link pagination", function () {
+        group("Follow the next links on the consent request events", function () {
             const nextUrl = extractNextUrl(firstPage);
 
-            let additionalPages = 0;
-            if (nextUrl !== null) {
-                additionalPages = followNextUrlPagination(
+            const { pages, repeatedUrl, failedUrl, failedStatus } = nextUrl === null
+                ? { pages: [], repeatedUrl: null, failedUrl: null, failedStatus: null }
+                : collectNextUrlPages(
                     eventsTokenGenerator.getToken(),
                     nextUrl,
                     MAX_PAGES,
                     getConsentRequestEventsLabel,
                 );
+
+            PaginationDomainChecks.CheckNextLinksDoNotRepeat(repeatedUrl, OPERATION);
+
+            // A walk that dies on its last page still returns every page before it,
+            // so without this the distinct count below is satisfied by the prefix.
+            PaginationDomainChecks.CheckEveryPageLoaded(failedUrl, failedStatus, OPERATION);
+
+            for (const page of pages) {
+                PaginationDomainChecks.CheckPaginatedNotEmpty(page, OPERATION);
             }
 
-            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, "EnterpriseGetConsentRequestEvents");
+            // An event carries no id of its own, so the whole record is its identity:
+            // the consent request, what happened to it and when. Paging has to reach
+            // events the first page did not hold, which counting pages cannot say
+            // since a page that repeats the first one still counts.
+            const seen = new Set();
+            for (const page of [firstPage, ...pages]) {
+                for (const item of page?.data ?? []) {
+                    seen.add(JSON.stringify(item));
+                }
+            }
+
+            PaginationDomainChecks.CheckPagesHoldDistinctItems(seen.size, firstPage?.data?.length ?? 0, OPERATION);
         });
     });
 }
