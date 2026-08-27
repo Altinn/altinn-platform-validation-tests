@@ -36,21 +36,6 @@ export default function () {
     const introspectionClient = getClient();
 
     group("As a caller, I can ask whether a token is valid", function () {
-        group("A platform access token is reported active", function () {
-            // The bearer stays the client's own enterprise token. Only the
-            // introspected token is swapped, since the two are separate concerns
-            // here and the endpoint answers about the one in the body.
-            const introspection = IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, {
-                token: getPlatformAccessToken(),
-            });
-
-            if (introspection === null) {
-                fail("cannot read the answer: the introspection call did not return one");
-            }
-
-            IntrospectionDomainChecks.CheckTokenActive(introspection, PLATFORM_TOKEN_ISSUER);
-        });
-
         group("Introspecting a token answers whether it is active", function () {
             // The hint is what a caller that knows what it holds sends along.
             const introspection = IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, { tokenTypeHint: "access_token" });
@@ -85,6 +70,22 @@ export default function () {
         // authentication would answer 200 and turn this group red.
         group("A request without a bearer is refused", function () {
             IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, { bearer: null }, 401);
+        });
+
+        // Last on purpose. This is the only group that depends on a second token
+        // generator endpoint, and both a non-200 from it and a fail() here abort the
+        // whole iteration, which would take the four groups above with it. Nothing
+        // fails hard: CheckTokenActive already fails closed on a missing answer, so a
+        // generator that is cold or down degrades the run instead of cutting it.
+        group("A platform access token is reported active", function () {
+            // The bearer stays the client's own enterprise token. Only the
+            // introspected token is swapped, since the two are separate concerns
+            // here and the endpoint answers about the one in the body.
+            const introspection = IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, {
+                token: getPlatformAccessToken(),
+            });
+
+            IntrospectionDomainChecks.CheckTokenActive(introspection, PLATFORM_TOKEN_ISSUER);
         });
     });
 }

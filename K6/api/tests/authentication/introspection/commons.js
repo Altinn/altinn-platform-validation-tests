@@ -17,10 +17,11 @@ const ORG_NO = "312605031";
 /**
  * The issuer a platform access token comes back introspected as.
  *
- * The token generator signs platform access tokens as `platform` unless it is asked
- * for another issuer, and the endpoint echoes the issuer it read out of the token
- * it accepted. Left as the default on purpose: passing `org` to the generator makes
- * it answer with an empty body rather than a token.
+ * The generator's `org` sets the issuer, and leaving it out defaults to `platform`.
+ * It is passed explicitly anyway, so the test pins the issuer it mints rather than
+ * asserting on an undocumented default. The endpoint echoes the issuer it read out
+ * of the token it accepted, which is what makes this worth checking alongside the
+ * active flag.
  */
 export const PLATFORM_TOKEN_ISSUER = "platform";
 
@@ -42,8 +43,9 @@ let tokenGenerator = undefined;
 /**
  * k6 setup stage.
  *
- * Nothing to arrange: the token the test introspects is the one it authenticates
- * with, and that is minted per VU rather than in the setup.
+ * Nothing to arrange: every token this folder uses is minted per VU rather than in
+ * the setup, both the enterprise token the calls authenticate with and the platform
+ * access token the positive case introspects.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -102,6 +104,7 @@ export function getPlatformAccessToken() {
         platformTokenGenerator = new PlatformTokenGenerator(
             new PlatformTokenBuilder()
                 .withEnvironment(__ENV.ENVIRONMENT)
+                .withOrganization(PLATFORM_TOKEN_ISSUER)
                 .withTtl(3600)
                 .build(),
         );
