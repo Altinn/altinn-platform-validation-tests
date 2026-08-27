@@ -89,7 +89,16 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourceList(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run without one.
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/json",
+        });
+        const token = this.tokenGenerator?.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
 
         let url = `${this.FULL_PATH}/resourcelist`;
 
@@ -127,10 +136,7 @@ class ResourceClient {
 
         return http.get(url, {
             tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
+            headers,
         });
     }
 
@@ -613,7 +619,16 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceSearch(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run without one.
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/json",
+        });
+        const token = this.tokenGenerator?.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
 
         let url = `${this.FULL_PATH}/Search`;
 
@@ -651,10 +666,7 @@ class ResourceClient {
 
         return http.get(url, {
             tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
+            headers,
         });
     }
     /**

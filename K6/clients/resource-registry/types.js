@@ -303,7 +303,6 @@
  *
  * @typedef {object} ResourceListQueryBuilder
  * @property {boolean} [includeApps]
- * @property {boolean} [includeAltinn2]
  * @property {boolean} [includeMigratedApps]
  */
 
@@ -375,6 +374,7 @@
  * @property {ResourceType|null} ResourceType Resource type filter.
  * @property {string|null} Keyword Keyword filter.
  * @property {string|null} Reference Reference filter.
+ * @property {string|null} OrgCode Resource owner filter.
  */
 
 /**
@@ -417,6 +417,7 @@
  * @property {ResourceType|null} [ResourceType] Resource type filter.
  * @property {string|null} [Keyword] Keyword filter.
  * @property {string|null} [Reference] Reference filter.
+ * @property {string|null} [OrgCode] Resource owner filter.
  */
 
 /**

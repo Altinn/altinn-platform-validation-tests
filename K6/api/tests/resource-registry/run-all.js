@@ -1,5 +1,6 @@
 import runCreateResourceAndPolicy, { setup as setupCreateResourceAndPolicy } from "./create-resource-and-policy.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
+import runListAndSearchResources, { setup as setupListAndSearchResources } from "./list-and-search-resources.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings.
@@ -9,6 +10,7 @@ import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get
 export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
+        listAndSearchResources: setupListAndSearchResources(),
         createResourceAndPolicy: setupCreateResourceAndPolicy(),
     };
 }
@@ -22,6 +24,7 @@ export function setup() {
  */
 export default function () {
     runGetUpdatedResources();
+    runListAndSearchResources();
     runCreateResourceAndPolicy();
 }
 

@@ -8,3 +8,13 @@ test_definitions:
       - environment: tt02
       - environment: yt01
       - environment: prod
+  # Both endpoints hand out the whole catalogue in one response, and the test
+  # asks for it twice to compare them: around 1.5 MB per run in at22, 3.6 MB in
+  # at23 and yt01, 7.7 MB in prod and 15 MB in tt02.
+  - test_file: list-and-search-resources.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+      - environment: prod
