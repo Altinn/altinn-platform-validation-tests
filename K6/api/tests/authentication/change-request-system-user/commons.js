@@ -55,10 +55,12 @@ export const PAGINATION_SYSTEM_OWNER = "312605031";
  * at22, at23, tt02 and yt01. Reseeding one, or seeding a new one, means acting as
  * vendor 312605031: register 312605031_PaginationChangeRequests, invisible, redirect
  * url https://digdir.no, rights k6-instancedelegation-test and
- * ttd-dialogporten-dummy, one client id. Ask for a system user for the customer in
- * testdata/authentication/change-request-system-user/end-users-<env>.csv, granting
- * only k6-instancedelegation-test, and have that customer approve it through the
- * bff. Then create 120 change requests on that system user, each asking for
+ * ttd-dialogporten-dummy, one client id, and the system name
+ * PaginationChangeRequests. Ask for a system user for organisation 313490114, which
+ * is the customer that holds it in all four environments and is a row in
+ * K6/testdata/authentication/change-request-system-user/end-users-<env>.csv,
+ * granting only k6-instancedelegation-test, and have that customer approve it
+ * through the bff. Then create 120 change requests on that system user, each asking for
  * ttd-dialogporten-dummy with a fresh correlation id, and leave them pending. 120
  * because the listing hands out 50 per page, so three pages, and pending because a
  * change request nobody acted on stays listed for good.

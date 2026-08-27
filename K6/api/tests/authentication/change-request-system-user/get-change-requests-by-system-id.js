@@ -1,7 +1,7 @@
 import { fail, group } from "k6";
 
 import { ChangeRequestSystemUserBuildingBlocks } from "../../../authentication-imports.js";
-import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { collectNextUrlPages, extractNextUrl } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 import { getPaginationClients, PAGINATION_SYSTEM_ID } from "./commons.js";
 
@@ -44,17 +44,41 @@ export default function () {
             return page;
         });
 
-        group("Follow the next-link pagination", function () {
+        group("Follow the next links on the seeded change request system", function () {
             PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, OPERATION);
 
             const nextUrl = extractNextUrl(firstPage);
 
-            let additionalPages = 0;
-            if (nextUrl !== null) {
-                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
+            // The raw link is what tells a stuck endpoint apart from one that hands
+            // out no continuation at all, and the two have different fixes. Logged
+            // rather than asserted on, since its shape is the endpoint's business.
+            console.log(`${OPERATION} - next link from the first page: ${nextUrl}`);
+
+            const { pages, repeatedUrl } = nextUrl === null
+                ? { pages: [], repeatedUrl: null }
+                : collectNextUrlPages(tokenGenerator.getToken(), nextUrl);
+
+            PaginationDomainChecks.CheckNextLinksDoNotRepeat(repeatedUrl, OPERATION);
+
+            // Every page answers for itself. Reading only the first page would let a
+            // later one belong to another system, or hold nothing, without anyone
+            // noticing.
+            for (const page of pages) {
+                PaginationDomainChecks.CheckPaginatedNotEmpty(page, OPERATION);
+                PaginationDomainChecks.CheckItemsBelongToSystem(page, PAGINATION_SYSTEM_ID, "change request");
             }
 
-            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, OPERATION);
+            // The point of the seeded data: paging has to reach change requests the
+            // first page did not hold. Counting pages cannot say that, since a page
+            // that repeats the first one still counts as a page.
+            const seen = new Set();
+            for (const page of [firstPage, ...pages]) {
+                for (const item of page?.data ?? []) {
+                    seen.add(/** @type {{id?: string}} */ (item)?.id);
+                }
+            }
+
+            PaginationDomainChecks.CheckPagesHoldDistinctItems(seen.size, firstPage?.data?.length ?? 0, OPERATION);
         });
     });
 }
