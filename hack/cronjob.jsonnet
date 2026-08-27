@@ -2,29 +2,53 @@ local cronSchedule = std.extVar('cron_schedule');
 local namespace = std.extVar('namespace');
 local input_config_file = std.extVar('config_file');
 
-local cronJobName = std.asciiLower(
-  std.strReplace(
+local maxCronJobNameLength = 52; // Don't remember the correct value, but yea... Need to fix this eventually.
+
+local deVowel(str) =
+  std.foldl(
+    function(acc, vowel)
+      std.strReplace(acc, vowel, ''),
+    [
+      'a',
+      'e',
+      'i',
+      'o',
+      'u'
+    ],
+    str
+  );
+
+local normalizeCronJobName(input) =
+  std.asciiLower(
     std.strReplace(
       std.strReplace(
         std.strReplace(
           std.strReplace(
-            input_config_file,
-            namespace + '/',
+            std.strReplace(
+              input,
+              namespace + '/',
+              ''
+            ),
+            './K6/browser/',
             ''
           ),
-          './K6/browser/',
+          './K6/api/tests/',
           ''
         ),
-        './K6/api/tests/',
-        ''
+        '/',
+        '-'
       ),
-      '/',
-      '-'
-    ),
-    '.yaml',
-    ''
-  )
-);
+      '.yaml',
+      ''
+    )
+  );
+
+local cronJobName =
+  local normalized = normalizeCronJobName(input_config_file);
+  if std.length(normalized) > maxCronJobNameLength then
+    deVowel(normalized)
+  else
+    normalized;
 
 local cronjob = {
   apiVersion: 'batch/v1',
