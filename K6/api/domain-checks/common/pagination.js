@@ -208,10 +208,37 @@ function CheckNextLinksDoNotRepeat(repeatedUrl, operation) {
     return success;
 }
 
+/**
+ * Checks that every page the walk asked for actually answered.
+ *
+ * A walk that dies partway still returns the pages it did read, so a caller looking
+ * only at those sees a healthy prefix. That is the dangerous shape: a listing whose
+ * last page fails still delivers enough distinct items to satisfy every other check
+ * here, and the missing tail goes unreported.
+ *
+ * @param {string|null} failedUrl - The URL that did not answer 200, or null.
+ * @param {number|null} failedStatus - The status it answered with, or null.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if every page answered, false otherwise.
+ */
+function CheckEveryPageLoaded(failedUrl, failedStatus, operation) {
+    const success = check(failedUrl, {
+        [`CheckEveryPageLoaded - ${operation} answers every page of the walk`]: (url) =>
+            url === null,
+    });
+
+    if (!success) {
+        console.error(`CheckEveryPageLoaded - ${operation} stopped on ${failedStatus} from: ${failedUrl}`);
+    }
+
+    return success;
+}
+
 export const PaginationDomainChecks = {
     CheckPaginatedShape,
     CheckPaginatedNotEmpty,
     CheckMultiplePages,
+    CheckEveryPageLoaded,
     CheckNextLinksDoNotRepeat,
     CheckPagesHoldDistinctItems,
     CheckItemsBelongToSystem,

@@ -54,11 +54,15 @@ export default function () {
             // rather than asserted on, since its shape is the endpoint's business.
             console.log(`${OPERATION} - next link from the first page: ${nextUrl}`);
 
-            const { pages, repeatedUrl } = nextUrl === null
-                ? { pages: [], repeatedUrl: null }
+            const { pages, repeatedUrl, failedUrl, failedStatus } = nextUrl === null
+                ? { pages: [], repeatedUrl: null, failedUrl: null, failedStatus: null }
                 : collectNextUrlPages(tokenGenerator.getToken(), nextUrl);
 
             PaginationDomainChecks.CheckNextLinksDoNotRepeat(repeatedUrl, OPERATION);
+
+            // A walk that dies on its last page still returns every page before it,
+            // so without this the distinct count below is satisfied by the prefix.
+            PaginationDomainChecks.CheckEveryPageLoaded(failedUrl, failedStatus, OPERATION);
 
             // Every page answers for itself. Reading only the first page would let a
             // later one belong to another system, or hold nothing, without anyone

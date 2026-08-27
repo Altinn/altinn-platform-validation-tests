@@ -123,11 +123,16 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = 
  * next link forever ends the walk instead of running to maxPages. The caller sees
  * that in `urls`, which holds every URL fetched, in order.
  *
+ * A page that does not answer 200 also ends the walk, and is reported in
+ * `failedUrl`. It has to be reported rather than only logged: a walk that dies on
+ * its last page still returns every page before it, so a caller that looks only at
+ * what came back sees a healthy prefix and cannot tell that the tail is missing.
+ *
  * @param {string} token Bearer token for the follow-up requests.
  * @param {string|null} nextUrl Fully qualified URL from `links.next`.
  * @param {number} [maxPages=10] Most pages to fetch.
  * @param {{[x: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {{pages: Array<PaginatedResponse>, urls: string[], repeatedUrl: string|null}} The parsed pages, the URLs fetched, and the URL that ended the walk by repeating, if one did.
+ * @returns {{pages: Array<PaginatedResponse>, urls: string[], repeatedUrl: string|null, failedUrl: string|null, failedStatus: number|null}} The parsed pages, the URLs fetched, the URL that ended the walk by repeating, and the URL that ended it by not answering 200 together with the status it gave.
  */
 export function collectNextUrlPages(token, nextUrl, maxPages = 10, labels = null) {
     /** @type {Array<PaginatedResponse>} */
@@ -141,7 +146,7 @@ export function collectNextUrlPages(token, nextUrl, maxPages = 10, labels = null
 
     while (currentUrl && pages.length < maxPages) {
         if (seenUrls.has(currentUrl)) {
-            return { pages, urls, repeatedUrl: currentUrl };
+            return { pages, urls, repeatedUrl: currentUrl, failedUrl: null, failedStatus: null };
         }
 
         seenUrls.add(currentUrl);
@@ -168,7 +173,7 @@ export function collectNextUrlPages(token, nextUrl, maxPages = 10, labels = null
 
         if (res.status !== 200 || typeof res.body !== "string" || res.body.length === 0) {
             console.error(`collectNextUrlPages - ${url} answered ${res.status} ${res.status_text}`);
-            return { pages, urls, repeatedUrl: null };
+            return { pages, urls, repeatedUrl: null, failedUrl: url, failedStatus: res.status };
         }
 
         urls.push(url);
@@ -177,5 +182,5 @@ export function collectNextUrlPages(token, nextUrl, maxPages = 10, labels = null
         currentUrl = extractNextUrl(pages[pages.length - 1]);
     }
 
-    return { pages, urls, repeatedUrl: null };
+    return { pages, urls, repeatedUrl: null, failedUrl: null, failedStatus: null };
 }
