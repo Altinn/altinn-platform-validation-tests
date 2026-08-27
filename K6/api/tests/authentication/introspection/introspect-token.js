@@ -1,7 +1,7 @@
 import { fail, group } from "k6";
 
 import { IntrospectionBuildingBlocks, IntrospectionDomainChecks } from "../../../authentication-imports.js";
-import { getClient } from "./commons.js";
+import { getClient, getPlatformAccessToken, PLATFORM_TOKEN_ISSUER } from "./commons.js";
 
 export { setup } from "./commons.js";
 
@@ -21,15 +21,16 @@ const EMPTY_TOKEN_REFUSAL = /token/i;
  * says why, and anything it can be handed comes back as an answer rather than as a
  * 500.
  *
- * It deliberately does not assert that a valid token comes back active. No token
- * this repo can mint does, not even one whose `iss` is the environment's own
- * authentication service, so what makes a token active is an open question for the
- * authentication team rather than something to pin down in a check. See #463.
+ * Both answers are covered, which is what makes the negative ones worth anything:
+ * a token that comes back active proves the endpoint reads what it is handed, so an
+ * inactive answer elsewhere is a refusal rather than an endpoint that never looked.
  *
- * That gap is worth knowing when reading the groups below. Until it is closed,
- * nothing here separates an endpoint that read the token and found it invalid from
- * one that never read it at all, so the groups are named for what they do verify
- * rather than for what a reader would expect them to.
+ * Which token comes back active is narrower than it first appears. The endpoint
+ * tries its validators in turn and answers active for the first that accepts the
+ * token, and only one is wired up: the eFormidling access token validator, which
+ * takes platform access tokens. Ordinary Altinn bearers are not that, so the
+ * enterprise and personal tokens the rest of this repo runs on come back inactive,
+ * and so does an Altinn token off the exchange. See #463.
  */
 export default function () {
     const introspectionClient = getClient();
@@ -69,6 +70,22 @@ export default function () {
         // authentication would answer 200 and turn this group red.
         group("A request without a bearer is refused", function () {
             IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, { bearer: null }, 401);
+        });
+
+        // Last on purpose. This is the only group that depends on a second token
+        // generator endpoint, and both a non-200 from it and a fail() here abort the
+        // whole iteration, which would take the four groups above with it. Nothing
+        // fails hard: CheckTokenActive already fails closed on a missing answer, so a
+        // generator that is cold or down degrades the run instead of cutting it.
+        group("A platform access token is reported active", function () {
+            // The bearer stays the client's own enterprise token. Only the
+            // introspected token is swapped, since the two are separate concerns
+            // here and the endpoint answers about the one in the body.
+            const introspection = IntrospectionBuildingBlocks.IntrospectToken(introspectionClient, {
+                token: getPlatformAccessToken(),
+            });
+
+            IntrospectionDomainChecks.CheckTokenActive(introspection, PLATFORM_TOKEN_ISSUER);
         });
     });
 }
