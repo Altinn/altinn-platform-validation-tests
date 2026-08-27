@@ -77,7 +77,12 @@ var errorPathCases = []errorPathCase{
 		name:        "PodReconciler",
 		addToScheme: corev1.AddToScheme,
 		expired: func() client.Object {
-			return &corev1.Pod{ObjectMeta: expiredMeta("expired-pod")}
+			return &corev1.Pod{
+				ObjectMeta: expiredMeta("expired-pod"),
+				Status: corev1.PodStatus{
+					Phase: corev1.PodSucceeded,
+				},
+			}
 		},
 		reconcile: func(
 			ctx context.Context,
@@ -111,6 +116,9 @@ var errorPathCases = []errorPathCase{
 		expired: func() client.Object {
 			return &k6iov1alpha1.TestRun{
 				ObjectMeta: expiredMeta("expired-test-run"),
+				Status: k6iov1alpha1.TestRunStatus{
+					Stage: "finished",
+				},
 			}
 		},
 		reconcile: func(

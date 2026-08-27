@@ -11,7 +11,7 @@ var (
 			Name: "cleaneroperator_testrun_deletions_total",
 			Help: "Total number of TestRun resources deleted by the cleaner operator.",
 		},
-		[]string{"namespace"},
+		[]string{"k8s_namespace"},
 	)
 )
 

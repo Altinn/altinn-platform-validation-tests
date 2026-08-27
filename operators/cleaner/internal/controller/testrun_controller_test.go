@@ -86,6 +86,9 @@ var _ = Describe("TestRun Controller", func() {
 					Name:      "old-test-run",
 					Namespace: "default",
 				},
+				Status: k6iov1alpha1.TestRunStatus{
+					Stage: "finished",
+				},
 			}
 
 			testRun.CreationTimestamp = metav1.Time{
@@ -173,6 +176,9 @@ var _ = Describe("TestRun Controller", func() {
 					Name:      "threshold-test-run",
 					Namespace: "default",
 				},
+				Status: k6iov1alpha1.TestRunStatus{
+					Stage: "finished",
+				},
 			}
 
 			testRun.CreationTimestamp = metav1.Time{
@@ -206,4 +212,47 @@ var _ = Describe("TestRun Controller", func() {
 			Expect(apierrors.IsNotFound(err)).To(BeTrue())
 		})
 	})
+
+	When("the TestRun is older than the deletion threshold but not finished", func() {
+		It("should not delete the TestRun", func() {
+			testRun := &k6iov1alpha1.TestRun{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "old-running-test-run",
+					Namespace: "default",
+				},
+				Status: k6iov1alpha1.TestRunStatus{
+					Stage: "started",
+				},
+			}
+
+			testRun.CreationTimestamp = metav1.Time{
+				Time: time.Now().UTC().Add(
+					-(DeletionThreshold + time.Minute),
+				),
+			}
+
+			Expect(k8sClient.Create(ctx, testRun)).To(Succeed())
+
+			result, err := reconciler.Reconcile(ctx, ctrl.Request{
+				NamespacedName: types.NamespacedName{
+					Namespace: testRun.Namespace,
+					Name:      testRun.Name,
+				},
+			})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(ctrl.Result{}))
+
+			var existingTestRun k6iov1alpha1.TestRun
+			Expect(k8sClient.Get(
+				ctx,
+				types.NamespacedName{
+					Namespace: testRun.Namespace,
+					Name:      testRun.Name,
+				},
+				&existingTestRun,
+			)).To(Succeed())
+		})
+	})
+
 })

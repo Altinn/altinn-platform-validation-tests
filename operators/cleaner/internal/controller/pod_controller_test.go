@@ -83,6 +83,9 @@ var _ = Describe("Pod Controller", func() {
 						),
 					},
 				},
+				Status: corev1.PodStatus{
+					Phase: corev1.PodSucceeded,
+				},
 			}
 
 			Expect(k8sClient.Create(ctx, pod)).To(Succeed())
@@ -172,6 +175,9 @@ var _ = Describe("Pod Controller", func() {
 						),
 					},
 				},
+				Status: corev1.PodStatus{
+					Phase: corev1.PodSucceeded,
+				},
 			}
 
 			Expect(k8sClient.Create(ctx, pod)).To(Succeed())
@@ -199,4 +205,46 @@ var _ = Describe("Pod Controller", func() {
 			Expect(apierrors.IsNotFound(err)).To(BeTrue())
 		})
 	})
+
+	When("the Pod is older than the deletion threshold but did not succeed", func() {
+		It("should not delete the Pod", func() {
+			pod := &corev1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "old-running-pod",
+					Namespace: "default",
+					CreationTimestamp: metav1.Time{
+						Time: time.Now().UTC().Add(
+							-(DeletionThreshold + time.Minute),
+						),
+					},
+				},
+				Status: corev1.PodStatus{
+					Phase: corev1.PodRunning,
+				},
+			}
+
+			Expect(k8sClient.Create(ctx, pod)).To(Succeed())
+
+			result, err := reconciler.Reconcile(ctx, ctrl.Request{
+				NamespacedName: types.NamespacedName{
+					Namespace: pod.Namespace,
+					Name:      pod.Name,
+				},
+			})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(ctrl.Result{}))
+
+			var existingPod corev1.Pod
+			Expect(k8sClient.Get(
+				ctx,
+				types.NamespacedName{
+					Namespace: pod.Namespace,
+					Name:      pod.Name,
+				},
+				&existingPod,
+			)).To(Succeed())
+		})
+	})
+
 })
