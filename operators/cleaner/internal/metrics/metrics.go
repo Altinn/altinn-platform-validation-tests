@@ -6,11 +6,12 @@ import (
 )
 
 var (
-	TestRunDeletionsTotal = prometheus.NewCounter(
+	TestRunDeletionsTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "cleaneroperator_testrun_deletions_total",
 			Help: "Total number of TestRun resources deleted by the cleaner operator.",
 		},
+		[]string{"namespace"},
 	)
 )
 
