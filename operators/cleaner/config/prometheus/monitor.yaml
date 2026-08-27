@@ -6,8 +6,9 @@ metadata:
     control-plane: controller-manager
     app.kubernetes.io/name: cleaner
     app.kubernetes.io/managed-by: kustomize
+    release: kube-prometheus-stack # // Important, otherwise the Prometheus instance won't pick it up
   name: controller-manager-metrics-monitor
-  namespace: system
+  namespace: cleaner-system
 spec:
   endpoints:
     - path: /metrics

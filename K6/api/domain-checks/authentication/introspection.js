@@ -25,6 +25,33 @@ function CheckIntrospectionAnswered(introspection) {
 }
 
 /**
+ * Checks that a token was accepted.
+ *
+ * The issuer is checked alongside the flag rather than on its own. The endpoint
+ * only fills `iss` in when it accepted the token, so the two travel together, and
+ * an answer that turned active while naming some other issuer is a different
+ * validator having claimed the token than the one the test meant to exercise.
+ *
+ * @param {IntrospectionResponse|null} introspection - The introspection response.
+ * @param {string} expectedIssuer - The issuer the answer has to name.
+ * @returns {boolean} True if the token was reported active and issued by that issuer, false otherwise.
+ */
+function CheckTokenActive(introspection, expectedIssuer) {
+    const success = check(introspection, {
+        "CheckTokenActive - The token is reported active": (response) =>
+            response?.active === true,
+        "CheckTokenActive - The answer names the issuer that signed the token": (response) =>
+            response?.iss === expectedIssuer,
+    });
+
+    if (!success) {
+        console.error(`CheckTokenActive - introspection returned: ${JSON.stringify(introspection)}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that a token was rejected.
  *
  * @param {IntrospectionResponse|null} introspection - The introspection response.
@@ -45,5 +72,6 @@ function CheckTokenInactive(introspection) {
 
 export const IntrospectionDomainChecks = {
     CheckIntrospectionAnswered,
+    CheckTokenActive,
     CheckTokenInactive,
 };

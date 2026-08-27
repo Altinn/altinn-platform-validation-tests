@@ -76,7 +76,10 @@ class AuthorizedPartiesClient {
             {
                 tags,
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    // An empty token means the caller wants an unauthenticated
+                    // request, so send no Authorization header at all rather
+                    // than a bare "Bearer ".
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     Accept: "application/json",
                     "Content-type": "application/json",
                 },
