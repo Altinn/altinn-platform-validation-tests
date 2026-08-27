@@ -18,7 +18,6 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
@@ -56,25 +55,34 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		if apierrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
+
 		log.Error(err, "Unable to fetch Pod", "namespace", req.Namespace, "name", req.Name)
 		return ctrl.Result{}, err
-	} else {
-		elapsedTime := time.Since(pod.CreationTimestamp.Time)
-		if elapsedTime >= DeletionThreshold {
-			log.Info(fmt.Sprintf("Pod %s should be deleted", pod.Name))
-			if err := r.Delete(ctx, &pod); err != nil {
-				if apierrors.IsNotFound(err) {
-					return ctrl.Result{}, nil
-				}
-				log.Error(err, "Unable to delete old pod", "Pod", pod)
-				return ctrl.Result{}, err
-			}
-		} else {
-			// log.Info(fmt.Sprintf("Pod will be deleted in %d minutes", DeletionThreshold-minutesSince))
-			return ctrl.Result{
-				RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
-			}, nil
+	}
+
+	elapsedTime := time.Since(pod.CreationTimestamp.Time)
+
+	// The Pod has not reached the deletion threshold yet.
+	if elapsedTime < DeletionThreshold {
+		return ctrl.Result{
+			RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
+		}, nil
+	}
+
+	// Only successfully completed Pods should be deleted.
+	if pod.Status.Phase != corev1.PodSucceeded {
+		return ctrl.Result{}, nil
+	}
+
+	log.Info("Pod should be deleted", "name", pod.Name)
+
+	if err := r.Delete(ctx, &pod); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
 		}
+
+		log.Error(err, "Unable to delete old pod", "Pod", pod)
+		return ctrl.Result{}, err
 	}
 
 	return ctrl.Result{}, nil

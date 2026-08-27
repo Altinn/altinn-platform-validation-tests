@@ -18,7 +18,6 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/Altinn/altinn-platform-validation-tests/operators/cleaner/internal/metrics"
@@ -57,29 +56,38 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		if apierrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
+
 		log.Error(err, "Unable to fetch TestRun", "namespace", req.Namespace, "name", req.Name)
 		return ctrl.Result{}, err
-	} else {
-		elapsedTime := time.Since(testRun.CreationTimestamp.Time)
-		if elapsedTime >= DeletionThreshold {
-			log.Info(fmt.Sprintf("Test run %s should be deleted", testRun.Name))
-			if err := r.Delete(ctx, &testRun); err != nil {
-				if apierrors.IsNotFound(err) {
-					return ctrl.Result{}, nil
-				}
-				log.Error(err, "Unable to delete old testrun", "TestRun", testRun)
-				return ctrl.Result{}, err
-			}
-			metrics.TestRunDeletionsTotal.
-				WithLabelValues(testRun.Namespace).
-				Inc()
-		} else {
-			// log.Info(fmt.Sprintf("TestRun will be deleted in %d minutes", DeletionThreshold-minutesSince))
-			return ctrl.Result{
-				RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
-			}, nil
-		}
 	}
+
+	elapsedTime := time.Since(testRun.CreationTimestamp.Time)
+
+	if elapsedTime < DeletionThreshold {
+		return ctrl.Result{
+			RequeueAfter: DeletionThreshold - elapsedTime + time.Minute,
+		}, nil
+	}
+
+	if testRun.Status.Stage != k6iov1alpha1.Stage("finished") {
+		return ctrl.Result{}, nil
+	}
+
+	log.Info("Test run should be deleted", "name", testRun.Name)
+
+	if err := r.Delete(ctx, &testRun); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+
+		log.Error(err, "Unable to delete old testrun", "TestRun", testRun)
+		return ctrl.Result{}, err
+	}
+
+	metrics.TestRunDeletionsTotal.
+		WithLabelValues(testRun.Namespace).
+		Inc()
+
 	return ctrl.Result{}, nil
 }
 
