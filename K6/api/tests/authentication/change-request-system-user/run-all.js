@@ -1,6 +1,7 @@
 import { cleanupArranged } from "./commons.js";
 import runCreateAndApproveChangeRequest, { setup as setupCreateAndApprove } from "./create-and-approve-change-request.js";
 import runCreateAndDeleteChangeRequest, { setup as setupCreateAndDelete } from "./create-and-delete-change-request.js";
+import runGetChangeRequestsBySystemId, { setup as setupGetBySystemId } from "./get-change-requests-by-system-id.js";
 import runListChangeRequestsBySystem, { setup as setupListBySystem } from "./list-change-requests-by-system.js";
 
 /**
@@ -14,6 +15,10 @@ export function setup() {
         createAndApprove: setupCreateAndApprove(),
         createAndDelete: setupCreateAndDelete(),
         listBySystem: setupListBySystem(),
+
+        // Arranges nothing, it only checks the environment. Called anyway so a
+        // missing url fails here rather than halfway through the run.
+        getBySystemId: setupGetBySystemId(),
     };
 }
 
@@ -27,6 +32,7 @@ export default function (data) {
     runCreateAndApproveChangeRequest(data.createAndApprove);
     runCreateAndDeleteChangeRequest(data.createAndDelete);
     runListChangeRequestsBySystem(data.listBySystem);
+    runGetChangeRequestsBySystemId();
 }
 
 /**
@@ -38,6 +44,9 @@ export function teardown(data) {
     cleanupArranged(data.createAndApprove);
     cleanupArranged(data.createAndDelete);
     cleanupArranged(data.listBySystem);
+
+    // Nothing for get-change-requests-by-system-id.js: it reads a seeded system
+    // that has to outlive the run, so there is nothing of its own to remove.
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

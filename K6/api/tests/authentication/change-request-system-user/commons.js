@@ -43,6 +43,34 @@ const VENDOR_SCOPES = CreateScopeString([
 export const REDIRECT_URL = "https://digdir.no";
 
 /**
+ * The vendor that owns the system the pagination test reads from.
+ */
+export const PAGINATION_SYSTEM_OWNER = "312605031";
+
+/**
+ * The system the pagination test pages through.
+ *
+ * Seeded once per environment and left in place on purpose, the same way
+ * 312605031_Virksomhetsbruker is for the ordinary system user requests. It exists in
+ * at22, at23, tt02 and yt01. Reseeding one, or seeding a new one, means acting as
+ * vendor 312605031: register 312605031_PaginationChangeRequests, invisible, redirect
+ * url https://digdir.no, rights k6-instancedelegation-test and
+ * ttd-dialogporten-dummy, one client id, and the system name
+ * PaginationChangeRequests. Ask for a system user for organisation 313490114, which
+ * is the customer that holds it in all four environments and is a row in
+ * K6/testdata/authentication/change-request-system-user/end-users-<env>.csv,
+ * granting only k6-instancedelegation-test, and have that customer approve it
+ * through the bff. Then create 120 change requests on that system user, each asking for
+ * ttd-dialogporten-dummy with a fresh correlation id, and leave them pending. 120
+ * because the listing hands out 50 per page, so three pages, and pending because a
+ * change request nobody acted on stays listed for good.
+ *
+ * The vendor is not one of the ones in vendors.csv, so no sweep in this folder
+ * touches any of it.
+ */
+export const PAGINATION_SYSTEM_ID = `${PAGINATION_SYSTEM_OWNER}_PaginationChangeRequests`;
+
+/**
  * @type {object | undefined}
  */
 let clients = undefined;
@@ -56,6 +84,16 @@ let approverTokenGenerator = undefined;
  * @type {EnterpriseTokenGenerator | undefined}
  */
 let vendorTokenGenerator = undefined;
+
+/**
+ * @type {ChangeRequestSystemUserClient | undefined}
+ */
+let paginationClient = undefined;
+
+/**
+ * @type {EnterpriseTokenGenerator | undefined}
+ */
+let paginationTokenGenerator = undefined;
 
 /**
  * What a test needs arranged before it runs.
@@ -255,6 +293,44 @@ export function getClients() {
     }
 
     return [clients, approverTokenGenerator, vendorTokenGenerator];
+}
+
+/**
+ * Creates and caches the client the pagination test reads with.
+ *
+ * Reads as the vendor that owns the seeded system, with the request read scope and
+ * nothing else, so the test cannot withdraw the data it is there to page through.
+ *
+ * Cached at module scope, so a VU builds it once and keeps the token it fetched
+ * rather than refetching on every iteration.
+ *
+ * @returns {[ChangeRequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
+ */
+export function getPaginationClients() {
+    if (paginationClient === undefined || paginationTokenGenerator === undefined) {
+        paginationTokenGenerator = new EnterpriseTokenGenerator(
+            new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
+                .withOrganizationNumber(PAGINATION_SYSTEM_OWNER)
+                .build(),
+        );
+
+        paginationClient = new ChangeRequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator);
+    }
+
+    return [paginationClient, paginationTokenGenerator];
+}
+
+/**
+ * k6 setup stage for the pagination test.
+ *
+ * Nothing to arrange: the system, its system user and the change requests on it are
+ * seeded once and stay put, so this only checks that the environment is configured.
+ */
+export function paginationSetup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
 }
 
 /**

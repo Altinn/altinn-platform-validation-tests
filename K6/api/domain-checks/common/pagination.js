@@ -156,10 +156,91 @@ function CheckNoNextLink(paginated, operation) {
     return success;
 }
 
+/**
+ * Checks that paging through actually reached items the first page did not hold.
+ *
+ * Counting pages says pagination moved, not that it went anywhere. An endpoint that
+ * answers the first page again under a fresh next link has moved a page and
+ * delivered nothing, and a count cannot tell the two apart. This can: it is the
+ * number of distinct items seen across every page, against the number one page can
+ * hold.
+ *
+ * @param {number} distinctItems - Distinct items seen across all pages.
+ * @param {number} firstPageItems - Items on the first page.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if paging reached items beyond the first page, false otherwise.
+ */
+function CheckPagesHoldDistinctItems(distinctItems, firstPageItems, operation) {
+    const success = check(distinctItems, {
+        [`CheckPagesHoldDistinctItems - ${operation} pages hold items the first page did not`]: (count) =>
+            count > firstPageItems,
+    });
+
+    if (!success) {
+        console.error(`CheckPagesHoldDistinctItems - ${operation} saw ${distinctItems} distinct item(s) across all pages, the first page alone held ${firstPageItems}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the walk was never handed a next link it had already followed.
+ *
+ * A repeated link is how a stuck pagination presents itself: the endpoint keeps
+ * offering the same continuation, so a walker either loops or stops. Named after
+ * the operation, unlike the generic check inside the follow helper, so a failure
+ * says which listing was stuck.
+ *
+ * @param {string|null} repeatedUrl - The URL that ended the walk by repeating, or null.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if no next link repeated, false otherwise.
+ */
+function CheckNextLinksDoNotRepeat(repeatedUrl, operation) {
+    const success = check(repeatedUrl, {
+        [`CheckNextLinksDoNotRepeat - ${operation} never hands out the same next link twice`]: (url) =>
+            url === null,
+    });
+
+    if (!success) {
+        console.error(`CheckNextLinksDoNotRepeat - ${operation} handed out this next link again: ${repeatedUrl}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that every page the walk asked for actually answered.
+ *
+ * A walk that dies partway still returns the pages it did read, so a caller looking
+ * only at those sees a healthy prefix. That is the dangerous shape: a listing whose
+ * last page fails still delivers enough distinct items to satisfy every other check
+ * here, and the missing tail goes unreported.
+ *
+ * @param {string|null} failedUrl - The URL that did not answer 200, or null.
+ * @param {number|null} failedStatus - The status it answered with, or null.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if every page answered, false otherwise.
+ */
+function CheckEveryPageLoaded(failedUrl, failedStatus, operation) {
+    const success = check(failedUrl, {
+        [`CheckEveryPageLoaded - ${operation} answers every page of the walk`]: (url) =>
+            url === null,
+    });
+
+    if (!success) {
+        console.error(`CheckEveryPageLoaded - ${operation} stopped on ${failedStatus} from: ${failedUrl}`);
+    }
+
+    return success;
+}
+
 export const PaginationDomainChecks = {
     CheckPaginatedShape,
     CheckPaginatedNotEmpty,
     CheckMultiplePages,
+    CheckEveryPageLoaded,
+    CheckNextLinksDoNotRepeat,
+    CheckPagesHoldDistinctItems,
     CheckItemsBelongToSystem,
     CheckNextLink,
     CheckNoNextLink,
