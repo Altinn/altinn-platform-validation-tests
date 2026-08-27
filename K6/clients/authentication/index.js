@@ -1,6 +1,7 @@
 export { ChangeRequestSystemUserBuilder } from "./change-request-system-user.builders.js";
 export { ChangeRequestSystemUserClient } from "./change-request-system-user.js";
 export { IntrospectionClient } from "./introspection.js";
+export { OpenidClient } from "./openid.js";
 export {
     CreateAgentRequestSystemUserBuilder,
     CreateRequestSystemUserBuilder,
