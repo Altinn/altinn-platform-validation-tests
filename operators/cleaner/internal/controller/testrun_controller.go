@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/Altinn/altinn-platform-validation-tests/operators/cleaner/internal/metrics"
-	"github.com/grafana/k6-operator/api/v1alpha1"
 	k6iov1alpha1 "github.com/grafana/k6-operator/api/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -70,7 +69,7 @@ func (r *TestRunReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		}, nil
 	}
 
-	if testRun.Status.Stage != v1alpha1.Stage("finished") {
+	if testRun.Status.Stage != k6iov1alpha1.Stage("finished") {
 		return ctrl.Result{}, nil
 	}
 
