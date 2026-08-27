@@ -4,12 +4,8 @@ import { AuthorizedParty, ProblemDetails } from "../../../../clients/access-mana
 
 /**
  * Every check here names itself, after the function and what it compared, so it can be
- * called like any other domain check and needs nothing from the caller but the data.
- *
- * Each one also takes an optional trailing name, which replaces the default one, for the
- * rare case where the default does not say enough. Nothing needs it: a caller that leaves
- * it out gets the self describing default, which already distinguishes two calls of the
- * same check because it carries the arguments.
+ * called like any other domain check and needs nothing from the caller but the data. The
+ * name carries the arguments, so two calls of the same check stay distinguishable.
  */
 
 /**

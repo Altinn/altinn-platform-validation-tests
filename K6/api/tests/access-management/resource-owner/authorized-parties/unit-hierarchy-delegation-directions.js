@@ -132,12 +132,20 @@ export default function (data) {
         group("A main unit delegates to a subunit, and goes missing (#2952)", function () {
             const parties = lookUp(hovedenhetC.dagligleder.pid);
 
+            // Absence alone is satisfied by an empty response, which is also what
+            // GetAuthorizedParties returns on any non 200, so the group would stay green if
+            // the seeded delegation were revoked and stop tracking #2952. Anchoring on a non
+            // empty list keeps the absence meaningful.
+            AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
+
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, hovedenhetA.partyuuid);
         });
 
         // The same known bug, from the other direction. Also switched off in Bruno.
         group("A subunit delegates to a subunit, and goes missing (#2952)", function () {
             const parties = lookUp(hovedenhetC.dagligleder.pid);
+
+            AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
             AuthorizedPartiesDomainChecks.CheckPartyIsAbsent(parties, underenhetD.partyuuid);
         });

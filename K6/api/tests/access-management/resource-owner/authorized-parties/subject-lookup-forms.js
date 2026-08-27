@@ -38,19 +38,17 @@ export default function (data) {
 
         const lookup = (request) => GetAuthorizedParties(authorizedPartiesClient, request, queryParams);
 
-        let personBaseline = null;
-        let organisationBaseline = null;
-        let enterpriseUserBaseline = null;
-
-        group("A person can be looked up by national identity number", function () {
+        // Each baseline is the group's return value rather than a variable assigned inside
+        // the callback, which control flow analysis does not follow.
+        const personBaseline = group("A person can be looked up by national identity number", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(person.pid).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
-            personBaseline = PartyUuidList(parties);
+            return PartyUuidList(parties);
         });
 
-        if (personBaseline === null || personBaseline.length === 0) {
+        if (personBaseline.length === 0) {
             // Without a baseline the comparisons below would pass against an empty list and
             // say nothing. The baseline group's own failed check is the signal.
             return;
@@ -74,19 +72,23 @@ export default function (data) {
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline);
         });
 
-        group("An organisation can be the subject too", function () {
+        const organisationBaseline = group("An organisation can be the subject too", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(firm.orgno).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
-            organisationBaseline = PartyUuidList(parties);
+            return PartyUuidList(parties);
         });
 
-        group("The organisation uuid form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(firm.partyUuid).build());
+        // Same reasoning as the person baseline above, but skipping the one group rather
+        // than returning, since the enterprise user pair below is deliberately kept.
+        if (organisationBaseline.length > 0) {
+            group("The organisation uuid form resolves to the same parties", function () {
+                const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(firm.partyUuid).build());
 
-            AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, organisationBaseline ?? []);
-        });
+                AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, organisationBaseline);
+            });
+        }
 
         // Both enterprise user forms resolve to an empty list at at22 today, because the
         // fixture user holds no access, so the pair below agrees on nothing. The steps are
@@ -94,18 +96,18 @@ export default function (data) {
         // fixture is given access, but the equivalence is not exercised as things stand.
         // Deliberately not asserted non empty, which would be a fixture failure dressed up as
         // a product one. The Bruno suite this was ported from has the same gap.
-        group("An enterprise user can be the subject too", function () {
+        const enterpriseUserBaseline = group("An enterprise user can be the subject too", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUsername(enterpriseUser.username).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
 
-            enterpriseUserBaseline = PartyUuidList(parties);
+            return PartyUuidList(parties);
         });
 
         group("The enterprise user uuid form resolves to the same parties", function () {
             const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUuid(enterpriseUser.partyUuid).build());
 
-            AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, enterpriseUserBaseline ?? []);
+            AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, enterpriseUserBaseline);
         });
     });
 }
