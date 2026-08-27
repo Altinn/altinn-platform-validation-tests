@@ -441,7 +441,7 @@ function CheckPartyHasEmailId(parties, partyUuid, expectedEmailId) {
 function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPackages) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyIncludesAccessPackages - '${partyUuid}' holds the expected access packages`, party,
+    return Assert(`CheckPartyIncludesAccessPackages - the party holds the expected access packages`, party,
         (found) => found !== undefined &&
             expectedAccessPackages.every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
         () => party === undefined
