@@ -3,9 +3,13 @@ import { check } from "k6";
 import { AuthorizedParty, ProblemDetails } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 
 /**
- * Every check here names itself, after the function and what it compared, so it can be
- * called like any other domain check and needs nothing from the caller but the data. The
- * name carries the arguments, so two calls of the same check stay distinguishable.
+ * Every check here names itself, after the function and the outcome it asserts, so it can
+ * be called like any other domain check and needs nothing from the caller but the data.
+ *
+ * The names are fixed rather than built from the arguments, so a check called for several
+ * parties in one group is reported as one check with several observations instead of one
+ * line per party. The party uuids and expected values live in the failure diagnostics,
+ * which is where they are needed.
  */
 
 /**
@@ -260,7 +264,7 @@ function CheckEveryPartyMatchesContract(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyIsPresent(parties, partyUuid) {
-    return Assert(`CheckPartyIsPresent - '${partyUuid}' is in the party list`, parties,
+    return Assert("CheckPartyIsPresent - the party is in the party list", parties,
         (body) => FindParty(body, partyUuid) !== undefined,
         () => [
             `'${partyUuid}' was not in the party list`,
@@ -276,7 +280,7 @@ function CheckPartyIsPresent(parties, partyUuid) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyIsAbsent(parties, partyUuid) {
-    return Assert(`CheckPartyIsAbsent - '${partyUuid}' is not in the party list`, parties,
+    return Assert("CheckPartyIsAbsent - the party is not in the party list", parties,
         (body) => FindParty(body, partyUuid) === undefined,
         () => [`'${partyUuid}' was in the party list and should not have been`]);
 }
@@ -290,7 +294,7 @@ function CheckPartyIsAbsent(parties, partyUuid) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyIsNotTopLevel(parties, subunitPartyUuid) {
-    return Assert(`CheckPartyIsNotTopLevel - '${subunitPartyUuid}' is not returned at the top level`, parties,
+    return Assert("CheckPartyIsNotTopLevel - the subunit is not returned at the top level", parties,
         (body) => !TopLevelPartyUuids(body).includes(Normalise(subunitPartyUuid)),
         () => [
             `subunit '${subunitPartyUuid}' was returned at the top level`,
@@ -327,13 +331,13 @@ function CheckOnlyTheseTopLevelParties(parties, expectedPartyUuids) {
 function CheckPartyIsOnlyHierarchyElement(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyIsOnlyHierarchyElement - '${partyUuid}' is only a hierarchy element with no access of its own`, party,
+    return Assert("CheckPartyIsOnlyHierarchyElement - the party is only a hierarchy element with no access of its own", party,
         (found) => found !== undefined &&
             found.onlyHierarchyElementWithNoAccess === true &&
             AllAccess(found).length === 0,
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
-            : [`onlyHierarchyElementWithNoAccess=${party.onlyHierarchyElementWithNoAccess}, access: ${JSON.stringify(AllAccess(party))}`]);
+            : [`'${partyUuid}' came back with onlyHierarchyElementWithNoAccess=${party.onlyHierarchyElementWithNoAccess}, access: ${JSON.stringify(AllAccess(party))}`]);
 }
 
 /**
@@ -346,7 +350,7 @@ function CheckPartyIsOnlyHierarchyElement(parties, partyUuid) {
 function CheckPartyHoldsAccessItself(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHoldsAccessItself - '${partyUuid}' holds the access itself`, party,
+    return Assert("CheckPartyHoldsAccessItself - the party holds the access itself", party,
         (found) => found !== undefined && found.onlyHierarchyElementWithNoAccess === false,
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
@@ -364,13 +368,13 @@ function CheckPartyHoldsAccessItself(parties, partyUuid) {
 function CheckPartyIsOrganizationWithNumber(parties, partyUuid, expectedOrganizationNumber) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyIsOrganizationWithNumber - '${partyUuid}' is an organization with number ${expectedOrganizationNumber}`, party,
+    return Assert("CheckPartyIsOrganizationWithNumber - the party is an organization with the expected number", party,
         (found) => found !== undefined &&
             found.type === "Organization" &&
             found.organizationNumber === expectedOrganizationNumber,
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
-            : [`expected Organization/${expectedOrganizationNumber}, got ${party.type}/${party.organizationNumber}`]);
+            : [`expected Organization/${expectedOrganizationNumber} on '${partyUuid}', got ${party.type}/${party.organizationNumber}`]);
 }
 
 /**
@@ -384,11 +388,11 @@ function CheckPartyIsOrganizationWithNumber(parties, partyUuid, expectedOrganiza
 function CheckPartyType(parties, partyUuid, expectedType) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyType - '${partyUuid}' is of type ${expectedType}`, party,
+    return Assert("CheckPartyType - the party is of the expected type", party,
         (found) => found !== undefined && found.type === expectedType,
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
-            : [`expected type '${expectedType}', got '${party.type}'`]);
+            : [`expected type '${expectedType}' on '${partyUuid}', got '${party.type}'`]);
 }
 
 /**
@@ -402,7 +406,7 @@ function CheckPartyType(parties, partyUuid, expectedType) {
 function CheckPartyHasNoNationalIdentityNumber(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHasNoNationalIdentityNumber - '${partyUuid}' carries no national identity number`, party,
+    return Assert("CheckPartyHasNoNationalIdentityNumber - the party carries no national identity number", party,
         (found) => found !== undefined && found.personId === null,
         () => [`expected personId null on '${partyUuid}', got '${party?.personId}'`]);
 }
@@ -418,7 +422,7 @@ function CheckPartyHasNoNationalIdentityNumber(parties, partyUuid) {
 function CheckPartyHasEmailId(parties, partyUuid, expectedEmailId) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHasEmailId - '${partyUuid}' carries the email id ${expectedEmailId}`, party,
+    return Assert("CheckPartyHasEmailId - the party carries the expected email id", party,
         (found) => found !== undefined && found.emailId === expectedEmailId,
         () => [`expected '${expectedEmailId}' on '${partyUuid}', got '${party?.emailId}'`]);
 }
@@ -443,7 +447,7 @@ function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPack
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
             : [
-                `expected to hold: ${JSON.stringify(expectedAccessPackages)}`,
+                `expected '${partyUuid}' to hold: ${JSON.stringify(expectedAccessPackages)}`,
                 `got: ${JSON.stringify(party.authorizedAccessPackages ?? [])}`,
             ]);
 }
@@ -458,7 +462,7 @@ function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPack
 function CheckPartyHasSomeAccessPackages(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHasSomeAccessPackages - '${partyUuid}' holds at least one access package`, party,
+    return Assert("CheckPartyHasSomeAccessPackages - the party holds at least one access package", party,
         (found) => found !== undefined && (found.authorizedAccessPackages ?? []).length > 0,
         () => [`expected access packages on '${partyUuid}', got: ${JSON.stringify(party?.authorizedAccessPackages ?? [])}`]);
 }
@@ -475,7 +479,7 @@ function CheckPartyIncludesRole(parties, partyUuid, expectedRole) {
     const party = FindParty(parties, partyUuid);
     const wanted = expectedRole.toLowerCase();
 
-    return Assert(`CheckPartyIncludesRole - '${partyUuid}' holds the role ${expectedRole}`, party,
+    return Assert("CheckPartyIncludesRole - the party holds the expected role", party,
         (found) => found !== undefined &&
             (found.authorizedRoles ?? []).some((/** @type {*} */ role) => String(role).toLowerCase() === wanted),
         () => [`expected role '${expectedRole}' on '${partyUuid}', got: ${JSON.stringify(party?.authorizedRoles ?? [])}`]);
@@ -492,12 +496,12 @@ function CheckPartyIncludesRole(parties, partyUuid, expectedRole) {
 function CheckPartyHasExactlyResources(parties, partyUuid, expectedResources) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHasExactlyResources - '${partyUuid}' holds exactly the expected resources`, party,
+    return Assert("CheckPartyHasExactlyResources - the party holds exactly the expected resources", party,
         (found) => found !== undefined && SameMembers(found.authorizedResources ?? [], expectedResources),
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
             : [
-                `expected: ${JSON.stringify(expectedResources)}`,
+                `expected '${partyUuid}' to hold exactly: ${JSON.stringify(expectedResources)}`,
                 `got: ${JSON.stringify(party.authorizedResources ?? [])}`,
             ]);
 }
@@ -512,7 +516,7 @@ function CheckPartyHasExactlyResources(parties, partyUuid, expectedResources) {
 function CheckPartyHasSomeAccess(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHasSomeAccess - '${partyUuid}' holds some access`, party,
+    return Assert("CheckPartyHasSomeAccess - the party holds some access", party,
         (found) => found !== undefined && AllAccess(found).length > 0,
         () => party === undefined
             ? [`'${partyUuid}' was not in the party list`]
@@ -529,7 +533,7 @@ function CheckPartyHasSomeAccess(parties, partyUuid) {
 function CheckPartyHasNoSubunits(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert(`CheckPartyHasNoSubunits - '${partyUuid}' has no subunits`, party,
+    return Assert("CheckPartyHasNoSubunits - the party has no subunits", party,
         (found) => found !== undefined && (found.subunits ?? []).length === 0,
         () => [`'${partyUuid}' came back with subunits: ${JSON.stringify((party?.subunits ?? []).map((subunit) => subunit.partyUuid))}`]);
 }
@@ -546,7 +550,7 @@ function CheckSubunitIsNestedUnderMainUnit(parties, mainUnitPartyUuid, subunitPa
     const mainUnit = FindParty(parties, mainUnitPartyUuid);
     const wanted = Normalise(subunitPartyUuid);
 
-    return Assert(`CheckSubunitIsNestedUnderMainUnit - '${subunitPartyUuid}' is nested under '${mainUnitPartyUuid}'`, mainUnit,
+    return Assert("CheckSubunitIsNestedUnderMainUnit - the subunit is nested under the main unit", mainUnit,
         (found) => (found?.subunits ?? []).some((/** @type {*} */ subunit) => Normalise(subunit.partyUuid) === wanted),
         () => mainUnit === undefined
             ? [`main unit '${mainUnitPartyUuid}' was not in the party list`]
@@ -568,15 +572,15 @@ function CheckSubunitInheritsMainUnitAccessPackages(parties, mainUnitPartyUuid, 
     const mainUnit = FindParty(parties, mainUnitPartyUuid);
     const subunit = FindParty(parties, subunitPartyUuid);
 
-    return Assert(`CheckSubunitInheritsMainUnitAccessPackages - '${subunitPartyUuid}' inherits the access packages of '${mainUnitPartyUuid}'`, subunit,
+    return Assert("CheckSubunitInheritsMainUnitAccessPackages - the subunit inherits the access packages of its main unit", subunit,
         (found) => found !== undefined && mainUnit !== undefined &&
             (mainUnit.authorizedAccessPackages ?? [])
                 .every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
         () => mainUnit === undefined || subunit === undefined
             ? [`main unit '${mainUnitPartyUuid}' or subunit '${subunitPartyUuid}' was not in the party list`]
             : [
-                `main unit holds: ${JSON.stringify(mainUnit.authorizedAccessPackages ?? [])}`,
-                `subunit holds: ${JSON.stringify(subunit.authorizedAccessPackages ?? [])}`,
+                `main unit '${mainUnitPartyUuid}' holds: ${JSON.stringify(mainUnit.authorizedAccessPackages ?? [])}`,
+                `subunit '${subunitPartyUuid}' holds: ${JSON.stringify(subunit.authorizedAccessPackages ?? [])}`,
             ]);
 }
 
@@ -671,7 +675,7 @@ function CheckNoPartyCarriesResource(parties, resourceId) {
         .filter((party) => (party.authorizedResources ?? []).includes(resourceId))
         .map((party) => party.partyUuid);
 
-    return Assert(`CheckNoPartyCarriesResource - no party carries '${resourceId}'`, parties,
+    return Assert("CheckNoPartyCarriesResource - no party carries the resource", parties,
         () => offenders.length === 0,
         () => [`'${resourceId}' unexpectedly appeared on: ${JSON.stringify(offenders)}`]);
 }
@@ -715,7 +719,7 @@ function CheckPartyUuidsMatchBaseline(parties, baselinePartyUuids) {
  * @returns {boolean} True if the check held.
  */
 function CheckProblemBodyMentions(problem, expectedInBody) {
-    return Assert(`CheckProblemBodyMentions - the problem body mentions '${expectedInBody}'`, problem,
+    return Assert("CheckProblemBodyMentions - the problem body mentions the expected value", problem,
         (body) => JSON.stringify(body ?? "").includes(expectedInBody),
         () => [`expected '${expectedInBody}' in the problem body, got: ${JSON.stringify(problem)}`]);
 }
