@@ -139,6 +139,26 @@ The five accounting firm scenarios share one generator because they share one lo
 accounting firm's daglig leder and the parties it answers with. Five generators would mean
 five copies of that pass and five times the traffic for the same parties.
 
+### Where the candidates come from, and why that is a weakness
+
+Every generator starts from `register/organizations-<environment>.csv`, thirty
+organisations that already existed in the repo, chosen for the register suite rather than
+for this one. Each is tried in turn and kept only if the endpoint answers with everything
+the scenario needs. That is generate and test over an inherited list, not a search: nothing
+here asks for an accounting firm, it asks thirty organisations whether they happen to be
+one.
+
+It works, and the rows it produces are real. What it costs is reach. Ten rows out of at
+most twenty eight candidates is a sample of that file rather than of the environment, and
+any conclusion drawn from a candidate coming up empty, such as the business manager one
+above, holds only for those thirty.
+
+The tool for doing this properly is Tenor, whose KQL search over the synthetic
+Enhets- og Foretaksregister can ask for facilitators by role directly, daglig leder and
+clients included, in `playwright/tenor` in the access management frontend repo. Sourcing the
+candidates from a Tenor query rather than from this file would turn the filter into a query
+and lift the ceiling on how many rows an environment can fill. It has not been done.
+
 Each generator prints its csv, which is copied into
 `K6/testdata/access-management/resource-owner/authorized-parties/<scenario>/<environment>.csv`
 by hand, since a k6 run cannot write back to the repo. The files hold ten rows apart from
@@ -148,12 +168,16 @@ environments, and a firm picked out of Enhetsregisteret holds none on its own.
 
 ### What the four remaining scenarios would need
 
-`forretningsforer-clients.js` was tried and put back. The organisations that carry the
-`forretningsforer` role in these environments carry only accountant packages: no business
-manager package appears anywhere in the response. Rows could still be produced that pass,
-naming an accountant package as the one the firm holds on its client, but the scenario
-would no longer be about business managers. It needs a housing company client with a
-package held through that role, which somebody has to seed.
+`forretningsforer-clients.js` was tried and put back. Among the candidates the generators
+draw from, the organisations carrying the `forretningsforer` role carry only accountant
+packages: no business manager package appears anywhere in the response. Rows could still be
+produced that pass, naming an accountant package as the one the firm holds on its client,
+but the scenario would no longer be about business managers.
+
+That is a statement about thirty organisations, not about the environment. The candidates
+are `register/organizations-<environment>.csv`, a file picked for the register suite, so a
+housing company client with a package held through that role may well exist outside it. See
+the note on sourcing below before concluding it has to be seeded.
 
 `party-kinds.js` needs a self identified user, an ID-porten user registered by email, a
 rightholder holding packages and one holding none, and a system user. Register hands out
