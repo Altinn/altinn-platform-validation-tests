@@ -3,7 +3,7 @@ import { baseUrls, TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
 import { Meny } from "../felles/meny";
-import { gaaTil, sidensUrl } from "../felles/navigasjon";
+import { gaaTil, erPaaSiden } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Side } from "../side";
 
@@ -28,7 +28,7 @@ export class TilgangsstyringForside implements Side {
     }
 
     async assertLoggedIn() {
-        await expect(this.page, 'Er på tilgangsstyring forside').toHaveURL(sidensUrl(this.url));
+        await expect(this.page, 'Er på tilgangsstyring forside').toHaveURL(erPaaSiden(this.url));
         await this.meny.assertLoggedIn();
 
         // Brukere-lenken i sidemenyen finnes på alle tilgangsstyringssidene, og
