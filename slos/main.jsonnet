@@ -83,13 +83,13 @@ local slo = {
         prometheus: 'k8s',
         role: 'alert-rules',
         'pyrra.dev/team': namespace,
-        'pyrra.dev/application': namespace,
+        'pyrra.dev/deploy_env': deploy_env,
         release: 'kube-prometheus-stack',  // Important, otherwise the Prometheus instance won't pick it up
         'generated-by': 'k6-action-image',  // not true, but leave it for now
       },
     },
     spec: {
-      target: '99.9',
+      target: '95',
       window: '28d',
       indicator: {
         ratio: {
