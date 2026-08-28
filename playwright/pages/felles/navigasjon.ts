@@ -17,10 +17,10 @@ export const REDIRECT_TIMEOUT = 20_000;
  * laste, og da ryker navigeringen selv om neste forsøk går rett inn. Alle andre
  * feil kastes videre med en gang, siden de sier noe ekte om flaten.
  *
- * Tallene er valgt slik at forsøkene får plass i testens eget budsjett: to forsøk à
- * 20 sekunder er 40, mens en test har 60. Tre forsøk à 30 ville vart lenger enn
- * testen selv, og da hadde en treg flate blitt rapportert som en test-timeout uten
- * spor av hva navigeringen ventet på. Infoportalen sender inn sitt eget tak.
+ * Tallene er valgt slik at forsøkene rekker å bli ferdige før testen selv gir opp:
+ * to forsøk à 20 sekunder er 40, mens en test har 60. Tre forsøk à 30 ville vart
+ * lenger enn testen, og da hadde en treg flate blitt rapportert som en test-timeout
+ * uten spor av hva navigeringen ventet på. Infoportalen sender inn sitt eget tak.
  *
  * @param page Siden som skal navigere.
  * @param url URLen den skal til.
