@@ -5972,14 +5972,17 @@ local slo = {
 };
 
 {
-  'slos.json': [
-    slo.new(
-      s.action,
-      s.namespace,
-      s.endpoint,
-      s.deploy_env,
-      s.method
-    )
-    for s in slo_definitions
-  ],
+  ['slos-' + namespace + '.json']:
+    [
+      slo.new(
+        s.action,
+        s.namespace,
+        s.endpoint,
+        s.deploy_env,
+        s.method
+      )
+      for s in slo_definitions
+      if s.namespace == namespace
+    ]
+    for namespace in std.set([s.namespace for s in slo_definitions])
 }

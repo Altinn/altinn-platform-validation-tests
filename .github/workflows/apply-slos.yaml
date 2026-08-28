@@ -29,5 +29,5 @@ jobs:
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
 
       - name: "Apply SLOs"
-        run: "kubectl apply -f .dist/slos.yaml || true"
+        run: "kubectl apply -f .dist/"
         shell: "bash"
