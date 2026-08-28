@@ -56,7 +56,7 @@ export class Meny {
             name: /^(logg ut|log out)$/i,
         }).first();
 
-        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled({ timeout: 10_000 });
+        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled();
         await logoutButton.click();
     }
 

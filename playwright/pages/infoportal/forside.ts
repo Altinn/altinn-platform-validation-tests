@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import { baseUrls, TestUser } from "../../config/environment";
-import { gaaTil } from "../felles/navigasjon";
+import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class InfoportalForside implements Side {
@@ -20,7 +20,7 @@ export class InfoportalForside implements Side {
         await expect(
             this.page.getByText(user.name).first(),
             'Brukeren er innlogget på infoportalen'
-        ).toBeVisible({ timeout: 10_000 });
+        ).toBeVisible();
     }
 
     /**
@@ -34,7 +34,7 @@ export class InfoportalForside implements Side {
         await expect(
             this.page.getByRole('button', { name: /logg inn|login/i }).first(),
             'Innloggingsknappen vises på infoportalen'
-        ).toBeVisible({ timeout: 15_000 });
+        ).toBeVisible({ timeout: REDIRECT_TIMEOUT });
 
         await expect(
             this.page.getByText(user.name).first(),
