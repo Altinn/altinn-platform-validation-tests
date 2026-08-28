@@ -73,6 +73,8 @@ export const options = {
  * @property {string} directDelegatorPackage One package it delegated.
  * @property {string} resourceHolderPartyUuid A party carrying a resource the person holds.
  * @property {string} resourceId The resource it carries.
+ * @property {Array<string>} reachablePartyUuids Every party the person reaches, subunits included.
+ * @property {Array<string>} heldResourceIds Every resource the person holds, on any party.
  */
 
 /**
@@ -293,6 +295,11 @@ function discover(authorizedPartiesClient, candidate) {
         directDelegatorPackage: (directDelegator.authorizedAccessPackages ?? [])[0],
         resourceHolderPartyUuid: resource === null ? "" : resource.partyUuid,
         resourceId: resource === null ? "" : resource.resourceId,
+        // Not columns. Two of the columns name a party or a person the subject must not
+        // reach, which no single lookup can answer, so they are filled in from another row
+        // once every row is in. These two are what makes that checkable rather than assumed.
+        reachablePartyUuids: flatten(withKeyRoles).map((party) => party.partyUuid),
+        heldResourceIds: [...new Set(withKeyRoles.flatMap((party) => party.authorizedResources ?? []))],
     };
 }
 
@@ -386,20 +393,42 @@ function printCsvs(rows) {
         "resource-filter": ["pid", "resourceHolderPartyUuid", "resourceId", "clientPartyUuid", "pidWithoutResource"],
     };
 
-    // The two columns no single firm can answer: a party the subject cannot reach, and a
-    // person who does not hold the resource. Both are taken from the next row, which is a
-    // different firm with a different daglig leder, so they are real parties that happen
-    // to be out of reach rather than invented ones.
+    // The two columns no single lookup can answer: a party the subject cannot reach, and a
+    // person who does not hold the resource. Both are borrowed from another row, so they
+    // are real parties and real people rather than invented ones, and both are checked
+    // against what that other row actually saw rather than assumed. The same handful of
+    // people lead many of these organisations, so a subject reaching another row's firm is
+    // common enough that assuming it away produced a scenario that failed two rows in ten.
     /** @type {Array<{[column: string]: string}>} */
-    const enriched = rows.map((row, index) => ({
-        ...row,
-        unreachablePartyUuid: rows[(index + 1) % rows.length].firmPartyUuid,
-        pidWithoutResource: rows[(index + 1) % rows.length].pid,
-    }));
+    const enriched = rows.map((row) => {
+        const unreachable = rows.find((other) =>
+            other.pid !== row.pid && !row.reachablePartyUuids.includes(other.firmPartyUuid));
+
+        const withoutResource = row.resourceId === "" ? undefined : rows.find((other) =>
+            other.pid !== row.pid && !other.heldResourceIds.includes(row.resourceId));
+
+        if (unreachable === undefined) {
+            console.log(`${row.orgno}: reaches every other row's firm, so it fills no party filter row`);
+        }
+
+        if (row.resourceId !== "" && withoutResource === undefined) {
+            console.log(`${row.orgno}: every other row's subject holds ${row.resourceId}, so it fills no resource filter row`);
+        }
+
+        // The two lists are dropped here rather than carried into the csv: they are how the
+        // borrowing was checked, not something a scenario reads.
+        const { reachablePartyUuids, heldResourceIds, ...columns } = row;
+
+        return {
+            ...columns,
+            unreachablePartyUuid: unreachable === undefined ? "" : unreachable.firmPartyUuid,
+            pidWithoutResource: withoutResource === undefined ? "" : withoutResource.pid,
+        };
+    });
 
     for (const [scenario, header] of Object.entries(columns)) {
-        // Resource filter is the one scenario a firm can fail on its own, so its file is
-        // whatever subset of the rows carries a resource rather than all of them.
+        // A firm can fail one scenario while filling the others, so each file is whatever
+        // subset of the rows can answer its columns rather than all of them.
         const applicable = enriched.filter((row) => header.every((column) => row[column] !== ""));
 
         let csv = `${header.join(",")}\n`;

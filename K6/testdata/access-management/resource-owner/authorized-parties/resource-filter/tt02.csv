@@ -1,4 +1,4 @@
 pid,resourceHolderPartyUuid,resourceId,clientPartyUuid,pidWithoutResource
 13886499404,395d010d-f8d5-48ee-b3ec-50fa1568dac1,einnsyn-api-test,b91768c2-a4d1-4b0f-93a6-ce7fb3269aab,06926697712
-24896097691,49ef8a94-f2b5-4d30-9476-124b46424bd3,ske-soeknad-dagsoppgjoer-eller-maanedsoppgjoer,364f91ce-a414-40a3-863f-7d0b8f56cab7,02915597141
-02915597141,909d7073-2220-4eea-82b8-32a8be807022,udi-arbeidstilbud-preprod,9e2653de-09c5-4220-a917-8fd82e9c31f7,07897497063
+24896097691,49ef8a94-f2b5-4d30-9476-124b46424bd3,ske-soeknad-dagsoppgjoer-eller-maanedsoppgjoer,364f91ce-a414-40a3-863f-7d0b8f56cab7,13886499404
+02915597141,909d7073-2220-4eea-82b8-32a8be807022,udi-arbeidstilbud-preprod,9e2653de-09c5-4220-a917-8fd82e9c31f7,13886499404
