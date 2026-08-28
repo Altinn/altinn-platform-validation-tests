@@ -73,6 +73,6 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     return {
-        keyRoleFilter: fetchTestData(`access-management/resource-owner/authorized-parties/key-role-filter/${__ENV.ENVIRONMENT}.csv`),
+        keyRoleFilter: fetchTestData(`access-management/resource-owner/authorized-parties/key-role-filter/${__ENV.ENVIRONMENT}.csv`, true, "test/subject-lookup-forms-from-csv"),
     };
 }

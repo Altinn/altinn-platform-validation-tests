@@ -114,6 +114,6 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     return {
-        subjectLookupForms: fetchTestData(`access-management/resource-owner/authorized-parties/subject-lookup-forms/${__ENV.ENVIRONMENT}.csv`),
+        subjectLookupForms: fetchTestData(`access-management/resource-owner/authorized-parties/subject-lookup-forms/${__ENV.ENVIRONMENT}.csv`, true, "test/subject-lookup-forms-from-csv"),
     };
 }

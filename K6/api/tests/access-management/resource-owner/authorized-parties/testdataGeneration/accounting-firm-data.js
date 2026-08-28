@@ -213,17 +213,32 @@ function discover(authorizedPartiesClient, candidate) {
         return skip("the firm is missing or has no subunit");
     }
 
+    // What the firm reaches, rather than what the person does, is exactly what drops out
+    // when key role parties are excluded.
+    //
+    // Subunits count as reached: the scenarios' presence and absence checks flatten the
+    // hierarchy, so a party that comes back nested under a main unit has not dropped out.
+    const reachedWithoutKeyRoles = new Set(flatten(withoutKeyRoles).map((party) => party.partyUuid));
+
+    if (!reachedWithoutKeyRoles.has(firm.partyUuid)) {
+        return skip("the firm itself drops out when key roles are excluded");
+    }
+
     // A client is a party carrying the accountant packages, which is what the firm's
     // clients hold and nothing else does. It needs a subunit carrying them too, because
-    // party-filter asserts the subunit comes back nested under it.
+    // party-filter asserts the subunit comes back nested under it, and it has to be one of
+    // the parties the firm reaches, since key-role-filter asserts it drops out without the
+    // firm in between. All three are one search rather than three, because a firm whose
+    // first client fails one of them may well have a second that passes.
     const client = withKeyRoles.find((party) =>
         party.partyUuid !== firm.partyUuid
         && party.organizationNumber !== null
+        && !reachedWithoutKeyRoles.has(party.partyUuid)
         && holdsAll(party, ACCOUNTANT_PACKAGES)
         && (party.subunits ?? []).some((subunit) => holdsAll(subunit, ACCOUNTANT_PACKAGES)));
 
     if (client === undefined) {
-        return skip("no client carries the accountant packages on both itself and a subunit");
+        return skip("no client the firm alone reaches carries the accountant packages on both itself and a subunit");
     }
 
     const clientSubunit = (client.subunits ?? []).find((subunit) => holdsAll(subunit, ACCOUNTANT_PACKAGES));
@@ -236,11 +251,8 @@ function discover(authorizedPartiesClient, candidate) {
         return skip("no sole proprietorship owner is returned as a person");
     }
 
-    // What the firm reaches, rather than what the person does, is exactly what drops out
-    // when key role parties are excluded. key-role-filter needs two of them, so that it
-    // asserts more than the one client the other scenarios already use.
-    const reachedWithoutKeyRoles = new Set(withoutKeyRoles.map((party) => party.partyUuid));
-
+    // key-role-filter asserts on two parties that drop out, so that it says more than the
+    // one client the other scenarios already use.
     const keyRoleOnly = withKeyRoles.find((party) =>
         party.partyUuid !== client.partyUuid
         && party.organizationNumber !== null
@@ -248,10 +260,6 @@ function discover(authorizedPartiesClient, candidate) {
 
     if (keyRoleOnly === undefined) {
         return skip("only one party is reachable through a key role");
-    }
-
-    if (!reachedWithoutKeyRoles.has(firm.partyUuid)) {
-        return skip("the firm itself drops out when key roles are excluded");
     }
 
     // A direct delegator is what survives that exclusion while still carrying access, so
@@ -327,6 +335,19 @@ function discoverResource(authorizedPartiesClient, request, parties, client, org
     }
 
     return { partyUuid: holder.partyUuid, resourceId: resourceId };
+}
+
+/**
+ * Every party in the response, main units and their subunits alike.
+ *
+ * The scenarios' presence and absence checks flatten the hierarchy, so the discovery has
+ * to see it the same way: a party returned nested under a main unit is returned.
+ *
+ * @param {Array<AuthorizedParty>} parties The parties to flatten.
+ * @returns {Array<AuthorizedParty>} Every party, at one level.
+ */
+function flatten(parties) {
+    return parties.flatMap((party) => [party, ...(party.subunits ?? [])]);
 }
 
 /**
