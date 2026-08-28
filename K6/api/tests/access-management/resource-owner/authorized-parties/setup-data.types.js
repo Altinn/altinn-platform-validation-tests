@@ -293,8 +293,34 @@
  * @property {string} pidWithoutResource A subject that does not hold the resource.
  */
 
+/**
+ * The rows `authorization-boundaries.js` draws from.
+ *
+ * @typedef {object} AuthorizationBoundariesSetupData
+ * @property {Array<SubjectRow>} authorizationBoundaries The rows.
+ */
+
+/**
+ * The rows `org-code-filter.js` draws from.
+ *
+ * @typedef {object} OrgCodeFilterSetupData
+ * @property {Array<SubjectRow>} orgCodeFilter The rows.
+ */
+
+/**
+ * A subject and nothing else, for the two scenarios that are about the caller rather than
+ * about who is being asked about. The two files hold different people, so a fixture
+ * problem in one is not silently a fixture problem in the other.
+ *
+ * @typedef {object} SubjectRow
+ * @property {string} pid A person the endpoint answers about.
+ */
+
 export const SetupData = undefined;
 export const AccessInformationFlagsRow = undefined;
+export const AuthorizationBoundariesSetupData = undefined;
+export const OrgCodeFilterSetupData = undefined;
+export const SubjectRow = undefined;
 export const AccessInformationFlagsSetupData = undefined;
 export const ClientsAndKeyRolePartiesRow = undefined;
 export const ClientsAndKeyRolePartiesSetupData = undefined;

@@ -111,22 +111,64 @@ stop being shared.
 
 ## Test data
 
-Eleven of the twelve scenarios read a json fixture; `subject-lookup-forms.js` reads a csv.
-The split follows what a scenario needs. The eleven assert something about how the parties
-are related to each other, which only a hand described tree can say, and they exist for at22
-alone. Subject lookup forms asserts that six ways of naming one subject agree, which needs no
-relation at all: one person and one organisation the endpoint answers non-empty for, written
-out in every identifier form. That is generated rather than described, so it exists for all
-four environments.
+Eight of the twelve scenarios read a generated csv, ten rows per environment, in at22,
+at23, tt02 and yt01. Four still read the hand described json fixture and still run at at22
+alone. The split is not about file format: it follows what a scenario can find in the
+wild.
 
-`testdataGeneration/subject-lookup-forms-data.js` writes those rows. It takes the thirty
-organisations in `register/organizations-<environment>.csv`, asks Register for each one's
-daglig leder and for the organisations themselves in one bulk query, and then asks the
-endpoint under test which of the pairs answer non-empty, keeping the first ten. Nothing is
-seeded, so a row is only as durable as the daglig leder role behind it: regenerate the file
-when rows start coming back empty. It prints the csv, which is copied into
-`K6/testdata/access-management/resource-owner/authorized-parties/subject-lookup-forms/<environment>.csv`
-by hand, since a k6 run cannot write back to the repo.
+A scenario can be generated when what it asserts is a shape the endpoint itself will tell
+you about. Which client carries the accountant packages, which subunit hangs under it,
+which party is the sole proprietorship owner, which parties drop out when key roles are
+excluded, which resource narrows the list, which six identifier forms name one subject:
+none of that is written down anywhere, and all of it is readable off a lookup. The
+generators start from organisations the register suite already carries, ask Register who
+leads them, and then let the endpoint under test decide which candidates survive. Nothing
+is seeded, so a row is only as durable as the daglig leder role behind it, and the answer
+is regenerate rather than repair.
+
+A scenario cannot be generated when what it asserts was put there on purpose. The four
+below are in that group, and the section after this one says what each would need.
+
+| Generator | Writes the rows for |
+| --- | --- |
+| `testdataGeneration/subject-lookup-forms-data.js` | `subject-lookup-forms` |
+| `testdataGeneration/accounting-firm-data.js` | `clients-and-key-role-parties`, `access-information-flags`, `key-role-filter`, `party-filter`, `resource-filter` |
+| `testdataGeneration/subject-only-data.js` | `authorization-boundaries`, `org-code-filter` |
+
+The five accounting firm scenarios share one generator because they share one lookup: an
+accounting firm's daglig leder and the parties it answers with. Five generators would mean
+five copies of that pass and five times the traffic for the same parties.
+
+Each generator prints its csv, which is copied into
+`K6/testdata/access-management/resource-owner/authorized-parties/<scenario>/<environment>.csv`
+by hand, since a k6 run cannot write back to the repo. The files hold ten rows apart from
+the resource filter, which holds whatever the environment could fill: ten at yt01, three at
+tt02, one at at22 and at23. Nobody has delegated a resource to these firms in the AT
+environments, and a firm picked out of Enhetsregisteret holds none on its own.
+
+### What the four remaining scenarios would need
+
+`forretningsforer-clients.js` was tried and put back. The organisations that carry the
+`forretningsforer` role in these environments carry only accountant packages: no business
+manager package appears anywhere in the response. Rows could still be produced that pass,
+naming an accountant package as the one the firm holds on its client, but the scenario
+would no longer be about business managers. It needs a housing company client with a
+package held through that role, which somebody has to seed.
+
+`party-kinds.js` needs a self identified user, an ID-porten user registered by email, a
+rightholder holding packages and one holding none, and a system user. Register hands out
+none of those, and the two rightholder cases only exist because a delegation was made.
+
+`deleted-parties.js` needs two sole proprietorships deleted on either side of a two year
+retention window, both with an owner, plus an active one. Register carries `isDeleted` and
+`deletedAt`, so the deletion dates are readable, but two things are not. Register serves
+holders for `daglig-leder` and no other role, so the owner of a sole proprietorship cannot
+be looked up, and the party deleted outside the window is absent from the response by
+definition, which is the whole assertion. Discovery has nothing to read either side from.
+
+`unit-hierarchy-delegation-directions.js` needs a hierarchy carrying delegations in all
+nine directions between main units, subunits and people. Finding one of those in the wild
+is unlikely and finding ten is not worth trying.
 
 `../testdata-<environment>.json` holds the accounting firm tree, the forretningsfører
 firm, the enterprise and self identified users and the deleted sole proprietorships.
@@ -150,20 +192,19 @@ k6 run K6/api/tests/access-management/resource-owner/authorized-parties/run-all.
 ```
 
 `ENVIRONMENT` and `BASE_URL` are required, plus `TOKEN_GENERATOR_USERNAME` and
-`TOKEN_GENERATOR_PASSWORD`. `ENVIRONMENT` also picks the test data file, so it has to
-match one of the `testdata-<environment>.json` files. Only at22 exists today, matching
-the Bruno suite, which is why `run-all.js` runs at at22 only.
+`TOKEN_GENERATOR_PASSWORD`. `run-all.js` runs at at22 only, because the four scenarios
+that still read the json fixture have one only for at22.
 
-`subject-lookup-forms.js` reads a csv instead and runs on its own in at22, at23, tt02 and
-yt01:
+The eight csv driven scenarios run on their own in at22, at23, tt02 and yt01:
 
 ```
 k6 run K6/api/tests/access-management/resource-owner/authorized-parties/subject-lookup-forms.js
 ```
 
-It draws one of the ten rows per iteration, at random unless `RANDOMIZE=false`. Regenerating
-the rows additionally needs `REGISTER_SUBSCRIPTION_KEY`:
+Each draws one of its ten rows per iteration, at random unless `RANDOMIZE=false`, which
+picks by iteration number instead, so ten iterations exercise every row. Regenerating the
+rows additionally needs `REGISTER_SUBSCRIPTION_KEY`:
 
 ```
-k6 run K6/api/tests/access-management/resource-owner/authorized-parties/testdataGeneration/subject-lookup-forms-data.js
+k6 run K6/api/tests/access-management/resource-owner/authorized-parties/testdataGeneration/accounting-firm-data.js
 ```

@@ -71,6 +71,6 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     return {
-        accessInformationFlags: fetchTestData(`access-management/resource-owner/authorized-parties/access-information-flags/${__ENV.ENVIRONMENT}.csv`, true, "test/subject-lookup-forms-from-csv"),
+        accessInformationFlags: fetchTestData(`access-management/resource-owner/authorized-parties/access-information-flags/${__ENV.ENVIRONMENT}.csv`),
     };
 }

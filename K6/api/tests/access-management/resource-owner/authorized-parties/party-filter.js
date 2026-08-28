@@ -78,6 +78,6 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     return {
-        partyFilter: fetchTestData(`access-management/resource-owner/authorized-parties/party-filter/${__ENV.ENVIRONMENT}.csv`, true, "test/subject-lookup-forms-from-csv"),
+        partyFilter: fetchTestData(`access-management/resource-owner/authorized-parties/party-filter/${__ENV.ENVIRONMENT}.csv`),
     };
 }

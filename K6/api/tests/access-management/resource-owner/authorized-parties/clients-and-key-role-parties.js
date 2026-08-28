@@ -86,6 +86,6 @@ export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
     return {
-        clientsAndKeyRoleParties: fetchTestData(`access-management/resource-owner/authorized-parties/clients-and-key-role-parties/${__ENV.ENVIRONMENT}.csv`, true, "test/subject-lookup-forms-from-csv"),
+        clientsAndKeyRoleParties: fetchTestData(`access-management/resource-owner/authorized-parties/clients-and-key-role-parties/${__ENV.ENVIRONMENT}.csv`),
     };
 }
