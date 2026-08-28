@@ -85,7 +85,7 @@ export function getConsenteeOrgs(env) {
  * @returns {Array<{ssn: string, partyUuid: string}>} The consenter persons.
  */
 export function getConsenterPersons(env) {
-    return fetchTestData(`access-management/consent/consenter-persons/${env}.csv`);;
+    return fetchTestData(`access-management/consent/consenter-persons/${env}.csv`);
 }
 
 /**
@@ -96,7 +96,7 @@ export function getConsenterPersons(env) {
  * @returns {Array<{Pid: string, Org: string, ConsentId: string}>} Consents to look up.
  */
 export function getLookupConsents(env) {
-    return fetchTestData(`access-management/consent/lookup/${env}.csv`);;;
+    return fetchTestData(`access-management/consent/lookup/${env}.csv`);
 }
 
 /**
