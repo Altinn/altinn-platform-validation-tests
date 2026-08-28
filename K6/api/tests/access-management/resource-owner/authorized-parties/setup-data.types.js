@@ -199,6 +199,110 @@
  * @property {{[key: string]: string}} authTokenType Token type names accepted by the token generator.
  */
 
+/**
+ * The rows `clients-and-key-role-parties.js` draws from.
+ *
+ * @typedef {object} ClientsAndKeyRolePartiesSetupData
+ * @property {Array<ClientsAndKeyRolePartiesRow>} clientsAndKeyRoleParties The rows.
+ */
+
+/**
+ * An accounting firm, one of its clients and that client's sole proprietorship owner.
+ *
+ * @typedef {object} ClientsAndKeyRolePartiesRow
+ * @property {string} pid The firm's daglig leder, who is the subject.
+ * @property {string} orgno The firm.
+ * @property {string} firmPartyUuid The firm's party uuid.
+ * @property {string} firmSubunitPartyUuid A subunit of the firm.
+ * @property {string} clientOrgno A client that carries the accountant packages.
+ * @property {string} clientPartyUuid That client's party uuid.
+ * @property {string} clientSubunitPartyUuid A subunit of that client, carrying them too.
+ * @property {string} innehaverPartyUuid The owner of a sole proprietorship client.
+ */
+
+/**
+ * The rows `access-information-flags.js` draws from.
+ *
+ * @typedef {object} AccessInformationFlagsSetupData
+ * @property {Array<AccessInformationFlagsRow>} accessInformationFlags The rows.
+ */
+
+/**
+ * A subject and two parties that have to survive the flags being turned off.
+ *
+ * @typedef {object} AccessInformationFlagsRow
+ * @property {string} pid The subject.
+ * @property {string} firmPartyUuid The firm it leads.
+ * @property {string} clientPartyUuid A client holding the accountant role.
+ */
+
+/**
+ * The rows `key-role-filter.js` draws from.
+ *
+ * @typedef {object} KeyRoleFilterSetupData
+ * @property {Array<KeyRoleFilterRow>} keyRoleFilter The rows.
+ */
+
+/**
+ * A subject, what it reaches only through the firm, and what reached it directly.
+ *
+ * @typedef {object} KeyRoleFilterRow
+ * @property {string} pid The subject.
+ * @property {string} firmPartyUuid The firm, which survives the exclusion.
+ * @property {string} clientPartyUuid A client that drops out with it.
+ * @property {string} keyRoleOnlyPartyUuid A second party that drops out.
+ * @property {string} directDelegatorPartyUuid A party that delegated to the subject directly.
+ * @property {string} directDelegatorPackage One package it delegated.
+ */
+
+/**
+ * The rows `party-filter.js` draws from.
+ *
+ * @typedef {object} PartyFilterSetupData
+ * @property {Array<PartyFilterRow>} partyFilter The rows.
+ */
+
+/**
+ * A main unit, its subunit, and a party the subject cannot reach.
+ *
+ * The unreachable party is another row's firm, so it is a real party that happens to be
+ * out of reach rather than an invented uuid.
+ *
+ * @typedef {object} PartyFilterRow
+ * @property {string} pid The subject.
+ * @property {string} clientPartyUuid A client main unit the subject reaches.
+ * @property {string} clientSubunitPartyUuid Its subunit.
+ * @property {string} unreachablePartyUuid A party the subject does not reach.
+ */
+
+/**
+ * The rows `resource-filter.js` draws from.
+ *
+ * @typedef {object} ResourceFilterSetupData
+ * @property {Array<ResourceFilterRow>} resourceFilter The rows.
+ */
+
+/**
+ * A resource one subject holds and another does not.
+ *
+ * @typedef {object} ResourceFilterRow
+ * @property {string} pid The subject that holds the resource.
+ * @property {string} resourceHolderPartyUuid The party carrying it.
+ * @property {string} resourceId The resource.
+ * @property {string} clientPartyUuid A party the filter has to drop.
+ * @property {string} pidWithoutResource A subject that does not hold the resource.
+ */
+
 export const SetupData = undefined;
+export const AccessInformationFlagsRow = undefined;
+export const AccessInformationFlagsSetupData = undefined;
+export const ClientsAndKeyRolePartiesRow = undefined;
+export const ClientsAndKeyRolePartiesSetupData = undefined;
+export const KeyRoleFilterRow = undefined;
+export const KeyRoleFilterSetupData = undefined;
+export const PartyFilterRow = undefined;
+export const PartyFilterSetupData = undefined;
+export const ResourceFilterRow = undefined;
+export const ResourceFilterSetupData = undefined;
 export const SubjectLookupFormsRow = undefined;
 export const SubjectLookupFormsSetupData = undefined;

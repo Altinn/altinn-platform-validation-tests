@@ -1,0 +1,10 @@
+pid,resourceHolderPartyUuid,resourceId,clientPartyUuid,pidWithoutResource
+03916696174,89c3feac-14fc-4d7f-8753-b5c97f67869b,testressurs-tilgangspakke-org-infrastruktur-1,0bb12e7f-fd99-493a-b2f7-560bd2024471,13877196857
+13877196857,aee086e0-9598-464e-ba97-f08d06d74e14,testressurs-tilgangspakke-org-barnehageleder-1,42bb8b90-f46f-4986-8b7f-dd19047a760c,11863047716
+11863047716,4042ac93-3da9-4a4a-844d-feb670ce8ce1,testressurs-tilgangspakke-org-skoleeier-1,c96ea39c-17db-4849-ac81-96a34b9f67a5,05855897476
+05855897476,b094a864-d321-43b7-9a45-59028526b75a,testressurs-tilgangspakke-org-pleie-omsorgstjenester-i-institusjon-1,c35a8462-89f8-4823-afff-ba95e86cfc8c,19855899909
+19855899909,7a0dbfea-98c0-417a-acaa-6c9e0501d3f0,testressurs-tilgangspakke-org-barnehagemyndighet-1,d740c0e5-91bb-4405-b154-b8e32bfcfc01,08928399371
+09914698143,06aa0dba-906a-4965-87b3-5b0e0c95b1e4,testressurs-tilgangspakke-org-a-ordning-1,6492bf7c-2665-4617-bb48-b5746b2d84ad,14855998565
+14855998565,960f13dc-12e5-4308-b865-ac6565c2ae1b,testressurs-tilgangspakke-org-utvinning-raaolje-naturgass-kull-1,1579f4db-f91f-4017-bcb6-427fb15e20f7,25869397779
+25869397779,4721e5ee-7c92-4760-ab9e-df9874240a49,testressurs-tilgangspakke-org-avfall-behandle-gjenvinne-1,78616d91-6e36-41af-b83a-8dab1d3f8365,06856298130
+06856298130,825d04b3-6e54-464b-bc59-4494724908e6,testressurs-tilgangspakke-org-miljorydding-rensing-1,f0a0a9b3-2332-48d9-ad97-9697af1e8423,03916696174
