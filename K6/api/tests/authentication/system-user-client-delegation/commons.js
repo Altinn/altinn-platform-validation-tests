@@ -5,7 +5,7 @@ import { SystemUserAgentRequestClient } from "../../../../clients/access-managem
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient } from "../../../authentication-imports.js";
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
@@ -206,11 +206,10 @@ export function getFacilitatorTokenOpts(facilitator) {
  * list being arranged, so a run stays short and successive runs spread over the
  * organisations rather than hammering one.
  *
- * An arrange that breaks stops at the step that broke and hands back a facilitator
- * without an agent system user, rather than calling fail(). Setup giving up means
- * k6 skips the teardown, and the system that was just registered would stay in the
- * register. The test is the one that fails on the missing system user, and by then
- * the teardown is going to run.
+ * An arrange that breaks ends the whole run at the step that broke: the test has
+ * nothing to say without an agent system user, and letting it run on only buys a
+ * second failure on the same cause. Stopping in setup means k6 skips the teardown,
+ * so each step takes what the previous ones made with it before it stops.
  *
  * @returns {any[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
@@ -244,7 +243,7 @@ export function arrangeAgentSystemUser() {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            return undefined;
+            fail("cannot arrange an agent system user: registering the system did not return a system id");
         }
 
         const agentRequest = new CreateAgentRequestSystemUserBuilder()
@@ -260,7 +259,9 @@ export function arrangeAgentSystemUser() {
         const created = RequestSystemUserBuildingBlocks.VendorAgentCreate(apiClients.vendor.requestSystemUserClient, agentRequest);
 
         if (!created?.id) {
-            return undefined;
+            unwindArrange(registration.systemId);
+
+            fail("cannot arrange an agent system user: the agent system user request was not created");
         }
 
         // From here on the facilitator is the one acting, so the token has to be
@@ -268,7 +269,9 @@ export function arrangeAgentSystemUser() {
         tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, facilitator.partyId, created.id)) {
-            return undefined;
+            unwindArrange(registration.systemId, created.id);
+
+            fail("cannot arrange an agent system user: the facilitator did not approve the agent system user request");
         }
 
         // The system id is nested under system, not on the system user itself.
@@ -278,13 +281,17 @@ export function arrangeAgentSystemUser() {
                 candidate.system?.systemId === registration.systemId,
         );
 
-        if (systemUser === undefined) {
+        // The request was approved, so the agent system user exists and the sweep
+        // cannot take the system it belongs to. Left for someone to look at rather
+        // than unwound, since deleting a system the facilitator holds an agent
+        // system user on is not this step's call to make.
+        if (!SystemUserClientDelegationDomainChecks.CheckAgentSystemUserArranged(systemUser?.id)) {
             console.error(`arrangeAgentSystemUser - agent system users returned: ${JSON.stringify(systemUsers)}`);
 
-            return undefined;
+            fail("cannot arrange an agent system user: the approved agent system user could not be looked up");
         }
 
-        return systemUser.id;
+        return systemUser?.id;
     });
 
     return [
@@ -317,16 +324,12 @@ export function cleanupArranged(arranged) {
             tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
 
-            // An arrange that stopped early leaves no agent system user to delete,
-            // only the system it had already registered.
-            if (arrangement.systemUserId !== undefined) {
-                DeleteAgentSystemUser(
-                    apiClients.facilitator.bffSystemUserClient,
-                    arrangement.facilitator.partyId,
-                    arrangement.systemUserId,
-                    new DeleteAgentSystemUserQueryBuilder().withPartyUuid(arrangement.facilitator.orgUuid).build(),
-                );
-            }
+            DeleteAgentSystemUser(
+                apiClients.facilitator.bffSystemUserClient,
+                arrangement.facilitator.partyId,
+                arrangement.systemUserId,
+                new DeleteAgentSystemUserQueryBuilder().withPartyUuid(arrangement.facilitator.orgUuid).build(),
+            );
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, arrangement.systemId);
 
@@ -337,6 +340,26 @@ export function cleanupArranged(arranged) {
             sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX, apiClients.vendor.requestSystemUserClient);
         }
     });
+}
+
+/**
+ * Removes what the arrange had made when a later step of it stops the run.
+ *
+ * The arrange runs in setup, and k6 skips the teardown when the setup gives up, so
+ * a step that stops has to take the system and the request with it. The request
+ * goes first, since a pending one outlives the system it was made for.
+ *
+ * @param {string} systemId - The system the arrange registered.
+ * @param {string} [requestId] - The agent system user request to withdraw, when the arrange got as far as creating one.
+ */
+function unwindArrange(systemId, requestId = undefined) {
+    const [apiClients] = getClients();
+
+    if (requestId !== undefined) {
+        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+    }
+
+    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemId);
 }
 
 /**

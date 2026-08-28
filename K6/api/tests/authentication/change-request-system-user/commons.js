@@ -206,11 +206,7 @@ export function cleanupArranged(arranged) {
             // it leaves it behind otherwise, and nothing else picks it up.
             sweepPendingChangeRequests(apiClients.vendor.changeRequestClient, systemUser.systemId);
 
-            // An arrange that stopped early leaves no system user to delete, only the
-            // system it had already registered.
-            if (systemUser.systemUserId !== undefined) {
-                DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
-            }
+            DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
 
@@ -498,18 +494,21 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * create-and-confirm-system-user-request.js, which tests it directly.
  *
  * Keeps its own checks, so an arrange that breaks is visible and points at the step
- * that broke rather than surfacing as a confusing failure later. It stops at that
- * step and hands back nothing rather than calling fail(), since this runs in setup
- * and k6 skips the teardown when the setup gives up, which would leave the system
- * it had just registered in the register. The test is the one that fails, on the
- * missing system user, and by then the teardown is going to run.
+ * that broke rather than surfacing as a confusing failure later. A break ends the
+ * whole run: a test that never got its system user has nothing to say, and letting
+ * it run on only buys a second failure on the same cause, plus a guard in every
+ * test that reads what the arrange returned.
+ *
+ * Stopping in setup means k6 skips the teardown, so each step takes what the
+ * previous ones made with it before it stops. Whatever a stop cannot reach is
+ * covered by the sweep: the systems carry the test's prefix, and the next run
+ * removes them.
  *
  * @param {any} registration - Registration from createSystemRegistration.
  * @param {any} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
- * @returns {string|undefined} Identifier of the approved system user, or
- * undefined when a step of the arrange did not get that far.
+ * @returns {string} Identifier of the approved system user.
  */
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
     const [apiClients] = getClients();
@@ -518,7 +517,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            return;
+            fail("cannot arrange a system user: registering the system did not return a system id");
         }
 
         const createRequest = new CreateRequestSystemUserBuilder()
@@ -539,7 +538,9 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         });
 
         if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
-            return;
+            unwindArrange(registration);
+
+            fail("cannot arrange a system user: the system user request was not created");
         }
 
         const approved = ApproveSystemUserRequest(
@@ -551,7 +552,9 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         // Nothing to look up unless the request was approved, so stop here rather
         // than let the lookup fail as a second, unrelated failure.
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            return;
+            unwindArrange(registration, createdRequest?.id);
+
+            fail("cannot arrange a system user: the customer did not approve the system user request");
         }
 
         const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
@@ -563,10 +566,34 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
 
         const systemUserId = systemUser?.id;
 
+        // The request was approved, so the system user exists and the sweep cannot
+        // take the system it belongs to. Left for someone to look at rather than
+        // unwound, since deleting a system the customer holds a system user on is
+        // not this step's call to make.
         if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
-            return undefined;
+            fail("cannot arrange a system user: the approved system user could not be looked up");
         }
 
         return systemUserId;
     });
+}
+
+/**
+ * Removes what the arrange had made when a later step of it stops the run.
+ *
+ * The arrange runs in setup, and k6 skips the teardown when the setup gives up, so
+ * a step that stops has to take the system and the request with it. The request
+ * goes first, since a pending one outlives the system it was made for.
+ *
+ * @param {any} registration - Registration from createSystemRegistration.
+ * @param {string} [requestId] - The system user request to withdraw, when the arrange got as far as creating one.
+ */
+function unwindArrange(registration, requestId = undefined) {
+    const [apiClients] = getClients();
+
+    if (requestId !== undefined) {
+        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+    }
+
+    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, registration.systemId);
 }
