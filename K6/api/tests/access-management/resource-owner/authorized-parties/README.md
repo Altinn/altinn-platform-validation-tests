@@ -40,7 +40,7 @@ partly to pin them down:
 | `party-kinds.js` | Self identified user, ID-porten email user, rightholder with and without packages, system user |
 | `authorization-boundaries.js` | No token, insufficient scope, resource owner scope, admin scope |
 | `deleted-parties.js` | A deleted party keeps granting access to its owner for a retention window |
-| `subject-lookup-forms.js` | The eight identifier forms resolve to the same party list |
+| `subject-lookup-forms.js` | The six identifier forms resolve to the same party list |
 | `org-code-filter.js` | Own org code allowed, another owner's refused, admin scope allowed either |
 | `forretningsforer-clients.js` | A business manager's daily leader reaches the housing companies it manages |
 
@@ -55,11 +55,12 @@ anyway, with the issue named in the failure message, so they turn red when the f
 lands. In the Bruno folder this replaces those two directions were switched off behind
 a flag and registered no assertions at all.
 
-In `subject-lookup-forms.js`, both enterprise user lookup forms resolve to an empty list at at22, because the
-fixture user holds no access. The pair is still compared, so a divergence between the
-two forms would be caught the moment the fixture is given access, but as things stand
-that equivalence is not exercised. It is not asserted non empty, because an empty
-fixture is not a product failure.
+`subject-lookup-forms.js` no longer covers the two enterprise user forms. They resolved to an
+empty list at at22, because the fixture user held no access, so the pair agreed on nothing and
+the equivalence was never exercised. They were dropped when the scenario moved to a csv rather
+than kept against a fixture only at22 has: an enterprise user is not something Register hands
+out, so there was no way to generate one per environment. Whoever wants them back has to seed
+an enterprise user with access first, which is what would make the steps worth having.
 
 `includeSubParties` is not covered: the filter is resolved but never applied, tracked by
 [#3522](https://github.com/Altinn/altinn-authorization-tmp/issues/3522). The exact daglig
@@ -110,6 +111,23 @@ stop being shared.
 
 ## Test data
 
+Eleven of the twelve scenarios read a json fixture; `subject-lookup-forms.js` reads a csv.
+The split follows what a scenario needs. The eleven assert something about how the parties
+are related to each other, which only a hand described tree can say, and they exist for at22
+alone. Subject lookup forms asserts that six ways of naming one subject agree, which needs no
+relation at all: one person and one organisation the endpoint answers non-empty for, written
+out in every identifier form. That is generated rather than described, so it exists for all
+four environments.
+
+`testdataGeneration/subject-lookup-forms-data.js` writes those rows. It takes the thirty
+organisations in `register/organizations-<environment>.csv`, asks Register for each one's
+daglig leder and for the organisations themselves in one bulk query, and then asks the
+endpoint under test which of the pairs answer non-empty, keeping the first ten. Nothing is
+seeded, so a row is only as durable as the daglig leder role behind it: regenerate the file
+when rows start coming back empty. It prints the csv, which is copied into
+`K6/testdata/access-management/resource-owner/authorized-parties/subject-lookup-forms/<environment>.csv`
+by hand, since a k6 run cannot write back to the repo.
+
 `../testdata-<environment>.json` holds the accounting firm tree, the forretningsfører
 firm, the enterprise and self identified users and the deleted sole proprietorships.
 The main unit and subunit delegation hierarchy that
@@ -134,4 +152,18 @@ k6 run K6/api/tests/access-management/resource-owner/authorized-parties/run-all.
 `ENVIRONMENT` and `BASE_URL` are required, plus `TOKEN_GENERATOR_USERNAME` and
 `TOKEN_GENERATOR_PASSWORD`. `ENVIRONMENT` also picks the test data file, so it has to
 match one of the `testdata-<environment>.json` files. Only at22 exists today, matching
-the Bruno suite.
+the Bruno suite, which is why `run-all.js` runs at at22 only.
+
+`subject-lookup-forms.js` reads a csv instead and runs on its own in at22, at23, tt02 and
+yt01:
+
+```
+k6 run K6/api/tests/access-management/resource-owner/authorized-parties/subject-lookup-forms.js
+```
+
+It draws one of the ten rows per iteration, at random unless `RANDOMIZE=false`. Regenerating
+the rows additionally needs `REGISTER_SUBSCRIPTION_KEY`:
+
+```
+k6 run K6/api/tests/access-management/resource-owner/authorized-parties/testdataGeneration/subject-lookup-forms-data.js
+```

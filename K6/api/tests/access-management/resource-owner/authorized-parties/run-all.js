@@ -11,24 +11,27 @@ import OrgCodeFilter from "./org-code-filter.js";
 import PartyFilter from "./party-filter.js";
 import PartyKinds from "./party-kinds.js";
 import ResourceFilter from "./resource-filter.js";
-import { SetupData } from "./setup-data.types.js";
-import SubjectLookupForms from "./subject-lookup-forms.js";
+import { SetupData, SubjectLookupFormsSetupData } from "./setup-data.types.js";
+import SubjectLookupForms, { setup as SubjectLookupFormsSetup } from "./subject-lookup-forms.js";
 import UnitHierarchyDelegationDirections from "./unit-hierarchy-delegation-directions.js";
 
 /**
  * Fetches the fixtures once for every scenario in the run.
  *
- * @returns {SetupData} The fixtures every feature reads, as its `data` argument.
+ * Subject lookup forms reads a csv of its own rather than the shared json fixture, so its
+ * setup is merged in here rather than folded into the common one.
+ *
+ * @returns {SetupData & SubjectLookupFormsSetupData} The fixtures every feature reads, as its `data` argument.
  */
 export function setup() {
-    return CommonSetup();
+    return { ...CommonSetup(), ...SubjectLookupFormsSetup() };
 }
 
 // The scenarios are independent of each other, so this order is only for reading.
 /**
  * Runs the feature.
  *
- * @param {SetupData} data - The fixtures returned by setup().
+ * @param {SetupData & SubjectLookupFormsSetupData} data - The fixtures returned by setup().
  */
 export default function (data) {
     ClientsAndKeyRoleParties(data);

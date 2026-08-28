@@ -50,6 +50,9 @@ test_definitions:
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: org-code-filter.js
     test_scope: resourceowner-authorized-parties
