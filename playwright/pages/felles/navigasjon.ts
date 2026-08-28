@@ -43,3 +43,18 @@ export async function gaaTil(page: Page, url: string, timeout = 30_000, maxAttem
         }
     }
 }
+
+/**
+ * Et mønster som treffer en sides URL, uansett hva flaten har hengt på etter den.
+ *
+ * Testene spør etter hvilken side brukeren er på, ikke etter en URL på tegnet. Flatene
+ * legger av og til på en spørrestreng selv: tilgangsstyring kommer for eksempel tilbake
+ * fra innloggingen på `?openAccountMenu=true`. Et fragment eller en avsluttende skråstrek
+ * sier heller ikke noe om at brukeren har havnet et annet sted. Stien er det som skiller
+ * sidene fra hverandre, så det er den som sammenlignes.
+ *
+ * @param url Sidens URL, uten spørrestreng.
+ */
+export function sidensUrl(url: string): RegExp {
+    return new RegExp(`^${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/?([?#].*)?$`);
+}
