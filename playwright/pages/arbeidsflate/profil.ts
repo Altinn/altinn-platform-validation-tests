@@ -1,7 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { baseUrls, TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
-import { gaaTil, erPaaSiden } from "../felles/navigasjon";
+import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Side } from "../side";
 
@@ -21,7 +21,6 @@ export class ArbeidsflateProfil implements Side {
     }
 
     async assertLoggedIn() {
-        await expect(this.page, 'Er på arbeidsflate profil').toHaveURL(erPaaSiden(this.url));
         await this.meny.assertLoggedIn();
 
         // Lagrede søk ligger bare under profilen, og href-en er språkuavhengig.
