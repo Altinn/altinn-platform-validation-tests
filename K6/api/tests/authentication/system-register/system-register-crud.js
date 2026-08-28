@@ -24,6 +24,10 @@ export default async function (data) {
 
     const systemId = `${vendorId}_${systemName}`;
 
+    // Both resources are published in every environment the test runs in. The
+    // ones this test used to name were not: authentication-e2e-test and
+    // vegardtestressurs are missing in yt01, so registering the system failed
+    // there before the resources were swapped.
     const requestBody = new RegisterSystemRequestBuilder()
         .withName({
             "en": "K6-tests-en",
@@ -45,7 +49,7 @@ export default async function (data) {
                 "action": "read",
                 "resource": [
                     {
-                        "value": "authentication-e2e-test",
+                        "value": "k6-instancedelegation-test",
                         "id": "urn:altinn:resource"
                     }
                 ]
@@ -53,7 +57,7 @@ export default async function (data) {
             {
                 "resource": [
                     {
-                        "value": "vegardtestressurs",
+                        "value": "ttd-dialogporten-dummy",
                         "id": "urn:altinn:resource"
                     }
                 ]
@@ -81,7 +85,7 @@ export default async function (data) {
             "resource": [
                 {
                     "id": "urn:altinn:resource",
-                    "value": "authentication-e2e-test"
+                    "value": "k6-instancedelegation-test"
                 }
             ]
         },
@@ -90,7 +94,7 @@ export default async function (data) {
             "resource": [
                 {
                     "id": "urn:altinn:resource",
-                    "value": "vegardtestressurs"
+                    "value": "ttd-dialogporten-dummy"
                 }
             ]
         }
