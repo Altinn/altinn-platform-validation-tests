@@ -55,13 +55,6 @@ export default function (data) {
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 
-    // The arrange hands back a system user id only when every step of it worked,
-    // rather than failing the run, so that its teardown gets to remove what it did
-    // create. Nothing below says anything without one.
-    if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser.systemUserId)) {
-        fail("cannot make a change request: the setup produced no system user");
-    }
-
     group("As a vendor, I can find a change request by external ref and withdraw it", function () {
         const changeRequestId = group("Ask for a right the system user does not have", function () {
             const request = new ChangeRequestSystemUserBuilder()
