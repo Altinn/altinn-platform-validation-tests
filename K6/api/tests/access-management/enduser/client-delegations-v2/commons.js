@@ -1,23 +1,44 @@
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
 import { ClientDelegationV2Client } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { REQUIRED_FIELDS, TEST_DATA } from "./testdata.js";
 
 /**
- * Reads a dotted path off an object.
+ * One row of client delegation v2 test data.
  *
- * @param {object} source Object to read from.
- * @param {string} path Dotted path, as listed in REQUIRED_FIELDS.
- * @returns {*} The value, or undefined when any step is missing.
+ * Three parties are involved and it is easy to mix them up. The column names
+ * follow the ones the client admin fixture already uses for the same shape:
+ * `partyUuid` and `userId` are the person, `orgUuid` is the organisation that
+ * person acts for.
+ *
+ * The token identifies the person, never the organisation. A token carrying
+ * only the organisation's own party uuid is answered 403 by `/clients` and
+ * `/agents`, whichever organisation the request names. The organisation is named
+ * per request instead, through the `party` query parameter.
+ *
+ * The client the resource is delegated from, the agent it is delegated to and
+ * the role it goes through are not columns here. The test reads them off the v1
+ * API at runtime, because the role has to be one that client relationship
+ * actually grants, which only the API knows.
+ *
+ * @typedef {object} ClientDelegationV2TestRow
+ * @property {string} partyUuid Party uuid of the person who administers the organisation, a dagligleder in the Bruno fixtures.
+ * @property {string} userId User id of that same person.
+ * @property {string} orgUuid Party uuid of the organisation in the middle.
+ * @property {string} resource Resource that gets delegated and then removed. It has to be one the client's role may delegate onwards, which the API decides, so it cannot be discovered from the outside.
  */
-function readPath(source, path) {
-    return path.split(".").reduce(
-        (/** @type {*} */ value, key) => (value === null || value === undefined ? undefined : value[key]),
-        /** @type {*} */ (source),
-    );
-}
+
+/**
+ * The columns setup insists on carrying a value.
+ *
+ * Every one of them is environment specific and none survives being guessed.
+ * Leave a cell blank rather than filling it with something plausible: setup
+ * names whichever are still empty.
+ *
+ * @type {(keyof ClientDelegationV2TestRow)[]}
+ */
+const REQUIRED_COLUMNS = ["partyUuid", "userId", "orgUuid", "resource"];
 
 /**
  * The scopes the v2 resource endpoints ask for.
@@ -44,39 +65,35 @@ let clients = undefined;
 /**
  * Returns the test data for the environment the run is against.
  *
- * An entry that exists but is still blank fails here rather than deeper in, so
- * a half-filled environment reports which fields it is missing instead of a
- * 400 from the API.
+ * A row that exists but is still blank fails here rather than deeper in, so a
+ * half-filled fixture reports which columns it is missing instead of a 400 from
+ * the API.
  *
- * @returns {import("./testdata.js").ClientDelegationV2TestData} The actors and the resource to work with.
- * @throws {Error} If the environment has no test data, or has blank required fields.
+ * @returns {ClientDelegationV2TestRow[]} One entry per row in the fixture.
+ * @throws {Error} If any row has blank required columns.
  */
 export function getTestData() {
     const environment = __ENV.ENVIRONMENT;
-    const data = TEST_DATA[environment];
+    const path = `access-management/enduser/client-delegations-v2/${environment}.csv`;
 
-    if (data === undefined) {
-        throw new Error(
-            `No client delegation v2 test data for ${environment}. Add an entry for it in testdata.js.`,
-        );
-    }
+    /** @type {ClientDelegationV2TestRow[]} */
+    const rows = fetchTestData(path);
 
-    const missing = REQUIRED_FIELDS.filter((field) => !readPath(data, field));
+    rows.forEach((row, index) => {
+        const missing = REQUIRED_COLUMNS.filter((column) => !row[column]);
 
-    if (missing.length > 0) {
-        throw new Error(
-            `Client delegation v2 test data for ${environment} is missing ${missing.join(", ")}. Fill it in in testdata.js.`,
-        );
-    }
+        if (missing.length > 0) {
+            throw new Error(
+                `Client delegation v2 test data for ${environment} is missing ${missing.join(", ")} on row ${index + 1}. Fill it in in K6/testdata/${path}.`,
+            );
+        }
+    });
 
-    return data;
+    return rows;
 }
 
 /**
  * Builds the enduser token options for the person acting for the organisation.
- *
- * The token identifies the person, not the organisation. The organisation is
- * named per request instead, through the `party` query parameter.
  *
  * @param {string} userId User id of the person administering the organisation.
  * @param {string} userPartyUuid That person's own party uuid.
@@ -99,11 +116,11 @@ export function getTokenOpts(userId, userPartyUuid) {
  * delegation goes between, which v2 has no endpoint of its own for, and v2 does
  * the resource work.
  *
- * @param {import("./testdata.js").ClientDelegationV2TestData} data Test data naming the person to act as.
+ * @param {ClientDelegationV2TestRow} row Test data naming the person to act as.
  * @returns {{clientDelegation: ClientDelegationClient, clientDelegationV2: ClientDelegationV2Client}} The clients.
  */
-export function getClients(data) {
-    const opts = getTokenOpts(data.facilitator.user.userId, data.facilitator.user.partyUuid);
+export function getClients(row) {
+    const opts = getTokenOpts(row.userId, row.partyUuid);
 
     if (tokenGenerator === undefined) {
         tokenGenerator = new PersonalTokenGenerator(opts);
@@ -124,7 +141,10 @@ export function getClients(data) {
 /**
  * k6 setup stage. Declares what the tests in this folder need.
  *
- * @returns {import("./testdata.js").ClientDelegationV2TestData} The test data for the environment.
+ * The fixture is read from main, so a new environment only takes effect once its
+ * csv has merged.
+ *
+ * @returns {ClientDelegationV2TestRow[]} The test data for the environment.
  */
 export function setup() {
     requireEnv([

@@ -6,7 +6,7 @@ export { setupDelegateAndRemoveResource as setup };
 /**
  * Runs every client delegation v2 test in this folder once.
  *
- * @param {import("./testdata.js").ClientDelegationV2TestData} data What the setup arranged.
+ * @param {import("./commons.js").ClientDelegationV2TestRow[]} data What the setup arranged.
  * @returns {void}
  */
 export default function (data) {
