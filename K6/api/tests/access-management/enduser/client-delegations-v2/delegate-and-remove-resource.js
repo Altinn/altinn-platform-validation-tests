@@ -31,23 +31,24 @@ function describe(entity) {
 /**
  * Picks the client, agent and role the delegation goes between.
  *
- * Everything here reads from v2, the same version the delegation itself goes to.
- * That matters rather than being tidiness: v2 reports a client held through a
+ * Everything reads from v2, the same version the delegation itself goes to. That
+ * matters rather than being tidiness: v2 reports a client held through a
  * rettighetshaver relation and v1 does not. Measured against at22, where one
  * party returns one client from v2 and none from v1, for a client the delegation
  * then succeeds for.
  *
- * The fixture may pin the client and the role, and when it does they are used as
- * given. Discovery works, but what a role may delegate onwards follows from the
- * role-package coupling, and that coupling can be restricted to a unit variant,
- * so one role is not interchangeable with another. Discovering leaves the outcome
- * to the order the API returns its rows, which makes a red run say as much about
- * the draw as about the endpoint. Both paths log what they landed on.
+ * The fixture names the client, the agent and the role, and each is verified to
+ * be there rather than taken on trust. That is what makes a reset environment
+ * visible: the lists come back as an empty 200, so the status checks pass either
+ * way, and without a check on the contents the run keeps its green checks and
+ * simply has fewer of them. Nothing would say the test had stopped testing.
  *
- * The agent is always read, since it has to be registered on the facilitator
- * before anything can be delegated to it. It is filtered to persons: an
- * organisation as agent is refused with 400 AM.VLD-00008, which would fail the
- * delegation for a reason that has nothing to do with what this test checks.
+ * Discovery is the fallback for a fixture that has not been filled in. It picks
+ * the first client carrying any role and the first agent that is a person, which
+ * leaves the outcome to the order the API returns its rows, so it logs what it
+ * landed on. Agents are filtered to persons because an organisation as agent is
+ * refused with 400 AM.VLD-00008, which would fail the delegation for a reason
+ * that has nothing to do with what this test checks.
  *
  * @param {ClientDelegationV2Client} clientDelegationV2 The v2 Client Delegation API client.
  * @param {import("./commons.js").ClientDelegationV2TestRow} row The fixture row in play.
@@ -63,27 +64,29 @@ function arrangeDelegationTarget(clientDelegationV2, row) {
         labels,
     );
 
-    const agentRows = agents?.data ?? [];
-    const persons = agentRows.filter((entry) => entry?.agent?.id && entry?.agent?.type === "Person");
-    const skipped = agentRows.length - persons.length;
+    let agentId;
 
-    if (persons.length === 0) {
-        console.error(
-            `arrangeDelegationTarget - party ${party} has no person agents to delegate to`
-            + (skipped > 0 ? `; ${skipped} of ${agentRows.length} were other types` : ""),
-        );
-        return null;
-    }
+    if (row.agentUuid) {
+        if (!ClientDelegationV2DomainChecks.CheckAgentRegistered(agents, row.agentUuid, "GetAgents")) {
+            return null;
+        }
 
-    const agent = persons[0];
+        agentId = row.agentUuid;
+    } else {
+        const agentRows = agents?.data ?? [];
+        const persons = agentRows.filter((entry) => entry?.agent?.id && entry?.agent?.type === "Person");
+        const skipped = agentRows.length - persons.length;
 
-    if (row.clientUuid && row.roleCode) {
-        console.log(
-            `arrangeDelegationTarget - party ${party} client=${row.clientUuid} role=${row.roleCode} (pinned)`
-            + ` agent=${describe(agent.agent)}`,
-        );
+        if (persons.length === 0) {
+            console.error(
+                `arrangeDelegationTarget - party ${party} has no person agents to delegate to`
+                + (skipped > 0 ? `; ${skipped} of ${agentRows.length} were other types` : ""),
+            );
+            return null;
+        }
 
-        return { clientId: row.clientUuid, agentId: agent.agent.id, roleCode: row.roleCode };
+        agentId = persons[0].agent.id;
+        console.log(`arrangeDelegationTarget - party ${party} agent=${describe(persons[0].agent)} (discovered)`);
     }
 
     const clients = GetClients(
@@ -92,6 +95,16 @@ function arrangeDelegationTarget(clientDelegationV2, row) {
         null,
         labels,
     );
+
+    if (row.clientUuid && row.roleCode) {
+        if (!ClientDelegationV2DomainChecks.CheckClientListed(clients, row.clientUuid, row.roleCode, "GetClients")) {
+            return null;
+        }
+
+        console.log(`arrangeDelegationTarget - party ${party} client=${row.clientUuid} role=${row.roleCode} (pinned) agent=${agentId}`);
+
+        return { clientId: row.clientUuid, agentId, roleCode: row.roleCode };
+    }
 
     const client = (clients?.data ?? [])
         .find((entry) => entry?.client?.id && (entry?.access ?? []).some((access) => access?.role?.code));
@@ -109,11 +122,10 @@ function arrangeDelegationTarget(clientDelegationV2, row) {
     }
 
     console.log(
-        `arrangeDelegationTarget - party ${party} client=${describe(client.client)} role=${roleCode} (discovered)`
-        + ` agent=${describe(agent.agent)}`,
+        `arrangeDelegationTarget - party ${party} client=${describe(client.client)} role=${roleCode} (discovered) agent=${agentId}`,
     );
 
-    return { clientId: client.client.id, agentId: agent.agent.id, roleCode };
+    return { clientId: client.client.id, agentId, roleCode };
 }
 
 /**
@@ -278,6 +290,9 @@ export default function (data) {
  * 200 having changed nothing, so the sweep costs nothing where there is nothing
  * to clean.
  *
+ * It needs no lookup of its own: the fixture names the client, agent and role, so
+ * the request it has to undo can be rebuilt from the row alone.
+ *
  * The client is called directly rather than through the building blocks, so that
  * tidying up does not add checks to the summary. Teardown should clean, not
  * assert, and a cleanup that cannot reach the API says so in the log rather than
@@ -288,31 +303,15 @@ export default function (data) {
  */
 export function teardown(data) {
     data.flat().forEach((row) => {
-        if (!row.clientUuid || !row.roleCode) {
+        if (!row.clientUuid || !row.agentUuid || !row.roleCode) {
             return;
         }
 
         const clientDelegationV2 = getClient(row);
 
-        const agents = clientDelegationV2.GetAgents(
-            new AgentsQueryBuilder().withParty(row.orgUuid).build(),
-        );
-
-        if (agents.status !== 200) {
-            console.warn(`teardown - could not read the agents of ${row.orgName}: ${agents.status}`);
-            return;
-        }
-
-        const persons = (JSON.parse(String(agents.body)).data ?? [])
-            .filter((/** @type {*} */ entry) => entry?.agent?.id && entry?.agent?.type === "Person");
-
-        if (persons.length === 0) {
-            return;
-        }
-
         const { query, payload } = delegationRequest(row, {
             clientId: row.clientUuid,
-            agentId: persons[0].agent.id,
+            agentId: row.agentUuid,
             roleCode: row.roleCode,
         });
 

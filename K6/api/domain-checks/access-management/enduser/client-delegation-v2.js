@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AgentResourcesDtoPaginatedResult, ClientResourcesDtoPaginatedResult, ResourceDelegationDto } from "../../../../clients/access-management/enduser/client-delegation-v2/client-delegation-v2.types.js";
+import { AgentDtoPaginatedResult, AgentResourcesDtoPaginatedResult, ClientDtoPaginatedResult, ClientResourcesDtoPaginatedResult, ResourceDelegationDto } from "../../../../clients/access-management/enduser/client-delegation-v2/client-delegation-v2.types.js";
 
 /**
  * Collects every resource reference id in a paginated resources result.
@@ -134,7 +134,80 @@ function CheckDelegationEchoed(delegations, expected, operation) {
     return success;
 }
 
+/**
+ * Checks that the party has the expected agent registered.
+ *
+ * An empty agent list is a valid 200, so the status checks pass whether or not
+ * the environment still holds the relationships the fixture was built against.
+ * Naming the agent is what turns a reset environment into a red run: without
+ * this the run keeps its green checks, just fewer of them, and nothing says the
+ * test stopped testing anything.
+ *
+ * @param {AgentDtoPaginatedResult|null} agents - The agent list to search.
+ * @param {string} agentUuid - Party uuid of the agent the fixture expects.
+ * @param {string} operation - Name of the call being checked, used in the check name.
+ * @returns {boolean} True if the agent is registered, false otherwise.
+ */
+function CheckAgentRegistered(agents, agentUuid, operation) {
+    const ids = (agents?.data ?? [])
+        .map((entry) => entry?.agent?.id)
+        .filter((id) => id !== undefined && id !== null);
+
+    const success = check(agents, {
+        [`CheckAgentRegistered - ${operation} lists the expected agent`]: () =>
+            ids.includes(agentUuid),
+    });
+
+    if (!success) {
+        console.error(
+            `CheckAgentRegistered - ${operation} expected ${agentUuid} among ${ids.length} agents: ${JSON.stringify(ids)}`,
+        );
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the party has the expected client, holding the expected role.
+ *
+ * Same reasoning as CheckAgentRegistered, and the role is checked alongside the
+ * client because the two are what the delegation is built from: a client that is
+ * there but no longer grants the role fails the delegation for a reason the
+ * fixture cannot see.
+ *
+ * @param {ClientDtoPaginatedResult|null} clients - The client list to search.
+ * @param {string} clientUuid - Party uuid of the client the fixture expects.
+ * @param {string} roleCode - Role the delegation is meant to go through.
+ * @param {string} operation - Name of the call being checked, used in the check name.
+ * @returns {boolean} True if the client is listed with that role, false otherwise.
+ */
+function CheckClientListed(clients, clientUuid, roleCode, operation) {
+    const entry = (clients?.data ?? [])
+        .find((candidate) => candidate?.client?.id === clientUuid);
+
+    const roles = (entry?.access ?? [])
+        .map((access) => access?.role?.code)
+        .filter((code) => code !== undefined && code !== null);
+
+    const success = check(clients, {
+        [`CheckClientListed - ${operation} lists the expected client with the expected role`]: () =>
+            entry !== undefined && roles.includes(roleCode),
+    });
+
+    if (!success) {
+        console.error(
+            entry === undefined
+                ? `CheckClientListed - ${operation} expected client ${clientUuid} among: ${JSON.stringify((clients?.data ?? []).map((c) => c?.client?.id))}`
+                : `CheckClientListed - ${operation} client ${clientUuid} does not grant ${roleCode}, only: ${JSON.stringify(roles)}`,
+        );
+    }
+
+    return success;
+}
+
 export const ClientDelegationV2DomainChecks = {
+    CheckAgentRegistered,
+    CheckClientListed,
     CheckDelegationEchoed,
     CheckResourceDelegated,
     CheckResourceNotDelegated,

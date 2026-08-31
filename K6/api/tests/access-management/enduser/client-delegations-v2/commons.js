@@ -31,6 +31,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
  * @property {string} orgPartyId Altinn party id of that organisation. Informational, like orgNo.
  * @property {string} orgName Display name of that organisation. Informational, and only here to make a row readable; remove it if it stays unused.
  * @property {string} clientUuid Party uuid of the client to delegate from. Leave blank to let the test discover one, which makes the run depend on the order /clients happens to return.
+ * @property {string} agentUuid Party uuid of the agent to delegate to, drawn from the agents fixture for the same environment. Blank means take the first person the party has registered, with the same caveat as clientUuid. Naming it is also what lets setup tell a reset environment from a working one: an empty agent list is a valid 200, so only checking the contents against a named agent turns that into a red run.
  * @property {string} roleCode Role the delegation goes through. Blank means discover, with the same caveat as clientUuid. What may be delegated onwards follows from the role-package coupling, and that coupling can be restricted to a unit variant, so an arbitrary role is not interchangeable with a chosen one.
  * @property {string} resource Resource that gets delegated and then removed. It has to be one the client's role may delegate onwards, which the API decides, so it cannot be discovered from the outside.
  */
