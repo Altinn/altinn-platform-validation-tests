@@ -34,8 +34,8 @@ export default function (data) {
     runGetSystemUserByQuery(data.getSystemUserByQuery);
     runSystemWithCreatedResource(data.systemWithCreatedResource);
 
-    // Last, like in run-paginated-systemuser-tests.js: the stream fail()s on a first
-    // page it cannot read, and that ends the whole iteration.
+    // Last: the stream fail()s on a first page it cannot read, and that ends the
+    // whole iteration.
     runStreamSystemUsers();
 }
 
