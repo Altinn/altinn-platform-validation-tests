@@ -1,8 +1,14 @@
 import http from "k6/http";
 
-import { AgentResourcesQuery, ClientResourcesQuery, DelegateAgentResourcesQuery, ResourceDelegationBatchInputDto } from "./client-delegation-v2.types.js";
+import { AgentResourcesQuery, AgentsQuery, ClientResourcesQuery, ClientsQuery, DelegateAgentResourcesQuery, ResourceDelegationBatchInputDto } from "./client-delegation-v2.types.js";
 
 const TAGS = {
+    GetClients: {
+        action: "get-clients-v2",
+    },
+    GetAgents: {
+        action: "get-agents-v2",
+    },
     GetAgentResources: {
         action: "get-agent-resources-v2",
     },
@@ -20,8 +26,13 @@ const TAGS = {
 /**
  * Client for the v2 client delegation resource endpoints.
  *
- * Only the four resource endpoints live here. The rest of v2 either mirrors v1,
- * which the v1 client already covers, or is not tested yet.
+ * Covers the client and agent listings plus the four resource endpoints. The
+ * rest of v2 is not tested yet.
+ *
+ * The listings are v2 endpoints in their own right, not v1 ones reused: v2
+ * reports a client held through a rettighetshaver relation, and v1 does not.
+ * Measured against at22, where the same party returns one client from v2 and
+ * none from v1.
  */
 class ClientDelegationV2Client {
     /**
@@ -47,6 +58,30 @@ class ClientDelegationV2Client {
 
     static get TAGS() {
         return TAGS;
+    }
+
+    /**
+     * Gets the clients of a party.
+     *
+     * @param {ClientsQuery|null} [query] Query parameters. Prefer using ClientsQueryBuilder.
+     * @param {{[key: string]: string|number}|null} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetClients(query = null, headers = null, labels = null) {
+        return this.doGet("clients", TAGS.GetClients.action, query, headers, labels);
+    }
+
+    /**
+     * Gets the agents of a party.
+     *
+     * @param {AgentsQuery|null} [query] Query parameters. Prefer using AgentsQueryBuilder.
+     * @param {{[key: string]: string|number}|null} [headers] Optional request headers.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetAgents(query = null, headers = null, labels = null) {
+        return this.doGet("agents", TAGS.GetAgents.action, query, headers, labels);
     }
 
     /**

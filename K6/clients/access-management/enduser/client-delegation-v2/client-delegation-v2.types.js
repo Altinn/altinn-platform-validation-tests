@@ -99,17 +99,85 @@
  * @property {string} agent UUID of the agent the resources go to.
  */
 
+/**
+ * Access granted through a single role.
+ *
+ * Unlike the v1 shape, which carries packages only, v2 groups both packages and
+ * resources under the role that grants them.
+ *
+ * @typedef {object} RoleAccess
+ * @property {import("../client-delegation/client-delegation.types.js").CompactRoleDto} role The role granting the access.
+ * @property {Array<import("../client-delegation/client-delegation.types.js").CompactPackageDto>} packages Packages granted through the role.
+ * @property {Array<CompactResourceDto>} resources Resources granted through the role.
+ */
+
+/**
+ * A client of a party, with the access it grants.
+ *
+ * @typedef {object} ClientDto
+ * @property {import("../client-delegation/client-delegation.types.js").CompactEntityDto} client The client party.
+ * @property {Array<RoleAccess>} access Access grouped by role.
+ */
+
+/**
+ * An agent of a party, with the access delegated to it.
+ *
+ * @typedef {object} AgentDto
+ * @property {import("../client-delegation/client-delegation.types.js").CompactEntityDto} agent The agent party.
+ * @property {string} agentAddedAt ISO date-time.
+ * @property {Array<RoleAccess>} access Access grouped by role.
+ */
+
+/**
+ * @typedef {object} ClientDtoPaginatedResult
+ * @property {Array<ClientDto>} data The page of results.
+ * @property {import("../client-delegation/client-delegation.types.js").PaginatedResultLinks|null} links Paging links.
+ */
+
+/**
+ * @typedef {object} AgentDtoPaginatedResult
+ * @property {Array<AgentDto>} data The page of results.
+ * @property {import("../client-delegation/client-delegation.types.js").PaginatedResultLinks|null} links Paging links.
+ */
+
+/**
+ * Query for GET clients.
+ *
+ * The three filters are repeatable: each value is sent as its own occurrence of
+ * the parameter, which is what the API expects for a list.
+ *
+ * @typedef {object} ClientsQuery
+ * @property {string} party UUID of the party whose clients to list.
+ * @property {Array<string>} [roles] Role codes to filter on.
+ * @property {Array<string>} [packages] Access package urns to filter on.
+ * @property {Array<string>} [resources] Resource identifiers to filter on.
+ */
+
+/**
+ * Query for GET agents.
+ *
+ * @typedef {object} AgentsQuery
+ * @property {string} party UUID of the party whose agents to list.
+ */
+
 // Runtime placeholders, so the typedefs above can be imported by name without
 // k6 pulling in a binding that does not exist.
+export const AgentDto = undefined;
+export const AgentDtoPaginatedResult = undefined;
 export const AgentResourcesDto = undefined;
 export const AgentResourcesDtoPaginatedResult = undefined;
 export const AgentResourcesQuery = undefined;
+export const AgentsQuery = undefined;
+export const ClientDto = undefined;
+export const ClientDtoPaginatedResult = undefined;
 export const ClientResourcesDto = undefined;
 export const ClientResourcesDtoPaginatedResult = undefined;
 export const ClientResourcesQuery = undefined;
+export const ClientsQuery = undefined;
 export const CompactResourceDto = undefined;
 export const DelegateAgentResourcesQuery = undefined;
 export const ResourceAccess = undefined;
 export const ResourceDelegationBatchInputDto = undefined;
 export const ResourceDelegationDto = undefined;
 export const ResourceDelegationPermission = undefined;
+export const RoleAccess = undefined;

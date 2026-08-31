@@ -1,6 +1,8 @@
 export {
     AgentResourcesQueryBuilder,
+    AgentsQueryBuilder,
     ClientResourcesQueryBuilder,
+    ClientsQueryBuilder,
     DelegateAgentResourcesQueryBuilder,
     ResourceDelegationBatchInputBuilder,
 } from "./client-delegation-v2.builders.js";

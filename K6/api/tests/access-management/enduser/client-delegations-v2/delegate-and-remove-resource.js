@@ -1,13 +1,11 @@
 export { handleSummary } from "../../../../../common-imports.js";
 import { fail, group } from "k6";
 
-import { AgentsQueryBuilder, ClientDelegationClient, ClientsQueryBuilder } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
-import { AgentResourcesQueryBuilder, ClientResourcesQueryBuilder, DelegateAgentResourcesQueryBuilder, ResourceDelegationBatchInputBuilder } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
+import { AgentResourcesQueryBuilder, AgentsQueryBuilder, ClientDelegationV2Client, ClientResourcesQueryBuilder, ClientsQueryBuilder, DelegateAgentResourcesQueryBuilder, ResourceDelegationBatchInputBuilder } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
-import { GetAgents, GetClients } from "../../../../building-blocks/access-management/enduser/client-delegation/index.js";
-import { DelegateAgentResources, DeleteAgentResources, GetAgentResources, GetClientResources } from "../../../../building-blocks/access-management/enduser/client-delegation-v2/index.js";
+import { DelegateAgentResources, DeleteAgentResources, GetAgentResources, GetAgents, GetClientResources, GetClients } from "../../../../building-blocks/access-management/enduser/client-delegation-v2/index.js";
 import { ClientDelegationV2DomainChecks } from "../../../../domain-checks/access-management/enduser/client-delegation-v2.js";
-import { getClients, setup } from "./commons.js";
+import { getClient, setup } from "./commons.js";
 
 export { setup };
 
@@ -16,27 +14,80 @@ const labels = { step: "DelegateAndRemoveResource" };
 export const options = getOptions([labels]);
 
 /**
+ * Describes an entity for a log line, so a failure says what was drawn.
+ *
+ * The variant matters: a role-package coupling can be restricted to one, which
+ * is why the same role delegates fine for one unit type and is refused for
+ * another. Without it in the output a red run cannot be told apart from an
+ * unlucky draw.
+ *
+ * @param {*} entity A CompactEntityDto.
+ * @returns {string} Name, type and variant.
+ */
+function describe(entity) {
+    return `${entity?.name ?? "?"} (type=${entity?.type ?? "?"}, variant=${entity?.variant ?? "none"})`;
+}
+/**
  * Picks the client, agent and role the delegation goes between.
  *
- * v2 has no endpoint listing clients or agents, so this reads them from v1. The
- * role comes from the client rather than being configured, since it has to be a
- * role that client relationship actually grants.
+ * Everything here reads from v2, the same version the delegation itself goes to.
+ * That matters rather than being tidiness: v2 reports a client held through a
+ * rettighetshaver relation and v1 does not. Measured against at22, where one
+ * party returns one client from v2 and none from v1, for a client the delegation
+ * then succeeds for.
  *
- * @param {ClientDelegationClient} clientDelegation The v1 Client Delegation API client.
- * @param {string} party Party uuid whose clients and agents are used.
+ * The fixture may pin the client and the role, and when it does they are used as
+ * given. Discovery works, but what a role may delegate onwards follows from the
+ * role-package coupling, and that coupling can be restricted to a unit variant,
+ * so one role is not interchangeable with another. Discovering leaves the outcome
+ * to the order the API returns its rows, which makes a red run say as much about
+ * the draw as about the endpoint. Both paths log what they landed on.
+ *
+ * The agent is always read, since it has to be registered on the facilitator
+ * before anything can be delegated to it. It is filtered to persons: an
+ * organisation as agent is refused with 400 AM.VLD-00008, which would fail the
+ * delegation for a reason that has nothing to do with what this test checks.
+ *
+ * @param {ClientDelegationV2Client} clientDelegationV2 The v2 Client Delegation API client.
+ * @param {import("./commons.js").ClientDelegationV2TestRow} row The fixture row in play.
  * @returns {{clientId: string, agentId: string, roleCode: string}|null} The delegation target, or null when the party lacks the data.
  */
-function arrangeDelegationTarget(clientDelegation, party) {
-    const clients = GetClients(
-        clientDelegation,
-        new ClientsQueryBuilder().withParty(party).build(),
+function arrangeDelegationTarget(clientDelegationV2, row) {
+    const party = row.orgUuid;
+
+    const agents = GetAgents(
+        clientDelegationV2,
+        new AgentsQueryBuilder().withParty(party).build(),
         null,
         labels,
     );
 
-    const agents = GetAgents(
-        clientDelegation,
-        new AgentsQueryBuilder().withParty(party).build(),
+    const agentRows = agents?.data ?? [];
+    const persons = agentRows.filter((entry) => entry?.agent?.id && entry?.agent?.type === "Person");
+    const skipped = agentRows.length - persons.length;
+
+    if (persons.length === 0) {
+        console.error(
+            `arrangeDelegationTarget - party ${party} has no person agents to delegate to`
+            + (skipped > 0 ? `; ${skipped} of ${agentRows.length} were other types` : ""),
+        );
+        return null;
+    }
+
+    const agent = persons[0];
+
+    if (row.clientUuid && row.roleCode) {
+        console.log(
+            `arrangeDelegationTarget - party ${party} client=${row.clientUuid} role=${row.roleCode} (pinned)`
+            + ` agent=${describe(agent.agent)}`,
+        );
+
+        return { clientId: row.clientUuid, agentId: agent.agent.id, roleCode: row.roleCode };
+    }
+
+    const clients = GetClients(
+        clientDelegationV2,
+        new ClientsQueryBuilder().withParty(party).build(),
         null,
         labels,
     );
@@ -44,32 +95,24 @@ function arrangeDelegationTarget(clientDelegation, party) {
     const client = (clients?.data ?? [])
         .find((entry) => entry?.client?.id && (entry?.access ?? []).some((access) => access?.role?.code));
 
-    const agent = (agents?.data ?? []).find((entry) => entry?.agent?.id);
-
     if (client === undefined) {
         console.error(`arrangeDelegationTarget - party ${party} has no client with a role to delegate through`);
         return null;
     }
 
-    if (agent === undefined) {
-        console.error(`arrangeDelegationTarget - party ${party} has no agents to delegate to`);
-        return null;
-    }
-
-    // The find above already established that one of these carries a role code,
-    // but it has to be read out again for the result to be typed as a string.
-    const roleCode = (client.access ?? []).find((access) => access?.role?.code)?.role?.code;
+    const roleCode = (client.access ?? []).map((access) => access?.role?.code).find(Boolean);
 
     if (!roleCode) {
         console.error(`arrangeDelegationTarget - party ${party} has no role code to delegate through`);
         return null;
     }
 
-    return {
-        clientId: client.client.id,
-        agentId: agent.agent.id,
-        roleCode,
-    };
+    console.log(
+        `arrangeDelegationTarget - party ${party} client=${describe(client.client)} role=${roleCode} (discovered)`
+        + ` agent=${describe(agent.agent)}`,
+    );
+
+    return { clientId: client.client.id, agentId: agent.agent.id, roleCode };
 }
 
 /**
@@ -83,10 +126,10 @@ function arrangeDelegationTarget(clientDelegation, party) {
  */
 export default function (data) {
     const row = getItemFromList(data);
-    const { clientDelegation, clientDelegationV2 } = getClients(row);
+    const clientDelegationV2 = getClient(row);
 
     const target = group("Arrange - find a client, an agent and a role to delegate through", function () {
-        return arrangeDelegationTarget(clientDelegation, row.orgUuid);
+        return arrangeDelegationTarget(clientDelegationV2, row);
     });
 
     // Nothing below says anything without a client and an agent, and no write has

@@ -1,4 +1,3 @@
-import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
 import { ClientDelegationV2Client } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, requireEnv } from "../../../../../helpers.js";
@@ -23,9 +22,16 @@ import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
  * actually grants, which only the API knows.
  *
  * @typedef {object} ClientDelegationV2TestRow
- * @property {string} partyUuid Party uuid of the person who administers the organisation, a dagligleder in the Bruno fixtures.
+ * @property {string} pid National identity number of that person. Nothing reads it: the token is built from userId and partyUuid, and those are what the endpoints answer on. It is here so a row says who it is about without a lookup, and so the rest can be regenerated for a new environment from the fnr alone.
+ * @property {string} partyUuid Party uuid of the person who calls. The requirement is read and write on the altinn_client_administration resource for the facilitator, which a dagligleder has and the klientadministrator package also grants; dagligleder is how the fixtures happen to get it, not the rule. A person without it is answered 403.
+ * @property {string} partyId Altinn party id of that person. Informational, like pid.
  * @property {string} userId User id of that same person.
  * @property {string} orgUuid Party uuid of the organisation in the middle.
+ * @property {string} orgNo Organisation number of that same organisation. Informational in the same way as pid: the endpoints take the uuid, not the number.
+ * @property {string} orgPartyId Altinn party id of that organisation. Informational, like orgNo.
+ * @property {string} orgName Display name of that organisation. Informational, and only here to make a row readable; remove it if it stays unused.
+ * @property {string} clientUuid Party uuid of the client to delegate from. Leave blank to let the test discover one, which makes the run depend on the order /clients happens to return.
+ * @property {string} roleCode Role the delegation goes through. Blank means discover, with the same caveat as clientUuid. What may be delegated onwards follows from the role-package coupling, and that coupling can be restricted to a unit variant, so an arbitrary role is not interchangeable with a chosen one.
  * @property {string} resource Resource that gets delegated and then removed. It has to be one the client's role may delegate onwards, which the API decides, so it cannot be discovered from the outside.
  */
 
@@ -58,9 +64,9 @@ const SCOPES = CreateScopeString([
 let tokenGenerator = undefined;
 
 /**
- * @type {{clientDelegation: ClientDelegationClient, clientDelegationV2: ClientDelegationV2Client} | undefined}
+ * @type {ClientDelegationV2Client | undefined}
  */
-let clients = undefined;
+let client = undefined;
 
 /**
  * Returns the test data for the environment the run is against.
@@ -110,16 +116,15 @@ export function getTokenOpts(userId, userPartyUuid) {
 }
 
 /**
- * Returns the clients the test calls with, building them on first use.
+ * Returns the client the test calls with, building it on first use.
  *
- * Both the v1 and the v2 client are needed: v1 lists the clients and agents the
- * delegation goes between, which v2 has no endpoint of its own for, and v2 does
- * the resource work.
+ * One client, not two: v2 carries the client and agent listings as well as the
+ * resource endpoints, so nothing here needs v1.
  *
  * @param {ClientDelegationV2TestRow} row Test data naming the person to act as.
- * @returns {{clientDelegation: ClientDelegationClient, clientDelegationV2: ClientDelegationV2Client}} The clients.
+ * @returns {ClientDelegationV2Client} The v2 Client Delegation API client.
  */
-export function getClients(row) {
+export function getClient(row) {
     const opts = getTokenOpts(row.userId, row.partyUuid);
 
     if (tokenGenerator === undefined) {
@@ -128,14 +133,11 @@ export function getClients(row) {
         tokenGenerator.setTokenGeneratorOptions(opts);
     }
 
-    if (clients === undefined) {
-        clients = {
-            clientDelegation: new ClientDelegationClient(__ENV.BASE_URL, tokenGenerator),
-            clientDelegationV2: new ClientDelegationV2Client(__ENV.BASE_URL, tokenGenerator),
-        };
+    if (client === undefined) {
+        client = new ClientDelegationV2Client(__ENV.BASE_URL, tokenGenerator);
     }
 
-    return clients;
+    return client;
 }
 
 /**
