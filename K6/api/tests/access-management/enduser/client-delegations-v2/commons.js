@@ -32,7 +32,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
  * @property {string} orgPartyId Altinn party id of that organisation. Informational, like orgNo.
  * @property {string} orgName Display name of that organisation. Informational, and only here to make a row readable; remove it if it stays unused.
  * @property {string} clientUuid Party uuid of the client to delegate from. Leave blank to let the test discover one, which makes the run depend on the order /clients happens to return.
- * @property {string} agentUuid Party uuid of the agent to delegate to, drawn from the agents fixture for the same environment. Blank means take the first person the party has registered, with the same caveat as clientUuid. Naming it is also what lets setup tell a reset environment from a working one: an empty agent list is a valid 200, so only checking the contents against a named agent turns that into a red run.
+ * @property {string} agentUuid Party uuid of the agent to delegate to. Blank means take one from the agents fixture for the environment, by row position. Naming it is also what lets the run tell a reset environment from a working one: an empty agent list is a valid 200, so only checking the contents against a named agent turns that into a red run.
  * @property {string} roleCode Role the delegation goes through. Blank means discover, with the same caveat as clientUuid. What may be delegated onwards follows from the role-package coupling, and that coupling can be restricted to a unit variant, so an arbitrary role is not interchangeable with a chosen one.
  * @property {string} resource Resource that gets delegated and then removed. It has to be one the client's role may delegate onwards, which the API decides, so it cannot be discovered from the outside.
  */
@@ -77,15 +77,23 @@ let client = undefined;
  * half-filled fixture reports which columns it is missing instead of a 400 from
  * the API.
  *
+ * Two files are read: the rows themselves, and the pool of people to use as
+ * agents. Pairing them here rather than writing the agent into every row keeps
+ * the pool in one place, so adding a person to it does not mean editing rows.
+ *
  * @returns {ClientDelegationV2TestRow[]} One entry per row in the fixture.
  * @throws {Error} If any row has blank required columns.
  */
 export function getTestData() {
     const environment = __ENV.ENVIRONMENT;
     const path = `access-management/enduser/client-delegations-v2/${environment}.csv`;
+    const agentPath = `access-management/enduser/client-delegations-v2/agents/${environment}.csv`;
 
     /** @type {ClientDelegationV2TestRow[]} */
     const rows = fetchTestData(path);
+
+    /** @type {{pid: string, partyUuid: string, lastName: string, name: string}[]} */
+    const agents = fetchTestData(agentPath);
 
     rows.forEach((row, index) => {
         const missing = REQUIRED_COLUMNS.filter((column) => !row[column]);
@@ -94,6 +102,14 @@ export function getTestData() {
             throw new Error(
                 `Client delegation v2 test data for ${environment} is missing ${missing.join(", ")} on row ${index + 1}. Fill it in in K6/testdata/${path}.`,
             );
+        }
+
+        // A row may name its own agent. Where it does not, it takes one from the
+        // pool by position, wrapping if the pool is the shorter of the two, so a
+        // row and its agent stay paired from run to run rather than depending on
+        // the order the API happens to list them in.
+        if (!row.agentUuid) {
+            row.agentUuid = agents[index % agents.length].partyUuid;
         }
     });
 
@@ -219,5 +235,22 @@ export function setup() {
         "TOKEN_GENERATOR_PASSWORD",
     ]);
 
-    return segmentData(getTestData(), getNumberOfVUs());
+    const rows = getTestData();
+    const vus = getNumberOfVUs();
+
+    // segmentData hands out one slice per VU, so more VUs than rows leaves the
+    // last ones with nothing and the iteration reads undefined off an empty
+    // slice. Failing here rather than there matters because the crash is silent:
+    // the run still exits zero, and the summary only shows fewer checks than
+    // usual. Rows cannot simply be shared either, since each one sets up and
+    // tears down its own client relation and two VUs on one would fight over it.
+    if (vus > rows.length) {
+        throw new Error(
+            `Cannot run ${vus} VUs against ${rows.length} rows: this test writes, and two VUs`
+            + " on one row would set up and tear down the same client relation. Add rows to the"
+            + " fixture, or use a read-only test for load, which can share rows freely.",
+        );
+    }
+
+    return segmentData(rows, vus);
 }
