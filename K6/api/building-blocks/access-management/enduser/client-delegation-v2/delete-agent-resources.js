@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {DelegateAgentResourcesQuery} queryParams Query parameters. Use DelegateAgentResourcesQueryBuilder.
  * @param {ResourceDelegationBatchInputDto|null} [body] The resources to remove. Use ResourceDelegationBatchInputBuilder.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<ResourceDelegationDto>} The delegations that were removed.
+ * @returns {Array<ResourceDelegationDto>|null} The delegations that were removed, or null when the call failed.
  */
 export function DeleteAgentResources(
     clientDelegationV2Client,
@@ -28,8 +28,8 @@ export function DeleteAgentResources(
         "DeleteAgentResources",
     );
 
-    /** @type {Array<ResourceDelegationDto>} */
-    let delegations = [];
+    /** @type {Array<ResourceDelegationDto>|null} */
+    let delegations = null;
 
     const succeed = check(res, {
         "DeleteAgentResources - status code is 200": (r) =>

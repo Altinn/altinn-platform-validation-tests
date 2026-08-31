@@ -110,7 +110,7 @@ function CheckResourcesGrantedViaRole(resources, roleCode, operation) {
  * whether this call was the one that changed it, so it is reported rather than
  * asserted: delegating something already delegated is a success with no change.
  *
- * @param {Array<ResourceDelegationDto>} delegations - What the write call returned.
+ * @param {Array<ResourceDelegationDto>|null} delegations - What the write call returned, or null when the call failed. Null fails the check rather than throwing, so a failed write is reported the same way a wrong one is.
  * @param {{from: string, to: string}} expected - The party the delegation is from, and the agent it is to.
  * @param {string} operation - Name of the call being checked, used in the check name.
  * @returns {boolean} True if a matching delegation came back, false otherwise.

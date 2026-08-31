@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {DelegateAgentResourcesQuery} queryParams Query parameters. Use DelegateAgentResourcesQueryBuilder.
  * @param {ResourceDelegationBatchInputDto|null} [body] The resources to delegate. Use ResourceDelegationBatchInputBuilder.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<ResourceDelegationDto>} The delegations that were created.
+ * @returns {Array<ResourceDelegationDto>|null} The delegations that were created, or null when the call failed. Null means nothing was written; an empty array means the call landed and changed nothing.
  */
 export function DelegateAgentResources(
     clientDelegationV2Client,
@@ -28,8 +28,8 @@ export function DelegateAgentResources(
         "DelegateAgentResources",
     );
 
-    /** @type {Array<ResourceDelegationDto>} */
-    let delegations = [];
+    /** @type {Array<ResourceDelegationDto>|null} */
+    let delegations = null;
 
     const succeed = check(res, {
         "DelegateAgentResources - status code is 200": (r) =>

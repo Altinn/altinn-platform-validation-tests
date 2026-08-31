@@ -1,5 +1,6 @@
 export { handleSummary } from "../../../../../common-imports.js";
 import { fail, group } from "k6";
+import exec from "k6/execution";
 
 import { AgentResourcesQueryBuilder, AgentsQueryBuilder, ClientDelegationV2Client, ClientResourcesQueryBuilder, ClientsQueryBuilder, DelegateAgentResourcesQueryBuilder, ResourceDelegationBatchInputBuilder } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
@@ -116,16 +117,40 @@ function arrangeDelegationTarget(clientDelegationV2, row) {
 }
 
 /**
+ * Builds the query and payload for one delegation.
+ *
+ * The same pair is needed to create the delegation and to remove it again, and
+ * teardown has to build it without having seen the iteration that created it,
+ * so it lives here rather than inline.
+ *
+ * @param {import("./commons.js").ClientDelegationV2TestRow} row The fixture row.
+ * @param {{clientId: string, agentId: string, roleCode: string}} target What the arrange step settled on.
+ * @returns {{query: *, payload: *}} Query and body, for delegate and delete alike.
+ */
+function delegationRequest(row, target) {
+    return {
+        query: new DelegateAgentResourcesQueryBuilder()
+            .withParty(row.orgUuid)
+            .withClient(target.clientId)
+            .withAgent(target.agentId)
+            .build(),
+        payload: new ResourceDelegationBatchInputBuilder()
+            .addPermission(target.roleCode, [row.resource])
+            .build(),
+    };
+}
+
+/**
  * k6 default function executed for each iteration.
  *
  * Test: a resource can be delegated from a client to an agent, is visible from
  * both sides afterwards, and can be removed again.
  *
- * @param {import("./commons.js").ClientDelegationV2TestRow[]} data What the setup arranged.
+ * @param {import("./commons.js").ClientDelegationV2TestRow[][]} data One slice per VU, from setup.
  * @returns {void}
  */
 export default function (data) {
-    const row = getItemFromList(data);
+    const row = getItemFromList(data[exec.vu.idInTest - 1]);
     const clientDelegationV2 = getClient(row);
 
     const target = group("Arrange - find a client, an agent and a role to delegate through", function () {
@@ -138,17 +163,13 @@ export default function (data) {
         fail("cannot delegate a resource: the party has no client and agent to delegate between");
     }
 
-    const delegationQuery = new DelegateAgentResourcesQueryBuilder()
-        .withParty(row.orgUuid)
-        .withClient(target.clientId)
-        .withAgent(target.agentId)
-        .build();
+    const { query: delegationQuery, payload } = delegationRequest(row, target);
 
-    const payload = new ResourceDelegationBatchInputBuilder()
-        .addPermission(target.roleCode, [row.resource])
-        .build();
-
-    let delegated = false;
+    // Whether the write landed, which is what decides if there is anything to
+    // remove. Deliberately not the same question as whether the response looked
+    // the way we expected: a 200 echoing something surprising has still created a
+    // delegation, and skipping the removal for that would leave it behind.
+    let written = false;
 
     group("1. Delegate the resource to the agent", function () {
         const delegations = DelegateAgentResources(
@@ -158,7 +179,9 @@ export default function (data) {
             labels,
         );
 
-        delegated = ClientDelegationV2DomainChecks.CheckDelegationEchoed(
+        written = delegations !== null;
+
+        ClientDelegationV2DomainChecks.CheckDelegationEchoed(
             delegations,
             { from: target.clientId, to: target.agentId },
             "DelegateAgentResources",
@@ -167,7 +190,7 @@ export default function (data) {
 
     // Skipping rather than failing: a fail() here would abort the iteration and
     // leave the delegation behind, which step 4 is what removes.
-    if (delegated) {
+    if (written) {
         group("2. The agent has the resource", function () {
             const resources = GetAgentResources(
                 clientDelegationV2,
@@ -208,9 +231,7 @@ export default function (data) {
                 "GetClientResources",
             );
         });
-    }
 
-    if (delegated) {
         group("4. Remove the resource from the agent", function () {
             const removals = DeleteAgentResources(
                 clientDelegationV2,
@@ -242,4 +263,71 @@ export default function (data) {
             );
         });
     }
+}
+
+/**
+ * k6 teardown stage. Removes anything an iteration may have left behind.
+ *
+ * Step 4 already removes the delegation on the ordinary path. This is for the
+ * paths that never reach it: an iteration that timed out, threw, or was cut
+ * short when the run was stopped. Without this, such a run leaves a delegation
+ * in the environment and the next run sees it as pre-existing state.
+ *
+ * It sweeps every row rather than only the ones that ran, since teardown is not
+ * told what the iterations did. Removing a delegation that is not there answers
+ * 200 having changed nothing, so the sweep costs nothing where there is nothing
+ * to clean.
+ *
+ * The client is called directly rather than through the building blocks, so that
+ * tidying up does not add checks to the summary. Teardown should clean, not
+ * assert, and a cleanup that cannot reach the API says so in the log rather than
+ * turning a green run red.
+ *
+ * @param {import("./commons.js").ClientDelegationV2TestRow[][]} data One slice per VU, from setup.
+ * @returns {void}
+ */
+export function teardown(data) {
+    data.flat().forEach((row) => {
+        if (!row.clientUuid || !row.roleCode) {
+            return;
+        }
+
+        const clientDelegationV2 = getClient(row);
+
+        const agents = clientDelegationV2.GetAgents(
+            new AgentsQueryBuilder().withParty(row.orgUuid).build(),
+        );
+
+        if (agents.status !== 200) {
+            console.warn(`teardown - could not read the agents of ${row.orgName}: ${agents.status}`);
+            return;
+        }
+
+        const persons = (JSON.parse(String(agents.body)).data ?? [])
+            .filter((/** @type {*} */ entry) => entry?.agent?.id && entry?.agent?.type === "Person");
+
+        if (persons.length === 0) {
+            return;
+        }
+
+        const { query, payload } = delegationRequest(row, {
+            clientId: row.clientUuid,
+            agentId: persons[0].agent.id,
+            roleCode: row.roleCode,
+        });
+
+        const res = clientDelegationV2.DeleteAgentResources(query, payload);
+
+        if (res.status !== 200) {
+            console.warn(`teardown - could not remove the delegation for ${row.orgName}: ${res.status}`);
+            return;
+        }
+
+        const changed = (JSON.parse(String(res.body)) ?? [])
+            .filter((/** @type {*} */ entry) => entry?.changed);
+
+        if (changed.length > 0) {
+            console.info(`teardown - removed a delegation left behind for ${row.orgName}`);
+        }
+    });
 }

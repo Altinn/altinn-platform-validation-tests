@@ -1,6 +1,6 @@
 import { ClientDelegationV2Client } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /**
@@ -146,7 +146,12 @@ export function getClient(row) {
  * The fixture is read from main, so a new environment only takes effect once its
  * csv has merged.
  *
- * @returns {ClientDelegationV2TestRow[]} The test data for the environment.
+ * The rows are handed out one slice per VU. The test writes, so two VUs drawing
+ * the same row would delegate and remove the same resource for the same client
+ * and agent, and each would see the other removal as its own. Slicing keeps a VU
+ * on rows nobody else touches.
+ *
+ * @returns {ClientDelegationV2TestRow[][]} The test data for the environment, one slice per VU.
  */
 export function setup() {
     requireEnv([
@@ -156,5 +161,5 @@ export function setup() {
         "TOKEN_GENERATOR_PASSWORD",
     ]);
 
-    return getTestData();
+    return segmentData(getTestData(), getNumberOfVUs());
 }
