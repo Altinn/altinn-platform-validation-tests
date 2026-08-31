@@ -1,4 +1,5 @@
 import { ClientDelegationV2Client } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
+import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
@@ -139,6 +140,62 @@ export function getClient(row) {
     }
 
     return client;
+}
+
+/**
+ * The scopes the v1 connections endpoints ask for.
+ *
+ * Setting up the client relation goes through connections, not client
+ * delegations, and those endpoints answer 403 without the PDP scope even though
+ * creating the connection alone gets by on the portal scope.
+ */
+const CONNECTION_SCOPES = CreateScopeString([
+    AltinnScopes.PORTAL.ENDUSER,
+    AltinnScopes.PDP.AUTHORIZE.ENDUSER,
+]);
+
+/**
+ * @type {PersonalTokenGenerator | undefined}
+ */
+let connectionsTokenGenerator = undefined;
+
+/**
+ * @type {ConnectionsClient | undefined}
+ */
+let connectionsClient = undefined;
+
+/**
+ * Returns a connections client acting as the administrator of the given row.
+ *
+ * This has its own token generator rather than sharing the one behind
+ * getClient. The two are held at different identities at the same moment: the
+ * client relation is set up by the client's administrator while the delegation
+ * is made by the facilitator's, and a shared generator would leave whichever
+ * was asked for last answering for both.
+ *
+ * @param {ClientDelegationV2TestRow} row The row whose administrator to act as.
+ * @returns {ConnectionsClient} The v1 Connections API client.
+ */
+export function getConnectionsClient(row) {
+    const opts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(CONNECTION_SCOPES)
+        .withUserId(row.userId)
+        .withPartyUuid(row.partyUuid)
+        .build();
+
+    if (connectionsTokenGenerator === undefined) {
+        connectionsTokenGenerator = new PersonalTokenGenerator(opts);
+    } else {
+        connectionsTokenGenerator.setTokenGeneratorOptions(opts);
+    }
+
+    if (connectionsClient === undefined) {
+        connectionsClient = new ConnectionsClient(__ENV.BASE_URL, connectionsTokenGenerator);
+    }
+
+    return connectionsClient;
 }
 
 /**
