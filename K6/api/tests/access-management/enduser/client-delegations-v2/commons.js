@@ -235,22 +235,10 @@ export function setup() {
         "TOKEN_GENERATOR_PASSWORD",
     ]);
 
-    const rows = getTestData();
-    const vus = getNumberOfVUs();
-
-    // segmentData hands out one slice per VU, so more VUs than rows leaves the
-    // last ones with nothing and the iteration reads undefined off an empty
-    // slice. Failing here rather than there matters because the crash is silent:
-    // the run still exits zero, and the summary only shows fewer checks than
-    // usual. Rows cannot simply be shared either, since each one sets up and
-    // tears down its own client relation and two VUs on one would fight over it.
-    if (vus > rows.length) {
-        throw new Error(
-            `Cannot run ${vus} VUs against ${rows.length} rows: this test writes, and two VUs`
-            + " on one row would set up and tear down the same client relation. Add rows to the"
-            + " fixture, or use a read-only test for load, which can share rows freely.",
-        );
-    }
-
-    return segmentData(rows, vus);
+    // segmentData refuses more VUs than rows. That matters more here than where
+    // it is only about reading: each row sets up and tears down its own client
+    // relation, so two VUs on one would fight over it, and the rows cannot be
+    // shared to make the surplus VUs harmless. A read-only test wanting load can
+    // share rows freely and belongs in its own file.
+    return segmentData(getTestData(), getNumberOfVUs());
 }
