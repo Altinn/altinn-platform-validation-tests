@@ -2,6 +2,7 @@ import { cleanupArranged } from "./commons.js";
 import runGetSystemUserByQuery, { setup as setupGetSystemUserByQuery } from "./get-system-user-by-query.js";
 import runGetSystemUsersBySystemId, { setup as setupGetSystemUsersBySystemId } from "./get-system-users-by-system-id.js";
 import runStreamSystemUsers, { setup as setupStreamSystemUsers } from "./stream-system-users.js";
+import runSystemUserDecision, { setup as setupSystemUserDecision } from "./system-user-decision.js";
 import runSystemWithCreatedResource, { setup as setupSystemWithCreatedResource, teardown as teardownSystemWithCreatedResource } from "./system-with-created-resource.js";
 
 /**
@@ -15,6 +16,7 @@ export function setup() {
         getSystemUserByQuery: setupGetSystemUserByQuery(),
         getSystemUsersBySystemId: setupGetSystemUsersBySystemId(),
         streamSystemUsers: setupStreamSystemUsers(),
+        systemUserDecision: setupSystemUserDecision(),
         systemWithCreatedResource: setupSystemWithCreatedResource(),
     };
 }
@@ -32,6 +34,7 @@ export function setup() {
 export default function (data) {
     runGetSystemUsersBySystemId();
     runGetSystemUserByQuery(data.getSystemUserByQuery);
+    runSystemUserDecision(data.systemUserDecision);
     runSystemWithCreatedResource(data.systemWithCreatedResource);
 
     // Last: the stream fail()s on a first page it cannot read, and that ends the
@@ -46,6 +49,7 @@ export default function (data) {
  */
 export function teardown(data) {
     cleanupArranged(data.getSystemUserByQuery);
+    cleanupArranged(data.systemUserDecision);
     teardownSystemWithCreatedResource(data.systemWithCreatedResource);
 }
 

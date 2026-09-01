@@ -5,6 +5,7 @@ import runSystemRegister, { setup as setupSystemRegister, teardown as teardownSy
 import runSystemUser, { setup as setupSystemUser, teardown as teardownSystemUser } from "./system-user/run-all.js";
 import runSystemUserClientDelegation, { setup as setupSystemUserClientDelegation, teardown as teardownSystemUserClientDelegation } from "./system-user-client-delegation/run-all.js";
 import runSystemUserRequest, { setup as setupSystemUserRequest, teardown as teardownSystemUserRequest } from "./system-user-request/run-all.js";
+import runSystemUserToken, { setup as setupSystemUserToken, teardown as teardownSystemUserToken } from "./system-user-token/run-all.js";
 import runTokenExchange, { setup as setupTokenExchange } from "./token-exchange/run-all.js";
 
 /**
@@ -25,6 +26,7 @@ export async function setup() {
         systemUser: setupSystemUser(),
         systemUserClientDelegation: setupSystemUserClientDelegation(),
         systemUserRequest: setupSystemUserRequest(),
+        systemUserToken: setupSystemUserToken(),
         tokenExchange: await setupTokenExchange(),
     };
 }
@@ -41,6 +43,12 @@ export async function setup() {
  * and system register tests sign their grants with. Without the Maskinporten
  * secrets those two folders fail in their own setup and the rest still runs.
  *
+ * Two folders want more than that. The pdp sits behind API management, so the
+ * decision tests want AUTHORIZATION_SUBSCRIPTION_KEY, and the client delegation one
+ * only has a resource to ask about in at22 and tt02. The system user token folder
+ * runs in tt02 alone, since that is the Altinn environment Maskinporten looks system
+ * users up in, and its setup stops the run anywhere else.
+ *
  * @param {Awaited<ReturnType<typeof setup>>} data Setup results, keyed per folder.
  */
 export default async function (data) {
@@ -49,6 +57,7 @@ export default async function (data) {
     runSystemUserRequest(data.systemUserRequest);
     runChangeRequestSystemUser(data.changeRequestSystemUser);
     runSystemUserClientDelegation(data.systemUserClientDelegation);
+    await runSystemUserToken(data.systemUserToken);
     runTokenExchange(data.tokenExchange);
     runIntrospection();
     runOpenid();
@@ -70,6 +79,7 @@ export async function teardown(data) {
     teardownSystemUser(data.systemUser);
     teardownSystemUserClientDelegation(data.systemUserClientDelegation);
     teardownSystemUserRequest(data.systemUserRequest);
+    teardownSystemUserToken(data.systemUserToken);
     await teardownSystemRegister();
 }
 

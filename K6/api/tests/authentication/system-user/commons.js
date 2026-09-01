@@ -1,24 +1,39 @@
 import { Right } from "../../../../clients/authentication/types.js";
 import {
+    buildXacmlJsonAttributeExternal,
+    buildXacmlJsonCategoryExternal,
+    buildXacmlJsonRequestExternal,
+    buildXacmlJsonRequestRootExternal,
+} from "../../../../clients/authorization/builders.js";
+import { AuthorizeClient } from "../../../../clients/authorization/index.js";
+import { XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
+import {
     ResourceClient,
     ResourcePartyType,
     ResourceType,
     ServiceResourceBuilder,
 } from "../../../../clients/resource-registry/index.js";
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemRegisterClient, SystemUserClient } from "../../../authentication-imports.js";
 import { arrangeApprovedSystemUser, pickVendor, resource } from "../change-request-system-user/commons.js";
 
 /**
- * The rights the arranged system user is granted.
+ * The resource the arranged system user is granted a right on.
  *
  * Published in every environment these tests run in, so registering the system
  * works everywhere.
  *
+ * @type {string}
+ */
+export const GRANTED_RESOURCE = "k6-instancedelegation-test";
+
+/**
+ * The rights the arranged system user is granted.
+ *
  * @type {Right[]}
  */
-const GRANTED_RIGHTS = [resource("k6-instancedelegation-test")];
+const GRANTED_RIGHTS = [resource(GRANTED_RESOURCE)];
 
 /**
  * The scopes a vendor reads system users with.
@@ -150,6 +165,95 @@ export function getStreamClients() {
 }
 
 export { cleanupArranged } from "../change-request-system-user/commons.js";
+
+/**
+ * @type {AuthorizeClient | undefined}
+ */
+let authorizeClient = undefined;
+
+/**
+ * Creates and caches the client the decision test asks the PDP with.
+ *
+ * Its own client rather than one of the vendor's: the PDP sits behind API
+ * management and answers 401 without a subscription key, and it is asked with the
+ * authorize admin scope so the answer is about the system user in the request
+ * rather than about whoever is holding the token.
+ *
+ * Cached at module scope, so a VU builds it once and keeps the token it fetched.
+ *
+ * @returns {AuthorizeClient} The client.
+ */
+export function getAuthorizeClient() {
+    if (authorizeClient === undefined) {
+        const tokenGenerator = new PersonalTokenGenerator(
+            new PersonalTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withScopes(CreateScopeString([AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN]))
+                .build(),
+        );
+
+        authorizeClient = new AuthorizeClient(__ENV.BASE_URL, tokenGenerator, __ENV.AUTHORIZATION_SUBSCRIPTION_KEY);
+    }
+
+    return authorizeClient;
+}
+
+/**
+ * Builds the question "may this system user do this to this resource, for this
+ * organisation".
+ *
+ * A system user is named by its own uuid rather than by a person or an
+ * organisation, which is what makes this different from the requests the
+ * pdp-authorize tests build. The organisation goes on the resource side: it is the
+ * party the resource belongs to, so it is what says whose data is being reached.
+ *
+ * @param {string} systemUserId - Identifier of the system user asking.
+ * @param {string} resourceId - Resource the system user wants to reach.
+ * @param {string} orgNo - Organisation number of the party the resource belongs to.
+ * @param {string} action - Action, e.g. read or write.
+ * @returns {XacmlJsonRequestRootExternal} Authorization request.
+ */
+export function buildSystemUserRequest(systemUserId, resourceId, orgNo, action) {
+    return buildXacmlJsonRequestRootExternal({
+        request: buildXacmlJsonRequestExternal({
+            accessSubject: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:altinn:systemuser:uuid",
+                            value: systemUserId,
+                        }),
+                    ],
+                }),
+            ],
+            action: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                            value: action,
+                        }),
+                    ],
+                }),
+            ],
+            resource: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:altinn:resource",
+                            value: resourceId,
+                        }),
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:altinn:organization:identifier-no",
+                            value: orgNo,
+                        }),
+                    ],
+                }),
+            ],
+        }),
+    });
+}
 
 /**
  * The service owner that owns the resource the resource flow creates. The registry
