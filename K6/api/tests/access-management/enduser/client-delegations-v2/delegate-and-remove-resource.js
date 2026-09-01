@@ -69,6 +69,29 @@ function arrangeDelegationTarget(clientDelegationV2, row, clientRow) {
         return null;
     }
 
+    // The resources filter is a v2 addition with no v1 equivalent, so nothing
+    // else in the suite would notice it breaking. Only asked where the test set
+    // the relation up itself: it granted the client this very resource a moment
+    // ago, so the filtered listing has to still carry the client. A row that
+    // names its own client holds it through an Enhetsregisteret role instead,
+    // where the resource arrives via the role-package coupling rather than a
+    // direct grant, and the same expectation would not follow.
+    if (clientRow !== null) {
+        const filtered = GetClients(
+            clientDelegationV2,
+            new ClientsQueryBuilder().withParty(party).withResources([row.resource]).build(),
+            null,
+            labels,
+        );
+
+        ClientDelegationV2DomainChecks.CheckClientListed(
+            filtered,
+            clientId,
+            roleCode,
+            "GetClients filtered by resource",
+        );
+    }
+
     console.log(
         `arrangeDelegationTarget - party ${party} client=${clientId} role=${roleCode}`
         + ` (${row.clientUuid ? "named" : "set up"}) agent=${row.agentUuid}`,
