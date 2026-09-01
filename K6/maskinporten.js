@@ -149,7 +149,7 @@ export class MaskinportenAccessTokenGenerator {
     #signingKey = null;
 
     /**
-     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
+     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}: the scopes to ask for, and for a system user token the `authorization_details` withSystemUser built.
      * @param {string} [maskinportenKid=__ENV.MASKINPORTEN_KID] - Key ID of the key registered on the Maskinporten client.
      * @param {string} [maskinportenClientId=__ENV.MASKINPORTEN_CLIENT_ID] - Maskinporten client ID, used as the `iss` claim.
      * @param {string} [clientPem=__ENV.MASKINPORTEN_CLIENT_PEM] - The client's private key as PEM. Quote it in .env so the newlines survive sourcing; literal `\n` sequences are converted back to real line breaks.
@@ -282,9 +282,12 @@ export class MaskinportenAccessTokenGenerator {
     #cacheKey(scopes) {
         const authorizationDetails = this.tokenGeneratorOptions.authorizationDetails;
 
+        // Normalised here rather than at the two call sites: ensureToken defaulted an
+        // unset scope to the empty string and getToken did not, so the two looked the
+        // same token up under different keys and getToken reported nothing cached.
         return [
             this.#maskinportenClientId,
-            scopes,
+            scopes ?? "",
             authorizationDetails ? JSON.stringify(authorizationDetails) : "",
         ].join(":");
     }

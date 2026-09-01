@@ -1,10 +1,31 @@
 import { group } from "k6";
 
+import { buildSystemUserRequest } from "../../../../clients/authorization/builders.js";
 import { getItemFromList, requireEnv } from "../../../../helpers.js";
 import { AuthorizePost } from "../../../building-blocks/authorization/authorize/post.js";
-import { arrangeSystemUser, buildSystemUserRequest, cleanupArranged, getAuthorizeClient, GRANTED_RESOURCE } from "./commons.js";
+import { getAuthorizeClient } from "../../authorization/authorize-client.js";
+import { arrangeSystemUser, cleanupArranged, GRANTED_RESOURCE } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
+
+/**
+ * The organisation the negative question is asked for.
+ *
+ * Fixed rather than drawn, and drawn from neither list on purpose. The obvious
+ * choice was the vendor this iteration registered its system as, but the vendors and
+ * the end users overlap: half of vendors.csv also appears in end-users-<env>.csv, so
+ * roughly one iteration in four hundred would draw the customer as its own vendor,
+ * ask the positive question twice and report the second as a failure. On a scheduled
+ * run that is a false alarm every few days, and one that reads exactly like a real
+ * regression.
+ *
+ * 312605031 is the organisation the seeded systems in these tests belong to. It is a
+ * vendor, never a customer, so it is in no end-users-<env>.csv in any environment,
+ * and the system user under test can never have been granted anything for it.
+ *
+ * @type {string}
+ */
+const OTHER_ORG_NO = "312605031";
 
 /**
  * k6 setup stage. Arranges the system user the decisions are asked about.
@@ -12,7 +33,18 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
  * @returns The system user, as a single item list.
  */
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
+    requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
+
+    // The pdp sits behind API management and answers 401 without a subscription key,
+    // and there is no authorization-subscription-key-at23 to give this test there.
+    // Skipped rather than failed, so the folder's run-all stays usable in at23, and
+    // so nothing is arranged that the test would not get to ask about. What runs
+    // where is decided by functional.yaml, which lists the three that have a key.
+    if (!__ENV.AUTHORIZATION_SUBSCRIPTION_KEY) {
+        console.warn(`setup - skipping the system user decision test in ${__ENV.ENVIRONMENT}: it needs AUTHORIZATION_SUBSCRIPTION_KEY to reach the pdp`);
+
+        return [];
+    }
 
     return arrangeSystemUser("systemuserdecision");
 }
@@ -34,8 +66,13 @@ export function setup() {
  * @param {any[]} data The arranged system users from setup.
  */
 export default function (data) {
+    // Empty where there is no subscription key. See setup.
+    if ((data ?? []).length === 0) {
+        return;
+    }
+
     const arranged = getItemFromList(data, randomize);
-    const authorizeClient = getAuthorizeClient();
+    const [authorizeClient] = getAuthorizeClient();
 
     group("As the customer that approved it, my system user has the right it was granted", function () {
         group("The system user may read the resource for the customer that approved it", function () {
@@ -49,7 +86,7 @@ export default function (data) {
         group("The same right does not reach another organisation", function () {
             AuthorizePost(
                 authorizeClient,
-                buildSystemUserRequest(arranged.systemUserId, GRANTED_RESOURCE, arranged.vendorOrgNo, "read"),
+                buildSystemUserRequest(arranged.systemUserId, GRANTED_RESOURCE, OTHER_ORG_NO, "read"),
                 "NotApplicable",
             );
         });

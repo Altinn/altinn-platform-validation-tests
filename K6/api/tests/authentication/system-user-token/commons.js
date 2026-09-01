@@ -64,8 +64,13 @@ const ACCESS_PACKAGE = "urn:altinn:accesspackage:jordbruk";
  *
  * A system user token carries scopes like any other Maskinporten token. What the
  * caller may reach comes from the `authorization_details` claim rather than from
- * these, so this is simply a scope the client is registered for, and the tests use
- * it to check that the scope survives into the token and through the exchange.
+ * these, so the scope only has to be one the client is registered for, and the tests
+ * use it to check that it survives into the token and through the exchange.
+ *
+ * It reads oddly for a system user token, and it is not a choice: this is the only
+ * scope the client has. Maskinporten answers a grant asking for anything else with
+ * 400 invalid_scope, so a more neutral name would mean registering another scope on
+ * the client first.
  */
 export const SCOPE = AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE;
 
@@ -110,7 +115,11 @@ let maskinportenTokenGenerator = undefined;
  * @returns The system user the token is asked for, as a single item list.
  */
 export function setup() {
-    requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL", "MASKINPORTEN_CLIENT_ID"]);
+    // Only what the skip below needs, since requireEnv throws and a throw in setup
+    // ends the whole run. The Maskinporten secrets are asked for after it, or the
+    // aggregate run-all one level up would die here in the three environments that
+    // do not have them rather than skipping the way the next comment promises.
+    requireEnv(["ENVIRONMENT"]);
 
     // Nothing to arrange anywhere else: the seeded system is only in tt02, so the
     // request below would be rejected. Skipped rather than failed, so the aggregate
@@ -122,6 +131,8 @@ export function setup() {
         return [];
     }
 
+    requireEnv(["BASE_URL", "AM_UI_BASE_URL", "MASKINPORTEN_CLIENT_ID"]);
+
     // The same customers the other system user tests act on behalf of: daglig leder
     // in an AS and innehaver in an ENK, so someone who can approve for the company
     // without anyone having delegated to them first.
@@ -130,7 +141,9 @@ export function setup() {
 
     const [apiClients] = getClients();
 
-    vendorTokenGenerator?.setTokenGeneratorOptions(getVendorTokenOpts());
+    // Only the approver's, since the vendor is always the one organisation that owns
+    // the Maskinporten client and getClients built its generator for exactly that.
+    // Which customer this run acts on behalf of is what changes.
     approverTokenGenerator?.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
     const systemUserId = group("Arrange - the customer has a system user on the seeded system", function () {

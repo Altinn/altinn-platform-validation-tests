@@ -1,34 +1,6 @@
 import { check } from "k6";
-import encoding from "k6/encoding";
 
-/**
- * Reads the claims out of a JWT without verifying it.
- *
- * The same reasoning as in token-exchange.js: verifying the signature would mean
- * fetching signing keys and doing crypto in the test, which says more about the
- * test than about what issued the token. What matters here is which claims the
- * token carries, so the payload is read and the signature left to the services
- * that consume it.
- *
- * @param {string|null} token - The token to read.
- * @returns {any|null} The claims, or null when the token is not a readable JWT.
- */
-function readClaims(token) {
-    const parts = (token ?? "").split(".");
-
-    if (parts.length !== 3) {
-        return null;
-    }
-
-    try {
-        // A JWT is base64url encoded and unpadded, which is what "rawurl" means.
-        return JSON.parse(encoding.b64decode(parts[1], "rawurl", "s"));
-    } catch (error) {
-        console.error(`readClaims - cannot read the token payload: ${error}`);
-
-        return null;
-    }
-}
+import { readClaims } from "../common/jwt.js";
 
 /**
  * What a system user token has to say about the system user it was issued for.
@@ -75,8 +47,8 @@ function CheckSystemUserTokenClaims(token, expected, operation) {
     });
 
     const expires = check(claims, {
-        [`CheckSystemUserTokenClaims - ${operation} expires, and has not already`]: (found) =>
-            typeof found?.exp === "number" && found.exp * 1000 > Date.now(),
+        [`CheckSystemUserTokenClaims - ${operation} expires, and has not already`]: (payload) =>
+            typeof payload?.exp === "number" && payload.exp * 1000 > Date.now(),
     });
 
     if (!success || !expires) {
