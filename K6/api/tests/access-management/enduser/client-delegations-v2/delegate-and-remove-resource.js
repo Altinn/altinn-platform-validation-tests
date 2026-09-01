@@ -397,11 +397,13 @@ export default function (data) {
  * delegation and possibly a whole client relation in the environment, and the
  * next run sees them as pre-existing state.
  *
- * It sweeps every row rather than only the ones that ran, since teardown is not
- * told what the iterations did. Removing what is not there answers 200 or 204
- * having changed nothing, so the sweep costs nothing where there is nothing to
- * clean. A row that names its own client is left alone: that relation was not
- * made by the test and is not the test's to remove.
+ * teardown is not told what the iterations did, so it sweeps the rows this run
+ * could have reached rather than every row in the fixture. Sweeping everything
+ * would mean a scheduled run tearing down a relation a manual one is in the
+ * middle of using. Removing what is not there answers 200 or 204 having changed
+ * nothing, so the sweep costs nothing where there is nothing to clean. A row
+ * that names its own client is left alone: that relation was not made by the
+ * test and is not the test's to remove.
  *
  * The delegation is removed through the client directly rather than through the
  * building block, since a row that has nothing left to remove is the normal case
@@ -416,7 +418,23 @@ export default function (data) {
 export function teardown(data) {
     const all = data.flat();
 
-    all.forEach((row) => {
+    // Only the rows this run could have drawn. Sweeping every row would mean a
+    // scheduled run tearing down a relation a manual one is in the middle of
+    // using, and the two have no way of knowing about each other. A VU takes rows
+    // from the front of its slice, one per iteration, so that prefix is the reach
+    // of this run. Unset means k6 default, which is one of each.
+    // Cast for the same reason getNumberOfVUs does it: Scenario is a union and
+    // only some of its members carry vus and iterations.
+    const scenario = /** @type {*} */ (exec.test.options.scenarios?.default);
+    const vus = scenario?.vus ?? 1;
+    const iterations = scenario?.iterations ?? 1;
+    const perVu = scenario?.executor === "shared-iterations"
+        ? Math.ceil(iterations / vus)
+        : iterations;
+
+    const touched = data.flatMap((slice) => slice.slice(0, perVu));
+
+    touched.forEach((row) => {
         if (!row.agentUuid) {
             return;
         }
