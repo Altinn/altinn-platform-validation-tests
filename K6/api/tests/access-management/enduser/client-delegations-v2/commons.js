@@ -18,9 +18,15 @@ import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
  * per request instead, through the `party` query parameter.
  *
  * The client the resource is delegated from, the agent it is delegated to and
- * the role it goes through are not columns here. The test reads them off the v1
- * API at runtime, because the role has to be one that client relationship
- * actually grants, which only the API knows.
+ * the role it goes through are columns, but blank ones in every fixture today.
+ * Blank means the test provides them: it sets up its own client relation, takes
+ * an agent from the pool by position, and uses the role that relation is granted
+ * with. Filled in means the row names them and the test sets nothing up, which
+ * is what a client held through an Enhetsregisteret role needs, since that
+ * relation exists only because ER says so.
+ *
+ * Everything the test reads to confirm them comes from v2, never v1: v2 reports
+ * a client held through a rettighetshaver relation and v1 does not.
  *
  * @typedef {object} ClientDelegationV2TestRow
  * @property {string} pid National identity number of that person. Nothing reads it: the token is built from userId and partyUuid, and those are what the endpoints answer on. It is here so a row says who it is about without a lookup, and so the rest can be regenerated for a new environment from the fnr alone.
@@ -94,6 +100,18 @@ export function getTestData() {
 
     /** @type {{pid: string, partyUuid: string, lastName: string, name: string}[]} */
     const agents = fetchTestData(agentPath);
+
+    // Rows that name their own agent need no pool, so an empty one is only fatal
+    // where a row leaves the column blank. Checking it here rather than at the
+    // pairing below keeps the message about the fixture: index % 0 is NaN, and
+    // the lookup that follows would report a missing property on undefined
+    // instead of a missing file.
+    if (agents.length === 0 && rows.some((row) => !row.agentUuid)) {
+        throw new Error(
+            `The agent pool for ${environment} is empty, and rows leave agentUuid blank for it to fill.`
+            + ` Add people to K6/testdata/${agentPath}, or name an agent on every row.`,
+        );
+    }
 
     rows.forEach((row, index) => {
         const missing = REQUIRED_COLUMNS.filter((column) => !row[column]);

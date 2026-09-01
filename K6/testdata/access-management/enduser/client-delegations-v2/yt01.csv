@@ -1,2 +1,2 @@
-pid,partyUuid,partyId,userId,orgUuid,orgNo,orgPartyId,orgName,clientUuid,roleCode,resource
-,,,,,,,,,,
+pid,partyUuid,partyId,userId,orgUuid,orgNo,orgPartyId,orgName,clientUuid,agentUuid,roleCode,resource
+,,,,,,,,,,,
