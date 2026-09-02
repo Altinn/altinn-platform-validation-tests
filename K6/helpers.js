@@ -118,12 +118,26 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  *
+ * Refuses more sublists than items rather than handing back empty ones at the
+ * end. Every caller divides by VU count, and a VU that draws from an empty slice
+ * reads undefined off it without failing: the run still exits zero, and the only
+ * trace is a summary with fewer checks than usual.
+ *
  * @template T
  * @param {T[]} listOfItems The items to divide.
  * @param {number} numberOfSublists How many sublists to divide them into.
  * @returns {T[][]} A list with numberOfSublists lists.
+ * @throws {Error} If there are more sublists than items to fill them.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
+    if (numberOfSublists > listOfItems.length) {
+        throw new Error(
+            `Cannot divide ${listOfItems.length} rows into ${numberOfSublists} slices: the last`
+            + " ones would be empty, and a VU drawing from an empty slice reads undefined without"
+            + " failing. Add rows to the fixture, or run with fewer VUs.",
+        );
+    }
+
     /** @type {T[][]} */
     const sublists = [];
     const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
