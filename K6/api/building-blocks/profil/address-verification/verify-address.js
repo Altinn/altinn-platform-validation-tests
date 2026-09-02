@@ -8,6 +8,12 @@ import { withRetries } from "../../common/retry.js";
  * Verifies an address for the current user by providing the verification code
  * sent to the address.
  *
+ * A code that was actually received answers 204, and that is what the default
+ * accepts. A test that sends a code the address never got wants the refusal
+ * instead: 422 for a wrong code, 429 once too many attempts have been made on the
+ * address. Pass those in `expectedStatuses` and the check passes on the refusal
+ * and fails on the 204 that would mean a wrong code was let through.
+ *
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
  * @param {AddressVerificationRequest} request
  * Request body. Use {@link AddressVerificationRequestBuilder}.
@@ -17,6 +23,7 @@ import { withRetries } from "../../common/retry.js";
 export function VerifyAddress(
     addressVerificationClient,
     request,
+    expectedStatuses = [204],
     labels = null,
 ) {
     const res = withRetries(
@@ -24,22 +31,20 @@ export function VerifyAddress(
         "VerifyAddress",
     );
 
-    let verified = false;
+    let asExpected = false;
 
     const succeed = check(res, {
-        "VerifyAddress - status code is 204": (r) =>
-            r.status === 204,
-        "VerifyAddress - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
+        [`VerifyAddress - status code is ${expectedStatuses.join(" or ")}`]: (r) =>
+            expectedStatuses.includes(r.status),
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return verified;
+        return asExpected;
     }
 
-    verified = true;
+    asExpected = true;
 
-    return verified;
+    return asExpected;
 }

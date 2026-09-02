@@ -7,12 +7,17 @@ import { withRetries } from "../../common/retry.js";
 /**
  * Deletes notification settings for a party.
  *
+ * The endpoint is declared as returning the settings it deleted, but it answers
+ * `Ok()` with nothing in it, so there is no body to read: a 200 is the whole
+ * answer. Verified against ProfessionalNotificationSettingsController.Delete in
+ * altinn-profile.
+ *
  * @param {ProfessionalNotificationSettingsClient} professionalNotificationSettingsClient
  * Client for the Professional Notification Settings API.
  * @param {string} partyUuid Party UUID.
  * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
- * @returns {NotificationSettingsResponse|null} Parsed response body, or null when the call failed.
+ * @returns {boolean} True if the settings were deleted.
  */
 export function DeleteNotificationSettings(
     professionalNotificationSettingsClient,
@@ -27,9 +32,6 @@ export function DeleteNotificationSettings(
         "DeleteNotificationSettings",
     );
 
-    /** @type {NotificationSettingsResponse|null} */
-    let settings = null;
-
     const succeed = check(res, {
         "DeleteNotificationSettings - status code is 200": (r) =>
             r.status === 200,
@@ -40,23 +42,8 @@ export function DeleteNotificationSettings(
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return settings;
+        return false;
     }
 
-    check(res, {
-        "DeleteNotificationSettings - body is valid": (r) => {
-            try {
-                settings = JSON.parse(r.body);
-
-                return true;
-            } catch (err) {
-                console.log("Unable to parse response body");
-                console.log(r.body);
-
-                return false;
-            }
-        },
-    });
-
-    return settings;
+    return true;
 }
