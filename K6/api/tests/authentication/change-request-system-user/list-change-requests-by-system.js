@@ -75,7 +75,7 @@ export function setup() {
  * to reflect. The teardown withdraws whatever is left pending if an iteration stops
  * before that.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
@@ -159,7 +159,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the system user this test made change requests for
  * and the system it belongs to.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

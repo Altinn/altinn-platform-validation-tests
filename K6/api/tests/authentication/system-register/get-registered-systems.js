@@ -1,14 +1,9 @@
 import { group } from "k6";
 
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
+import { lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
-
-/**
- * @type {SystemRegisterClient | undefined}
- */
-let systemRegisterClient = undefined;
 
 /**
  * Creates and caches the client this test reads with.
@@ -23,21 +18,17 @@ let systemRegisterClient = undefined;
  *
  * @returns {SystemRegisterClient} The client.
  */
-function getClient() {
-    if (systemRegisterClient === undefined) {
-        const tokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
+const getClient = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
 
-        systemRegisterClient = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return systemRegisterClient;
-}
+    return new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
+});
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);

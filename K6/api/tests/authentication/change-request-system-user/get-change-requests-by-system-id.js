@@ -78,7 +78,7 @@ export default function () {
             const seen = new Set();
             for (const page of [firstPage, ...pages]) {
                 for (const item of page?.data ?? []) {
-                    seen.add(/** @type {{id?: string}} */ (item)?.id);
+                    seen.add(/** @type {{id?: string}|null} */ (item)?.id);
                 }
             }
 

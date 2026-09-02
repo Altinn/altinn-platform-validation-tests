@@ -134,7 +134,7 @@ export default function (data) {
 
             const approved = ApproveChangeRequest(
                 clients.approver.bffChangeRequestClient,
-                systemUser.customer.orgPartyId,
+                Number(systemUser.customer.orgPartyId),
                 changeRequestId,
             );
 

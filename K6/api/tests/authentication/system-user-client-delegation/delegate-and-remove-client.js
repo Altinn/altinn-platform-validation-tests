@@ -24,7 +24,7 @@ export function setup() {
  * listing the available clients finds what to delegate, and the delegated list is
  * what says whether the delegation and the removal took effect.
  *
- * @param {any[]} data The arranged facilitators from setup.
+ * @param {ReturnType<typeof setup>} data The arranged facilitators from setup.
  */
 export default function (data) {
     const arranged = getItemFromList(data, randomize);
@@ -96,7 +96,7 @@ export default function (data) {
  * deleted from the test itself without pulling it out from under the iterations
  * that follow.
  *
- * @param {any[]} data The arranged facilitators from setup.
+ * @param {ReturnType<typeof setup>} data The arranged facilitators from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

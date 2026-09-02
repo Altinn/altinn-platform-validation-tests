@@ -9,7 +9,7 @@ import {
 } from "../../../../clients/authentication/index.js";
 import { Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { fetchTestData, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
 import { sweepRegisteredSystems } from "../commons.js";
@@ -44,29 +44,16 @@ export const PAGINATION_SYSTEM_ID = "312605031_Virksomhetsbruker";
 const REDIRECT_URL = "https://digdir.no";
 
 /**
- * @type {object | undefined}
+ * @typedef {import("../commons.js").OrganizationUser} Customer
  */
-let clients = undefined;
 
 /**
- * @type {PersonalTokenGenerator | undefined}
+ * The clients this test folder acts with.
+ *
+ * @typedef {object} RequestClients
+ * @property {{systemRegisterClient: SystemRegisterClient, requestSystemUserClient: RequestSystemUserClient, systemUserClient: SystemUserClient}} vendor The vendor that registers the system and asks for the system user.
+ * @property {{requestSystemUserClient: RequestSystemUserClient, bffRequestClient: BffSystemUserRequestClient, bffSystemUserClient: BffSystemUserClient}} approver The customer that approves the request, and deletes the system user again.
  */
-let approverTokenGenerator = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let vendorTokenGenerator = undefined;
-
-/**
- * @type {RequestSystemUserClient | undefined}
- */
-let paginationClient = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let paginationTokenGenerator = undefined;
 
 /**
  * Fetches the customers the system users are created for, and draws the vendor that
@@ -80,7 +67,7 @@ let paginationTokenGenerator = undefined;
  * whose register to sweep. Nothing is looked up for it: the vendor is only ever the
  * organisation the enterprise token is minted for.
  *
- * @returns The customers the tests act on behalf of, and the vendor they register systems as.
+ * @returns {{customers: Customer[], vendorOrgNo: string}} The customers the tests act on behalf of, and the vendor they register systems as.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -123,50 +110,48 @@ export function sweepSystems(vendorOrgNo, systemNamePrefix) {
  * with getApproverTokenOpts. The cache is keyed on the options, so each of them
  * still gets its own cached token.
  *
- * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[RequestClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
-export function getClients() {
-    if (
-        clients === undefined ||
-        approverTokenGenerator === undefined ||
-        vendorTokenGenerator === undefined
-    ) {
-        vendorTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(VENDOR_SCOPES)
-                .build(),
-        );
+export const getClients = lazy(function () {
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(VENDOR_SCOPES)
+            .build(),
+    );
 
-        approverTokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
+    const approverTokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
 
-        clients = {
-            vendor: {
-                systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
-                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-            },
-            approver: {
-                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+    /** @type {RequestClients} */
+    const clients = {
+        vendor: {
+            systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
+            requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+        },
+        approver: {
+            requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
 
-                // Approving is what the customer does in the portal, so it goes through
-                // the bff rather than the authentication api the vendor calls. So is
-                // deleting the system user afterwards.
-                bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-            },
-        };
-    }
+            // Approving is what the customer does in the portal, so it goes through
+            // the bff rather than the authentication api the vendor calls. So is
+            // deleting the system user afterwards.
+            bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+            bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+        },
+    };
 
-    return [clients, approverTokenGenerator, vendorTokenGenerator];
-}
+    /** @type {[RequestClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} */
+    const built = [clients, approverTokenGenerator, vendorTokenGenerator];
+
+    return built;
+});
 
 /**
  * Token options for acting as a vendor.
@@ -175,7 +160,7 @@ export function getClients() {
  * generator was built with rather than adding to them.
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor this iteration acts as.
- * @returns {object} Options to hand to setTokenGeneratorOptions.
+ * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getVendorTokenOpts(vendorOrgNo) {
     return new EnterpriseTokenBuilder()
@@ -189,7 +174,7 @@ export function getVendorTokenOpts(vendorOrgNo) {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {any} customer - The customer this iteration acts on behalf of.
+ * @param {Customer} customer - The customer this iteration acts on behalf of.
  * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
@@ -288,19 +273,18 @@ export function createSystemRegistration({ systemNamePrefix, vendorOrgNo, regist
  *
  * @returns {[RequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
  */
-export function getPaginationClients() {
-    if (paginationClient === undefined || paginationTokenGenerator === undefined) {
-        paginationTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
-                .withOrganizationNumber(PAGINATION_SYSTEM_OWNER)
-                .build(),
-        );
+export const getPaginationClients = lazy(function () {
+    const paginationTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
+            .withOrganizationNumber(PAGINATION_SYSTEM_OWNER)
+            .build(),
+    );
 
-        paginationClient = new RequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator);
-    }
+    /** @type {[RequestSystemUserClient, EnterpriseTokenGenerator]} */
+    const built = [new RequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator), paginationTokenGenerator];
 
-    return [paginationClient, paginationTokenGenerator];
-}
+    return built;
+});

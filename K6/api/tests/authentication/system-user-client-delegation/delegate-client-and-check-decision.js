@@ -88,7 +88,7 @@ export function setup() {
  * Permit and NotApplicable for over a minute after both operations. So the negative
  * half of this belongs to whoever fixes the cache, not to a test.
  *
- * @param {any[]} data The arranged facilitators from setup.
+ * @param {ReturnType<typeof setup>} data The arranged facilitators from setup.
  */
 export default function (data) {
     // Empty where the resource is not published or there is no subscription key.
@@ -140,7 +140,7 @@ export default function (data) {
  * The delegation itself is not taken back: it goes with the agent system user, and
  * removing it first would only be a write into the cache described above.
  *
- * @param {any[]} data The arranged facilitators from setup.
+ * @param {ReturnType<typeof setup>} data The arranged facilitators from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

@@ -9,7 +9,7 @@ export { setup, teardown };
  *
  * Both sign a Maskinporten grant, which is asynchronous, so this is awaited.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export default async function (data) {
     await runGetSystemUserToken(data);

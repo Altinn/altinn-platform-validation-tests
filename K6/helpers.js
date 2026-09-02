@@ -212,6 +212,30 @@ export function checkIp(ip) {
 }
 
 /**
+ * Wraps a builder so it runs once and every later call gets what it built.
+ *
+ * For the clients and token generators a test caches at module scope: a VU builds
+ * them on its first iteration and reuses them for the rest, since the token
+ * generators cache their tokens per instance. Written this way rather than as a
+ * `let` that starts out undefined, so what the builder returns keeps its type and
+ * no caller has to check it for undefined first.
+ *
+ * @template T
+ * @param {() => T} build Builds the value the first time it is asked for.
+ * @returns {() => T} A function handing out that one value.
+ */
+export function lazy(build) {
+    /** @type {{value: T} | undefined} */
+    let cached = undefined;
+
+    return function () {
+        cached ??= { value: build() };
+
+        return cached.value;
+    };
+}
+
+/**
  * Ensures required environment variables exist.
  *
  * @param {string[]} vars - Array of environment variable names
