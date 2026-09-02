@@ -145,7 +145,7 @@ export function arrangeApprovedSystemUser({
 
     // Both tokens have to be set before the arrange runs, not in the default
     // function the way the test does it.
-    const [, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
@@ -196,7 +196,7 @@ export function pickVendor() {
  * @param {ArrangedSystemUser[]} arranged - What arrangeApprovedSystemUser returned.
  */
 export function cleanupArranged(arranged) {
-    const [apiClients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients: apiClients, approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     group("Cleanup - the customer deletes the system user and the vendor its system", function () {
         for (const systemUser of arranged ?? []) {
@@ -245,7 +245,7 @@ export function cleanupArranged(arranged) {
  * with getVendorTokenOpts and the approver with getApproverTokenOpts. The cache
  * is keyed on the options, so each of them still gets its own cached token.
  *
- * @returns {[ChangeRequestClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {{clients: ChangeRequestClients, approverTokenGenerator: PersonalTokenGenerator, vendorTokenGenerator: EnterpriseTokenGenerator}} Clients grouped by who they act as, and the two token generators.
  */
 export const getClients = lazy(function () {
     const vendorTokenGenerator = new EnterpriseTokenGenerator(
@@ -285,10 +285,7 @@ export const getClients = lazy(function () {
         },
     };
 
-    /** @type {[ChangeRequestClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} */
-    const built = [clients, approverTokenGenerator, vendorTokenGenerator];
-
-    return built;
+    return { clients, approverTokenGenerator, vendorTokenGenerator };
 });
 
 /**
@@ -300,7 +297,7 @@ export const getClients = lazy(function () {
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
  * rather than refetching on every iteration.
  *
- * @returns {[ChangeRequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
+ * @returns {{changeRequestClient: ChangeRequestSystemUserClient, tokenGenerator: EnterpriseTokenGenerator}} The client, and the generator the pagination helper needs to follow next links.
  */
 export const getPaginationClients = lazy(function () {
     const paginationTokenGenerator = new EnterpriseTokenGenerator(
@@ -312,10 +309,10 @@ export const getPaginationClients = lazy(function () {
             .build(),
     );
 
-    /** @type {[ChangeRequestSystemUserClient, EnterpriseTokenGenerator]} */
-    const built = [new ChangeRequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator), paginationTokenGenerator];
-
-    return built;
+    return {
+        changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator),
+        tokenGenerator: paginationTokenGenerator,
+    };
 });
 
 /**
@@ -388,7 +385,7 @@ export function accessPackage(urn) {
  * @returns {string[]} The access package urns.
  */
 export function findAccessPackages(count, vendorOrgNo) {
-    const [apiClients, , vendorTokenGenerator] = getClients();
+    const { clients: apiClients, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
@@ -510,7 +507,7 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * @returns {string} Identifier of the approved system user.
  */
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
-    const [apiClients] = getClients();
+    const { clients: apiClients } = getClients();
 
     return group("Arrange - the customer has an approved system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
@@ -588,7 +585,7 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
  * @param {string} [requestId] - The system user request to withdraw, when the arrange got as far as creating one.
  */
 function unwindArrange(registration, requestId = undefined) {
-    const [apiClients] = getClients();
+    const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
         RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);

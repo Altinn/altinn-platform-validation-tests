@@ -144,7 +144,7 @@ export function setup() {
     const customer = getItemFromList(fetchTestData(`authentication/change-request-system-user/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
     const externalRef = uuidv4();
 
-    const [apiClients, , approverTokenGenerator] = getClients();
+    const { clients: apiClients, approverTokenGenerator } = getClients();
 
     // Only the approver's, since the vendor is always the one organisation that owns
     // the Maskinporten client and getClients built its generator for exactly that.
@@ -203,7 +203,7 @@ export function setup() {
  * @param {ArrangedSystemUser[]} data - What setup returned.
  */
 export function teardown(data) {
-    const [apiClients, , approverTokenGenerator] = getClients();
+    const { clients: apiClients, approverTokenGenerator } = getClients();
 
     group("Cleanup - the customer deletes the system user", function () {
         for (const arranged of data ?? []) {
@@ -220,7 +220,7 @@ export function teardown(data) {
  * Built once per VU and reused across its iterations. The token generators cache
  * tokens per instance, so building them per iteration refetches every token again.
  *
- * @returns {[SystemUserTokenClients, EnterpriseTokenGenerator, PersonalTokenGenerator]} The clients, and the two token generators.
+ * @returns {{clients: SystemUserTokenClients, vendorTokenGenerator: EnterpriseTokenGenerator, approverTokenGenerator: PersonalTokenGenerator}} The clients, and the two token generators.
  */
 export const getClients = lazy(function () {
     const vendorTokenGenerator = new EnterpriseTokenGenerator(getVendorTokenOpts());
@@ -249,10 +249,7 @@ export const getClients = lazy(function () {
         authenticationClient: new AuthenticationClient(__ENV.BASE_URL),
     };
 
-    /** @type {[SystemUserTokenClients, EnterpriseTokenGenerator, PersonalTokenGenerator]} */
-    const built = [clients, vendorTokenGenerator, approverTokenGenerator];
-
-    return built;
+    return { clients, vendorTokenGenerator, approverTokenGenerator };
 });
 
 /**

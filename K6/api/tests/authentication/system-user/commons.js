@@ -79,7 +79,7 @@ export function arrangeSystemUser(systemNamePrefix) {
  * personal one. It is not built for anyone in particular: which vendor a run acts
  * as is decided by swapping the options with setTokenGeneratorOptions.
  *
- * @returns {[VendorClients, EnterpriseTokenGenerator]} The vendor's clients and the token generator behind them.
+ * @returns {{clients: VendorClients, vendorTokenGenerator: EnterpriseTokenGenerator}} The vendor's clients and the token generator behind them.
  */
 export const getClients = lazy(function () {
     const vendorTokenGenerator = new EnterpriseTokenGenerator(
@@ -97,10 +97,7 @@ export const getClients = lazy(function () {
         },
     };
 
-    /** @type {[VendorClients, EnterpriseTokenGenerator]} */
-    const built = [clients, vendorTokenGenerator];
-
-    return built;
+    return { clients, vendorTokenGenerator };
 });
 
 /**
@@ -132,7 +129,7 @@ export function getVendorTokenOpts(vendorOrgNo) {
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
  * rather than refetching on every iteration.
  *
- * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow the stream on.
+ * @returns {{systemUserClient: SystemUserClient, tokenGenerator: EnterpriseTokenGenerator}} The client, and the generator the pagination helper needs to follow the stream on.
  */
 export const getStreamClients = lazy(function () {
     const streamTokenGenerator = new EnterpriseTokenGenerator(
@@ -143,10 +140,10 @@ export const getStreamClients = lazy(function () {
             .build(),
     );
 
-    /** @type {[SystemUserClient, EnterpriseTokenGenerator]} */
-    const built = [new SystemUserClient(__ENV.BASE_URL, streamTokenGenerator), streamTokenGenerator];
-
-    return built;
+    return {
+        systemUserClient: new SystemUserClient(__ENV.BASE_URL, streamTokenGenerator),
+        tokenGenerator: streamTokenGenerator,
+    };
 });
 
 export { cleanupArranged } from "../change-request-system-user/commons.js";

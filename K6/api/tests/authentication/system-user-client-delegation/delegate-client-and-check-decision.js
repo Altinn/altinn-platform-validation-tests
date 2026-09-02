@@ -98,10 +98,10 @@ export default function (data) {
     }
 
     const arranged = getItemFromList(data, randomize);
-    const [clients, tokenGenerator] = getClients();
+    const { clients, facilitatorTokenGenerator } = getClients();
     const [authorizeClient] = getAuthorizeClient();
 
-    tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged.facilitator));
+    facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged.facilitator));
 
     const delegationClient = clients.facilitator.clientDelegationClient;
 

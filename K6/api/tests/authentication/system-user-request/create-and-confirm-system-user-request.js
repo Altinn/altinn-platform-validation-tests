@@ -45,7 +45,7 @@ export { setup } from "./commons.js";
  * @param {ReturnType<typeof import("./commons.js").setup>} data Test data from setup.
  */
 export default function (data) {
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients, approverTokenGenerator, vendorTokenGenerator } = getClients();
     const customer = getItemFromList(data.customers, randomize);
 
     const rights = [resourceRight(RESOURCE), resourceRight(APP)];

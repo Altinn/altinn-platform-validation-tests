@@ -23,7 +23,7 @@ const SYSTEM_ID = "312605031_Virksomhetsbruker";
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
  * rather than refetching on every iteration.
  *
- * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
+ * @returns {{systemUserClient: SystemUserClient, tokenGenerator: EnterpriseTokenGenerator}} The client, and the generator the pagination helper needs to follow next links.
  */
 const getClients = lazy(function () {
     // The vendor endpoint sits behind the system register scope, not a system user one.
@@ -36,10 +36,7 @@ const getClients = lazy(function () {
             .build(),
     );
 
-    /** @type {[SystemUserClient, EnterpriseTokenGenerator]} */
-    const built = [new SystemUserClient(__ENV.BASE_URL, tokenGenerator), tokenGenerator];
-
-    return built;
+    return { systemUserClient: new SystemUserClient(__ENV.BASE_URL, tokenGenerator), tokenGenerator };
 });
 
 export function setup() {
@@ -53,7 +50,7 @@ export function setup() {
  * Ensures that paginated access to system users by systemId works through APIM.
  */
 export default function () {
-    const [systemUserClient, tokenGenerator] = getClients();
+    const { systemUserClient, tokenGenerator } = getClients();
 
     group("As a vendor, I can list system users by system id and follow pagination", function () {
         const firstPage = group("Fetch the first page of system users", function () {

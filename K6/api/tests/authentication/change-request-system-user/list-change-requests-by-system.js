@@ -79,7 +79,7 @@ export function setup() {
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
-    const [clients, , vendorTokenGenerator] = getClients();
+    const { clients, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
 

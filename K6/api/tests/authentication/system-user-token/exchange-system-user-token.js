@@ -34,7 +34,7 @@ export default async function (data) {
 
     const arranged = getItemFromList(data, randomize);
     const systemUserToken = await fetchSystemUserToken(arranged);
-    const [clients] = getClients();
+    const { clients } = getClients();
 
     group("As a system vendor, I can exchange my system user token for an Altinn token", function () {
         const altinnToken = AuthenticationBuildingBlocks.ExchangeToken(

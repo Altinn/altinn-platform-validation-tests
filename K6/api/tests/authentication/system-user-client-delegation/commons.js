@@ -124,7 +124,7 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
  * the facilitator with getFacilitatorTokenOpts. The cache is keyed on the options,
  * so each of them still gets its own cached token.
  *
- * @returns {[ClientDelegationClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {{clients: ClientDelegationClients, facilitatorTokenGenerator: PersonalTokenGenerator, vendorTokenGenerator: EnterpriseTokenGenerator}} Clients grouped by who they act as, and the two token generators.
  */
 export const getClients = lazy(function () {
     const vendorTokenGenerator = new EnterpriseTokenGenerator(
@@ -159,10 +159,7 @@ export const getClients = lazy(function () {
         },
     };
 
-    /** @type {[ClientDelegationClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} */
-    const built = [clients, facilitatorTokenGenerator, vendorTokenGenerator];
-
-    return built;
+    return { clients, facilitatorTokenGenerator, vendorTokenGenerator };
 });
 
 /**
@@ -245,7 +242,7 @@ export function arrangeAgentSystemUser(orgType = null) {
     // token is minted for, so nothing is looked up for it.
     const vendorOrgNo = pickVendor();
 
-    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients: apiClients, facilitatorTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
@@ -278,7 +275,7 @@ export function arrangeAgentSystemUser(orgType = null) {
 
         // From here on the facilitator is the one acting, so the token has to be
         // theirs before the approval goes out.
-        tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
+        facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, Number(facilitator.partyId), created.id)) {
             unwindArrange(registration.systemId, created.id);
@@ -329,11 +326,11 @@ export function arrangeAgentSystemUser(orgType = null) {
  * @param {ArrangedAgentSystemUser[]} arranged - What arrangeAgentSystemUser returned.
  */
 export function cleanupArranged(arranged) {
-    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients: apiClients, facilitatorTokenGenerator, vendorTokenGenerator } = getClients();
 
     group("Cleanup - the facilitator deletes the agent system user and the vendor its system", function () {
         for (const arrangement of arranged ?? []) {
-            tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
+            facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
 
             DeleteAgentSystemUser(
@@ -365,7 +362,7 @@ export function cleanupArranged(arranged) {
  * @param {string} [requestId] - The agent system user request to withdraw, when the arrange got as far as creating one.
  */
 function unwindArrange(systemId, requestId = undefined) {
-    const [apiClients] = getClients();
+    const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
         RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);

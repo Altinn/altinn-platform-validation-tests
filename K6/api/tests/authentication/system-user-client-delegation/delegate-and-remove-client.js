@@ -28,9 +28,9 @@ export function setup() {
  */
 export default function (data) {
     const arranged = getItemFromList(data, randomize);
-    const [clients, tokenGenerator] = getClients();
+    const { clients, facilitatorTokenGenerator } = getClients();
 
-    tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged.facilitator));
+    facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged.facilitator));
 
     const delegationClient = clients.facilitator.clientDelegationClient;
 

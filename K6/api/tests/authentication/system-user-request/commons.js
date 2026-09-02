@@ -87,7 +87,7 @@ export function setup() {
  * @param {string} systemNamePrefix - The prefix the test names its systems with.
  */
 export function sweepSystems(vendorOrgNo, systemNamePrefix) {
-    const [clients, , vendorTokenGenerator] = getClients();
+    const { clients, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
@@ -110,7 +110,7 @@ export function sweepSystems(vendorOrgNo, systemNamePrefix) {
  * with getApproverTokenOpts. The cache is keyed on the options, so each of them
  * still gets its own cached token.
  *
- * @returns {[RequestClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {{clients: RequestClients, approverTokenGenerator: PersonalTokenGenerator, vendorTokenGenerator: EnterpriseTokenGenerator}} Clients grouped by who they act as, and the two token generators.
  */
 export const getClients = lazy(function () {
     const vendorTokenGenerator = new EnterpriseTokenGenerator(
@@ -147,10 +147,7 @@ export const getClients = lazy(function () {
         },
     };
 
-    /** @type {[RequestClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} */
-    const built = [clients, approverTokenGenerator, vendorTokenGenerator];
-
-    return built;
+    return { clients, approverTokenGenerator, vendorTokenGenerator };
 });
 
 /**
@@ -271,7 +268,7 @@ export function createSystemRegistration({ systemNamePrefix, vendorOrgNo, regist
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
  * rather than refetching on every iteration.
  *
- * @returns {[RequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
+ * @returns {{requestSystemUserClient: RequestSystemUserClient, tokenGenerator: EnterpriseTokenGenerator}} The client, and the generator the pagination helper needs to follow next links.
  */
 export const getPaginationClients = lazy(function () {
     const paginationTokenGenerator = new EnterpriseTokenGenerator(
@@ -283,8 +280,8 @@ export const getPaginationClients = lazy(function () {
             .build(),
     );
 
-    /** @type {[RequestSystemUserClient, EnterpriseTokenGenerator]} */
-    const built = [new RequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator), paginationTokenGenerator];
-
-    return built;
+    return {
+        requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator),
+        tokenGenerator: paginationTokenGenerator,
+    };
 });
