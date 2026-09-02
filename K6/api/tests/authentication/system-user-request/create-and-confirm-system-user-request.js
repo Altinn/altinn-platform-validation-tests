@@ -45,7 +45,7 @@ export { setup } from "./commons.js";
  * @param {ReturnType<typeof import("./commons.js").setup>} data Test data from setup.
  */
 export default function (data) {
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients, approverTokenGenerator, vendorTokenGenerator } = getClients();
     const customer = getItemFromList(data.customers, randomize);
 
     const rights = [resourceRight(RESOURCE), resourceRight(APP)];
@@ -99,7 +99,7 @@ export default function (data) {
 
             const approved = ApproveSystemUserRequest(
                 clients.approver.bffRequestClient,
-                customer.partyId,
+                Number(customer.partyId),
                 requestId,
             );
 
@@ -129,7 +129,7 @@ export default function (data) {
             });
 
             if (systemUser?.id !== undefined && systemUser.id !== null) {
-                DeleteSystemUser(clients.approver.bffSystemUserClient, customer.partyId, systemUser.id);
+                DeleteSystemUser(clients.approver.bffSystemUserClient, Number(customer.partyId), systemUser.id);
             }
 
             SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);

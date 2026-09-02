@@ -24,7 +24,7 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
  * the exchange derives it from the consumer of the incoming token, which is whoever
  * signed the grant.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof import("./commons.js").setup>} data The arranged system users from setup.
  */
 export default async function (data) {
     // Empty outside tt02, where setup has nothing to arrange. See its comment.
@@ -34,7 +34,7 @@ export default async function (data) {
 
     const arranged = getItemFromList(data, randomize);
     const systemUserToken = await fetchSystemUserToken(arranged);
-    const [clients] = getClients();
+    const { clients } = getClients();
 
     group("As a system vendor, I can exchange my system user token for an Altinn token", function () {
         const altinnToken = AuthenticationBuildingBlocks.ExchangeToken(

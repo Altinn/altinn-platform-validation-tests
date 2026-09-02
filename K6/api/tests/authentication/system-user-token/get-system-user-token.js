@@ -27,7 +27,7 @@ const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
  * The grant is fetched outside the group, since signing it is asynchronous and k6
  * groups take a synchronous callback.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof import("./commons.js").setup>} data The arranged system users from setup.
  */
 export default async function (data) {
     // Empty outside tt02, where setup has nothing to arrange. See its comment.

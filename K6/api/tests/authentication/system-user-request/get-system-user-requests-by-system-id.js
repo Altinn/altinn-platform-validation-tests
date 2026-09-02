@@ -17,7 +17,7 @@ export function setup() {
  * Ensures that paginated access to system user requests by systemId works through APIM.
  */
 export default function () {
-    const [requestSystemUserClient, tokenGenerator] = getPaginationClients();
+    const { requestSystemUserClient, tokenGenerator } = getPaginationClients();
 
     group("As a vendor, I can list system user requests by system id and follow pagination", function () {
         const firstPage = group("Fetch the first page of system user requests", function () {

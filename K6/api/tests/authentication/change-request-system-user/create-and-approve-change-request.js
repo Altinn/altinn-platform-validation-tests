@@ -61,7 +61,7 @@ export function setup() {
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients, approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
@@ -134,7 +134,7 @@ export default function (data) {
 
             const approved = ApproveChangeRequest(
                 clients.approver.bffChangeRequestClient,
-                systemUser.customer.orgPartyId,
+                Number(systemUser.customer.orgPartyId),
                 changeRequestId,
             );
 

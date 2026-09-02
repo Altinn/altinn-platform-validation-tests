@@ -63,7 +63,7 @@ export function setup() {
  * different organisation, which has to come back NotApplicable, because a system
  * user is granted for the one customer that approved it and for no one else.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export default function (data) {
     // Empty where there is no subscription key. See setup.
@@ -97,7 +97,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the system user this test asked about and the system
  * it belongs to.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

@@ -3,7 +3,7 @@ import { fail, group } from "k6";
 import { SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserRequestClient as BffSystemUserRequestClient } from "../../../../clients/access-management-bff/system-user-request/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { AuthenticationClient, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
@@ -94,24 +94,19 @@ const VENDOR_SCOPES = CreateScopeString([
  */
 
 /**
- * @type {SystemUserTokenClients | undefined}
+ * @typedef {import("../commons.js").EndUser} EndUser
  */
-let clients = undefined;
 
 /**
- * @type {EnterpriseTokenGenerator | undefined}
+ * The system user the setup arranged, and what the tests need to reach it.
+ *
+ * @typedef {object} ArrangedSystemUser
+ * @property {EndUser} customer The customer that holds the system user.
+ * @property {string} externalRef The reference the system user was asked for with, which the Maskinporten grant names.
+ * @property {string} systemUserId Identifier of the approved system user, which the token has to come back with.
+ * @property {string} systemId The seeded system the system user was created on.
+ * @property {string} vendorOrgNo The vendor that owns the system, which the exchanged token acts as.
  */
-let vendorTokenGenerator = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let approverTokenGenerator = undefined;
-
-/**
- * @type {MaskinportenAccessTokenGenerator | undefined}
- */
-let maskinportenTokenGenerator = undefined;
 
 /**
  * k6 setup stage. Gives a customer a system user on the seeded system.
@@ -121,7 +116,7 @@ let maskinportenTokenGenerator = undefined;
  * iteration so that a run which cannot arrange it says so before any iteration
  * starts, and so the iterations measure the token endpoint rather than the arrange.
  *
- * @returns The system user the token is asked for, as a single item list.
+ * @returns {ArrangedSystemUser[]} The system user the token is asked for, as a single item list.
  */
 export function setup() {
     // Only what the skip below needs, since requireEnv throws and a throw in setup
@@ -145,15 +140,16 @@ export function setup() {
     // The same customers the other system user tests act on behalf of: daglig leder
     // in an AS and innehaver in an ENK, so someone who can approve for the company
     // without anyone having delegated to them first.
+    /** @type {EndUser} */
     const customer = getItemFromList(fetchTestData(`authentication/change-request-system-user/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
     const externalRef = uuidv4();
 
-    const [apiClients] = getClients();
+    const { clients: apiClients, approverTokenGenerator } = getClients();
 
     // Only the approver's, since the vendor is always the one organisation that owns
     // the Maskinporten client and getClients built its generator for exactly that.
     // Which customer this run acts on behalf of is what changes.
-    approverTokenGenerator?.setTokenGeneratorOptions(getApproverTokenOpts(customer));
+    approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
 
     const systemUserId = group("Arrange - the customer has a system user on the seeded system", function () {
         const createRequest = new CreateRequestSystemUserBuilder()
@@ -169,7 +165,7 @@ export function setup() {
             fail(`cannot ask for a system user token: no system user request could be made on ${SYSTEM_ID}`);
         }
 
-        const approved = ApproveSystemUserRequest(apiClients.approver.bffRequestClient, customer.orgPartyId, createdRequest?.id);
+        const approved = ApproveSystemUserRequest(apiClients.approver.bffRequestClient, Number(customer.orgPartyId), createdRequest?.id);
 
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
             RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
@@ -204,16 +200,16 @@ export function setup() {
  * scheduled run leaves a system user on the customer every time it has run, and the
  * next run's grant has two to resolve between.
  *
- * @param {any[]} data - What setup returned.
+ * @param {ArrangedSystemUser[]} data - What setup returned.
  */
 export function teardown(data) {
-    const [apiClients] = getClients();
+    const { clients: apiClients, approverTokenGenerator } = getClients();
 
     group("Cleanup - the customer deletes the system user", function () {
         for (const arranged of data ?? []) {
-            approverTokenGenerator?.setTokenGeneratorOptions(getApproverTokenOpts(arranged.customer));
+            approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(arranged.customer));
 
-            DeleteSystemUser(apiClients.approver.bffSystemUserClient, arranged.customer.orgPartyId, arranged.systemUserId);
+            DeleteSystemUser(apiClients.approver.bffSystemUserClient, Number(arranged.customer.orgPartyId), arranged.systemUserId);
         }
     });
 }
@@ -224,42 +220,37 @@ export function teardown(data) {
  * Built once per VU and reused across its iterations. The token generators cache
  * tokens per instance, so building them per iteration refetches every token again.
  *
- * @returns {[SystemUserTokenClients, EnterpriseTokenGenerator, PersonalTokenGenerator]} The clients, and the two token generators.
+ * @returns {{clients: SystemUserTokenClients, vendorTokenGenerator: EnterpriseTokenGenerator, approverTokenGenerator: PersonalTokenGenerator}} The clients, and the two token generators.
  */
-export function getClients() {
-    if (
-        clients === undefined ||
-        vendorTokenGenerator === undefined ||
-        approverTokenGenerator === undefined
-    ) {
-        vendorTokenGenerator = new EnterpriseTokenGenerator(getVendorTokenOpts());
+export const getClients = lazy(function () {
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(getVendorTokenOpts());
 
-        approverTokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
+    const approverTokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
 
-        clients = {
-            vendor: {
-                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-            },
-            approver: {
-                bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-            },
+    /** @type {SystemUserTokenClients} */
+    const clients = {
+        vendor: {
+            requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+        },
+        approver: {
+            bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+            bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+        },
 
-            // No generator: the token this one exchanges is the system user token
-            // from Maskinporten, which the test passes in rather than mints.
-            authenticationClient: new AuthenticationClient(__ENV.BASE_URL),
-        };
-    }
+        // No generator: the token this one exchanges is the system user token
+        // from Maskinporten, which the test passes in rather than mints.
+        authenticationClient: new AuthenticationClient(__ENV.BASE_URL),
+    };
 
-    return [clients, vendorTokenGenerator, approverTokenGenerator];
-}
+    return { clients, vendorTokenGenerator, approverTokenGenerator };
+});
 
 /**
  * Token options for acting as the vendor that owns the system.
@@ -278,7 +269,7 @@ export function getVendorTokenOpts() {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {any} customer - The customer this run acts on behalf of.
+ * @param {EndUser} customer - The customer this run acts on behalf of.
  * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
@@ -298,13 +289,11 @@ export function getApproverTokenOpts(customer) {
  * with, only asked for a system user token instead of an ordinary enterprise one.
  * Signing goes through SubtleCrypto, which is promise based, so this is awaited.
  *
- * @param {any} arranged - What setup returned for this iteration.
+ * @param {ArrangedSystemUser} arranged - What setup returned for this iteration.
  * @returns {Promise<string>} A Maskinporten system user token.
  */
 export async function fetchSystemUserToken(arranged) {
-    if (maskinportenTokenGenerator === undefined) {
-        maskinportenTokenGenerator = new MaskinportenAccessTokenGenerator({});
-    }
+    const maskinportenTokenGenerator = getMaskinportenTokenGenerator();
 
     maskinportenTokenGenerator.setTokenGeneratorOptions(
         new MaskinportenTokenBuilder()
@@ -315,3 +304,16 @@ export async function fetchSystemUserToken(arranged) {
 
     return await maskinportenTokenGenerator.ensureToken();
 }
+
+/**
+ * Creates and caches the generator the system user tokens are signed with.
+ *
+ * Cached the way the clients are, so a VU keeps the token it fetched rather than
+ * signing a new grant on every iteration. What the grant asks for is set per call,
+ * since the system user it names is the one this iteration arranged.
+ *
+ * @returns {MaskinportenAccessTokenGenerator} The generator.
+ */
+const getMaskinportenTokenGenerator = lazy(function () {
+    return new MaskinportenAccessTokenGenerator({});
+});
