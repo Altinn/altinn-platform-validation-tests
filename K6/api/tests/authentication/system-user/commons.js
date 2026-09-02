@@ -11,14 +11,21 @@ import { SystemRegisterClient, SystemUserClient } from "../../../authentication-
 import { arrangeApprovedSystemUser, pickVendor, resource } from "../change-request-system-user/commons.js";
 
 /**
- * The rights the arranged system user is granted.
+ * The resource the arranged system user is granted a right on.
  *
  * Published in every environment these tests run in, so registering the system
  * works everywhere.
  *
+ * @type {string}
+ */
+export const GRANTED_RESOURCE = "k6-instancedelegation-test";
+
+/**
+ * The rights the arranged system user is granted.
+ *
  * @type {Right[]}
  */
-const GRANTED_RIGHTS = [resource("k6-instancedelegation-test")];
+const GRANTED_RIGHTS = [resource(GRANTED_RESOURCE)];
 
 /**
  * The scopes a vendor reads system users with.
@@ -150,7 +157,6 @@ export function getStreamClients() {
 }
 
 export { cleanupArranged } from "../change-request-system-user/commons.js";
-
 /**
  * The service owner that owns the resource the resource flow creates. The registry
  * compares the owner organization number against the consumer claim in the token,

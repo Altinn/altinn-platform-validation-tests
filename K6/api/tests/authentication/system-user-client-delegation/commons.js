@@ -87,7 +87,15 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
 };
 
 /**
- * @type {any | undefined}
+ * The clients these tests act with.
+ *
+ * @typedef {object} ClientDelegationClients
+ * @property {{systemRegisterClient: SystemRegisterClient, requestSystemUserClient: RequestSystemUserClient}} vendor The vendor that registers the system and asks for the agent system user.
+ * @property {{clientDelegationClient: SystemUserClientDelegationClient, bffAgentRequestClient: SystemUserAgentRequestClient, bffSystemUserClient: BffSystemUserClient}} facilitator The facilitator that approves the agent system user and delegates its clients to it.
+ */
+
+/**
+ * @type {ClientDelegationClients | undefined}
  */
 let clients = undefined;
 
@@ -116,7 +124,7 @@ let vendorTokenGenerator = undefined;
  * the facilitator with getFacilitatorTokenOpts. The cache is keyed on the options,
  * so each of them still gets its own cached token.
  *
- * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[ClientDelegationClients, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
 export function getClients() {
     if (
@@ -211,15 +219,20 @@ export function getFacilitatorTokenOpts(facilitator) {
  * second failure on the same cause. Stopping in setup means k6 skips the teardown,
  * so each step takes what the previous ones made with it before it stops.
  *
+ * @param {string|null} [orgType] - Draw only facilitators of this type, e.g. "revisor". Leave it out to draw from all of them, which is what a test that does not care which access packages it gets wants.
  * @returns {any[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
-export function arrangeAgentSystemUser() {
+export function arrangeAgentSystemUser(orgType = null) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
-    const facilitator = getItemFromList(
-        fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`),
-        randomize,
-    );
+    const candidates = fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`)
+        .filter((/** @type {{orgType: string}} */ row) => orgType === null || row.orgType === orgType);
+
+    if (candidates.length === 0) {
+        fail(`cannot arrange an agent system user: no facilitator of type '${orgType}' in ${__ENV.ENVIRONMENT}`);
+    }
+
+    const facilitator = getItemFromList(candidates, randomize);
 
     const accessPackages = ACCESS_PACKAGES_BY_ORG_TYPE[facilitator.orgType];
 
