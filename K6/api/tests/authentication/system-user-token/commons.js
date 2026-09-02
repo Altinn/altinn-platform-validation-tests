@@ -85,7 +85,16 @@ const VENDOR_SCOPES = CreateScopeString([
 ]);
 
 /**
- * @type {any | undefined}
+ * The clients this folder acts with.
+ *
+ * @typedef {object} SystemUserTokenClients
+ * @property {{requestSystemUserClient: RequestSystemUserClient, systemUserClient: SystemUserClient}} vendor The vendor that asks for the system user and looks the approved one up.
+ * @property {{bffRequestClient: BffSystemUserRequestClient, bffSystemUserClient: BffSystemUserClient}} approver The customer that approves the system user, and deletes it again.
+ * @property {AuthenticationClient} authenticationClient Exchanges the system user token for an Altinn one.
+ */
+
+/**
+ * @type {SystemUserTokenClients | undefined}
  */
 let clients = undefined;
 
@@ -215,7 +224,7 @@ export function teardown(data) {
  * Built once per VU and reused across its iterations. The token generators cache
  * tokens per instance, so building them per iteration refetches every token again.
  *
- * @returns {[any, EnterpriseTokenGenerator, PersonalTokenGenerator]} The clients, and the two token generators.
+ * @returns {[SystemUserTokenClients, EnterpriseTokenGenerator, PersonalTokenGenerator]} The clients, and the two token generators.
  */
 export function getClients() {
     if (

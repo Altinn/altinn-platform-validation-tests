@@ -43,11 +43,13 @@ export async function setup() {
  * and system register tests sign their grants with. Without the Maskinporten
  * secrets those two folders fail in their own setup and the rest still runs.
  *
- * Two of the tests want more than that, and both skip themselves rather than stop
- * the run where they cannot say anything. The decision test wants
- * AUTHORIZATION_SUBSCRIPTION_KEY, since the pdp sits behind API management. The
- * system user token folder runs in tt02 alone, since that is the Altinn environment
- * Maskinporten looks system users up in.
+ * Three of the tests want more than that, and each skips itself rather than stop
+ * the run where it cannot say anything. The two decision tests want
+ * AUTHORIZATION_SUBSCRIPTION_KEY, since the pdp sits behind API management, and the
+ * client delegation one also wants an environment where the resource it asks about
+ * is published, which is at22 and tt02. The system user token folder runs in tt02
+ * alone, since that is the Altinn environment Maskinporten looks system users up
+ * in.
  *
  * @param {Awaited<ReturnType<typeof setup>>} data Setup results, keyed per folder.
  */
