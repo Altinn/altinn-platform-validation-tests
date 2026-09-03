@@ -15,6 +15,8 @@ class ResourceSearchQueryBuilder {
             ResourceType: null,
             Keyword: null,
             Reference: null,
+            OrgCode: null,
+            OrganizationId: null,
         });
     }
 
@@ -86,6 +88,31 @@ class ResourceSearchQueryBuilder {
      */
     withReference(value) {
         this.query.Reference = value;
+
+        return this;
+    }
+
+    /**
+     * Sets resource owner filter. Matched on the whole org code, not a substring.
+     *
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
+     */
+    withOrgCode(value) {
+        this.query.OrgCode = value;
+
+        return this;
+    }
+
+    /**
+     * Sets resource owner filter on the organization number. Matched on the whole
+     * number, not a substring.
+     *
+     * @param {string} value Value to set.
+     * @returns {ResourceSearchQueryBuilder} This builder, for chaining.
+     */
+    withOrganizationId(value) {
+        this.query.OrganizationId = value;
 
         return this;
     }

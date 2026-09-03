@@ -1,4 +1,5 @@
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
+import runListAndSearchResources, { setup as setupListAndSearchResources } from "./list-and-search-resources.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings.
@@ -8,6 +9,7 @@ import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get
 export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
+        listAndSearchResources: setupListAndSearchResources(),
     };
 }
 
@@ -25,6 +27,7 @@ export function setup() {
  */
 export default function () {
     runGetUpdatedResources();
+    runListAndSearchResources();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

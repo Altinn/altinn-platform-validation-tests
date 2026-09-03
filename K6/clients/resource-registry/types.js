@@ -375,6 +375,8 @@
  * @property {ResourceType|null} ResourceType Resource type filter.
  * @property {string|null} Keyword Keyword filter.
  * @property {string|null} Reference Reference filter.
+ * @property {string|null} OrgCode Resource owner filter.
+ * @property {string|null} OrganizationId Resource owner organization number filter.
  */
 
 /**
@@ -417,6 +419,8 @@
  * @property {ResourceType|null} [ResourceType] Resource type filter.
  * @property {string|null} [Keyword] Keyword filter.
  * @property {string|null} [Reference] Reference filter.
+ * @property {string|null} [OrgCode] Resource owner filter.
+ * @property {string|null} [OrganizationId] Resource owner organization number filter.
  */
 
 /**
