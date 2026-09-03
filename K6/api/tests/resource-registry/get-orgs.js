@@ -1,5 +1,5 @@
 import { ResourceOwnerClient } from "../../../clients/resource-registry/index.js";
-import { requireEnv } from "../../../helpers.js";
+import { lazy, requireEnv } from "../../../helpers.js";
 import { ResourceOwnerGetOrgs } from "../../building-blocks/resource-registry/resource-owner/index.js";
 import { OrgListDomainChecks } from "../../domain-checks/resource-registry/org-list.js";
 
@@ -13,6 +13,16 @@ const EXPECTED_ORG_NUMBERS = {
     digdir: "991825827",
     skd: "974761076",
 };
+
+/**
+ * The endpoint is public, so the client is built without a token generator.
+ * Built once per VU, on the first iteration that asks for it.
+ *
+ * @returns {ResourceOwnerClient} The client.
+ */
+const getResourceOwnerClient = lazy(function () {
+    return new ResourceOwnerClient(__ENV.BASE_URL);
+});
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -28,7 +38,7 @@ export function setup() {
  * that cannot reach the CDN, or that hands on a truncated list, fails here.
  */
 export default function () {
-    const resourceOwnerClient = new ResourceOwnerClient(__ENV.BASE_URL);
+    const resourceOwnerClient = getResourceOwnerClient();
 
     const orgList = ResourceOwnerGetOrgs(resourceOwnerClient);
 

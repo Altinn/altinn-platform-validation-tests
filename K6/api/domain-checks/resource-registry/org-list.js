@@ -9,7 +9,7 @@ import { OrgList } from "../../../clients/resource-registry/types.js";
  *
  * @param {OrgList|null} orgList - The org list returned by the API.
  * @param {Array<string>} expectedOrgCodes - Org codes the list has to contain.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every expected org code is present, false otherwise.
  */
 function CheckOrgsPresent(orgList, expectedOrgCodes, operation) {
@@ -17,7 +17,7 @@ function CheckOrgsPresent(orgList, expectedOrgCodes, operation) {
     const missing = expectedOrgCodes.filter((orgCode) => orgs[orgCode] === undefined);
 
     const success = check(orgList, {
-        [`CheckOrgsPresent - ${operation} returns every expected org code`]: () =>
+        "CheckOrgsPresent - Every expected org code is in the list": () =>
             missing.length === 0,
     });
 
@@ -36,7 +36,7 @@ function CheckOrgsPresent(orgList, expectedOrgCodes, operation) {
  * to.
  *
  * @param {OrgList|null} orgList - The org list returned by the API.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every org is named in nb, nn and en, false otherwise.
  */
 function CheckOrgsNamedInAllLanguages(orgList, operation) {
@@ -46,7 +46,7 @@ function CheckOrgsNamedInAllLanguages(orgList, operation) {
         .map(([orgCode]) => orgCode);
 
     const success = check(orgList, {
-        [`CheckOrgsNamedInAllLanguages - Every org from ${operation} is named in nb, nn and en`]: () =>
+        "CheckOrgsNamedInAllLanguages - Every org is named in nb, nn and en": () =>
             Object.keys(orgs).length > 0 && unnamed.length === 0,
     });
 
@@ -64,7 +64,7 @@ function CheckOrgsNamedInAllLanguages(orgList, operation) {
  *
  * @param {OrgList|null} orgList - The org list returned by the API.
  * @param {{[orgCode: string]: string}} expectedOrgNumbers - Org code to organization number.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every organization number matches, false otherwise.
  */
 function CheckOrgNumbers(orgList, expectedOrgNumbers, operation) {
@@ -74,7 +74,7 @@ function CheckOrgNumbers(orgList, expectedOrgNumbers, operation) {
         .map(([orgCode, orgNumber]) => `${orgCode}: expected ${orgNumber}, got ${orgs[orgCode]?.orgnr}`);
 
     const success = check(orgList, {
-        [`CheckOrgNumbers - ${operation} reports the expected organization numbers`]: () =>
+        "CheckOrgNumbers - The expected organization numbers are reported": () =>
             wrong.length === 0,
     });
 
