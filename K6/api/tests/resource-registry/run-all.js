@@ -1,4 +1,3 @@
-import runCreateResourceAndPolicy, { setup as setupCreateResourceAndPolicy } from "./create-resource-and-policy.js";
 import runGetOrgs, { setup as setupGetOrgs } from "./get-orgs.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
@@ -11,21 +10,24 @@ export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
         getOrgs: setupGetOrgs(),
-        createResourceAndPolicy: setupCreateResourceAndPolicy(),
     };
 }
 
 /**
- * Runs every test in this folder once, in one k6 run, so a change to the shared
- * clients, building blocks or checks can be verified in one go.
+ * Runs the read tests in this folder once, in one k6 run, so a change to the
+ * shared clients, building blocks or checks can be verified in one go.
  *
- * Only the read flows are scheduled in prod, through healthcheck.yaml. The
- * create flow writes, so it stays out of that.
+ * create-resource-and-policy.js is deliberately left out. Deleting a resource
+ * leaves its rows in resourceregistry.resourcesubjects behind with deleted set
+ * to false, and nothing cleans them up, reported as
+ * Altinn/altinn-resource-registry#848 and concluded in #488. Every run of that
+ * test therefore leaks a couple of rows, so it has to be started on purpose
+ * rather than swept along by a run of everything. Wire it back in here once #848
+ * is fixed.
  */
 export default function () {
     runGetUpdatedResources();
     runGetOrgs();
-    runCreateResourceAndPolicy();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

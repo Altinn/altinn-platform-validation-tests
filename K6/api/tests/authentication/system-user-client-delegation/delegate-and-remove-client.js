@@ -24,22 +24,15 @@ export function setup() {
  * listing the available clients finds what to delegate, and the delegated list is
  * what says whether the delegation and the removal took effect.
  *
- * @param {any[]} data The arranged facilitators from setup.
+ * @param {ReturnType<typeof setup>} data The arranged facilitators from setup.
  */
 export default function (data) {
     const arranged = getItemFromList(data, randomize);
-    const [clients, tokenGenerator] = getClients();
+    const { clients, facilitatorTokenGenerator } = getClients();
 
-    tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged.facilitator));
+    facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged.facilitator));
 
     const delegationClient = clients.facilitator.clientDelegationClient;
-
-    // The arrange hands back a facilitator without an agent system user when it
-    // broke, rather than failing the run, so that its teardown gets to remove what
-    // it did create. Nothing below says anything without one.
-    if (!SystemUserClientDelegationDomainChecks.CheckAgentSystemUserArranged(arranged.systemUserId)) {
-        fail("cannot delegate a client: the setup produced no agent system user");
-    }
 
     group("As a facilitator, I can delegate a client to an agent system user and remove it again", function () {
         group("The agent system user is listed for the facilitator", function () {
@@ -103,7 +96,7 @@ export default function (data) {
  * deleted from the test itself without pulling it out from under the iterations
  * that follow.
  *
- * @param {any[]} data The arranged facilitators from setup.
+ * @param {ReturnType<typeof setup>} data The arranged facilitators from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);

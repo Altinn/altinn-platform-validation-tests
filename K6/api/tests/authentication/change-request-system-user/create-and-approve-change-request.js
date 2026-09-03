@@ -61,7 +61,7 @@ export function setup() {
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients, approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
@@ -73,15 +73,6 @@ export default function (data) {
         .filter((urn) => !systemUser.grantedAccessPackages.includes(urn))
         .map(accessPackage);
 
-    // The arrange hands back a system user id only when every step of it worked,
-    // rather than failing the run, so that its teardown gets to remove what it did
-    // create. Nothing below says anything without one.
-    if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser.systemUserId)) {
-        fail("cannot ask for more rights: the setup produced no system user");
-    }
-
-    // Bound after the guard, so the groups below read a value the compiler knows is
-    // there rather than one narrowed outside their own scope.
     const systemUserId = systemUser.systemUserId;
 
     group("As a vendor, I can ask an existing system user for more rights", function () {
@@ -143,7 +134,7 @@ export default function (data) {
 
             const approved = ApproveChangeRequest(
                 clients.approver.bffChangeRequestClient,
-                systemUser.customer.orgPartyId,
+                Number(systemUser.customer.orgPartyId),
                 changeRequestId,
             );
 

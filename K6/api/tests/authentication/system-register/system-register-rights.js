@@ -55,13 +55,24 @@ export default async function (data) {
 
     const systemId = `${vendorId}_${systemName}`;
 
+    // All three are published in every environment the test runs in. The ones this
+    // test used to name were not: authentication-e2e-test and vegardtestressurs are
+    // missing in yt01, so registering the system failed there before the resources
+    // were swapped.
+    //
+    // The third is an Altinn app rather than a resource registry resource. It looks
+    // the same in the payload, only with an identifier of the form app_<org>_<app>,
+    // but it is a real case a vendor registers and nothing here covered it. The same
+    // app the system user request test asks for, and picked the same way: published
+    // and delegable in all four environments, which app_ttd_endring-av-navn-v2 from
+    // the authentication repo is not.
     const rights = [
         {
             "action": "read",
             "resource": [
                 {
                     "id": "urn:altinn:resource",
-                    "value": "authentication-e2e-test"
+                    "value": "k6-instancedelegation-test"
                 }
             ]
         },
@@ -70,7 +81,16 @@ export default async function (data) {
             "resource": [
                 {
                     "id": "urn:altinn:resource",
-                    "value": "vegardtestressurs"
+                    "value": "ttd-dialogporten-dummy"
+                }
+            ]
+        },
+        {
+            "action": "read",
+            "resource": [
+                {
+                    "id": "urn:altinn:resource",
+                    "value": "app_ttd_two-task-app"
                 }
             ]
         }
@@ -96,7 +116,7 @@ export default async function (data) {
         .build();
 
     group("System Register Rights", function () {
-        group("Register a system with two rights", function () {
+        group("Register a system with two resources and an app", function () {
             // POST /vendor
             const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
 

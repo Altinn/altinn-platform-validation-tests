@@ -65,6 +65,17 @@ export default defineConfig({
     ["json", { outputFile: "test-results.json" }],
   ],
   timeout: 60000,
+  // Playwrights standard er fem sekunder, og det er for stramt her: en assertion
+  // venter typisk på at flaten har hentet parter og rettigheter etter innlogging,
+  // og en hel test bruker 2-7 sekunder når alt går bra. Standarden står her, slik
+  // at page objectene bare sier fra når de trenger noe annet enn den.
+  //
+  // At taket er romslig gjør oss ikke blinde for en flate som blir tregere, for det
+  // er ikke timeouten som skal fange den. Hvor lang tid testene bruker eksporteres
+  // som playwright_test_duration_seconds fra junit-rapporten, se helpers/junitparser,
+  // og en jevn økning der sier fra lenge før en test tilfeldigvis bikker over taket.
+  // Timeouten er sikkerhetsnettet for kjøringen, tallene over tid er målingen.
+  expect: { timeout: 10_000 },
   use: {
     headless: !headed,
     trace: "on-first-retry",
