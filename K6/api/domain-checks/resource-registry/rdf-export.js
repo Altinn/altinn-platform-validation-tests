@@ -10,14 +10,14 @@ import http from "k6/http";
  *
  * @param {http.RefinedResponse<"text">|null} response - The response returned by the API.
  * @param {string} expectedMediaType - Media type the response has to start with.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the media type matches, false otherwise.
  */
 function CheckMediaType(response, expectedMediaType, operation) {
     const contentType = response?.headers?.["Content-Type"] ?? "";
 
     const success = check(response, {
-        [`CheckMediaType - ${operation} answers with ${expectedMediaType}`]: () =>
+        "CheckMediaType - The response answers with the expected media type": () =>
             contentType.startsWith(expectedMediaType),
     });
 
@@ -36,7 +36,7 @@ function CheckMediaType(response, expectedMediaType, operation) {
  *
  * @param {http.RefinedResponse<"text">|null} response - The response returned by the API.
  * @param {Array<string>} expectedPrefixes - Prefix names the document has to declare.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every prefix is declared, false otherwise.
  */
 function CheckPrefixesDeclared(response, expectedPrefixes, operation) {
@@ -44,7 +44,7 @@ function CheckPrefixesDeclared(response, expectedPrefixes, operation) {
     const missing = expectedPrefixes.filter((prefix) => !body.includes(`@prefix ${prefix}:`));
 
     const success = check(response, {
-        [`CheckPrefixesDeclared - ${operation} declares every expected prefix`]: () =>
+        "CheckPrefixesDeclared - Every expected prefix is declared": () =>
             missing.length === 0,
     });
 
@@ -66,7 +66,7 @@ function CheckPrefixesDeclared(response, expectedPrefixes, operation) {
  * "body is not empty" check would let through.
  *
  * @param {http.RefinedResponse<"text">|null} response - The response returned by the API.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the counts match and are above zero, false otherwise.
  */
 function CheckEveryResourceIsIdentified(response, operation) {
@@ -75,7 +75,7 @@ function CheckEveryResourceIsIdentified(response, operation) {
     const publicServices = (body.match(/a cpsv:PublicService/g) ?? []).length;
 
     const success = check(response, {
-        [`CheckEveryResourceIsIdentified - Every resource from ${operation} carries an identifier`]: () =>
+        "CheckEveryResourceIsIdentified - Every resource carries an identifier": () =>
             publicServices > 0 && identifiers === publicServices,
     });
 

@@ -1,5 +1,5 @@
 import { ResourceClient } from "../../../clients/resource-registry/index.js";
-import { requireEnv } from "../../../helpers.js";
+import { lazy, requireEnv } from "../../../helpers.js";
 import { ResourceExport } from "../../building-blocks/resource-registry/resource/index.js";
 import { RdfExportDomainChecks } from "../../domain-checks/resource-registry/rdf-export.js";
 
@@ -12,6 +12,16 @@ const EXPECTED_MEDIA_TYPE = "application/xml+rdf";
 // service and the competent authority, dct carries identifier, title and
 // description.
 const EXPECTED_PREFIXES = ["rdf", "rdfs", "dct", "cv", "cpsv"];
+
+/**
+ * The endpoint is public, so the client is built without a token generator.
+ * Built once per VU, on the first iteration that asks for it.
+ *
+ * @returns {ResourceClient} The client.
+ */
+const getResourceClient = lazy(function () {
+    return new ResourceClient(__ENV.BASE_URL);
+});
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -30,7 +40,7 @@ export function setup() {
  * resource it describes.
  */
 export default function () {
-    const resourceClient = new ResourceClient(__ENV.BASE_URL);
+    const resourceClient = getResourceClient();
 
     const exported = ResourceExport(resourceClient);
 
