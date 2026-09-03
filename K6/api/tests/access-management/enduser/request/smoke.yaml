@@ -3,5 +3,7 @@ base_dir: K6/api/tests/access-management/enduser/request
 test_definitions:
   - test_file: be-om-tilgang.js
     contexts:
-      - environment: yt01
-      - environment: at23
+      - environment: tt02
+        test_type:
+          type: smoke
+          enabled: true
