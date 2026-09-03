@@ -76,7 +76,7 @@ function buildPayload(data, report) {
     headingBlock.text.text = headingBlock.text.text + `Environment: ${__ENV.ENVIRONMENT} \n`;
     reportBlock.text.text = report;
 
-    const grafanaBaseUrl = "https://grafana.altinn.cloud/d/cf5uw0ahcsj5sf/k6-logs-test-playground?orgId=1";
+    const grafanaBaseUrl = "https://altinn-grafana-test-b2b8dpdkcvfuhfd3.eno.grafana.azure.com/d/cf5uw0ahcsj5sf/k6-logs-test-playground?orgId=1";
     let urlToLogs = grafanaBaseUrl + `&from=${__ENV.MANIFEST_GENERATION_TIMESTAMP}`;
     urlToLogs = urlToLogs + `&to=${new Date().getTime() + 5 * 60 * 1000}`; // 5 minutes
     urlToLogs = urlToLogs + `&var-namespace=${__ENV.NAMESPACE}`;

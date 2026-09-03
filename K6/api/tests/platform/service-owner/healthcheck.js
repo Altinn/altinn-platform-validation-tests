@@ -9,24 +9,23 @@ import { withRetries } from "../../../building-blocks/common/retry.js";
 export const options = {
     "dns": {
         policy: "preferIPv4", // 1 test with IPv4 and one with IPv6 preferIPv6
-    }
+    },
 };
 
 export function setup() {
     requireEnv(["DEPLOY_ENV"]);
+
     const client = new AltinnCdnClient();
     const orgs = client.GetOrgs(__ENV.DEPLOY_ENV);
-    let endpoints = [];
-    for (let org of orgs) {
-        endpoints.push(
-            [
-                org,
-                __ENV.DEPLOY_ENV,
-                `${client.GetBaseUrlForOrgInEnvironment(org, __ENV.DEPLOY_ENV)}/kuberneteswrapper/api/v1/deployments`
-            ]
-        );
-    }
-    return endpoints;
+
+    return orgs.map((org) => [
+        org,
+        __ENV.DEPLOY_ENV,
+        `${client.GetBaseUrlForOrgInEnvironment(
+            org,
+            __ENV.DEPLOY_ENV,
+        )}/kuberneteswrapper/api/v1/deployments`,
+    ]);
 }
 
 /**
@@ -34,19 +33,41 @@ export function setup() {
  */
 export default function (data) {
     console.log(`Querying ${data.length} endpoints`);
-    for (let [org, deploy_env, endpoint] of data) {
-        const tags = { "org": org, "endpoint": endpoint, "deploy_env": deploy_env };
-        const params = {
-            tags: tags,
-        };
+
+    for (const [org, deploy_env, endpoint] of data) {
+        const tags = { org, endpoint, deploy_env, };
+
+        const params = { tags, };
+
+        let res = null;
+
         try {
-            const res = withRetries(() => http.get(endpoint, params), org);
-            check(res, { "HTTP version is valid": (res) => ["HTTP/1.1", "HTTP/2.0"].includes(res.proto), }, tags);
-            check(res, { "response code was 200": (res) => res.status == 200, }, tags);
-            const res_body = res.body;
-            check(res_body, { "body contains kuberneteswrapper": (body) => body.includes("kuberneteswrapper") }, tags);
+            res = withRetries(() => http.get(endpoint, params), org);
         } catch (e) {
-            console.error(e);
+            console.error(`${org} - request failed unexpectedly: ${e}`);
         }
+
+        check(
+            res,
+            {
+                "HTTP request succeeded": (response) =>
+                    response != null && response.status !== 0,
+
+                "HTTP version is valid": (response) =>
+                    response != null &&
+                    response.status !== 0 &&
+                    ["HTTP/1.1", "HTTP/2.0"].includes(response.proto),
+
+                "response code was 200": (response) =>
+                    response != null && response.status === 200,
+
+                "body contains kuberneteswrapper": (response) =>
+                    response != null &&
+                    response.status === 200 &&
+                    typeof response.body === "string" &&
+                    response.body.includes("kuberneteswrapper"),
+            },
+            tags,
+        );
     }
 }

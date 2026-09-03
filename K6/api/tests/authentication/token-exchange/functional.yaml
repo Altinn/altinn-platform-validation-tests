@@ -15,3 +15,7 @@ test_definitions:
         test_run:
           secrets:
             - 313175650-maskinporten-client
+      - environment: yt01
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client

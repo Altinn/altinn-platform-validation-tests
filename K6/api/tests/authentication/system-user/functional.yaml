@@ -1,12 +1,39 @@
 namespace: authentication
 base_dir: K6/api/tests/authentication/system-user
 test_definitions:
-  - test_file: run-paginated-systemuser-tests.js
-    contexts:
-      - environment: tt02
-      - environment: at22
-
   - test_file: get-system-user-by-query.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  - test_file: get-system-users-by-system-id.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  # The pdp sits behind API management, so this one needs the subscription key on
+  # top of what the other tests in the folder need. at23 is left out because there
+  # is no authorization-subscription-key-at23 to give it.
+  - test_file: system-user-decision.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
+  - test_file: stream-system-users.js
     contexts:
       - environment: at22
       - environment: at23

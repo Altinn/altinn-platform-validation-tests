@@ -13,7 +13,7 @@ import {
 } from "../../../../clients/authentication/index.js";
 import { AccessPackage, Right } from "../../../../clients/authentication/types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
@@ -71,29 +71,31 @@ export const PAGINATION_SYSTEM_OWNER = "312605031";
 export const PAGINATION_SYSTEM_ID = `${PAGINATION_SYSTEM_OWNER}_PaginationChangeRequests`;
 
 /**
- * @type {object | undefined}
+ * @typedef {import("../commons.js").EndUser} EndUser
  */
-let clients = undefined;
 
 /**
- * @type {PersonalTokenGenerator | undefined}
+ * The clients this test folder acts with.
+ *
+ * @typedef {object} ChangeRequestClients
+ * @property {{systemRegisterClient: SystemRegisterClient, requestSystemUserClient: RequestSystemUserClient, changeRequestClient: ChangeRequestSystemUserClient, systemUserClient: SystemUserClient, packagesClient: PackagesClient}} vendor The vendor that registers the system, asks for the system user and makes the change requests.
+ * @property {{requestSystemUserClient: RequestSystemUserClient, changeRequestClient: ChangeRequestSystemUserClient, bffChangeRequestClient: SystemUserChangeRequestClient, bffRequestClient: BffSystemUserRequestClient, bffSystemUserClient: BffSystemUserClient}} approver The customer that approves what the vendor asks for, and deletes the system user again.
  */
-let approverTokenGenerator = undefined;
 
 /**
- * @type {EnterpriseTokenGenerator | undefined}
+ * A system user the arrange step created, and what a test needs to work on it.
+ *
+ * @typedef {object} ArrangedSystemUser
+ * @property {EndUser} customer The customer that holds the system user.
+ * @property {string} vendorOrgNo The vendor that registered the system.
+ * @property {string} systemNamePrefix The prefix the system was named with, which the sweep matches on.
+ * @property {string} systemId The system the system user was created on.
+ * @property {string} clientId The client id the system was registered with, which a test looks the system user up by.
+ * @property {string} externalRef The reference the system user was asked for with, which a test looks it up by.
+ * @property {string} systemUserId Identifier of the approved system user.
+ * @property {string[]} grantedAccessPackages Urns of the access packages the system user starts with, so a test can give one up.
+ * @property {string[]} registeredAccessPackages Urns of every access package the system holds, so a test can ask for one the system user lacks.
  */
-let vendorTokenGenerator = undefined;
-
-/**
- * @type {ChangeRequestSystemUserClient | undefined}
- */
-let paginationClient = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let paginationTokenGenerator = undefined;
 
 /**
  * What a test needs arranged before it runs.
@@ -119,7 +121,7 @@ let paginationTokenGenerator = undefined;
  * the systems of changerequestdelete along with its own.
  *
  * @param {ArrangeSystemUserParams} options - What the calling test needs arranged.
- * @returns A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, the system id so a teardown can remove what was registered, and the client id and external ref so a test can look the system user up again.
+ * @returns {ArrangedSystemUser[]} A single arranged system user, as a list so the test picks from it with getItemFromList like any other test data. Carries the access packages back, so a test can ask for one it does not have and give up one it does, the system id so a teardown can remove what was registered, and the client id and external ref so a test can look the system user up again.
  */
 export function arrangeApprovedSystemUser({
     systemNamePrefix,
@@ -136,13 +138,14 @@ export function arrangeApprovedSystemUser({
     // an ENK. Built per environment by `yarn tenor:endusers` in
     // altinn-access-management-frontend, since Tenor holds the same synthetic
     // companies everywhere while the Altinn ids differ per environment.
+    /** @type {EndUser} */
     const customer = getItemFromList(fetchTestData(`authentication/change-request-system-user/end-users-${__ENV.ENVIRONMENT}.csv`), randomize);
 
     const registration = createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRights, registeredAccessPackages });
 
     // Both tokens have to be set before the arrange runs, not in the default
     // function the way the test does it.
-    const [, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(customer));
@@ -190,10 +193,10 @@ export function pickVendor() {
  * vendor that registered it. The system goes last, since it is what the system
  * user is built on.
  *
- * @param {any[]} arranged - What arrangeApprovedSystemUser returned.
+ * @param {ArrangedSystemUser[]} arranged - What arrangeApprovedSystemUser returned.
  */
 export function cleanupArranged(arranged) {
-    const [apiClients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients: apiClients, approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     group("Cleanup - the customer deletes the system user and the vendor its system", function () {
         for (const systemUser of arranged ?? []) {
@@ -206,11 +209,7 @@ export function cleanupArranged(arranged) {
             // it leaves it behind otherwise, and nothing else picks it up.
             sweepPendingChangeRequests(apiClients.vendor.changeRequestClient, systemUser.systemId);
 
-            // An arrange that stopped early leaves no system user to delete, only the
-            // system it had already registered.
-            if (systemUser.systemUserId !== undefined) {
-                DeleteSystemUser(apiClients.approver.bffSystemUserClient, systemUser.customer.orgPartyId, systemUser.systemUserId);
-            }
+            DeleteSystemUser(apiClients.approver.bffSystemUserClient, Number(systemUser.customer.orgPartyId), systemUser.systemUserId);
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemUser.systemId);
 
@@ -246,54 +245,48 @@ export function cleanupArranged(arranged) {
  * with getVendorTokenOpts and the approver with getApproverTokenOpts. The cache
  * is keyed on the options, so each of them still gets its own cached token.
  *
- * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {{clients: ChangeRequestClients, approverTokenGenerator: PersonalTokenGenerator, vendorTokenGenerator: EnterpriseTokenGenerator}} Clients grouped by who they act as, and the two token generators.
  */
-export function getClients() {
-    if (clients === undefined) {
-        vendorTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(VENDOR_SCOPES)
-                .build(),
-        );
+export const getClients = lazy(function () {
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(VENDOR_SCOPES)
+            .build(),
+    );
 
-        approverTokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
+    const approverTokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
 
-        clients = {
-            vendor: {
-                systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
-                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-                packagesClient: new PackagesClient(__ENV.BASE_URL, vendorTokenGenerator),
-            },
-            approver: {
-                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
-                changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+    /** @type {ChangeRequestClients} */
+    const clients = {
+        vendor: {
+            systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
+            requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+            packagesClient: new PackagesClient(__ENV.BASE_URL, vendorTokenGenerator),
+        },
+        approver: {
+            requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
+            changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, approverTokenGenerator),
 
-                // Approving is what the customer does in the portal, so it goes through
-                // the bff rather than the authentication api the vendor calls.
-                bffChangeRequestClient: new SystemUserChangeRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-                bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
-            },
-        };
-    }
+            // Approving is what the customer does in the portal, so it goes through
+            // the bff rather than the authentication api the vendor calls.
+            bffChangeRequestClient: new SystemUserChangeRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+            bffRequestClient: new BffSystemUserRequestClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+            bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, approverTokenGenerator),
+        },
+    };
 
-    if (approverTokenGenerator === undefined || vendorTokenGenerator === undefined) {
-        // Only reachable if the block above stops building all three together.
-        fail("getClients did not build the token generators");
-    }
-
-    return [clients, approverTokenGenerator, vendorTokenGenerator];
-}
+    return { clients, approverTokenGenerator, vendorTokenGenerator };
+});
 
 /**
  * Creates and caches the client the pagination test reads with.
@@ -304,24 +297,23 @@ export function getClients() {
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
  * rather than refetching on every iteration.
  *
- * @returns {[ChangeRequestSystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow next links.
+ * @returns {{changeRequestClient: ChangeRequestSystemUserClient, tokenGenerator: EnterpriseTokenGenerator}} The client, and the generator the pagination helper needs to follow next links.
  */
-export function getPaginationClients() {
-    if (paginationClient === undefined || paginationTokenGenerator === undefined) {
-        paginationTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
-                .withOrganizationNumber(PAGINATION_SYSTEM_OWNER)
-                .build(),
-        );
+export const getPaginationClients = lazy(function () {
+    const paginationTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
+            .withOrganizationNumber(PAGINATION_SYSTEM_OWNER)
+            .build(),
+    );
 
-        paginationClient = new ChangeRequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator);
-    }
-
-    return [paginationClient, paginationTokenGenerator];
-}
+    return {
+        changeRequestClient: new ChangeRequestSystemUserClient(__ENV.BASE_URL, paginationTokenGenerator),
+        tokenGenerator: paginationTokenGenerator,
+    };
+});
 
 /**
  * k6 setup stage for the pagination test.
@@ -354,7 +346,7 @@ export function getVendorTokenOpts(vendorOrgNo) {
 /**
  * Token options for approving on behalf of a customer.
  *
- * @param {any} customer - The customer this iteration acts on behalf of.
+ * @param {EndUser} customer - The customer this iteration acts on behalf of.
  * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getApproverTokenOpts(customer) {
@@ -393,7 +385,7 @@ export function accessPackage(urn) {
  * @returns {string[]} The access package urns.
  */
 export function findAccessPackages(count, vendorOrgNo) {
-    const [apiClients, , vendorTokenGenerator] = getClients();
+    const { clients: apiClients, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
@@ -498,27 +490,30 @@ function createSystemRegistration({ systemNamePrefix, vendorOrgNo, registeredRig
  * create-and-confirm-system-user-request.js, which tests it directly.
  *
  * Keeps its own checks, so an arrange that breaks is visible and points at the step
- * that broke rather than surfacing as a confusing failure later. It stops at that
- * step and hands back nothing rather than calling fail(), since this runs in setup
- * and k6 skips the teardown when the setup gives up, which would leave the system
- * it had just registered in the register. The test is the one that fails, on the
- * missing system user, and by then the teardown is going to run.
+ * that broke rather than surfacing as a confusing failure later. A break ends the
+ * whole run: a test that never got its system user has nothing to say, and letting
+ * it run on only buys a second failure on the same cause, plus a guard in every
+ * test that reads what the arrange returned.
  *
- * @param {any} registration - Registration from createSystemRegistration.
- * @param {any} customer - The customer the system user is created for.
+ * Stopping in setup means k6 skips the teardown, so each step takes what the
+ * previous ones made with it before it stops. Whatever a stop cannot reach is
+ * covered by the sweep: the systems carry the test's prefix, and the next run
+ * removes them.
+ *
+ * @param {ReturnType<typeof createSystemRegistration>} registration - Registration from createSystemRegistration.
+ * @param {EndUser} customer - The customer the system user is created for.
  * @param {Right[]} grantedRights - The rights the system user is granted up front.
  * @param {string[]} grantedAccessPackages - Urns of the access packages the system user is granted up front.
- * @returns {string|undefined} Identifier of the approved system user, or
- * undefined when a step of the arrange did not get that far.
+ * @returns {string} Identifier of the approved system user.
  */
 function createApprovedSystemUser(registration, customer, grantedRights, grantedAccessPackages) {
-    const [apiClients] = getClients();
+    const { clients: apiClients } = getClients();
 
     return group("Arrange - the customer has an approved system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
 
         if (createdSystemId === null) {
-            return;
+            fail("cannot arrange a system user: registering the system did not return a system id");
         }
 
         const createRequest = new CreateRequestSystemUserBuilder()
@@ -539,19 +534,23 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         });
 
         if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
-            return;
+            unwindArrange(registration);
+
+            fail("cannot arrange a system user: the system user request was not created");
         }
 
         const approved = ApproveSystemUserRequest(
             apiClients.approver.bffRequestClient,
-            customer.orgPartyId,
+            Number(customer.orgPartyId),
             createdRequest?.id,
         );
 
         // Nothing to look up unless the request was approved, so stop here rather
         // than let the lookup fail as a second, unrelated failure.
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            return;
+            unwindArrange(registration, createdRequest?.id);
+
+            fail("cannot arrange a system user: the customer did not approve the system user request");
         }
 
         const systemUser = SystemUserBuildingBlocks.GetByExternalId(apiClients.vendor.systemUserClient, {
@@ -563,10 +562,34 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
 
         const systemUserId = systemUser?.id;
 
+        // The request was approved, so the system user exists and the sweep cannot
+        // take the system it belongs to. Left for someone to look at rather than
+        // unwound, since deleting a system the customer holds a system user on is
+        // not this step's call to make.
         if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUserId)) {
-            return undefined;
+            fail("cannot arrange a system user: the approved system user could not be looked up");
         }
 
         return systemUserId;
     });
+}
+
+/**
+ * Removes what the arrange had made when a later step of it stops the run.
+ *
+ * The arrange runs in setup, and k6 skips the teardown when the setup gives up, so
+ * a step that stops has to take the system and the request with it. The request
+ * goes first, since a pending one outlives the system it was made for.
+ *
+ * @param {ReturnType<typeof createSystemRegistration>} registration - Registration from createSystemRegistration.
+ * @param {string} [requestId] - The system user request to withdraw, when the arrange got as far as creating one.
+ */
+function unwindArrange(registration, requestId = undefined) {
+    const { clients: apiClients } = getClients();
+
+    if (requestId !== undefined) {
+        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+    }
+
+    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, registration.systemId);
 }

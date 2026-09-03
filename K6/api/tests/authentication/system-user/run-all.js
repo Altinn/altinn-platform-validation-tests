@@ -2,7 +2,7 @@ import { cleanupArranged } from "./commons.js";
 import runGetSystemUserByQuery, { setup as setupGetSystemUserByQuery } from "./get-system-user-by-query.js";
 import runGetSystemUsersBySystemId, { setup as setupGetSystemUsersBySystemId } from "./get-system-users-by-system-id.js";
 import runStreamSystemUsers, { setup as setupStreamSystemUsers } from "./stream-system-users.js";
-import runSystemWithCreatedResource, { setup as setupSystemWithCreatedResource, teardown as teardownSystemWithCreatedResource } from "./system-with-created-resource.js";
+import runSystemUserDecision, { setup as setupSystemUserDecision } from "./system-user-decision.js";
 
 /**
  * k6 setup stage. Runs the setup each test in the folder brings, keeping the
@@ -15,7 +15,7 @@ export function setup() {
         getSystemUserByQuery: setupGetSystemUserByQuery(),
         getSystemUsersBySystemId: setupGetSystemUsersBySystemId(),
         streamSystemUsers: setupStreamSystemUsers(),
-        systemWithCreatedResource: setupSystemWithCreatedResource(),
+        systemUserDecision: setupSystemUserDecision(),
     };
 }
 
@@ -27,15 +27,23 @@ export function setup() {
  * change-request-system-user and system-user-request as well, which is useful by
  * hand but is those folders' own run-all.js over again.
  *
+ * system-with-created-resource.js is deliberately left out. It creates a resource
+ * in the resource registry, and deleting a resource leaves its rows in
+ * resourceregistry.resourcesubjects behind with deleted set to false, with nothing
+ * cleaning them up, reported as Altinn/altinn-resource-registry#848 and concluded
+ * in #488. Every run leaks a couple of rows, so it has to be started on purpose
+ * rather than swept along by a run of everything. Wire it back in here once #848
+ * is fixed.
+ *
  * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
  */
 export default function (data) {
     runGetSystemUsersBySystemId();
     runGetSystemUserByQuery(data.getSystemUserByQuery);
-    runSystemWithCreatedResource(data.systemWithCreatedResource);
+    runSystemUserDecision(data.systemUserDecision);
 
-    // Last, like in run-paginated-systemuser-tests.js: the stream fail()s on a first
-    // page it cannot read, and that ends the whole iteration.
+    // Last: the stream fail()s on a first page it cannot read, and that ends the
+    // whole iteration.
     runStreamSystemUsers();
 }
 
@@ -46,7 +54,7 @@ export default function (data) {
  */
 export function teardown(data) {
     cleanupArranged(data.getSystemUserByQuery);
-    teardownSystemWithCreatedResource(data.systemWithCreatedResource);
+    cleanupArranged(data.systemUserDecision);
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).

@@ -25,7 +25,7 @@ const OPERATION = "ChangeRequestSystemUserVendorGetBySystem";
  * The endpoint ignores the continuation token it hands out, tracked as Altinn/altinn-authentication#2156.
  */
 export default function () {
-    const [changeRequestClient, tokenGenerator] = getPaginationClients();
+    const { changeRequestClient, tokenGenerator } = getPaginationClients();
 
     group("As a vendor, I can list the change requests on a system by id and follow pagination", function () {
         const firstPage = group("Fetch the first page of change requests", function () {
@@ -78,7 +78,7 @@ export default function () {
             const seen = new Set();
             for (const page of [firstPage, ...pages]) {
                 for (const item of page?.data ?? []) {
-                    seen.add(/** @type {{id?: string}} */ (item)?.id);
+                    seen.add(/** @type {{id?: string}|null} */ (item)?.id);
                 }
             }
 

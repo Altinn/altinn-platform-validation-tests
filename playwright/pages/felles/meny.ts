@@ -8,7 +8,7 @@ export class Meny {
     /**
      * Venter på at knappen er aktivert og ikke bare synlig. Headeren rendrer den
      * `disabled` mens den henter det den trenger, og `click()` blokkerer da uten
-     * egen timeout til hele testbudsjettet er brukt opp. Det har skjedd, se
+     * egen timeout til testen har brukt opp tiden sin. Det har skjedd, se
      * `helpers/junitparser/example-junit-report.xml`.
      */
     async clickMenuButton() {
@@ -56,7 +56,7 @@ export class Meny {
             name: /^(logg ut|log out)$/i,
         }).first();
 
-        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled({ timeout: 10_000 });
+        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled();
         await logoutButton.click();
     }
 

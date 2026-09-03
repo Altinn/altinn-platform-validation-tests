@@ -16,6 +16,22 @@ import { createSystemRegistration, getApproverTokenOpts, getClients, getVendorTo
 const RESOURCE = "k6-instancedelegation-test";
 
 /**
+ * The Altinn app the requested system user is also asked for.
+ *
+ * An app is a resource like any other as far as the request payload goes, only with
+ * an identifier of the form app_<org>_<app>, and it is the case a vendor integrating
+ * against an app service actually makes. It went untested here until now, so a
+ * regression that only hit app rights would have gone unnoticed.
+ *
+ * Which app it is takes some care, since this test runs in all four environments and
+ * the customer's approval runs a delegation check: app_ttd_endring-av-navn-v2, which
+ * the authentication repo uses, is not published in yt01, and app_ttd_martinotest is
+ * published everywhere but not delegable in tt02, where approving it answers 403
+ * ResourceNotDelegable. This one is published and delegable in all four.
+ */
+const APP = "app_ttd_two-task-app";
+
+/**
  * What this test names its systems, which is also what its teardown sweeps up.
  * Unique per test, or two tests running at once would delete each other's systems.
  */
@@ -29,10 +45,10 @@ export { setup } from "./commons.js";
  * @param {ReturnType<typeof import("./commons.js").setup>} data Test data from setup.
  */
 export default function (data) {
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients, approverTokenGenerator, vendorTokenGenerator } = getClients();
     const customer = getItemFromList(data.customers, randomize);
 
-    const rights = [resourceRight(RESOURCE)];
+    const rights = [resourceRight(RESOURCE), resourceRight(APP)];
 
     const registration = createSystemRegistration({
         systemNamePrefix: SYSTEM_NAME_PREFIX,
@@ -83,7 +99,7 @@ export default function (data) {
 
             const approved = ApproveSystemUserRequest(
                 clients.approver.bffRequestClient,
-                customer.partyId,
+                Number(customer.partyId),
                 requestId,
             );
 
@@ -113,7 +129,7 @@ export default function (data) {
             });
 
             if (systemUser?.id !== undefined && systemUser.id !== null) {
-                DeleteSystemUser(clients.approver.bffSystemUserClient, customer.partyId, systemUser.id);
+                DeleteSystemUser(clients.approver.bffSystemUserClient, Number(customer.partyId), systemUser.id);
             }
 
             SystemRegisterBuildingBlocks.VendorDelete(clients.vendor.systemRegisterClient, registration.systemId);

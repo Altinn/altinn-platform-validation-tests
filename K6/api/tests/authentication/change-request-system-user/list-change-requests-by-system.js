@@ -75,20 +75,13 @@ export function setup() {
  * to reflect. The teardown withdraws whatever is left pending if an iteration stops
  * before that.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
-    const [clients, , vendorTokenGenerator] = getClients();
+    const { clients, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
-
-    // The arrange hands back a system user id only when every step of it worked,
-    // rather than failing the run, so that its teardown gets to remove what it did
-    // create. Nothing below says anything without one.
-    if (!ChangeRequestSystemUserDomainChecks.CheckSystemUserToChange(systemUser.systemUserId)) {
-        fail("cannot make a change request: the setup produced no system user");
-    }
 
     group("As a vendor, I can list the change requests on a system I own", function () {
         const changeRequestIds = group("Ask for a right the system user does not have, more than once", function () {
@@ -109,7 +102,7 @@ export default function (data) {
                     201,
                 );
 
-                if (changeRequest?.id !== undefined) {
+                if (changeRequest?.id !== undefined && changeRequest.id !== null) {
                     created.push(changeRequest.id);
                 }
             }
@@ -166,7 +159,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the system user this test made change requests for
  * and the system it belongs to.
  *
- * @param {any[]} data The arranged system users from setup.
+ * @param {ReturnType<typeof setup>} data The arranged system users from setup.
  */
 export function teardown(data) {
     cleanupArranged(data);
