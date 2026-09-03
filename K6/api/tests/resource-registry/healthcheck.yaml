@@ -8,3 +8,13 @@ test_definitions:
       - environment: tt02
       - environment: yt01
       - environment: prod
+  # The catalogue comes in one response and the test asks for it twice, once
+  # without the apps and once with: around 2 MB per run in at22, 4 MB in at23,
+  # 5 MB in yt01, 10 MB in prod and 22 MB in tt02.
+  - test_file: get-resource-list.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+      - environment: prod
