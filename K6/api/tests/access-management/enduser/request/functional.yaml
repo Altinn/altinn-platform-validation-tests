@@ -4,4 +4,5 @@ test_definitions:
   - test_file: be-om-tilgang.js
     contexts:
       - environment: yt01
+      - environment: at22
       - environment: at23
