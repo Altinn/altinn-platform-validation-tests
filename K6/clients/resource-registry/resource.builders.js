@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { SubjectAttribute } from "./resource.constants.js";
-import { ResourceSearchQuery, ResourceType, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
+import { ResourceChangesQuery, ResourceSearchQuery, ResourceType, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
 
 /**
  * Builder for creating query parameters for searching resources.
@@ -148,6 +148,50 @@ class ResourceUpdatedQueryBuilder {
      * Returns the built query object.
      *
      * @returns {UpdatedResourceSubjectsQuery} The result.
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
+ * Builder for query parameters for the resource changes feed.
+ */
+class ResourceChangesQueryBuilder {
+    constructor() {
+        this.query = /** @type {ResourceChangesQuery} */ ({});
+    }
+
+    /**
+     * Sets the continuation token. Opaque, and only ever taken from the next
+     * link of a previous page.
+     *
+     * @param {string} token Continuation token.
+     * @returns {ResourceChangesQueryBuilder} This builder, for chaining.
+     */
+    token(token) {
+        this.query.token = token;
+
+        return this;
+    }
+
+    /**
+     * Sets the maximum number of resources returned. The registry accepts 1 to
+     * 1000 and refuses anything else with a validation error.
+     *
+     * @param {number} limit Maximum number of resources.
+     * @returns {ResourceChangesQueryBuilder} This builder, for chaining.
+     */
+    limit(limit) {
+        this.query.limit = limit;
+
+        return this;
+    }
+
+    /**
+     * Returns the built query object.
+     *
+     * @returns {ResourceChangesQuery} The result.
      */
     build() {
         return this.query;
@@ -857,6 +901,7 @@ ${actions}      </xacml:AnyOf>
 }
 
 export {
+    ResourceChangesQueryBuilder,
     ResourceSearchQueryBuilder,
     ResourceUpdatedQueryBuilder,
     ServiceResourceBuilder,

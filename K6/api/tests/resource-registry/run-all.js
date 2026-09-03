@@ -1,3 +1,4 @@
+import runGetResourceChanges, { setup as setupGetResourceChanges } from "./get-resource-changes.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
 /**
@@ -8,6 +9,7 @@ import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get
 export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
+        getResourceChanges: setupGetResourceChanges(),
     };
 }
 
@@ -25,6 +27,7 @@ export function setup() {
  */
 export default function () {
     runGetUpdatedResources();
+    runGetResourceChanges();
 }
 
 // Shared end-of-test summary logging (prints check pass/fail counts).
