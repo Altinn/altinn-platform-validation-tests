@@ -3,16 +3,9 @@ import { ConnectionsClient, } from "../../../../../clients/access-management/end
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PackagesExport } from "../../../../building-blocks/access-management/metadata/packages/index.js";
-
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {ConnectionsClient | undefined} */
-let connectionsApiClient = undefined;
-/** @type {RequestClient | undefined} */
-let requestApiClient = undefined;
 
 /**
  * k6 setup function.
@@ -83,18 +76,18 @@ function fetchAssignablePackages() {
  * @returns {[ConnectionsClient, RequestClient, PersonalTokenGenerator]} Tuple
  * containing the Connections client, the Request client and the token generator.
  */
-export function getClients() {
-    if (tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator(getEnduserOpts());
-    }
-    if (connectionsApiClient === undefined) {
-        connectionsApiClient = new ConnectionsClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    if (requestApiClient === undefined) {
-        requestApiClient = new RequestClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    return [connectionsApiClient, requestApiClient, tokenGenerator];
-}
+export const getClients = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(getEnduserOpts());
+
+    /** @type {[ConnectionsClient, RequestClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionsClient(__ENV.BASE_URL, tokenGenerator),
+        new RequestClient(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Builds enduser personal-token options for a given user.

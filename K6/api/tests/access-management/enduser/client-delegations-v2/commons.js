@@ -1,7 +1,7 @@
 import { ClientDelegationV2Client } from "../../../../../clients/access-management/enduser/client-delegation-v2/index.js";
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 
 /**
@@ -65,16 +65,6 @@ const SCOPES = CreateScopeString([
     AltinnScopes.CLIENTDELEGATIONS.READ,
     AltinnScopes.CLIENTDELEGATIONS.WRITE,
 ]);
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
- * @type {ClientDelegationV2Client | undefined}
- */
-let client = undefined;
 
 /**
  * Returns the test data for the environment the run is against.
@@ -161,20 +151,36 @@ export function getTokenOpts(userId, userPartyUuid) {
  * @returns {ClientDelegationV2Client} The v2 Client Delegation API client.
  */
 export function getClient(row) {
-    const opts = getTokenOpts(row.userId, row.partyUuid);
+    const { client, tokenGenerator } = getCachedClient();
 
-    if (tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator(opts);
-    } else {
-        tokenGenerator.setTokenGeneratorOptions(opts);
-    }
-
-    if (client === undefined) {
-        client = new ClientDelegationV2Client(__ENV.BASE_URL, tokenGenerator);
-    }
+    tokenGenerator.setTokenGeneratorOptions(getTokenOpts(row.userId, row.partyUuid));
 
     return client;
 }
+
+/**
+ * Creates and caches the v2 client and the generator behind it.
+ *
+ * Built once per VU and reused across its iterations. Not built for anyone in
+ * particular: which person a call acts as is decided by getClient swapping the
+ * generator options.
+ *
+ * @returns {{client: ClientDelegationV2Client, tokenGenerator: PersonalTokenGenerator}} The client, and the generator behind it.
+ */
+const getCachedClient = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(SCOPES)
+            .build(),
+    );
+
+    return {
+        client: new ClientDelegationV2Client(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    };
+});
 
 /**
  * The scopes the v1 connections endpoints ask for.
@@ -189,16 +195,6 @@ const CONNECTION_SCOPES = CreateScopeString([
 ]);
 
 /**
- * @type {PersonalTokenGenerator | undefined}
- */
-let connectionsTokenGenerator = undefined;
-
-/**
- * @type {ConnectionsClient | undefined}
- */
-let connectionsClient = undefined;
-
-/**
  * Returns a connections client acting as the administrator of the given row.
  *
  * This has its own token generator rather than sharing the one behind
@@ -211,26 +207,44 @@ let connectionsClient = undefined;
  * @returns {ConnectionsClient} The v1 Connections API client.
  */
 export function getConnectionsClient(row) {
-    const opts = new PersonalTokenBuilder()
-        .withEnvironment(__ENV.ENVIRONMENT)
-        .withTtl(3600)
-        .withScopes(CONNECTION_SCOPES)
-        .withUserId(row.userId)
-        .withPartyUuid(row.partyUuid)
-        .build();
+    const { connectionsClient, connectionsTokenGenerator } = getCachedConnectionsClient();
 
-    if (connectionsTokenGenerator === undefined) {
-        connectionsTokenGenerator = new PersonalTokenGenerator(opts);
-    } else {
-        connectionsTokenGenerator.setTokenGeneratorOptions(opts);
-    }
-
-    if (connectionsClient === undefined) {
-        connectionsClient = new ConnectionsClient(__ENV.BASE_URL, connectionsTokenGenerator);
-    }
+    connectionsTokenGenerator.setTokenGeneratorOptions(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CONNECTION_SCOPES)
+            .withUserId(row.userId)
+            .withPartyUuid(row.partyUuid)
+            .build(),
+    );
 
     return connectionsClient;
 }
+
+/**
+ * Creates and caches the connections client and the generator behind it.
+ *
+ * Built once per VU and reused across its iterations. Not built for anyone in
+ * particular: which administrator a call acts as is decided by
+ * getConnectionsClient swapping the generator options.
+ *
+ * @returns {{connectionsClient: ConnectionsClient, connectionsTokenGenerator: PersonalTokenGenerator}} The client, and the generator behind it.
+ */
+const getCachedConnectionsClient = lazy(function () {
+    const connectionsTokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CONNECTION_SCOPES)
+            .build(),
+    );
+
+    return {
+        connectionsClient: new ConnectionsClient(__ENV.BASE_URL, connectionsTokenGenerator),
+        connectionsTokenGenerator,
+    };
+});
 
 /**
  * k6 setup stage. Declares what the tests in this folder need.

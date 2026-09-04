@@ -1,19 +1,9 @@
 
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData } from "../../../../helpers.js";
+import { fetchTestData, lazy } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 import { GetParties } from "../../../building-blocks/dialogporten/graphql/index.js";
-
-/**
- * @type {GraphqlClient | undefined}
- */
-let graphqlClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
 
 /**
  * k6 setup function.
@@ -42,18 +32,17 @@ export function setup() {
  * PersonalTokenGenerator
  * ]} Tuple containing the GraphQL client and token generator.
  */
-export function getClient() {
-    if (graphqlClient === undefined || tokenGenerator === undefined) {
-        const baseUrl = __ENV.BASE_URL;
-        const tokenOpts = getDialogportenOpts();
+export const getClient = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(getDialogportenOpts());
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+    /** @type {[GraphqlClient, PersonalTokenGenerator]} */
+    const clients = [
+        new GraphqlClient(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
 
-        graphqlClient = new GraphqlClient(baseUrl, tokenGenerator);
-    }
-
-    return [graphqlClient, tokenGenerator];
-}
+    return clients;
+});
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.
