@@ -142,7 +142,16 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceExport(labels = null) {
-        const token = this.tokenGenerator.getToken();
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run without one.
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/xml+rdf",
+        });
+        const token = this.tokenGenerator?.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
 
         const url = `${this.FULL_PATH}/export`;
 
@@ -161,10 +170,7 @@ class ResourceClient {
 
         return http.get(url, {
             tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/xml+rdf",
-            },
+            headers,
         });
     }
 
