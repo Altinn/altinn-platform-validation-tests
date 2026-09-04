@@ -1,7 +1,7 @@
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData } from "../../../../helpers.js";
+import { fetchTestData, lazy } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
 
 export const orgNo = __ENV.ENVIRONMENT == "yt01" ? "713431400" : "991825827";
@@ -25,11 +25,6 @@ export const serviceResources =
         : ["k6-instancedelegation-test"];
 
 /**
- * @type {ServiceOwnerApiClient | undefined}
- */
-let serviceOwnerApiClient = undefined;
-
-/**
  * Creates and caches the client used to interact with the
  * Service Owner Dialog API.
  *
@@ -41,26 +36,22 @@ let serviceOwnerApiClient = undefined;
  *
  * @returns {[ServiceOwnerApiClient]} Tuple containing the Service Owner API client.
  */
-export function getClients() {
-    if (serviceOwnerApiClient === undefined) {
-        const tokenOpts = new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes("digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search")
-            .withOrganization("ttd")
-            .withOrganizationNumber(orgNo)
-            .build();
+export const getClients = lazy(function () {
+    const tokenOpts = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes("digdir:dialogporten.serviceprovider digdir:dialogporten.serviceprovider.search")
+        .withOrganization("ttd")
+        .withOrganizationNumber(orgNo)
+        .build();
 
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+    /** @type {[ServiceOwnerApiClient]} */
+    const clients = [
+        new ServiceOwnerApiClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts)),
+    ];
 
-        serviceOwnerApiClient = new ServiceOwnerApiClient(
-            __ENV.BASE_URL,
-            tokenGenerator
-        );
-    }
-
-    return [serviceOwnerApiClient];
-}
+    return clients;
+});
 
 /**
  * Setup function to fetch and parse CSV data of end users for testing

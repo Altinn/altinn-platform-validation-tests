@@ -24,7 +24,7 @@ import {
     GetRightHoldersQueryBuilder,
 } from "../../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { GetAgents, GetClients } from "../../../building-blocks/access-management-bff/client-delegations/index.js";
@@ -48,16 +48,6 @@ const getDelegationCheckLabel = { step: `4. ${AccessPackageClient.TAGS.GetAccess
  * @type {boolean}
  */
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
-
-// clients to use
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {ClientDelegationsClient | undefined} */
-let clientDelegationsApiClient = undefined;
-/** @type {ConnectionClient | undefined} */
-let connectionsApiClient = undefined;
-/** @type {AccessPackageClient | undefined} */
-let accessPackageApiClient = undefined;
 
 // get k6 options
 export const options = getOptions([getConnectionsLabel, getAgentsLabel, getClientsLabel, getDelegationCheckLabel, tokenGeneratorLabel]);
@@ -88,30 +78,28 @@ export function setup() {
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
-function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (clientDelegationsApiClient == undefined) {
-        clientDelegationsApiClient = new ClientDelegationsClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    return [connectionsApiClient, clientDelegationsApiClient, accessPackageApiClient, tokenGenerator];
-}
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+
+    /** @type {[ConnectionClient, ClientDelegationsClient, AccessPackageClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new ClientDelegationsClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Main function executed by each VU.

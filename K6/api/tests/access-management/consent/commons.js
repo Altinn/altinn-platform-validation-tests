@@ -5,7 +5,7 @@ import { ConsentLookupRequestBuilder, MaskinportenClient } from "../../../../cli
 import { ConsentLookupRequest } from "../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData } from "../../../../helpers.js";
+import { fetchTestData, lazy } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /**
@@ -39,34 +39,12 @@ const LOOKUP_CONSENT_VALID_DAYS = 1520;
 const REDIRECT_URL = "https://altinn.no";
 
 /**
- * @type {object | undefined}
+ * The clients the consent lifecycle acts with.
+ *
+ * @typedef {object} ConsentClients
+ * @property {{enterpriseClient: EnterpriseClient}} consentee The organization the consent is given to.
+ * @property {{consentClient: ConsentClient}} consenter The person giving the consent.
  */
-let clients = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let consenteeTokenGenerator = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let consenterTokenGenerator = undefined;
-
-/**
- * @type {EnterpriseClient | undefined}
- */
-let eventsClient = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let eventsTokenGenerator = undefined;
-
-/**
- * @type {MaskinportenClient | undefined}
- */
-let lookupClient = undefined;
 
 /**
  * The organizations that receive, and therefore hold, the consents.
@@ -119,30 +97,32 @@ export function getLookupConsents(env) {
  * Handling a consent request is what the person does in the portal, so it goes
  * through the bff rather than the enterprise api the organization calls.
  *
- * @returns {[any, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {[ConsentClients, EnterpriseTokenGenerator, PersonalTokenGenerator]} Clients grouped by who they act as, and the two token generators.
  */
-export function getClients() {
-    if (clients === undefined || consenteeTokenGenerator === undefined || consenterTokenGenerator === undefined) {
-        consenteeTokenGenerator = new EnterpriseTokenGenerator(
-            getConsenteeTokenOpts(),
-        );
+export const getClients = lazy(function () {
+    const consenteeTokenGenerator = new EnterpriseTokenGenerator(
+        getConsenteeTokenOpts(),
+    );
 
-        consenterTokenGenerator = new PersonalTokenGenerator(
-            getConsenterTokenOpts(),
-        );
+    const consenterTokenGenerator = new PersonalTokenGenerator(
+        getConsenterTokenOpts(),
+    );
 
-        clients = {
-            consentee: {
-                enterpriseClient: new EnterpriseClient(__ENV.BASE_URL, consenteeTokenGenerator),
-            },
-            consenter: {
-                consentClient: new ConsentClient(__ENV.AM_UI_BASE_URL, consenterTokenGenerator),
-            },
-        };
-    }
+    /** @type {ConsentClients} */
+    const clients = {
+        consentee: {
+            enterpriseClient: new EnterpriseClient(__ENV.BASE_URL, consenteeTokenGenerator),
+        },
+        consenter: {
+            consentClient: new ConsentClient(__ENV.AM_UI_BASE_URL, consenterTokenGenerator),
+        },
+    };
 
-    return [clients, consenteeTokenGenerator, consenterTokenGenerator];
-}
+    /** @type {[ConsentClients, EnterpriseTokenGenerator, PersonalTokenGenerator]} */
+    const result = [clients, consenteeTokenGenerator, consenterTokenGenerator];
+
+    return result;
+});
 
 /**
  * Creates and caches the client the events test reads with.
@@ -156,17 +136,19 @@ export function getClients() {
  *
  * @returns {[EnterpriseClient, EnterpriseTokenGenerator]} The client, and the generator whose organization is swapped per iteration.
  */
-export function getEventsClient() {
-    if (eventsClient === undefined || eventsTokenGenerator === undefined) {
-        eventsTokenGenerator = new EnterpriseTokenGenerator(
-            getEventsTokenOpts(),
-        );
+export const getEventsClient = lazy(function () {
+    const eventsTokenGenerator = new EnterpriseTokenGenerator(
+        getEventsTokenOpts(),
+    );
 
-        eventsClient = new EnterpriseClient(__ENV.BASE_URL, eventsTokenGenerator);
-    }
+    /** @type {[EnterpriseClient, EnterpriseTokenGenerator]} */
+    const clients = [
+        new EnterpriseClient(__ENV.BASE_URL, eventsTokenGenerator),
+        eventsTokenGenerator,
+    ];
 
-    return [eventsClient, eventsTokenGenerator];
-}
+    return clients;
+});
 
 /**
  * Creates and caches the client the lookup test reads with.
@@ -180,21 +162,17 @@ export function getEventsClient() {
  *
  * @returns {MaskinportenClient} The client the lookup test reads with.
  */
-export function getLookupClient() {
-    if (lookupClient === undefined) {
-        const tokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.MASKINPORTEN.CONSENT.READ]))
-                .build(),
-        );
+export const getLookupClient = lazy(function () {
+    const tokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.MASKINPORTEN.CONSENT.READ]))
+            .build(),
+    );
 
-        lookupClient = new MaskinportenClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return lookupClient;
-}
+    return new MaskinportenClient(__ENV.BASE_URL, tokenGenerator);
+});
 
 /**
  * Token options for acting as the organization a consent is given to.
