@@ -40,7 +40,7 @@ partly to pin them down:
 | `party-kinds.js` | Self identified user, ID-porten email user, rightholder with and without packages, system user |
 | `authorization-boundaries.js` | No token, insufficient scope, resource owner scope, admin scope |
 | `deleted-parties.js` | A deleted party keeps granting access to its owner for a retention window |
-| `subject-lookup-forms.js` | The eight identifier forms resolve to the same party list |
+| `subject-lookup-forms.js` | The six identifier forms resolve to the same party list |
 | `org-code-filter.js` | Own org code allowed, another owner's refused, admin scope allowed either |
 | `forretningsforer-clients.js` | A business manager's daily leader reaches the housing companies it manages |
 
@@ -55,11 +55,12 @@ anyway, with the issue named in the failure message, so they turn red when the f
 lands. In the Bruno folder this replaces those two directions were switched off behind
 a flag and registered no assertions at all.
 
-In `subject-lookup-forms.js`, both enterprise user lookup forms resolve to an empty list at at22, because the
-fixture user holds no access. The pair is still compared, so a divergence between the
-two forms would be caught the moment the fixture is given access, but as things stand
-that equivalence is not exercised. It is not asserted non empty, because an empty
-fixture is not a product failure.
+`subject-lookup-forms.js` no longer covers the two enterprise user forms. They resolved to an
+empty list at at22, because the fixture user held no access, so the pair agreed on nothing and
+the equivalence was never exercised. They were dropped when the scenario moved to a csv rather
+than kept against a fixture only at22 has: an enterprise user is not something Register hands
+out, so there was no way to generate one per environment. Whoever wants them back has to seed
+an enterprise user with access first, which is what would make the steps worth having.
 
 `includeSubParties` is not covered: the filter is resolved but never applied, tracked by
 [#3522](https://github.com/Altinn/altinn-authorization-tmp/issues/3522). The exact daglig
@@ -110,6 +111,89 @@ stop being shared.
 
 ## Test data
 
+Eight of the twelve scenarios read a generated csv, ten rows per environment, in at22,
+at23, tt02 and yt01. Four still read the hand described json fixture and still run at at22
+alone. The split is not about file format: it follows what a scenario can find in the
+wild.
+
+A scenario can be generated when what it asserts is a shape the endpoint itself will tell
+you about. Which client carries the accountant packages, which subunit hangs under it,
+which party is the sole proprietorship owner, which parties drop out when key roles are
+excluded, which resource narrows the list, which six identifier forms name one subject:
+none of that is written down anywhere, and all of it is readable off a lookup. The
+generators start from organisations the register suite already carries, ask Register who
+leads them, and then let the endpoint under test decide which candidates survive. Nothing
+is seeded, so a row is only as durable as the daglig leder role behind it, and the answer
+is regenerate rather than repair.
+
+A scenario cannot be generated when what it asserts was put there on purpose. The four
+below are in that group, and the section after this one says what each would need.
+
+| Generator | Writes the rows for |
+| --- | --- |
+| `testdataGeneration/subject-lookup-forms-data.js` | `subject-lookup-forms` |
+| `testdataGeneration/accounting-firm-data.js` | `clients-and-key-role-parties`, `access-information-flags`, `key-role-filter`, `party-filter`, `resource-filter` |
+| `testdataGeneration/subject-only-data.js` | `authorization-boundaries`, `org-code-filter` |
+
+The five accounting firm scenarios share one generator because they share one lookup: an
+accounting firm's daglig leder and the parties it answers with. Five generators would mean
+five copies of that pass and five times the traffic for the same parties.
+
+### Where the candidates come from, and why that is a weakness
+
+Every generator starts from `register/organizations-<environment>.csv`, thirty
+organisations that already existed in the repo, chosen for the register suite rather than
+for this one. Each is tried in turn and kept only if the endpoint answers with everything
+the scenario needs. That is generate and test over an inherited list, not a search: nothing
+here asks for an accounting firm, it asks thirty organisations whether they happen to be
+one.
+
+It works, and the rows it produces are real. What it costs is reach. Ten rows out of at
+most twenty eight candidates is a sample of that file rather than of the environment, and
+any conclusion drawn from a candidate coming up empty, such as the business manager one
+above, holds only for those thirty.
+
+The tool for doing this properly is Tenor, whose KQL search over the synthetic
+Enhets- og Foretaksregister can ask for facilitators by role directly, daglig leder and
+clients included, in `playwright/tenor` in the access management frontend repo. Sourcing the
+candidates from a Tenor query rather than from this file would turn the filter into a query
+and lift the ceiling on how many rows an environment can fill. It has not been done.
+
+Each generator prints its csv, which is copied into
+`K6/testdata/access-management/resource-owner/authorized-parties/<scenario>/<environment>.csv`
+by hand, since a k6 run cannot write back to the repo. The files hold ten rows apart from
+the resource filter, which holds whatever the environment could fill: ten at yt01, three at
+tt02, one at at22 and at23. Nobody has delegated a resource to these firms in the AT
+environments, and a firm picked out of Enhetsregisteret holds none on its own.
+
+### What the four remaining scenarios would need
+
+`forretningsforer-clients.js` was tried and put back. Among the candidates the generators
+draw from, the organisations carrying the `forretningsforer` role carry only accountant
+packages: no business manager package appears anywhere in the response. Rows could still be
+produced that pass, naming an accountant package as the one the firm holds on its client,
+but the scenario would no longer be about business managers.
+
+That is a statement about thirty organisations, not about the environment. The candidates
+are `register/organizations-<environment>.csv`, a file picked for the register suite, so a
+housing company client with a package held through that role may well exist outside it. See
+the note on sourcing below before concluding it has to be seeded.
+
+`party-kinds.js` needs a self identified user, an ID-porten user registered by email, a
+rightholder holding packages and one holding none, and a system user. Register hands out
+none of those, and the two rightholder cases only exist because a delegation was made.
+
+`deleted-parties.js` needs two sole proprietorships deleted on either side of a two year
+retention window, both with an owner, plus an active one. Register carries `isDeleted` and
+`deletedAt`, so the deletion dates are readable, but two things are not. Register serves
+holders for `daglig-leder` and no other role, so the owner of a sole proprietorship cannot
+be looked up, and the party deleted outside the window is absent from the response by
+definition, which is the whole assertion. Discovery has nothing to read either side from.
+
+`unit-hierarchy-delegation-directions.js` needs a hierarchy carrying delegations in all
+nine directions between main units, subunits and people. Finding one of those in the wild
+is unlikely and finding ten is not worth trying.
+
 `../testdata-<environment>.json` holds the accounting firm tree, the forretningsfører
 firm, the enterprise and self identified users and the deleted sole proprietorships.
 The main unit and subunit delegation hierarchy that
@@ -132,6 +216,19 @@ k6 run K6/api/tests/access-management/resource-owner/authorized-parties/run-all.
 ```
 
 `ENVIRONMENT` and `BASE_URL` are required, plus `TOKEN_GENERATOR_USERNAME` and
-`TOKEN_GENERATOR_PASSWORD`. `ENVIRONMENT` also picks the test data file, so it has to
-match one of the `testdata-<environment>.json` files. Only at22 exists today, matching
-the Bruno suite.
+`TOKEN_GENERATOR_PASSWORD`. `run-all.js` runs at at22 only, because the four scenarios
+that still read the json fixture have one only for at22.
+
+The eight csv driven scenarios run on their own in at22, at23, tt02 and yt01:
+
+```
+k6 run K6/api/tests/access-management/resource-owner/authorized-parties/subject-lookup-forms.js
+```
+
+Each draws one of its ten rows per iteration, at random unless `RANDOMIZE=false`, which
+picks by iteration number instead, so ten iterations exercise every row. Regenerating the
+rows additionally needs `REGISTER_SUBSCRIPTION_KEY`:
+
+```
+k6 run K6/api/tests/access-management/resource-owner/authorized-parties/testdataGeneration/accounting-firm-data.js
+```

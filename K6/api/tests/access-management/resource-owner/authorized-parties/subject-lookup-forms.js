@@ -1,18 +1,18 @@
 export { handleSummary } from "../../../../../common-imports.js";
-export { setup } from "./common.js";
 
 import { group } from "k6";
 
 import { AuthorizedPartiesRequest } from "../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { fetchTestData, getItemFromList, requireEnv } from "../../../../../helpers.js";
 import { GetAuthorizedParties } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties.js";
 import { AuthorizedPartiesDomainChecks, PartyUuidList } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getClients } from "./common.js";
-import { SetupData } from "./setup-data.types.js";
+import { SubjectLookupFormsSetupData } from "./setup-data.types.js";
 
 // The same subject resolves to the same party list whichever identifier form is used: a
-// person by national identity number, user id, party id and person uuid, an organisation
-// by number and uuid, and an enterprise user by user name and uuid.
+// person by national identity number, user id, party id and person uuid, and an
+// organisation by number and uuid.
 //
 // This matrix only exists on the service owner surface, since the subject is named in the
 // request body rather than taken from the token. The system user uuid form is covered by
@@ -21,19 +21,27 @@ import { SetupData } from "./setup-data.types.js";
 // The groups run in order: each baseline records the party list the following groups
 // compare against. The baselines are locals rather than module state, so every iteration
 // and every VU establishes its own.
+//
+// Unlike the rest of the suite this reads a csv rather than the accounting firm fixture,
+// because nothing here depends on how the parties are related: it needs one person and
+// one organisation the endpoint answers non-empty for, described by every identifier form.
+// That is generated rather than hand written, and exists for all four environments, which
+// the json fixture does not.
+
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
  * Runs the feature.
  *
- * @param {SetupData} data - The fixtures returned by setup().
+ * @param {SubjectLookupFormsSetupData} data - The fixtures returned by setup().
  */
 export default function (data) {
     group("The same subject resolves to the same party list whichever identifier form is used", function () {
         const [authorizedPartiesClient] = getClients();
 
-        const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
-        const person = firm.dagligleder;
-        const enterpriseUser = data.testdata.a2BrunoECUser;
+        // One row per iteration rather than all ten, so the group names stay the same
+        // whichever row is drawn and a run costs the same as it did against the fixture.
+        const row = getItemFromList(data.subjectLookupForms, randomize);
 
         const queryParams = new AuthorizedPartiesQueryBuilder().includeAccessPackages().build();
 
@@ -42,7 +50,7 @@ export default function (data) {
         // Each baseline is the group's return value rather than a variable assigned inside
         // the callback, which control flow analysis does not follow.
         const personBaseline = group("A person can be looked up by national identity number", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(person.pid).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(row.pid).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
@@ -56,25 +64,25 @@ export default function (data) {
         }
 
         group("The user id form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withUserId(person.userId).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withUserId(row.userId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline);
         });
 
         group("The party id form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(person.partyId).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(row.partyId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline);
         });
 
         group("The person uuid form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(person.partyUuid).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(row.partyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline);
         });
 
         const organisationBaseline = group("An organisation can be the subject too", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(firm.orgno).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(row.orgno).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
@@ -82,33 +90,30 @@ export default function (data) {
         });
 
         // Same reasoning as the person baseline above, but skipping the one group rather
-        // than returning, since the enterprise user pair below is deliberately kept.
+        // than returning, in case a form is added after it.
         if (organisationBaseline.length > 0) {
             group("The organisation uuid form resolves to the same parties", function () {
-                const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(firm.partyUuid).build());
+                const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(row.orgPartyUuid).build());
 
                 AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, organisationBaseline);
             });
         }
-
-        // Both enterprise user forms resolve to an empty list at at22 today, because the
-        // fixture user holds no access, so the pair below agrees on nothing. The steps are
-        // kept because they still catch one form diverging from the other the moment the
-        // fixture is given access, but the equivalence is not exercised as things stand.
-        // Deliberately not asserted non empty, which would be a fixture failure dressed up as
-        // a product one. The Bruno suite this was ported from has the same gap.
-        const enterpriseUserBaseline = group("An enterprise user can be the subject too", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUsername(enterpriseUser.username).build());
-
-            AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
-
-            return PartyUuidList(parties);
-        });
-
-        group("The enterprise user uuid form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withEnterpriseUserUuid(enterpriseUser.partyUuid).build());
-
-            AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, enterpriseUserBaseline);
-        });
     });
+}
+
+/**
+ * Fetches the rows this scenario draws from.
+ *
+ * Its own setup rather than the suite's, since the rows are all it reads. That is what
+ * lets it run in every environment the csv exists for, while the rest of the suite is
+ * pinned to the one environment its json fixture describes.
+ *
+ * @returns {SubjectLookupFormsSetupData} The rows, as the default function's `data` argument.
+ */
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+
+    return {
+        subjectLookupForms: fetchTestData(`access-management/resource-owner/authorized-parties/subject-lookup-forms/${__ENV.ENVIRONMENT}.csv`),
+    };
 }

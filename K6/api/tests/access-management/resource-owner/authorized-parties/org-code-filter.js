@@ -1,13 +1,13 @@
 export { handleSummary } from "../../../../../common-imports.js";
-export { setup } from "./common.js";
 
 import { group } from "k6";
 
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { fetchTestData, getItemFromList, requireEnv } from "../../../../../helpers.js";
 import { GetAuthorizedParties, GetAuthorizedPartiesRefused } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
-import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE } from "./common.js";
-import { SetupData } from "./setup-data.types.js";
+import { getAdminClient, getClients, OTHER_SERVICE_OWNER_ORG_CODE, OWN_SERVICE_OWNER_ORG_CODE } from "./common.js";
+import { OrgCodeFilterSetupData } from "./setup-data.types.js";
 
 // Which org code a caller may ask on behalf of depends on its scope. A service owner may
 // filter on its own, is refused another service owner's, and the admin scope is allowed
@@ -15,19 +15,24 @@ import { SetupData } from "./setup-data.types.js";
 //
 // This filter only exists on the service owner surface, since a plain resource owner is
 // limited to the org code it owns.
+//
+// The subject is incidental here too: the same lookup is sent three times and only the
+// org code and the scope change.
+
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
  * Runs the feature.
  *
- * @param {SetupData} data - The fixtures returned by setup().
+ * @param {OrgCodeFilterSetupData} data - The fixtures returned by setup().
  */
 export default function (data) {
     group("Which org code a caller may ask on behalf of depends on its scope", function () {
         const [authorizedPartiesClient] = getClients();
 
-        const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
-        const ownOrgCode = data.sharedTestData.serviceOwners.digdir.org;
-        const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
+        const row = getItemFromList(data.orgCodeFilter, randomize);
+
+        const request = new AuthorizedPartiesRequestBuilder().withPerson(row.pid).build();
 
         const filteredOnOrgCode = (/** @type {string} */ orgCode) => new AuthorizedPartiesQueryBuilder()
             .includeAccessPackages()
@@ -35,7 +40,7 @@ export default function (data) {
             .build();
 
         group("A service owner may filter on the org code it owns", function () {
-            const parties = GetAuthorizedParties(authorizedPartiesClient, request, filteredOnOrgCode(ownOrgCode));
+            const parties = GetAuthorizedParties(authorizedPartiesClient, request, filteredOnOrgCode(OWN_SERVICE_OWNER_ORG_CODE));
 
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
         });
@@ -52,4 +57,17 @@ export default function (data) {
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
         });
     });
+}
+
+/**
+ * Fetches the rows this scenario draws from.
+ *
+ * @returns {OrgCodeFilterSetupData} The rows, as the default function's `data` argument.
+ */
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+
+    return {
+        orgCodeFilter: fetchTestData(`access-management/resource-owner/authorized-parties/org-code-filter/${__ENV.ENVIRONMENT}.csv`),
+    };
 }
