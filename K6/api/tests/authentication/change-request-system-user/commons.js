@@ -546,7 +546,12 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         // really have made.
         const requestToApprove = GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id);
 
-        if (!SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New")) {
+        SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+        const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+        const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+        if (!readyToApprove || !customerMayApprove) {
             unwindArrange(registration, createdRequest?.id);
 
             fail("cannot arrange a system user: the system user request was not there for the customer to approve");

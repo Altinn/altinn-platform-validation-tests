@@ -104,7 +104,12 @@ export default function (data) {
             // customer would really have made.
             const requestToApprove = GetSystemUserRequest(clients.approver.bffRequestClient, requestId);
 
-            if (!SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New")) {
+            SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+            const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+            const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+            if (!readyToApprove || !customerMayApprove) {
                 fail("cannot approve: the system user request was not there for the customer to approve");
             }
 

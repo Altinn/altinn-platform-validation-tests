@@ -281,7 +281,12 @@ export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
         // would really have made.
         const requestToApprove = GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id);
 
-        if (!SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New")) {
+        SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+        const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+        const facilitatorMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+        if (!readyToApprove || !facilitatorMayApprove) {
             unwindArrange(registration.systemId, created.id);
 
             fail("cannot arrange an agent system user: the agent system user request was not there for the facilitator to approve");

@@ -172,7 +172,12 @@ export function setup() {
         // really have made.
         const requestToApprove = GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id);
 
-        if (!SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New")) {
+        SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, SYSTEM_ID);
+
+        const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+        const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+        if (!readyToApprove || !customerMayApprove) {
             RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
 
             fail("cannot ask for a system user token: the system user request was not there for the customer to approve");
