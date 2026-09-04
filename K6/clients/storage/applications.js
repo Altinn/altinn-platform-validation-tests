@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { Application } from "./applications.types.js";
 
 const TAGS = {

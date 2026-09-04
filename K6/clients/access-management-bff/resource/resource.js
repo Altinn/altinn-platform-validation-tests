@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { GetResourceOwnersQuery, GetResourceQuery, SearchResourcesQuery } from "./resource.types.js";
 
 const TAGS = {
@@ -121,8 +122,8 @@ class ResourceClient {
         }
 
         let tags = {
-            endpoint: `${this.FULL_PATH}`,
-            name: `${this.FULL_PATH}`,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetResource.action,
         };
 

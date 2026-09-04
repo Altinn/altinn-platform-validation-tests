@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
+
 const TAGS = {
     GetRegisteredSystems: {
         action: "get-registered-systems",
@@ -51,8 +53,8 @@ class SystemRegisterClient {
         const url = new URL(`${this.FULL_PATH}`);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}`,
-            name: `${this.FULL_PATH}`,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetRegisteredSystems.action,
         };
 

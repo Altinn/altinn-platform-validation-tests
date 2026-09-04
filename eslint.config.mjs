@@ -5,6 +5,8 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 import jsdoc from "eslint-plugin-jsdoc";
 import unusedImports from "eslint-plugin-unused-imports";
 
+import k6 from "./eslint-rules/k6-request-tags.mjs";
+
 export default defineConfig([
   {
     ignores: ["K6/example_env/**"],
@@ -15,6 +17,7 @@ export default defineConfig([
       "simple-import-sort": simpleImportSort,
       jsdoc,
       "unused-imports": unusedImports,
+      k6,
     },
   },
   {
@@ -38,6 +41,8 @@ export default defineConfig([
       "no-undef": 2,
 
       "no-trailing-spaces": "error",
+
+      "k6/static-request-tags": "error",
 
       "unused-imports/no-unused-imports": "error",
 

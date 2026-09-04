@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import {
     AppsInstanceDelegationRequestDto,
 } from "./altinn-apps.types.js";

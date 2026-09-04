@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { ConsentRequestDto, ConsentRequestEventsQuery } from "./consent-enterprise.types.js";
 
 const TAGS = {
@@ -56,8 +57,8 @@ class EnterpriseClient {
         const url = `${this.FULL_PATH}/consentrequests`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/consentrequests`,
+            name: `${this.FULL_PATH}/consentrequests`,
             action: TAGS.EnterpriseCreateConsentRequest.action,
         };
 
@@ -129,34 +130,19 @@ class EnterpriseClient {
     EnterpriseGetConsentRequestEvents(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/consentrequests/events`;
+        const url = new URL(`${this.FULL_PATH}/consentrequests/events`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
                 }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
             }
         }
 
@@ -173,7 +159,7 @@ class EnterpriseClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

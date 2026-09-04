@@ -50,8 +50,8 @@ class PrivateNotificationsSettingsClient {
         const url = `${this.FULL_PATH}/phonenumber`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/phonenumber`,
+            name: `${this.FULL_PATH}/phonenumber`,
             action: TAGS.UpdatePrivateNotificationPhoneNumber.action,
         };
 

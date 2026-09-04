@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { ResourcePolicyRightsQuery } from "./types.js";
 
 const TAGS = {
@@ -50,24 +51,15 @@ class ResourceV2Client {
     ) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy/rights`;
+        const url = new URL(`${this.FULL_PATH}/${encodeURIComponent(id)}/policy/rights`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -84,7 +76,7 @@ class ResourceV2Client {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

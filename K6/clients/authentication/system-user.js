@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { SystemUserByExternalIdQuery, SystemUserPagedQuery, SystemUserUpdateDto, SystemUserVendorQuery } from "./types.js";
 
 const TAGS = {
@@ -59,12 +60,22 @@ class SystemUserClient {
     SystemUserGetByExternalId(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/byExternalId`;
+        const url = new URL(`${this.FULL_PATH}/byExternalId`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === null || value === undefined) {
+                    continue;
+                }
+
+                url.searchParams.append(key, String(value));
+            }
+        }
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/byExternalId`,
+                name: `${this.FULL_PATH}/byExternalId`,
                 action: TAGS.SystemUserGetByExternalId.action,
             },
             headers: {
@@ -73,27 +84,6 @@ class SystemUserClient {
             },
         };
 
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -101,7 +91,7 @@ class SystemUserClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 
     /**
@@ -120,8 +110,8 @@ class SystemUserClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.SystemUserUpdate.action,
         };
 
@@ -155,12 +145,22 @@ class SystemUserClient {
     SystemUserVendorGetByQuery(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/vendor/byquery`;
+        const url = new URL(`${this.FULL_PATH}/vendor/byquery`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === null || value === undefined) {
+                    continue;
+                }
+
+                url.searchParams.append(key, String(value));
+            }
+        }
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/vendor/byquery`,
+                name: `${this.FULL_PATH}/vendor/byquery`,
                 action: TAGS.SystemUserVendorGetByQuery.action,
             },
             headers: {
@@ -169,27 +169,6 @@ class SystemUserClient {
             },
         };
 
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -197,7 +176,7 @@ class SystemUserClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 
     /**
@@ -214,7 +193,22 @@ class SystemUserClient {
     SystemUserVendorGetBySystem(systemId, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/vendor/bysystem/${encodeURIComponent(systemId)}`;
+        const url = new URL(
+            `${this.FULL_PATH}/vendor/bysystem/${encodeURIComponent(systemId)}`,
+        );
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === null || value === undefined) {
+                    continue;
+                }
+
+                url.searchParams.append(
+                    key,
+                    String(typeof value === "object" ? value.value : value),
+                );
+            }
+        }
 
         const params = {
             tags: {
@@ -228,31 +222,6 @@ class SystemUserClient {
             },
         };
 
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                if (typeof value === "object") {
-                    value = value.value;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -260,7 +229,7 @@ class SystemUserClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 
     /**
@@ -276,12 +245,25 @@ class SystemUserClient {
     SystemUserInternalStream(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/internal/systemusers/stream`;
+        const url = new URL(`${this.FULL_PATH}/internal/systemusers/stream`);
+
+        if (query !== null) {
+            for (const [key, value] of Object.entries(query)) {
+                if (value === null || value === undefined) {
+                    continue;
+                }
+
+                url.searchParams.append(
+                    key,
+                    String(typeof value === "object" ? value.value : value),
+                );
+            }
+        }
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/internal/systemusers/stream`,
+                name: `${this.FULL_PATH}/internal/systemusers/stream`,
                 action: TAGS.SystemUserInternalStream.action,
             },
             headers: {
@@ -290,31 +272,6 @@ class SystemUserClient {
             },
         };
 
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                if (typeof value === "object") {
-                    value = value.value;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -322,7 +279,7 @@ class SystemUserClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 }
 

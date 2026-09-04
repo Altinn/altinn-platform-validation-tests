@@ -17,6 +17,25 @@
 
 ## Important patterns
 - We try to follow the same structure as in the [Altinn Studio Docs](https://docs.altinn.studio/nb/api/), which means, if you need to talk to the [Altinn.AccessManagement.Api.Enduser](https://docs.altinn.studio/nb/,api/accessmanagement/enduser/) APIs, you will find the API clients in [K6/clients/access-management/enduser](K6/clients/access-management/enduser), the building-blocks in [K6/api/building-blocks/access-management/enduser](K6/api/building-blocks/access-management/enduser) and the domain-checks in [K6/api/domain-checks/access-management/enduser](K6/api/domain-checks/access-management/enduser). JSDOC types, Builders, etc. are located in the [K6/clients](K6/clients) folders, so, for the same APIs we've been talking about, you can see [K6/clients/access-management/enduser](K6/clients/access-management/enduser), and the domain-checks in [K6/api/domain-checks/access-management/enduser](K6/api/domain-checks/access-management/enduser).
+- Request tags decide what a metric is grouped by, so every client call sets `endpoint`, `name` and `action`, and none of them may carry a value that differs between calls. A party uuid or a query parameter in `name` gives Grafana one timeseries per value, and the panel that should show one line for an endpoint shows thousands. The URL carries the values and the tags carry the shape, written out where the tags are set, with `{parameterName}` where the URL has a value:
+
+  ```js
+  const url = new URL(`${this.FULL_PATH}/${partyUuid}/customers`);
+
+  if (fields !== null) {
+      url.searchParams.set("fields", fields.join(","));
+  }
+
+  let tags = {
+      endpoint: `${this.FULL_PATH}/{partyUuid}/customers`,
+      name: `${this.FULL_PATH}/{partyUuid}/customers`,
+      action: TAGS.GetCustomers.action,
+  };
+
+  return http.get(url.toString(), { tags, headers });
+  ```
+
+  Build the URL with `new URL` and `searchParams` whenever it takes path or query values, so nothing is ever appended to a string a tag also points at. The `k6/static-request-tags` lint rule in [eslint-rules](eslint-rules/k6-request-tags.mjs) covers `action` as well, and fails a tag that reads anything which can differ between calls, `endpoint` and `name` disagreeing, and a tag written over after it is set. A tag may read what is fixed for the run, such as a property on the client, `__ENV`, or a module-level `const` holding a string, but not a local, a parameter, a call, or a module-level `const` that is computed, since module scope runs once per VU.
 - In general, tests should be able to be run in all environments, so test data should be easy to get, and tests should use [__ENV](https://grafana.com/docs/k6/latest/using-k6/environment-variables/) vars instead of hardcoded values.
 - Use the [setup](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#setup-and-teardown-stages) to declare required env vars, fetch / prepare test data, etc.
 - It's usually the case that multiple tests will shared a lot of code. We usually create a `commons.js` with the reusable bits, such as Client initialization, TokenGenerator setup, the setup function, etc.

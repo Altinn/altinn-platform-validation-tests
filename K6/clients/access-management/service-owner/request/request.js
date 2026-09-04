@@ -62,8 +62,8 @@ class RequestClient {
         const url = `${this.FULL_PATH}/_meta/urns/party`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/_meta/urns/party`,
+            name: `${this.FULL_PATH}/_meta/urns/party`,
             action: TAGS.RequestGetPartyUrns.action,
         };
 
@@ -167,8 +167,8 @@ class RequestClient {
         const url = `${this.FULL_PATH}/resource`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/resource`,
+            name: `${this.FULL_PATH}/resource`,
             action: TAGS.RequestCreateResourceRequest.action,
         };
 
@@ -203,8 +203,8 @@ class RequestClient {
         const url = `${this.FULL_PATH}/package`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/package`,
+            name: `${this.FULL_PATH}/package`,
             action: TAGS.RequestCreatePackageRequest.action,
         };
 
@@ -239,8 +239,8 @@ class RequestClient {
         const url = this.FULL_PATH;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.RequestCreateRequest.action,
         };
 

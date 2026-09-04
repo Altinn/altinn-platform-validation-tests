@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { DataElement, FileScanStatus } from "./instances.types.js";
 
 const TAGS = {
