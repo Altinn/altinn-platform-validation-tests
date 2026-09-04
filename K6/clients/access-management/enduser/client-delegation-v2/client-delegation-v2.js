@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../../common-imports.js";
 import { AgentResourcesQuery, AgentsQuery, ClientResourcesQuery, ClientsQuery, DelegateAgentResourcesQuery, ResourceDelegationBatchInputDto } from "./client-delegation-v2.types.js";
 
 const TAGS = {
@@ -174,8 +175,12 @@ class ClientDelegationV2Client {
      */
     buildTags(path, action, labels) {
         const tags = {
+            // Every caller passes a fixed path, one per endpoint, so these read as a
+            // parameter but take the same handful of values a written-out tag would.
+            /* eslint-disable k6/static-request-tags */
             endpoint: `${this.FULL_PATH}/${path}`,
             name: `${this.FULL_PATH}/${path}`,
+            /* eslint-enable k6/static-request-tags */
             action,
         };
 

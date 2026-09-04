@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { DataValues, Instance, PresentationTexts, Substatus } from "./instances.types.js";
 
 const TAGS = {

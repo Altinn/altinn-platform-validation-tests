@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { CreateAgentRequestSystemUser, CreateRequestSystemUser, GuidOpaque } from "./types.js";
 
 const TAGS = {
@@ -74,8 +75,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.RequestSystemUserVendorCreate.action,
         };
 
@@ -112,8 +113,8 @@ class RequestSystemUserClient {
         const url = `${this.FULL_PATH}/agent`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/agent`,
+            name: `${this.FULL_PATH}/agent`,
             action: TAGS.RequestSystemUserVendorAgentCreate.action,
         };
 
@@ -347,10 +348,10 @@ class RequestSystemUserClient {
     RequestSystemUserVendorGetBySystem(systemId, token = null, labels = null) {
         const authToken = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/bysystem/${encodeURIComponent(systemId)}`;
+        const url = new URL(`${this.FULL_PATH}/bysystem/${encodeURIComponent(systemId)}`);
 
         if (token !== null) {
-            url += `?token=${encodeURIComponent(JSON.stringify(token))}`;
+            url.searchParams.set("token", JSON.stringify(token));
         }
 
         let tags = {
@@ -366,7 +367,7 @@ class RequestSystemUserClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -393,10 +394,10 @@ class RequestSystemUserClient {
     ) {
         const authToken = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/agent/bysystem/${encodeURIComponent(systemId)}`;
+        const url = new URL(`${this.FULL_PATH}/agent/bysystem/${encodeURIComponent(systemId)}`);
 
         if (token !== null) {
-            url += `?token=${encodeURIComponent(JSON.stringify(token))}`;
+            url.searchParams.set("token", JSON.stringify(token));
         }
 
         let tags = {
@@ -412,7 +413,7 @@ class RequestSystemUserClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,

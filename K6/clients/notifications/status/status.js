@@ -1,6 +1,7 @@
 
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { StatusFeedQuery } from "../types.js";
 
 const TAGS = {
@@ -85,11 +86,9 @@ class StatusClient {
     StatusGetFeed(queryParams = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/feed`;
+        const url = new URL(`${this.FULL_PATH}/feed`);
 
         if (queryParams !== null) {
-            const params = /** @type {string[]} */ ([]);
-
             const queryKeys = {
                 Seq: queryParams.seq,
                 PageSize: queryParams.pageSize,
@@ -101,11 +100,7 @@ class StatusClient {
                     continue;
                 }
 
-                params.push(`${key}=${encodeURIComponent(value)}`);
-            }
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.set(key, String(value));
             }
         }
 
@@ -122,7 +117,7 @@ class StatusClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

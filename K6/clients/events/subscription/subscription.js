@@ -60,8 +60,8 @@ class SubscriptionClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.SubscriptionCreate.action,
         };
 
@@ -95,8 +95,8 @@ class SubscriptionClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.SubscriptionGetAll.action,
         };
 

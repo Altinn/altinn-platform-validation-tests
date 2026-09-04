@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { ChangeRequestSystemUser, GuidOpaque } from "./types.js";
 
 const TAGS = {
@@ -66,24 +67,14 @@ class ChangeRequestSystemUserClient {
     ) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/vendor`;
-
-        const query = [];
+        const url = new URL(`${this.FULL_PATH}/vendor`);
 
         if (correlationId !== null) {
-            query.push(
-                `correlation-id=${encodeURIComponent(correlationId)}`,
-            );
+            url.searchParams.set("correlation-id", correlationId);
         }
 
         if (systemUserId !== null) {
-            query.push(
-                `system-user-id=${encodeURIComponent(systemUserId)}`,
-            );
-        }
-
-        if (query.length > 0) {
-            url += `?${query.join("&")}`;
+            url.searchParams.set("system-user-id", systemUserId);
         }
 
         let tags = {
@@ -99,7 +90,7 @@ class ChangeRequestSystemUserClient {
             };
         }
 
-        return http.post(url, JSON.stringify(request), {
+        return http.post(url.toString(), JSON.stringify(request), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -245,10 +236,10 @@ class ChangeRequestSystemUserClient {
     ) {
         const authToken = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/vendor/bysystem/${systemId}`;
+        const url = new URL(`${this.FULL_PATH}/vendor/bysystem/${systemId}`);
 
         if (token !== null) {
-            url += `?token=${encodeURIComponent(token.value)}`;
+            url.searchParams.set("token", token.value);
         }
 
         let tags = {
@@ -264,7 +255,7 @@ class ChangeRequestSystemUserClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${authToken}`,

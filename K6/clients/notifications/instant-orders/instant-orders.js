@@ -54,8 +54,8 @@ class InstantOrdersClient {
         const url = `${this.FULL_PATH}/sms`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/sms`,
+            name: `${this.FULL_PATH}/sms`,
             action: TAGS.InstantOrdersCreateSms.action,
         };
 
@@ -90,8 +90,8 @@ class InstantOrdersClient {
         const url = `${this.FULL_PATH}/email`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/email`,
+            name: `${this.FULL_PATH}/email`,
             action: TAGS.InstantOrdersCreateEmail.action,
         };
 
@@ -128,8 +128,8 @@ class InstantOrdersClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.InstantOrdersCreate.action,
         };
 

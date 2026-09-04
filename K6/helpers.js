@@ -20,6 +20,16 @@ import { papaparse, randomItem } from "./common-imports.js";
 const testDataFetchFailures = new Counter("test_data_fetch_failures");
 
 /**
+ * Where the test data files are read from.
+ *
+ * Kept out here so the request tags can name the path without the branch and the
+ * file: those go in the URL, and a tag that carried them would report one series
+ * per fixture.
+ */
+const TEST_DATA_HOST =
+    "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests";
+
+/**
  * Records the outcome of one test data read.
  *
  * @param {string} file The file that was read, as the caller named it.
@@ -325,16 +335,21 @@ export function fetchTestData(
     failOnDataFetchingFailure = true,
     branch = "main",
 ) {
-    const testDataBaseUrl =
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const testDataBaseUrl = `${TEST_DATA_HOST}/refs/heads/${branch}/K6/testdata`;
     const url = filename.startsWith("http")
         ? filename
         : `${testDataBaseUrl}/${filename}`;
 
-    const res = withRetries(
-        () => http.get(url, { tags: { action: "fetch-test-data" } }),
-        "fetch-test-data",
-    );
+    // The branch and the file stay out of both tags, so every read reports to one
+    // series rather than one per file. Which file came up short is on
+    // test_data_fetch_failures.
+    const tags = {
+        endpoint: `${TEST_DATA_HOST}/refs/heads/{branch}/K6/testdata/{filename}`,
+        name: `${TEST_DATA_HOST}/refs/heads/{branch}/K6/testdata/{filename}`,
+        action: "fetch-test-data",
+    };
+
+    const res = withRetries(() => http.get(url, { tags }), "fetch-test-data");
 
     if (res.status !== 200) {
         recordTestDataFetch(filename, `status-${res.status}`);

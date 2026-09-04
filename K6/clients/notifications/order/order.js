@@ -52,8 +52,8 @@ class OrderClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.OrderCreateOrder.action,
         };
 
@@ -88,8 +88,8 @@ class OrderClient {
         const url = `${this.FULL_PATH}/composed-email`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/composed-email`,
+            name: `${this.FULL_PATH}/composed-email`,
             action: TAGS.OrderCreateComposedEmail.action,
         };
 

@@ -45,8 +45,8 @@ class ResourceOwnerClient {
         const url = `${this.FULL_PATH}/orgs`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/orgs`,
+            name: `${this.FULL_PATH}/orgs`,
             action: TAGS.ResourceOwnerGetOrgs.action,
         };
 

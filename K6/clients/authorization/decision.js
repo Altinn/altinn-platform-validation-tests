@@ -57,8 +57,8 @@ class DecisionClient {
         const url = `${this.FULL_PATH}/decision`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/decision`,
+            name: `${this.FULL_PATH}/decision`,
             action: TAGS.DecisionPost.action,
         };
 
@@ -99,8 +99,8 @@ class DecisionClient {
         const url = `${this.FULL_PATH}/authorize`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/authorize`,
+            name: `${this.FULL_PATH}/authorize`,
             action: TAGS.AuthorizePost.action,
         };
 
