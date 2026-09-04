@@ -12,6 +12,13 @@
  * 2. Bruker A ber om tilgangspakken, rettet til Virksomhet B
  * 3. Bruker B lister sine mottatte forespørsler og finner den siste opprettede
  * 4. Bruker B godkjenner forespørselen på vegne av Virksomhet B
+ * 5. (Opprydding) Virksomhet B fjerner connectionen igjen, med cascade, slik at
+ * tilgangspakken godkjenningen ga forsvinner med den.
+ *
+ * Uten steg 5 hoper tilgangene seg opp: hver iterasjon legger én pakke til på
+ * connectionen og fjerner ingen, så etter noen tusen kjøringer har brukerne
+ * nesten alle pakkene på nesten alle virksomhetene. Da beviser ikke steg 4
+ * lenger at en ny tilgang blir gitt, den gir bare på nytt det som alt ligger der.
  *
  * Alle kall bruker personlige enduser-tokens (Altinn); den aktive brukerens token
  * byttes mellom stegene via den delte token-generatoren.
@@ -21,10 +28,10 @@
 
 import { check, fail, group } from "k6";
 
-import { CreateConnectionQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { ReceivedRequestsQueryBuilder, RequestStatus } from "../../../../../clients/access-management/enduser/request/index.js";
 import { getItemFromList, getOptions, pickUnique } from "../../../../../helpers.js";
-import { CreateConnection } from "../../../../building-blocks/access-management/enduser/connections/index.js";
+import { CreateConnection, DeleteConnection } from "../../../../building-blocks/access-management/enduser/connections/index.js";
 import { ApproveReceivedRequest, CreatePackageRequest, GetReceivedRequests } from "../../../../building-blocks/access-management/enduser/request/index.js";
 import { getClients, getEnduserOpts } from "./common-functions.js";
 
@@ -35,12 +42,14 @@ const addAssignmentLabel = { step: "1. Virksomhet B adds Bruker A (assignment)" 
 const requestPackageLabel = { step: "2. Bruker A requests access package" };
 const getReceivedLabel = { step: "3. Bruker B gets received request" };
 const approveLabel = { step: "4. Bruker B approves request" };
+const cleanupLabel = { step: "5. Virksomhet B removes the connection" };
 
 export const options = getOptions([
     addAssignmentLabel,
     requestPackageLabel,
     getReceivedLabel,
     approveLabel,
+    cleanupLabel,
 ]);
 
 /**
@@ -106,6 +115,19 @@ export default function (data) {
             receivedRequest.id,
             [],
             approveLabel,
+        );
+
+        // Steg 5: Fjern connectionen igjen (Bs token). Cascade tar tilgangspakken
+        // godkjenningen ga med seg, så iterasjonen etterlater ingen tilgang.
+        DeleteConnection(
+            connectionsApiClient,
+            new DeleteConnectionQueryBuilder()
+                .withParty(b.orgUuid)
+                .withFrom(b.orgUuid)
+                .withTo(a.partyUuid)
+                .withCascade(true)
+                .build(),
+            cleanupLabel,
         );
     });
 }
