@@ -137,9 +137,9 @@ export default function (data) {
             // a 404 on the approval itself. The portal loads the change request
             // this way before it shows the customer anything to approve, so it is
             // also the call the customer would really have made.
-            const pending = GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId);
+            const changeRequestToApprove = GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId);
 
-            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(pending, "New")) {
+            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequestToApprove, "New")) {
                 fail("cannot approve: the change request was not there for the customer to approve");
             }
 
