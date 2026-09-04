@@ -35,7 +35,7 @@
   return http.get(url.toString(), { tags, headers });
   ```
 
-  Build the URL with `new URL` and `searchParams` whenever it takes path or query values, so nothing is ever appended to a string a tag also points at. The `k6/static-request-tags` lint rule in [eslint-rules](eslint-rules/k6-request-tags.mjs) fails a tag that reads anything bound inside the method, the two tags disagreeing, and a tag written over after it is set.
+  Build the URL with `new URL` and `searchParams` whenever it takes path or query values, so nothing is ever appended to a string a tag also points at. The `k6/static-request-tags` lint rule in [eslint-rules](eslint-rules/k6-request-tags.mjs) covers `action` as well, and fails a tag that reads anything which can differ between calls, `endpoint` and `name` disagreeing, and a tag written over after it is set. A tag may read what is fixed for the run, such as a property on the client, `__ENV`, or a module-level `const` holding a string, but not a local, a parameter, a call, or a module-level `const` that is computed, since module scope runs once per VU.
 - In general, tests should be able to be run in all environments, so test data should be easy to get, and tests should use [__ENV](https://grafana.com/docs/k6/latest/using-k6/environment-variables/) vars instead of hardcoded values.
 - Use the [setup](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#setup-and-teardown-stages) to declare required env vars, fetch / prepare test data, etc.
 - It's usually the case that multiple tests will shared a lot of code. We usually create a `commons.js` with the reusable bits, such as Client initialization, TokenGenerator setup, the setup function, etc.

@@ -24,15 +24,15 @@
  * followed the query without anyone having to write it there.
  */
 
-const TAG_KEYS = new Set(["endpoint", "name"]);
+const TAG_KEYS = new Set(["endpoint", "name", "action"]);
 
 /**
  * Finds the variable a name refers to, from the innermost scope outwards.
  *
  * @param {import("eslint").Scope.Scope|null} scope Where the name is read.
  * @param {string} name The name to look up.
- * @returns {import("eslint").Scope.Variable|null} The variable, or null when it
- * is a global such as `URL`.
+ * @returns {import("eslint").Scope.Variable|null} The variable, or null when
+ * nothing in scope declares it, such as a global.
  */
 function resolve(scope, name) {
     for (let current = scope; current !== null; current = current.upper) {
@@ -47,44 +47,156 @@ function resolve(scope, name) {
 }
 
 /**
+ * What a name was declared as, when it was declared somewhere a tag may read.
+ *
+ * A module-level `const` is the only declaration a tag may read, and only for
+ * what it was initialized to: module scope runs once per VU, so a `const` set
+ * from `uuidv4()` holds a different value in every VU, and a tag reading it
+ * opens a series per VU. An import is taken on trust, since the value is not in
+ * this file to look at, which is how a tag reads a URL out of a config module.
+ *
  * @param {import("eslint").Scope.Variable|null} variable The variable a tag reads.
- * @returns {boolean} True when it is fixed for the run rather than per call.
+ * @returns {import("estree").Node|"import"|null} What it was initialized to,
+ * "import" when the value is not in this file to look at, and null when a tag
+ * may not read it.
  */
-function isFixedForTheRun(variable) {
-    if (variable === null) {
-        return true;
+function declaration(variable) {
+    if (variable === null || variable.defs.length !== 1) {
+        return null;
     }
 
-    return variable.scope.type === "module" || variable.scope.type === "global";
+    const [definition] = variable.defs;
+
+    if (definition.type === "ImportBinding" || definition.type === "ClassName") {
+        return "import";
+    }
+
+    const scope = variable.scope.type;
+
+    if (
+        definition.type !== "Variable"
+        || definition.parent.kind !== "const"
+        || (scope !== "module" && scope !== "global")
+    ) {
+        return null;
+    }
+
+    return definition.node.init ?? null;
+}
+
+/**
+ * Follows a member expression to the value it reads.
+ *
+ * `TAGS.GetCustomers.action` lands on the string in the object literal `TAGS`
+ * was initialized to, and `config.tokenUrl` lands on "import" when config came
+ * from one.
+ *
+ * @param {import("estree").Node} node The member expression.
+ * @param {import("eslint").Scope.Scope} scope The scope it is read in.
+ * @returns {import("estree").Node|"import"|null} The value it reads, "import"
+ * when it comes from one, and null when it cannot be followed.
+ */
+function follow(node, scope) {
+    /** @type {string[]} */
+    const path = [];
+
+    let current = node;
+    while (current.type === "MemberExpression") {
+        if (current.computed || current.property.type !== "Identifier") {
+            return null;
+        }
+
+        path.unshift(current.property.name);
+        current = current.object;
+    }
+
+    if (current.type === "ThisExpression") {
+        return "import";
+    }
+
+    if (current.type !== "Identifier") {
+        return null;
+    }
+
+    // The environment is read once and holds for the run. `__VU` and `__ITER`
+    // are not, which is why this names the one global a tag may read instead of
+    // trusting every global.
+    if (current.name === "__ENV") {
+        return "import";
+    }
+
+    let value = declaration(resolve(scope, current.name));
+
+    for (const step of path) {
+        if (value === "import") {
+            return "import";
+        }
+
+        if (value === null || value.type !== "ObjectExpression") {
+            return null;
+        }
+
+        const property = value.properties.find(
+            (candidate) =>
+                candidate.type === "Property"
+                && candidate.key.type === "Identifier"
+                && candidate.key.name === step,
+        );
+
+        if (!property) {
+            return null;
+        }
+
+        value = property.value;
+    }
+
+    return value;
 }
 
 /**
  * @param {import("estree").Node} node The tag value, or a part of it.
  * @param {import("eslint").Scope.Scope} scope The scope the value is written in.
+ * @param {Set<import("estree").Node>} [seen] Values already followed, so a
+ * `const` that reads another one cannot send this around in a circle.
  * @returns {boolean} True when nothing in the value can differ between calls.
  */
-function isStatic(node, scope) {
+function isStatic(node, scope, seen = new Set()) {
+    if (seen.has(node)) {
+        return false;
+    }
+
+    seen.add(node);
+
     switch (node.type) {
         case "Literal":
             return typeof node.value === "string";
 
-        case "ThisExpression":
-            return true;
-
-        case "Identifier":
-            return isFixedForTheRun(resolve(scope, node.name));
-
         case "TemplateLiteral":
-            return node.expressions.every((expression) => isStatic(expression, scope));
+            return node.expressions.every(
+                (expression) => isStatic(expression, scope, seen),
+            );
 
         case "BinaryExpression":
             return node.operator === "+"
-                && isStatic(node.left, scope)
-                && isStatic(node.right, scope);
+                && isStatic(node.left, scope, seen)
+                && isStatic(node.right, scope, seen);
 
-        case "MemberExpression":
-            return isStatic(node.object, scope)
-                && (!node.computed || isStatic(node.property, scope));
+        case "Identifier": {
+            const value = declaration(resolve(scope, node.name));
+
+            return value === "import"
+                || (value !== null && isStatic(value, scope, seen));
+        }
+
+        case "ThisExpression":
+            return true;
+
+        case "MemberExpression": {
+            const value = follow(node, scope);
+
+            return value === "import"
+                || (value !== null && isStatic(value, scope, seen));
+        }
 
         default:
             return false;
@@ -129,11 +241,19 @@ const staticRequestTags = {
                         property.type === "Property" && property.key.type === "Identifier",
                 );
 
+                const named = new Set(properties.map((property) => property.key.name));
+
+                // `action` on its own is a payload field in plenty of places, an
+                // XACML request among them, so a tag object has to look like one:
+                // an action together with a path, or the tags of a request.
                 const isTagObject =
-                    properties.some((property) => property.key.name === "action")
+                    (named.has("action") && (named.has("endpoint") || named.has("name")))
                     || (node.parent.type === "Property"
                         && node.parent.key.type === "Identifier"
-                        && node.parent.key.name === "tags");
+                        && node.parent.key.name === "tags")
+                    || (node.parent.type === "VariableDeclarator"
+                        && node.parent.id.type === "Identifier"
+                        && node.parent.id.name === "tags");
 
                 if (!isTagObject) {
                     return;

@@ -35,6 +35,9 @@ export default function (data) {
     console.log(`Querying ${data.length} endpoints`);
 
     for (const [org, deploy_env, endpoint] of data) {
+        // One series per service owner is the point of this test, and the org is
+        // already a tag of its own, so the endpoint may name the host it checked.
+        // eslint-disable-next-line k6/static-request-tags
         const tags = { org, endpoint, deploy_env, };
 
         const params = { tags, };
