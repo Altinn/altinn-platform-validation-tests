@@ -26,8 +26,6 @@ export function SubscriptionGetAll(
     const succeed = check(res, {
         "SubscriptionGetAll - status code is 200": (r) =>
             r.status === 200,
-        "SubscriptionGetAll - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

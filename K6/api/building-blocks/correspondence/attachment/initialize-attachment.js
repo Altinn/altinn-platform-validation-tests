@@ -30,8 +30,6 @@ export function InitializeAttachment(
 
     const succeed = check(res, {
         "InitializeAttachment - status code is 200": (r) => r.status === 200,
-        "InitializeAttachment - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

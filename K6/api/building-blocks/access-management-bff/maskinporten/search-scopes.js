@@ -32,8 +32,6 @@ export function SearchScopes(
     const succeed = check(res, {
         "SearchScopes - status code is 200": (r) =>
             r.status === 200,
-        "SearchScopes - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

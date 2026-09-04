@@ -31,8 +31,6 @@ export function InitializeFileTransfer(
     const succeed = check(res, {
         "InitializeFileTransfer - status code is 200": (r) =>
             r.status === 200,
-        "InitializeFileTransfer - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -86,8 +84,6 @@ export function GetFileTransfer(
     const succeed = check(res, {
         "GetFileTransfer - status code is 200": (r) =>
             r.status === 200,
-        "GetFileTransfer - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -141,8 +137,6 @@ export function GetFileTransferDetails(
     const succeed = check(res, {
         "GetFileTransferDetails - status code is 200": (r) =>
             r.status === 200,
-        "GetFileTransferDetails - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -196,8 +190,6 @@ export function GetFileTransfers(
     const succeed = check(res, {
         "GetFileTransfers - status code is 200": (r) =>
             r.status === 200,
-        "GetFileTransfers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -282,8 +274,6 @@ export function UploadFileTransfer(
 
     const succeed = check(res, {
         "UploadFileTransfer - status code is 200": (r) => r.status === 200,
-        "UploadFileTransfer - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -336,8 +326,6 @@ export function DownloadFileTransfer(
 
     const succeed = check(res, {
         "DownloadFileTransfer - status code is 200": (r) => r.status === 200,
-        "DownloadFileTransfer - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

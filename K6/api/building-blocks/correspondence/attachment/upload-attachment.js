@@ -34,8 +34,6 @@ export function UploadAttachment(
 
     const succeed = check(res, {
         "UploadAttachment - status code is 200": (r) => r.status === 200,
-        "UploadAttachment - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

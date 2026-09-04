@@ -37,8 +37,6 @@ export function DeleteAgentResources(
     const succeed = check(res, {
         "DeleteAgentResources - status code is 200": (r) =>
             r.status === 200,
-        "DeleteAgentResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

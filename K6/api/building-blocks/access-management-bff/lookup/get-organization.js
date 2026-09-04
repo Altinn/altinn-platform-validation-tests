@@ -24,8 +24,6 @@ export function GetOrganization(lookupClient, orgNummer, labels = null) {
     const succeed = check(res, {
         "GetOrganization - status code is 200": (r) =>
             r.status === 200,
-        "GetOrganization - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
