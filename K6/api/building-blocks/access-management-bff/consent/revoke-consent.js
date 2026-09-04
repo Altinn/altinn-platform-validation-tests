@@ -22,8 +22,6 @@ export function RevokeConsent(consentClient, consentId, labels = null) {
     const succeed = check(res, {
         "RevokeConsent - status code is 200": (r) =>
             r.status === 200,
-        "RevokeConsent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

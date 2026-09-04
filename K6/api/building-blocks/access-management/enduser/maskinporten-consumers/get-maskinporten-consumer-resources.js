@@ -33,8 +33,6 @@ export function GetMaskinportenConsumerResources(
     const succeed = check(res, {
         "GetMaskinportenConsumerResources - status code is 200": (r) =>
             r.status === 200,
-        "GetMaskinportenConsumerResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

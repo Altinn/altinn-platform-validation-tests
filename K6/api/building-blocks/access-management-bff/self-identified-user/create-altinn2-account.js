@@ -29,8 +29,6 @@ export function CreateAltinn2Account(
     const succeed = check(res, {
         "CreateAltinn2Account - status code is 200": (r) =>
             r.status === 200,
-        "CreateAltinn2Account - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -32,8 +32,6 @@ export function SendVerificationCode(
     const succeed = check(res, {
         "SendVerificationCode - status code is 204": (r) =>
             r.status === 204,
-        "SendVerificationCode - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

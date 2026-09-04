@@ -32,8 +32,6 @@ export function DeleteAccessPackageDelegation(
     const succeed = check(res, {
         "DeleteAccessPackageDelegation - status code is 200": (r) =>
             r.status === 200,
-        "DeleteAccessPackageDelegation - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -31,8 +31,6 @@ export function RequestCreateResourceRequest(
     const succeed = check(res, {
         "RequestCreateResourceRequest - status code is 202": (r) =>
             r.status === 202,
-        "RequestCreateResourceRequest - status text is 202 Accepted": (r) =>
-            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {

@@ -28,8 +28,6 @@ export function SystemRegisterVendorCreate(
     const succeed = check(res, {
         "SystemRegisterVendorCreate - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorCreate - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

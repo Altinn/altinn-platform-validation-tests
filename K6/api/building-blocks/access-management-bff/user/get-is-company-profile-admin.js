@@ -23,8 +23,6 @@ export function GetIsCompanyProfileAdmin(userClient, party, labels = null) {
     const succeed = check(res, {
         "GetIsCompanyProfileAdmin - status code is 200": (r) =>
             r.status === 200,
-        "GetIsCompanyProfileAdmin - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

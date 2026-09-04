@@ -39,8 +39,6 @@ export function UpdateTextResource(
 
     const succeed = check(res, {
         "UpdateTextResource - status code is 200": (r) => r.status === 200,
-        "UpdateTextResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

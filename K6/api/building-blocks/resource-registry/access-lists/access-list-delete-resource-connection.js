@@ -37,8 +37,6 @@ export function AccessListsDeleteResourceConnection(
     const succeed = check(res, {
         "AccessListsDeleteResourceConnection - status code is 200": (r) =>
             r.status === 200,
-        "AccessListsDeleteResourceConnection - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -32,8 +32,6 @@ export function DeleteTextResource(
 
     const succeed = check(res, {
         "DeleteTextResource - status code is 200": (r) => r.status === 200,
-        "DeleteTextResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

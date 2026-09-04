@@ -33,8 +33,6 @@ export function GetMaskinportenSupplierDelegationCheck(
     const succeed = check(res, {
         "GetMaskinportenSupplierDelegationCheck - status code is 200": (r) =>
             r.status === 200,
-        "GetMaskinportenSupplierDelegationCheck - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

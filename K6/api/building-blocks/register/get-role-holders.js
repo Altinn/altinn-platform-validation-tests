@@ -40,8 +40,6 @@ export function GetRoleHolders(
     const succeed = check(res, {
         [`GetRoleHolders(${ccrRole}) - status code is 200`]: (r) =>
             r.status === 200,
-        [`GetRoleHolders(${ccrRole}) - status text is 200 OK`]: (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

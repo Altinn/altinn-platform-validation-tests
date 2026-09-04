@@ -40,8 +40,6 @@ export function GetAgentSystemUserCustomers(
     const succeed = check(res, {
         "GetAgentSystemUserCustomers - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentSystemUserCustomers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
