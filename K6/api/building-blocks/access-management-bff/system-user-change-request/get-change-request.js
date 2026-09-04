@@ -32,8 +32,6 @@ export function GetChangeRequest(
     const succeed = check(res, {
         "GetChangeRequest - status code is 200": (r) =>
             r.status === 200,
-        "GetChangeRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

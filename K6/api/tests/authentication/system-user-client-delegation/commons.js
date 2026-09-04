@@ -5,9 +5,9 @@ import { SystemUserAgentRequestClient } from "../../../../clients/access-managem
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks } from "../../../authentication-imports.js";
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
-import { ApproveAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
+import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
 import { sweepRegisteredSystems } from "../commons.js";
 
@@ -40,11 +40,6 @@ const FACILITATOR_SCOPES = CreateScopeString([
     AltinnScopes.CLIENTDELEGATIONS.READ,
     AltinnScopes.CLIENTDELEGATIONS.WRITE,
 ]);
-
-/**
- * What these tests name their systems, which is also what the teardown sweeps up.
- */
-const SYSTEM_NAME_PREFIX = "clientdelegation";
 
 /**
  * Every system registered by these tests allows the same redirect url.
@@ -99,6 +94,7 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
  * @property {string} systemId The system the agent system user was created on.
  * @property {string} systemUserId Identifier of the approved agent system user.
  * @property {string[]} accessPackages Urns of the access packages the agent system user was asked for, which decide which of the facilitator's clients are delegable.
+ * @property {string} systemNamePrefix What the system was named with, which is what the teardown sweeps on.
  */
 
 /**
@@ -214,10 +210,11 @@ export function getFacilitatorTokenOpts(facilitator) {
  * second failure on the same cause. Stopping in setup means k6 skips the teardown,
  * so each step takes what the previous ones made with it before it stops.
  *
+ * @param {string} systemNamePrefix - What the run names the system it registers, which is also what the teardown sweeps up. Unique per test file, see the note on it in the caller.
  * @param {string|null} [orgType] - Draw only facilitators of this type, e.g. "revisor". Leave it out to draw from all of them, which is what a test that does not care which access packages it gets wants.
  * @returns {ArrangedAgentSystemUser[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
-export function arrangeAgentSystemUser(orgType = null) {
+export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     /** @type {Facilitator[]} */
@@ -246,7 +243,7 @@ export function arrangeAgentSystemUser(orgType = null) {
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
-    const registration = createSystemRegistration(vendorOrgNo, accessPackages);
+    const registration = createSystemRegistration(vendorOrgNo, accessPackages, systemNamePrefix);
 
     const systemUserId = group("Arrange - the facilitator has an approved agent system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
@@ -276,6 +273,19 @@ export function arrangeAgentSystemUser(orgType = null) {
         // From here on the facilitator is the one acting, so the token has to be
         // theirs before the approval goes out.
         facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
+
+        // Read before approving, with the facilitator's own token, so a request the
+        // approval cannot find is reported as that rather than as a 404 on the
+        // approval itself. The portal loads the request this way before it shows the
+        // facilitator anything to approve, so it is also the call the facilitator
+        // would really have made.
+        const pending = GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id);
+
+        if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
+            unwindArrange(registration.systemId, created.id);
+
+            fail("cannot arrange an agent system user: the agent system user request was not there for the facilitator to approve");
+        }
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, Number(facilitator.partyId), created.id)) {
             unwindArrange(registration.systemId, created.id);
@@ -310,6 +320,7 @@ export function arrangeAgentSystemUser(orgType = null) {
             systemId: registration.systemId,
             systemUserId,
             accessPackages,
+            systemNamePrefix,
         },
     ];
 }
@@ -346,7 +357,7 @@ export function cleanupArranged(arranged) {
             // whatever an earlier run left in this vendor's register, which is what
             // happens when the arrange itself broke: k6 skips the teardown when the
             // setup gives up.
-            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX, apiClients.vendor.requestSystemUserClient);
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, arrangement.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
 }
@@ -376,10 +387,11 @@ function unwindArrange(systemId, requestId = undefined) {
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {string[]} accessPackages - Urns of the access packages the system is registered with.
+ * @param {string} systemNamePrefix - What the system is named with, which is what the teardown sweeps on.
  * @returns The system id and the registration payload.
  */
-function createSystemRegistration(vendorOrgNo, accessPackages) {
-    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
+function createSystemRegistration(vendorOrgNo, accessPackages, systemNamePrefix) {
+    const systemName = `${systemNamePrefix}${uuidv4()}`;
     const systemId = `${vendorOrgNo}_${systemName}`;
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()

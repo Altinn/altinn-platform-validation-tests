@@ -7,7 +7,7 @@ import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../he
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { AuthenticationClient, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
-import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { ApproveSystemUserRequest, GetSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 
 /**
  * Whether to draw a random customer rather than walk the list.
@@ -163,6 +163,19 @@ export function setup() {
 
         if (!SystemUserRequestDomainChecks.CheckRequestId(createdRequest?.id)) {
             fail(`cannot ask for a system user token: no system user request could be made on ${SYSTEM_ID}`);
+        }
+
+        // Read before approving, with the customer's own token, so a request the
+        // approval cannot find is reported as that rather than as a 404 on the
+        // approval itself. The portal loads the request this way before it shows the
+        // customer anything to approve, so it is also the call the customer would
+        // really have made.
+        const pending = GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id);
+
+        if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
+            RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
+
+            fail("cannot ask for a system user token: the system user request was not there for the customer to approve");
         }
 
         const approved = ApproveSystemUserRequest(apiClients.approver.bffRequestClient, Number(customer.orgPartyId), createdRequest?.id);

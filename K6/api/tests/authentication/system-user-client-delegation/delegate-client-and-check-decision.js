@@ -10,6 +10,19 @@ import { arrangeAgentSystemUser, cleanupArranged, getClients, getFacilitatorToke
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
+ * What this test names the system it registers, and so what its teardown sweeps up.
+ *
+ * Unique to this file. functional.yaml lists the two tests in this folder as their
+ * own test definitions, so they run as two k6 processes at the same time, and both
+ * draw a vendor at random from the same list. Drawing the same one used to be
+ * enough for one run's sweep to withdraw the other's pending agent request while
+ * its approval was still in flight, which answered 404 on an id the vendor had just
+ * been handed. Observed in at22, where the pdp call in front of the approval left a
+ * 1.5 second window for the other run's teardown to land in.
+ */
+const SYSTEM_NAME_PREFIX = "clientdelegation-decision";
+
+/**
  * The resource the decision is asked about.
  *
  * A resource whose policy permits the ansvarlig-revisor access package, which is
@@ -65,7 +78,7 @@ export function setup() {
         return [];
     }
 
-    return arrangeAgentSystemUser(ORG_TYPE);
+    return arrangeAgentSystemUser(SYSTEM_NAME_PREFIX, ORG_TYPE);
 }
 
 /**
