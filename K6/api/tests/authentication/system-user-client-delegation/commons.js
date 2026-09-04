@@ -42,11 +42,6 @@ const FACILITATOR_SCOPES = CreateScopeString([
 ]);
 
 /**
- * What these tests name their systems, which is also what the teardown sweeps up.
- */
-const SYSTEM_NAME_PREFIX = "clientdelegation";
-
-/**
  * Every system registered by these tests allows the same redirect url.
  */
 const REDIRECT_URL = "https://digdir.no";
@@ -99,6 +94,7 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
  * @property {string} systemId The system the agent system user was created on.
  * @property {string} systemUserId Identifier of the approved agent system user.
  * @property {string[]} accessPackages Urns of the access packages the agent system user was asked for, which decide which of the facilitator's clients are delegable.
+ * @property {string} systemNamePrefix What the system was named with, which is what the teardown sweeps on.
  */
 
 /**
@@ -214,10 +210,11 @@ export function getFacilitatorTokenOpts(facilitator) {
  * second failure on the same cause. Stopping in setup means k6 skips the teardown,
  * so each step takes what the previous ones made with it before it stops.
  *
+ * @param {string} systemNamePrefix - What the run names the system it registers, which is also what the teardown sweeps up. Unique per test file, see the note on it in the caller.
  * @param {string|null} [orgType] - Draw only facilitators of this type, e.g. "revisor". Leave it out to draw from all of them, which is what a test that does not care which access packages it gets wants.
  * @returns {ArrangedAgentSystemUser[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
-export function arrangeAgentSystemUser(orgType = null) {
+export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     /** @type {Facilitator[]} */
@@ -246,7 +243,7 @@ export function arrangeAgentSystemUser(orgType = null) {
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
-    const registration = createSystemRegistration(vendorOrgNo, accessPackages);
+    const registration = createSystemRegistration(vendorOrgNo, accessPackages, systemNamePrefix);
 
     const systemUserId = group("Arrange - the facilitator has an approved agent system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
@@ -310,6 +307,7 @@ export function arrangeAgentSystemUser(orgType = null) {
             systemId: registration.systemId,
             systemUserId,
             accessPackages,
+            systemNamePrefix,
         },
     ];
 }
@@ -346,7 +344,7 @@ export function cleanupArranged(arranged) {
             // whatever an earlier run left in this vendor's register, which is what
             // happens when the arrange itself broke: k6 skips the teardown when the
             // setup gives up.
-            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX, apiClients.vendor.requestSystemUserClient);
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, arrangement.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
 }
@@ -376,10 +374,11 @@ function unwindArrange(systemId, requestId = undefined) {
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {string[]} accessPackages - Urns of the access packages the system is registered with.
+ * @param {string} systemNamePrefix - What the system is named with, which is what the teardown sweeps on.
  * @returns The system id and the registration payload.
  */
-function createSystemRegistration(vendorOrgNo, accessPackages) {
-    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
+function createSystemRegistration(vendorOrgNo, accessPackages, systemNamePrefix) {
+    const systemName = `${systemNamePrefix}${uuidv4()}`;
     const systemId = `${vendorOrgNo}_${systemName}`;
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()
