@@ -137,8 +137,10 @@ export default function (data) {
             // a 404 on the approval itself. The portal loads the change request
             // this way before it shows the customer anything to approve, so it is
             // also the call the customer would really have made.
-            if (GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId) === null) {
-                fail("cannot approve: the change request could not be read as the customer");
+            const pending = GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId);
+
+            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(pending, "New")) {
+                fail("cannot approve: the change request was not there for the customer to approve");
             }
 
             const approved = ApproveChangeRequest(

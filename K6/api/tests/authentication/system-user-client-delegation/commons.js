@@ -5,7 +5,7 @@ import { SystemUserAgentRequestClient } from "../../../../clients/access-managem
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks } from "../../../authentication-imports.js";
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
@@ -279,10 +279,12 @@ export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
         // approval itself. The portal loads the request this way before it shows the
         // facilitator anything to approve, so it is also the call the facilitator
         // would really have made.
-        if (GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id) === null) {
+        const pending = GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id);
+
+        if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
             unwindArrange(registration.systemId, created.id);
 
-            fail("cannot arrange an agent system user: the agent system user request could not be read as the facilitator");
+            fail("cannot arrange an agent system user: the agent system user request was not there for the facilitator to approve");
         }
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, Number(facilitator.partyId), created.id)) {

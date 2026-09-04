@@ -544,10 +544,12 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
         // approval itself. The portal loads the request this way before it shows the
         // customer anything to approve, so it is also the call the customer would
         // really have made.
-        if (GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id) === null) {
+        const pending = GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id);
+
+        if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
             unwindArrange(registration, createdRequest?.id);
 
-            fail("cannot arrange a system user: the system user request could not be read as the customer");
+            fail("cannot arrange a system user: the system user request was not there for the customer to approve");
         }
 
         const approved = ApproveSystemUserRequest(
