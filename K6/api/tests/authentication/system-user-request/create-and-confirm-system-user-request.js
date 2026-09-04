@@ -102,9 +102,14 @@ export default function (data) {
             // the approval itself. The portal loads the request this way before it
             // shows the customer anything to approve, so it is also the call the
             // customer would really have made.
-            const pending = GetSystemUserRequest(clients.approver.bffRequestClient, requestId);
+            const requestToApprove = GetSystemUserRequest(clients.approver.bffRequestClient, requestId);
 
-            if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
+            SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+            const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+            const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+            if (!readyToApprove || !customerMayApprove) {
                 fail("cannot approve: the system user request was not there for the customer to approve");
             }
 

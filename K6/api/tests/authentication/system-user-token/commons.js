@@ -170,9 +170,14 @@ export function setup() {
         // approval itself. The portal loads the request this way before it shows the
         // customer anything to approve, so it is also the call the customer would
         // really have made.
-        const pending = GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id);
+        const requestToApprove = GetSystemUserRequest(apiClients.approver.bffRequestClient, createdRequest?.id);
 
-        if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
+        SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, SYSTEM_ID);
+
+        const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+        const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+        if (!readyToApprove || !customerMayApprove) {
             RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
 
             fail("cannot ask for a system user token: the system user request was not there for the customer to approve");

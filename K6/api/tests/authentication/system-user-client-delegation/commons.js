@@ -279,9 +279,14 @@ export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
         // approval itself. The portal loads the request this way before it shows the
         // facilitator anything to approve, so it is also the call the facilitator
         // would really have made.
-        const pending = GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id);
+        const requestToApprove = GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id);
 
-        if (!SystemUserRequestDomainChecks.CheckRequestStatus(pending, "New")) {
+        SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+        const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+        const facilitatorMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+        if (!readyToApprove || !facilitatorMayApprove) {
             unwindArrange(registration.systemId, created.id);
 
             fail("cannot arrange an agent system user: the agent system user request was not there for the facilitator to approve");

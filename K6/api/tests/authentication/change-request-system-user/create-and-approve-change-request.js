@@ -3,7 +3,7 @@ import { fail, group } from "k6";
 import { Right } from "../../../../clients/authentication/types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
-import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
+import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { ApproveChangeRequest, GetChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
 import { accessPackage, arrangeApprovedSystemUser, cleanupArranged, findAccessPackages, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL, resource } from "./commons.js";
 
@@ -137,9 +137,14 @@ export default function (data) {
             // a 404 on the approval itself. The portal loads the change request
             // this way before it shows the customer anything to approve, so it is
             // also the call the customer would really have made.
-            const pending = GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId);
+            const changeRequestToApprove = GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId);
 
-            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(pending, "New")) {
+            SystemUserRequestDomainChecks.CheckRequestSystem(changeRequestToApprove, systemUser.systemId);
+
+            // No CheckUserMayApprove here: a change request cannot be escalated, so
+            // the BFF serves no userMayEscalateButNotApprove on it the way it does on
+            // a system user request.
+            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequestToApprove, "New")) {
                 fail("cannot approve: the change request was not there for the customer to approve");
             }
 
