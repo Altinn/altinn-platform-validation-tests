@@ -4,7 +4,7 @@ import { Right } from "../../../../clients/authentication/types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
 import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
-import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
+import { ApproveChangeRequest, GetChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
 import { accessPackage, arrangeApprovedSystemUser, cleanupArranged, findAccessPackages, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL, resource } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -130,6 +130,15 @@ export default function (data) {
         group("The customer approves the change", function () {
             if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestId(changeRequestId)) {
                 fail("cannot approve: no change request was created to approve");
+            }
+
+            // Read before approving, with the customer's own token, so a change
+            // request the approval cannot find is reported as that rather than as
+            // a 404 on the approval itself. The portal loads the change request
+            // this way before it shows the customer anything to approve, so it is
+            // also the call the customer would really have made.
+            if (GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId) === null) {
+                fail("cannot approve: the change request could not be read as the customer");
             }
 
             const approved = ApproveChangeRequest(

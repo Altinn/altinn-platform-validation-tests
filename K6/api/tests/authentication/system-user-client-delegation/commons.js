@@ -7,7 +7,7 @@ import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../he
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
-import { ApproveAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
+import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
 import { sweepRegisteredSystems } from "../commons.js";
 
@@ -273,6 +273,17 @@ export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
         // From here on the facilitator is the one acting, so the token has to be
         // theirs before the approval goes out.
         facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
+
+        // Read before approving, with the facilitator's own token, so a request the
+        // approval cannot find is reported as that rather than as a 404 on the
+        // approval itself. The portal loads the request this way before it shows the
+        // facilitator anything to approve, so it is also the call the facilitator
+        // would really have made.
+        if (GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id) === null) {
+            unwindArrange(registration.systemId, created.id);
+
+            fail("cannot arrange an agent system user: the agent system user request could not be read as the facilitator");
+        }
 
         if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, Number(facilitator.partyId), created.id)) {
             unwindArrange(registration.systemId, created.id);
