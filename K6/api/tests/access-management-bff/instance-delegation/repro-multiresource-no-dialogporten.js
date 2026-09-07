@@ -55,7 +55,11 @@ export default function (data) {
     const [authorizeClient] = getAuthorizeClient();
     const resource = resources[exec.vu.idInTest - 1];
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
-    const instanceId = `urn:altinn:dialog-id:${uuidv4()}`;
+    // Not a real dialog or any other real object, just a value in one of the
+    // three URN formats the instance parameter is validated against. It never
+    // gets checked against anything, so a made-up uuid works fine, and the
+    // generic instance-id prefix avoids implying Dialogporten is involved.
+    const instanceId = `urn:altinn:instance-id:${uuidv4()}`;
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 
