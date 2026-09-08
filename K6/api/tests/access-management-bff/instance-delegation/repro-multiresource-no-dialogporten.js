@@ -4,7 +4,7 @@ import exec from "k6/execution";
 import { CreateInstanceRightsQueryBuilder, InstanceRightsDelegationDtoBuilder } from "../../../../clients/access-management-bff/instance/index.js";
 import { GetRightsMetaQueryBuilder } from "../../../../clients/access-management-bff/single-right/index.js";
 import { uuidv4 } from "../../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, requireEnv } from "../../../../helpers.js";
 import { CreateInstanceRights } from "../../../building-blocks/access-management-bff/instance/index.js";
 import { GetRightsMeta } from "../../../building-blocks/access-management-bff/single-right/index.js";
 import { getAuthorizeClient } from "../../authorization/authorize-client.js";
@@ -26,6 +26,13 @@ import { getClients, getFromTo, getTokenOpts } from "./commons.js";
  * Needs the ten resources to already exist and be published (status Active) in
  * whatever environment this runs against. They were created once as a one-off
  * in at23 and tt02.
+ *
+ * Resource assignment is deterministic (VU 1 always gets "-01", VU 2 "-02",
+ * and so on), so running with --vus 10 guarantees all ten get used, never
+ * picked at random. The org and mottaker for each iteration are drawn at
+ * random from the whole shared list instead of one slice per VU, since
+ * org-user.csv only has a handful of rows and a VU-sized slice would run out
+ * well before ten VUs.
  */
 const resources = [
     "k6-multiresource-test-01",
@@ -42,19 +49,17 @@ const resources = [
 
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
-    const numberOfVUs = getNumberOfVUs();
-    const data = fetchTestData(`access-management-bff/instance-delegation/${__ENV.ENVIRONMENT}/org-user.csv`);
-    return segmentData(data, numberOfVUs);
+    return fetchTestData(`access-management-bff/instance-delegation/${__ENV.ENVIRONMENT}/org-user.csv`);
 }
 
 /**
- * @param {any[][]} data Organizations with their daglig leder, one slice per VU.
+ * @param {any[]} data Organizations with their daglig leder, shared by every VU.
  */
 export default function (data) {
     const { instance: instanceApiClient, singleRight: singleRightApiClient, tokenGenerator } = getClients();
     const [authorizeClient] = getAuthorizeClient();
     const resource = resources[exec.vu.idInTest - 1];
-    const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
+    const { from, to } = getFromTo(data);
     // Not a real dialog or any other real object, just a value in one of the
     // three URN formats the instance parameter is validated against. It never
     // gets checked against anything, so a made-up uuid works fine, and the
