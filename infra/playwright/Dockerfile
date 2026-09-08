@@ -2,8 +2,6 @@ FROM altinnplatformvalidationtests.azurecr.io/helpers-junitparser:1.0.0 AS build
 
 FROM node:24-bookworm
 
-ARG PLAYWRIGHT_VERSION
-
 RUN apt update && \
     apt upgrade -y && \
     apt install -y --no-install-recommends \
@@ -36,6 +34,7 @@ RUN curl -L -o azcopy.tar.gz https://aka.ms/downloadazcopy-v10-linux && \
     cp ./azcopy_linux_amd64_*/azcopy /usr/local/bin/ && \
     chmod +x /usr/local/bin/azcopy
 
+ARG PLAYWRIGHT_VERSION
 
 RUN npm install -g \
     playwright@${PLAYWRIGHT_VERSION} \

@@ -26,19 +26,16 @@ jobs:
       - name: Get Playwright version
         id: playwright
         run: |
-          version=$(jq -r '.devDependencies.playwright // .dependencies.playwright' package.json)
-          version="${version#v}"
+          version=$(jq -r '.devDependencies."@playwright/test"' playwright/package.json)
+
+          if [ "$version" = "null" ]; then
+            echo "Could not find @playwright/test in playwright/package.json"
+            exit 1
+          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Setup k8s client
-        uses: "./.github/actions/setup-k8s"
-        with:
-          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
-          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
-
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
         with:
           client-id: "${{ secrets.AZURE_CLIENT_ID }}"
           tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
@@ -50,9 +47,9 @@ jobs:
       - name: Build image
         run: |
           docker build \
-            --build-arg PLAYWRIGHT_VERSION="${{ steps.playwright.outputs.version }}" \
-            -t "altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:${{ steps.playwright.outputs.version }}" \
-            .
+                  --build-arg PLAYWRIGHT_VERSION="${{ steps.playwright.outputs.version }}" \
+                  -t "altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:${{ steps.playwright.outputs.version }}" \
+                  infra/playwright
 
       - name: Push image
         run: |
