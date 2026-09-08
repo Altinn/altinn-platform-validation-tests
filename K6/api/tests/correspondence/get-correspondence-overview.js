@@ -35,10 +35,8 @@ export default function (endUsers) {
         .withOnBehalfOf(recipient)
         .build();
 
-    let correspondenceIds = [];
-
-    group("A recipient can list correspondence ids", function () {
-        correspondenceIds = GetCorrespondences(
+    const correspondenceIds = group("A recipient can list correspondence ids", function () {
+        return GetCorrespondences(
             correspondenceClient,
             query,
             listLabel,

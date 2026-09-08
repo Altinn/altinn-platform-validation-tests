@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
  * @param {string} systemId System identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemRegisterUpdateResult|null} Delete result.
  */
 export function SystemRegisterVendorDelete(
@@ -28,8 +28,6 @@ export function SystemRegisterVendorDelete(
     const succeed = check(res, {
         "SystemRegisterVendorDelete - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorDelete - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

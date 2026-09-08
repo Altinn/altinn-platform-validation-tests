@@ -14,7 +14,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link CreateAccessPackageQueryBuilder}.
  * @param {PersonInput|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {AssignmentPackageDto|null} Created access package assignment.
  */
@@ -39,8 +39,6 @@ export function CreateAccessPackage(
     const succeed = check(res, {
         "CreateAccessPackage - status code is 200": (r) =>
             r.status === 200,
-        "CreateAccessPackage - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

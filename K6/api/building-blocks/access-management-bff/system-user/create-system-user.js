@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {number} partyId Party id of the organisation.
  * @param {NewSystemUserRequest|null} [body] The system user to create. Use
  * {@link NewSystemUserRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The created system user. The API does not publish a
  * schema for this response.
  */
@@ -33,8 +33,6 @@ export function CreateSystemUser(
     const succeed = check(res, {
         "CreateSystemUser - status code is 200": (r) =>
             r.status === 200,
-        "CreateSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

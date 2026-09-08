@@ -28,7 +28,7 @@ export default async function () {
             .textContent();
 
         check(text, {
-            "Text includes Aktuelle skjemaer og tjenester": (h) => h.includes("Aktuelle skjemaer og tjenester"),
+            "Text includes Aktuelle skjemaer og tjenester": (h) => h?.includes("Aktuelle skjemaer og tjenester") === true,
         });
     }
     catch (error) {

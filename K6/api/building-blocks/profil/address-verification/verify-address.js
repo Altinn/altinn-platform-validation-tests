@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
  * @param {AddressVerificationRequest} request
  * Request body. Use {@link AddressVerificationRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the address was successfully verified.
  */
 export function VerifyAddress(
@@ -29,8 +29,6 @@ export function VerifyAddress(
     const succeed = check(res, {
         "VerifyAddress - status code is 204": (r) =>
             r.status === 204,
-        "VerifyAddress - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

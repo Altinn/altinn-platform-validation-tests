@@ -7,3 +7,24 @@ test_definitions:
       - environment: at23
       - environment: tt02
       - environment: yt01
+
+  - test_file: create-and-delete-change-request.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  - test_file: list-change-requests-by-system.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
+
+  # get-change-requests-by-system-id.js is deliberately not scheduled yet. The
+  # endpoint ignores the continuation token it hands out, so the test is red in
+  # every environment through no fault of its own, and a permanently red run
+  # teaches everyone to ignore the colour. Add the contexts back once
+  # Altinn/altinn-authentication#2156 is fixed. It is left out of the folder's
+  # run-all.js for the same reason, so until then it is run by hand.

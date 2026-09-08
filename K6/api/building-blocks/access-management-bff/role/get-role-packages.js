@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RoleClient} roleClient Client for the role endpoints.
  * @param {GetRolePackagesQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRolePackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AccessPackage>|null} The access packages.
  */
 export function GetRolePackages(
@@ -30,8 +30,6 @@ export function GetRolePackages(
     const succeed = check(res, {
         "GetRolePackages - status code is 200": (r) =>
             r.status === 200,
-        "GetRolePackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

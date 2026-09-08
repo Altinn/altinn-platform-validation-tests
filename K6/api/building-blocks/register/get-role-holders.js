@@ -18,8 +18,8 @@ import { withRetries } from "../common/retry.js";
  * @param {string} partyUuid The party that assigned the role.
  * @param {string} ccrRole The role that was assigned, from CcrHolderRoles,
  * e.g. "daglig-leder".
- * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {Array<PartyFieldInclude>|null} [fields] The party fields to include.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Party>|null} The parties holding the role, or null on failure.
  */
 export function GetRoleHolders(
@@ -40,8 +40,6 @@ export function GetRoleHolders(
     const succeed = check(res, {
         [`GetRoleHolders(${ccrRole}) - status code is 200`]: (r) =>
             r.status === 200,
-        [`GetRoleHolders(${ccrRole}) - status text is 200 OK`]: (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

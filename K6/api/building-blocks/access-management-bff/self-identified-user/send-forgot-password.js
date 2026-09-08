@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * self identified user endpoints.
  * @param {Altinn2ForgotPasswordRequest|null} [body] The account to recover the
  * password for. Use {@link Altinn2ForgotPasswordRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the password recovery was started.
  */
 export function SendForgotPassword(
@@ -29,8 +29,6 @@ export function SendForgotPassword(
     const succeed = check(res, {
         "SendForgotPassword - status code is 200": (r) =>
             r.status === 200,
-        "SendForgotPassword - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

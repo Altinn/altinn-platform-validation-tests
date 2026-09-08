@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * Client for the Private Notifications Settings API.
  * @param {PrivateNotificationSettingsUpdateRequest} request
  * Request body. Use {@link PrivateNotificationSettingsUpdateRequestBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {PrivateNotificationSettingsUpdateResponse|null} Parsed response body, or null when the call failed.
  */
@@ -34,8 +34,6 @@ export function UpdatePrivateNotificationPhoneNumber(
     const succeed = check(res, {
         "UpdatePrivateNotificationPhoneNumber - status code is 200": (r) =>
             r.status === 200,
-        "UpdatePrivateNotificationPhoneNumber - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

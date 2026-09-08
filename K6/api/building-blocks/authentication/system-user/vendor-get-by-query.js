@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
  * @param {SystemUserVendorQuery|null} query Query parameters, with the keys "system-id" and "external-ref".
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemUser|null} System user.
  */
 export function SystemUserVendorGetByQuery(
@@ -28,8 +28,6 @@ export function SystemUserVendorGetByQuery(
     const succeed = check(res, {
         "SystemUserVendorGetByQuery - status code is 200": (r) =>
             r.status === 200,
-        "SystemUserVendorGetByQuery - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

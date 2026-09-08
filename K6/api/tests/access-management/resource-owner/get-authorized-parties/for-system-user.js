@@ -16,6 +16,9 @@ export function setup() {
     return fetchTestData(`access-management/resource-owner/get-authorized-parties/for-system-user/${__ENV.ENVIRONMENT}.csv`);
 }
 
+/**
+ * @param {ReturnType<typeof setup>} data Test data from setup.
+ */
 export default function (data) {
     const [authorizedPartiesClient] = getClients();
     const systemUser = getItemFromList(data, randomize);

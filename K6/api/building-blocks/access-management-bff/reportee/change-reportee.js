@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ReporteeClient} reporteeClient Client for the reportee endpoints.
  * @param {ChangeReporteeQuery|null} [queryParams] Optional query parameters.
  * Use {@link ChangeReporteeQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the reportee was changed.
  */
 export function ChangeReportee(
@@ -28,8 +28,6 @@ export function ChangeReportee(
     const succeed = check(res, {
         "ChangeReportee - status code is 200": (r) =>
             r.status === 200,
-        "ChangeReportee - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

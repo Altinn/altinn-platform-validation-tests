@@ -2,6 +2,7 @@ import { getItemFromList, getOptions, requireEnv } from "../../../../helpers.js"
 import { GetEndUserContext } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getClients } from "./common-functions.js";
 
+/** @type {{[environment: string]: {pid: string, label: string}[]}} */
 const endUsersByEnvironment = {
     yt01: [
         { pid: "06917699338", label: "a_06917699338_73k" },

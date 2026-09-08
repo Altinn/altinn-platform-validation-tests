@@ -13,6 +13,11 @@ import { afUrl, environment, getCookie, waitForPageLoaded } from "./arbeidsflate
 
 const pageLoadingTime = new Trend("page_loading_time", true);
 
+/**
+ * @typedef {import("./arbeidsflate-utils.js").ArbeidsflateEndUser} ArbeidsflateEndUser
+ */
+
+/** @type {{[environment: string]: ArbeidsflateEndUser[]}} */
 const endUsersByEnvironment = {
     yt01: [
         { pid: "20041065185", label: "a_20041065185_95k", userId: "1282457", partyId: "53277829", partyUuid: "df2f94e7-1220-4561-ba1f-d340f2657510" },
@@ -83,6 +88,7 @@ function getOptions() {
                 },
             },
         },
+        /** @type {{[name: string]: import("k6/options").Threshold[]}} */
         thresholds: {},
     };
 
@@ -100,15 +106,16 @@ function getOptions() {
  */
 export default async function (data) {
     const testData = getItemFromList(data);
-    const label = endUsersByEnvironment[environment].find(user => user.pid === testData.pid)?.label;
+    // setup carried the label along with the cookie, so there is nothing to look up.
+    const label = testData.label;
     const context = await browser.newContext();
     const page = await context.newPage();
-    let startTime;
-    let endTime;
+    let startTime = 0;
+    let endTime = 0;
 
     try {
         await context.addCookies([testData.cookie]);
-        startTime = new Date();
+        startTime = Date.now();
         await page.goto(afUrl + "?mock=true"); // The mock is to avoid a popup telling about the new arbeidsflate
 
         // Check if we are on the right page
@@ -118,7 +125,7 @@ export default async function (data) {
         });
         // Wait for the page to load
         await waitForPageLoaded(page);
-        endTime = new Date();
+        endTime = Date.now();
         pageLoadingTime.add(endTime - startTime, { pid_avgivere: label });
     }
     catch (error) {

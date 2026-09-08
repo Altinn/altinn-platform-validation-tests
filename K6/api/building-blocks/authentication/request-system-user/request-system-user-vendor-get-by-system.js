@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {string} systemId System identifier.
  * @param {GuidOpaque|null} [token] Continuation token.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponsePaginated|null} Paginated request responses.
  */
 export function RequestSystemUserVendorGetBySystem(
@@ -35,8 +35,6 @@ export function RequestSystemUserVendorGetBySystem(
     const succeed = check(res, {
         "RequestSystemUserVendorGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "RequestSystemUserVendorGetBySystem - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

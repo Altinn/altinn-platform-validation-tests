@@ -28,10 +28,19 @@ export default function () {
         return;
     }
 
-    let body;
+    /**
+     * The part of the health response this test reads.
+     *
+     * @typedef {object} InfoportalHealth
+     * @property {string} [status] Overall status of the service.
+     * @property {{[name: string]: {status?: string}}} [entries] One entry per dependency.
+     */
+
+    /** @type {InfoportalHealth} */
+    let body = {};
 
     try {
-        body = res.json();
+        body = /** @type {InfoportalHealth} */ (res.json());
         check(null, {
             "infoportal health response is valid JSON": () => true,
         });
@@ -47,7 +56,7 @@ export default function () {
         "infoportal overall status is healthy": (b) =>
             b?.status === "Healthy",
         "infoportal health entries are present": (b) =>
-            b?.entries &&
+            b?.entries !== undefined &&
             typeof b.entries === "object" &&
             !Array.isArray(b.entries),
     });

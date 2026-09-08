@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetInstanceRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceRightsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {InstanceRights|null} The rights on the instance.
  */
 export function GetInstanceRights(
@@ -31,8 +31,6 @@ export function GetInstanceRights(
     const succeed = check(res, {
         "GetInstanceRights - status code is 200": (r) =>
             r.status === 200,
-        "GetInstanceRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

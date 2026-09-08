@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * Client for the Correspondence API.
  * @param {string} correspondenceId
  * Correspondence identifier.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {string|null}
  * The correspondence id, or null if the request failed.
@@ -34,8 +34,6 @@ export function ConfirmCorrespondence(
     const succeed = check(res, {
         "ConfirmCorrespondence - status code is 200": (r) =>
             r.status === 200,
-        "ConfirmCorrespondence - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

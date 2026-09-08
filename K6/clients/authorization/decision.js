@@ -47,7 +47,7 @@ class DecisionClient {
      * the endpoint can be used.
      * @param {string} [contentType] Content type of the request body. The endpoint
      * accepts application/json, application/xml and text/xml.
-     * @param {{[key:string]:string}} [labels]
+     * @param {{[key:string]:string}|null} [labels]
      * Optional k6 tags that will be merged with the default request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -89,7 +89,7 @@ class DecisionClient {
      * POST /authorize
      *
      * @param {XacmlJsonRequestRootExternal} request Authorization request.
-     * @param {{[key:string]:string}} [labels]
+     * @param {{[key:string]:string}|null} [labels]
      * Optional k6 tags that will be merged with the default request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link UpdateInstanceRightsQueryBuilder}.
  * @param {RightKeyListDto|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True if update succeeded.
  */
@@ -35,7 +35,5 @@ export function UpdateInstanceRights(
     return check(res, {
         "UpdateInstanceRights - status code is 200": (r) =>
             r.status === 200,
-        "UpdateInstanceRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 }

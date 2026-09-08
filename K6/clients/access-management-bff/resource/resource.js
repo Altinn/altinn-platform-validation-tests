@@ -49,7 +49,7 @@ class ResourceClient {
      *
      * @param {GetResourceOwnersQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetResourceOwnersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceOwners(query = null, labels = null) {
@@ -98,7 +98,7 @@ class ResourceClient {
      *
      * @param {GetResourceQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetResourceQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResource(query = null, labels = null) {
@@ -147,7 +147,7 @@ class ResourceClient {
      *
      * @param {SearchResourcesQuery|null} [query] Optional query parameters. Prefer
      * using {@link SearchResourcesQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SearchResources(query = null, labels = null) {

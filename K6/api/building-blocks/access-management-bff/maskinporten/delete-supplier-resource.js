@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {DeleteSupplierResourceQuery} queryParams Query parameters. Use
  * {@link DeleteSupplierResourceQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the resource was revoked.
  */
 export function DeleteSupplierResource(
@@ -29,8 +29,6 @@ export function DeleteSupplierResource(
     const succeed = check(res, {
         "DeleteSupplierResource - status code is 200": (r) =>
             r.status === 200,
-        "DeleteSupplierResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

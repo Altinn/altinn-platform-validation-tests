@@ -62,10 +62,10 @@ class DataClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {*} body Binary file content.
-     * @param {string} dataType Data type id the element belongs to.
-     * @param {Array<string>} refs Ids of related data elements.
-     * @param {string} generatedFromTask Task the element was generated from.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {string|null} [dataType] Data type id the element belongs to.
+     * @param {Array<string>|null} [refs] Ids of related data elements.
+     * @param {string|null} [generatedFromTask] Task the element was generated from.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateData(instanceOwnerPartyId, instanceGuid, body, dataType = null, refs = null, generatedFromTask = null, labels = null) {
@@ -110,7 +110,7 @@ class DataClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetData(instanceOwnerPartyId, instanceGuid, dataGuid, labels = null) {
@@ -142,9 +142,9 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {*} body Binary file content.
-     * @param {Array<string>} refs Ids of related data elements.
-     * @param {string} generatedFromTask Task the element was generated from.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {Array<string>|null} [refs] Ids of related data elements.
+     * @param {string|null} [generatedFromTask] Task the element was generated from.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateData(instanceOwnerPartyId, instanceGuid, dataGuid, body, refs = null, generatedFromTask = null, labels = null) {
@@ -185,8 +185,8 @@ class DataClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
-     * @param {boolean} delay Whether to delay the delete until the instance is deleted.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {boolean|null} [delay] Whether to delay the delete until the instance is deleted.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteData(instanceOwnerPartyId, instanceGuid, dataGuid, delay = null, labels = null) {
@@ -221,7 +221,7 @@ class DataClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDataElements(instanceOwnerPartyId, instanceGuid, labels = null) {
@@ -254,7 +254,7 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {DataElement} request Data element metadata to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateDataElement(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {
@@ -288,7 +288,7 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {FileScanStatus} request File scan status to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateFileScanStatus(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {

@@ -81,7 +81,7 @@ class UserClient {
     /**
      * Gets the profile of the authenticated user.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUserProfile(labels = null) {
@@ -115,7 +115,7 @@ class UserClient {
      * Updates whether deleted entities are shown for the authenticated user.
      *
      * @param {boolean|null} [body] Whether to show deleted entities.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateShowDeleted(body = null, labels = null) {
@@ -155,7 +155,7 @@ class UserClient {
     /**
      * Gets the actor list of the authenticated user in the Altinn 2 format.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActorListOld(labels = null) {
@@ -188,7 +188,7 @@ class UserClient {
     /**
      * Gets the actor list of the authenticated user.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActorList(labels = null) {
@@ -221,7 +221,7 @@ class UserClient {
     /**
      * Gets the favourite actors of the authenticated user.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
@@ -255,7 +255,7 @@ class UserClient {
      * Adds an actor to the favourites of the authenticated user.
      *
      * @param {string} partyUuid Party UUID of the actor.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateFavorite(partyUuid, labels = null) {
@@ -295,7 +295,7 @@ class UserClient {
      * Removes an actor from the favourites of the authenticated user.
      *
      * @param {string} partyUuid Party UUID of the actor.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteFavorite(partyUuid, labels = null) {
@@ -335,7 +335,7 @@ class UserClient {
      * Gets a reportee of the authenticated user.
      *
      * @param {string} partyUuid Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReportee(partyUuid, labels = null) {
@@ -369,7 +369,7 @@ class UserClient {
      * Gets the right holders of a reportee of the authenticated user.
      *
      * @param {string} partyUuid Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReporteeList(partyUuid, labels = null) {
@@ -403,7 +403,7 @@ class UserClient {
      * Checks whether the authenticated user is an administrator for the reportee.
      *
      * @param {string} party Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsAdmin(party, labels = null) {
@@ -438,7 +438,7 @@ class UserClient {
      * Checks whether the authenticated user is a client administrator.
      *
      * @param {string} party Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsClientAdmin(party, labels = null) {
@@ -473,7 +473,7 @@ class UserClient {
      * Checks whether the authenticated user is a company profile administrator.
      *
      * @param {string} party Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsCompanyProfileAdmin(party, labels = null) {
@@ -508,7 +508,7 @@ class UserClient {
      * Checks whether the authenticated user is a main administrator.
      *
      * @param {string} party Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsHovedadmin(party, labels = null) {
@@ -543,7 +543,7 @@ class UserClient {
      * Checks whether the authenticated user is an instance administrator.
      *
      * @param {string} party Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsInstanceAdmin(party, labels = null) {
@@ -578,7 +578,7 @@ class UserClient {
      * Checks whether the authenticated user is a Maskinporten administrator.
      *
      * @param {string} party Party UUID of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsMaskinportenAdmin(party, labels = null) {

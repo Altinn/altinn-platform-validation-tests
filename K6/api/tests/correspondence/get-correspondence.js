@@ -45,10 +45,8 @@ export default function (endUsers) {
         .withOnBehalfOf(recipient)
         .build();
 
-    let correspondenceIds = [];
-
-    group("A recipient can list correspondence ids", function () {
-        correspondenceIds = GetCorrespondences(
+    const correspondenceIds = group("A recipient can list correspondence ids", function () {
+        return GetCorrespondences(
             correspondenceClient,
             query,
             listLabel,
@@ -67,10 +65,8 @@ export default function (endUsers) {
     );
 
     for (const correspondenceId of selectedIds) {
-        let overview;
-
-        group("Get the correspondence's Dialogporten reference", function () {
-            overview = GetCorrespondence(
+        const overview = group("Get the correspondence's Dialogporten reference", function () {
+            return GetCorrespondence(
                 correspondenceClient,
                 correspondenceId,
                 overviewLabel,
@@ -93,10 +89,8 @@ export default function (endUsers) {
             continue;
         }
 
-        let dialog;
-
-        group("Get the matching Dialogporten dialog token", function () {
-            dialog = GetDialog(
+        const dialog = group("Get the matching Dialogporten dialog token", function () {
+            return GetDialog(
                 dialogportenClient,
                 dialogId,
                 dialogLabel,

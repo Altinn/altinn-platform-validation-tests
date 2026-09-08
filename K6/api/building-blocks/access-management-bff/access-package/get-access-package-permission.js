@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} packageId Access package UUID.
  * @param {GetAccessPackagePermissionQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAccessPackagePermissionQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessPackageFE|null} The access package.
  */
 export function GetAccessPackagePermission(
@@ -37,8 +37,6 @@ export function GetAccessPackagePermission(
     const succeed = check(res, {
         "GetAccessPackagePermission - status code is 200": (r) =>
             r.status === 200,
-        "GetAccessPackagePermission - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

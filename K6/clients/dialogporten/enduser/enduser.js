@@ -1,6 +1,7 @@
 import http from "k6/http";
 
 import { uuidv4 } from "../../../common-imports.js";
+import { DialogSearchParams } from "./dialogs-search-params-builder.js";
 import { V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "./types.js";
 
 const TAGS = {
@@ -49,10 +50,10 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/SearchDialogs
      * https://altinn-dev-api.azure-api.net/dialogporten/swagger/index.html#/End/V1ServiceOwnerDialogsQueriesSearch_Dialog
      *
-     * @param DialogSearchParamsBuilder - object containing query parameters for the request
-     * @returns http.RefinedResponse<"text">
+     * @param {DialogSearchParams} queryParams - object containing query parameters for the request
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-
     GetDialogs(queryParams, labels = null) {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH + "/dialogs");
@@ -64,7 +65,7 @@ class EnduserApiClient {
                     url.searchParams.append(key, item);
                 }
             } else {
-                url.searchParams.append(key, value);
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -78,10 +79,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 Accept: "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -96,7 +97,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialog
      *
      * @param {string} dialogId The ID of the dialog to retrieve
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns TODO: description
      */
     GetDialog(dialogId, labels = null) {
@@ -113,10 +114,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 Accept: "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -131,7 +132,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogActivities
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogActivities(
@@ -151,10 +152,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -170,7 +171,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } activityId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogActivity(
@@ -191,10 +192,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -209,7 +210,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogSeenLogs
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLogs(
@@ -229,10 +230,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -248,7 +249,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } seenLogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogSeenLog(
@@ -269,10 +270,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -287,7 +288,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogTransmissions
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmissions(
@@ -307,10 +308,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -326,7 +327,7 @@ class EnduserApiClient {
      *
      * @param { string } dialogId TODO: description
      * @param { string } transmissionId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogTransmission(
@@ -347,10 +348,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -364,7 +365,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogContextLabellog
      *
      * @param { string } dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogContextLabellog(
@@ -384,10 +385,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -401,7 +402,7 @@ class EnduserApiClient {
      * Get parties
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetParties
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetParties(
@@ -420,10 +421,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -437,7 +438,7 @@ class EnduserApiClient {
      * Get service resources
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetServiceResources
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetServiceResources(
@@ -456,10 +457,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -474,7 +475,7 @@ class EnduserApiClient {
      * https://platform.tt02.altinn.no/dialogporten/swagger/index.html?urls.primaryName=v1.enduser#/Enduser/GetDialogLookup
      *
      * @param {string} dialogId TODO: description
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     GetDialogLookup(
@@ -496,10 +497,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Accept": "application/json",
-            },
+            }),
         };
 
         if (__ENV.TRACE_CALL) {
@@ -516,7 +517,7 @@ class EnduserApiClient {
      * @param {string} dialogId - id of the dialog to set labels on
      * @param {V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
      * @param {string|null} ifMatch - revision the caller last saw, sent as If-Match so a concurrent write is rejected
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PutDialogSystemLabels(dialogId, request, ifMatch = null, labels = null) {
@@ -533,10 +534,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {
@@ -557,7 +558,7 @@ class EnduserApiClient {
      *
      * @param {V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
      * @param {string|null} ifMatch - revision the caller last saw, sent as If-Match so a concurrent write is rejected
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns http.RefinedResponse<"text">
      */
     PostBulkSetSystemLabels(request, ifMatch = null, labels = null) {
@@ -573,10 +574,10 @@ class EnduserApiClient {
         }
         const params = {
             tags: tags,
-            headers: {
+            headers: /** @type {{[key: string]: string}} */ ({
                 Authorization: "Bearer " + token,
                 "Content-type": "application/json",
-            },
+            }),
         };
 
         if (ifMatch != null) {

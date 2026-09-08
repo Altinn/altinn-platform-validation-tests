@@ -7,6 +7,9 @@ const TAGS = {
     GetNotificationAddressesByEmail: {
         action: "get-notification-addresses-by-email",
     },
+    GetNotificationAddressesByPhoneNumber: {
+        action: "get-notification-addresses-by-phone-number",
+    },
 };
 
 class DashboardClient {
@@ -39,7 +42,7 @@ class DashboardClient {
      * Gets all notification addresses for the given organization.
      *
      * @param {string} organizationNumber Organization number.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -74,7 +77,7 @@ class DashboardClient {
      * Gets all notification addresses for the given email address.
      *
      * @param {string} emailAddress Email address.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -111,7 +114,7 @@ class DashboardClient {
      * @param {string} phoneNumber Phone number.
      * @param {{countrycode?: string}|null} [query]
      * Optional query parameters.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

@@ -41,7 +41,7 @@ class ResourceClient {
      * Gets information about a broker resource configuration.
      *
      * @param {string} resourceId Resource identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -79,7 +79,7 @@ class ResourceClient {
      * @param {ResourceExt} request
      * Resource configuration. Prefer using
      * {@link ResourceRequestBuilder} to construct this object.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

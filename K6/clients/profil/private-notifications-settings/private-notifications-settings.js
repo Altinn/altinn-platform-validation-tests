@@ -40,7 +40,7 @@ class PrivateNotificationsSettingsClient {
      * @param {PrivateNotificationSettingsUpdateRequest} request
      * Request body. Prefer using
      * {@link PrivateNotificationSettingsUpdateRequestBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

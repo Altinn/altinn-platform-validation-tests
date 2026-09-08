@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UsersClient} usersClient Client for the Users API.
  * @param {ProfileSettingsPatchRequest} request Profile settings patch request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ProfileSettingPreference|null} Updated profile settings.
  */
 export function PatchProfileSettings(
@@ -31,8 +31,6 @@ export function PatchProfileSettings(
     const succeed = check(res, {
         "PatchProfileSettings - status code is 200": (r) =>
             r.status === 200,
-        "PatchProfileSettings - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

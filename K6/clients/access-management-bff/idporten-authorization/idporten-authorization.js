@@ -43,7 +43,7 @@ class IdPortenAuthorizationClient {
     /**
      * Gets the ID-porten authorizations of the authenticated user.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIdPortenAuthorizations(labels = null) {
@@ -77,7 +77,7 @@ class IdPortenAuthorizationClient {
      * Deletes an ID-porten authorization.
      *
      * @param {string} id Authorization identifier.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteIdPortenAuthorization(id, labels = null) {

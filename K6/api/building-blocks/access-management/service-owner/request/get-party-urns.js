@@ -7,7 +7,7 @@ import { withRetries } from "../../../common/retry.js";
  * Gets supported party URN types.
  *
  * @param {RequestClient} requestClient Client for the Request API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<string>|null} Supported party URN types.
  */
 export function RequestGetPartyUrns(
@@ -25,8 +25,6 @@ export function RequestGetPartyUrns(
     const succeed = check(res, {
         "RequestGetPartyUrns - status code is 200": (r) =>
             r.status === 200,
-        "RequestGetPartyUrns - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

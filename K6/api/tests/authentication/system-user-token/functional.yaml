@@ -1,0 +1,19 @@
+namespace: authentication
+base_dir: K6/api/tests/authentication/system-user-token
+test_definitions:
+  # tt02 only: test.maskinporten.no looks system users up in tt02 whatever
+  # environment the rest of the run points at, so a grant signed anywhere else
+  # resolves against tt02 and the test says nothing about that environment.
+  - test_file: get-system-user-token.js
+    contexts:
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+
+  - test_file: exchange-system-user-token.js
+    contexts:
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client

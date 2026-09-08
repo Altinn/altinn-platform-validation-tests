@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {AccessListPagedQuery|null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} Access list members.
  */
 export function AccessListGetMembers(
@@ -37,8 +37,6 @@ export function AccessListGetMembers(
     const succeed = check(res, {
         "AccessListGetMembers - status code is 200": (r) =>
             r.status === 200,
-        "AccessListGetMembers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

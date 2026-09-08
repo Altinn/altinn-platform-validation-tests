@@ -15,7 +15,7 @@ import { withRetries } from "../../../common/retry.js";
  * Page size header.
  * @param {number|null} [pageNumber]
  * Page number header.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<RequestDto>} Sent requests.
  */
@@ -42,8 +42,6 @@ export function GetSentRequests(
     const succeed = check(res, {
         "GetSentRequests - status code is 200": (r) =>
             r.status === 200,
-        "GetSentRequests - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

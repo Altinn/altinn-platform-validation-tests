@@ -39,7 +39,7 @@ class LogoutRedirectClient {
     /**
      * Gets the logout redirect target.
      *
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetLogoutRedirect(labels = null) {

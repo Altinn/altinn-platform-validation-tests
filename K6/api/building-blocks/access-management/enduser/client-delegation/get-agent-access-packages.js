@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ClientDelegationClient} clientDelegationClient Client for the Client Delegation API.
  * @param {AgentAccessPackagesQuery} queryParams
  * Query parameters. Use {@link AgentAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ClientDtoPaginatedResult|null} Paginated access packages result.
  */
 export function GetAgentAccessPackages(
@@ -32,8 +32,6 @@ export function GetAgentAccessPackages(
     const succeed = check(res, {
         "GetAgentAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

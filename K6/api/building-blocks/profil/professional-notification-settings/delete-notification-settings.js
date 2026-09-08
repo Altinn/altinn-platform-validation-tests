@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ProfessionalNotificationSettingsClient} professionalNotificationSettingsClient
  * Client for the Professional Notification Settings API.
  * @param {string} partyUuid Party UUID.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {NotificationSettingsResponse|null} Parsed response body, or null when the call failed.
  */
@@ -33,8 +33,6 @@ export function DeleteNotificationSettings(
     const succeed = check(res, {
         "DeleteNotificationSettings - status code is 200": (r) =>
             r.status === 200,
-        "DeleteNotificationSettings - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {OrderClient} orderClient Client for the Order API.
  * @param {ComposedEmailRequestExt} request Composed email order request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationOrderChainResponseExt|null} Created notification order response.
  */
 export function OrderCreateComposedEmail(
@@ -28,9 +28,6 @@ export function OrderCreateComposedEmail(
     const succeed = check(res, {
         "OrderCreateComposedEmail - status code is 200 or 201": (r) =>
             r.status === 200 || r.status === 201,
-        "OrderCreateComposedEmail - status text is successful": (r) =>
-            r.status_text === "200 OK" ||
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

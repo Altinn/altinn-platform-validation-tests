@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {GetInstancesQuery|null} [queryParams]
  * Query parameters. Use {@link GetInstancesQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {Array<InstancePermissionDto>|null} Instance permissions.
  */
@@ -33,8 +33,6 @@ export function GetInstances(
     const succeed = check(res, {
         "GetInstances - status code is 200": (r) =>
             r.status === 200,
-        "GetInstances - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

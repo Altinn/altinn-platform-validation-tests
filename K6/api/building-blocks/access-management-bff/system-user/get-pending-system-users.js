@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClient} systemUserClient Client for the system user
  * endpoints.
  * @param {string} partyUuid Party UUID of the organisation.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The pending system users. The API does not publish a
  * schema for this response.
  */
@@ -29,8 +29,6 @@ export function GetPendingSystemUsers(
     const succeed = check(res, {
         "GetPendingSystemUsers - status code is 200": (r) =>
             r.status === 200,
-        "GetPendingSystemUsers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

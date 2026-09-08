@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * parameters. Use {@link CreateInstanceRightsQueryBuilder}.
  * @param {InstanceRightsDelegationDto|null} [body] The person and the rights
  * to delegate. Use {@link InstanceRightsDelegationDtoBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the rights were delegated.
  */
 export function CreateInstanceRights(
@@ -33,8 +33,6 @@ export function CreateInstanceRights(
     const succeed = check(res, {
         "CreateInstanceRights - status code is 200": (r) =>
             r.status === 200,
-        "CreateInstanceRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -50,7 +50,7 @@ class ProfessionalNotificationSettingsClient {
      * Gets notification settings for a party.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -87,7 +87,7 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {NotificationSettingsRequest} request
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -129,7 +129,7 @@ class ProfessionalNotificationSettingsClient {
      * @param {string} partyUuid Party UUID.
      * @param {NotificationSettingsPatchRequest} request
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -165,7 +165,7 @@ class ProfessionalNotificationSettingsClient {
      * Deletes notification settings for a party.
      *
      * @param {string} partyUuid Party UUID.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -199,7 +199,7 @@ class ProfessionalNotificationSettingsClient {
     /**
      * Gets notification settings for all parties.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

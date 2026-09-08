@@ -1,18 +1,8 @@
 
 import { EnduserApiClient } from "../../../../clients/dialogporten/enduser/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData } from "../../../../helpers.js";
+import { fetchTestData, lazy } from "../../../../helpers.js";
 import { requireEnv } from "../../../../helpers.js";
-
-/**
- * @type {EnduserApiClient | undefined}
- */
-let enduserApiClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
 
 /**
  * k6 setup function.
@@ -22,7 +12,7 @@ let tokenGenerator = undefined;
  *
  * The CSV contains SSNs for the target environment.
  *
- * @returns {Array} Parsed CSV data used as test input.
+ * @returns {any[]} Parsed CSV data used as test input.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -41,18 +31,17 @@ export function setup() {
  * PersonalTokenGenerator
  * ]} Tuple containing the API client and token generator.
  */
-export function getClient() {
-    if (enduserApiClient === undefined) {
-        const baseUrl = __ENV.BASE_URL;
-        const tokenOpts = getDialogportenOpts();
+export const getClient = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(getDialogportenOpts());
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+    /** @type {[EnduserApiClient, PersonalTokenGenerator]} */
+    const clients = [
+        new EnduserApiClient(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
 
-        enduserApiClient = new EnduserApiClient(baseUrl, tokenGenerator);
-    }
-
-    return [enduserApiClient, tokenGenerator];
-}
+    return clients;
+});
 
 /**
  * Changes the options for the token generator. If an SSN is provided, it will be included in the token options to generate a token specific to that end user.

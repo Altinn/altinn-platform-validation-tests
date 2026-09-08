@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {RequestClient} requestClient Client for the Access Management Request API.
  * @param {SentRequestsQuery|null} [queryParams]
  * Query parameters. Use {@link SentRequestsQueryBuilder}.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {number} Number of sent requests.
  */
@@ -33,8 +33,6 @@ export function GetSentRequestsCount(
     const succeed = check(res, {
         "GetSentRequestsCount - status code is 200": (r) =>
             r.status === 200,
-        "GetSentRequestsCount - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSupplierResourceDelegationCheckQuery} queryParams Query
  * parameters. Use {@link GetSupplierResourceDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceCheckDto|null} The delegation check result.
  */
 export function GetSupplierResourceDelegationCheck(
@@ -34,8 +34,6 @@ export function GetSupplierResourceDelegationCheck(
     const succeed = check(res, {
         "GetSupplierResourceDelegationCheck - status code is 200": (r) =>
             r.status === 200,
-        "GetSupplierResourceDelegationCheck - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

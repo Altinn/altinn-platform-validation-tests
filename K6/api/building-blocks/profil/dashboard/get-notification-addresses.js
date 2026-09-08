@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {DashboardClient} dashboardClient Client for the Dashboard API.
  * @param {string} organizationNumber Organization number.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DashboardNotificationAddressResponse>} Notification addresses for the organization.
  */
 export function GetNotificationAddresses(
@@ -31,8 +31,6 @@ export function GetNotificationAddresses(
     const succeed = check(res, {
         "GetNotificationAddresses - status code is 200": (r) =>
             r.status === 200,
-        "GetNotificationAddresses - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

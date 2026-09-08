@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {RequestSystemUserClient} requestSystemUserClient Client for the Request System User API.
  * @param {CreateRequestSystemUser} request Request model.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestSystemResponse|null} Request response.
  */
 export function RequestSystemUserVendorCreate(
@@ -32,8 +32,6 @@ export function RequestSystemUserVendorCreate(
     const succeed = check(res, {
         "RequestSystemUserVendorCreate - status code is 201": (r) =>
             r.status === 201,
-        "RequestSystemUserVendorCreate - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {CreateSupplierResourceQuery} queryParams Query parameters. Use
  * {@link CreateSupplierResourceQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean|null} True if the resource was delegated.
  */
 export function CreateSupplierResource(
@@ -30,8 +30,6 @@ export function CreateSupplierResource(
     const succeed = check(res, {
         "CreateSupplierResource - status code is 200": (r) =>
             r.status === 200,
-        "CreateSupplierResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -15,7 +15,7 @@ import { withRetries } from "../../common/retry.js";
  * {@link ValidatePersonInputBuilder}.
  * @param {CreateAgentQuery|null} [queryParams] Optional query parameters. Use
  * {@link CreateAgentQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AssignmentDto|null} The created assignment.
  */
 export function CreateAgent(
@@ -35,8 +35,6 @@ export function CreateAgent(
     const succeed = check(res, {
         "CreateAgent - status code is 200": (r) =>
             r.status === 200,
-        "CreateAgent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

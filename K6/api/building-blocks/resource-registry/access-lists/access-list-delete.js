@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDto|null} Deleted access list information.
  */
 export function AccessListDelete(
@@ -34,8 +34,6 @@ export function AccessListDelete(
     const succeed = check(res, {
         "AccessListDelete - status code is 200": (r) =>
             r.status === 200,
-        "AccessListDelete - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

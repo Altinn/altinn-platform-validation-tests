@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenSuppliersClient} maskinportenSuppliersClient Client for the Maskinporten Suppliers API.
  * @param {MaskinportenSupplierResourcesQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenSupplierResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourcePermissionDto>} Maskinporten supplier resource permissions.
  */
 export function GetMaskinportenSupplierResources(
@@ -32,8 +32,6 @@ export function GetMaskinportenSupplierResources(
     const succeed = check(res, {
         "GetMaskinportenSupplierResources - status code is 200": (r) =>
             r.status === 200,
-        "GetMaskinportenSupplierResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

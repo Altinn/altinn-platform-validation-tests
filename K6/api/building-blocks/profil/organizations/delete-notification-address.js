@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {OrganizationsClient} organizationsClient Client for the Organizations API.
  * @param {string} organizationNumber Organization number.
  * @param {number} notificationAddressId Notification address identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} Deleted notification address.
  */
 export function DeleteNotificationAddress(
@@ -34,8 +34,6 @@ export function DeleteNotificationAddress(
     const succeed = check(res, {
         "DeleteNotificationAddress - status code is 200": (r) =>
             r.status === 200,
-        "DeleteNotificationAddress - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

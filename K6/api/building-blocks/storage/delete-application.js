@@ -11,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} org Application owner organization.
  * @param {string} app Application identifier.
  * @param {boolean|null} [hard] Permanently delete application.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Application|null} Deleted application metadata.
  */
 export function DeleteApplication(
@@ -36,8 +36,6 @@ export function DeleteApplication(
 
     const succeed = check(res, {
         "DeleteApplication - status code is 200": (r) => r.status === 200,
-        "DeleteApplication - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

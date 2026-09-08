@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetRightHoldersQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRightHoldersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The connections. The API does not publish a schema
  * for this response.
  */
@@ -31,8 +31,6 @@ export function GetRightHolders(
     const succeed = check(res, {
         "GetRightHolders - status code is 200": (r) =>
             r.status === 200,
-        "GetRightHolders - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

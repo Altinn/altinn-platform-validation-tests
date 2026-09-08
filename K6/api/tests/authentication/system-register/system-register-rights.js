@@ -1,35 +1,38 @@
 import { fail, group } from "k6";
 
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
+import { getVendorClient, setup as commonsSetup, sweepSystems, VENDOR_ID } from "./commons.js";
 
 const ORG = "ttd";
 
-export function setup() {
-    requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    return;
+/**
+ * What this test names its systems, which is also what its teardown sweeps up.
+ * Unique per test, or two tests running at once would delete each other's systems.
+ */
+const SYSTEM_NAME_PREFIX = "K6-rights-system-";
+
+/**
+ * k6 setup stage. Fetches the vendor token, and declares the environment this test
+ * needs on top of it: the rights and access packages a customer sees come back on an
+ * enduser token, which is minted per environment.
+ *
+ * @returns {Promise<{vendorToken: string}>} The token the vendor acts with.
+ */
+export async function setup() {
+    requireEnv(["ENVIRONMENT"]);
+
+    return await commonsSetup();
 }
 
-export default async function () {
-    const scopes = CreateScopeString([
-        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
-    ]);
-
-    const options = new MaskinportenTokenBuilder()
-        .withScopes(scopes)
-        .build();
-
-    const tokenGenerator
-        = new MaskinportenAccessTokenGenerator(options);
-
-    // Signing the grant goes through SubtleCrypto, so the token has to be fetched
-    // before the client starts asking for it.
-    await tokenGenerator.ensureToken();
-
-    const systemRegisterClient
-        = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
+/**
+ * @param {Awaited<ReturnType<typeof import("./commons.js").setup>>} data Test data from setup.
+ * @returns {Promise<void>} Resolves when the iteration is done.
+ */
+export default async function (data) {
+    const systemRegisterClient = getVendorClient(data.vendorToken);
 
     // GET /{systemId}/rights answers 403 to a Maskinporten systemregister token; it
     // wants the portal enduser scope. Registering and deleting the system still goes
@@ -47,18 +50,29 @@ export default async function () {
     const enduserSystemRegisterClient
         = new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator);
 
-    const vendorId = 313175650;
-    const systemName = `K6-rights-system-${uuidv4()}`;
+    const vendorId = VENDOR_ID;
+    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
 
     const systemId = `${vendorId}_${systemName}`;
 
+    // All three are published in every environment the test runs in. The ones this
+    // test used to name were not: authentication-e2e-test and vegardtestressurs are
+    // missing in yt01, so registering the system failed there before the resources
+    // were swapped.
+    //
+    // The third is an Altinn app rather than a resource registry resource. It looks
+    // the same in the payload, only with an identifier of the form app_<org>_<app>,
+    // but it is a real case a vendor registers and nothing here covered it. The same
+    // app the system user request test asks for, and picked the same way: published
+    // and delegable in all four environments, which app_ttd_endring-av-navn-v2 from
+    // the authentication repo is not.
     const rights = [
         {
             "action": "read",
             "resource": [
                 {
                     "id": "urn:altinn:resource",
-                    "value": "authentication-e2e-test"
+                    "value": "k6-instancedelegation-test"
                 }
             ]
         },
@@ -67,7 +81,16 @@ export default async function () {
             "resource": [
                 {
                     "id": "urn:altinn:resource",
-                    "value": "vegardtestressurs"
+                    "value": "ttd-dialogporten-dummy"
+                }
+            ]
+        },
+        {
+            "action": "read",
+            "resource": [
+                {
+                    "id": "urn:altinn:resource",
+                    "value": "app_ttd_two-task-app"
                 }
             ]
         }
@@ -93,7 +116,7 @@ export default async function () {
         .build();
 
     group("System Register Rights", function () {
-        group("Register a system with two rights", function () {
+        group("Register a system with two resources and an app", function () {
             // POST /vendor
             const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(systemRegisterClient, requestBody);
 
@@ -116,6 +139,22 @@ export default async function () {
             SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
     });
+}
+
+/**
+ * k6 teardown stage. Removes the systems this test left in the register.
+ *
+ * Deleting the system is a step of the test itself, so on the way it was meant to
+ * go there is nothing here to do. An iteration that gave up half way is what this
+ * is for: fail() skips the delete, and the system would stay behind.
+ *
+ * Async, since the sweep signs its own Maskinporten grant rather than reusing the
+ * token setup fetched.
+ *
+ * @returns {Promise<void>} Resolves once the register is swept.
+ */
+export async function teardown() {
+    await sweepSystems(SYSTEM_NAME_PREFIX);
 }
 
 // add the custom reporting for this test to the default summary

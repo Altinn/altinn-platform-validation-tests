@@ -7,9 +7,9 @@
 
 export class DialogByIdVariablesBuilder {
     constructor() {
-        this.variables = {
+        this.variables = /** @type {DialogByIdVariables} */ ({
             id: null,
-        };
+        });
     }
 
     /**

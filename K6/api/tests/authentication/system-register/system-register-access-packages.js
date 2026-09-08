@@ -1,35 +1,38 @@
 import { fail, group } from "k6";
 
-import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, MaskinportenAccessTokenGenerator, MaskinportenTokenBuilder, uuidv4 } from "../../../../common-imports.js";
+import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { RegisterSystemRequestBuilder, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemRegisterDomainChecks } from "../../../authentication-imports.js";
+import { getVendorClient, setup as commonsSetup, sweepSystems, VENDOR_ID } from "./commons.js";
 
 const ORG = "ttd";
 
-export function setup() {
-    requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    return;
+/**
+ * What this test names its systems, which is also what its teardown sweeps up.
+ * Unique per test, or two tests running at once would delete each other's systems.
+ */
+const SYSTEM_NAME_PREFIX = "K6-access-packages-system-";
+
+/**
+ * k6 setup stage. Fetches the vendor token, and declares the environment this test
+ * needs on top of it: the rights and access packages a customer sees come back on an
+ * enduser token, which is minted per environment.
+ *
+ * @returns {Promise<{vendorToken: string}>} The token the vendor acts with.
+ */
+export async function setup() {
+    requireEnv(["ENVIRONMENT"]);
+
+    return await commonsSetup();
 }
 
-export default async function () {
-    const scopes = CreateScopeString([
-        AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE
-    ]);
-
-    const options = new MaskinportenTokenBuilder()
-        .withScopes(scopes)
-        .build();
-
-    const tokenGenerator
-        = new MaskinportenAccessTokenGenerator(options);
-
-    // Signing the grant goes through SubtleCrypto, so the token has to be fetched
-    // before the client starts asking for it.
-    await tokenGenerator.ensureToken();
-
-    const systemRegisterClient
-        = new SystemRegisterClient(__ENV.BASE_URL, tokenGenerator);
+/**
+ * @param {Awaited<ReturnType<typeof import("./commons.js").setup>>} data Test data from setup.
+ * @returns {Promise<void>} Resolves when the iteration is done.
+ */
+export default async function (data) {
+    const systemRegisterClient = getVendorClient(data.vendorToken);
 
     // GET /{systemId}/accesspackages wants the portal enduser scope, the same as the
     // rights endpoint. Registering, updating and deleting the system still goes
@@ -47,8 +50,8 @@ export default async function () {
     const enduserSystemRegisterClient
         = new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator);
 
-    const vendorId = 313175650;
-    const systemName = `K6-access-packages-system-${uuidv4()}`;
+    const vendorId = VENDOR_ID;
+    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
 
     const systemId = `${vendorId}_${systemName}`;
 
@@ -121,6 +124,22 @@ export default async function () {
             SystemRegisterDomainChecks.CheckUpdateSucceeded(deleteResult, "SystemRegisterVendorDelete");
         });
     });
+}
+
+/**
+ * k6 teardown stage. Removes the systems this test left in the register.
+ *
+ * Deleting the system is a step of the test itself, so on the way it was meant to
+ * go there is nothing here to do. An iteration that gave up half way is what this
+ * is for: fail() skips the delete, and the system would stay behind.
+ *
+ * Async, since the sweep signs its own Maskinporten grant rather than reusing the
+ * token setup fetched.
+ *
+ * @returns {Promise<void>} Resolves once the register is swept.
+ */
+export async function teardown() {
+    await sweepSystems(SYSTEM_NAME_PREFIX);
 }
 
 // add the custom reporting for this test to the default summary

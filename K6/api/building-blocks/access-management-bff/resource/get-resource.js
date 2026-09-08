@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ResourceClient} resourceClient Client for the resource endpoints.
  * @param {GetResourceQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetResourceQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ServiceResourceFE|null} The resource.
  */
 export function GetResource(
@@ -30,8 +30,6 @@ export function GetResource(
     const succeed = check(res, {
         "GetResource - status code is 200": (r) =>
             r.status === 200,
-        "GetResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

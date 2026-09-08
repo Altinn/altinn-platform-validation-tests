@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get labels for
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel[]} Parsed response body, or an empty array when the call failed.
  */
 export function GetServiceOwnerLabels(

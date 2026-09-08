@@ -109,9 +109,9 @@ class ConnectionsClient {
      * @param {GetConnectionsQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetConnectionsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -172,7 +172,7 @@ class ConnectionsClient {
      * {@link CreateConnectionQueryBuilder}.
      * @param {PersonInput|null} [body]
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -232,7 +232,7 @@ class ConnectionsClient {
      * @param {DeleteConnectionQuery|null} [query]
      * Query parameters. Prefer using
      * {@link DeleteConnectionQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -283,9 +283,9 @@ class ConnectionsClient {
      * @param {GetConnectionUsersQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetConnectionUsersQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -343,9 +343,9 @@ class ConnectionsClient {
      * @param {GetAccessPackagesQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetAccessPackagesQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -406,7 +406,7 @@ class ConnectionsClient {
      * {@link CreateAccessPackageQueryBuilder}.
      * @param {PersonInput|null} [body]
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -466,7 +466,7 @@ class ConnectionsClient {
      * @param {DeleteAccessPackageQuery|null} [query]
      * Query parameters. Prefer using
      * {@link DeleteAccessPackageQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -517,7 +517,7 @@ class ConnectionsClient {
      * @param {AccessPackageDelegationCheckQuery|null} [query]
      * Query parameters. Prefer using
      * {@link AccessPackageDelegationCheckQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -568,9 +568,9 @@ class ConnectionsClient {
      * @param {GetRolesQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetRolesQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -628,7 +628,7 @@ class ConnectionsClient {
      * @param {DeleteRoleQuery|null} [query]
      * Query parameters. Prefer using
      * {@link DeleteRoleQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -678,9 +678,9 @@ class ConnectionsClient {
      * @param {GetResourcesQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetResourcesQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -738,7 +738,7 @@ class ConnectionsClient {
      * @param {DeleteResourceQuery|null} [query]
      * Query parameters. Prefer using
      * {@link DeleteResourceQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -788,9 +788,9 @@ class ConnectionsClient {
      * @param {GetResourceRightsQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetResourceRightsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -851,7 +851,7 @@ class ConnectionsClient {
      * {@link CreateResourceRightsQueryBuilder}.
      * @param {RightKeyListDto|null} [body]
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -913,7 +913,7 @@ class ConnectionsClient {
      * {@link UpdateResourceRightsQueryBuilder}.
      * @param {RightKeyListDto|null} [body]
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -972,7 +972,7 @@ class ConnectionsClient {
      * @param {GetResourceDelegationCheckQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetResourceDelegationCheckQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1022,9 +1022,9 @@ class ConnectionsClient {
      * @param {GetInstancesQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetInstancesQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1083,7 +1083,7 @@ class ConnectionsClient {
      * @param {DeleteInstanceQuery|null} [query]
      * Query parameters. Prefer using
      * {@link DeleteInstanceQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1133,9 +1133,9 @@ class ConnectionsClient {
      * @param {GetInstanceRightsQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetInstanceRightsQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1196,7 +1196,7 @@ class ConnectionsClient {
      * {@link CreateInstanceRightsQueryBuilder}.
      * @param {InstanceRightsDelegationDto|null} [body]
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1258,7 +1258,7 @@ class ConnectionsClient {
      * {@link UpdateInstanceRightsQueryBuilder}.
      * @param {RightKeyListDto|null} [body]
      * Request body.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1317,7 +1317,7 @@ class ConnectionsClient {
      * @param {GetInstanceDelegationCheckQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetInstanceDelegationCheckQueryBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -1367,9 +1367,9 @@ class ConnectionsClient {
      * @param {GetInstanceUsersQuery|null} [query]
      * Query parameters. Prefer using
      * {@link GetInstanceUsersQueryBuilder}.
-     * @param {{[key: string]: string|number}} [headers]
+     * @param {{[key: string]: string|number}|null} [headers]
      * Optional request headers.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

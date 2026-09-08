@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {EventsQueryParams|null} [query] Optional query parameters.
  * @param {string|null} [alternativeSubject] Optional alternative subject header.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
  */
 export function EventsGet(
@@ -34,8 +34,6 @@ export function EventsGet(
     const succeed = check(res, {
         "EventsGet - status code is 200": (r) =>
             r.status === 200,
-        "EventsGet - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

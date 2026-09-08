@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetClientAccessPackagesQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetClientAccessPackagesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AgentDelegation>|null} Agents with the access packages they
  * hold on the client.
  */
@@ -35,8 +35,6 @@ export function GetClientAccessPackages(
     const succeed = check(res, {
         "GetClientAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "GetClientAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

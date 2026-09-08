@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetMyClientsQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetMyClientsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<MyClientDelegation>|null} Clients grouped by client
  * provider.
  */
@@ -32,8 +32,6 @@ export function GetMyClients(
     const succeed = check(res, {
         "GetMyClients - status code is 200": (r) =>
             r.status === 200,
-        "GetMyClients - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

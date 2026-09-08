@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * Client for the Correspondence API.
  * @param {string} correspondenceId
  * Correspondence identifier.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {import("k6/http").RefinedResponse<"text">|null}
  * Response containing the zip archive, or null if the request failed.
@@ -31,8 +31,6 @@ export function DownloadAllAttachments(
     const succeed = check(res, {
         "DownloadAllAttachments - status code is 200": (r) =>
             r.status === 200,
-        "DownloadAllAttachments - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

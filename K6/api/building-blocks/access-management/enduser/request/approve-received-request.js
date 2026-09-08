@@ -12,7 +12,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} id Request UUID.
  * @param {Array<string>|null} [rights]
  * Optional rights to approve.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Approved request.
  */
@@ -39,8 +39,6 @@ export function ApproveReceivedRequest(
     const succeed = check(res, {
         "ApproveReceivedRequest - status code is 200": (r) =>
             r.status === 200,
-        "ApproveReceivedRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

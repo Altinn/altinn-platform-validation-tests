@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Retrieves all party groups for the current user.
  *
  * @param {PartyGroupsClient} partyGroupsClient Client for the API.
- * @param {{[key: string]: string}} [labels] See the client method.
+ * @param {{[key: string]: string}|null} [labels] See the client method.
  * @returns {Array<GroupResponse>|null} Parsed response body, or null when the call failed.
  */
 export function GetPartyGroups(
@@ -25,8 +25,6 @@ export function GetPartyGroups(
 
     const succeed = check(res, {
         "GetPartyGroups - status code is 200": (r) => r.status === 200,
-        "GetPartyGroups - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

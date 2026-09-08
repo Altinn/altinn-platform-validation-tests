@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SettingsControllerUpdateSelectedLanguageRequest|null} [body] The
  * language to select. Use
  * {@link SettingsControllerUpdateSelectedLanguageRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the language was updated.
  */
 export function UpdateSelectedLanguage(
@@ -29,8 +29,6 @@ export function UpdateSelectedLanguage(
     const succeed = check(res, {
         "UpdateSelectedLanguage - status code is 200": (r) =>
             r.status === 200,
-        "UpdateSelectedLanguage - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

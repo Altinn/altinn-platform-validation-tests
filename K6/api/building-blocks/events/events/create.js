@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {CloudEvent} event CloudEvent payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Created event identifier.
  */
 export function EventsCreate(
@@ -31,8 +31,6 @@ export function EventsCreate(
     const succeed = check(res, {
         "EventsCreate - status code is 200": (r) =>
             r.status === 200,
-        "EventsCreate - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

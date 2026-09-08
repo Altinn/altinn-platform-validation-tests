@@ -56,7 +56,7 @@ class SettingsClient {
      * @param {SettingsControllerUpdateSelectedLanguageRequest|null} [body] The
      * language to select. Prefer using
      * {@link SettingsControllerUpdateSelectedLanguageRequestBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateSelectedLanguage(body = null, labels = null) {
@@ -95,7 +95,7 @@ class SettingsClient {
      * Gets the notification addresses of an organisation.
      *
      * @param {string} orgNumber Organisation number.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationAddresses(orgNumber, labels = null) {
@@ -133,7 +133,7 @@ class SettingsClient {
      * @param {string} orgNumber Organisation number.
      * @param {NotificationAddressModel|null} [body] The notification address to
      * add. Prefer using {@link NotificationAddressModelBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateNotificationAddress(orgNumber, body = null, labels = null) {
@@ -175,7 +175,7 @@ class SettingsClient {
      *
      * @param {string} orgNumber Organisation number.
      * @param {number} notificationAddressId Notification address id.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteNotificationAddress(
@@ -222,7 +222,7 @@ class SettingsClient {
      * @param {number} notificationAddressId Notification address id.
      * @param {NotificationAddressModel|null} [body] The new notification address
      * values. Prefer using {@link NotificationAddressModelBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateNotificationAddress(

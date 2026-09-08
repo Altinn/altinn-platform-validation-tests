@@ -14,6 +14,10 @@ export class logoutWithUser {
         this.page = page;
     }
 
+    /**
+     * @param {string} logoutReportee Name of the reportee to log out from.
+     * @returns {Promise<void>} Resolves once logout was submitted.
+     */
     async gotoLogoutPage(logoutReportee) {
         await this.page.goto(`${__ENV.ALTINN2_BASE_URL}/ui/profile`);
 

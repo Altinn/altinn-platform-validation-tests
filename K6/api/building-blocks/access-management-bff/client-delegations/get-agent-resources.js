@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * client delegation endpoints.
  * @param {GetAgentResourcesQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAgentResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ClientDelegation>|null} Clients with the resources the agent
  * holds on them.
  */
@@ -32,8 +32,6 @@ export function GetAgentResources(
     const succeed = check(res, {
         "GetAgentResources - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {ClientDelegationClient} clientDelegationClient Client for the Client Delegation API.
  * @param {DeleteMyClientProviderQuery} queryParams
  * Query parameters. Use {@link DeleteMyClientProviderQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the client provider was successfully removed.
  */
 export function DeleteMyClientProvider(
@@ -31,8 +31,6 @@ export function DeleteMyClientProvider(
     const succeed = check(res, {
         "DeleteMyClientProvider - status code is 204": (r) =>
             r.status === 204,
-        "DeleteMyClientProvider - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
  * @param {string} urnValue Package URN.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PackageDto|null} Package.
  */
 export function PackagesGetPackageByUrn(
@@ -28,8 +28,6 @@ export function PackagesGetPackageByUrn(
     const succeed = check(res, {
         "PackagesGetPackageByUrn - status code is 200": (r) =>
             r.status === 200,
-        "PackagesGetPackageByUrn - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

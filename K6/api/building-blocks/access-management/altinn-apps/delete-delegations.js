@@ -14,9 +14,9 @@ import { withRetries } from "../../common/retry.js";
  * @param {AppsInstanceDelegationClient} appsInstanceDelegationClient Client for the Apps Instance Delegation API.
  * @param {string} resourceId Resource identifier.
  * @param {string} instanceId Instance identifier.
- * @param {string} [expectedStatus] Expected revoke status for every right,
+ * @param {string|null} [expectedStatus] Expected revoke status for every right,
  * e.g. Revoked or NotRevoked. Only checked when set.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AppsInstanceRevokeResponseDtoPaginated|null} Revocation result.
  */
 export function DeleteDelegations(
@@ -41,8 +41,6 @@ export function DeleteDelegations(
     const succeed = check(res, {
         "DeleteDelegations - status code is 200": (r) =>
             r.status === 200,
-        "DeleteDelegations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -68,7 +66,7 @@ export function DeleteDelegations(
 
     if (parsed && expectedStatus !== null) {
         check(result, {
-            [`DeleteDelegations - every right is ${expectedStatus}`]: (b) => {
+            [`DeleteDelegations - every right is ${expectedStatus}`]: (/** @type {AppsInstanceRevokeResponseDtoPaginated|null} */ b) => {
                 const rights = (b?.data ?? []).flatMap(
                     (delegation) => delegation.rights ?? [],
                 );

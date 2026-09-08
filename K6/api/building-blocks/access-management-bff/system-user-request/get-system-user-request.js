@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserRequestClient} systemUserRequestClient Client for the
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The request. The API does not publish a schema for
  * this response.
  */
@@ -32,8 +32,6 @@ export function GetSystemUserRequest(
     const succeed = check(res, {
         "GetSystemUserRequest - status code is 200": (r) =>
             r.status === 200,
-        "GetSystemUserRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

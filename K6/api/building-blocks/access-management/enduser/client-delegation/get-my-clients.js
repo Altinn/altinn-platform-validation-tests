@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link MyClientsQueryBuilder}.
  * @param {{[key: string]: string|number}|null} [headers]
  * Optional request headers, for example paging headers.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {MyClientDtoPaginatedResult|null} Paginated clients result.
  */
 export function GetMyClients(
@@ -37,8 +37,6 @@ export function GetMyClients(
     const succeed = check(res, {
         "GetMyClients - status code is 200": (r) =>
             r.status === 200,
-        "GetMyClients - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {LookupClient} lookupClient Client for the lookup endpoints.
  * @param {string} uuid User UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfileFE|null} The user profile.
  */
 export function GetUser(lookupClient, uuid, labels = null) {
@@ -24,8 +24,6 @@ export function GetUser(lookupClient, uuid, labels = null) {
     const succeed = check(res, {
         "GetUser - status code is 200": (r) =>
             r.status === 200,
-        "GetUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

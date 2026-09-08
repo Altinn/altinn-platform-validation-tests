@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Retrieves all vendor registered systems.
  *
  * @param {SystemRegisterClient} systemRegisterClient Client for the System Register API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RegisteredSystemDTO[]|null} Registered systems.
  */
 export function SystemRegisterVendorGet(
@@ -26,8 +26,6 @@ export function SystemRegisterVendorGet(
     const succeed = check(res, {
         "SystemRegisterVendorGet - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorGet - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

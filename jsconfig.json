@@ -6,8 +6,10 @@
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "bundler",
-        "types": ["k6"],
-        "strict": false
+        "types": [
+            "k6"
+        ],
+        "strict": true
     },
     "include": [
         "K6/**/*.js",

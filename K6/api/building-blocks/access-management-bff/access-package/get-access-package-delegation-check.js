@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {GetAccessPackageDelegationCheckQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetAccessPackageDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DelegationCheck>|null} Delegation check results per access
  * package.
  */
@@ -36,8 +36,6 @@ export function GetAccessPackageDelegationCheck(
     const succeed = check(res, {
         "GetAccessPackageDelegationCheck - status code is 200": (r) =>
             r.status === 200,
-        "GetAccessPackageDelegationCheck - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

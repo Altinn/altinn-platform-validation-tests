@@ -46,9 +46,23 @@ export function getCorrespondenceOptions(labels) {
 }
 
 /**
+ * The sender identity a Correspondence test uses in one environment.
+ *
+ * Every property is optional, since an environment that is not listed falls back
+ * to whatever the env vars set.
+ *
+ * @typedef {object} CorrespondenceEnvironmentDefaults
+ * @property {string} [resourceId] Correspondence resource to send on.
+ * @property {string} [serviceOwnerOrg] Service owner org code.
+ * @property {string} [serviceOwnerOrgNo] Service owner organisation number.
+ */
+
+/**
  * Defaults migrated from the existing Correspondence performance test data.
  * The YT01 resource differs because the old resource is not a Correspondence
  * service and cannot authorize these calls.
+ *
+ * @type {{[environment: string]: CorrespondenceEnvironmentDefaults}}
  */
 const TEST_CONFIGURATION = {
     at23: {
@@ -68,6 +82,11 @@ const TEST_CONFIGURATION = {
     },
 };
 
+/**
+ * @param {string|undefined} value The env var as it was set, if it was set.
+ * @param {boolean} defaultValue What to use when it was not.
+ * @returns {boolean} The parsed value.
+ */
 function parseBoolean(value, defaultValue) {
     if (value === undefined || value === "") {
         return defaultValue;
@@ -84,6 +103,12 @@ function parseBoolean(value, defaultValue) {
     throw new Error(`Expected a boolean value, got '${value}'`);
 }
 
+/**
+ * @param {string|undefined} value The env var as it was set, if it was set.
+ * @param {number} defaultValue What to use when it was not.
+ * @param {string} name Name of the env var, for the error message.
+ * @returns {number} The parsed value.
+ */
 function parsePositiveInteger(value, defaultValue, name) {
     const parsed = Number(value ?? defaultValue);
 
@@ -109,6 +134,7 @@ function parsePositiveInteger(value, defaultValue, name) {
  * }} Test configuration for the active environment.
  */
 export function getCorrespondenceTestConfiguration() {
+    /** @type {CorrespondenceEnvironmentDefaults} */
     const defaults = TEST_CONFIGURATION[__ENV.ENVIRONMENT] ?? {};
     const configuration = {
         resourceId: __ENV.CORRESPONDENCE_RESOURCE_ID ?? defaults.resourceId,
@@ -177,6 +203,7 @@ export function setupCorrespondenceTestData() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
     const configuration = getCorrespondenceTestConfiguration();
 
+    /** @type {CorrespondenceTestUser[]} */
     const rows = fetchTestData(
         `correspondence/${__ENV.ENVIRONMENT}/fullmakt-user-user.csv`,
     );
@@ -237,10 +264,15 @@ export function getEndUser(endUsers, singleUser = false) {
     return endUsers[index];
 }
 
+/** @type {CorrespondenceClient|undefined} */
 let enterpriseSenderClient;
+/** @type {CorrespondenceClient|undefined} */
 let recipientClient;
+/** @type {PersonalTokenGenerator|undefined} */
 let recipientTokenGenerator;
+/** @type {EnduserApiClient|undefined} */
 let dialogportenClient;
+/** @type {PersonalTokenGenerator|undefined} */
 let dialogportenTokenGenerator;
 
 /**
@@ -292,7 +324,7 @@ export function getRecipientClient(endUser) {
         .withPartyUuid(endUser.partyUuid)
         .build();
 
-    if (recipientClient === undefined) {
+    if (recipientClient === undefined || recipientTokenGenerator === undefined) {
         recipientTokenGenerator = new PersonalTokenGenerator(options);
         recipientClient = new CorrespondenceClient(
             __ENV.BASE_URL,
@@ -323,7 +355,7 @@ export function getDialogportenClient(endUser) {
         .withPartyUuid(endUser.partyUuid)
         .build();
 
-    if (dialogportenClient === undefined) {
+    if (dialogportenClient === undefined || dialogportenTokenGenerator === undefined) {
         dialogportenTokenGenerator = new PersonalTokenGenerator(options);
         dialogportenClient = new EnduserApiClient(
             __ENV.BASE_URL,
@@ -378,8 +410,13 @@ export function buildInitializeCorrespondenceRequest(recipient) {
         .build();
 }
 
+/** @type {ArrayBuffer|undefined} */
 let attachmentPayload;
 
+/**
+ * @param {number} size Attachment size in bytes.
+ * @returns {ArrayBuffer} A payload of that size, reused across iterations.
+ */
 function getAttachmentPayload(size) {
     if (attachmentPayload === undefined || attachmentPayload.byteLength !== size) {
         const bytes = new Uint8Array(size);

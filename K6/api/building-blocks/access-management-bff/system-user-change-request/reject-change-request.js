@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * for the system user change request endpoints.
  * @param {number} partyId Party id of the organisation.
  * @param {string} changeRequestId Change request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the change request was rejected.
  */
 export function RejectChangeRequest(
@@ -33,8 +33,6 @@ export function RejectChangeRequest(
     const succeed = check(res, {
         "RejectChangeRequest - status code is 200": (r) =>
             r.status === 200,
-        "RejectChangeRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

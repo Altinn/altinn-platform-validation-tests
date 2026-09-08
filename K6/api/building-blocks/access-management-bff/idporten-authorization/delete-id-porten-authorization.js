@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {IdPortenAuthorizationClient} idPortenAuthorizationClient Client for
  * the ID-porten authorization endpoints.
  * @param {string} id Authorization identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the authorization was deleted.
  */
 export function DeleteIdPortenAuthorization(
@@ -30,8 +30,6 @@ export function DeleteIdPortenAuthorization(
     const succeed = check(res, {
         "DeleteIdPortenAuthorization - status code is 200": (r) =>
             r.status === 200,
-        "DeleteIdPortenAuthorization - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

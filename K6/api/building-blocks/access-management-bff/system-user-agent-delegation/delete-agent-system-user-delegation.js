@@ -14,7 +14,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} delegationId Delegation UUID.
  * @param {DeleteAgentSystemUserDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link DeleteAgentSystemUserDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the delegation was revoked.
  */
 export function DeleteAgentSystemUserDelegation(
@@ -41,8 +41,6 @@ export function DeleteAgentSystemUserDelegation(
     const succeed = check(res, {
         "DeleteAgentSystemUserDelegation - status code is 200": (r) =>
             r.status === 200,
-        "DeleteAgentSystemUserDelegation - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

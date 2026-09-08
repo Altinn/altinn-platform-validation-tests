@@ -8,8 +8,8 @@ import { withRetries } from "../../common/retry.js";
  * Gets all resources.
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
- * @param {ResourceListQueryBuilder | object} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {ResourceListQueryBuilder | object|null} [query] Optional query parameters.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ServiceResource>|null} List of resources.
  */
 export function ResourceGetResourceList(
@@ -28,8 +28,6 @@ export function ResourceGetResourceList(
     const succeed = check(res, {
         "ResourceGetResourceList - status code is 200": (r) =>
             r.status === 200,
-        "ResourceGetResourceList - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

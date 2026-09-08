@@ -12,6 +12,9 @@ export const options = getOptions([
     getDialogslabel,
 ]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [serviceOwnerApiClient] = getClients();
     const party = getItemFromList(data, randomize).ssn;

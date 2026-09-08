@@ -14,7 +14,11 @@ export class IdportenInnlogging {
         await this.page.locator('#submit').click();
     }
 
+    /**
+     * Sjekker på URLen og ikke på TestID-knappen, siden prod-innloggingen viser
+     * de ekte ID-porten-valgene og ikke testbruker-knappen.
+     */
     async assertOnPage() {
-        await expect(this.page.locator('#testid1'), 'Er på ID-porten-innlogging').toBeVisible();
+        await expect(this.page, 'Er sendt til ID-porten-innlogging').toHaveURL(/idporten/);
     }
 }

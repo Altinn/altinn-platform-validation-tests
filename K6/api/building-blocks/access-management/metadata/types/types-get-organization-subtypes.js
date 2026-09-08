@@ -8,7 +8,7 @@ import { withRetries } from "../../../common/retry.js";
  * Gets organization sub types.
  *
  * @param {TypesClient} typesClient Client for the Types API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<SubTypeDto>|null} Organization sub types.
  */
 export function TypesGetOrganizationSubTypes(
@@ -26,8 +26,6 @@ export function TypesGetOrganizationSubTypes(
     const succeed = check(res, {
         "TypesGetOrganizationSubTypes - status code is 200": (r) =>
             r.status === 200,
-        "TypesGetOrganizationSubTypes - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

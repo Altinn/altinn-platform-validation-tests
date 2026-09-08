@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {DashboardUserContactInformationClient} dashboardUserContactInformationClient Client for the Dashboard User Contact Information API.
  * @param {string} organizationNumber Organization number.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DashboardUserContactInformationResponse>} User contact information for the organization.
  */
 export function GetContactInformation(
@@ -31,8 +31,6 @@ export function GetContactInformation(
     const succeed = check(res, {
         "GetContactInformation - status code is 200": (r) =>
             r.status === 200,
-        "GetContactInformation - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

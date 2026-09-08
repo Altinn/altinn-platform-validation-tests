@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClient} systemUserClient Client for the system user
  * endpoints.
  * @param {number} partyId Party id of the organisation.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The agent system users. The API does not publish a
  * schema for this response.
  */
@@ -25,8 +25,6 @@ export function GetAgentSystemUsers(systemUserClient, partyId, labels = null) {
     const succeed = check(res, {
         "GetAgentSystemUsers - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentSystemUsers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

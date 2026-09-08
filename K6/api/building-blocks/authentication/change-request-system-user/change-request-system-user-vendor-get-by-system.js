@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient Client for the Change Request System User API.
  * @param {string} systemId System identifier.
  * @param {GuidOpaque|null} [token] Optional continuation token.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ChangeRequestResponsePaginated|null} Paginated change request response.
  */
 export function ChangeRequestSystemUserVendorGetBySystem(
@@ -35,9 +35,6 @@ export function ChangeRequestSystemUserVendorGetBySystem(
     const succeed = check(res, {
         "ChangeRequestSystemUserVendorGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "ChangeRequestSystemUserVendorGetBySystem - status text is 200 OK": (
-            r,
-        ) => r.status_text === "200 OK",
     });
 
     if (!succeed) {

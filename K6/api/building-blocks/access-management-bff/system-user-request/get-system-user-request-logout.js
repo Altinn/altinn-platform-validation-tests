@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserRequestClient} systemUserRequestClient Client for the
  * system user request endpoints.
  * @param {string} requestId System user request UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {import("k6/http").RefinedResponse<"text">} The raw response, holding the redirect
  * target.
  */
@@ -29,8 +29,6 @@ export function GetSystemUserRequestLogout(
     const succeed = check(res, {
         "GetSystemUserRequestLogout - status code is 200": (r) =>
             r.status === 200,
-        "GetSystemUserRequestLogout - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

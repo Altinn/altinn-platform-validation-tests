@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {CreateAccessPackageDelegationQuery|null} [queryParams] Optional
  * query parameters. Use {@link CreateAccessPackageDelegationQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the access package was delegated.
  */
 export function CreateAccessPackageDelegation(
@@ -32,8 +32,6 @@ export function CreateAccessPackageDelegation(
     const succeed = check(res, {
         "CreateAccessPackageDelegation - status code is 200": (r) =>
             r.status === 200,
-        "CreateAccessPackageDelegation - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

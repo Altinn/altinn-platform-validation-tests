@@ -18,8 +18,8 @@ import { withRetries } from "../common/retry.js";
  * @param {string} partyUuid The party whose customers to get.
  * @param {string} ccrRole The role the customers have assigned, from
  * CcrCustomerRoles, e.g. "revisor".
- * @param {Array<PartyFieldInclude>} [fields] The party fields to include.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {Array<PartyFieldInclude>|null} [fields] The party fields to include.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Party>|null} The customer parties, or null on failure.
  */
 export function GetCustomers(
@@ -39,8 +39,6 @@ export function GetCustomers(
 
     const succeed = check(res, {
         [`GetCustomers(${ccrRole}) - status code is 200`]: (r) => r.status === 200,
-        [`GetCustomers(${ccrRole}) - status text is 200 OK`]: (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

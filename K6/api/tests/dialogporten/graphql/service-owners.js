@@ -107,6 +107,7 @@ const allServiceOwners = [
     "sft",
 ];
 
+/** @type {{[environment: string]: string[]}} */
 const serviceOwnersByEnv = {
     yt01: [
         "asf",

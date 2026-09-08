@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetConsumersQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetConsumersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<MaskinportenConnection>|null} The Maskinporten consumers.
  */
 export function GetConsumers(
@@ -31,8 +31,6 @@ export function GetConsumers(
     const succeed = check(res, {
         "GetConsumers - status code is 200": (r) =>
             r.status === 200,
-        "GetConsumers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

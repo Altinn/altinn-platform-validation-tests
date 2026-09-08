@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets all verified addresses for the current user.
  *
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<VerifiedAddressResponse>} Verified addresses for the current user.
  */
 export function GetVerifiedAddresses(
@@ -26,8 +26,6 @@ export function GetVerifiedAddresses(
     const succeed = check(res, {
         "GetVerifiedAddresses - status code is 200": (r) =>
             r.status === 200,
-        "GetVerifiedAddresses - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

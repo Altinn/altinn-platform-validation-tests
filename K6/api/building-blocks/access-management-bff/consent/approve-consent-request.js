@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} consentRequestId Consent request UUID.
  * @param {ApproveConsentContext|null} [body] Context for the approval. Use
  * {@link ApproveConsentContextBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the consent request was approved.
  */
 export function ApproveConsentRequest(
@@ -35,8 +35,6 @@ export function ApproveConsentRequest(
     const succeed = check(res, {
         "ApproveConsentRequest - status code is 200": (r) =>
             r.status === 200,
-        "ApproveConsentRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

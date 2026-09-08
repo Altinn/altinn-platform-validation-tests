@@ -382,8 +382,10 @@
 /**
  * Query parameters for the vendor system user lookup.
  *
- * @typedef {object} SystemUserVendorQuery
- * @property {string} [orgno] Organisation number to look up.
+ * The hyphenated keys are what the endpoint reads, so this is written as an object
+ * type: @property cannot name a key that is not an identifier.
+ *
+ * @typedef {{orgno?: string, "system-id"?: string, "external-ref"?: string}} SystemUserVendorQuery
  */
 
 /**

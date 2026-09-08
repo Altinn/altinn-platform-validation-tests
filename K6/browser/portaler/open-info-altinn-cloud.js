@@ -28,7 +28,7 @@ export default async function () {
             .textContent();
 
         check(text, {
-            "Text includes Aktuelt": (h) => h.includes("Aktuelt"),
+            "Text includes Aktuelt": (h) => h?.includes("Aktuelt") === true,
         });
     }
     catch (error) {

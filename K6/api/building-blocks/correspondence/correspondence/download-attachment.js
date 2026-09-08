@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * Correspondence identifier.
  * @param {string} attachmentId
  * Attachment identifier.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {import("k6/http").RefinedResponse<"text">|null}
  * Response containing the binary attachment, or null if the request failed.
@@ -35,8 +35,6 @@ export function DownloadAttachment(
     const succeed = check(res, {
         "DownloadAttachment - status code is 200": (r) =>
             r.status === 200,
-        "DownloadAttachment - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

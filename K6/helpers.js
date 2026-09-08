@@ -23,7 +23,7 @@ const testDataFetchFailures = new Counter("test_data_fetch_failures");
  * Records the outcome of one test data read.
  *
  * @param {string} file The file that was read, as the caller named it.
- * @param {string} [reason] Why the read failed, or omitted when it worked.
+ * @param {string|null} [reason] Why the read failed, or omitted when it worked.
  * @returns {void}
  */
 function recordTestDataFetch(file, reason = null) {
@@ -79,10 +79,22 @@ export function retry(conditionFn, options = {}) {
     return success;
 }
 
+/**
+ * Parses CSV text with a header row into one object per row.
+ *
+ * @param {string} data The CSV text.
+ * @returns {{[column: string]: string}[]} One object per row, keyed by column.
+ */
 export function parseCsvData(data) {
     return papaparse.parse(data, { header: true, skipEmptyLines: true }).data;
 }
 
+/**
+ * Reads a local CSV file with a header row.
+ *
+ * @param {string} filename Path to the file.
+ * @returns {{[column: string]: string}[]} One object per row, keyed by column.
+ */
 export function readCsv(filename) {
     return parseCsvData(open(filename));
 }
@@ -106,11 +118,27 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  *
- * @param listOfItems TODO: description
- * @param numberOfSublists TODO: description
- * @returns A list with numberOfSublists lists.
+ * Refuses more sublists than items rather than handing back empty ones at the
+ * end. Every caller divides by VU count, and a VU that draws from an empty slice
+ * reads undefined off it without failing: the run still exits zero, and the only
+ * trace is a summary with fewer checks than usual.
+ *
+ * @template T
+ * @param {T[]} listOfItems The items to divide.
+ * @param {number} numberOfSublists How many sublists to divide them into.
+ * @returns {T[][]} A list with numberOfSublists lists.
+ * @throws {Error} If there are more sublists than items to fill them.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
+    if (numberOfSublists > listOfItems.length) {
+        throw new Error(
+            `Cannot divide ${listOfItems.length} rows into ${numberOfSublists} slices: the last`
+            + " ones would be empty, and a VU drawing from an empty slice reads undefined without"
+            + " failing. Add rows to the fixture, or run with fewer VUs.",
+        );
+    }
+
+    /** @type {T[][]} */
     const sublists = [];
     const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
     const remainder = listOfItems.length % numberOfSublists;
@@ -132,7 +160,7 @@ export function segmentData(listOfItems, numberOfSublists = 1) {
  */
 export function getNumberOfVUs() {
     return (
-        /** @type {any} */ (exec.test.options.scenarios.default).vus ??
+        /** @type {any} */ (exec.test.options.scenarios?.default).vus ??
         __ENV.BREAKPOINT_STAGE_TARGET ??
         1
     );
@@ -143,12 +171,15 @@ export function getNumberOfVUs() {
  *
  * @param {{ [key: string]: string }[]} labels - Array of label objects (key/value pairs)
  * @param {string[]} groups - list of strings
- * @returns {import("k6/options").Options} The k6 options for the run.
+ * @returns {import("k6/options").Options & {thresholds: {[name: string]: import("k6/options").Threshold[]}}}
+ * The k6 options for the run. thresholds is always populated, so a caller can
+ * add its own without checking.
  */
 export function getOptions(labels, groups = []) {
     const options = {
         summaryTrendStats: ["avg", "min", "med", "max", "p(95)", "p(99)", "count"],
         // Placeholder, will be populated below
+        /** @type {{[name: string]: import("k6/options").Threshold[]}} */
         thresholds: {},
     };
 
@@ -167,6 +198,10 @@ export function getOptions(labels, groups = []) {
     return options;
 }
 
+/**
+ * @param {string} ip Address to validate.
+ * @returns {boolean} True when the address is a valid IPv4 or IPv6 address.
+ */
 export function checkIp(ip) {
     const ipv4 =
         /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -177,6 +212,30 @@ export function checkIp(ip) {
 }
 
 /**
+ * Wraps a builder so it runs once and every later call gets what it built.
+ *
+ * For the clients and token generators a test caches at module scope: a VU builds
+ * them on its first iteration and reuses them for the rest, since the token
+ * generators cache their tokens per instance. Written this way rather than as a
+ * `let` that starts out undefined, so what the builder returns keeps its type and
+ * no caller has to check it for undefined first.
+ *
+ * @template T
+ * @param {() => T} build Builds the value the first time it is asked for.
+ * @returns {() => T} A function handing out that one value.
+ */
+export function lazy(build) {
+    /** @type {{value: T} | undefined} */
+    let cached = undefined;
+
+    return function () {
+        cached ??= { value: build() };
+
+        return cached.value;
+    };
+}
+
+/**
  * Ensures required environment variables exist.
  *
  * @param {string[]} vars - Array of environment variable names
@@ -184,6 +243,7 @@ export function checkIp(ip) {
  */
 export function requireEnv(vars) {
     const missing = [];
+    /** @type {{[key: string]: string}} */
     const result = {};
 
     for (const name of vars) {

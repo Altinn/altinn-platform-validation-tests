@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClient} systemUserClient Client for the SystemUser API.
  * @param {SystemUserPagedQuery|null} [query] Query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemUserRegisterDTOItemStream|null} Stream result.
  */
 export function SystemUserInternalStream(
@@ -28,8 +28,6 @@ export function SystemUserInternalStream(
     const succeed = check(res, {
         "SystemUserInternalStream - status code is 200": (r) =>
             r.status === 200,
-        "SystemUserInternalStream - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

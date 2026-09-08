@@ -47,7 +47,7 @@ class GraphqlClient {
      * Get all dialogs based on variables
      *
      * @param {DialogSearchVariables} variables - variables to use in the search query, built with DialogSearchVariablesBuilder
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetAllDialogsForParty(variables, labels = null) {
@@ -77,7 +77,7 @@ class GraphqlClient {
      * Get dialog by id
      *
      * @param {DialogByIdVariables} variables - the variables naming the dialog to get
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetDialogById(variables, labels = null) {
@@ -104,7 +104,7 @@ class GraphqlClient {
     /**
      * Get parties for a user
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      * */
     GetParties(labels = null) {
@@ -131,7 +131,7 @@ class GraphqlClient {
     /**
      * Get filtered service resources for a user
      *
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+     * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
      * @returns response from the API
      */
     GetFilterServiceResources(labels = null) {

@@ -9,7 +9,7 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {AccessListMembershipsClient} accessListMembershipsClient Client for the Access List Memberships API.
  * @param {AccessListMembershipsQuery|null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceMembershipWithActionFilterDtoListObject|null} Access list memberships.
  */
 export function AccessListMembershipsGetMemberships(
@@ -31,8 +31,6 @@ export function AccessListMembershipsGetMemberships(
     const succeed = check(res, {
         "AccessListMembershipsGetMemberships - status code is 200": (r) =>
             r.status === 200,
-        "AccessListMembershipsGetMemberships - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

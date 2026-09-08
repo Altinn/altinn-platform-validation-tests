@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} party Member party UUID URN.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AccessListInfoDto>|null} Access lists.
  */
 export function AccessListGetByMember(
@@ -28,8 +28,6 @@ export function AccessListGetByMember(
     const succeed = check(res, {
         "AccessListGetByMember - status code is 200": (r) =>
             r.status === 200,
-        "AccessListGetByMember - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

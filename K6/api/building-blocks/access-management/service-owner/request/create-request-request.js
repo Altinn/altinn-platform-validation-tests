@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RequestClient} requestClient Client for the Request API.
  * @param {RequestResourceDto} request Request payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */
 export function RequestCreateResourceRequest(
@@ -31,8 +31,6 @@ export function RequestCreateResourceRequest(
     const succeed = check(res, {
         "RequestCreateResourceRequest - status code is 202": (r) =>
             r.status === 202,
-        "RequestCreateResourceRequest - status text is 202 Accepted": (r) =>
-            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {

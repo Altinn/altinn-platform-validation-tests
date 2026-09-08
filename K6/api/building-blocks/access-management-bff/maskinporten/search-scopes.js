@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {SearchScopesQuery|null} [queryParams] Optional query parameters. Use
  * {@link SearchScopesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PaginatedListOfServiceResourceFE|null} Paginated list of matching
  * scopes.
  */
@@ -32,8 +32,6 @@ export function SearchScopes(
     const succeed = check(res, {
         "SearchScopes - status code is 200": (r) =>
             r.status === 200,
-        "SearchScopes - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

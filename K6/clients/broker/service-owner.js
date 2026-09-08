@@ -42,7 +42,7 @@ class ServiceOwnerClient {
      *
      * @param {ServiceOwnerInitializeExt} request
      * Service owner initialization request.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -79,7 +79,7 @@ class ServiceOwnerClient {
     /**
      * Gets the service owner for the calling organization within the broker service.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">}
      * Service owner overview information.

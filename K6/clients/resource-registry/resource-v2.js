@@ -39,7 +39,7 @@ class ResourceV2Client {
      *
      * @param {string} id Resource identifier.
      * @param {ResourcePolicyRightsQuery|null} [query] Optional query parameters.
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -53,10 +53,9 @@ class ResourceV2Client {
         let url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy/rights`;
 
         if (query !== null) {
-            const params = [];
+            const params = /** @type {string[]} */ ([]);
 
-            Object.keys(query).forEach((key) => {
-                const value = query[key];
+            Object.entries(query).forEach(([key, value]) => {
 
                 if (value === undefined || value === null) {
                     return;

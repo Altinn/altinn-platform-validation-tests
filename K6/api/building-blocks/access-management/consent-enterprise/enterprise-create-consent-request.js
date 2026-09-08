@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnterpriseClient} enterpriseClient Client for the Enterprise API.
  * @param {ConsentRequestDto} request Consent request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ConsentRequestDetailsDto|null} Created consent request details.
  */
 export function EnterpriseCreateConsentRequest(
@@ -35,8 +35,6 @@ export function EnterpriseCreateConsentRequest(
     const succeed = check(res, {
         "EnterpriseCreateConsentRequest - status code is 201": (r) =>
             r.status === 201,
-        "EnterpriseCreateConsentRequest - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

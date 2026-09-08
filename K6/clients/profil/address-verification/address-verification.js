@@ -46,7 +46,7 @@ class AddressVerificationClient {
     /**
      * Gets all verified addresses for the current user.
      *
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -84,7 +84,7 @@ class AddressVerificationClient {
      * @param {AddressVerificationRequest} request
      * Request body. Prefer using
      * {@link AddressVerificationRequestBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -126,7 +126,7 @@ class AddressVerificationClient {
      * @param {AddressCodeSendRequest} request
      * Request body. Prefer using
      * {@link AddressCodeSendRequestBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -168,7 +168,7 @@ class AddressVerificationClient {
      * @param {AddressCodeResendRequest} request
      * Request body. Prefer using
      * {@link AddressCodeResendRequestBuilder}.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

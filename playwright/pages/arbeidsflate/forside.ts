@@ -1,6 +1,8 @@
 import { expect, Page } from "@playwright/test";
-import { baseUrls } from "../../config/environment";
+import { baseUrls, TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
+import { gaaTil } from "../felles/navigasjon";
+import { assertFlateUtlogget } from "../felles/utlogget";
 import { Side } from "../side";
 
 export class ArbeidsflateForside implements Side {
@@ -9,11 +11,16 @@ export class ArbeidsflateForside implements Side {
     constructor(private page: Page, private meny = new Meny(page)) { }
 
     async navigateTo() {
-        await this.page.goto(this.url);
+        await gaaTil(this.page, this.url);
+    }
+
+    // Flatene bak innlogging svarer likt for en utlogget bruker, så påstanden
+    // ligger i `assertFlateUtlogget`.
+    async assertLoggedOut(user: TestUser) {
+        await assertFlateUtlogget(this.page, user);
     }
 
     async assertLoggedIn() {
-        await expect(this.page, 'Er på arbeidsflate forside').toHaveURL(this.url);
         await this.meny.assertLoggedIn();
 
         // Utkast-lenken i sidemenyen finnes bare på innboksen, og href-en er den

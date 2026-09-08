@@ -58,7 +58,7 @@ class ConnectionClient {
      * Gets the right holders of a reportee.
      *
      * @param {number} partyId Party id of the reportee.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReporteeRightHolders(partyId, labels = null) {
@@ -95,7 +95,7 @@ class ConnectionClient {
      *
      * @param {DeleteReporteeConnectionQuery|null} [query] Optional query
      * parameters. Prefer using {@link DeleteReporteeConnectionQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteReporteeConnection(query = null, labels = null) {
@@ -149,7 +149,7 @@ class ConnectionClient {
      * @param {string} partyUuid Party UUID of the reportee.
      * @param {ValidatePersonInput|null} [body] The person to validate. Prefer
      * using {@link ValidatePersonInputBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ValidatePerson(partyUuid, body = null, labels = null) {
@@ -196,7 +196,7 @@ class ConnectionClient {
      * query parameter must be given, not both.
      * @param {CreateRightHolderQuery|null} [query] Optional query parameters.
      * Prefer using {@link CreateRightHolderQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateRightHolder(partyUuid, body = null, query = null, labels = null) {
@@ -252,7 +252,7 @@ class ConnectionClient {
      *
      * @param {GetRightHoldersQuery|null} [query] Optional query parameters. Prefer
      * using {@link GetRightHoldersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRightHolders(query = null, labels = null) {
@@ -301,7 +301,7 @@ class ConnectionClient {
      *
      * @param {GetSimplifiedConnectionsQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetSimplifiedConnectionsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSimplifiedConnections(query = null, labels = null) {

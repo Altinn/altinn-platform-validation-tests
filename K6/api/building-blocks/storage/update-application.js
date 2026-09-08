@@ -11,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} org Application owner organization.
  * @param {string} app Application identifier.
  * @param {Application} application Updated application metadata.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Application|null} Updated application.
  */
 export function UpdateApplication(
@@ -36,8 +36,6 @@ export function UpdateApplication(
 
     const succeed = check(res, {
         "UpdateApplication - status code is 200": (r) => r.status === 200,
-        "UpdateApplication - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

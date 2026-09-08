@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {PartyGroupsClient} partyGroupsClient Client for the API.
  * @param {GroupRequest} request See the client method.
- * @param {{[key: string]: string}} [labels] See the client method.
+ * @param {{[key: string]: string}|null} [labels] See the client method.
  * @returns {GroupResponse|null} Parsed response body, or null when the call failed.
  */
 export function CreatePartyGroup(
@@ -28,8 +28,6 @@ export function CreatePartyGroup(
 
     const succeed = check(res, {
         "CreatePartyGroup - status code is 201": (r) => r.status === 201,
-        "CreatePartyGroup - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

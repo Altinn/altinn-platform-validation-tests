@@ -55,6 +55,10 @@ export function setup() {
     return getOrganizations(__ENV.ENVIRONMENT);
 }
 
+/**
+ * @param {ReturnType<typeof setup>} organizations The organizations from setup.
+ * @returns {void} Nothing. The checks record what the calls returned.
+ */
 export default function (organizations) {
     const organization = getItemFromList(organizations, randomize);
 

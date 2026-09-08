@@ -5,7 +5,7 @@ import { InitializeCorrespondencesResponseExt } from "../../../clients/correspon
 /**
  * Checks attachment ids returned by a correspondence upload operation.
  *
- * @param {InitializeCorrespondencesResponseExt} response API response.
+ * @param {InitializeCorrespondencesResponseExt|null} response API response.
  * @param {number} expectedCount Number of uploaded attachments.
  * @returns {boolean} True if the expected attachment ids were returned.
  */

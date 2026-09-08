@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClientDelegationClient} systemUserClientDelegationClient Client for SystemUserClientDelegation API.
  * @param {string|null} party Party identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SystemUser[]|null} System users.
  */
 export function GetAgents(
@@ -28,8 +28,6 @@ export function GetAgents(
     const succeed = check(res, {
         "GetAgents - status code is 200": (r) =>
             r.status === 200,
-        "GetAgents - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

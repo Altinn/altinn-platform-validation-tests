@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EnterpriseClient} enterpriseClient Client for the Enterprise API.
  * @param {ConsentRequestEventsQuery} query Query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ConsentStatusChangeDtoPaginatedResult|null} Consent request events.
  */
 export function EnterpriseGetConsentRequestEvents(
@@ -32,8 +32,6 @@ export function EnterpriseGetConsentRequestEvents(
     const succeed = check(res, {
         "EnterpriseGetConsentRequestEvents - status code is 200": (r) =>
             r.status === 200,
-        "EnterpriseGetConsentRequestEvents - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

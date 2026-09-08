@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {{[x: string]: string}} queryParams - query parameters for the request
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialogs(
@@ -62,7 +62,7 @@ export function GetDialogs(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {string} dialogId - id of the dialog to get
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {V1ServiceOwnerDialogsQueriesGet_Dialog|null} Parsed response body, or null when the call failed.
  */
 export function GetDialog(
@@ -115,7 +115,7 @@ export function GetDialog(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient TODO: description
  * @param {{[x: string]: string}} queryParams - query parameters for the request
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem|null} Parsed response body, or null when the call failed.
  */
 export function GetEndUserContext(

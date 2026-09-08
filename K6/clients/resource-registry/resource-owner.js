@@ -35,7 +35,7 @@ class ResourceOwnerClient {
     /**
      * Gets the organization list.
      *
-     * @param {{[key: string]: string}} [labels] See the API documentation.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

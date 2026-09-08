@@ -44,7 +44,7 @@ class InstantOrdersClient {
      * Creates and sends an instant SMS notification to a single recipient.
      *
      * @param {InstantSmsNotificationOrderRequestExt} request SMS notification payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -80,7 +80,7 @@ class InstantOrdersClient {
      * Creates and sends an instant email notification to a single recipient.
      *
      * @param {InstantEmailNotificationOrderRequestExt} request Email notification payload.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -118,7 +118,7 @@ class InstantOrdersClient {
      * POST /future/orders/instant
      *
      * @param {InstantNotificationOrderRequestExt} request Instant order.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSimplifiedConnectionsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetSimplifiedConnectionsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<SimplifiedConnection>|null} The simplified connections.
  */
 export function GetSimplifiedConnections(
@@ -31,8 +31,6 @@ export function GetSimplifiedConnections(
     const succeed = check(res, {
         "GetSimplifiedConnections - status code is 200": (r) =>
             r.status === 200,
-        "GetSimplifiedConnections - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -9,8 +9,8 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AppClient} appClient Client for the App API.
  * @param {AppPartyEventsQuery|null} [query] Optional query parameters.
- * @param {string} [person] Person number header value.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {string|null} [person] Person number header value.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {CloudEvent[]|null} Cloud events.
  */
 export function AppGetByParty(
@@ -34,8 +34,6 @@ export function AppGetByParty(
     const succeed = check(res, {
         "AppGetByParty - status code is 200": (r) =>
             r.status === 200,
-        "AppGetByParty - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

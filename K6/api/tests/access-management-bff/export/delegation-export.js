@@ -2,7 +2,7 @@ import exec from "k6/execution";
 
 import { DelegationExportClient, GetDelegationExportQueryBuilder } from "../../../../clients/access-management-bff/delegation-export/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetDelegationExport } from "../../../building-blocks/access-management-bff/delegation-export/index.js";
 import { getTokenOpts } from "./commons.js";
@@ -17,11 +17,6 @@ export const options = getOptions(
     [label],
 );
 
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {DelegationExportClient | undefined} */
-let delegationExportApiClient = undefined;
-
 /**
  * Creates and caches API clients used by the scenario.
  *
@@ -33,25 +28,27 @@ let delegationExportApiClient = undefined;
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
-function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
 
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (delegationExportApiClient == undefined) {
-        delegationExportApiClient = new DelegationExportClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    return [delegationExportApiClient, tokenGenerator];
-}
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+
+    /** @type {[DelegationExportClient, PersonalTokenGenerator]} */
+    const clients = [
+        new DelegationExportClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Setup function to segment data for VUs.

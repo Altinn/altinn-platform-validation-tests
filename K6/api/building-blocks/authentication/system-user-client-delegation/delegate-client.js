@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {SystemUserClientDelegationClient} systemUserClientDelegationClient Client for SystemUserClientDelegation API.
  * @param {string} agent System user id.
  * @param {string} client Client id.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ClientDelegationResponse|null} Delegation response.
  */
 export function DelegateClient(
@@ -35,8 +35,6 @@ export function DelegateClient(
     const succeed = check(res, {
         "DelegateClient - status code is 200": (r) =>
             r.status === 200,
-        "DelegateClient - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

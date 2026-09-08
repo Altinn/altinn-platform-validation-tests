@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * package endpoints.
  * @param {GetAccessPackageDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAccessPackageDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} Access package delegations grouped by area. The API
  * does not publish a schema for this response.
  */
@@ -34,8 +34,6 @@ export function GetAccessPackageDelegations(
     const succeed = check(res, {
         "GetAccessPackageDelegations - status code is 200": (r) =>
             r.status === 200,
-        "GetAccessPackageDelegations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

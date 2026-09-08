@@ -54,7 +54,7 @@ class ChangeRequestSystemUserClient {
      * @param {ChangeRequestSystemUser} request Change request payload.
      * @param {string|null} correlationId Correlation identifier.
      * @param {string|null} systemUserId System user identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -115,7 +115,7 @@ class ChangeRequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.read` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -152,7 +152,7 @@ class ChangeRequestSystemUserClient {
      * Requires the `altinn:authentication/systemuser.request.write` scope.
      *
      * @param {string} requestId Request identifier.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -191,7 +191,7 @@ class ChangeRequestSystemUserClient {
      * @param {string} systemId System identifier.
      * @param {string} orgNo Organisation number.
      * @param {string} externalRef External reference.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
@@ -234,7 +234,7 @@ class ChangeRequestSystemUserClient {
      *
      * @param {string} systemId System identifier.
      * @param {GuidOpaque|null} token Optional continuation token.
-     * @param {{[key: string]: string}} [labels]
+     * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */

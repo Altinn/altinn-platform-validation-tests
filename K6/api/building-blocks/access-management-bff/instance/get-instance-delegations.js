@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetInstanceDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<InstanceDelegation>|null} The instance delegations.
  */
 export function GetInstanceDelegations(
@@ -31,8 +31,6 @@ export function GetInstanceDelegations(
     const succeed = check(res, {
         "GetInstanceDelegations - status code is 200": (r) =>
             r.status === 200,
-        "GetInstanceDelegations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

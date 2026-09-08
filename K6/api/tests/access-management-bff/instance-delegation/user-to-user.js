@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 import exec from "k6/execution";
 
 import { GetAccessPackageDelegationCheckQueryBuilder } from "../../../../clients/access-management-bff/access-package/index.js";
@@ -35,14 +35,7 @@ import {
 } from "../../../building-blocks/access-management-bff/user/index.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
-import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts } from "./commons.js";
-
-// serviceowner which will create a dialog.
-// The yt serviceOwner is different from the other environments.
-let serviceOwnerOrgNo = "991825827";
-if (__ENV.ENVIRONMENT === "yt01") {
-    serviceOwnerOrgNo = "713431400";
-}
+import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts, SERVICE_OWNER_ORG_NO } from "./commons.js";
 
 // List of resources to test with. Use only one for now,
 // make sure to have the resource created in the environment before running the test, and that the service owner owns it,
@@ -169,23 +162,24 @@ export default function (data) {
         accessPackage: bffAccessPackageApiClient,
         graphql: graphqlClient,
         tokenGenerator,
-    } = getClients(serviceOwnerOrgNo);
+    } = getClients();
     const { from, to } = getFromTo(data[exec.vu.idInTest - 1]);
     const resource = getItemFromList(resources);
-    let dialogId = null;
-
     // create a dialog to have an instance to delegate on, and to be able to test with a realistic instance in the access management API
-    group(group0Label, function () {
-        const resp = CreateDialog(
+    const dialogId = group(group0Label, function () {
+        return CreateDialog(
             serviceOwnerApiClient,
             from.ssn,
             resource,
-            serviceOwnerOrgNo,
+            SERVICE_OWNER_ORG_NO,
             createDialog,
             false,
         );
-        dialogId = resp;
     });
+
+    if (dialogId === null) {
+        fail("cannot delegate on an instance: creating the dialog returned no dialog id");
+    }
 
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(from.userId, from.partyUuid));
 

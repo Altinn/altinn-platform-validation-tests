@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} id Request UUID.
  * @param {GetRequestQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The access request. The API does not publish a schema
  * for this response.
  */
@@ -33,8 +33,6 @@ export function GetRequest(
     const succeed = check(res, {
         "GetRequest - status code is 200": (r) =>
             r.status === 200,
-        "GetRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

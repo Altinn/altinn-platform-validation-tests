@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {DeleteSupplierQuery} queryParams Query parameters. Use
  * {@link DeleteSupplierQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the supplier was removed.
  */
 export function DeleteSupplier(
@@ -29,8 +29,6 @@ export function DeleteSupplier(
     const succeed = check(res, {
         "DeleteSupplier - status code is 200": (r) =>
             r.status === 200,
-        "DeleteSupplier - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

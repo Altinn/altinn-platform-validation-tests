@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {AccessListPagedQuery|null} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceConnectionDtoAggregateVersionVersionedPaginated|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsGetResourceConnections(
@@ -37,8 +37,6 @@ export function AccessListsGetResourceConnections(
     const succeed = check(res, {
         "AccessListsGetResourceConnections - status code is 200": (r) =>
             r.status === 200,
-        "AccessListsGetResourceConnections - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

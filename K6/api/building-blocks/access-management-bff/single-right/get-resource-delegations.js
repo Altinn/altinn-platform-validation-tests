@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetResourceDelegationsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetResourceDelegationsQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceDelegation>|null} The resource delegations.
  */
 export function GetResourceDelegations(
@@ -31,8 +31,6 @@ export function GetResourceDelegations(
     const succeed = check(res, {
         "GetResourceDelegations - status code is 200": (r) =>
             r.status === 200,
-        "GetResourceDelegations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

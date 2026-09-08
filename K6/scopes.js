@@ -39,6 +39,7 @@ export const AltinnScopes = {
         },
 
         SYSTEMUSER: {
+            ADMIN: "altinn:authentication/systemuser.admin",
             REQUEST: {
                 READ: "altinn:authentication/systemuser.request.read",
                 WRITE: "altinn:authentication/systemuser.request.write"
@@ -77,6 +78,16 @@ export const AltinnScopes = {
     BROKERSERVICE: {
         READ: "altinn:brokerservice.read",
         WRITE: "altinn:brokerservice.write"
+    },
+
+    CLIENTDELEGATIONS: {
+        READ: "altinn:clientdelegations.read",
+        WRITE: "altinn:clientdelegations.write",
+
+        MYCLIENTS: {
+            READ: "altinn:clientdelegations/myclients.read",
+            WRITE: "altinn:clientdelegations/myclients.write"
+        }
     },
 
     CONSENTREQUESTS: {

@@ -1,8 +1,9 @@
 import { testMedFlater as test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
-// Ikke prod: testen går gjennom ID-porten-skjermbildene, som bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02");
+// Endrer ingen data. I prod går innloggingen via mockporten, siden
+// TestID-skjermbildene bare finnes i testmiljøene.
+runInEnvironment("at23", "tt02", "prod");
 
 const flater: { start: Flate; landing: Flate }[] = [
   { start: "arbeidsflate", landing: "arbeidsflate" },
@@ -25,7 +26,7 @@ for (const { start, landing } of flater) {
     });
 
     await test.step("Bruker logger inn", async () => {
-      await innlogging.viaIdporten(user);
+      await innlogging.viaInnloggingsflyten(sider[landing], user);
     });
 
     await test.step(`Bruker skal være innlogget på ${landing}`, async () => {

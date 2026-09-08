@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {string} resource Resource identifier.
  * @param {Array<string>|null} [rights]
  * Optional rights.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {RequestDto|null} Created request.
  */
@@ -42,8 +42,6 @@ export function CreateResourceRequest(
     const succeed = check(res, {
         "CreateResourceRequest - status code is 200": (r) =>
             r.status === 200,
-        "CreateResourceRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

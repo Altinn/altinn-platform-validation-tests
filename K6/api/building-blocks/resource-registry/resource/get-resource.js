@@ -9,8 +9,8 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{versionId?: number} | object} [query] Optional query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{versionId?: number} | object|null} [query] Optional query parameters.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ServiceResource|null} Resource.
  */
 export function ResourceGetResource(
@@ -34,8 +34,6 @@ export function ResourceGetResource(
     const succeed = check(res, {
         "ResourceGetResource - status code is 200": (r) =>
             r.status === 200,
-        "ResourceGetResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

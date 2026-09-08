@@ -700,7 +700,7 @@ class DeleteMyClientResourcesQueryBuilder {
  */
 class DelegationBatchInputDtoBuilder {
     constructor() {
-        this.body = { values: [] };
+        this.body = /** @type {DelegationBatchInputDto} */ ({ values: [] });
     }
 
     /**
@@ -711,6 +711,10 @@ class DelegationBatchInputDtoBuilder {
      * @returns {DelegationBatchInputDtoBuilder} This builder, for chaining.
      */
     addPermission(role, packages) {
+        if (this.body.values === null) {
+            this.body.values = [];
+        }
+
         this.body.values.push({ role, packages });
         return this;
     }
@@ -735,7 +739,7 @@ class DelegationBatchInputDtoBuilder {
  */
 class ResourceDelegationBatchInputDtoBuilder {
     constructor() {
-        this.body = { values: [] };
+        this.body = /** @type {ResourceDelegationBatchInputDto} */ ({ values: [] });
     }
 
     /**
@@ -746,6 +750,10 @@ class ResourceDelegationBatchInputDtoBuilder {
      * @returns {ResourceDelegationBatchInputDtoBuilder} This builder, for chaining.
      */
     addPermission(role, resources) {
+        if (this.body.values === null) {
+            this.body.values = [];
+        }
+
         this.body.values.push({ role, resources });
         return this;
     }

@@ -17,8 +17,8 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {Array<PartyUrn>} urns The party identifiers to look up.
- * @param {Array<PartyFieldInclude>} [fields] The fields to include in the response.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {Array<PartyFieldInclude>|null} [fields] The fields to include in the response.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<Party>|null} The parties found, or null on failure.
  */
 export function AccessManagementPartiesQuery(

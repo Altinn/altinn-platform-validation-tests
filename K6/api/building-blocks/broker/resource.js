@@ -11,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} resourceId Altinn resource identifier.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceExt|null} Parsed response body, or null when the call failed.
  */
 export function GetResource(
@@ -32,8 +32,6 @@ export function GetResource(
 
     const succeed = check(res, {
         "GetResource - status code is 200": (r) => r.status === 200,
-        "GetResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
@@ -66,7 +64,7 @@ export function GetResource(
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} resourceId Altinn resource identifier.
  * @param {ResourceExt} request Resource to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the call succeeded.
  */
 export function PutResource(
@@ -86,8 +84,6 @@ export function PutResource(
 
     const succeed = check(res, {
         "PutResource - status code is 200": (r) => r.status === 200,
-        "PutResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

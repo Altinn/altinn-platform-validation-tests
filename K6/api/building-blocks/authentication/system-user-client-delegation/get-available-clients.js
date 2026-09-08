@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SystemUserClientDelegationClient} systemUserClientDelegationClient Client for SystemUserClientDelegation API.
  * @param {string|null} agent System user id.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ClientInfoClientInfoPaginated|null} Available clients.
  */
 export function GetAvailableClients(
@@ -32,8 +32,6 @@ export function GetAvailableClients(
     const succeed = check(res, {
         "GetAvailableClients - status code is 200": (r) =>
             r.status === 200,
-        "GetAvailableClients - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

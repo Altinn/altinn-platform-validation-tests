@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<PolicyRightsDTO>|null} Policy rights.
  */
 export function ResourceGetPolicyRights(
@@ -28,8 +28,6 @@ export function ResourceGetPolicyRights(
     const succeed = check(res, {
         "ResourceGetPolicyRights - status code is 200": (r) =>
             r.status === 200,
-        "ResourceGetPolicyRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

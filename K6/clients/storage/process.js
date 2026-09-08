@@ -50,7 +50,7 @@ class ProcessClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {ProcessState} request Process state to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateProcessState(instanceOwnerPartyId, instanceGuid, request, labels = null) {
@@ -82,7 +82,7 @@ class ProcessClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetProcessHistory(instanceOwnerPartyId, instanceGuid, labels = null) {
@@ -114,7 +114,7 @@ class ProcessClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {ProcessStateUpdate} request Process state and events to store.
-     * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateProcessStateAndEvents(instanceOwnerPartyId, instanceGuid, request, labels = null) {

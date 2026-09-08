@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {RolesClient} rolesClient Client for the Roles API.
  * @param {RolesGetRolePackagesQuery} query Query parameters.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PackageDto|null} Role package.
  */
 export function RolesGetRolePackages(
@@ -28,8 +28,6 @@ export function RolesGetRolePackages(
     const succeed = check(res, {
         "RolesGetRolePackages - status code is 200": (r) =>
             r.status === 200,
-        "RolesGetRolePackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

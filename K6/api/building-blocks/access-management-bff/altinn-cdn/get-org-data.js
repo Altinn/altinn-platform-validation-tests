@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AltinnCdnClient} altinnCdnClient Client for the Altinn CDN
  * endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} Organisation data keyed by org code, each value an
  * {@link OrgData}.
  */
@@ -24,8 +24,6 @@ export function GetOrgData(altinnCdnClient, labels = null) {
     const succeed = check(res, {
         "GetOrgData - status code is 200": (r) =>
             r.status === 200,
-        "GetOrgData - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

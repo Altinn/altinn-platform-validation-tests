@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the favorite parties for the current user.
  *
  * @param {FavoritesClient} favoritesClient Client for the Favorites API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {GroupResponse|null} Favorite parties group.
  */
 export function GetFavorites(
@@ -26,8 +26,6 @@ export function GetFavorites(
     const succeed = check(res, {
         "GetFavorites - status code is 200": (r) =>
             r.status === 200,
-        "GetFavorites - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

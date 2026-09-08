@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {InstantOrdersClient} instantOrdersClient Client for the Instant Orders API.
  * @param {InstantSmsNotificationOrderRequestExt} request SMS notification payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {InstantNotificationOrderResponseExt|null} Notification order response.
  */
 export function InstantOrdersCreateSms(
@@ -31,9 +31,6 @@ export function InstantOrdersCreateSms(
     const succeed = check(res, {
         "InstantOrdersCreateSms - status code is 200 or 201": (r) =>
             r.status === 200 || r.status === 201,
-        "InstantOrdersCreateSms - status text is 200 OK or 201 Created": (r) =>
-            r.status_text === "200 OK" ||
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

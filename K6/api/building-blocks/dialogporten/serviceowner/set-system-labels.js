@@ -12,9 +12,9 @@ import { withRetries } from "../../common/retry.js";
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
  * @param {string} dialogId - id of the dialog
  * @param {V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest} request - labels to add and remove
- * @param {string} enduserId - the end user to act on behalf of
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [enduserId] - the end user to act on behalf of
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function SetEndUserContextSystemLabels(
@@ -55,8 +55,8 @@ export function SetEndUserContextSystemLabels(
  *
  * @param {ServiceOwnerApiClient} serviceOwnerApiClient - client to interact with the API
  * @param {V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel} request - dialogs and the labels to add and remove
- * @param {string} enduserId - the end user to act on behalf of
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [enduserId] - the end user to act on behalf of
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function BulkSetEndUserContextSystemLabels(

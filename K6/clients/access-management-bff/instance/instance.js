@@ -63,7 +63,7 @@ class InstanceClient {
      *
      * @param {GetInstanceDelegationsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetInstanceDelegationsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceDelegations(query = null, labels = null) {
@@ -112,7 +112,7 @@ class InstanceClient {
      *
      * @param {DeleteInstanceDelegationQuery|null} [query] Optional query
      * parameters. Prefer using {@link DeleteInstanceDelegationQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstanceDelegation(query = null, labels = null) {
@@ -165,7 +165,7 @@ class InstanceClient {
      *
      * @param {GetInstanceDelegationCheckQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetInstanceDelegationCheckQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceDelegationCheck(query = null, labels = null) {
@@ -216,7 +216,7 @@ class InstanceClient {
      * Prefer using {@link CreateInstanceRightsQueryBuilder}.
      * @param {InstanceRightsDelegationDto|null} [body] The person and the rights
      * to delegate. Prefer using {@link InstanceRightsDelegationDtoBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceRights(query = null, body = null, labels = null) {
@@ -270,7 +270,7 @@ class InstanceClient {
      *
      * @param {GetInstanceRightsQuery|null} [query] Optional query parameters.
      * Prefer using {@link GetInstanceRightsQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceRights(query = null, labels = null) {
@@ -320,7 +320,7 @@ class InstanceClient {
      * @param {UpdateInstanceRightsQuery|null} [query] Optional query parameters.
      * Prefer using {@link UpdateInstanceRightsQueryBuilder}.
      * @param {Array<string>|null} [body] Keys of the rights to keep.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateInstanceRights(query = null, body = null, labels = null) {
@@ -374,7 +374,7 @@ class InstanceClient {
      *
      * @param {GetInstanceSimplifiedUsersQuery|null} [query] Optional query
      * parameters. Prefer using {@link GetInstanceSimplifiedUsersQueryBuilder}.
-     * @param {{[key: string]: string}} [labels] Optional k6 request tags.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceSimplifiedUsers(query = null, labels = null) {

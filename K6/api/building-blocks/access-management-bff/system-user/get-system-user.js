@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {number} partyId Party id of the organisation.
  * @param {string} systemUserGuid System user UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The system user. The API does not publish a schema
  * for this response.
  */
@@ -35,8 +35,6 @@ export function GetSystemUser(
     const succeed = check(res, {
         "GetSystemUser - status code is 200": (r) =>
             r.status === 200,
-        "GetSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

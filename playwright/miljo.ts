@@ -9,6 +9,15 @@ export const MILJOER = ["at22", "at23", "tt02", "prod"] as const;
 export type Miljo = (typeof MILJOER)[number];
 
 /**
+ * Miljøet kjøringen går mot. For koden som må gjøre noe annet i prod, som
+ * innloggingen: ID-porten-skjermbildene finnes ikke for en syntetisk bruker der.
+ */
+export function gjeldendeMiljo(): Miljo {
+  // playwright.config.ts har allerede feilet hvis ENVIRONMENT mangler.
+  return process.env.ENVIRONMENT as Miljo;
+}
+
+/**
  * Sier hvilke miljøer testene i fila er satt opp for, og skipper dem i alle andre.
  *
  * Kalles øverst i spec-fila, over describe og test. Deklarasjonen er et opt-in:
@@ -34,8 +43,7 @@ export function runInEnvironment(...miljoer: Miljo[]) {
     );
   }
 
-  // playwright.config.ts har allerede feilet hvis ENVIRONMENT mangler.
-  const miljo = process.env.ENVIRONMENT as Miljo;
+  const miljo = gjeldendeMiljo();
 
   test.skip(
     !miljoer.includes(miljo),

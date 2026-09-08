@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UserClient} userClient Client for the user endpoints.
  * @param {boolean|null} [body] Whether to show deleted entities.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ProfileSettingPreference|null} The updated profile setting
  * preferences.
  */
@@ -25,8 +25,6 @@ export function UpdateShowDeleted(userClient, body = null, labels = null) {
     const succeed = check(res, {
         "UpdateShowDeleted - status code is 200": (r) =>
             r.status === 200,
-        "UpdateShowDeleted - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

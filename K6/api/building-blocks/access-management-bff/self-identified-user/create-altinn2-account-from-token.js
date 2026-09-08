@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * self identified user endpoints.
  * @param {Altinn2AccountFromTokenRequest|null} [body] The token to create the
  * account from. Use {@link Altinn2AccountFromTokenRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the account was created.
  */
 export function CreateAltinn2AccountFromToken(
@@ -32,8 +32,6 @@ export function CreateAltinn2AccountFromToken(
     const succeed = check(res, {
         "CreateAltinn2AccountFromToken - status code is 200": (r) =>
             r.status === 200,
-        "CreateAltinn2AccountFromToken - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

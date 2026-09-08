@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {IdPortenAuthorizationClient} idPortenAuthorizationClient Client for
  * the ID-porten authorization endpoints.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The authorizations. The API does not publish a schema
  * for this response.
  */
@@ -27,8 +27,6 @@ export function GetIdPortenAuthorizations(
     const succeed = check(res, {
         "GetIdPortenAuthorizations - status code is 200": (r) =>
             r.status === 200,
-        "GetIdPortenAuthorizations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

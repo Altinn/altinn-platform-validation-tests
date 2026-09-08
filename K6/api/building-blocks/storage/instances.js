@@ -8,9 +8,9 @@ import { withRetries } from "../common/retry.js";
  * Queries instances across applications.
  *
  * @param {InstancesClient} instancesClient Client for the API.
- * @param {{[key: string]: *}} query Optional query parameters.
- * @param {string} instanceOwnerIdentifier Value for the X-Ai-InstanceOwnerIdentifier header.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: *}|null} [query] Optional query parameters.
+ * @param {string|null} [instanceOwnerIdentifier] Value for the X-Ai-InstanceOwnerIdentifier header.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {InstanceQueryResponse|null} Parsed response body, or null when the call failed.
  */
 export function QueryInstances(
@@ -65,8 +65,8 @@ export function QueryInstances(
  *
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {Instance} request Instance to create.
- * @param {string} appId Application id, e.g. ttd/my-app.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {string|null} [appId] Application id, e.g. ttd/my-app.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function CreateInstance(
@@ -121,7 +121,7 @@ export function CreateInstance(
  *
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {string} instanceGuid Instance UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function GetInstanceByGuid(
@@ -175,7 +175,7 @@ export function GetInstanceByGuid(
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function GetInstance(
@@ -231,8 +231,8 @@ export function GetInstance(
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {boolean} hard Whether to hard delete.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {boolean|null} [hard] Whether to hard delete.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} The deleted instance on a soft delete, or null on a
  * hard delete, which answers 204, and when the call failed.
  */
@@ -297,7 +297,7 @@ export function DeleteInstance(
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function CompleteInstance(
@@ -354,7 +354,7 @@ export function CompleteInstance(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {DataValues} request Data values to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function UpdateDataValues(
@@ -413,7 +413,7 @@ export function UpdateDataValues(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {PresentationTexts} request Presentation texts to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function UpdatePresentationTexts(
@@ -471,8 +471,8 @@ export function UpdatePresentationTexts(
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {string} status Read status to set.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {string|null} [status] Read status to set.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function UpdateReadStatus(
@@ -531,7 +531,7 @@ export function UpdateReadStatus(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {Substatus} request Substatus to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function UpdateSubStatus(

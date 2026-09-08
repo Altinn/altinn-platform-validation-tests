@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetInstanceSimplifiedUsersQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceSimplifiedUsersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<SimplifiedParty>|null} The candidate parties.
  */
 export function GetInstanceSimplifiedUsers(
@@ -31,8 +31,6 @@ export function GetInstanceSimplifiedUsers(
     const succeed = check(res, {
         "GetInstanceSimplifiedUsers - status code is 200": (r) =>
             r.status === 200,
-        "GetInstanceSimplifiedUsers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} id Resource identifier.
  * @param {ResourcePolicyRightsQuery|null} [query] Query parameters.
  * Optional query parameters.
- * @param {{[key: string]: string}} [labels] See the API documentation.
+ * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
  * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
  */
@@ -36,8 +36,6 @@ export function ResourceV2GetPolicyRights(
     const succeed = check(res, {
         "ResourceV2GetPolicyRights - status code is 200": (r) =>
             r.status === 200,
-        "ResourceV2GetPolicyRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

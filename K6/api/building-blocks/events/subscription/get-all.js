@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Retrieves all subscriptions for the authorized consumer.
  *
  * @param {SubscriptionClient} subscriptionClient Client for the Subscription API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {SubscriptionList|null} Subscription list.
  */
 export function SubscriptionGetAll(
@@ -26,8 +26,6 @@ export function SubscriptionGetAll(
     const succeed = check(res, {
         "SubscriptionGetAll - status code is 200": (r) =>
             r.status === 200,
-        "SubscriptionGetAll - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -12,7 +12,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link CreateResourceRightsQueryBuilder}.
  * @param {RightKeyListDto|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True when the request succeeds.
  */
@@ -34,8 +34,6 @@ export function CreateResourceRights(
     const succeed = check(res, {
         "CreateResourceRights - status code is 201": (r) =>
             r.status === 201,
-        "CreateResourceRights - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

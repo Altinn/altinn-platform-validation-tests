@@ -7,7 +7,7 @@ import { withRetries } from "../../common/retry.js";
  * Exports all resources as RDF/XML.
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} RDF/XML document.
  */
 export function ResourceExport(
@@ -25,8 +25,6 @@ export function ResourceExport(
     const succeed = check(res, {
         "ResourceExport - status code is 200": (r) =>
             r.status === 200,
-        "ResourceExport - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

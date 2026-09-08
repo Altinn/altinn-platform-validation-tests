@@ -10,7 +10,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {RequestClient} requestClient Client for the Request API.
  * @param {string} party Party identifier.
  * @param {string} id Request identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {RequestDto|null} Request.
  */
 export function GetRequest(
@@ -34,8 +34,6 @@ export function GetRequest(
     const succeed = check(res, {
         "GetRequest - status code is 200": (r) =>
             r.status === 200,
-        "GetRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

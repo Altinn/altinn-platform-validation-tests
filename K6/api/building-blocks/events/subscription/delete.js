@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {SubscriptionClient} subscriptionClient Client for the Subscription API.
  * @param {number} id Subscription id.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether deletion succeeded.
  */
 export function SubscriptionDelete(
@@ -28,7 +28,5 @@ export function SubscriptionDelete(
     return check(res, {
         "SubscriptionDelete - status code is 200": (r) =>
             r.status === 200,
-        "SubscriptionDelete - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 }

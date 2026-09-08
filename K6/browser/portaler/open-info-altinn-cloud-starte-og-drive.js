@@ -28,7 +28,7 @@ export default async function () {
             .textContent();
 
         check(text, {
-            "Text includes Starte og drive bedrift": (h) => h.includes("Starte og drive bedrift"),
+            "Text includes Starte og drive bedrift": (h) => h?.includes("Starte og drive bedrift") === true,
         });
     }
     catch (error) {

@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link AgentClientAccessPackagesQueryBuilder}.
  * @param {DelegationBatchInputDto|null} [body]
  * Request body. Use {@link DelegationBatchInputBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<DelegationDto>} The delegations that were revoked.
  */
 export function DeleteAgentAccessPackages(
@@ -37,8 +37,6 @@ export function DeleteAgentAccessPackages(
     const succeed = check(res, {
         "DeleteAgentAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "DeleteAgentAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

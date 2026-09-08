@@ -11,10 +11,10 @@ import { withRetries } from "../common/retry.js";
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {*} body Binary file content.
- * @param {string} dataType Data type id.
- * @param {Array<string>} refs Ids of related data elements.
- * @param {string} generatedFromTask Task the element was generated from.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {string|null} [dataType] Data type id.
+ * @param {Array<string>|null} [refs] Ids of related data elements.
+ * @param {string|null} [generatedFromTask] Task the element was generated from.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
 export function CreateData(
@@ -79,7 +79,7 @@ export function CreateData(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {import("k6/http").RefinedResponse<"text">} The HTTP response. The body is the file
  * content, so the response is returned rather than a boolean.
  */
@@ -120,9 +120,9 @@ export function GetData(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {*} body Binary file content.
- * @param {Array<string>} refs Ids of related data elements.
- * @param {string} generatedFromTask Task the element was generated from.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {Array<string>|null} [refs] Ids of related data elements.
+ * @param {string|null} [generatedFromTask] Task the element was generated from.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
 export function UpdateData(
@@ -187,8 +187,8 @@ export function UpdateData(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
- * @param {boolean} delay Whether to delay the delete.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {boolean|null} [delay] Whether to delay the delete.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
 export function DeleteData(
@@ -248,7 +248,7 @@ export function DeleteData(
  * @param {DataClient} dataClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElementList|null} Parsed response body, or null when the call failed.
  */
 export function GetDataElements(
@@ -306,7 +306,7 @@ export function GetDataElements(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {DataElement} request Data element metadata to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
 export function UpdateDataElement(
@@ -368,7 +368,7 @@ export function UpdateDataElement(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {FileScanStatus} request File scan status to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateFileScanStatus(

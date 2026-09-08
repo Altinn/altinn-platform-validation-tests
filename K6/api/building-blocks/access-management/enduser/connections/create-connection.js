@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link CreateConnectionQueryBuilder}.
  * @param {PersonInput|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {AssignmentDto|null} Created assignment.
  */
@@ -38,8 +38,6 @@ export function CreateConnection(
     const succeed = check(res, {
         "CreateConnection - status code is 200": (r) =>
             r.status === 200,
-        "CreateConnection - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

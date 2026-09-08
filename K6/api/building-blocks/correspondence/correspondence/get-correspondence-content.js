@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {CorrespondenceClient} correspondenceClient Client for the Correspondence API.
  * @param {string} correspondenceId Correspondence UUID.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Message body or null when request fails.
  */
 export function GetCorrespondenceContent(
@@ -29,8 +29,6 @@ export function GetCorrespondenceContent(
         "GetCorrespondenceContent - status code is 200": (r) =>
             r.status === 200,
 
-        "GetCorrespondenceContent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

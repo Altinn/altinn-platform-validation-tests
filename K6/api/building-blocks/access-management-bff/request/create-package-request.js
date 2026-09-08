@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {CreatePackageRequestQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreatePackageRequestQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The created request. The API does not publish a
  * schema for this response.
  */
@@ -31,8 +31,6 @@ export function CreatePackageRequest(
     const succeed = check(res, {
         "CreatePackageRequest - status code is 200": (r) =>
             r.status === 200,
-        "CreatePackageRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

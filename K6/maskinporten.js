@@ -38,6 +38,17 @@ function utf8Bytes(value) {
     return encoding.b64decode(encoding.b64encode(value));
 }
 
+/**
+ * Reads the message off a caught value, which the runtime does not guarantee
+ * to be an `Error`.
+ *
+ * @param {unknown} error - The caught value.
+ * @returns {string} The error message, or the value rendered as a string.
+ */
+function errorMessage(error) {
+    return error instanceof Error ? error.message : String(error);
+}
+
 const TAGS = {
     getToken: {
         token_generator: "maskinporten-token-generator",
@@ -47,10 +58,20 @@ const TAGS = {
 };
 
 /**
+ * The `authorization_details` entry that asks for a system user token.
+ *
+ * @typedef {object} SystemUserAuthorizationDetail
+ * @property {"urn:altinn:systemuser"} type The only type Maskinporten takes here.
+ * @property {{authority: "iso6523-actorid-upis", ID: string}} systemuser_org The organisation that holds the system user, as an ISO 6523 identifier.
+ * @property {string} [externalRef] External reference of the system user, for a client that holds more than one for the same organisation.
+ */
+
+/**
  * Options the Maskinporten token builder produces.
  *
  * @typedef {object} MaskinportenTokenOptions
  * @property {string} [scopes] Space separated scopes to request.
+ * @property {SystemUserAuthorizationDetail[]} [authorizationDetails] What the grant asks for beyond the scopes. Set by withSystemUser.
  */
 
 /**
@@ -74,6 +95,41 @@ export class MaskinportenTokenBuilder {
     }
 
     /**
+     * Asks for a system user token rather than an ordinary enterprise one.
+     *
+     * Maskinporten answers this by looking the system user up in Altinn from the
+     * client the grant is signed by and the organisation named here, and puts what
+     * it found in the `authorization_details` claim of the token: the system user
+     * id and the system it belongs to. A lookup that finds nothing is answered with
+     * 404 and error code MP-303, so the token endpoint, not Altinn, is where a
+     * system user that does not exist shows up.
+     *
+     * Documented at https://docs.digdir.no/docs/Maskinporten/maskinporten_func_systembruker
+     *
+     * @param {string} systemUserOrgNo - Organisation number of the organisation that holds the system user.
+     * @param {string|null} [externalRef] - External reference of the system user. Leave it out when the client holds a single system user for the organisation, which is what Maskinporten then resolves to.
+     * @returns {MaskinportenTokenBuilder} This builder, for chaining.
+     */
+    withSystemUser(systemUserOrgNo, externalRef = null) {
+        /** @type {SystemUserAuthorizationDetail} */
+        const detail = {
+            type: "urn:altinn:systemuser",
+            systemuser_org: {
+                authority: "iso6523-actorid-upis",
+                ID: `0192:${systemUserOrgNo}`,
+            },
+        };
+
+        if (externalRef !== null) {
+            detail.externalRef = externalRef;
+        }
+
+        this.options.authorizationDetails = [detail];
+
+        return this;
+    }
+
+    /**
      * @returns {MaskinportenTokenOptions} The built options, to pass to the generator.
      */
     build() {
@@ -89,10 +145,11 @@ export class MaskinportenAccessTokenGenerator {
     #maskinportenClientId;
     #clientPem;
     #cache = new Map();
+    /** @type {CryptoKey|null} */
     #signingKey = null;
 
     /**
-     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}; `scopes` is the only one used.
+     * @param {MaskinportenTokenOptions} tokenGeneratorOptions - Options from {@link MaskinportenTokenBuilder}: the scopes to ask for, and for a system user token the `authorization_details` withSystemUser built.
      * @param {string} [maskinportenKid=__ENV.MASKINPORTEN_KID] - Key ID of the key registered on the Maskinporten client.
      * @param {string} [maskinportenClientId=__ENV.MASKINPORTEN_CLIENT_ID] - Maskinporten client ID, used as the `iss` claim.
      * @param {string} [clientPem=__ENV.MASKINPORTEN_CLIENT_PEM] - The client's private key as PEM. Quote it in .env so the newlines survive sourcing; literal `\n` sequences are converted back to real line breaks.
@@ -166,8 +223,10 @@ export class MaskinportenAccessTokenGenerator {
      * @returns {Promise<string>} A Maskinporten access token.
      */
     async ensureToken() {
-        const scopes = this.tokenGeneratorOptions.scopes;
-        const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
+        // The builder defaults this, but the typedef leaves it optional, and an
+        // empty scope string is what the token endpoint would reject anyway.
+        const scopes = this.tokenGeneratorOptions.scopes ?? "";
+        const cacheKey = this.#cacheKey(scopes);
         const cached = this.#cache.get(cacheKey);
 
         if (cached && cached.expiresAt > Date.now()) {
@@ -196,7 +255,7 @@ export class MaskinportenAccessTokenGenerator {
     getToken() {
         const scopes = this.tokenGeneratorOptions.scopes;
 
-        const cacheKey = `${this.#maskinportenClientId}:${scopes}`;
+        const cacheKey = this.#cacheKey(scopes);
         const cached = this.#cache.get(cacheKey);
 
         if (!cached || cached.expiresAt <= Date.now()) {
@@ -208,6 +267,29 @@ export class MaskinportenAccessTokenGenerator {
         }
 
         return cached.token;
+    }
+
+    /**
+     * The cache key a token is stored under.
+     *
+     * A system user token is a different token for the same client and scopes, and
+     * one per organisation and external ref at that, so what the grant asks for
+     * beyond the scopes has to be part of the key.
+     *
+     * @param {string|undefined} scopes - The scopes the token was asked for.
+     * @returns {string} The cache key.
+     */
+    #cacheKey(scopes) {
+        const authorizationDetails = this.tokenGeneratorOptions.authorizationDetails;
+
+        // Normalised here rather than at the two call sites: ensureToken defaulted an
+        // unset scope to the empty string and getToken did not, so the two looked the
+        // same token up under different keys and getToken reported nothing cached.
+        return [
+            this.#maskinportenClientId,
+            scopes ?? "",
+            authorizationDetails ? JSON.stringify(authorizationDetails) : "",
+        ].join(":");
     }
 
     /**
@@ -242,7 +324,7 @@ export class MaskinportenAccessTokenGenerator {
             return JSON.parse(String(response.body)).access_token;
         } catch (e) {
             throw new Error(
-                `Unable to parse Maskinporten token: ${e.message}`,
+                `Unable to parse Maskinporten token: ${errorMessage(e)}`,
                 { cause: e },
             );
         }
@@ -272,6 +354,13 @@ export class MaskinportenAccessTokenGenerator {
             // This is the lifetime of the grant, not of the access token it returns.
             exp: now + ASSERTION_LIFETIME_SECONDS,
             jti: uuidv4(),
+
+            // Only present when the grant asks for something the scopes cannot
+            // express, which today means a system user token. An ordinary
+            // enterprise grant leaves the claim out rather than sending it empty.
+            ...(this.tokenGeneratorOptions.authorizationDetails?.length
+                ? { authorization_details: this.tokenGeneratorOptions.authorizationDetails }
+                : {}),
         };
 
         const signingKey = await this.#getSigningKey();
@@ -311,7 +400,7 @@ export class MaskinportenAccessTokenGenerator {
             );
         } catch (e) {
             throw new Error(
-                `Unable to import MASKINPORTEN_CLIENT_PEM as a PKCS#8 ${WEBCRYPTO_ALGORITHM.name} key: ${e.message}`,
+                `Unable to import MASKINPORTEN_CLIENT_PEM as a PKCS#8 ${WEBCRYPTO_ALGORITHM.name} key: ${errorMessage(e)}`,
                 { cause: e },
             );
         }
@@ -347,7 +436,7 @@ export class MaskinportenAccessTokenGenerator {
             expirationTimestamp = payload.exp * 1000;
         } catch (e) {
             throw new Error(
-                `Failed to decode JWT payload for expiration: ${e.message}`,
+                `Failed to decode JWT payload for expiration: ${errorMessage(e)}`,
                 { cause: e },
             );
         }

@@ -30,8 +30,6 @@ export function DeleteAttachment(
 
     const succeed = check(res, {
         "DeleteAttachment - status code is 200": (r) => r.status === 200,
-        "DeleteAttachment - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

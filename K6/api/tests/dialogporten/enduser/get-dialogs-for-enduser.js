@@ -15,6 +15,9 @@ const getDialogslabel = { step: "1. get-dialogs-for-enduser" };
 
 export const options = getOptions([getDialogslabel]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [enduserApiClient, tokenGenerator] = getClient();
     const endUser = getItemFromList(data, randomize);

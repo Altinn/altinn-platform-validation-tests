@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} systemUserGuid System user UUID.
  * @param {GetAgentSystemUserCustomersQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetAgentSystemUserCustomersQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {any} The customers. The API does not publish a schema for
  * this response.
  */
@@ -40,8 +40,6 @@ export function GetAgentSystemUserCustomers(
     const succeed = check(res, {
         "GetAgentSystemUserCustomers - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentSystemUserCustomers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

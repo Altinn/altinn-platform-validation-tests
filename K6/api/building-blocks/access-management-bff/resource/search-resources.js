@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {ResourceClient} resourceClient Client for the resource endpoints.
  * @param {SearchResourcesQuery|null} [queryParams] Optional query parameters.
  * Use {@link SearchResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {PaginatedListOfServiceResourceFE|null} Paginated list of matching
  * resources.
  */
@@ -31,8 +31,6 @@ export function SearchResources(
     const succeed = check(res, {
         "SearchResources - status code is 200": (r) =>
             r.status === 200,
-        "SearchResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -12,6 +12,9 @@ import { getClients } from "./common.js";
 // hovedenhet B skal se underenhet C i aktørlista.
 const groupLabel = "dagl-B-får-underenhet-C-i-aktørlista";
 
+/**
+ * @param {ReturnType<typeof import("./common.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const dagligleder = data.testdata.authParties_hovedenhetB.dagligleder;
     let [authorizedPartiesClient] = getClients(dagligleder.userid, dagligleder.partyid, dagligleder.partyuuid, dagligleder.pid);

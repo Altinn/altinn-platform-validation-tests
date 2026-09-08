@@ -18,7 +18,7 @@
  */
 export class DialogSearchVariablesBuilder {
     constructor() {
-        this.variables = {
+        this.variables = /** @type {DialogSearchVariables} */ ({
             partyURIs: [],
             status: [
                 "NOT_APPLICABLE",
@@ -31,7 +31,7 @@ export class DialogSearchVariablesBuilder {
             label: ["DEFAULT"],
             limit: 100,
             searchLanguageCode: "nb",
-        };
+        });
     }
 
     /**

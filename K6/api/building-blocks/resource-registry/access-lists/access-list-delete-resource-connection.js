@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {string} resourceIdentifier Resource identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsDeleteResourceConnection(
@@ -37,8 +37,6 @@ export function AccessListsDeleteResourceConnection(
     const succeed = check(res, {
         "AccessListsDeleteResourceConnection - status code is 200": (r) =>
             r.status === 200,
-        "AccessListsDeleteResourceConnection - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

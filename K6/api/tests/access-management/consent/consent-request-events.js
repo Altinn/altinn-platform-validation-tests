@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { ConsentRequestEventsQueryBuilder } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { randomItem } from "../../../../common-imports.js";
@@ -38,20 +38,26 @@ export default function (orgs) {
     eventsTokenGenerator.setTokenGeneratorOptions(getEventsTokenOpts(org.orgNo));
 
     group("As an organization, I can read my consent request events and follow pagination", function () {
-        let firstPage;
-
-        group("Fetch the first page of consent request events", function () {
+        const firstPage = group("Fetch the first page of consent request events", function () {
             // No filters: walk every event the organization has.
             const query = new ConsentRequestEventsQueryBuilder().Build();
 
-            firstPage = EnterpriseGetConsentRequestEvents(
+            const page = EnterpriseGetConsentRequestEvents(
                 eventsClient,
                 query,
                 getConsentRequestEventsLabel,
             );
 
-            PaginationDomainChecks.CheckPaginatedShape(firstPage, "EnterpriseGetConsentRequestEvents");
-            PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, "EnterpriseGetConsentRequestEvents");
+            // Following next links needs a page to follow them from, so a first page
+            // that is missing or shaped wrong ends the iteration here rather than
+            // failing every check below on the same cause.
+            if (!PaginationDomainChecks.CheckPaginatedShape(page, "EnterpriseGetConsentRequestEvents")) {
+                fail("cannot follow pagination: the first page of consent request events is not a paginated response");
+            }
+
+            PaginationDomainChecks.CheckPaginatedNotEmpty(page, "EnterpriseGetConsentRequestEvents");
+
+            return page;
         });
 
         group("Follow the next-link pagination", function () {

@@ -13,8 +13,8 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} dialogId - id of the dialog
  * @param {string} transmissionId - id of the transmission
  * @param {V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest} request - the transmission to store
- * @param {string} ifMatch - revision to send as the If-Match header
- * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
+ * @param {string|null} [ifMatch] - revision to send as the If-Match header
+ * @param {{[x: string]: string}|null} [labels] - Object containing request labels as key/value pairs.
  * @returns {boolean} Whether the call succeeded.
  */
 export function UpdateTransmission(

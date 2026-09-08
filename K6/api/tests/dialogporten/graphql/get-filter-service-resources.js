@@ -16,6 +16,9 @@ export const options = getOptions([
     getFilterServiceResourcesLabel,
 ]);
 
+/**
+ * @param {ReturnType<typeof import("./common-functions.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     const [graphqlClient, tokenGenerator] = getClient();
     const endUser = getItemFromList(data, randomize);

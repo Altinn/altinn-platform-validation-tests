@@ -9,7 +9,7 @@ import { withRetries } from "../../../common/retry.js";
  *
  * @param {ConnectionsClient} connectionsClient Client for the Connections API.
  * @param {ServiceOwnerAccessPackageDelegation} request Delegation payload.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AssignmentPackageDto|null} Created assignment package.
  */
 export function ConnectionsCreateAccessPackage(
@@ -31,8 +31,6 @@ export function ConnectionsCreateAccessPackage(
     const succeed = check(res, {
         "ConnectionsCreateAccessPackage - status code is 200": (r) =>
             r.status === 200,
-        "ConnectionsCreateAccessPackage - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

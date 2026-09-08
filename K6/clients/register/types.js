@@ -207,6 +207,7 @@ export const CcrHolderRoles = {
  * The keys are the values of CcrCustomerRoles, which is what lets a test draw a
  * role once and use it against both services.
  *
+ * @type {{[roleName: string]: string}}
  * @readonly
  */
 export const ErRoleFieldTypes = {

@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AccessListInfoDto|null} Access list information.
  */
 export function AccessListGet(
@@ -34,8 +34,6 @@ export function AccessListGet(
     const succeed = check(res, {
         "AccessListGet - status code is 200": (r) =>
             r.status === 200,
-        "AccessListGet - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

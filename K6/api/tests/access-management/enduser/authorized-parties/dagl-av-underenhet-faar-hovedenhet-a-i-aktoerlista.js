@@ -16,6 +16,9 @@ const groupLabel = "dagl-av-underenhet-får-hovedenhet-A-i-aktørlista";
 // kept skipped here until that bug is fixed.
 const skipDueToKnownBug = true;
 
+/**
+ * @param {ReturnType<typeof import("./common.js").setup>} data Test data from setup.
+ */
 export default function (data) {
     if (skipDueToKnownBug) {
         console.warn(`${groupLabel} is skipped due to a known bug`);

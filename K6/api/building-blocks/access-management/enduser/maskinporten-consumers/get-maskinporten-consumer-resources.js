@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenConsumersClient} maskinportenConsumersClient Client for the Maskinporten Consumers API.
  * @param {MaskinportenConsumerResourcesQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenConsumerResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourcePermissionDto>} Resource permissions.
  */
 export function GetMaskinportenConsumerResources(
@@ -33,8 +33,6 @@ export function GetMaskinportenConsumerResources(
     const succeed = check(res, {
         "GetMaskinportenConsumerResources - status code is 200": (r) =>
             r.status === 200,
-        "GetMaskinportenConsumerResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

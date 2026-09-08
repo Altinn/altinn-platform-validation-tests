@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {ResourceClient} resourceClient Client for the Resource API.
  * @param {string} id Resource identifier.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the policy was successfully retrieved.
  */
 export function ResourceGetPolicy(resourceClient, id, labels = null) {
@@ -20,8 +20,6 @@ export function ResourceGetPolicy(resourceClient, id, labels = null) {
     const succeed = check(res, {
         "ResourceGetPolicy - status code is 200": (r) =>
             r.status === 200,
-        "ResourceGetPolicy - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -15,6 +15,10 @@ test_definitions:
         test_run:
           secrets:
             - 313175650-maskinporten-client
+      - environment: yt01
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
 
   - test_file: system-register-rights.js
     contexts:
@@ -27,6 +31,10 @@ test_definitions:
           secrets:
             - 313175650-maskinporten-client
       - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+      - environment: yt01
         test_run:
           secrets:
             - 313175650-maskinporten-client
@@ -45,3 +53,14 @@ test_definitions:
         test_run:
           secrets:
             - 313175650-maskinporten-client
+      - environment: yt01
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
+
+  - test_file: get-registered-systems.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01

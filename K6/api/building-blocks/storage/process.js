@@ -11,7 +11,7 @@ import { withRetries } from "../common/retry.js";
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {ProcessState} request Process state to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function UpdateProcessState(
@@ -69,7 +69,7 @@ export function UpdateProcessState(
  * @param {ProcessClient} processClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {ProcessHistoryList|null} Parsed response body, or null when the call failed.
  */
 export function GetProcessHistory(
@@ -126,7 +126,7 @@ export function GetProcessHistory(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {ProcessStateUpdate} request Process state and events to store.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function UpdateProcessStateAndEvents(

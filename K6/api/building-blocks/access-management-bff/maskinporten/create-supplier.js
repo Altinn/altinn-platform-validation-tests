@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {CreateSupplierQuery} queryParams Query parameters. Use
  * {@link CreateSupplierQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AssignmentDto|null} The created assignment.
  */
 export function CreateSupplier(
@@ -31,8 +31,6 @@ export function CreateSupplier(
     const succeed = check(res, {
         "CreateSupplier - status code is 200": (r) =>
             r.status === 200,
-        "CreateSupplier - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

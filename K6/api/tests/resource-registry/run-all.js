@@ -1,11 +1,27 @@
-import runGetUpdatedResources, { setup } from "./get-updated-resources.js";
-
-export { setup };
+import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
 /**
- * Runs the folder's only test, so every folder has the same entry point. A second
- * test in here goes in the list below.
+ * k6 setup stage. Runs the setup each test in the folder brings.
  *
+ * @returns One entry per test that needs setup data.
+ */
+export function setup() {
+    return {
+        getUpdatedResources: setupGetUpdatedResources(),
+    };
+}
+
+/**
+ * Runs the read tests in this folder once, in one k6 run, so a change to the
+ * shared clients, building blocks or checks can be verified in one go.
+ *
+ * create-resource-and-policy.js is deliberately left out. Deleting a resource
+ * leaves its rows in resourceregistry.resourcesubjects behind with deleted set
+ * to false, and nothing cleans them up, reported as
+ * Altinn/altinn-resource-registry#848 and concluded in #488. Every run of that
+ * test therefore leaks a couple of rows, so it has to be started on purpose
+ * rather than swept along by a run of everything. Wire it back in here once #848
+ * is fixed.
  */
 export default function () {
     runGetUpdatedResources();

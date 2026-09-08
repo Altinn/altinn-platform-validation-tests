@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UserClient} userClient Client for the user endpoints.
  * @param {string} partyUuid Party UUID of the actor.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the actor was added to the favourites.
  */
 export function CreateFavorite(userClient, partyUuid, labels = null) {
@@ -22,8 +22,6 @@ export function CreateFavorite(userClient, partyUuid, labels = null) {
     const succeed = check(res, {
         "CreateFavorite - status code is 200": (r) =>
             r.status === 200,
-        "CreateFavorite - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

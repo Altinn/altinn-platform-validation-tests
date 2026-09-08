@@ -8,7 +8,7 @@ import { withRetries } from "../../common/retry.js";
  * Gets the current user based on the request context.
  *
  * @param {UsersClient} usersClient Client for the Users API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfile|null} User profile.
  */
 export function GetCurrentUser(
@@ -28,8 +28,6 @@ export function GetCurrentUser(
     const succeed = check(res, {
         "GetCurrentUser - status code is 200": (r) =>
             r.status === 200,
-        "GetCurrentUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

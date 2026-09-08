@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
  * @param {AddressCodeResendRequest} request
  * Request body. Use {@link AddressCodeResendRequestBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the verification code was successfully regenerated and sent.
  */
 export function ResendVerificationCode(
@@ -32,8 +32,6 @@ export function ResendVerificationCode(
     const succeed = check(res, {
         "ResendVerificationCode - status code is 204": (r) =>
             r.status === 204,
-        "ResendVerificationCode - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

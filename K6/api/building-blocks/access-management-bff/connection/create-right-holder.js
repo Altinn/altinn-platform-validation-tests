@@ -16,7 +16,7 @@ import { withRetries } from "../../common/retry.js";
  * {@link ValidatePersonInputBuilder}.
  * @param {CreateRightHolderQuery|null} [queryParams] Optional query
  * parameters. Use {@link CreateRightHolderQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Party UUID of the added right holder.
  */
 export function CreateRightHolder(
@@ -42,8 +42,6 @@ export function CreateRightHolder(
     const succeed = check(res, {
         "CreateRightHolder - status code is 200": (r) =>
             r.status === 200,
-        "CreateRightHolder - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

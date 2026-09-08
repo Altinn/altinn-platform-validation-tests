@@ -3,16 +3,9 @@ import { ConnectionsClient, } from "../../../../../clients/access-management/end
 import { RequestClient } from "../../../../../clients/access-management/enduser/request/index.js";
 import { PackagesClient } from "../../../../../clients/access-management/metadata/packages/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PackagesExport } from "../../../../building-blocks/access-management/metadata/packages/index.js";
-
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {ConnectionsClient | undefined} */
-let connectionsApiClient = undefined;
-/** @type {RequestClient | undefined} */
-let requestApiClient = undefined;
 
 /**
  * k6 setup function.
@@ -23,7 +16,7 @@ let requestApiClient = undefined;
  * Each CSV row holds an organization (Virksomhet) and its daglig leder:
  * pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
  *
- * @returns {{ users: Array, packages: string[] }} Test input: parsed CSV rows
+ * @returns {{ users: any[], packages: string[] }} Test input: parsed CSV rows
  * and the URNs of packages that can be requested (Organisasjon, delegable and
  * assignable).
  */
@@ -62,7 +55,7 @@ function fetchAssignablePackages() {
     const groups = PackagesExport(metaApiClient, { action: "fetch-access-packages" });
 
     const urns = [];
-    for (const group of groups) {
+    for (const group of groups ?? []) {
         if (group.type !== "Organisasjon") continue;
         for (const area of group.areas ?? []) {
             for (const pkg of area.packages ?? []) {
@@ -83,24 +76,24 @@ function fetchAssignablePackages() {
  * @returns {[ConnectionsClient, RequestClient, PersonalTokenGenerator]} Tuple
  * containing the Connections client, the Request client and the token generator.
  */
-export function getClients() {
-    if (tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator(getEnduserOpts());
-    }
-    if (connectionsApiClient === undefined) {
-        connectionsApiClient = new ConnectionsClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    if (requestApiClient === undefined) {
-        requestApiClient = new RequestClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    return [connectionsApiClient, requestApiClient, tokenGenerator];
-}
+export const getClients = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(getEnduserOpts());
+
+    /** @type {[ConnectionsClient, RequestClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionsClient(__ENV.BASE_URL, tokenGenerator),
+        new RequestClient(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Builds enduser personal-token options for a given user.
  *
- * @param {string=} pid - the user's national identity number
- * @param {string=} partyUuid - the user's party uuid
+ * @param {string|null} [pid] - the user's national identity number
+ * @param {string|null} [partyUuid] - the user's party uuid
  * @returns Token generator options for the given user.
  */
 export function getEnduserOpts(pid = null, partyUuid = null) {

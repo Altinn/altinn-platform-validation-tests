@@ -9,7 +9,7 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {UsersClient} usersClient Client for the Users API.
  * @param {string} userUuid User uuid.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {UserProfile|null} User profile.
  */
 export function GetUserByUuid(
@@ -31,8 +31,6 @@ export function GetUserByUuid(
     const succeed = check(res, {
         "GetUserByUuid - status code is 200": (r) =>
             r.status === 200,
-        "GetUserByUuid - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {string} organizationNumber Organization number.
  * @param {number} notificationAddressId Notification address identifier.
  * @param {NotificationAddressRequest} request Notification address request.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {NotificationAddressResponse|null} Updated notification address.
  */
 export function UpdateNotificationAddress(
@@ -37,8 +37,6 @@ export function UpdateNotificationAddress(
     const succeed = check(res, {
         "UpdateNotificationAddress - status code is 200": (r) =>
             r.status === 200,
-        "UpdateNotificationAddress - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

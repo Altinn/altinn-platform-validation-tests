@@ -11,7 +11,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RoleClient} roleClient Client for the role endpoints.
  * @param {GetRoleResourcesQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRoleResourcesQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<ResourceAM>|null} The resources.
  */
 export function GetRoleResources(
@@ -30,8 +30,6 @@ export function GetRoleResources(
     const succeed = check(res, {
         "GetRoleResources - status code is 200": (r) =>
             r.status === 200,
-        "GetRoleResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

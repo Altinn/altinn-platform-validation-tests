@@ -543,7 +543,7 @@ class ClientAccessPackagesQueryBuilder {
  */
 class DelegationBatchInputBuilder {
     constructor() {
-        this.body = { values: [] };
+        this.body = /** @type {DelegationBatchInputDto} */ ({ values: [] });
     }
 
     /**
@@ -554,6 +554,10 @@ class DelegationBatchInputBuilder {
      * @returns {DelegationBatchInputBuilder} This builder, for chaining.
      */
     addPermission(role, packages) {
+        if (this.body.values === null) {
+            this.body.values = [];
+        }
+
         this.body.values.push({ role, packages });
         return this;
     }

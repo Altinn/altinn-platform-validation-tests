@@ -7,7 +7,7 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
-import { fetchTestData, getItemFromList, retry } from "../../../helpers.js";
+import { fetchTestData, getItemFromList, lazy, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
@@ -21,21 +21,6 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
  * - register-usernames-<env>.csv   (header: username)
  * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
  */
-
-/**
- * @type {RegisterClient | undefined}
- */
-let lookupClient = undefined;
-
-/**
- * @type {RegisterClient | undefined}
- */
-let partyLookupAdminClient = undefined;
-
-/**
- * @type {EnhetsregisteretClient | undefined}
- */
-let enhetsregisteretClient = undefined;
 
 /**
  * Self-identified users to look up by username. Legacy ones, created through the
@@ -84,24 +69,20 @@ export function getOrganizations(env) {
  *
  * @returns {RegisterClient} The client the lookup tests read with.
  */
-export function getLookupClient() {
-    if (lookupClient === undefined) {
-        const tokenGenerator = new PlatformTokenGenerator(
-            new PlatformTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .build(),
-        );
+export const getLookupClient = lazy(function () {
+    const tokenGenerator = new PlatformTokenGenerator(
+        new PlatformTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .build(),
+    );
 
-        lookupClient = new RegisterClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-            __ENV.REGISTER_SUBSCRIPTION_KEY,
-        );
-    }
-
-    return lookupClient;
-}
+    return new RegisterClient(
+        __ENV.BASE_URL,
+        tokenGenerator,
+        __ENV.REGISTER_SUBSCRIPTION_KEY,
+    );
+});
 
 /**
  * Creates and caches the client the internal party endpoints are read with.
@@ -114,27 +95,23 @@ export function getLookupClient() {
  *
  * @returns {RegisterClient} The client the customer and holder reads go through.
  */
-export function getPartyLookupAdminClient() {
-    if (partyLookupAdminClient === undefined) {
-        const tokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(
-                    CreateScopeString([AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN]),
-                )
-                .build(),
-        );
+export const getPartyLookupAdminClient = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(
+                CreateScopeString([AltinnScopes.REGISTER.PARTYLOOKUP.ADMIN]),
+            )
+            .build(),
+    );
 
-        partyLookupAdminClient = new RegisterClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-            __ENV.REGISTER_SUBSCRIPTION_KEY,
-        );
-    }
-
-    return partyLookupAdminClient;
-}
+    return new RegisterClient(
+        __ENV.BASE_URL,
+        tokenGenerator,
+        __ENV.REGISTER_SUBSCRIPTION_KEY,
+    );
+});
 
 /**
  * Creates and caches the client for the ER update service.
@@ -144,13 +121,9 @@ export function getPartyLookupAdminClient() {
  *
  * @returns {EnhetsregisteretClient} The client the role changes go through.
  */
-export function getEnhetsregisteretClient() {
-    if (enhetsregisteretClient === undefined) {
-        enhetsregisteretClient = new EnhetsregisteretClient(__ENV.BASE_URL);
-    }
-
-    return enhetsregisteretClient;
-}
+export const getEnhetsregisteretClient = lazy(function () {
+    return new EnhetsregisteretClient(__ENV.BASE_URL);
+});
 
 /**
  * Organization numbers of the customers that have this organization in the given role.
@@ -158,7 +131,7 @@ export function getEnhetsregisteretClient() {
  * @param {RegisterClient} registerClient Client for the Register API.
  * @param {string} organizationUuid The uuid of the organization holding the role.
  * @param {string} ccrRole The role the customers have assigned, e.g. "revisor".
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<string>|null} Organization numbers, or null when the call failed.
  */
 export function getCustomerOrganizationNumbers(
@@ -181,7 +154,9 @@ export function getCustomerOrganizationNumbers(
         return null;
     }
 
-    return customers.map((customer) => customer.organizationIdentifier);
+    return customers
+        .map((customer) => customer.organizationIdentifier)
+        .filter((identifier) => identifier !== undefined);
 }
 
 /**
@@ -191,7 +166,7 @@ export function getCustomerOrganizationNumbers(
  * @param {string} ccrRole The role under test, e.g. "revisor".
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {boolean} randomize Whether to draw at random rather than take the first.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string} Organization number of the customer to move.
  */
 export function drawCustomerToMove(
@@ -247,7 +222,7 @@ export function drawCustomerToMove(
  * @param {string} targetOrg Organization number of the customer being moved.
  * @param {boolean} expectPresent Whether the customer should end up in the list.
  * @param {string} testscenario Prefix used in log and check output.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True once Register agrees, false if it never did.
  */
 export function waitForRegister(

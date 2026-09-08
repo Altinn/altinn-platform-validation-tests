@@ -17,7 +17,7 @@ import { withRetries } from "../common/retry.js";
  * e.g. "revisor".
  * @param {string} clientOrg Organization number of the organization losing a facilitator.
  * @param {string} facilitatorOrg Organization number of the facilitator.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether ER processed the batch.
  */
 export function RemoveCcrRoleFromEr(

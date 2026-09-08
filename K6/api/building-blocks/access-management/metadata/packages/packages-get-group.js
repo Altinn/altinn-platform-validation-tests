@@ -8,7 +8,7 @@ import { withRetries } from "../../../common/retry.js";
  * Gets access package group.
  *
  * @param {PackagesClient} packagesClient Client for the Packages API.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {AreaGroupDto|null} Area group.
  */
 export function PackagesGetGroup(
@@ -26,8 +26,6 @@ export function PackagesGetGroup(
     const succeed = check(res, {
         "PackagesGetGroup - status code is 200": (r) =>
             r.status === 200,
-        "PackagesGetGroup - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

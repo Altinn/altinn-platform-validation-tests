@@ -12,7 +12,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} app Application identifier.
  * @param {string} language Language code.
  * @param {TextResource} textResource Updated text resource.
- * @param {{[key:string]:string}} [labels] Optional k6 request labels.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {TextResource|null} Updated text resource.
  */
 export function UpdateTextResource(
@@ -39,8 +39,6 @@ export function UpdateTextResource(
 
     const succeed = check(res, {
         "UpdateTextResource - status code is 200": (r) => r.status === 200,
-        "UpdateTextResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

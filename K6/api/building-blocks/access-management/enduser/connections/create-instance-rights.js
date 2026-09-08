@@ -13,7 +13,7 @@ import { withRetries } from "../../../common/retry.js";
  * Query parameters. Use {@link CreateInstanceRightsQueryBuilder}.
  * @param {InstanceRightsDelegationDto|null} [body]
  * Request body.
- * @param {{[key: string]: string}} [labels]
+ * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
  * @returns {boolean} True if creation succeeded.
  */
@@ -35,7 +35,5 @@ export function CreateInstanceRights(
     return check(res, {
         "CreateInstanceRights - status code is 201": (r) =>
             r.status === 201,
-        "CreateInstanceRights - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 }

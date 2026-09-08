@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * endpoints.
  * @param {GetSingleRightDelegationCheckQuery|null} [queryParams] Optional
  * query parameters. Use {@link GetSingleRightDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<RightCheck>|null} Delegation check results.
  */
 export function GetSingleRightDelegationCheck(
@@ -34,8 +34,6 @@ export function GetSingleRightDelegationCheck(
     const succeed = check(res, {
         "GetSingleRightDelegationCheck - status code is 200": (r) =>
             r.status === 200,
-        "GetSingleRightDelegationCheck - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

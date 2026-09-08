@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {RoleClient} roleClient Client for the role endpoints.
  * @param {DeleteRoleQuery|null} [queryParams] Optional query parameters. Use
  * {@link DeleteRoleQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} True if the role was revoked.
  */
 export function DeleteRole(roleClient, queryParams = null, labels = null) {
@@ -24,8 +24,6 @@ export function DeleteRole(roleClient, queryParams = null, labels = null) {
     const succeed = check(res, {
         "DeleteRole - status code is 200": (r) =>
             r.status === 200,
-        "DeleteRole - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -11,7 +11,7 @@ import { withRetries } from "../../../common/retry.js";
  * @param {MaskinportenSuppliersClient} maskinportenSuppliersClient Client for the Maskinporten Suppliers API.
  * @param {MaskinportenSupplierDelegationCheckQuery|null} [queryParams]
  * Query parameters. Use {@link MaskinportenSupplierDelegationCheckQueryBuilder}.
- * @param {{[key: string]: string}} [labels] Optional k6 request labels.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {ResourceCheckDto|null} Resource delegation check result.
  */
 export function GetMaskinportenSupplierDelegationCheck(
@@ -33,8 +33,6 @@ export function GetMaskinportenSupplierDelegationCheck(
     const succeed = check(res, {
         "GetMaskinportenSupplierDelegationCheck - status code is 200": (r) =>
             r.status === 200,
-        "GetMaskinportenSupplierDelegationCheck - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
