@@ -33,10 +33,25 @@ export class Innlogging {
     }
 
     /**
-     * Logger inn og lander på siden som ble sendt inn. Dette er veien testene skal
-     * bruke når innloggingen er et middel og ikke det som testes.
+     * Logger inn og lander på siden som ble sendt inn, veien testene skal bruke når
+     * innloggingen er et middel og ikke det som testes. Testmiljøene går gjennom
+     * ID-porten; prod har ikke TestID-skjermbildene.
      */
     async logIn(side: Side, user: TestUser) {
+        if (gjeldendeMiljo() === 'prod') {
+            await this.viaSyntetisk(side, user);
+            return;
+        }
+
+        await side.navigateTo();
+        await this.viaIdporten(user);
+
+        // ID-porten lander ikke nødvendigvis der brukeren kom fra: infoportalen
+        // sender henne til arbeidsflaten.
+        await side.navigateTo();
+    }
+
+    async viaSyntetisk(side: Side, user: TestUser) {
         await this.syntetisk.login(side.url, user);
     }
 
@@ -57,7 +72,7 @@ export class Innlogging {
      */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
         if (gjeldendeMiljo() === 'prod') {
-            await this.syntetisk.login(landing.url, user);
+            await this.viaSyntetisk(landing, user);
             return;
         }
 

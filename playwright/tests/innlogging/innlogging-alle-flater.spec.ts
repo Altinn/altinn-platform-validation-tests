@@ -1,7 +1,7 @@
 import { testMedFlater as test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
-// Endrer ingen data. I prod går innloggingen via mockporten, siden
+// Endrer ingen data. I prod går innloggingen syntetisk, siden
 // TestID-skjermbildene bare finnes i testmiljøene.
 runInEnvironment("at23", "tt02", "prod");
 

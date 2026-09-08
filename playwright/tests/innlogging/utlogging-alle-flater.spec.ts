@@ -3,7 +3,7 @@ import { runInEnvironment } from "../../miljo";
 
 // Endrer ingen data. Utloggingen går gjennom authentication /logout, som sender
 // brukeren videre til /logout/handleloggedout, og det er de to endepunktene testen
-// er her for. I prod går innloggingen via mockporten, siden TestID-skjermbildene
+// er her for. I prod går innloggingen syntetisk, siden TestID-skjermbildene
 // bare finnes i testmiljøene.
 runInEnvironment("at23", "tt02", "prod");
 

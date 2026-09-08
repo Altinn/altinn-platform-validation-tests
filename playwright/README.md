@@ -83,10 +83,14 @@ får språket injisert, så `assertSections` slår opp riktige navn selv.
 
 ## Innlogging
 
-`innlogging.logIn(side, user)` lander innlogget på siden du sender inn. Mekanismen
-ligger i `pages/felles/syntetisk-innlogging.ts` og skal ikke lekke ut i testene.
-Flyten må starte på Altinns login-endepunkt, siden `state` opprettes serverside; en
-authorize-URL kan ikke skrives for hånd eller gjenbrukes.
+`innlogging.logIn(side, user)` lander innlogget på siden du sender inn. I
+testmiljøene går den gjennom ID-porten, som er veien en ekte bruker tar. Prod har
+ikke TestID-skjermbildene, og bruker `innlogging.viaSyntetisk(side, user)`.
+
+Den syntetiske innloggingen ligger i `pages/felles/syntetisk-innlogging.ts` og skal
+ikke lekke ut i testene. Flyten må starte på Altinns login-endepunkt, siden `state`
+opprettes serverside; en authorize-URL kan ikke skrives for hånd eller gjenbrukes.
 
 Testene i `tests/innlogging/` bruker `innlogging.viaIdporten`, siden det er
-innloggingsflyten gjennom ID-porten de tester.
+innloggingsflyten gjennom ID-porten de tester. `innlogging-syntetisk.spec.ts` er
+unntaket, og kjører den syntetiske innloggingen i at23, tt02 og prod.
