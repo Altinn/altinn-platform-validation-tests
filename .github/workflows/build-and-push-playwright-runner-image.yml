@@ -1,0 +1,60 @@
+name: Build and Push Playwright runner Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "playwright/package.json"
+      - "infra/playwright/run-playwright-tests.sh"
+      - "infra/playwright/Dockerfile"
+      - ".github/workflows/build-and-push-playwright-runner-image.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
+
+      - name: Get Playwright version
+        id: playwright
+        run: |
+          version=$(jq -r '.devDependencies.playwright // .dependencies.playwright' package.json)
+          version="${version#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Setup k8s client
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+          subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+      - name: Login to ACR
+        run: az acr login --name altinnplatformvalidationtests
+
+      - name: Build image
+        run: |
+          docker build \
+            --build-arg PLAYWRIGHT_VERSION="${{ steps.playwright.outputs.version }}" \
+            -t "altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:${{ steps.playwright.outputs.version }}" \
+            .
+
+      - name: Push image
+        run: |
+          docker push \
+            "altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:${{ steps.playwright.outputs.version }}"
