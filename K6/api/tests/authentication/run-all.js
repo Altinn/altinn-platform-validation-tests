@@ -84,6 +84,3 @@ export async function teardown(data) {
     teardownSystemUserToken(data.systemUserToken);
     await teardownSystemRegister();
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../common-imports.js";
