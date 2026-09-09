@@ -10,6 +10,7 @@ on:
 run-name: "slos"
 permissions:
   contents: "read"
+  id-token: write
 jobs:
   slos:
     runs-on: "ubuntu-latest"
