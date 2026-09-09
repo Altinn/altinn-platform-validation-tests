@@ -1,4 +1,4 @@
-FROM altinnplatformvalidationtests.azurecr.io/helpers-junitparser:1.0.0 AS builder
+FROM altinnplatformvalidationtests.azurecr.io/helpers-junitparser:1.0.1 AS builder
 
 FROM node:24-bookworm
 
