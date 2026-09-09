@@ -1,5 +1,6 @@
 name: "Apply SLOs"
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -10,7 +11,7 @@ run-name: "slos"
 permissions:
   contents: "read"
 jobs:
-  checks:
+  slos:
     runs-on: "ubuntu-latest"
     environment: "test"
     steps:
