@@ -1,13 +1,13 @@
 export { handleSummary } from "../../../../../common-imports.js";
-export { setup } from "./common.js";
 
 import { group } from "k6";
 
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { fetchTestData, getItemFromList, requireEnv } from "../../../../../helpers.js";
 import { GetAuthorizedParties, GetAuthorizedPartiesRefused } from "../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { AuthorizedPartiesDomainChecks } from "../../../../domain-checks/access-management/resource-owner/authorized-parties.js";
 import { getAdminClient, getClients, getNoTokenClient, getWrongScopeClient } from "./common.js";
-import { SetupData } from "./setup-data.types.js";
+import { AuthorizationBoundariesSetupData } from "./setup-data.types.js";
 
 // The endpoint only answers callers the resource owner policy accepts: no token is
 // rejected before any lookup, a token whose scope the policy does not accept is rejected
@@ -16,16 +16,22 @@ import { SetupData } from "./setup-data.types.js";
 // Every group here calls the client directly rather than going through the
 // GetAuthorizedParties building block, which asserts 200 and would register a failing
 // check for every request that is meant to be refused.
+//
+// The subject is incidental: this is about the credential, and the same lookup is sent
+// with all four. The fixture is a person the endpoint answers about, nothing more.
+
+const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
 /**
  * Runs the feature.
  *
- * @param {SetupData} data - The fixtures returned by setup().
+ * @param {AuthorizationBoundariesSetupData} data - The fixtures returned by setup().
  */
 export default function (data) {
     group("The endpoint only answers callers the resource owner policy accepts", function () {
-        const firm = data.testdata.REGN_ULASTELIG_RETTFERDIG_TIGER;
-        const request = new AuthorizedPartiesRequestBuilder().withPerson(firm.dagligleder.pid).build();
+        const row = getItemFromList(data.authorizationBoundaries, randomize);
+
+        const request = new AuthorizedPartiesRequestBuilder().withPerson(row.pid).build();
         const queryParams = new AuthorizedPartiesQueryBuilder().build();
 
         group("An unauthenticated request is refused", function () {
@@ -49,4 +55,17 @@ export default function (data) {
             AuthorizedPartiesDomainChecks.CheckResponseIsPartyArray(parties);
         });
     });
+}
+
+/**
+ * Fetches the rows this scenario draws from.
+ *
+ * @returns {AuthorizationBoundariesSetupData} The rows, as the default function's `data` argument.
+ */
+export function setup() {
+    requireEnv(["ENVIRONMENT", "BASE_URL"]);
+
+    return {
+        authorizationBoundaries: fetchTestData(`access-management/resource-owner/authorized-parties/authorization-boundaries/${__ENV.ENVIRONMENT}.csv`),
+    };
 }
