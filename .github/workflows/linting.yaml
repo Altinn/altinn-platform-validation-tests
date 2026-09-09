@@ -30,7 +30,7 @@ jobs:
       - name: "Typecheck Code"
         run: "npm run typecheck"
       - name: "Test RDF statement counting"
-        run: "node --experimental-default-type=module --test tests/count-rdf-statements.test.mjs"
+        run: "node --test tests/count-rdf-statements.test.mjs"
       - name: "Ensure javascript files are Kebab Case and that generation of manifests works"
         run: "./hack/validate.sh"
         shell: "bash"
