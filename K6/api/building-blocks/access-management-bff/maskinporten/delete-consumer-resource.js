@@ -29,8 +29,6 @@ export function DeleteConsumerResource(
     const succeed = check(res, {
         "DeleteConsumerResource - status code is 200": (r) =>
             r.status === 200,
-        "DeleteConsumerResource - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

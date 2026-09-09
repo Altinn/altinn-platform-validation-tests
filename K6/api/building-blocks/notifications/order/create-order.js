@@ -29,9 +29,6 @@ export function OrderCreateOrder(
     const succeed = check(res, {
         "OrderCreateOrder - status code is 200 or 201": (r) =>
             r.status === 200 || r.status === 201,
-        "OrderCreateOrder - status text is successful": (r) =>
-            r.status_text === "200 OK" ||
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

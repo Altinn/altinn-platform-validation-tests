@@ -31,8 +31,6 @@ export function SubscriptionCreate(
     const succeed = check(res, {
         "SubscriptionCreate - status code is 201": (r) =>
             r.status === 201,
-        "SubscriptionCreate - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

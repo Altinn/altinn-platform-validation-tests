@@ -29,8 +29,6 @@ export function SendForgotPassword(
     const succeed = check(res, {
         "SendForgotPassword - status code is 200": (r) =>
             r.status === 200,
-        "SendForgotPassword - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

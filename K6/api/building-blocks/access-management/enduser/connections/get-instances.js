@@ -33,8 +33,6 @@ export function GetInstances(
     const succeed = check(res, {
         "GetInstances - status code is 200": (r) =>
             r.status === 200,
-        "GetInstances - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

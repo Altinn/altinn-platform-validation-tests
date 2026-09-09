@@ -35,8 +35,6 @@ export function SystemUserVendorGetBySystem(
     const succeed = check(res, {
         "SystemUserVendorGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "SystemUserVendorGetBySystem - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

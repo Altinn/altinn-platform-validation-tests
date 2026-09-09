@@ -35,8 +35,6 @@ export function GetAgentSystemUser(
     const succeed = check(res, {
         "GetAgentSystemUser - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

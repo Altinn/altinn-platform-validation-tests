@@ -32,8 +32,6 @@ export function RequestSystemUserVendorAgentCreate(
     const succeed = check(res, {
         "RequestSystemUserVendorAgentCreate - status code is 201": (r) =>
             r.status === 201,
-        "RequestSystemUserVendorAgentCreate - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

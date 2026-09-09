@@ -36,7 +36,7 @@ export { setup } from "./commons.js";
  * @param {ReturnType<typeof import("./commons.js").setup>} data The customers and the vendor from setup.
  */
 export default function (data) {
-    const [clients, , vendorTokenGenerator] = getClients();
+    const { clients, vendorTokenGenerator } = getClients();
     const customer = getItemFromList(data.customers, randomize);
 
     const registration = createSystemRegistration({

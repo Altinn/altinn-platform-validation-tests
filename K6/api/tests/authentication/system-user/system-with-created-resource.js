@@ -155,6 +155,13 @@ export function setup() {
  * arrange getting this far already says the resource was accepted rather than
  * merely ignored.
  *
+ * Not scheduled, and deliberately not wired into run-all.js either. Deleting a
+ * resource leaves its rows in resourceregistry.resourcesubjects behind with
+ * deleted set to false, and nothing cleans them up, reported as
+ * Altinn/altinn-resource-registry#848 and concluded in #488. Every run leaks a
+ * couple of rows, so run this one on purpose and not by habit until #848 is
+ * fixed.
+ *
  * @param {ReturnType<typeof setup>} data What the setup arranged.
  */
 export default function (data) {

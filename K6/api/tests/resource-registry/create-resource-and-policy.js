@@ -8,7 +8,7 @@ import {
     XacmlPolicyBuilder,
 } from "../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../common-imports.js";
-import { requireEnv } from "../../../helpers.js";
+import { lazy, requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     ResourceCreatePolicy,
@@ -84,11 +84,6 @@ export function setup() {
  * owner organization number against the consumer claim in the token.
  */
 /**
- * @type {ResourceClient | undefined}
- */
-let resourceClient = undefined;
-
-/**
  * Creates and caches the client this test writes with.
  *
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
@@ -96,23 +91,19 @@ let resourceClient = undefined;
  *
  * @returns {ResourceClient} The client.
  */
-function getResourceClient() {
-    if (resourceClient === undefined) {
-        const tokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withOrganization(SERVICE_OWNER_ORG)
-                .withOrganizationNumber(SERVICE_OWNER_ORG_NO)
-                .withScopes(CreateScopeString([
-                    AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
-                ]))
-                .build(),
-        );
+const getResourceClient = lazy(function () {
+    const tokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withOrganization(SERVICE_OWNER_ORG)
+            .withOrganizationNumber(SERVICE_OWNER_ORG_NO)
+            .withScopes(CreateScopeString([
+                AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
+            ]))
+            .build(),
+    );
 
-        resourceClient = new ResourceClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return resourceClient;
-}
+    return new ResourceClient(__ENV.BASE_URL, tokenGenerator);
+});
 
 export default function () {
     const resourceClient = getResourceClient();
