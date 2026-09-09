@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - "hack/playwright-cronjobs.jsonnet"
-      - "hack/run-playwright-tests.sh"
+      - "infra/playwright/run-playwright-tests.sh"
       - ".github/workflows/generate-and-apply-playwright-cronjobs.yml"
 
 permissions:
@@ -16,6 +16,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: "test"
     steps:
       - name: Checkout
         uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
