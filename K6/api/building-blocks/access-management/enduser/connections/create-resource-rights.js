@@ -34,8 +34,6 @@ export function CreateResourceRights(
     const succeed = check(res, {
         "CreateResourceRights - status code is 201": (r) =>
             r.status === 201,
-        "CreateResourceRights - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

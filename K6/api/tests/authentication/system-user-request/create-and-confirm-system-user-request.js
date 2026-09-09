@@ -3,7 +3,7 @@ import { fail, group } from "k6";
 import { getItemFromList } from "../../../../helpers.js";
 import { CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks, SystemUserBuildingBlocks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
-import { ApproveSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { ApproveSystemUserRequest, GetSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
 import { createSystemRegistration, getApproverTokenOpts, getClients, getVendorTokenOpts, resourceRight, sweepSystems } from "./commons.js";
 
 /**
@@ -97,6 +97,22 @@ export default function (data) {
                 fail("cannot approve: creating the system user request returned no id");
             }
 
+            // Read before approving, with the customer's own token, so a request
+            // the approval cannot find is reported as that rather than as a 404 on
+            // the approval itself. The portal loads the request this way before it
+            // shows the customer anything to approve, so it is also the call the
+            // customer would really have made.
+            const requestToApprove = GetSystemUserRequest(clients.approver.bffRequestClient, requestId);
+
+            SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+            const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+            const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+            if (!readyToApprove || !customerMayApprove) {
+                fail("cannot approve: the system user request was not there for the customer to approve");
+            }
+
             const approved = ApproveSystemUserRequest(
                 clients.approver.bffRequestClient,
                 Number(customer.partyId),
@@ -149,6 +165,3 @@ export default function (data) {
 export function teardown(data) {
     sweepSystems(data.vendorOrgNo, SYSTEM_NAME_PREFIX);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

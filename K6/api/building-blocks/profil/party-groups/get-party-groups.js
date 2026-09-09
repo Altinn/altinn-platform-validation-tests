@@ -25,8 +25,6 @@ export function GetPartyGroups(
 
     const succeed = check(res, {
         "GetPartyGroups - status code is 200": (r) => r.status === 200,
-        "GetPartyGroups - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

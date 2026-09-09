@@ -1,16 +1,7 @@
 import { AuthorizeClient } from "../../../clients/authorization/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
+import { lazy } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
-
-/**
- * @type {AuthorizeClient | undefined}
- */
-let authorizeClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
 
 /**
  * Creates and caches the client tests ask the policy decision point with.
@@ -29,18 +20,20 @@ let tokenGenerator = undefined;
  *
  * @returns {[AuthorizeClient, PersonalTokenGenerator]} The client, and the generator behind it for callers that swap who they ask as.
  */
-export function getAuthorizeClient() {
-    if (authorizeClient === undefined || tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN]))
-                .build(),
-        );
+export const getAuthorizeClient = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN]))
+            .build(),
+    );
 
-        authorizeClient = new AuthorizeClient(__ENV.BASE_URL, tokenGenerator, __ENV.AUTHORIZATION_SUBSCRIPTION_KEY);
-    }
+    /** @type {[AuthorizeClient, PersonalTokenGenerator]} */
+    const clients = [
+        new AuthorizeClient(__ENV.BASE_URL, tokenGenerator, __ENV.AUTHORIZATION_SUBSCRIPTION_KEY),
+        tokenGenerator,
+    ];
 
-    return [authorizeClient, tokenGenerator];
-}
+    return clients;
+});

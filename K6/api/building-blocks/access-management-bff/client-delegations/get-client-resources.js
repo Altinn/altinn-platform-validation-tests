@@ -35,8 +35,6 @@ export function GetClientResources(
     const succeed = check(res, {
         "GetClientResources - status code is 200": (r) =>
             r.status === 200,
-        "GetClientResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

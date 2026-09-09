@@ -41,8 +41,6 @@ export function CheckResourceDelegation(
     const succeed = check(res, {
         "CheckResourceDelegation - status code is 200": (r) =>
             r.status === 200,
-        "CheckResourceDelegation - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

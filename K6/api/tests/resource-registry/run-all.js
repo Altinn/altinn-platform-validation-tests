@@ -1,4 +1,5 @@
 import runExportResources, { setup as setupExportResources } from "./export-resources.js";
+import runGetOrgs, { setup as setupGetOrgs } from "./get-orgs.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
 /**
@@ -10,6 +11,7 @@ export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
         exportResources: setupExportResources(),
+        getOrgs: setupGetOrgs(),
     };
 }
 
@@ -28,7 +30,5 @@ export function setup() {
 export default function () {
     runGetUpdatedResources();
     runExportResources();
+    runGetOrgs();
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../common-imports.js";

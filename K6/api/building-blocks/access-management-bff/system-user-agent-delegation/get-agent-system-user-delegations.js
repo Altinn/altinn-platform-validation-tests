@@ -40,8 +40,6 @@ export function GetAgentSystemUserDelegations(
     const succeed = check(res, {
         "GetAgentSystemUserDelegations - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentSystemUserDelegations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

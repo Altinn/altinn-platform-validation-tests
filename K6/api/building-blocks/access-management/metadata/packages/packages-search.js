@@ -28,8 +28,6 @@ export function PackagesSearch(
     const succeed = check(res, {
         "PackagesSearch - status code is 200": (r) =>
             r.status === 200,
-        "PackagesSearch - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

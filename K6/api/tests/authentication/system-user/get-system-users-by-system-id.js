@@ -83,6 +83,3 @@ export default function () {
         });
     });
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

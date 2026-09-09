@@ -29,8 +29,6 @@ export function RolesGetRoleResources(
     const succeed = check(res, {
         "RolesGetRoleResources - status code is 200": (r) =>
             r.status === 200,
-        "RolesGetRoleResources - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

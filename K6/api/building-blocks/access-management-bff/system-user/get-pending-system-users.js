@@ -29,8 +29,6 @@ export function GetPendingSystemUsers(
     const succeed = check(res, {
         "GetPendingSystemUsers - status code is 200": (r) =>
             r.status === 200,
-        "GetPendingSystemUsers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

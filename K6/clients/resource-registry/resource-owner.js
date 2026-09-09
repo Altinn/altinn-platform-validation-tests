@@ -9,9 +9,10 @@ const TAGS = {
 class ResourceOwnerClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} [tokenGenerator] Generates bearer tokens. The endpoint is
+     * public, so it is readable without one.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator = null) {
         /**
          * Generates authentication tokens.
          */
@@ -40,7 +41,16 @@ class ResourceOwnerClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceOwnerGetOrgs(labels = null) {
-        const token = this.tokenGenerator.getToken();
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run as a healthcheck in prod.
+        const headers = /** @type {{[key: string]: string}} */ ({
+            Accept: "application/json",
+        });
+        const token = this.tokenGenerator?.getToken();
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
 
         const url = `${this.FULL_PATH}/orgs`;
 
@@ -59,10 +69,7 @@ class ResourceOwnerClient {
 
         return http.get(url, {
             tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
+            headers,
         });
     }
 }

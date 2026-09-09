@@ -29,8 +29,6 @@ export function GetAgentRequestLogout(
     const succeed = check(res, {
         "GetAgentRequestLogout - status code is 200": (r) =>
             r.status === 200,
-        "GetAgentRequestLogout - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

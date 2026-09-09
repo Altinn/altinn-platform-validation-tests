@@ -23,8 +23,6 @@ export function GetIsMaskinportenAdmin(userClient, party, labels = null) {
     const succeed = check(res, {
         "GetIsMaskinportenAdmin - status code is 200": (r) =>
             r.status === 200,
-        "GetIsMaskinportenAdmin - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

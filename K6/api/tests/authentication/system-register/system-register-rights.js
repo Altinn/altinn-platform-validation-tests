@@ -156,6 +156,3 @@ export default async function (data) {
 export async function teardown() {
     await sweepSystems(SYSTEM_NAME_PREFIX);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";
