@@ -8,7 +8,7 @@ import {
     XacmlPolicyBuilder,
 } from "../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../common-imports.js";
-import { requireEnv } from "../../../helpers.js";
+import { lazy, requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     ResourceCreatePolicy,
@@ -72,15 +72,17 @@ export function setup() {
  * Test: a resource can be created and given a policy, and the registry reports
  * back the rights the policy granted.
  *
+ * Not scheduled, and deliberately not wired into run-all.js either. Deleting a
+ * resource leaves its rows in resourceregistry.resourcesubjects behind with
+ * deleted set to false, and nothing cleans them up, reported as
+ * Altinn/altinn-resource-registry#848 and concluded in #488. Every run leaks a
+ * couple of rows, so run this one on purpose and not by habit until #848 is
+ * fixed.
+ *
  * Writing to the registry needs an enterprise token with the resource.write
  * scope, and the registry only lets the owner write: it compares the resource
  * owner organization number against the consumer claim in the token.
  */
-/**
- * @type {ResourceClient | undefined}
- */
-let resourceClient = undefined;
-
 /**
  * Creates and caches the client this test writes with.
  *
@@ -89,23 +91,19 @@ let resourceClient = undefined;
  *
  * @returns {ResourceClient} The client.
  */
-function getResourceClient() {
-    if (resourceClient === undefined) {
-        const tokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withOrganization(SERVICE_OWNER_ORG)
-                .withOrganizationNumber(SERVICE_OWNER_ORG_NO)
-                .withScopes(CreateScopeString([
-                    AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
-                ]))
-                .build(),
-        );
+const getResourceClient = lazy(function () {
+    const tokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withOrganization(SERVICE_OWNER_ORG)
+            .withOrganizationNumber(SERVICE_OWNER_ORG_NO)
+            .withScopes(CreateScopeString([
+                AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
+            ]))
+            .build(),
+    );
 
-        resourceClient = new ResourceClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return resourceClient;
-}
+    return new ResourceClient(__ENV.BASE_URL, tokenGenerator);
+});
 
 export default function () {
     const resourceClient = getResourceClient();
@@ -203,6 +201,3 @@ export default function () {
         });
     }
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../common-imports.js";

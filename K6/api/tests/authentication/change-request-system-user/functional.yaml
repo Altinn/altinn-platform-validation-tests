@@ -26,5 +26,5 @@ test_definitions:
   # endpoint ignores the continuation token it hands out, so the test is red in
   # every environment through no fault of its own, and a permanently red run
   # teaches everyone to ignore the colour. Add the contexts back once
-  # Altinn/altinn-authentication#2156 is fixed. Until then it is run by hand and
-  # through the folder's run-all.js.
+  # Altinn/altinn-authentication#2156 is fixed. It is left out of the folder's
+  # run-all.js for the same reason, so until then it is run by hand.

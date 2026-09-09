@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { ConsentRequestEventsQueryBuilder } from "../../../../clients/access-management/consent-enterprise/index.js";
 import { randomItem } from "../../../../common-imports.js";
@@ -53,7 +53,13 @@ export default function (orgs) {
                 getConsentRequestEventsLabel,
             );
 
-            PaginationDomainChecks.CheckPaginatedShape(page, OPERATION);
+            // Following next links needs a page to follow them from, so a first page
+            // that is missing or shaped wrong ends the iteration here rather than
+            // failing every check below on the same cause.
+            if (!PaginationDomainChecks.CheckPaginatedShape(page, OPERATION)) {
+                fail("cannot follow pagination: the first page of consent request events is not a paginated response");
+            }
+
             PaginationDomainChecks.CheckPaginatedNotEmpty(page, OPERATION);
 
             return page;
@@ -96,6 +102,3 @@ export default function (orgs) {
         });
     });
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

@@ -1,18 +1,8 @@
 
 import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-
-/**
- * @type {ConnectionsClient | undefined}
- */
-let connectionsApiClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
 
 /**
  * Creates and caches the clients used to interact with the
@@ -26,28 +16,26 @@ let tokenGenerator = undefined;
  * PersonalTokenGenerator
  * ]} The initialized API client and token generator.
  */
-export function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
+export const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-    if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionsClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-        );
-    }
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
-    return [connectionsApiClient, tokenGenerator];
-}
+    /** @type {[ConnectionsClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionsClient(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Function to get token options map.

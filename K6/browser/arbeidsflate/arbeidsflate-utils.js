@@ -2,6 +2,7 @@ import { fail } from "k6";
 import http from "k6/http";
 
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../common-imports.js";
+import { lazy } from "../../helpers.js";
 
 export const environment = __ENV.ENVIRONMENT || "yt01";
 
@@ -19,8 +20,18 @@ export const environment = __ENV.ENVIRONMENT || "yt01";
  * @property {string} partyUuid Party UUID.
  */
 
-/** @type {PersonalTokenGenerator|undefined} */
-let tokenGenerator = undefined;
+/**
+ * Creates and caches the token generator the browser tests sign in with.
+ *
+ * Built once per VU and reused across its iterations. Not built for anyone in
+ * particular: which end user a call acts as is decided by getToken swapping the
+ * generator options.
+ *
+ * @returns {PersonalTokenGenerator} The generator.
+ */
+const getTokenGenerator = lazy(function () {
+    return new PersonalTokenGenerator();
+});
 
 export const afUrl = (() => {
     switch (environment) {
@@ -82,13 +93,11 @@ function getToken(pid, userId, partyId, partyUuid) {
         .withPartyUuid(partyUuid)
         .build();
 
-    if (tokenGenerator == undefined) {
-        tokenGenerator = new PersonalTokenGenerator();
-    }
+    const tokenGenerator = getTokenGenerator();
+
     tokenGenerator.setTokenGeneratorOptions(tokenOpts);
 
-    const token = tokenGenerator.getToken();
-    return token;
+    return tokenGenerator.getToken();
 }
 
 /**

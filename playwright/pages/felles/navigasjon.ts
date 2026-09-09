@@ -17,17 +17,17 @@ export const REDIRECT_TIMEOUT = 20_000;
  * laste, og da ryker navigeringen selv om neste forsøk går rett inn. Alle andre
  * feil kastes videre med en gang, siden de sier noe ekte om flaten.
  *
- * Timeouten er Playwrights egen standard, slik at flatene beholder den de hadde. Et
- * strammere tak her ville også truffet testene som ikke logger ut, og en kald flate
- * som svarer etter 20 sekunder ville begynt å feile. Infoportalen sender inn sitt
- * eget, som er det den hadde før denne hjelperen fantes.
+ * Tallene er valgt slik at forsøkene rekker å bli ferdige før testen selv gir opp:
+ * to forsøk à 20 sekunder er 40, mens en test har 60. Tre forsøk à 30 ville vart
+ * lenger enn testen, og da hadde en treg flate blitt rapportert som en test-timeout
+ * uten spor av hva navigeringen ventet på. Infoportalen sender inn sitt eget tak.
  *
  * @param page Siden som skal navigere.
  * @param url URLen den skal til.
  * @param timeout Hvor lenge hvert forsøk får bruke.
  * @param maxAttempts Hvor mange forsøk den får.
  */
-export async function gaaTil(page: Page, url: string, timeout = 30_000, maxAttempts = 3) {
+export async function gaaTil(page: Page, url: string, timeout = 20_000, maxAttempts = 2) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             await page.goto(url, { timeout });

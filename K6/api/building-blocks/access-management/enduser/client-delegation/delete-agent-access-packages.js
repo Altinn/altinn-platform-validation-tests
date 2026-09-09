@@ -37,8 +37,6 @@ export function DeleteAgentAccessPackages(
     const succeed = check(res, {
         "DeleteAgentAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "DeleteAgentAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

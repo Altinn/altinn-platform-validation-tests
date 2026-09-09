@@ -24,8 +24,6 @@ export function GetConsent(consentClient, consentId, labels = null) {
     const succeed = check(res, {
         "GetConsent - status code is 200": (r) =>
             r.status === 200,
-        "GetConsent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

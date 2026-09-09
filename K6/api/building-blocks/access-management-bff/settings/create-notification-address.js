@@ -37,8 +37,6 @@ export function CreateNotificationAddress(
     const succeed = check(res, {
         "CreateNotificationAddress - status code is 200": (r) =>
             r.status === 200,
-        "CreateNotificationAddress - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

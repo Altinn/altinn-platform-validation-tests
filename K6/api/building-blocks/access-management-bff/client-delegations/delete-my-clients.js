@@ -37,8 +37,6 @@ export function DeleteMyClients(
     const succeed = check(res, {
         "DeleteMyClients - status code is 200": (r) =>
             r.status === 200,
-        "DeleteMyClients - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

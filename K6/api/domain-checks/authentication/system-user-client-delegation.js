@@ -137,13 +137,12 @@ function CheckClientNotDelegated(clients, clientId) {
 /**
  * Checks that the setup produced an agent system user to delegate to.
  *
- * The arrange stops at the step that broke rather than failing the run, so this is
- * where an arrange that got nowhere surfaces. A caller that gets false back should
- * fail(): there is nothing to say about the delegation endpoints without an agent
- * system user, and failing here lets the teardown remove what the arrange did
- * manage to create.
+ * Called by the arrange itself, at the step that looks the approved agent system
+ * user up, so a summary says which step of the arrange broke. There is nothing to
+ * say about the delegation endpoints without one, so a caller that gets false back
+ * should fail().
  *
- * @param {string|undefined} systemUserId - The agent system user the setup should have produced.
+ * @param {string|undefined} systemUserId - The agent system user the arrange should have produced.
  * @returns {boolean} True if there is an agent system user to act on, false otherwise.
  */
 function CheckAgentSystemUserArranged(systemUserId) {

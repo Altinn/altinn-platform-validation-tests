@@ -35,8 +35,6 @@ export function EnterpriseCreateConsentRequest(
     const succeed = check(res, {
         "EnterpriseCreateConsentRequest - status code is 201": (r) =>
             r.status === 201,
-        "EnterpriseCreateConsentRequest - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

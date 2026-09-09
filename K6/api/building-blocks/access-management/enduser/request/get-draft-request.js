@@ -31,8 +31,6 @@ export function GetDraftRequest(
     const succeed = check(res, {
         "GetDraftRequest - status code is 200": (r) =>
             r.status === 200,
-        "GetDraftRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

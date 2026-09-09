@@ -1,6 +1,5 @@
 import { group } from "k6";
 
-import { handleSummary } from "../../../common-imports.js";
 import { UploadCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
 import { AttachmentDomainChecks } from "../../domain-checks/correspondence/attachment.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
@@ -46,5 +45,3 @@ export default function (endUsers) {
         },
     );
 }
-
-export { handleSummary };

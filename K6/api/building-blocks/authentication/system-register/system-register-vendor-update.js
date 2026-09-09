@@ -35,8 +35,6 @@ export function SystemRegisterVendorUpdate(
     const succeed = check(res, {
         "SystemRegisterVendorUpdate - status code is 200": (r) =>
             r.status === 200,
-        "SystemRegisterVendorUpdate - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

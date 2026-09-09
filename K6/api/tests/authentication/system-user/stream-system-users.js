@@ -28,7 +28,7 @@ export function setup() {
  * is, so the test only follows the stream on when they say there is more.
  */
 export default function () {
-    const [systemUserClient, tokenGenerator] = getStreamClients();
+    const { systemUserClient, tokenGenerator } = getStreamClients();
 
     group("As Register, I can stream every system user and follow the stream on", function () {
         const firstPage = group("Fetch the first page of the stream", function () {
@@ -93,6 +93,3 @@ export default function () {
         });
     });
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";
