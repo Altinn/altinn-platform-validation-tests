@@ -2,7 +2,7 @@ import { fail, group } from "k6";
 
 import { requireEnv } from "../../../../helpers.js";
 import { SystemUserBuildingBlocks, SystemUserDomainChecks } from "../../../authentication-imports.js";
-import { extractNextUrl, followNextUrlPagination } from "../../../building-blocks/common/follow-next-url-pagination.js";
+import { collectNextUrlPages, extractNextUrl } from "../../../building-blocks/common/follow-next-url-pagination.js";
 import { PaginationDomainChecks } from "../../../domain-checks/common/pagination.js";
 import { getStreamClients } from "./commons.js";
 
@@ -57,18 +57,39 @@ export default function () {
             return;
         }
 
-        group("Follow the stream to the next pages", function () {
+        group("Follow the stream past the first page", function () {
             PaginationDomainChecks.CheckNextLink(firstPage, `${__ENV.BASE_URL}/authentication/`, OPERATION);
             PaginationDomainChecks.CheckPaginatedNotEmpty(firstPage, OPERATION);
 
             const nextUrl = extractNextUrl(firstPage);
 
-            let additionalPages = 0;
-            if (nextUrl !== null) {
-                additionalPages = followNextUrlPagination(tokenGenerator.getToken(), nextUrl);
+            const { pages, repeatedUrl, failedUrl, failedStatus } = nextUrl === null
+                ? { pages: [], repeatedUrl: null, failedUrl: null, failedStatus: null }
+                : collectNextUrlPages(tokenGenerator.getToken(), nextUrl);
+
+            PaginationDomainChecks.CheckNextLinksDoNotRepeat(repeatedUrl, OPERATION);
+
+            // A walk that dies on its last page still returns every page before it,
+            // so without this the distinct count below is satisfied by the prefix.
+            PaginationDomainChecks.CheckEveryPageLoaded(failedUrl, failedStatus, OPERATION);
+
+            // The stats above said the stream holds more than this page, so following
+            // it has to reach system users the first page did not hold. Counting pages
+            // cannot say that, since a page that repeats the first one still counts.
+            //
+            // The pages themselves are not checked for emptiness the way a listing's
+            // are. A stream hands out a next link even when it has caught up, so the
+            // walk can read past the end of the data and an empty page there is the
+            // stream saying there is nothing new. A page that does not answer at all
+            // is a different matter, and the check above covers it.
+            const seen = new Set();
+            for (const page of [firstPage, ...pages]) {
+                for (const item of page?.data ?? []) {
+                    seen.add(/** @type {{id?: string|null}} */ (item)?.id);
+                }
             }
 
-            PaginationDomainChecks.CheckMultiplePages(1 + additionalPages, OPERATION);
+            PaginationDomainChecks.CheckPagesHoldDistinctItems(seen.size, firstPage?.data?.length ?? 0, OPERATION);
         });
     });
 }
