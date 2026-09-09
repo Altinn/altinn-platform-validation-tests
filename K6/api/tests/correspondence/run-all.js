@@ -33,6 +33,3 @@ export default function (data) {
     runGetCorrespondence(data.getCorrespondence);
     runInitializeCorrespondence(data.initializeCorrespondence);
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../common-imports.js";

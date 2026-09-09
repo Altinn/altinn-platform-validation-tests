@@ -1,7 +1,6 @@
 import { group } from "k6";
 
 import { CorrespondenceQueryBuilder } from "../../../clients/correspondence/index.js";
-import { handleSummary } from "../../../common-imports.js";
 import {
     GetCorrespondence,
     GetCorrespondences,
@@ -70,5 +69,3 @@ export default function (endUsers) {
         }
     });
 }
-
-export { handleSummary };
