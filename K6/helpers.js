@@ -38,7 +38,7 @@ function recordTestDataFetch(file, reason = null) {
  * @param {Function} conditionFn - Function that returns true on success, false otherwise.
  * @param {{retries?: number, intervalSeconds?: number, testscenario?: string}} options
  * Retry settings: how many times to retry (default 10), seconds between
- * attempts (default 5) and the prefix used in log/check output.
+ * attempts (default 5) and the prefix used in log output.
  * @returns {boolean} - true if success within retry limit, false otherwise.
  */
 export function retry(conditionFn, options = {}) {
@@ -55,16 +55,21 @@ export function retry(conditionFn, options = {}) {
             const result = conditionFn();
 
             if (result) {
-                console.log(`${testscenario}] condition met on attempt ${attempt}`);
+                console.log(
+                    `[${testscenario}] condition met on attempt ${attempt}`
+                );
                 success = true;
                 break;
             }
 
             console.log(
-                `${testscenario}] Attempt ${attempt}/${retries} — condition not met, retrying...`
+                `[${testscenario}] Attempt ${attempt}/${retries} — condition not met, retrying...`
             );
         } catch (err) {
-            console.warn(`${testscenario}: Error on attempt ${attempt}:`);
+            console.warn(
+                `[${testscenario}] Error on attempt ${attempt}:`,
+                err
+            );
         }
 
         if (attempt < retries) {
@@ -73,7 +78,7 @@ export function retry(conditionFn, options = {}) {
     }
 
     check(success, {
-        [`${testscenario} succeeded within ${retries} retries`]: (s) => s === true,
+        "condition succeeds within retry limit": (s) => s === true,
     });
 
     return success;

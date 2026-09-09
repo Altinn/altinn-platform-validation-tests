@@ -1,5 +1,138 @@
 {
-    "K6/helpers.js": [
-        "`${testscenario} succeeded within ${retries} retries`"
+    "K6/api/building-blocks/access-management/altinn-apps/check-resource-delegation.js": [
+        "`CheckResourceDelegation - every result is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/access-management/altinn-apps/create-delegation.js": [
+        "`CreateDelegation - every right is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/access-management/altinn-apps/delete-delegations.js": [
+        "`DeleteDelegations - every right is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/access-management/altinn-apps/revoke-delegation.js": [
+        "`RevokeDelegation - every right is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/access-management/resource-owner/authorized-parties/get-authorized-parties-refused.js": [
+        "`GetAuthorizedPartiesRefused - status code is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/authentication/authentication/exchange-token.js": [
+        "`ExchangeToken - status code is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/authentication/change-request-system-user/change-request-system-user-vendor-create.js": [
+        "<ConditionalExpression>"
+    ],
+    "K6/api/building-blocks/authentication/introspection/introspect-token.js": [
+        "`IntrospectToken - status code is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/authentication/openid/get-discovery-document.js": [
+        "`GetDiscoveryDocument - status code is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/authentication/openid/get-key-set.js": [
+        "`GetKeySet - status code is ${expectedStatus}`"
+    ],
+    "K6/api/building-blocks/authorization/authorize/post.js": [
+        "`AuthorizePost - decision is ${expectedDecision}`"
+    ],
+    "K6/api/building-blocks/authorization/decision/post.js": [
+        "`DecisionPost - decision is ${expectedDecision}`"
+    ],
+    "K6/api/building-blocks/infoportal/infoportal.js": [
+        "`${method} - status code is ${status_code}`"
+    ],
+    "K6/api/building-blocks/register/add-ccr-role-to-er.js": [
+        "`AddCcrRoleToEr(${ccrRole}) - status code is 200`",
+        "`AddCcrRoleToEr(${ccrRole}) - batch status is OK_ER_DATA_PROCESSED`"
+    ],
+    "K6/api/building-blocks/register/get-customers.js": [
+        "`GetCustomers(${ccrRole}) - status code is 200`",
+        "`GetCustomers(${ccrRole}) - body is valid`"
+    ],
+    "K6/api/building-blocks/register/get-role-holders.js": [
+        "`GetRoleHolders(${ccrRole}) - status code is 200`",
+        "`GetRoleHolders(${ccrRole}) - body is valid`"
+    ],
+    "K6/api/building-blocks/register/remove-ccr-role-from-er.js": [
+        "`RemoveCcrRoleFromEr(${ccrRole}) - status code is 200`",
+        "`RemoveCcrRoleFromEr(${ccrRole}) - batch status is OK_ER_DATA_PROCESSED`"
+    ],
+    "K6/api/domain-checks/access-management/consent.js": [
+        "`CheckConsentRequestStatus - Consent request has status '${expectedStatus}'`",
+        "`CheckConsentResponse - ${operation} returns a body`"
+    ],
+    "K6/api/domain-checks/access-management/enduser/client-delegation-v2.js": [
+        "`CheckResourceDelegated - ${operation} lists the delegated resource`",
+        "`CheckResourceNotDelegated - ${operation} no longer lists the resource`",
+        "`CheckResourcesGrantedViaRole - ${operation} groups the access under ${roleCode}`",
+        "`CheckDelegationEchoed - ${operation} echoes a delegation from the client to the agent`",
+        "`CheckAgentRegistered - ${operation} lists the expected agent`",
+        "`CheckClientListed - ${operation} lists the expected client with the expected role`"
+    ],
+    "K6/api/domain-checks/access-management/resource-owner/authorized-parties.js": [
+        "name"
+    ],
+    "K6/api/domain-checks/authentication/change-request-system-user.js": [
+        "`CheckChangeRequestStatus - Change request has status '${expectedStatus}'`",
+        "`CheckChangeRequestsCreated - Asking ${expected} times created ${expected} change requests`",
+        "`CheckChangeRequestsCreated - The ${expected} change requests are separate ones`"
+    ],
+    "K6/api/domain-checks/authentication/openid.js": [
+        "`CheckEndpointsBelongToThisEnvironment - ${field} is an absolute URL under this environment`",
+        "`CheckSupportedValuesAreListed - ${field} is a non-empty list`"
+    ],
+    "K6/api/domain-checks/authentication/system-register.js": [
+        "`CheckUpdateSucceeded - ${operation} reports succeeded: true`"
+    ],
+    "K6/api/domain-checks/authentication/system-user-client-delegation.js": [
+        "`CheckDelegationEchoesClient - ${operation} echoes the agent system user and the client`"
+    ],
+    "K6/api/domain-checks/authentication/system-user-request.js": [
+        "`CheckRequestStatus - Request has status '${expectedStatus}'`"
+    ],
+    "K6/api/domain-checks/authentication/system-user-token.js": [
+        "`CheckSystemUserTokenClaims - ${operation} is a system user token`",
+        "`CheckSystemUserTokenClaims - ${operation} names the organisation that holds the system user`",
+        "`CheckSystemUserTokenClaims - ${operation} names the system user it was asked for`",
+        "`CheckSystemUserTokenClaims - ${operation} names the system the system user belongs to`",
+        "`CheckSystemUserTokenClaims - ${operation} expires, and has not already`"
+    ],
+    "K6/api/domain-checks/authentication/system-user.js": [
+        "`CheckSystemUserFound - ${operation} found the expected system user`",
+        "`CheckStreamStats - ${operation} reports where in the stream the page sits`",
+        "`CheckStreamStats - ${operation} ends the page no earlier than it starts`",
+        "`CheckStreamStats - ${operation} holds at least what the page does`",
+        "`CheckStreamStats - ${operation} puts no more items on the page than the stats say`"
+    ],
+    "K6/api/domain-checks/common/pagination.js": [
+        "`CheckPaginatedShape - ${operation} returns data and links`",
+        "`CheckPaginatedNotEmpty - ${operation} returns at least one item`",
+        "`CheckMultiplePages - ${operation} returns more than one page`",
+        "`CheckItemsBelongToSystem - Every ${itemName} belongs to the expected system`",
+        "`CheckNextLink - ${operation} returns a next link`",
+        "`CheckNextLink - ${operation} next link is https`",
+        "`CheckNextLink - ${operation} next link points at this environment`",
+        "`CheckNoNextLink - ${operation} hands out no next link`",
+        "`CheckPagesHoldDistinctItems - ${operation} pages hold items the first page did not`",
+        "`CheckNextLinksDoNotRepeat - ${operation} never hands out the same next link twice`",
+        "`CheckEveryPageLoaded - ${operation} answers every page of the walk`"
+    ],
+    "K6/api/domain-checks/register/ccr-role.js": [
+        "`CheckRoleRemoved - Register dropped the ${ccrRole} customer`",
+        "`CheckRoleAddedBack - Register lists the ${ccrRole} customer again`"
+    ],
+    "K6/api/domain-checks/resource-registry/policy-rights.js": [
+        "`CheckOneRightPerAction - ${operation} returns one right per action`",
+        "`CheckRightsForResource - Every right from ${operation} is for the expected resource`",
+        "`CheckRightsCoverActions - ${operation} covers every action the policy asked for`",
+        "`CheckRightsGrantSubjects - Every right from ${operation} lists the expected subjects`",
+        "`CheckRightsSubjectTypes - Every right from ${operation} carries the expected subject types`"
+    ],
+    "K6/api/tests/access-management/resource-owner/authorized-parties/deleted-parties.js": [
+        "`${<MemberExpression>} was deleted inside the ${retentionYears} year window`",
+        "`${<MemberExpression>} was deleted outside the ${retentionYears} year window`"
+    ],
+    "K6/api/tests/arbeidsflate/get-arbeidsflate-health.js": [
+        "`${name} status is ok`"
+    ],
+    "K6/api/tests/portaler/get-infoportal-health.js": [
+        "`${name} status is healthy`"
     ]
 }
