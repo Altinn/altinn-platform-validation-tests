@@ -1,20 +1,23 @@
-name: "Apply CronJobs"
+name: Playwright Cronjobs
+
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - "hack/create_cronjobs.sh"
-      - "hack/cronjob.jsonnet"
-run-name: "cronjobs"
+      - "hack/playwright-cronjobs.jsonnet"
+      - "hack/run-playwright-tests.sh"
+      - ".github/workflows/generate-and-apply-playwright-cronjobs.yml"
+
 permissions:
-  contents: "read"
+  contents: read
+  id-token: write
 jobs:
-  cronjobs:
-    runs-on: "ubuntu-latest"
-    environment: "test"
+  deploy:
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout code"
+      - name: Checkout
         uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
 
       - name: Install jsonnet
@@ -30,9 +33,9 @@ jobs:
           chmod +x "$HOME/bin/yq"
           echo "$HOME/bin" >> "$GITHUB_PATH"
 
-      - name: "Generate Cronjobs"
-        run: "hack/create_cronjobs.sh"
-        shell: "bash"
+      - name: Generate CronJobs
+        run: |
+          hack/generate_playwright_cronjobs.sh
 
       - name: "Setup k8s client"
         uses: "./.github/actions/setup-k8s"
@@ -41,6 +44,6 @@ jobs:
           azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
 
-      - name: "Apply CronJobs"
-        run: "kubectl apply -f .dist/ -R || true"
+      - name: "Apply Playwright Cronjobs"
+        run: "kubectl apply -f .dist/ -R"
         shell: "bash"
