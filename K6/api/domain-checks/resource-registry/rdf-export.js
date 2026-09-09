@@ -1,6 +1,8 @@
 import { check } from "k6";
 import http from "k6/http";
 
+import { countRdfStatements } from "./count-rdf-statements.js";
+
 /**
  * Checks the media type of a download.
  *
@@ -31,8 +33,8 @@ function CheckMediaType(response, expectedMediaType, operation) {
 /**
  * Checks that the document declares the namespace prefixes it is written in.
  *
- * A body that is empty, truncated or an error page in disguise fails here, which
- * is as far as we go without an RDF parser.
+ * This catches missing declarations, but does not validate Turtle syntax or
+ * detect every truncated document.
  *
  * @param {http.RefinedResponse<"text">|null} response - The response returned by the API.
  * @param {Array<string>} expectedPrefixes - Prefix names the document has to declare.
@@ -71,8 +73,7 @@ function CheckPrefixesDeclared(response, expectedPrefixes, operation) {
  */
 function CheckEveryResourceIsIdentified(response, operation) {
     const body = response?.body ?? "";
-    const identifiers = (body.match(/dct:identifier/g) ?? []).length;
-    const publicServices = (body.match(/a cpsv:PublicService/g) ?? []).length;
+    const { identifiers, publicServices } = countRdfStatements(body);
 
     const success = check(response, {
         "CheckEveryResourceIsIdentified - Every resource carries an identifier": () =>
