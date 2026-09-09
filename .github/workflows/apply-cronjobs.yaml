@@ -1,5 +1,6 @@
-name: "Apply CronJobs"
+name: "Generate and Apply K6 CronJobs"
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
