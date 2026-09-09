@@ -34,3 +34,5 @@ jobs:
       - name: "Ensure there are no trailing white spaces"
         run: "./hack/fix_whitespaces.sh"
         shell: "bash"
+      - name: "Ensure k6 check names are static"
+        run: "npm run lint:k6-checks"
