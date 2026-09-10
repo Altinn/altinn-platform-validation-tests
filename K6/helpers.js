@@ -19,7 +19,6 @@ import { papaparse, randomItem } from "./common-imports.js";
  */
 const testDataFetchFailures = new Counter("test_data_fetch_failures");
 
-
 /**
  * Records the outcome of one test data read.
  *
