@@ -1,5 +1,6 @@
 /**
  * @typedef {object} AltinnProblemDetails
+ * @property {string|null} [statusDescription] Description of the HTTP status code.
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]
@@ -12,6 +13,7 @@
 
 /**
  * @typedef {object} AltinnValidationProblemDetails
+ * @property {string|null} [statusDescription] Description of the HTTP status code.
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]
@@ -40,7 +42,7 @@
  *
  * @typedef {object} BaseCorrespondenceExt
  * @property {string} resourceId The Resource Id associated with the correspondence service.
- * @property {string|null} [sender] The Sending organization of the correspondence.
+ * @property {string|null} [sender] Deprecated in Swagger. The Sending organization of the correspondence.
  * @property {string} sendersReference A reference used by senders and receivers to identify a specific Correspondence using external identification methods.
  * @property {string|null} [messageSender] An alternative name for the sender of the correspondence. The name will be displayed instead of the organization name.
  * @property {InitializeCorrespondenceContentExt} content
@@ -52,6 +54,7 @@
  * @property {InitializeCorrespondenceNotificationExt} notification
  * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
  * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
+ * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence.
  * @property {boolean} isConfidential Specifies whether the correspondence is confidential
  */
 
@@ -91,7 +94,7 @@
  *
  * @typedef {object} CorrespondenceDetailsExt
  * @property {string} resourceId The Resource Id associated with the correspondence service.
- * @property {string|null} [sender] The Sending organization of the correspondence.
+ * @property {string|null} [sender] Deprecated in Swagger. The Sending organization of the correspondence.
  * @property {string} sendersReference A reference used by senders and receivers to identify a specific Correspondence using external identification methods.
  * @property {string|null} [messageSender] An alternative name for the sender of the correspondence. The name will be displayed instead of the organization name.
  * @property {CorrespondenceContentExt} content
@@ -103,6 +106,7 @@
  * @property {InitializeCorrespondenceNotificationExt} notification
  * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
  * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
+ * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence.
  * @property {boolean} isConfidential Specifies whether the correspondence is confidential
  * @property {string|null} [recipient] The recipient of the correspondence.
  * @property {string} correspondenceId Unique Id for this correspondence
@@ -131,7 +135,7 @@
  *
  * @typedef {object} CorrespondenceOverviewExt
  * @property {string} resourceId The Resource Id associated with the correspondence service.
- * @property {string|null} [sender] The Sending organization of the correspondence.
+ * @property {string|null} [sender] Deprecated in Swagger. The Sending organization of the correspondence.
  * @property {string} sendersReference A reference used by senders and receivers to identify a specific Correspondence using external identification methods.
  * @property {string|null} [messageSender] An alternative name for the sender of the correspondence. The name will be displayed instead of the organization name.
  * @property {CorrespondenceContentExt} content
@@ -143,6 +147,7 @@
  * @property {InitializeCorrespondenceNotificationExt} notification
  * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
  * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
+ * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence.
  * @property {boolean} isConfidential Specifies whether the correspondence is confidential
  * @property {string|null} [recipient] The recipient of the correspondence.
  * @property {string} correspondenceId Unique Id for this correspondence
@@ -176,7 +181,7 @@
 /**
  * Represents the important statuses for an Correspondence
  *
- * @typedef {"Initialized"|"ReadyForPublish"|"Published"|"Fetched"|"Read"|"Replied"|"Confirmed"|"PurgedByRecipient"|"PurgedByAltinn"|"Archived"|"Reserved"|"Failed"|"AttachmentsDownloaded"} CorrespondenceStatusExt
+ * @typedef {"Initialized"|"ReadyForPublish"|"Published"|"Fetched"|"Read"|"Replied"|"Confirmed"|"PurgedByRecipient"|"PurgedByAltinn"|"Archived"|"Reserved"|"Failed"|"AttachmentsDownloaded"|"Forwarded"} CorrespondenceStatusExt
  */
 
 /**
@@ -264,7 +269,7 @@
  * @property {string|null} [sendersReference] Senders Reference for this notification
  * @property {Array<NotificationRecipientExt>|null} [customRecipients] A list of additional recipients for the notification. These are processed in addition to the Correspondence recipient; if not set, only the Correspondence recipient receives the notification.
  * @property {NotificationRecipientExt} customRecipient
- * @property {Array<CustomNotificationRecipientExt>|null} [customNotificationRecipients] Only the first list of recipients will be used. If not set, the notification will be sent to the recipient of the Correspondence
+ * @property {Array<CustomNotificationRecipientExt>|null} [customNotificationRecipients] Deprecated in Swagger; use customRecipient or customRecipients. Only the first list of recipients will be used. If not set, the notification will be sent to the recipient of the Correspondence
  * @property {boolean} overrideRegisteredContactInformation When set to true, only CustomRecipients will be used for notifications, overriding the default correspondence recipient. This flag can only be used when CustomRecipients is provided. Default value is false (use default contact info + custom recipients).
  */
 
@@ -429,6 +434,15 @@
 
 export const AltinnProblemDetails = undefined;
 export const AltinnValidationProblemDetails = undefined;
+/**
+ * Request to forward a correspondence to an email address.
+ *
+ * @typedef {object} ForwardCorrespondenceRequestExt
+ * @property {string|null} forwardTo Recipient email address.
+ * @property {string|null} [forwardingText] Optional text accompanying the forwarded correspondence.
+ */
+
+export const ForwardCorrespondenceRequestExt = undefined;
 export const AttachmentDataLocationTypeExt = undefined;
 export const AttachmentStatusExt = undefined;
 export const BaseCorrespondenceExt = undefined;

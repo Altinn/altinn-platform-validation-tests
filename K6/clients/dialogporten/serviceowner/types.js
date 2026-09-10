@@ -159,6 +159,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -180,6 +181,8 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent creation of navigational actions. If not provided, a new UUIDv7 will be generated.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -187,7 +190,7 @@
  * @property {string|null} [id] A UUIDv7 may be provided to support idempotent additions to the list of transmissions. If not supplied, a new UUIDv7 will be generated.
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt If supplied, overrides the creating date and time for the transmission. If not supplied, the current date /time will be used.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {string|null} [extendedType] Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use).
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
  * @property {string|null} [relatedTransmissionId] Reference to any other transmission that this transmission is related to.
@@ -196,6 +199,7 @@
  * @property {V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionContent|null} [content] The transmission unstructured text content.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreateTransmission_TransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -212,10 +216,11 @@
 /**
  * @typedef {object} V1ServiceOwnerDialogsCommandsCreate_ApiAction
  * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent creation of Api Actions. If not provided, a new UUIDv7 will be generated.
- * @property {string} action String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [action] Deprecated. Use 'AuthorizationContext.Action' instead. String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {string|null} [name] The logical name of the operation the API action refers to.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreate_ApiActionEndpoint>|null} [endpoints] The endpoints associated with the action.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -238,6 +243,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreate_AttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -297,14 +303,15 @@
 /**
  * @typedef {object} V1ServiceOwnerDialogsCommandsCreate_GuiAction
  * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent creation of Gui Actions. If not provided, a new UUIDv7 will be generated.
- * @property {string} action The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
+ * @property {string|null} [action] Deprecated. Use 'AuthorizationContext.Action' instead. The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
  * @property {string} url The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean} isDeleteDialogAction Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX for delete actions.
  * @property {Http_HttpVerb|null} [httpMethod] The HTTP method that the frontend should use when redirecting the user.
  * @property {DialogsEntitiesActions_DialogGuiActionPriority} priority Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action priority.
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the action, this should be short and in verb form. Must be text/plain.
  * @property {Array<V1CommonLocalizations_Localization>|null} [prompt] If there should be a prompt asking the user for confirmation before the action is executed, this field should contain the prompt text.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -322,7 +329,7 @@
  * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent creation of transmissions. If not provided, a new UUIDv7 will be generated.
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt If supplied, overrides the creating date and time for the transmission. If not supplied, the current date /time will be used.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {string|null} [extendedType] Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use).
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
  * @property {string|null} [relatedTransmissionId] Reference to any other transmission that this transmission is related to.
@@ -331,6 +338,7 @@
  * @property {V1ServiceOwnerDialogsCommandsCreate_TransmissionContent|null} [content] The transmission unstructured text content.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreate_TransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreate_TransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -340,6 +348,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsCommandsCreate_TransmissionAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -361,6 +370,8 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent creation of navigational actions. If not provided, a new UUIDv7 will be generated.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -370,6 +381,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -377,6 +389,7 @@
  * @property {string} url The fully qualified URL of the attachment.
  * @property {string|null} [mediaType] The media type of the attachment.
  * @property {Attachments_AttachmentUrlConsumerType} consumerType The type of consumer the URL is intended for.
+ * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent additions and updates of attachment URLs. If not provided, a new UUIDv7 will be generated.
  */
 
 /**
@@ -391,13 +404,15 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent additions of navigational actions. If not provided, a new UUIDv7 will be generated.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
  * @typedef {object} V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and the transmission is not updated.
  * @property {string|null} [createdAt] Overrides the creating date and time for the transmission.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {string|null} [extendedType] Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use).
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
  * @property {string|null} [relatedTransmissionId] Reference to any other transmission that this transmission is related to.
@@ -407,6 +422,7 @@
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
  * @property {boolean} isSilentUpdate
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -423,10 +439,11 @@
 /**
  * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_ApiAction
  * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent additions of Api Actions. If not provided, a new UUIDv7 will be generated.
- * @property {string} action String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [action] Deprecated. Use 'AuthorizationContext.Action' instead. String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {string|null} [name] The logical name of the operation the API action refers to.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdate_ApiActionEndpoint>|null} [endpoints] The endpoints associated with the action.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -449,6 +466,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdate_AttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -494,14 +512,15 @@
 /**
  * @typedef {object} V1ServiceOwnerDialogsCommandsUpdate_GuiAction
  * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent additions of Gui Actions. If not provided, a new UUIDv7 will be generated.
- * @property {string} action The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
+ * @property {string|null} [action] Deprecated. Use 'AuthorizationContext.Action' instead. The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
  * @property {string} url The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean} isDeleteDialogAction Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX for delete actions.
  * @property {Http_HttpVerb|null} [httpMethod] The HTTP method that the frontend should use when redirecting the user.
  * @property {DialogsEntitiesActions_DialogGuiActionPriority} priority Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action priority.
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the action, this should be short and in verb form. Must be text/plain.
  * @property {Array<V1CommonLocalizations_Localization>|null} [prompt] If there should be a prompt asking the user for confirmation before the action is executed, this field should contain the prompt text.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -514,7 +533,7 @@
  * @property {string|null} [id] A UUIDv7 may be provided to support idempotent additions to the list of transmissions. If not supplied, a new UUIDv7 will be generated.
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt If supplied, overrides the creating date and time for the transmission. If not supplied, the current date /time will be used.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {string|null} [extendedType] Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use).
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
  * @property {string|null} [relatedTransmissionId] Reference to any other transmission that this transmission is related to.
@@ -523,6 +542,7 @@
  * @property {V1ServiceOwnerDialogsCommandsUpdate_TransmissionContent|null} [content] The transmission unstructured text content.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdate_TransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity. Cannot be combined with authorizationAttribute or action; use authorizationContext.action.
  */
 
 /**
@@ -532,6 +552,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsCommandsUpdate_TransmissionAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -553,6 +574,8 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string|null} [id] A self-defined UUIDv7 may be provided to support idempotent additions of navigational actions. If not provided, a new UUIDv7 will be generated.
+ * @property {V1CommonAuthorizationContexts_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -581,6 +604,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsQueriesGetTransmission_AttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -603,6 +627,8 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string} id The unique identifier for the navigational action in UUIDv7 format.
+ * @property {V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -610,7 +636,7 @@
  * @property {string} id The unique identifier for the transmission in UUIDv7 format.
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt The date and time when the transmission was created.
- * @property {string|null} [authorizationAttribute] The authorization attribute associated with the transmission.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. The authorization attribute associated with the transmission.
  * @property {string|null} [extendedType] The extended type URI for the transmission.
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
  * @property {string|null} [relatedTransmissionId] The unique identifier for the related transmission, if any.
@@ -619,6 +645,7 @@
  * @property {V1ServiceOwnerDialogsQueriesGetTransmission_Content} content The content of the transmission.
  * @property {Array<V1ServiceOwnerDialogsQueriesGetTransmission_Attachment>|null} [attachments] The attachments associated with the transmission.
  * @property {Array<V1ServiceOwnerDialogsQueriesGetTransmission_NavigationalAction>|null} [navigationalActions] The navigational actions associated with the transmission.
+ * @property {V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -655,7 +682,7 @@
  * @property {string} updatedAt The date and time when the dialog was last updated.
  * @property {string} contentUpdatedAt The date and time when the dialog content was last updated.
  * @property {DialogsEntities_DialogStatus} status The aggregated status of the dialog.
- * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
+ * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel Deprecated. Use EndUserContext.SystemLabels instead. System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
  * @property {boolean} isApiOnly Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans.
  * @property {boolean} hasUnopenedContent Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user. A Transmission is considered "sent from the service owner" if the DialogTransmissionType is not one of Submission or Correction. The value of this field is: - true when there are any new unopened Transmissions sent from the service owner. - false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions. Note that the value is - determined by the service owner and not to be confused with IsContentSeen - not affected by SystemLabels For correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened
  * @property {V1ServiceOwnerDialogsQueriesGet_Content|null} [content] The dialog unstructured text content.
@@ -688,11 +715,12 @@
 /**
  * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogApiAction
  * @property {string} id The unique identifier for the action in UUIDv7 format.
- * @property {string} action String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string} action Deprecated. Use 'AuthorizationContext.Action' instead. String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean|null} [isAuthorized] True if the authenticated user (set in the query) is authorized for this action.
  * @property {string|null} [name] The logical name of the operation the API action refers to.
  * @property {Array<V1ServiceOwnerDialogsQueriesGet_DialogApiActionEndpoint>|null} [endpoints] The endpoints associated with the action.
+ * @property {V1ServiceOwnerDialogsQueriesGet_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -715,6 +743,8 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsQueriesGet_DialogAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1ServiceOwnerDialogsQueriesGet_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
+ * @property {boolean|null} [isAuthorized] Indicates whether the end user is authorized for this attachment. IsAuthorized is evaluated only when you use the EndUserId query-parameter, otherwise it is null.
  */
 
 /**
@@ -734,15 +764,16 @@
 /**
  * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogGuiAction
  * @property {string} id The unique identifier for the action in UUIDv7 format.
- * @property {string} action The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
+ * @property {string} action Deprecated. Use 'AuthorizationContext.Action' instead. The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
  * @property {string} url The fully qualified URL of the action, to which the user will be redirected when the action is triggered.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean|null} [isAuthorized] Whether the user, if supplied in the query, is authorized to perform the action.
  * @property {boolean} isDeleteDialogAction Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX for delete actions.
  * @property {DialogsEntitiesActions_DialogGuiActionPriority} priority Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action priority.
  * @property {Http_HttpVerb} httpMethod The HTTP method that the frontend should use when redirecting the user.
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the action, this should be short and in verb form.
  * @property {Array<V1CommonLocalizations_Localization>|null} [prompt] If there should be a prompt asking the user for confirmation before the action is executed, this field should contain the prompt text.
+ * @property {V1ServiceOwnerDialogsQueriesGet_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -770,7 +801,7 @@
  * @property {string} id The unique identifier for the transmission in UUIDv7 format.
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt The date and time when the transmission was created.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean|null} [isAuthorized] Flag indicating if the authenticated user supplied in the query is authorized for this transmission.
  * @property {string|null} [extendedType] Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use).
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
@@ -781,6 +812,7 @@
  * @property {boolean} isOpened Indicates whether the dialog transmission has been opened.
  * @property {Array<V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1ServiceOwnerDialogsQueriesGet_DialogTransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
+ * @property {V1ServiceOwnerDialogsQueriesGet_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -790,6 +822,8 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsQueriesGet_DialogTransmissionAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1ServiceOwnerDialogsQueriesGet_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
+ * @property {boolean|null} [isAuthorized] Indicates whether the end user is authorized for this attachment. IsAuthorized is evaluated only when you use the EndUserId query-parameter, otherwise it is null.
  */
 
 /**
@@ -812,6 +846,9 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string} id The unique identifier for the navigational action in UUIDv7 format.
+ * @property {V1ServiceOwnerDialogsQueriesGet_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
+ * @property {boolean|null} [isAuthorized] Indicates whether the end user is authorized for this navigational action. IsAuthorized is evaluated only when you use the EndUserId query-parameter, otherwise it is null.
  */
 
 /**
@@ -859,6 +896,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1ServiceOwnerDialogsQueriesSearchTransmissions_AttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -881,6 +919,8 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string} id The unique identifier for the navigational action in UUIDv7 format.
+ * @property {V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -888,7 +928,7 @@
  * @property {string} id The unique identifier for the transmission in UUIDv7 format.
  * @property {string|null} [idempotentKey] An optional key to ensure idempotency in transmission creation. If provided, it must be unique within the dialog; reusing the same key for the same dialog results in Conflict and no new transmission is created.
  * @property {string} createdAt The date and time when the transmission was created.
- * @property {string|null} [authorizationAttribute] The authorization attribute associated with the transmission.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use 'AuthorizationContext' instead. The authorization attribute associated with the transmission.
  * @property {string|null} [extendedType] The extended type URI for the transmission.
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
  * @property {string|null} [relatedTransmissionId] The unique identifier for the related transmission, if any.
@@ -897,6 +937,7 @@
  * @property {V1ServiceOwnerDialogsQueriesSearchTransmissions_Content} content The content of the transmission.
  * @property {Array<V1ServiceOwnerDialogsQueriesSearchTransmissions_Attachment>|null} [attachments] The attachments associated with the transmission.
  * @property {Array<V1ServiceOwnerDialogsQueriesSearchTransmissions_NavigationalAction>|null} [navigationalActions] The navigational actions associated with the transmission.
+ * @property {V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext|null} [authorizationContext] Experimental authorization context used to evaluate access to this entity.
  */
 
 /**
@@ -930,7 +971,7 @@
  * @property {string|null} [deletedAt] If deleted, the date and time when the deletion was performed.
  * @property {string|null} [visibleFrom] The timestamp when the dialog will be made visible for authorized end users.
  * @property {DialogsEntities_DialogStatus} status The aggregated status of the dialog.
- * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
+ * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel Deprecated. Use EndUserContext.SystemLabels instead. System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
  * @property {boolean} isApiOnly Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans.
  * @property {number} fromServiceOwnerTransmissionsCount The number of transmissions sent by a service owner
  * @property {number} fromPartyTransmissionsCount The number of transmissions sent by a party representative
@@ -984,7 +1025,7 @@
 /**
  * @typedef {object} V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel
  * @property {Array<V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_DialogRevision>|null} [dialogs] List of target dialog ids with optional revision ids
- * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] List of system labels to set on target dialogs
+ * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] Deprecated. Use AddLabels instead. This property will be removed in a future version. List of system labels to set on target dialogs
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [addLabels] List of system labels to add to the target dialogs. If multiple instances of 'bin', 'archive', or 'default' are provided, the last one will be used.
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [removeLabels] List of system labels to remove from the target dialogs. If 'bin' or 'archive' is removed, the 'default' label will be added automatically unless 'bin' or 'archive' is also in the AddLabels list.
  * @property {V1ServiceOwnerCommonActors_Actor|null} [performedBy] Optional actor metadata describing who performed the operation. Only available for admin-integrations when EndUserId is omitted.
@@ -998,7 +1039,7 @@
 
 /**
  * @typedef {object} V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest
- * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] List of system labels to set on target dialogs
+ * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] Deprecated. Use AddLabels instead. This property will be removed in a future version. List of system labels to set on target dialogs
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [addLabels] List of system labels to add to target dialogs. If multiple instances of 'bin', 'archive', or 'default' are provided, the last one will be used.
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [removeLabels] List of system labels to remove from target dialogs. If 'bin' or 'archive' is removed, the 'default' label will be added automatically unless 'bin' or 'archive' is also in the AddLabels list.
  * @property {V1ServiceOwnerCommonActors_Actor|null} [performedBy] Optional actor metadata describing who performed the change. Only available for admin-integrations when EnduserId is omitted.
@@ -1012,6 +1053,62 @@
 /**
  * @typedef {object} V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel
  * @property {string} value A label value.
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1CommonAuthorizationContexts_AuthorizationContext
+ * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy. The service owner must have access to the referenced resource. When set, the dialog's instance reference no longer applies to the evaluation of this entity.
+ * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource. Cannot contain a service resource reference; use "serviceResource" for that. References to an app ("urn:altinn:app") or an organization ("urn:altinn:org") are not allowed either; both are derived from the effective service resource.
+ * @property {Array<string>|null} [parties] The parties to evaluate access on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties. Must contain at least one party unless "includeDialogParty" is true.
+ * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {string|null} [action] The XACML action to evaluate. Optional; defaults to "read" if not supplied.
+ * @property {string|null} [tokenRef] An optional reference identifying this context in the dialog token. When the end user is authorized for this context, the dialog token's "e" claim lists this value instead of the id of the entity carrying the context, allowing the service owner to recognize the grant without tracking Dialogporten entity ids. The same value may be shared by multiple entities in one dialog to form an OR-group: authorization for any entity in the group adds the shared value to "e", so a recipient validating that value cannot distinguish which individual entity was authorized. Only group entities that intentionally share access semantics. Token references are scoped to a dialog; recipients must also validate the token's dialog id ("i"). Maximum 50 characters.
+ * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Required. Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
+ */
+
+/**
+ * @typedef {"Disabled"|"Excluded"} DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext
+ * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy.
+ * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource.
+ * @property {Array<string>|null} [parties] The parties access is evaluated on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties.
+ * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {string|null} [action] The XACML action to evaluate. Null when not overridden; the effective action is then "read".
+ * @property {string|null} [tokenRef] The service owner supplied reference identifying this context in the dialog token's "e" claim, if any. Null when the carrying entity's id is used instead. Sharing a value between entities in one dialog forms an OR-group: authorization for any group member adds the shared value to "e". Recipients must also validate the token's dialog id ("i").
+ * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_AuthorizationContext
+ * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy.
+ * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource.
+ * @property {Array<string>|null} [parties] The parties access is evaluated on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties.
+ * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {string|null} [action] The XACML action to evaluate. Null when not overridden; the effective action is then "read".
+ * @property {string|null} [tokenRef] The service owner supplied reference identifying this context in the dialog token's "e" claim, if any. Null when the carrying entity's id is used instead. Sharing a value between entities in one dialog forms an OR-group: authorization for any group member adds the shared value to "e". Recipients must also validate the token's dialog id ("i").
+ * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext
+ * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy.
+ * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource.
+ * @property {Array<string>|null} [parties] The parties access is evaluated on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties.
+ * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {string|null} [action] The XACML action to evaluate. Null when not overridden; the effective action is then "read".
+ * @property {string|null} [tokenRef] The service owner supplied reference identifying this context in the dialog token's "e" claim, if any. Null when the carrying entity's id is used instead. Sharing a value between entities in one dialog forms an OR-group: authorization for any group member adds the shared value to "e". Recipients must also validate the token's dialog id ("i").
+ * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
  */
 
 export const Actors_ActorType = undefined;
@@ -1125,3 +1222,8 @@ export const V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_DialogRevis
 export const V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest = undefined;
 export const V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label = undefined;
 export const V1ServiceOwnerServiceOwnerContextQueriesGetServiceOwnerLabels_ServiceOwnerLabel = undefined;
+export const V1CommonAuthorizationContexts_AuthorizationContext = undefined;
+export const DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation = undefined;
+export const V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext = undefined;
+export const V1ServiceOwnerDialogsQueriesGet_AuthorizationContext = undefined;
+export const V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext = undefined;

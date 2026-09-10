@@ -1,9 +1,12 @@
 import http from "k6/http";
 
 import { URL } from "../../common-imports.js";
-import { CorrespondenceQuery, InitializeCorrespondencesExt } from "./correspondence.types.js";
+import { CorrespondenceQuery, ForwardCorrespondenceRequestExt, InitializeCorrespondencesExt } from "./correspondence.types.js";
 
 const TAGS = {
+    ForwardCorrespondence: {
+        action: "forward-correspondence",
+    },
     InitializeCorrespondence: {
         action: "initialize-correspondence",
     },
@@ -63,6 +66,34 @@ class CorrespondenceClient {
 
     static get TAGS() {
         return TAGS;
+    }
+
+    /**
+     * Forwards a correspondence to an email address.
+     *
+     * @param {string} correspondenceId Correspondence UUID.
+     * @param {ForwardCorrespondenceRequestExt} request Forwarding payload.
+     * Prefer using {@link ForwardCorrespondenceRequestBuilder}.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    ForwardCorrespondence(correspondenceId, request, labels = null) {
+        const token = this.tokenGenerator.getToken();
+        const url = `${this.FULL_PATH}/${encodeURIComponent(correspondenceId)}/forward`;
+
+        return http.post(url, JSON.stringify(request), {
+            tags: {
+                ...labels,
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/forward`,
+                name: `${this.FULL_PATH}/{correspondenceId}/forward`,
+                action: TAGS.ForwardCorrespondence.action,
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
     }
 
     /**

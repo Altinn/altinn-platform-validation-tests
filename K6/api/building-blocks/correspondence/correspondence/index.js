@@ -1,6 +1,7 @@
 export { ConfirmCorrespondence } from "./confirm-correspondence.js";
 export { DownloadAllAttachments } from "./download-all-attachments.js";
 export { DownloadAttachment } from "./download-attachment.js";
+export { ForwardCorrespondence } from "./forward-correspondence.js";
 export { GetCorrespondence } from "./get-correspondence.js";
 export { GetCorrespondenceContent } from "./get-correspondence-content.js";
 export { GetCorrespondenceDetails } from "./get-correspondence-details.js";
