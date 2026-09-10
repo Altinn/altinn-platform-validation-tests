@@ -29,8 +29,6 @@ export function UpdateSelectedLanguage(
     const succeed = check(res, {
         "UpdateSelectedLanguage - status code is 200": (r) =>
             r.status === 200,
-        "UpdateSelectedLanguage - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

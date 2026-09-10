@@ -1,5 +1,6 @@
-name: "Apply CronJobs"
+name: "Generate and Apply K6 CronJobs"
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -9,6 +10,7 @@ on:
 run-name: "cronjobs"
 permissions:
   contents: "read"
+  id-token: write
 jobs:
   cronjobs:
     runs-on: "ubuntu-latest"
@@ -16,6 +18,19 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
+
+      - name: Install jsonnet
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jsonnet
+
+      - name: Install yq
+        run: |
+          mkdir -p "$HOME/bin"
+          wget -qO "$HOME/bin/yq" \
+            https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64
+          chmod +x "$HOME/bin/yq"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
 
       - name: "Generate Cronjobs"
         run: "hack/create_cronjobs.sh"

@@ -1,10 +1,5 @@
-import { requireEnv } from "../../../../helpers.js";
+import { lazy, requireEnv } from "../../../../helpers.js";
 import { OpenidClient } from "../../../authentication-imports.js";
-
-/**
- * @type {OpenidClient | undefined}
- */
-let openidClient = undefined;
 
 /**
  * k6 setup stage.
@@ -30,10 +25,6 @@ export function setup() {
  *
  * @returns {OpenidClient} The client.
  */
-export function getClient() {
-    if (openidClient === undefined) {
-        openidClient = new OpenidClient(__ENV.BASE_URL);
-    }
-
-    return openidClient;
-}
+export const getClient = lazy(function () {
+    return new OpenidClient(__ENV.BASE_URL);
+});

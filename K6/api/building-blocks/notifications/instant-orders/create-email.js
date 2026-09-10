@@ -31,9 +31,6 @@ export function InstantOrdersCreateEmail(
     const succeed = check(res, {
         "InstantOrdersCreateEmail - status code is 200 or 201": (r) =>
             r.status === 200 || r.status === 201,
-        "InstantOrdersCreateEmail - status text is 200 OK or 201 Created": (r) =>
-            r.status_text === "200 OK" ||
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

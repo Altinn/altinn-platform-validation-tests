@@ -3,10 +3,22 @@
 .dist
 node_modules
 package-lock.json
+# Playwright
 test-results
 playwright-report
 test-results.json
 test-results.xml
+# Local .terraform directories
+.terraform/
+# .tfstate files
+*.tfstate
+*.tfstate.*
+# Ignore transient lock info files created by terraform apply
+.terraform.tfstate.lock.info
+.terraform.lock.hcl
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
 .DS_Store
 .env
 .env*.local

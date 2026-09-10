@@ -4,7 +4,7 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../../common-imports.js";
-import { requireEnv } from "../../../../helpers.js";
+import { lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { IntrospectionClient } from "../../../authentication-imports.js";
 
@@ -24,21 +24,6 @@ const ORG_NO = "312605031";
  * active flag.
  */
 export const PLATFORM_TOKEN_ISSUER = "platform";
-
-/**
- * @type {IntrospectionClient | undefined}
- */
-let introspectionClient = undefined;
-
-/**
- * @type {PlatformTokenGenerator | undefined}
- */
-let platformTokenGenerator = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
 
 /**
  * k6 setup stage.
@@ -66,22 +51,18 @@ export function setup() {
  *
  * @returns {IntrospectionClient} The client.
  */
-export function getClient() {
-    if (introspectionClient === undefined || tokenGenerator === undefined) {
-        tokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
-                .withOrganizationNumber(ORG_NO)
-                .build(),
-        );
+export const getClient = lazy(function () {
+    const tokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.REQUEST.READ]))
+            .withOrganizationNumber(ORG_NO)
+            .build(),
+    );
 
-        introspectionClient = new IntrospectionClient(__ENV.BASE_URL, tokenGenerator);
-    }
-
-    return introspectionClient;
-}
+    return new IntrospectionClient(__ENV.BASE_URL, tokenGenerator);
+});
 
 /**
  * Mints the one kind of token the endpoint reports as active.
@@ -100,15 +81,20 @@ export function getClient() {
  * @returns {string} A platform access token, issued as `PLATFORM_TOKEN_ISSUER`.
  */
 export function getPlatformAccessToken() {
-    if (platformTokenGenerator === undefined) {
-        platformTokenGenerator = new PlatformTokenGenerator(
-            new PlatformTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withOrganization(PLATFORM_TOKEN_ISSUER)
-                .withTtl(3600)
-                .build(),
-        );
-    }
-
-    return platformTokenGenerator.getToken();
+    return getPlatformTokenGenerator().getToken();
 }
+
+/**
+ * Creates and caches the generator behind getPlatformAccessToken.
+ *
+ * @returns {PlatformTokenGenerator} The generator.
+ */
+const getPlatformTokenGenerator = lazy(function () {
+    return new PlatformTokenGenerator(
+        new PlatformTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withOrganization(PLATFORM_TOKEN_ISSUER)
+            .withTtl(3600)
+            .build(),
+    );
+});

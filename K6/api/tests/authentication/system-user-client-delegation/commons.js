@@ -3,11 +3,11 @@ import { fail, group } from "k6";
 import { DeleteAgentSystemUserQueryBuilder, SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks } from "../../../authentication-imports.js";
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
-import { ApproveAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
+import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
 import { sweepRegisteredSystems } from "../commons.js";
 
@@ -40,11 +40,6 @@ const FACILITATOR_SCOPES = CreateScopeString([
     AltinnScopes.CLIENTDELEGATIONS.READ,
     AltinnScopes.CLIENTDELEGATIONS.WRITE,
 ]);
-
-/**
- * What these tests name their systems, which is also what the teardown sweeps up.
- */
-const SYSTEM_NAME_PREFIX = "clientdelegation";
 
 /**
  * Every system registered by these tests allows the same redirect url.
@@ -87,19 +82,28 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
 };
 
 /**
- * @type {any | undefined}
+ * @typedef {import("../commons.js").OrganizationUser} Facilitator
  */
-let clients = undefined;
 
 /**
- * @type {PersonalTokenGenerator | undefined}
+ * The agent system user the arrange step created, and what a test needs to work on it.
+ *
+ * @typedef {object} ArrangedAgentSystemUser
+ * @property {Facilitator} facilitator The facilitator that holds the agent system user and the clients it can be given.
+ * @property {string} vendorOrgNo The vendor that registered the system.
+ * @property {string} systemId The system the agent system user was created on.
+ * @property {string} systemUserId Identifier of the approved agent system user.
+ * @property {string[]} accessPackages Urns of the access packages the agent system user was asked for, which decide which of the facilitator's clients are delegable.
+ * @property {string} systemNamePrefix What the system was named with, which is what the teardown sweeps on.
  */
-let facilitatorTokenGenerator = undefined;
 
 /**
- * @type {EnterpriseTokenGenerator | undefined}
+ * The clients these tests act with.
+ *
+ * @typedef {object} ClientDelegationClients
+ * @property {{systemRegisterClient: SystemRegisterClient, requestSystemUserClient: RequestSystemUserClient}} vendor The vendor that registers the system and asks for the agent system user.
+ * @property {{clientDelegationClient: SystemUserClientDelegationClient, bffAgentRequestClient: SystemUserAgentRequestClient, bffSystemUserClient: BffSystemUserClient}} facilitator The facilitator that approves the agent system user and delegates its clients to it.
  */
-let vendorTokenGenerator = undefined;
 
 /**
  * Creates and caches the clients these tests use.
@@ -116,48 +120,43 @@ let vendorTokenGenerator = undefined;
  * the facilitator with getFacilitatorTokenOpts. The cache is keyed on the options,
  * so each of them still gets its own cached token.
  *
- * @returns {[any, PersonalTokenGenerator, EnterpriseTokenGenerator]} Clients grouped by who they act as, and the two token generators.
+ * @returns {{clients: ClientDelegationClients, facilitatorTokenGenerator: PersonalTokenGenerator, vendorTokenGenerator: EnterpriseTokenGenerator}} Clients grouped by who they act as, and the two token generators.
  */
-export function getClients() {
-    if (
-        clients === undefined ||
-        facilitatorTokenGenerator === undefined ||
-        vendorTokenGenerator === undefined
-    ) {
-        vendorTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(VENDOR_SCOPES)
-                .build(),
-        );
+export const getClients = lazy(function () {
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(VENDOR_SCOPES)
+            .build(),
+    );
 
-        facilitatorTokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(FACILITATOR_SCOPES)
-                .build(),
-        );
+    const facilitatorTokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(FACILITATOR_SCOPES)
+            .build(),
+    );
 
-        clients = {
-            vendor: {
-                systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
-                requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-            },
-            facilitator: {
-                // The delegation endpoints under test live in authentication, while
-                // approving the agent request and deleting the system user is what
-                // the facilitator does in the portal, so those go through the bff.
-                clientDelegationClient: new SystemUserClientDelegationClient(__ENV.BASE_URL, facilitatorTokenGenerator),
-                bffAgentRequestClient: new SystemUserAgentRequestClient(__ENV.AM_UI_BASE_URL, facilitatorTokenGenerator),
-                bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, facilitatorTokenGenerator),
-            },
-        };
-    }
+    /** @type {ClientDelegationClients} */
+    const clients = {
+        vendor: {
+            systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
+            requestSystemUserClient: new RequestSystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+        },
+        facilitator: {
+            // The delegation endpoints under test live in authentication, while
+            // approving the agent request and deleting the system user is what
+            // the facilitator does in the portal, so those go through the bff.
+            clientDelegationClient: new SystemUserClientDelegationClient(__ENV.BASE_URL, facilitatorTokenGenerator),
+            bffAgentRequestClient: new SystemUserAgentRequestClient(__ENV.AM_UI_BASE_URL, facilitatorTokenGenerator),
+            bffSystemUserClient: new BffSystemUserClient(__ENV.AM_UI_BASE_URL, facilitatorTokenGenerator),
+        },
+    };
 
-    return [clients, facilitatorTokenGenerator, vendorTokenGenerator];
-}
+    return { clients, facilitatorTokenGenerator, vendorTokenGenerator };
+});
 
 /**
  * Token options for acting as a vendor.
@@ -183,7 +182,7 @@ export function getVendorTokenOpts(vendorOrgNo) {
  * The scopes have to be repeated here, since the options replace the ones the
  * generator was built with rather than adding to them.
  *
- * @param {any} facilitator - The facilitator this run acts on behalf of.
+ * @param {Facilitator} facilitator - The facilitator this run acts on behalf of.
  * @returns Options to hand to setTokenGeneratorOptions.
  */
 export function getFacilitatorTokenOpts(facilitator) {
@@ -211,15 +210,22 @@ export function getFacilitatorTokenOpts(facilitator) {
  * second failure on the same cause. Stopping in setup means k6 skips the teardown,
  * so each step takes what the previous ones made with it before it stops.
  *
- * @returns {any[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
+ * @param {string} systemNamePrefix - What the run names the system it registers, which is also what the teardown sweeps up. Unique per test file, see the note on it in the caller.
+ * @param {string|null} [orgType] - Draw only facilitators of this type, e.g. "revisor". Leave it out to draw from all of them, which is what a test that does not care which access packages it gets wants.
+ * @returns {ArrangedAgentSystemUser[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
-export function arrangeAgentSystemUser() {
+export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
-    const facilitator = getItemFromList(
-        fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`),
-        randomize,
-    );
+    /** @type {Facilitator[]} */
+    const candidates = fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`)
+        .filter((/** @type {Facilitator} */ row) => orgType === null || row.orgType === orgType);
+
+    if (candidates.length === 0) {
+        fail(`cannot arrange an agent system user: no facilitator of type '${orgType}' in ${__ENV.ENVIRONMENT}`);
+    }
+
+    const facilitator = getItemFromList(candidates, randomize);
 
     const accessPackages = ACCESS_PACKAGES_BY_ORG_TYPE[facilitator.orgType];
 
@@ -233,11 +239,11 @@ export function arrangeAgentSystemUser() {
     // token is minted for, so nothing is looked up for it.
     const vendorOrgNo = pickVendor();
 
-    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients: apiClients, facilitatorTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(vendorOrgNo));
 
-    const registration = createSystemRegistration(vendorOrgNo, accessPackages);
+    const registration = createSystemRegistration(vendorOrgNo, accessPackages, systemNamePrefix);
 
     const systemUserId = group("Arrange - the facilitator has an approved agent system user", function () {
         const createdSystemId = SystemRegisterBuildingBlocks.VendorCreate(apiClients.vendor.systemRegisterClient, registration.registerSystemRequest);
@@ -252,7 +258,7 @@ export function arrangeAgentSystemUser() {
             .withPartyOrgNo(facilitator.orgNo)
             // The agent request takes access package objects, while the system
             // registration below takes the bare urns.
-            .withAccessPackages(accessPackages.map((/** @type {string} */ urn) => ({ urn })))
+            .withAccessPackages(accessPackages.map((urn) => ({ urn })))
             .withRedirectUrl(REDIRECT_URL)
             .build();
 
@@ -266,16 +272,34 @@ export function arrangeAgentSystemUser() {
 
         // From here on the facilitator is the one acting, so the token has to be
         // theirs before the approval goes out.
-        tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
+        facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
-        if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, facilitator.partyId, created.id)) {
+        // Read before approving, with the facilitator's own token, so a request the
+        // approval cannot find is reported as that rather than as a 404 on the
+        // approval itself. The portal loads the request this way before it shows the
+        // facilitator anything to approve, so it is also the call the facilitator
+        // would really have made.
+        const requestToApprove = GetAgentRequest(apiClients.facilitator.bffAgentRequestClient, created.id);
+
+        SystemUserRequestDomainChecks.CheckRequestSystem(requestToApprove, registration.systemId);
+
+        const readyToApprove = SystemUserRequestDomainChecks.CheckRequestStatus(requestToApprove, "New");
+        const facilitatorMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
+
+        if (!readyToApprove || !facilitatorMayApprove) {
+            unwindArrange(registration.systemId, created.id);
+
+            fail("cannot arrange an agent system user: the agent system user request was not there for the facilitator to approve");
+        }
+
+        if (!ApproveAgentRequest(apiClients.facilitator.bffAgentRequestClient, Number(facilitator.partyId), created.id)) {
             unwindArrange(registration.systemId, created.id);
 
             fail("cannot arrange an agent system user: the facilitator did not approve the agent system user request");
         }
 
         // The system id is nested under system, not on the system user itself.
-        const systemUsers = GetAgentSystemUsers(apiClients.facilitator.bffSystemUserClient, facilitator.partyId) ?? [];
+        const systemUsers = GetAgentSystemUsers(apiClients.facilitator.bffSystemUserClient, Number(facilitator.partyId)) ?? [];
         const systemUser = systemUsers.find(
             (/** @type {{id?: string, system?: {systemId?: string}}} */ candidate) =>
                 candidate.system?.systemId === registration.systemId,
@@ -301,6 +325,7 @@ export function arrangeAgentSystemUser() {
             systemId: registration.systemId,
             systemUserId,
             accessPackages,
+            systemNamePrefix,
         },
     ];
 }
@@ -314,19 +339,19 @@ export function arrangeAgentSystemUser() {
  * so it goes through the bff, while the system belongs to the vendor. The system
  * goes last, since it is what the system user is built on.
  *
- * @param {any[]} arranged - What arrangeAgentSystemUser returned.
+ * @param {ArrangedAgentSystemUser[]} arranged - What arrangeAgentSystemUser returned.
  */
 export function cleanupArranged(arranged) {
-    const [apiClients, tokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients: apiClients, facilitatorTokenGenerator, vendorTokenGenerator } = getClients();
 
     group("Cleanup - the facilitator deletes the agent system user and the vendor its system", function () {
         for (const arrangement of arranged ?? []) {
-            tokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
+            facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arrangement.facilitator));
             vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
 
             DeleteAgentSystemUser(
                 apiClients.facilitator.bffSystemUserClient,
-                arrangement.facilitator.partyId,
+                Number(arrangement.facilitator.partyId),
                 arrangement.systemUserId,
                 new DeleteAgentSystemUserQueryBuilder().withPartyUuid(arrangement.facilitator.orgUuid).build(),
             );
@@ -337,7 +362,7 @@ export function cleanupArranged(arranged) {
             // whatever an earlier run left in this vendor's register, which is what
             // happens when the arrange itself broke: k6 skips the teardown when the
             // setup gives up.
-            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, SYSTEM_NAME_PREFIX, apiClients.vendor.requestSystemUserClient);
+            sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, arrangement.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
 }
@@ -353,7 +378,7 @@ export function cleanupArranged(arranged) {
  * @param {string} [requestId] - The agent system user request to withdraw, when the arrange got as far as creating one.
  */
 function unwindArrange(systemId, requestId = undefined) {
-    const [apiClients] = getClients();
+    const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
         RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
@@ -367,10 +392,11 @@ function unwindArrange(systemId, requestId = undefined) {
  *
  * @param {string} vendorOrgNo - Organisation number of the vendor the system is registered as.
  * @param {string[]} accessPackages - Urns of the access packages the system is registered with.
+ * @param {string} systemNamePrefix - What the system is named with, which is what the teardown sweeps on.
  * @returns The system id and the registration payload.
  */
-function createSystemRegistration(vendorOrgNo, accessPackages) {
-    const systemName = `${SYSTEM_NAME_PREFIX}${uuidv4()}`;
+function createSystemRegistration(vendorOrgNo, accessPackages, systemNamePrefix) {
+    const systemName = `${systemNamePrefix}${uuidv4()}`;
     const systemId = `${vendorOrgNo}_${systemName}`;
 
     const registerSystemRequest = new RegisterSystemRequestBuilder()

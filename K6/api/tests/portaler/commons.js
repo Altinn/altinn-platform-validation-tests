@@ -21,7 +21,6 @@ export function getInfoCloud(path, labels) {
 
     const succeed = check(res, {
         "status code is 200": (r) => r.status === 200,
-        "status text is 200 OK": (r) => r.status_text == "200 OK",
     });
     if (!succeed) {
         console.log(`Request to ${endpoint} failed.`);
@@ -56,7 +55,6 @@ export function searchInfoCloud(searchWord, labels) {
 
     const succeed = check(res, {
         "status code is 200": (r) => r.status === 200,
-        "status text is 200 OK": (r) => r.status_text == "200 OK",
     });
     if (!succeed) {
         console.log(`Request to ${endpoint} failed.`);

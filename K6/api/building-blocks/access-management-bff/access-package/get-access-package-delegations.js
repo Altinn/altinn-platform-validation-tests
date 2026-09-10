@@ -34,8 +34,6 @@ export function GetAccessPackageDelegations(
     const succeed = check(res, {
         "GetAccessPackageDelegations - status code is 200": (r) =>
             r.status === 200,
-        "GetAccessPackageDelegations - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -3,24 +3,19 @@ import { sleep } from "k6";
 import dns from "k6/x/dns";
 
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
-import { checkIp } from "../../../../helpers.js";
-import { requireEnv } from "../../../../helpers.js";
+import { checkIp, requireEnv } from "../../../../helpers.js";
 
 export function setup() {
     requireEnv(["DEPLOY_ENV"]);
+
     const client = new AltinnCdnClient();
     const orgs = client.GetOrgs(__ENV.DEPLOY_ENV);
-    let domains = [];
-    for (let org of orgs) {
-        domains.push(
-            [
-                org,
-                __ENV.DEPLOY_ENV,
-                client.GetDomainForOrgAndEnvironment(org, __ENV.DEPLOY_ENV)
-            ]
-        );
-    }
-    return domains;
+
+    return orgs.map((org) => [
+        org,
+        __ENV.DEPLOY_ENV,
+        client.GetDomainForOrgAndEnvironment(org, __ENV.DEPLOY_ENV),
+    ]);
 }
 
 /**
@@ -28,12 +23,38 @@ export function setup() {
  */
 export default async function (data) {
     console.log(`Querying ${data.length} domains`);
-    for (let [org, deploy_env, domain] of data) {
-        const tags = { "org": org, "domain": domain, "deploy_env": deploy_env };
-        const ipv4Results = await dns.resolve(domain, "A", "8.8.8.8:53");
-        for (let ip of ipv4Results) {
-            check(ip, { "Valid IPv4 address returned": (ip) => checkIp(ip), }, tags);
+
+    for (const [org, deploy_env, domain] of data) {
+        const tags = { org, domain, deploy_env, };
+
+        let ipv4Results = null;
+        let lookupSucceeded = false;
+
+        try {
+            ipv4Results = await dns.resolve(domain, "A", "8.8.8.8:53");
+            lookupSucceeded = true;
+        } catch (e) {
+            console.error(`${domain} - DNS lookup failed: ${e}`);
         }
+        check(
+            ipv4Results,
+            {
+                "DNS lookup succeeded": () => lookupSucceeded,
+
+                "Valid IPv4 address returned": (ips) =>
+                    Array.isArray(ips) &&
+                    ips.length > 0 &&
+                    ips.every((ip) => checkIp(ip)),
+            },
+            tags,
+        );
+
+        if (lookupSucceeded) {
+            console.log(
+                `${domain} - IPv4 addresses: ${ipv4Results.join(", ")}`,
+            );
+        }
+
         sleep(1);
     }
 }

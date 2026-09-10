@@ -40,8 +40,6 @@ export function GetRoles(
     const succeed = check(res, {
         "GetRoles - status code is 200": (r) =>
             r.status === 200,
-        "GetRoles - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

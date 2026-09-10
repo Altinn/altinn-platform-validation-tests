@@ -34,8 +34,6 @@ export function UpdateResourceRights(
     const succeed = check(res, {
         "UpdateResourceRights - status code is 200": (r) =>
             r.status === 200,
-        "UpdateResourceRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

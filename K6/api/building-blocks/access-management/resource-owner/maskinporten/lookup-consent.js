@@ -27,8 +27,6 @@ export function LookupConsent(maskinportenClient, request, labels = null) {
 
     const succeed = check(res, {
         "LookupConsent - status code is 200": (r) => r.status === 200,
-        "LookupConsent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

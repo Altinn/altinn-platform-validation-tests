@@ -23,8 +23,6 @@ export function GetIsHovedadmin(userClient, party, labels = null) {
     const succeed = check(res, {
         "GetIsHovedadmin - status code is 200": (r) =>
             r.status === 200,
-        "GetIsHovedadmin - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

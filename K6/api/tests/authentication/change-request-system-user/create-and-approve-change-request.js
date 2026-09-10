@@ -3,8 +3,8 @@ import { fail, group } from "k6";
 import { Right } from "../../../../clients/authentication/types.js";
 import { uuidv4 } from "../../../../common-imports.js";
 import { getItemFromList } from "../../../../helpers.js";
-import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks } from "../../../authentication-imports.js";
-import { ApproveChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
+import { ChangeRequestSystemUserBuilder, ChangeRequestSystemUserBuildingBlocks, ChangeRequestSystemUserDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
+import { ApproveChangeRequest, GetChangeRequest } from "../../../building-blocks/access-management-bff/system-user-change-request/index.js";
 import { accessPackage, arrangeApprovedSystemUser, cleanupArranged, findAccessPackages, getApproverTokenOpts, getClients, getVendorTokenOpts, pickVendor, REDIRECT_URL, resource } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
@@ -61,7 +61,7 @@ export function setup() {
  */
 export default function (data) {
     const systemUser = getItemFromList(data, randomize);
-    const [clients, approverTokenGenerator, vendorTokenGenerator] = getClients();
+    const { clients, approverTokenGenerator, vendorTokenGenerator } = getClients();
 
     vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(systemUser.vendorOrgNo));
     approverTokenGenerator.setTokenGeneratorOptions(getApproverTokenOpts(systemUser.customer));
@@ -132,9 +132,25 @@ export default function (data) {
                 fail("cannot approve: no change request was created to approve");
             }
 
+            // Read before approving, with the customer's own token, so a change
+            // request the approval cannot find is reported as that rather than as
+            // a 404 on the approval itself. The portal loads the change request
+            // this way before it shows the customer anything to approve, so it is
+            // also the call the customer would really have made.
+            const changeRequestToApprove = GetChangeRequest(clients.approver.bffChangeRequestClient, changeRequestId);
+
+            SystemUserRequestDomainChecks.CheckRequestSystem(changeRequestToApprove, systemUser.systemId);
+
+            // No CheckUserMayApprove here: a change request cannot be escalated, so
+            // the BFF serves no userMayEscalateButNotApprove on it the way it does on
+            // a system user request.
+            if (!ChangeRequestSystemUserDomainChecks.CheckChangeRequestStatus(changeRequestToApprove, "New")) {
+                fail("cannot approve: the change request was not there for the customer to approve");
+            }
+
             const approved = ApproveChangeRequest(
                 clients.approver.bffChangeRequestClient,
-                systemUser.customer.orgPartyId,
+                Number(systemUser.customer.orgPartyId),
                 changeRequestId,
             );
 
@@ -165,6 +181,3 @@ export default function (data) {
 export function teardown(data) {
     cleanupArranged(data);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

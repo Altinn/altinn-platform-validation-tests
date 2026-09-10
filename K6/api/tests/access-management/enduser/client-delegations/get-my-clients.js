@@ -1,6 +1,6 @@
 import { ClientDelegationClient } from "../../../../../clients/access-management/enduser/client-delegation/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { getItemFromList, getOptions, requireEnv } from "../../../../../helpers.js";
+import { getItemFromList, getOptions, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { GetMyClients } from "../../../../building-blocks/access-management/enduser/client-delegation/index.js";
 
@@ -29,11 +29,6 @@ const endUsersByEnvironment = {
 
 const endUsers = endUsersByEnvironment[environment] || [];
 const endUserLabels = [...endUsers.map(user => { return { unique_id: user.label }; }), tokenGeneratorLabel]; // TODO: This should be an object, not an array
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {ClientDelegationClient | undefined} */
-let clientDelegationsApiClient = undefined;
-
 // get k6 options
 export const options = getOptions(endUserLabels);
 
@@ -43,24 +38,36 @@ export function setup() {
 }
 
 /**
+ * Creates and caches the client and token generator this test reads with.
+ *
+ * Built once per VU and reused across its iterations. Which end user the run acts
+ * as is decided per iteration by swapping the token generator options.
+ *
+ * @returns {{clientDelegationsApiClient: ClientDelegationClient, tokenGenerator: PersonalTokenGenerator}} The client, and the generator behind it.
+ */
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PORTAL.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
+
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+
+    return {
+        clientDelegationsApiClient: new ClientDelegationClient(__ENV.BASE_URL, tokenGenerator),
+        tokenGenerator,
+    };
+});
+
+/**
  * Main function executed by each VU.
  */
 export default function () {
-    if (tokenGenerator === undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PORTAL.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
-
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (clientDelegationsApiClient === undefined) {
-        clientDelegationsApiClient = new ClientDelegationClient(__ENV.BASE_URL, tokenGenerator);
-    }
+    const { clientDelegationsApiClient, tokenGenerator } = getClients();
     const party = getItemFromList(endUsers, false);
     tokenGenerator.setTokenGeneratorOptions(getTokenOpts(party.uuid));
     GetMyClients(

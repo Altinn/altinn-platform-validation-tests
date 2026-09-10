@@ -36,7 +36,7 @@ export { setup } from "./commons.js";
  * @param {ReturnType<typeof import("./commons.js").setup>} data The customers and the vendor from setup.
  */
 export default function (data) {
-    const [clients, , vendorTokenGenerator] = getClients();
+    const { clients, vendorTokenGenerator } = getClients();
     const customer = getItemFromList(data.customers, randomize);
 
     const registration = createSystemRegistration({
@@ -126,6 +126,3 @@ export default function (data) {
 export function teardown(data) {
     sweepSystems(data.vendorOrgNo, SYSTEM_NAME_PREFIX);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

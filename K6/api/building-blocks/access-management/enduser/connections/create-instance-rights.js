@@ -35,7 +35,5 @@ export function CreateInstanceRights(
     return check(res, {
         "CreateInstanceRights - status code is 201": (r) =>
             r.status === 201,
-        "CreateInstanceRights - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 }

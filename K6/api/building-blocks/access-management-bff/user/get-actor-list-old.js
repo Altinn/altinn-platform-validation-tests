@@ -23,8 +23,6 @@ export function GetActorListOld(userClient, labels = null) {
     const succeed = check(res, {
         "GetActorListOld - status code is 200": (r) =>
             r.status === 200,
-        "GetActorListOld - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {
