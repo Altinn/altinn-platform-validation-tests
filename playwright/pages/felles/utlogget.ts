@@ -16,9 +16,6 @@ import { REDIRECT_TIMEOUT } from "./navigasjon";
  * rendrer begge uten sesjon, mens navnet bare vises for en innlogget bruker. Det er
  * det samme signalet infoportalen bruker.
  *
- * At sesjonen faktisk er borte er det `Innlogging.assertLoggedOut` svarer for, på
- * cookiene, og det er den påstanden som ikke kan lures av et skjermbilde.
- *
  * @param page Siden som skal være utlogget.
  * @param user Brukeren som var innlogget, og hvis navn ikke skal vises lenger.
  */

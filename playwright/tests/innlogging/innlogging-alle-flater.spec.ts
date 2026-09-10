@@ -1,8 +1,6 @@
 import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
-// Endrer ingen data. I prod går innloggingen via mockporten, siden
-// TestID-skjermbildene bare finnes i testmiljøene.
 runInEnvironment("at23", "tt02", "prod");
 
 test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });

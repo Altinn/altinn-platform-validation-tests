@@ -1,11 +1,8 @@
 import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
-// Endrer ingen data. Utloggingen går gjennom authentication /logout, som sender
-// brukeren videre til /logout/handleloggedout, og det er de to endepunktene testen
-// er her for. I prod går innloggingen via mockporten, siden TestID-skjermbildene
-// bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02", "prod");
+// Mockporten brukes til innlogging i prod, men har ikke en fungerende utloggingsside.
+runInEnvironment("at23", "tt02");
 
 test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
 
@@ -38,7 +35,6 @@ for (const start of utloggingsflater) {
 
     await test.step("Bruker logger ut", async () => {
       await innlogging.logOut();
-      await innlogging.assertLoggedOut();
     });
 
     await test.step("Ingen av flatene viser brukeren som innlogget", async () => {

@@ -86,10 +86,16 @@ export class Meny {
         });
     }
 
+    private loginButton() {
+        return this.page.getByRole('button', { name: /logg inn|login/i });
+    }
+
+    async isLoginButtonVisible() {
+        return this.loginButton().isVisible();
+    }
+
     async clickLoginButton() {
-        await this.page.getByRole('button', {
-            name: /logg inn|login/i,
-        }).click();
+        await this.loginButton().click();
     }
 
     /**

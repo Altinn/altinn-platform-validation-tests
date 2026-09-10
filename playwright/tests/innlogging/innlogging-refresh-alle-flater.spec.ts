@@ -1,7 +1,6 @@
 import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
-// Innloggingen bruker ID-porten med TestID i testmiljøene og Mockporten i prod.
 runInEnvironment("at23", "tt02", "prod");
 
 test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });

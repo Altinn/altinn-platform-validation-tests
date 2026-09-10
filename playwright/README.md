@@ -22,8 +22,8 @@ En tom fil gir feil. at23 og tt02 har filer i repoet; hvordan øvrige testdatafi
 skal leveres som secrets, er ikke bestemt ennå.
 
 Når filen mangler, brukes foreløpig `TEST_USER_PID` og `TEST_USER_NAME` fra
-miljøfilen. Denne fallbacken krever `--workers=1` og gir samme person uavhengig
-av brukergruppe. Personen må derfor passe til testen du velger å kjøre.
+miljøfilen. Når en brukergruppe mangler CSV, velger oppsettet automatisk én worker.
+Fallbacken gir samme person uavhengig av brukergruppe. Personen må derfor passe til testen du velger å kjøre.
 Når CSV-filen blir tilgjengelig, brukes den automatisk uten kodeendringer.
 CSV-brukere fordeles mellom workerne innenfor én kjøring; separate kjøringer
 deler fortsatt brukerpool.
@@ -53,6 +53,8 @@ testpersoner, ikke ordinær eID-innlogging.
 `tests/innlogging/mockporten.spec.ts` tester Mockporten eksplisitt én gang per
 miljøkjøring, i alle fire miljøer. Den logger inn én gang og kontrollerer sesjonen
 på tvers av flatene. I prod bruker også de øvrige innloggede testene Mockporten.
+Utlogging testes bare i at23 og tt02, siden Mockportens utloggingsside svarer 404.
+Prod-suiten dekker derfor ikke utlogging.
 
 ## Hva kreves på selve spec-filen
 
