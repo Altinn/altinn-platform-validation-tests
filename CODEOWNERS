@@ -6,3 +6,4 @@
 /hack @Altinn/team-platform
 /CODEOWNERS @Altinn/team-platform
 /slos @Altinn/altinn-test-contributors
+/hack/k6-check-exceptions.json @Altinn/team-platform

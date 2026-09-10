@@ -5,12 +5,14 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 K6",
     "fix": "eslint --fix K6",
+    "lint:k6-checks": "node ./hack/find_checks_with_dynamic_names.mjs ./K6",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typecheck": "tsc -p jsconfig.json --noEmit"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/parser": "^8.0.4",
     "@stylistic/eslint-plugin": "^5.5.0",
     "@types/k6": "^2.2.0",
     "eslint": "^10.0.0",
