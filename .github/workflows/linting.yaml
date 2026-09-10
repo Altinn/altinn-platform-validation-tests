@@ -9,6 +9,7 @@ on:
       - "conf"
       - "jsconfig.json"
       - "package.json"
+      - "tests/**"
 run-name: "linting"
 permissions:
   contents: "read"
@@ -28,6 +29,8 @@ jobs:
         run: "npm run lint"
       - name: "Typecheck Code"
         run: "npm run typecheck"
+      - name: "Test RDF statement counting"
+        run: "node --test tests/count-rdf-statements.test.mjs"
       - name: "Ensure javascript files are Kebab Case and that generation of manifests works"
         run: "./hack/validate.sh"
         shell: "bash"
