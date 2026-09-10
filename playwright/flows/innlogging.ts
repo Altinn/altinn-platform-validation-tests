@@ -1,6 +1,6 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 import { Sprak } from "../config/sprak";
-import { TestUser } from "../config/environment";
+import { TestUser } from "../config/testdata";
 import { IdportenInnlogging } from "../pages/felles/idporten-innlogging";
 import { Meny } from "../pages/felles/meny";
 import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
@@ -33,31 +33,55 @@ export class Innlogging {
     }
 
     /**
-     * Logger inn og lander på siden som ble sendt inn. Dette er veien testene skal
-     * bruke når innloggingen er et middel og ikke det som testes.
+     * Standardinnlogging: ID-porten med TestID i testmiljøene, Mockporten i prod.
+     * Navigerer tilbake til ønsket side etter innlogging, også når infoportalen
+     * sender brukeren til arbeidsflaten.
      */
     async logIn(side: Side, user: TestUser) {
-        await this.syntetisk.login(side.url, user);
+        if (gjeldendeMiljo() === 'prod') {
+            await this.viaMockporten(side, user);
+            return;
+        }
+
+        await side.navigateTo();
+        await this.viaIdporten(user);
+        await side.navigateTo();
     }
 
     /**
-     * Logger inn gjennom ID-porten-skjermbildene. Bare for testene der selve
-     * innloggingsflyten er det som testes.
+     * Eksplisitt Mockporten-innlogging for mekanismens egen test og for prod.
+     */
+    async viaMockporten(side: Side, user: TestUser) {
+        await test.step('Innlogging med Mockporten', async () => {
+            await this.syntetisk.login(side.url, user);
+        });
+    }
+
+    /**
+     * Fullfører ID-porten-innlogging med TestID fra flaten brukeren står på.
+     * TestID er bare tilgjengelig i testmiljøene.
      */
     async viaIdporten(user: TestUser) {
-        if (!this.page.url().includes('idporten')) {
-            await this.meny.clickLoginButton();
+        if (gjeldendeMiljo() === 'prod') {
+            throw new Error('TestID er ikke tilgjengelig i prod. Bruk logIn().');
         }
-        await this.idporten.login(user);
+
+        await test.step('Innlogging med TestID', async () => {
+            if (!this.page.url().includes('idporten')) {
+                await this.meny.clickLoginButton();
+            }
+            await this.idporten.login(user);
+            await this.meny.lukkAktorvelger();
+        });
     }
 
     /**
      * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-     * går det gjennom ID-porten-skjermbildene.
+     * går det gjennom ID-porten med TestID; i prod brukes Mockporten.
      */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
         if (gjeldendeMiljo() === 'prod') {
-            await this.syntetisk.login(landing.url, user);
+            await this.viaMockporten(landing, user);
             return;
         }
 

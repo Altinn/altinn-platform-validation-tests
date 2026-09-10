@@ -1,4 +1,4 @@
-import { testMedFlater as test, Flate } from "../../fixtures/test";
+import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
 // Endrer ingen data. Utloggingen går gjennom authentication /logout, som sender
@@ -6,6 +6,8 @@ import { runInEnvironment } from "../../miljo";
 // er her for. I prod går innloggingen via mockporten, siden TestID-skjermbildene
 // bare finnes i testmiljøene.
 runInEnvironment("at23", "tt02", "prod");
+
+test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
 
 /**
  * Flatene som skal være utlogget etterpå. Infoportalen er med her, men ikke som
@@ -27,7 +29,7 @@ for (const start of utloggingsflater) {
   test(`Bruker er utlogget på alle flater etter utlogging fra ${start}`, async ({
     innlogging,
     user,
-    flater: sider,
+    sider,
   }) => {
     await test.step(`Bruker logger inn og lander på ${start}`, async () => {
       await innlogging.logIn(sider[start], user);

@@ -1,5 +1,5 @@
 import { expect, Page } from "@playwright/test";
-import { TestUser } from "../../config/environment";
+import { TestUser } from "../../config/testdata";
 
 /**
  * Innlogging med TestID hos ID-porten, altså gjennom skjermbildene en bruker

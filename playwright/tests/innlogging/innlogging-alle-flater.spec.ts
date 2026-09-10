@@ -1,9 +1,11 @@
-import { testMedFlater as test, Flate } from "../../fixtures/test";
+import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
 // Endrer ingen data. I prod går innloggingen via mockporten, siden
 // TestID-skjermbildene bare finnes i testmiljøene.
 runInEnvironment("at23", "tt02", "prod");
+
+test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
 
 const flater: { start: Flate; landing: Flate }[] = [
   { start: "arbeidsflate", landing: "arbeidsflate" },
@@ -13,10 +15,10 @@ const flater: { start: Flate; landing: Flate }[] = [
 ];
 
 for (const { start, landing } of flater) {
-  test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, async ({
+  test(`Innlogget sesjon gjelder på tvers av flatene etter besøk på ${start}`, async ({
     innlogging,
     user,
-    flater: sider,
+    sider,
   }) => {
     await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
       await sider[start].navigateTo();

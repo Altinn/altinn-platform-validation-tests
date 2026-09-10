@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
-import { baseUrls, TestUser } from "../../config/environment";
+import { baseUrls } from "../../config/environment";
+import { TestUser } from "../../config/testdata";
 import { Sprak } from "../../config/sprak";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
 import { Meny } from "../felles/meny";
