@@ -175,14 +175,9 @@ class ClientDelegationV2Client {
      */
     buildTags(path, action, labels) {
         const tags = {
-            // Every caller passes a fixed path and action, one per endpoint, so these
-            // read as parameters but take the same handful of values written-out tags
-            // would.
-            /* eslint-disable k6/static-request-tags */
             endpoint: `${this.FULL_PATH}/${path}`,
             name: `${this.FULL_PATH}/${path}`,
             action,
-            /* eslint-enable k6/static-request-tags */
         };
 
         return labels !== null ? { ...labels, ...tags } : tags;
