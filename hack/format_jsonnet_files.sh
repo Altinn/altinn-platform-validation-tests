@@ -10,3 +10,7 @@ fi
 for file in $(find ./hack -type f -name "*.jsonnet" -o -name "*.libsonnet"); do
   jsonnetfmt "$JSONNETFMT_FLAGS" "$file"
 done
+
+for file in $(find ./slos -type f -name "*.jsonnet" -o -name "*.libsonnet"); do
+  jsonnetfmt "$JSONNETFMT_FLAGS" "$file"
+done
