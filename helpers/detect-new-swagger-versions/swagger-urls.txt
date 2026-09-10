@@ -1,0 +1,52 @@
+# https://docs.altinn.studio/nb/api/accessmanagement/appsopenapi/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-apps.json
+
+# https://docs.altinn.studio/nb/api/accessmanagement/consententerprise/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-consententerprise.json
+
+# https://docs.altinn.studio/nb/api/accessmanagement/enduser/v1/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-enduser.json
+
+# https://docs.altinn.studio/nb/api/accessmanagement/enduser/v2/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v2-enduser.json
+
+# https://docs.altinn.studio/nb/api/accessmanagement/metadata/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-metadata.json
+
+# https://docs.altinn.studio/nb/api/accessmanagement/resourceowneropenapi/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-resourceowner.json
+
+# https://docs.altinn.studio/nb/api/accessmanagement/serviceowneropenapi/
+https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-serviceowner.json
+
+# https://docs.altinn.studio/nb/api/authentication/spec/
+https://docs.altinn.studio/swagger/altinn-platform-authentication-v1.json
+
+# https://docs.altinn.studio/nb/api/authorization/
+https://docs.altinn.studio/swagger/altinn-platform-authorization-v1.json
+
+# https://docs.altinn.studio/nb/dialogporten/reference/openapi/
+https://platform.tt02.altinn.no/dialogporten/swagger/v1/swagger.json
+
+# Dialogporten - Where is the graphql one?
+
+# https://docs.altinn.studio/nb/api/broker/spec/
+https://docs.altinn.studio/swagger/altinn-broker-v1.json
+
+# https://docs.altinn.studio/nb/api/correspondence/spec/
+https://platform.tt02.altinn.no/correspondence/api/v1/swagger/v1/swagger.json
+
+# https://docs.altinn.studio/nb/api/profile/reference/spec/
+https://docs.altinn.studio/swagger/altinn-platform-profile-v1.json
+
+# https://docs.altinn.studio/nb/api/resourceregistry/spec/
+https://docs.altinn.studio/swagger/altinn-resource-registry-v1.json
+
+# https://docs.altinn.studio/nb/api/storage/spec/
+https://docs.altinn.studio/swagger/altinn-platform-storage-v1.json
+
+# https://docs.altinn.studio/nb/events/api/openapi/
+https://docs.altinn.studio/swagger/altinn-platform-events-v1.json
+
+# https://docs.altinn.studio/nb/notifications/reference/openapi/
+https://docs.altinn.studio/swagger/altinn-notifications-v1.json
