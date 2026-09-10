@@ -40,14 +40,32 @@ class InfoPortalApiClient {
      * Get authorized parties for the user
      *
      * @param {{[key: string]: string}|null} [labels] - k6 check tags
-     * @returns http.RefinedResponse<"text">
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAuthorizedParties(labels = null) {
+        const token = this.tokenGenerator.getToken();
 
-        const url = this.FULL_PATH + "/authorized-parties";
-        return this.#getEndpoint(url, {
+        const url = `${this.FULL_PATH}/authorized-parties`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/authorized-parties`,
+            name: `${this.FULL_PATH}/authorized-parties`,
             action: TAGS.GetAuthorizedParties.action,
-            ...labels
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Cookie: `AltinnStudioRuntime=${token}`,
+                "Content-type": "application/json",
+            },
         });
     }
 
@@ -55,13 +73,32 @@ class InfoPortalApiClient {
      * Get favorites for the user
      *
      * @param {{[key: string]: string}|null} [labels] - k6 check tags
-     * @returns http.RefinedResponse<"text">
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
-        const url = this.FULL_PATH + "/favorites";
-        return this.#getEndpoint(url, {
+        const token = this.tokenGenerator.getToken();
+
+        const url = `${this.FULL_PATH}/favorites`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/favorites`,
+            name: `${this.FULL_PATH}/favorites`,
             action: TAGS.GetFavorites.action,
-            ...labels
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
+        }
+
+        return http.get(url, {
+            tags,
+            headers: {
+                Cookie: `AltinnStudioRuntime=${token}`,
+                "Content-type": "application/json",
+            },
         });
     }
 
@@ -69,39 +106,34 @@ class InfoPortalApiClient {
      * Get current user info
      *
      * @param {{[key: string]: string}|null} [labels] - k6 check tags
-     * @returns http.RefinedResponse<"text">
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCurrent(labels = null) {
-        const url = this.FULL_PATH + "/current";
-        return this.#getEndpoint(url, {
-            action: TAGS.GetCurrent.action,
-            ...labels
-        });
-    }
-
-    /**
-     * Method to do the actuel http call to the api, used by all the public methods in this class
-     *
-     * @param {string} url Full url of the endpoint to call.
-     * @param {{[x: string]: string}} labels - Object containing request labels as key/value pairs.
-     * @returns TODO: description
-     */
-    #getEndpoint(url, labels) {
         const token = this.tokenGenerator.getToken();
-        let tags = { endpoint: url.toString() };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
+
+        const url = `${this.FULL_PATH}/current`;
+
+        let tags = {
+            endpoint: `${this.FULL_PATH}/current`,
+            name: `${this.FULL_PATH}/current`,
+            action: TAGS.GetCurrent.action,
+        };
+
+        if (labels !== null) {
+            tags = {
+                ...labels,
+                ...tags,
+            };
         }
-        const params = {
-            tags: tags,
+
+        return http.get(url, {
+            tags,
             headers: {
-                Cookie: "AltinnStudioRuntime=" + token,
+                Cookie: `AltinnStudioRuntime=${token}`,
                 "Content-type": "application/json",
             },
-        };
-        return http.get(url, params);
+        });
     }
-
 }
 
 export { InfoPortalApiClient };

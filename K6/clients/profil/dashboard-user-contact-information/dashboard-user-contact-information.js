@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
+
 const TAGS = {
     GetContactInformation: {
         action: "get-contact-information",
@@ -136,9 +138,9 @@ class DashboardUserContactInformationClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }

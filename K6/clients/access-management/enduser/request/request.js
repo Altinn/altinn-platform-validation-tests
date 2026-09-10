@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../../common-imports.js";
 import { ReceivedRequestsQuery, SentRequestsQuery } from "./request.types.js";
 
 const TAGS = {
@@ -88,9 +89,9 @@ class RequestClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -144,9 +145,9 @@ class RequestClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -396,9 +397,9 @@ class RequestClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -452,9 +453,9 @@ class RequestClient {
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
                 } else {
-                    url.searchParams.append(key, value);
+                    url.searchParams.append(key, String(value));
                 }
             }
         }
@@ -546,8 +547,8 @@ class RequestClient {
         url.searchParams.append("id", id);
 
         let tags = {
-            endpoint: `${this.FULL_PATH}`,
-            name: `${this.FULL_PATH}`,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetRequest.action,
         };
 

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../../common-imports.js";
 import { AgentResourcesQuery, AgentsQuery, ClientResourcesQuery, ClientsQuery, DelegateAgentResourcesQuery, ResourceDelegationBatchInputDto } from "./client-delegation-v2.types.js";
 
 const TAGS = {

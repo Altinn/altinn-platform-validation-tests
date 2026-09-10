@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { uuidv4 } from "../../../common-imports.js";
 import { getActivityBody, getDialogBody, getDialogBodyWithoutTransmissionsAndActivities, getTransmissionBody } from "./request-body-templates.js";
 import { JsonPatchOperations_Operation, V1ServiceOwnerDialogsCommandsUpdate_Dialog, V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest, V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest, V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label } from "./types.js";
@@ -130,7 +131,8 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + "/dialogs");
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs",
+            name: this.FULL_PATH + "/dialogs",
             action: TAGS.PostDialog.action
         };
         if (labels != null) {
@@ -252,7 +254,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + "/dialogs");
 
         for (const [key, value] of Object.entries(queryParams)) {
-            if (value) url.searchParams.append(key, value);
+            if (value) url.searchParams.append(key, String(value));
         }
 
         let tags = {
@@ -594,7 +596,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + "/dialogs/endusercontext");
 
         for (const [key, value] of Object.entries(queryParams)) {
-            if (value) url.searchParams.append(key, value);
+            if (value) url.searchParams.append(key, String(value));
         }
 
         let tags = {
@@ -635,7 +637,7 @@ class ServiceOwnerApiClient {
         const url = new URL(this.FULL_PATH + "/dialoglookup");
 
         for (const [key, value] of Object.entries(queryParams)) {
-            if (value) url.searchParams.append(key, value);
+            if (value) url.searchParams.append(key, String(value));
         }
 
         let tags = {

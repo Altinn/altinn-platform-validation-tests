@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
+
 const TAGS = {
     GetAvailableClients: {
         action: "systemuser-client-delegation-get-available-clients",
@@ -55,12 +57,16 @@ class SystemUserClientDelegationClient {
     GetAvailableClients(agent = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/clients/available`;
+        const url = new URL(`${this.FULL_PATH}/clients/available`);
+
+        if (agent !== null) {
+            url.searchParams.set("agent", agent);
+        }
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/clients/available`,
+                name: `${this.FULL_PATH}/clients/available`,
                 action: TAGS.GetAvailableClients.action,
             },
             headers: {
@@ -69,13 +75,6 @@ class SystemUserClientDelegationClient {
             },
         };
 
-        if (agent !== null) {
-            url = `${url}?agent=${encodeURIComponent(agent)}`;
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -83,7 +82,7 @@ class SystemUserClientDelegationClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 
     /**
@@ -97,12 +96,16 @@ class SystemUserClientDelegationClient {
     GetClients(agent = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/clients`;
+        const url = new URL(`${this.FULL_PATH}/clients`);
+
+        if (agent !== null) {
+            url.searchParams.set("agent", agent);
+        }
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/clients`,
+                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.GetClients.action,
             },
             headers: {
@@ -111,13 +114,6 @@ class SystemUserClientDelegationClient {
             },
         };
 
-        if (agent !== null) {
-            url = `${url}?agent=${encodeURIComponent(agent)}`;
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -125,7 +121,7 @@ class SystemUserClientDelegationClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 
     /**
@@ -140,14 +136,10 @@ class SystemUserClientDelegationClient {
     DelegateClient(agent, client, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/clients`;
+        const url = new URL(`${this.FULL_PATH}/clients`);
 
-        const queryParams = [
-            `agent=${encodeURIComponent(agent)}`,
-            `client=${encodeURIComponent(client)}`,
-        ];
-
-        url = `${url}?${queryParams.join("&")}`;
+        url.searchParams.set("agent", agent);
+        url.searchParams.set("client", client);
 
         const params = {
             tags: {
@@ -168,7 +160,7 @@ class SystemUserClientDelegationClient {
             };
         }
 
-        return http.post(url, null, params);
+        return http.post(url.toString(), null, params);
     }
 
     /**
@@ -183,14 +175,10 @@ class SystemUserClientDelegationClient {
     RemoveClient(agent, client, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/clients`;
+        const url = new URL(`${this.FULL_PATH}/clients`);
 
-        const queryParams = [
-            `agent=${encodeURIComponent(agent)}`,
-            `client=${encodeURIComponent(client)}`,
-        ];
-
-        url = `${url}?${queryParams.join("&")}`;
+        url.searchParams.set("agent", agent);
+        url.searchParams.set("client", client);
 
         const params = {
             tags: {
@@ -211,7 +199,7 @@ class SystemUserClientDelegationClient {
             };
         }
 
-        return http.del(url, null, params);
+        return http.del(url.toString(), null, params);
     }
 
     /**
@@ -225,12 +213,16 @@ class SystemUserClientDelegationClient {
     GetAgents(party = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/agents`;
+        const url = new URL(`${this.FULL_PATH}/agents`);
+
+        if (party !== null) {
+            url.searchParams.set("party", party);
+        }
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/agents`,
+                name: `${this.FULL_PATH}/agents`,
                 action: TAGS.GetAgents.action,
             },
             headers: {
@@ -239,13 +231,6 @@ class SystemUserClientDelegationClient {
             },
         };
 
-        if (party !== null) {
-            url = `${url}?party=${encodeURIComponent(party)}`;
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
         if (labels !== null) {
             params.tags = {
                 ...labels,
@@ -253,7 +238,7 @@ class SystemUserClientDelegationClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 }
 

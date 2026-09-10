@@ -45,8 +45,8 @@ class TypesClient {
         const url = `${this.FULL_PATH}/meta/types/organization/subtypes`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/meta/types/organization/subtypes`,
+            name: `${this.FULL_PATH}/meta/types/organization/subtypes`,
             action: TAGS.TypesGetOrganizationSubTypes.action,
         };
 

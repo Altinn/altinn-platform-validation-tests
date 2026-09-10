@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { CloudEvent, EventsQueryParams } from "../types.js";
 
 const TAGS = {
@@ -51,8 +52,8 @@ class EventsClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.EventsCreate.action,
         };
 
@@ -86,12 +87,12 @@ class EventsClient {
     EventsGet(query = null, alternativeSubject = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}`;
+        const url = new URL(`${this.FULL_PATH}`);
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: this.FULL_PATH,
+                name: this.FULL_PATH,
                 action: TAGS.EventsGet.action,
             },
             headers: /** @type {{[key: string]: string}} */ ({
@@ -106,35 +107,18 @@ class EventsClient {
         }
 
         if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
+            for (const [key, value] of Object.entries(query)) {
                 if (value === null || value === undefined) {
-                    return;
+                    continue;
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        queryParams.push(
-                            `${key}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
                 }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
             }
         }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {
@@ -143,7 +127,7 @@ class EventsClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 }
 

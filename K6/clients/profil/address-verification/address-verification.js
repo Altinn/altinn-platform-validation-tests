@@ -56,8 +56,8 @@ class AddressVerificationClient {
         const url = `${this.FULL_PATH}/verified-addresses`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/verified-addresses`,
+            name: `${this.FULL_PATH}/verified-addresses`,
             action: TAGS.GetVerifiedAddresses.action,
         };
 
@@ -94,8 +94,8 @@ class AddressVerificationClient {
         const url = `${this.FULL_PATH}/verify`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/verify`,
+            name: `${this.FULL_PATH}/verify`,
             action: TAGS.VerifyAddress.action,
         };
 
@@ -136,8 +136,8 @@ class AddressVerificationClient {
         const url = `${this.FULL_PATH}/send`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/send`,
+            name: `${this.FULL_PATH}/send`,
             action: TAGS.SendVerificationCode.action,
         };
 
@@ -178,8 +178,8 @@ class AddressVerificationClient {
         const url = `${this.FULL_PATH}/resend`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/resend`,
+            name: `${this.FULL_PATH}/resend`,
             action: TAGS.ResendVerificationCode.action,
         };
 

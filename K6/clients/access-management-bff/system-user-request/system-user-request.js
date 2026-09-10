@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
+
 const TAGS = {
     GetSystemUserRequest: {
         action: "get-system-user-request",

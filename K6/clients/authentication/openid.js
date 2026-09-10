@@ -88,11 +88,11 @@ class OpenidClient {
     GetKeySet(url = null, labels = null) {
         const target = url ?? `${this.FULL_PATH}/jwks`;
 
-        // The URL the caller passed stays out of the name tag: a document that points
+        // The URL the caller passed stays out of both tags: a document that points
         // somewhere unexpected should turn a check red, not quietly open a second
         // series in the metrics.
         let tags = {
-            endpoint: target,
+            endpoint: `${this.FULL_PATH}/jwks`,
             name: `${this.FULL_PATH}/jwks`,
             action: TAGS.GetKeySet.action,
         };

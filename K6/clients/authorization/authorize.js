@@ -61,8 +61,8 @@ class AuthorizeClient {
         const url = `${this.FULL_PATH}/authorize`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/authorize`,
+            name: `${this.FULL_PATH}/authorize`,
             action: TAGS.AuthorizePost.action,
         };
 

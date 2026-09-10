@@ -84,11 +84,11 @@ class PartyGroupsClient {
     GetPartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const endpoint = `${this.FULL_PATH}/${groupId}`;
+        const url = `${this.FULL_PATH}/${groupId}`;
 
         let tags = {
-            endpoint,
-            name: endpoint,
+            endpoint: `${this.FULL_PATH}/{groupId}`,
+            name: `${this.FULL_PATH}/{groupId}`,
             action: TAGS.GetPartyGroup.action,
         };
 
@@ -99,7 +99,7 @@ class PartyGroupsClient {
             };
         }
 
-        return http.get(endpoint, {
+        return http.get(url, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -152,11 +152,11 @@ class PartyGroupsClient {
     UpdatePartyGroup(groupId, request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const endpoint = `${this.FULL_PATH}/${groupId}`;
+        const url = `${this.FULL_PATH}/${groupId}`;
 
         let tags = {
-            endpoint,
-            name: endpoint,
+            endpoint: `${this.FULL_PATH}/{groupId}`,
+            name: `${this.FULL_PATH}/{groupId}`,
             action: TAGS.UpdatePartyGroup.action,
         };
 
@@ -167,7 +167,7 @@ class PartyGroupsClient {
             };
         }
 
-        return http.patch(endpoint, JSON.stringify(request), {
+        return http.patch(url, JSON.stringify(request), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -187,11 +187,11 @@ class PartyGroupsClient {
     DeletePartyGroup(groupId, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const endpoint = `${this.FULL_PATH}/${groupId}`;
+        const url = `${this.FULL_PATH}/${groupId}`;
 
         let tags = {
-            endpoint,
-            name: endpoint,
+            endpoint: `${this.FULL_PATH}/{groupId}`,
+            name: `${this.FULL_PATH}/{groupId}`,
             action: TAGS.DeletePartyGroup.action,
         };
 
@@ -202,7 +202,7 @@ class PartyGroupsClient {
             };
         }
 
-        return http.del(endpoint, null, {
+        return http.del(url, null, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -222,11 +222,11 @@ class PartyGroupsClient {
     AddPartyToGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const endpoint = `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`;
+        const url = `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`;
 
         let tags = {
-            endpoint,
-            name: endpoint,
+            endpoint: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
+            name: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
             action: TAGS.AddPartyToGroup.action,
         };
 
@@ -237,7 +237,7 @@ class PartyGroupsClient {
             };
         }
 
-        return http.put(endpoint, null, {
+        return http.put(url, null, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -257,11 +257,11 @@ class PartyGroupsClient {
     RemovePartyFromGroup(groupId, partyUuid, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const endpoint = `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`;
+        const url = `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`;
 
         let tags = {
-            endpoint,
-            name: endpoint,
+            endpoint: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
+            name: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
             action: TAGS.RemovePartyFromGroup.action,
         };
 
@@ -272,7 +272,7 @@ class PartyGroupsClient {
             };
         }
 
-        return http.del(endpoint, null, {
+        return http.del(url, null, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

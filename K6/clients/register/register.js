@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { PartyFieldInclude, PartyUrn } from "./types.js";
 
 const TAGS = {
@@ -88,19 +89,17 @@ class RegisterClient {
     AccessManagementPartiesQuery(urns, fields = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const path = `${this.FULL_PATH}/access-management/parties/query`;
-
-        let url = path;
+        const url = new URL(`${this.FULL_PATH}/access-management/parties/query`);
 
         if (fields !== null) {
-            url += `?fields=${encodeURIComponent(fields.join(","))}`;
+            url.searchParams.set("fields", fields.join(","));
         }
 
         // The path without the query string, so the requested fields do not each
         // get their own timeseries.
         let tags = {
-            endpoint: path,
-            name: path,
+            endpoint: `${this.FULL_PATH}/access-management/parties/query`,
+            name: `${this.FULL_PATH}/access-management/parties/query`,
             action: TAGS.AccessManagementPartiesQuery.action,
         };
 
@@ -111,7 +110,7 @@ class RegisterClient {
             };
         }
 
-        return http.post(url, JSON.stringify({ data: urns }), {
+        return http.post(url.toString(), JSON.stringify({ data: urns }), {
             tags,
             headers: {
                 PlatformAccessToken: token,
@@ -146,22 +145,18 @@ class RegisterClient {
     GetCustomers(partyUuid, ccrRole, fields = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const path = `${this.FULL_PATH}/internal/parties/${partyUuid}/customers/ccr/${ccrRole}`;
-
-        let url = path;
+        const url = new URL(`${this.FULL_PATH}/internal/parties/${partyUuid}/customers/ccr/${ccrRole}`);
 
         if (fields !== null) {
-            url += `?fields=${encodeURIComponent(fields.join(","))}`;
+            url.searchParams.set("fields", fields.join(","));
         }
 
         // Both label tags keep the placeholders, so a party uuid, a role and a set
         // of requested fields do not each get their own timeseries. The role is a
         // tag of its own instead, which is three values rather than one per party.
-        const template = `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`;
-
         let tags = {
-            endpoint: template,
-            name: template,
+            endpoint: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
+            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
             action: TAGS.GetCustomers.action,
             ccrRole: ccrRole,
         };
@@ -173,7 +168,7 @@ class RegisterClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -206,20 +201,16 @@ class RegisterClient {
     GetRoleHolders(partyUuid, ccrRole, fields = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const path = `${this.FULL_PATH}/internal/parties/${partyUuid}/holders/ccr/${ccrRole}`;
-
-        let url = path;
+        const url = new URL(`${this.FULL_PATH}/internal/parties/${partyUuid}/holders/ccr/${ccrRole}`);
 
         if (fields !== null) {
-            url += `?fields=${encodeURIComponent(fields.join(","))}`;
+            url.searchParams.set("fields", fields.join(","));
         }
 
         // Placeholders in both label tags, for the same reason as in GetCustomers.
-        const template = `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`;
-
         let tags = {
-            endpoint: template,
-            name: template,
+            endpoint: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
+            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
             action: TAGS.GetRoleHolders.action,
             ccrRole: ccrRole,
         };
@@ -231,7 +222,7 @@ class RegisterClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

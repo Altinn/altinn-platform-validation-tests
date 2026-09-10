@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../../common-imports.js";
 import { MaskinportenSupplierDelegationCheckQuery, MaskinportenSupplierResourcesQuery, MaskinportenSuppliersQuery } from "./maskinporten-suppliers.types.js";
 
 const TAGS = {

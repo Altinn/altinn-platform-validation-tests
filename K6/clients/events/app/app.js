@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery } from "../types.js";
 
 const TAGS = {
@@ -54,8 +55,8 @@ class AppClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.AppCreate.action,
         };
 
@@ -89,7 +90,7 @@ class AppClient {
     AppGetByApp(org, app, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/${org}/${app}`;
+        const url = new URL(`${this.FULL_PATH}/${org}/${app}`);
 
         const params = {
             tags: {
@@ -104,35 +105,18 @@ class AppClient {
         };
 
         if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
+            for (const [key, value] of Object.entries(query)) {
                 if (value === null || value === undefined) {
-                    return;
+                    continue;
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        queryParams.push(
-                            `${key}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
                 }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
             }
         }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {
@@ -141,7 +125,7 @@ class AppClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 
     /**
@@ -156,12 +140,12 @@ class AppClient {
     AppGetByParty(query = null, person = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/party`;
+        const url = new URL(`${this.FULL_PATH}/party`);
 
         const params = {
             tags: {
-                endpoint: url,
-                name: url,
+                endpoint: `${this.FULL_PATH}/party`,
+                name: `${this.FULL_PATH}/party`,
                 action: TAGS.AppGetByParty.action,
             },
             headers: /** @type {{[key: string]: string}} */ ({
@@ -175,35 +159,18 @@ class AppClient {
         }
 
         if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
+            for (const [key, value] of Object.entries(query)) {
                 if (value === null || value === undefined) {
-                    return;
+                    continue;
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        queryParams.push(
-                            `${key}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
                 }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
             }
         }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
 
         if (labels !== null) {
             params.tags = {
@@ -212,7 +179,7 @@ class AppClient {
             };
         }
 
-        return http.get(url, params);
+        return http.get(url.toString(), params);
     }
 }
 

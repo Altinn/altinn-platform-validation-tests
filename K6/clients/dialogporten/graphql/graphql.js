@@ -6,6 +6,7 @@
  */
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { getAllDialogsForParties, getDialogById, getFilterServiceResources, getParties } from "./graphql-queries.js";
 
 const TAGS = {
@@ -54,7 +55,8 @@ class GraphqlClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetAllDialogsForParty.action
         };
         if (labels != null) {
@@ -84,7 +86,8 @@ class GraphqlClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetDialogById.action
         };
         if (labels != null) {
@@ -111,7 +114,8 @@ class GraphqlClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetParties.action
         };
         if (labels != null) {
@@ -138,7 +142,8 @@ class GraphqlClient {
         const token = this.tokenGenerator.getToken();
         const url = new URL(this.FULL_PATH);
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetFilterServiceResources.action
         };
         if (labels != null) {

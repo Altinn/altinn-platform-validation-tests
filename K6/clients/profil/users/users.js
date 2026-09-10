@@ -129,8 +129,8 @@ class UsersClient {
         const url = `${this.FULL_PATH}/current`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/current`,
+            name: `${this.FULL_PATH}/current`,
             action: TAGS.GetCurrentUser.action,
         };
 
@@ -166,8 +166,8 @@ class UsersClient {
         const url = this.FULL_PATH;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetUserBySsn.action,
         };
 
@@ -204,8 +204,8 @@ class UsersClient {
         const url = `${this.FULL_PATH}/current/profilesettings`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/current/profilesettings`,
+            name: `${this.FULL_PATH}/current/profilesettings`,
             action: TAGS.UpdateProfileSettings.action,
         };
 
@@ -242,8 +242,8 @@ class UsersClient {
         const url = `${this.FULL_PATH}/current/profilesettings`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/current/profilesettings`,
+            name: `${this.FULL_PATH}/current/profilesettings`,
             action: TAGS.PatchProfileSettings.action,
         };
 

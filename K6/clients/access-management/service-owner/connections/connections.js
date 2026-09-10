@@ -51,8 +51,8 @@ class ConnectionsClient {
         const url = `${this.FULL_PATH}/serviceowner/connections/accesspackages`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
+            name: `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
             action: TAGS.ConnectionsCreateAccessPackage.action,
         };
 
@@ -87,8 +87,8 @@ class ConnectionsClient {
         const url = `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
+            name: `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
             action: TAGS.ConnectionsRevokeAccessPackage.action,
         };
 

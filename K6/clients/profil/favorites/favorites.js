@@ -42,8 +42,8 @@ class FavoritesClient {
         const url = this.FULL_PATH;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.GetFavorites.action,
         };
 

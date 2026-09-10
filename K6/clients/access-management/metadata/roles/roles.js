@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../../common-imports.js";
 import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleResourcesByIdQuery, RolesGetRoleResourcesQuery } from "./roles.types.js";
 
 const TAGS = {
@@ -62,8 +63,8 @@ class RolesClient {
         const url = `${this.FULL_PATH}/meta/info/roles`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/meta/info/roles`,
+            name: `${this.FULL_PATH}/meta/info/roles`,
             action: TAGS.RolesGetRoles.action,
         };
 
@@ -130,34 +131,19 @@ class RolesClient {
     RolesGetRolePackages(query, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/meta/info/roles/packages`;
+        const url = new URL(`${this.FULL_PATH}/meta/info/roles/packages`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
                 }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
             }
         }
 
@@ -174,7 +160,7 @@ class RolesClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -195,34 +181,19 @@ class RolesClient {
     RolesGetRoleResources(query, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/meta/info/roles/resources`;
+        const url = new URL(`${this.FULL_PATH}/meta/info/roles/resources`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
                 if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
+                    value.forEach((v) => url.searchParams.append(key, String(v)));
+                } else {
+                    url.searchParams.append(key, String(value));
                 }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
             }
         }
 
@@ -239,7 +210,7 @@ class RolesClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -261,24 +232,15 @@ class RolesClient {
     RolesGetRolePackagesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/meta/info/roles/${id}/packages`;
+        const url = new URL(`${this.FULL_PATH}/meta/info/roles/${id}/packages`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -295,7 +257,7 @@ class RolesClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -317,24 +279,15 @@ class RolesClient {
     RolesGetRoleResourcesById(id, query, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/meta/info/roles/${id}/resources`;
+        const url = new URL(`${this.FULL_PATH}/meta/info/roles/${id}/resources`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -351,7 +304,7 @@ class RolesClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { ChangeReporteeAndRedirectQuery, ChangeReporteeQuery } from "./reportee.types.js";
 
 const TAGS = {

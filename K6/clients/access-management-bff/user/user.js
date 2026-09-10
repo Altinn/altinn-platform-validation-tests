@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
+
 const TAGS = {
     GetUserProfile: {
         action: "get-user-profile",

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { CorrespondenceQuery, InitializeCorrespondencesExt } from "./correspondence.types.js";
 
 const TAGS = {
@@ -119,7 +120,7 @@ class CorrespondenceClient {
         const url = `${this.FULL_PATH}/upload`;
 
         let tags = {
-            endpoint: url,
+            endpoint: `${this.FULL_PATH}/upload`,
             name: `${this.FULL_PATH}/upload`,
             action: TAGS.UploadCorrespondences.action,
         };

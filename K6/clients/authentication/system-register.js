@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { AccessPackage, RegisterSystemRequest, Right } from "./types.js";
 
 const TAGS = {
@@ -79,8 +80,8 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.SystemRegisterGet.action,
         };
 
@@ -113,8 +114,8 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/vendor`,
+            name: `${this.FULL_PATH}/vendor`,
             action: TAGS.SystemRegisterVendorGet.action,
         };
 
@@ -148,8 +149,8 @@ class SystemRegisterClient {
         const url = `${this.FULL_PATH}/vendor`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/vendor`,
+            name: `${this.FULL_PATH}/vendor`,
             action: TAGS.SystemRegisterVendorCreate.action,
         };
 
@@ -291,10 +292,10 @@ class SystemRegisterClient {
     SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/${systemId}/rights`;
+        const url = new URL(`${this.FULL_PATH}/${systemId}/rights`);
 
         if (useOldFormatForApp !== null) {
-            url += `?useOldFormatForApp=${encodeURIComponent(useOldFormatForApp)}`;
+            url.searchParams.set("useOldFormatForApp", String(useOldFormatForApp));
         }
 
         let tags = {
@@ -310,7 +311,7 @@ class SystemRegisterClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -337,10 +338,10 @@ class SystemRegisterClient {
     ) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/${systemId}/accesspackages`;
+        const url = new URL(`${this.FULL_PATH}/${systemId}/accesspackages`);
 
         if (useOldFormatForApp !== null) {
-            url += `?useOldFormatForApp=${encodeURIComponent(useOldFormatForApp)}`;
+            url.searchParams.set("useOldFormatForApp", String(useOldFormatForApp));
         }
 
         let tags = {
@@ -356,7 +357,7 @@ class SystemRegisterClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,

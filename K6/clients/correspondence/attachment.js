@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import {
     InitializeAttachmentExt,
 } from "./attachment.types.js";
@@ -60,8 +61,8 @@ class AttachmentClient {
 
         const tags = {
             ...labels,
-            endpoint: url.toString(),
-            name: url.toString(),
+            endpoint: `${this.FULL_PATH}/attachment`,
+            name: `${this.FULL_PATH}/attachment`,
             action: TAGS.InitializeAttachment.action,
         };
 

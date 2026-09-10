@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../common-imports.js";
 import { ResourceListQuery, ResourceSearchQuery, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
 
 const TAGS = {
@@ -91,24 +92,15 @@ class ResourceClient {
     ResourceGetResourceList(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/resourcelist`;
+        const url = new URL(`${this.FULL_PATH}/resourcelist`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -125,7 +117,7 @@ class ResourceClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -147,8 +139,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/export`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/export`,
+            name: `${this.FULL_PATH}/export`,
             action: TAGS.ResourceExport.action,
         };
 
@@ -179,24 +171,15 @@ class ResourceClient {
     ResourceGetResource(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
+        const url = new URL(`${this.FULL_PATH}/${encodeURIComponent(id)}`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -213,7 +196,7 @@ class ResourceClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -235,8 +218,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: this.FULL_PATH,
+            name: this.FULL_PATH,
             action: TAGS.ResourceCreateResource.action,
         };
 
@@ -454,24 +437,15 @@ class ResourceClient {
     ResourceGetPolicySubjects(id, query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy/subjects`;
+        const url = new URL(`${this.FULL_PATH}/${encodeURIComponent(id)}/policy/subjects`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -488,7 +462,7 @@ class ResourceClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -581,8 +555,8 @@ class ResourceClient {
         const url = `${this.FULL_PATH}/bysubjects`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/bysubjects`,
+            name: `${this.FULL_PATH}/bysubjects`,
             action: ResourceClient.TAGS.ResourceGetResourcesBySubjects.action,
         };
 
@@ -615,24 +589,15 @@ class ResourceClient {
     ResourceSearch(query = null, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        let url = `${this.FULL_PATH}/Search`;
+        const url = new URL(`${this.FULL_PATH}/Search`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
@@ -649,7 +614,7 @@ class ResourceClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -678,30 +643,20 @@ class ResourceClient {
             headers.Authorization = `Bearer ${token}`;
         }
 
-        let url = `${this.FULL_PATH}/updated`;
+        const url = new URL(`${this.FULL_PATH}/updated`);
 
         if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
+            for (const [key, value] of Object.entries(query)) {
                 if (value === undefined || value === null) {
-                    return;
+                    continue;
                 }
 
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
+                url.searchParams.append(key, String(value));
             }
         }
 
         let tags = {
             endpoint: `${this.FULL_PATH}/updated`,
-            // The query stays out of the name tag, or metrics get one series per value.
             name: `${this.FULL_PATH}/updated`,
             action: TAGS.ResourceUpdated.action,
         };
@@ -713,7 +668,7 @@ class ResourceClient {
             };
         }
 
-        return http.get(url, {
+        return http.get(url.toString(), {
             tags,
             headers,
         });

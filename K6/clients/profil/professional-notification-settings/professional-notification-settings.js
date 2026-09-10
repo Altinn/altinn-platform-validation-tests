@@ -209,8 +209,8 @@ class ProfessionalNotificationSettingsClient {
         const url = `${this.FULL_PATH}/parties`;
 
         let tags = {
-            endpoint: url,
-            name: url,
+            endpoint: `${this.FULL_PATH}/parties`,
+            name: `${this.FULL_PATH}/parties`,
             action: TAGS.GetAllNotificationSettings.action,
         };
 

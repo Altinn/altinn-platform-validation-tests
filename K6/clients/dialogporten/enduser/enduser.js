@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../common-imports.js";
 import { uuidv4 } from "../../../common-imports.js";
 import { DialogSearchParams } from "./dialogs-search-params-builder.js";
 import { V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest } from "./types.js";
@@ -62,7 +63,7 @@ class EnduserApiClient {
             if (value === undefined || value === null) continue;
             if (Array.isArray(value)) {
                 for (const item of value) {
-                    url.searchParams.append(key, item);
+                    url.searchParams.append(key, String(item));
                 }
             } else {
                 url.searchParams.append(key, String(value));
@@ -566,7 +567,8 @@ class EnduserApiClient {
         const url = new URL(this.FULL_PATH + "/dialogs/context/systemlabels/actions/bulkset");
 
         let tags = {
-            endpoint: url.toString(),
+            endpoint: this.FULL_PATH + "/dialogs/context/systemlabels/actions/bulkset",
+            name: this.FULL_PATH + "/dialogs/context/systemlabels/actions/bulkset",
             action: TAGS.PostBulkSetSystemLabels.action,
         };
         if (labels != null) {

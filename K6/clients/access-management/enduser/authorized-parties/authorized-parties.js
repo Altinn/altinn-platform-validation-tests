@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { URL } from "../../../../common-imports.js";
 import { EndUserAuthorizedPartiesQuery } from "./authorized-parties.types.js";
 import { EndUserAuthorizedPartiesQueryBuilder } from "./authorized-parties-query-builder.js";
 
