@@ -18,19 +18,29 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+
       - name: "Use Node.js"
         uses: "actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f"
         with:
           node-version: "24.x"
+
       - name: "Dependencies"
         run: "npm install"
+
       - name: "Lint Code"
         run: "npm run lint"
+
       - name: "Typecheck Code"
         run: "npm run typecheck"
+
+      - name: "Make sure Jsonnet files are formatted"
+        run: "./hack/format_jsonnet_files.sh --test"
+        shell: "bash"
+
       - name: "Ensure javascript files are Kebab Case and that generation of manifests works"
         run: "./hack/validate.sh"
         shell: "bash"
+
       - name: "Ensure there are no trailing white spaces"
         run: "./hack/fix_whitespaces.sh"
         shell: "bash"

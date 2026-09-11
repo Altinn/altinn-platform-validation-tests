@@ -5984,5 +5984,5 @@ local slo = {
       for s in slo_definitions
       if s.namespace == namespace
     ]
-    for namespace in std.set([s.namespace for s in slo_definitions])
+  for namespace in std.set([s.namespace for s in slo_definitions])
 }
