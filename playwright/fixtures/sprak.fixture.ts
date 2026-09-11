@@ -1,5 +1,5 @@
-import { test as base } from '@playwright/test';
-import { Sprak } from '../config/sprak';
+import { test as base } from "@playwright/test";
+import { Sprak } from "../config/sprak";
 
 /**
  * Spraket er en option-fixture, så en test eller et helt describe-blokk kan sette
@@ -7,5 +7,5 @@ import { Sprak } from '../config/sprak';
  * argument. Default er bokmål.
  */
 export const test = base.extend<{ sprak: Sprak }>({
-    sprak: [Sprak.Bokmaal, { option: true }],
+  sprak: [Sprak.Bokmaal, { option: true }],
 });

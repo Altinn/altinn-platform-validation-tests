@@ -1,4 +1,4 @@
-import { TestUser } from "../config/environment";
+import { TestUser } from "../config/testdata";
 
 /**
  * Fellesnevneren for en side som kan nås direkte og som viser om brukeren er

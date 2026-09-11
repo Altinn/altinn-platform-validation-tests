@@ -49,6 +49,12 @@ const headed = npmFlag("headed") !== undefined;
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
 
+// Fallback til én miljøkonfigurert person må ikke brukes av parallelle workere.
+const testdatamappe = path.join(__dirname, "testdata");
+const manglerTestdata = fs.readdirSync(testdatamappe, { withFileTypes: true })
+  .filter((oppf) => oppf.isDirectory())
+  .some((oppf) => !fs.existsSync(path.join(testdatamappe, oppf.name, `${environment}.csv`)));
+
 export default defineConfig({
   // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
   globalSetup: "./global-setup.ts",
@@ -58,7 +64,7 @@ export default defineConfig({
   // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
   // Traces skrives ved første retry
   retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
-  workers: workers ? Number(workers) : undefined,
+  workers: workers ? Number(workers) : manglerTestdata ? 1 : undefined,
   reporter: [
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results.xml" }],
