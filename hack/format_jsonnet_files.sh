@@ -1,16 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-JSONNETFMT_FLAGS="-i"
+case "${1:-}" in
+    "")
+        mode="format"
+        ;;
+    --test)
+        mode="check"
+        ;;
+    *)
+        echo "Usage: $0 [--test]" >&2
+        exit 2
+        ;;
+esac
 
-if [[ "${1:-}" == "--test" ]]; then
-    JSONNETFMT_FLAGS="--test"
-fi
+while IFS= read -r -d '' file; do
+    if [[ "$mode" == "format" ]]; then
+        jsonnetfmt -i "$file"
+        continue
+    fi
 
-for file in $(find ./hack -type f -name "*.jsonnet" -o -name "*.libsonnet"); do
-  jsonnetfmt "$JSONNETFMT_FLAGS" "$file"
-done
-
-for file in $(find ./slos -type f -name "*.jsonnet" -o -name "*.libsonnet"); do
-  jsonnetfmt "$JSONNETFMT_FLAGS" "$file"
-done
+    if ! jsonnetfmt --test "$file" >/dev/null 2>&1; then
+        echo "ERROR: $file is not formatted" >&2
+        diff -u "$file" <(jsonnetfmt "$file") || true
+        exit 1
+    fi
+done < <(
+    find ./hack ./slos \
+        -type f \
+        \( -name '*.jsonnet' -o -name '*.libsonnet' \) \
+        -print0
+)
