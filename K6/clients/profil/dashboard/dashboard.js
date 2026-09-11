@@ -1,7 +1,5 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
-
 const TAGS = {
     GetNotificationAddresses: {
         action: "get-notification-addresses",
@@ -86,11 +84,11 @@ class DashboardClient {
     GetNotificationAddressesByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const url = `${this.FULL_PATH}/organizations/notificationaddresses/email/${emailAddress}`;
+        const url = `${this.FULL_PATH}/organizations/notificationaddresses/email`;
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/email/{emailAddress}`,
-            name: `${this.FULL_PATH}/organizations/notificationaddresses/email/{emailAddress}`,
+            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/email`,
+            name: `${this.FULL_PATH}/organizations/notificationaddresses/email`,
             action: TAGS.GetNotificationAddressesByEmail.action,
         };
 
@@ -106,6 +104,7 @@ class DashboardClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
+                emailAddress,
             },
         });
     }
@@ -115,7 +114,7 @@ class DashboardClient {
      *
      * @param {string} phoneNumber Phone number.
      * @param {{countrycode?: string}|null} [query]
-     * Optional query parameters.
+     * Optional country code, sent as an HTTP header by this endpoint.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
@@ -127,27 +126,11 @@ class DashboardClient {
     ) {
         const token = this.tokenGenerator.getToken();
 
-        const url = new URL(
-            `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber/${phoneNumber}`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
+        const url = `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`;
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber/{phoneNumber}`,
-            name: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber/{phoneNumber}`,
+            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`,
+            name: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`,
             action: TAGS.GetNotificationAddressesByPhoneNumber.action,
         };
 
@@ -158,11 +141,13 @@ class DashboardClient {
             };
         }
 
-        return http.get(url.toString(), {
+        return http.get(url, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
+                phoneNumber,
+                ...(query?.countrycode == null ? {} : { countrycode: query.countrycode }),
             },
         });
     }

@@ -1,7 +1,5 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
-
 const TAGS = {
     GetContactInformation: {
         action: "get-contact-information",
@@ -86,11 +84,11 @@ class DashboardUserContactInformationClient {
     GetContactInformationByEmail(emailAddress, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const url = `${this.FULL_PATH}/organizations/contactinformation/email/${emailAddress}`;
+        const url = `${this.FULL_PATH}/organizations/contactinformation/email`;
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/contactinformation/email/{emailAddress}`,
-            name: `${this.FULL_PATH}/organizations/contactinformation/email/{emailAddress}`,
+            endpoint: `${this.FULL_PATH}/organizations/contactinformation/email`,
+            name: `${this.FULL_PATH}/organizations/contactinformation/email`,
             action: TAGS.GetContactInformationByEmail.action,
         };
 
@@ -106,6 +104,7 @@ class DashboardUserContactInformationClient {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
+                emailAddress,
             },
         });
     }
@@ -115,7 +114,7 @@ class DashboardUserContactInformationClient {
      *
      * @param {string} phoneNumber Phone number. Must contain between 5 and 15 digits.
      * @param {{countrycode?: string}|null} [query]
-     * Optional query parameters.
+     * Optional country code, sent as an HTTP header by this endpoint.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
@@ -127,27 +126,11 @@ class DashboardUserContactInformationClient {
     ) {
         const token = this.tokenGenerator.getToken();
 
-        const url = new URL(
-            `${this.FULL_PATH}/organizations/contactinformation/phonenumber/${phoneNumber}`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
+        const url = `${this.FULL_PATH}/organizations/contactinformation/phonenumber`;
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/contactinformation/phonenumber/{phoneNumber}`,
-            name: `${this.FULL_PATH}/organizations/contactinformation/phonenumber/{phoneNumber}`,
+            endpoint: `${this.FULL_PATH}/organizations/contactinformation/phonenumber`,
+            name: `${this.FULL_PATH}/organizations/contactinformation/phonenumber`,
             action: TAGS.GetContactInformationByPhoneNumber.action,
         };
 
@@ -158,11 +141,13 @@ class DashboardUserContactInformationClient {
             };
         }
 
-        return http.get(url.toString(), {
+        return http.get(url, {
             tags,
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
+                phoneNumber,
+                ...(query?.countrycode == null ? {} : { countrycode: query.countrycode }),
             },
         });
     }

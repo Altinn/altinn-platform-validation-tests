@@ -121,6 +121,7 @@ class InstantOrdersClient {
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     * @deprecated Use InstantOrdersCreateSms with recipientSms at the top level.
      */
     InstantOrdersCreate(request, labels = null) {
         const token = this.tokenGenerator.getToken();

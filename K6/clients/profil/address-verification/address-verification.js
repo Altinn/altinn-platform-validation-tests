@@ -162,8 +162,8 @@ class AddressVerificationClient {
         );
     }
     /**
-     * Resets the verification process for the current user and the given address
-     * by regenerating and sending a new verification code.
+     * Sends a new verification code using the send endpoint. The server's
+     * cooldown also applies to resends (429 while the cooldown is active).
      *
      * @param {AddressCodeResendRequest} request
      * Request body. Prefer using
@@ -175,11 +175,11 @@ class AddressVerificationClient {
     ResendVerificationCode(request, labels = null) {
         const token = this.tokenGenerator.getToken();
 
-        const url = `${this.FULL_PATH}/resend`;
+        const url = `${this.FULL_PATH}/send`;
 
         let tags = {
-            endpoint: `${this.FULL_PATH}/resend`,
-            name: `${this.FULL_PATH}/resend`,
+            endpoint: `${this.FULL_PATH}/send`,
+            name: `${this.FULL_PATH}/send`,
             action: TAGS.ResendVerificationCode.action,
         };
 

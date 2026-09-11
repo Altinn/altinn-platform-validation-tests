@@ -1,5 +1,6 @@
 /**
  * @typedef {object} AltinnProblemDetails
+ * @property {string|null} [statusDescription] Description of the HTTP status code.
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]
@@ -12,6 +13,7 @@
 
 /**
  * @typedef {object} AltinnValidationProblemDetails
+ * @property {string|null} [statusDescription] Description of the HTTP status code.
  * @property {string|null} [type]
  * @property {string|null} [title]
  * @property {number|null} [status]
@@ -34,7 +36,7 @@
  * @property {string} sendersReference A reference value given to the attachment by the creator.
  * @property {number|null} [expirationInDays] Relative expiration time (days) for the attachment.
  * @property {string} resourceId Gets or sets the Resource Id for the correspondence service.
- * @property {string|null} [sender] The Sending organisation of the correspondence.
+ * @property {string|null} [sender] Deprecated in Swagger. The Sending organisation of the correspondence.
  * @property {string} attachmentId Unique Id for this attachment
  * @property {AttachmentStatusExt} status
  * @property {string|null} [statusText] Current attachment status text description
@@ -55,7 +57,7 @@
  * @property {string} sendersReference A reference value given to the attachment by the creator.
  * @property {number|null} [expirationInDays] Relative expiration time (days) for the attachment.
  * @property {string} resourceId Gets or sets the Resource Id for the correspondence service.
- * @property {string|null} [sender] The Sending organisation of the correspondence.
+ * @property {string|null} [sender] Deprecated in Swagger. The Sending organisation of the correspondence.
  * @property {string} attachmentId Unique Id for this attachment
  * @property {AttachmentStatusExt} status
  * @property {string|null} [statusText] Current attachment status text description
@@ -90,7 +92,7 @@
  * @property {string} sendersReference A reference value given to the attachment by the creator.
  * @property {number|null} [expirationInDays] Relative expiration time (days) for the attachment.
  * @property {string} resourceId Gets or sets the Resource Id for the correspondence service.
- * @property {string|null} [sender] The Sending organisation of the correspondence.
+ * @property {string|null} [sender] Deprecated in Swagger. The Sending organisation of the correspondence.
  */
 
 /**
