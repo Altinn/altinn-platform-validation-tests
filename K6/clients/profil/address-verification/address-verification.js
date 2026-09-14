@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { AddressCodeResendRequest, AddressCodeSendRequest, AddressVerificationRequest } from "./address-verification.types.js";
 
 const TAGS = {
@@ -51,30 +52,15 @@ class AddressVerificationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetVerifiedAddresses(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/verified-addresses`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/verified-addresses`,
-            name: `${this.FULL_PATH}/verified-addresses`,
-            action: TAGS.GetVerifiedAddresses.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/verified-addresses`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/verified-addresses`,
+                action: TAGS.GetVerifiedAddresses.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -89,34 +75,16 @@ class AddressVerificationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     VerifyAddress(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/verify`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/verify`,
-            name: `${this.FULL_PATH}/verify`,
-            action: TAGS.VerifyAddress.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
-            JSON.stringify(request),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/verify`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/verify`,
+                action: TAGS.VerifyAddress.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
     /**
@@ -131,34 +99,16 @@ class AddressVerificationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SendVerificationCode(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/send`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/send`,
-            name: `${this.FULL_PATH}/send`,
-            action: TAGS.SendVerificationCode.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
-            JSON.stringify(request),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/send`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/send`,
+                action: TAGS.SendVerificationCode.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
     /**
@@ -173,34 +123,16 @@ class AddressVerificationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResendVerificationCode(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/send`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/send`,
-            name: `${this.FULL_PATH}/send`,
-            action: TAGS.ResendVerificationCode.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
-            JSON.stringify(request),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/send`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/send`,
+                action: TAGS.ResendVerificationCode.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 }

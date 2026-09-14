@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../../common/request.js";
+
 const TAGS = {
     GetContactInformation: {
         action: "get-contact-information",
@@ -47,30 +49,15 @@ class DashboardUserContactInformationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetContactInformation(organizationNumber, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/organizations/${organizationNumber}/contactinformation`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/{organizationNumber}/contactinformation`,
-            name: `${this.FULL_PATH}/organizations/{organizationNumber}/contactinformation`,
-            action: TAGS.GetContactInformation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/organizations/${organizationNumber}/contactinformation`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/organizations/{organizationNumber}/contactinformation`,
+                action: TAGS.GetContactInformation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -82,31 +69,16 @@ class DashboardUserContactInformationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetContactInformationByEmail(emailAddress, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/organizations/contactinformation/email`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/contactinformation/email`,
-            name: `${this.FULL_PATH}/organizations/contactinformation/email`,
-            action: TAGS.GetContactInformationByEmail.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                emailAddress,
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/organizations/contactinformation/email`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/organizations/contactinformation/email`,
+                action: TAGS.GetContactInformationByEmail.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { emailAddress },
+            }),
+        );
     }
 
     /**
@@ -124,32 +96,16 @@ class DashboardUserContactInformationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/organizations/contactinformation/phonenumber`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/contactinformation/phonenumber`,
-            name: `${this.FULL_PATH}/organizations/contactinformation/phonenumber`,
-            action: TAGS.GetContactInformationByPhoneNumber.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                phoneNumber,
-                ...(query?.countrycode == null ? {} : { countrycode: query.countrycode }),
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/organizations/contactinformation/phonenumber`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/organizations/contactinformation/phonenumber`,
+                action: TAGS.GetContactInformationByPhoneNumber.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { phoneNumber, countrycode: query?.countrycode },
+            }),
+        );
     }
 }
 

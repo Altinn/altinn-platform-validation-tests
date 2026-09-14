@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { NotificationAddressRequest } from "./organizations.types.js";
 
 const TAGS = {
@@ -55,30 +56,15 @@ class OrganizationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
-            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
-            action: TAGS.GetNotificationAddresses.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
+                action: TAGS.GetNotificationAddresses.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -95,31 +81,17 @@ class OrganizationsClient {
         request,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
-            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
-            action: TAGS.CreateNotificationAddress.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory`,
+                action: TAGS.CreateNotificationAddress.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -136,30 +108,15 @@ class OrganizationsClient {
         notificationAddressId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
-            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
-            action: TAGS.GetNotificationAddress.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
+                action: TAGS.GetNotificationAddress.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -178,31 +135,17 @@ class OrganizationsClient {
         request,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
-            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
-            action: TAGS.UpdateNotificationAddress.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
+                action: TAGS.UpdateNotificationAddress.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -219,30 +162,16 @@ class OrganizationsClient {
         notificationAddressId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
-            name: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
-            action: TAGS.DeleteNotificationAddress.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${organizationNumber}/notificationaddresses/mandatory/${notificationAddressId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{organizationNumber}/notificationaddresses/mandatory/{notificationAddressId}`,
+                action: TAGS.DeleteNotificationAddress.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 
