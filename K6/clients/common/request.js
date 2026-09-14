@@ -83,15 +83,17 @@ export function traceparent() {
  * be found again in the logs of the service it went to. See
  * {@link traceparent} for the format.
  *
- * @param {string|null} token Bearer token, or null for an unauthenticated
- * request.
- * @param {{json?: boolean, accept?: string|null, headers?: {[key: string]: string}}} [options]
+ * @param {string|null} token Bearer token, or null when the request carries
+ * its credential some other way, or none at all.
+ * @param {{json?: boolean, accept?: string|null, headers?: {[key: string]: string|number|null|undefined}|null}} [options]
  * `json` adds a JSON `Content-Type`, `accept` overrides the `Accept` header
- * (null leaves it out), and `headers` are added as they are.
+ * (null leaves it out), and `headers` are added on top. A header whose value
+ * is null or undefined is left out, so an optional header can be passed
+ * without a guard, and numbers are sent as strings.
  * @returns {{[key: string]: string}} The headers to send with the request.
  */
 export function requestHeaders(token, options = {}) {
-    const { json = false, accept = "application/json", headers = {} } = options;
+    const { json = false, accept = "application/json", headers = null } = options;
 
     /** @type {{[key: string]: string}} */
     const result = {};
@@ -108,7 +110,11 @@ export function requestHeaders(token, options = {}) {
         result["Content-Type"] = "application/json";
     }
 
-    Object.assign(result, headers);
+    for (const [key, value] of Object.entries(headers ?? {})) {
+        if (value !== null && value !== undefined) {
+            result[key] = String(value);
+        }
+    }
 
     if (__ENV.TRACE_CALL) {
         result.traceparent = traceparent();
@@ -120,7 +126,7 @@ export function requestHeaders(token, options = {}) {
 /**
  * Builds the k6 params of a request: its tags and headers, in one call.
  *
- * @param {{endpoint: string, action: string, labels?: {[key: string]: string}|null, token?: string|null, json?: boolean, accept?: string|null, headers?: {[key: string]: string}}} request
+ * @param {{endpoint: string, action: string, labels?: {[key: string]: string}|null, token?: string|null, json?: boolean, accept?: string|null, headers?: {[key: string]: string|number|null|undefined}|null}} request
  * What to tag the request with and how to authenticate it. See
  * {@link requestTags} and {@link requestHeaders} for each field.
  * @returns {{tags: {[key: string]: string}, headers: {[key: string]: string}}}
