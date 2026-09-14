@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, requestParams } from "../common/request.js";
 
 const TAGS = {
     ExchangeToken: {
@@ -58,36 +58,15 @@ class AuthenticationClient {
             ? options.token
             : this.tokenGenerator?.getToken();
 
-        const url = new URL(
-            `${this.FULL_PATH}/exchange/${encodeURIComponent(tokenProvider)}`,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/exchange/${encodeURIComponent(tokenProvider)}`, { test: options.test }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/exchange/{tokenProvider}`,
+                action: TAGS.ExchangeToken.action,
+                labels,
+                token: token ?? null,
+            }),
         );
-
-        if (options.test !== undefined) {
-            url.searchParams.set("test", String(options.test));
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/exchange/{tokenProvider}`,
-            name: `${this.FULL_PATH}/exchange/{tokenProvider}`,
-            action: TAGS.ExchangeToken.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
-        });
-
-        if (token !== null && token !== undefined) {
-            headers.Authorization = `Bearer ${token}`;
-        }
-
-        return http.get(url.toString(), { tags, headers });
     }
 }
 

@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { AccessPackage, RegisterSystemRequest, Right } from "./types.js";
 
 const TAGS = {
@@ -75,30 +75,15 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterGet(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.SystemRegisterGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            this.FULL_PATH,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.SystemRegisterGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -109,30 +94,15 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorGet(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor`,
-            name: `${this.FULL_PATH}/vendor`,
-            action: TAGS.SystemRegisterVendorGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/vendor`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor`,
+                action: TAGS.SystemRegisterVendorGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -144,31 +114,17 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor`,
-            name: `${this.FULL_PATH}/vendor`,
-            action: TAGS.SystemRegisterVendorCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/vendor`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor`,
+                action: TAGS.SystemRegisterVendorCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -180,30 +136,15 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorGetById(systemId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${systemId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
-            name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterVendorGetById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/vendor/${systemId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+                action: TAGS.SystemRegisterVendorGetById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -216,31 +157,17 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdate(systemId, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${systemId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
-            name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterVendorUpdate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/vendor/${systemId}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+                action: TAGS.SystemRegisterVendorUpdate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -252,30 +179,16 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorDelete(systemId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${systemId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
-            name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterVendorDelete.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/vendor/${systemId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+                action: TAGS.SystemRegisterVendorDelete.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -290,34 +203,15 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterGetRightsFrontend(systemId, useOldFormatForApp = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${systemId}/rights`);
-
-        if (useOldFormatForApp !== null) {
-            url.searchParams.set("useOldFormatForApp", String(useOldFormatForApp));
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
-            name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetRightsFrontend.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${systemId}/rights`, { useOldFormatForApp }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+                action: TAGS.SystemRegisterGetRightsFrontend.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -336,34 +230,15 @@ class SystemRegisterClient {
         useOldFormatForApp = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${systemId}/accesspackages`);
-
-        if (useOldFormatForApp !== null) {
-            url.searchParams.set("useOldFormatForApp", String(useOldFormatForApp));
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
-            name: `${this.FULL_PATH}/vendor/{systemId}`,
-            action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${systemId}/accesspackages`, { useOldFormatForApp }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}`,
+                action: TAGS.SystemRegisterGetAccessPackagesFrontend.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -376,31 +251,17 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorUpdateRights(systemId, rights, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${systemId}/rights`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}/rights`,
-            name: `${this.FULL_PATH}/vendor/{systemId}/rights`,
-            action: TAGS.SystemRegisterVendorUpdateRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(rights), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/vendor/${systemId}/rights`,
+            jsonBody(rights),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}/rights`,
+                action: TAGS.SystemRegisterVendorUpdateRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -417,31 +278,17 @@ class SystemRegisterClient {
         accessPackages,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${systemId}/accesspackages`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
-            name: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
-            action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(accessPackages), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/vendor/${systemId}/accesspackages`,
+            jsonBody(accessPackages),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}/accesspackages`,
+                action: TAGS.SystemRegisterVendorUpdateAccessPackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -453,30 +300,15 @@ class SystemRegisterClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemRegisterVendorGetChangeLog(systemId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${systemId}/changelog`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
-            name: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
-            action: TAGS.SystemRegisterVendorGetChangeLog.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/vendor/${systemId}/changelog`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{systemId}/changelog`,
+                action: TAGS.SystemRegisterVendorGetChangeLog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 
