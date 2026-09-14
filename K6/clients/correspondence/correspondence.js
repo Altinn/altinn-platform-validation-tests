@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { CorrespondenceQuery, ForwardCorrespondenceRequestExt, InitializeCorrespondencesExt } from "./correspondence.types.js";
 
 const TAGS = {
@@ -78,22 +78,17 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ForwardCorrespondence(correspondenceId, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/${encodeURIComponent(correspondenceId)}/forward`;
-
-        return http.post(url, JSON.stringify(request), {
-            tags: {
-                ...labels,
+        return http.post(
+            `${this.FULL_PATH}/${encodeURIComponent(correspondenceId)}/forward`,
+            jsonBody(request),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/{correspondenceId}/forward`,
-                name: `${this.FULL_PATH}/{correspondenceId}/forward`,
                 action: TAGS.ForwardCorrespondence.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -106,31 +101,17 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeCorrespondence(body, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.InitializeCorrespondence.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
             this.FULL_PATH,
-            JSON.stringify(body),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            },
+            jsonBody(body),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.InitializeCorrespondence.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                accept: null,
+            }),
         );
     }
 
@@ -147,31 +128,16 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadCorrespondences(formData, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/upload`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/upload`,
-            name: `${this.FULL_PATH}/upload`,
-            action: TAGS.UploadCorrespondences.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
+            `${this.FULL_PATH}/upload`,
             formData,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/upload`,
+                action: TAGS.UploadCorrespondences.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -185,45 +151,15 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondences(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(this.FULL_PATH);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === null || value === undefined) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetCorrespondences.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
-            url.toString(),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            buildUrl(this.FULL_PATH, query),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetCorrespondences.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -237,32 +173,16 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PurgeCorrespondence(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${correspondenceId}/purge`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/purge`,
-            name: `${this.FULL_PATH}/{correspondenceId}/purge`,
-            action: TAGS.PurgeCorrespondence.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url,
+            `${this.FULL_PATH}/${correspondenceId}/purge`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/purge`,
+                action: TAGS.PurgeCorrespondence.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -278,32 +198,15 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadAttachment(correspondenceId, attachmentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url =
-            `${this.FULL_PATH}/${correspondenceId}/attachment/${attachmentId}/download`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/attachment/{attachmentId}/download`,
-            name: `${this.FULL_PATH}/{correspondenceId}/attachment/{attachmentId}/download`,
-            action: TAGS.DownloadAttachment.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
-            url,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            `${this.FULL_PATH}/${correspondenceId}/attachment/${attachmentId}/download`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/attachment/{attachmentId}/download`,
+                action: TAGS.DownloadAttachment.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -317,32 +220,15 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadAllAttachments(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url =
-            `${this.FULL_PATH}/${correspondenceId}/attachments/downloadall`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/attachments/downloadall`,
-            name: `${this.FULL_PATH}/{correspondenceId}/attachments/downloadall`,
-            action: TAGS.DownloadAllAttachments.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
-            url,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            `${this.FULL_PATH}/${correspondenceId}/attachments/downloadall`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/attachments/downloadall`,
+                action: TAGS.DownloadAllAttachments.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -356,33 +242,16 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     MarkAsRead(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url =
-            `${this.FULL_PATH}/${correspondenceId}/markasread`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/markasread`,
-            name: `${this.FULL_PATH}/{correspondenceId}/markasread`,
-            action: TAGS.MarkAsRead.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
+            `${this.FULL_PATH}/${correspondenceId}/markasread`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/markasread`,
+                action: TAGS.MarkAsRead.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -396,33 +265,16 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmCorrespondence(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url =
-            `${this.FULL_PATH}/${correspondenceId}/confirm`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/confirm`,
-            name: `${this.FULL_PATH}/{correspondenceId}/confirm`,
-            action: TAGS.ConfirmCorrespondence.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
+            `${this.FULL_PATH}/${correspondenceId}/confirm`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/confirm`,
+                action: TAGS.ConfirmCorrespondence.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -436,32 +288,15 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondence(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url =
-            `${this.FULL_PATH}/${correspondenceId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}`,
-            name: `${this.FULL_PATH}/{correspondenceId}`,
-            action: TAGS.GetCorrespondence.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
-            url,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            `${this.FULL_PATH}/${correspondenceId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}`,
+                action: TAGS.GetCorrespondence.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -475,32 +310,15 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondenceDetails(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url =
-            `${this.FULL_PATH}/${correspondenceId}/details`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/details`,
-            name: `${this.FULL_PATH}/{correspondenceId}/details`,
-            action: TAGS.GetCorrespondenceDetails.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
-            url,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            `${this.FULL_PATH}/${correspondenceId}/details`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/details`,
+                action: TAGS.GetCorrespondenceDetails.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 
@@ -514,31 +332,15 @@ class CorrespondenceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCorrespondenceContent(correspondenceId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = `${this.FULL_PATH}/${correspondenceId}/content`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{correspondenceId}/content`,
-            name: `${this.FULL_PATH}/{correspondenceId}/content`,
-            action: TAGS.GetCorrespondenceContent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
-            url,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "text/plain",
-                },
-            },
+            `${this.FULL_PATH}/${correspondenceId}/content`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{correspondenceId}/content`,
+                action: TAGS.GetCorrespondenceContent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: "text/plain",
+            }),
         );
     }
 }

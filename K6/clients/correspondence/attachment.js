@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { jsonBody, requestParams } from "../common/request.js";
 import {
     InitializeAttachmentExt,
 } from "./attachment.types.js";
@@ -55,28 +55,16 @@ class AttachmentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeAttachment(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/attachment`);
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/attachment`,
-            name: `${this.FULL_PATH}/attachment`,
-            action: TAGS.InitializeAttachment.action,
-        };
-
         return http.post(
-            url.toString(),
-            JSON.stringify(request),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/attachment`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/attachment`,
+                action: TAGS.InitializeAttachment.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -95,29 +83,19 @@ class AttachmentClient {
         contentType = "application/octet-stream",
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/attachment/${attachmentId}/upload`,
-        );
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/upload`,
-            name: `${this.FULL_PATH}/attachment/{attachmentId}/upload`,
-            action: TAGS.UploadAttachment.action,
-        };
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/attachment/${attachmentId}/upload`,
             fileData,
-            {
-                tags,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/upload`,
+                action: TAGS.UploadAttachment.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": contentType,
                 },
-            },
+            }),
         );
     }
 
@@ -129,26 +107,15 @@ class AttachmentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAttachment(attachmentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/attachment/${attachmentId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/attachment/{attachmentId}`,
+                action: TAGS.GetAttachment.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}`,
-            name: `${this.FULL_PATH}/attachment/{attachmentId}`,
-            action: TAGS.GetAttachment.action,
-        };
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -159,26 +126,16 @@ class AttachmentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAttachment(attachmentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.del(
             `${this.FULL_PATH}/attachment/${attachmentId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/attachment/{attachmentId}`,
+                action: TAGS.DeleteAttachment.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}`,
-            name: `${this.FULL_PATH}/attachment/{attachmentId}`,
-            action: TAGS.DeleteAttachment.action,
-        };
-
-        return http.del(url.toString(), null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -189,26 +146,15 @@ class AttachmentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAttachmentDetails(attachmentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/attachment/${attachmentId}/details`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/details`,
+                action: TAGS.GetAttachmentDetails.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/details`,
-            name: `${this.FULL_PATH}/attachment/{attachmentId}/details`,
-            action: TAGS.GetAttachmentDetails.action,
-        };
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -219,27 +165,18 @@ class AttachmentClient {
      * @returns {http.RefinedResponse<"binary">} Exposes the attachment bytes.
      */
     DownloadAttachment(attachmentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/attachment/${attachmentId}/download`,
-        );
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/download`,
-            name: `${this.FULL_PATH}/attachment/{attachmentId}/download`,
-            action: TAGS.DownloadAttachment.action,
-        };
-
-        return http.get(url.toString(), {
-            tags,
-            responseType: "binary",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
+            {
+                ...requestParams({
+                    endpoint: `${this.FULL_PATH}/attachment/{attachmentId}/download`,
+                    action: TAGS.DownloadAttachment.action,
+                    labels,
+                    token: this.tokenGenerator.getToken(),
+                }),
+                responseType: "binary",
             },
-        });
+        );
     }
 }
 
