@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { ChangeRequestSystemUser, GuidOpaque } from "./types.js";
 
 const TAGS = {
@@ -65,39 +65,20 @@ class ChangeRequestSystemUserClient {
         systemUserId = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/vendor`);
-
-        if (correlationId !== null) {
-            url.searchParams.set("correlation-id", correlationId);
-        }
-
-        if (systemUserId !== null) {
-            url.searchParams.set("system-user-id", systemUserId);
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor`,
-            name: `${this.FULL_PATH}/vendor`,
-            action: TAGS.ChangeRequestSystemUserVendorCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url.toString(), JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            buildUrl(`${this.FULL_PATH}/vendor`, {
+                "correlation-id": correlationId,
+                "system-user-id": systemUserId,
+            }),
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor`,
+                action: TAGS.ChangeRequestSystemUserVendorCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -111,30 +92,15 @@ class ChangeRequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorGet(requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${requestId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{requestId}`,
-            name: `${this.FULL_PATH}/vendor/{requestId}`,
-            action: TAGS.ChangeRequestSystemUserVendorGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/vendor/${requestId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{requestId}`,
+                action: TAGS.ChangeRequestSystemUserVendorGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -148,30 +114,16 @@ class ChangeRequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeRequestSystemUserVendorDelete(requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/${requestId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/{requestId}`,
-            name: `${this.FULL_PATH}/vendor/{requestId}`,
-            action: TAGS.ChangeRequestSystemUserVendorDelete.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/vendor/${requestId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/{requestId}`,
+                action: TAGS.ChangeRequestSystemUserVendorDelete.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -192,30 +144,15 @@ class ChangeRequestSystemUserClient {
         externalRef,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/vendor/byexternalref/${systemId}/${orgNo}/${externalRef}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            name: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            action: TAGS.ChangeRequestSystemUserVendorGetByExternalRef.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/vendor/byexternalref/${systemId}/${orgNo}/${externalRef}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+                action: TAGS.ChangeRequestSystemUserVendorGetByExternalRef.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -234,34 +171,17 @@ class ChangeRequestSystemUserClient {
         token = null,
         labels = null,
     ) {
-        const authToken = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/vendor/bysystem/${systemId}`);
-
-        if (token !== null) {
-            url.searchParams.set("token", token.value);
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
-            name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
-            action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${authToken}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/vendor/bysystem/${systemId}`, {
+                token: token !== null ? token.value : null,
+            }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
+                action: TAGS.ChangeRequestSystemUserVendorGetBySystem.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

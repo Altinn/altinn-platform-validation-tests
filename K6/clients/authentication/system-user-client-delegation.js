@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, requestParams } from "../common/request.js";
 
 const TAGS = {
     GetAvailableClients: {
@@ -55,34 +55,15 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAvailableClients(agent = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients/available`);
-
-        if (agent !== null) {
-            url.searchParams.set("agent", agent);
-        }
-
-        const params = {
-            tags: {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients/available`, { agent }),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/clients/available`,
-                name: `${this.FULL_PATH}/clients/available`,
                 action: TAGS.GetAvailableClients.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url.toString(), params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -94,34 +75,15 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClients(agent = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients`);
-
-        if (agent !== null) {
-            url.searchParams.set("agent", agent);
-        }
-
-        const params = {
-            tags: {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients`, { agent }),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/clients`,
-                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.GetClients.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url.toString(), params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -134,33 +96,16 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DelegateClient(agent, client, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients`);
-
-        url.searchParams.set("agent", agent);
-        url.searchParams.set("client", client);
-
-        const params = {
-            tags: {
+        return http.post(
+            buildUrl(`${this.FULL_PATH}/clients`, { agent, client }),
+            null,
+            requestParams({
                 endpoint: `${this.FULL_PATH}/clients`,
-                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.DelegateClient.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.post(url.toString(), null, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -173,33 +118,16 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RemoveClient(agent, client, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients`);
-
-        url.searchParams.set("agent", agent);
-        url.searchParams.set("client", client);
-
-        const params = {
-            tags: {
+        return http.del(
+            buildUrl(`${this.FULL_PATH}/clients`, { agent, client }),
+            null,
+            requestParams({
                 endpoint: `${this.FULL_PATH}/clients`,
-                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.RemoveClient.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.del(url.toString(), null, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -211,34 +139,15 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgents(party = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents`);
-
-        if (party !== null) {
-            url.searchParams.set("party", party);
-        }
-
-        const params = {
-            tags: {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/agents`, { party }),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/agents`,
-                name: `${this.FULL_PATH}/agents`,
                 action: TAGS.GetAgents.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url.toString(), params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

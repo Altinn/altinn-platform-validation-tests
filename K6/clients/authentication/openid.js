@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
+
 const TAGS = {
     GetDiscoveryDocument: {
         action: "authentication-openid-discovery-document",
@@ -51,24 +53,15 @@ class OpenidClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDiscoveryDocument(labels = null) {
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetDiscoveryDocument.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
-        });
-
-        return http.get(this.FULL_PATH, { tags, headers });
+        return http.get(
+            this.FULL_PATH,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetDiscoveryDocument.action,
+                labels,
+                token: null,
+            }),
+        );
     }
 
     /**
@@ -88,31 +81,22 @@ class OpenidClient {
     GetKeySet(url = null, labels = null) {
         const target = url ?? `${this.FULL_PATH}/jwks`;
 
-        // The URL the caller passed stays out of both tags: a document that points
-        // somewhere unexpected should turn a check red, not quietly open a second
-        // series in the metrics.
-        let tags = {
-            endpoint: `${this.FULL_PATH}/jwks`,
-            name: `${this.FULL_PATH}/jwks`,
-            action: TAGS.GetKeySet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
+        return http.get(target, {
+            ...requestParams({
+                // The URL the caller passed stays out of both tags: a document that
+                // points somewhere unexpected should turn a check red, not quietly
+                // open a second series in the metrics.
+                endpoint: `${this.FULL_PATH}/jwks`,
+                action: TAGS.GetKeySet.action,
+                labels,
+                token: null,
+            }),
+            // Redirects are not followed. The point of passing the advertised jwks_uri
+            // in is to read exactly what the document names, and k6 would otherwise
+            // chase up to ten hops, so a validated URL answering 302 could still land
+            // on another environment's key set without any check noticing.
+            redirects: 0,
         });
-
-        // Redirects are not followed. The point of passing the advertised jwks_uri in
-        // is to read exactly what the document names, and k6 would otherwise chase up
-        // to ten hops, so a validated URL answering 302 could still land on another
-        // environment's key set without any check noticing.
-        return http.get(target, { tags, headers, redirects: 0 });
     }
 }
 
