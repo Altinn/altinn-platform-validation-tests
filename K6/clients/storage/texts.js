@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { TextResource } from "./applications.types.js";
 
 const TAGS = {
@@ -57,25 +58,17 @@ class TextsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateTextResource(org, app, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
-            action: TAGS.CreateTextResource.action,
-        };
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/applications/${org}/${app}/texts`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
+                action: TAGS.CreateTextResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -90,24 +83,15 @@ class TextsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetTextResource(org, app, language, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            action: TAGS.GetTextResource.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
+                action: TAGS.GetTextResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -123,25 +107,17 @@ class TextsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateTextResource(org, app, language, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            action: TAGS.UpdateTextResource.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
+                action: TAGS.UpdateTextResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -156,24 +132,16 @@ class TextsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteTextResource(org, app, language, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            action: TAGS.DeleteTextResource.action,
-        };
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
+                action: TAGS.DeleteTextResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { DataValues, Instance, PresentationTexts, Substatus } from "./instances.types.js";
 
 const TAGS = {
@@ -75,44 +75,16 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     QueryInstances(query = null, instanceOwnerIdentifier = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances`,
-            name: `${this.FULL_PATH}/instances`,
-            action: TAGS.QueryInstances.action,
-        };
-
-        const requestHeaders = /** @type {{[key: string]: string}} */ ({
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-        });
-
-        if (instanceOwnerIdentifier !== null) {
-            requestHeaders["X-Ai-InstanceOwnerIdentifier"] = instanceOwnerIdentifier;
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: requestHeaders,
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/instances`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances`,
+                action: TAGS.QueryInstances.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "X-Ai-InstanceOwnerIdentifier": instanceOwnerIdentifier },
+            }),
+        );
     }
 
     /**
@@ -126,29 +98,17 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstance(request, appId = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances`);
-
-        if (appId !== null) {
-            url.searchParams.append("appId", appId);
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances`,
-            name: `${this.FULL_PATH}/instances`,
-            action: TAGS.CreateInstance.action,
-        };
-
-        return http.post(url.toString(), JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.post(
+            buildUrl(`${this.FULL_PATH}/instances`, { appId }),
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances`,
+                action: TAGS.CreateInstance.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -161,24 +121,15 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceByGuid(instanceGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceGuid}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceGuid}`,
-            action: TAGS.GetInstanceByGuid.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceGuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceGuid}`,
+                action: TAGS.GetInstanceByGuid.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -192,24 +143,15 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
-            action: TAGS.GetInstance.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
+                action: TAGS.GetInstance.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -224,28 +166,16 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstance(instanceOwnerPartyId, instanceGuid, hard = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`);
-
-        if (hard !== null) {
-            url.searchParams.append("hard", String(hard));
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
-            action: TAGS.DeleteInstance.action,
-        };
-
-        return http.del(url.toString(), null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`, { hard }),
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}`,
+                action: TAGS.DeleteInstance.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -259,24 +189,16 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CompleteInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/complete`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/complete`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/complete`,
-            action: TAGS.CompleteInstance.action,
-        };
-
-        return http.post(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/complete`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/complete`,
+                action: TAGS.CompleteInstance.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -291,25 +213,17 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateDataValues(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/datavalues`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/datavalues`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/datavalues`,
-            action: TAGS.UpdateDataValues.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/datavalues`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/datavalues`,
+                action: TAGS.UpdateDataValues.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -324,25 +238,17 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePresentationTexts(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/presentationtexts`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/presentationtexts`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/presentationtexts`,
-            action: TAGS.UpdatePresentationTexts.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/presentationtexts`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/presentationtexts`,
+                action: TAGS.UpdatePresentationTexts.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -357,28 +263,16 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateReadStatus(instanceOwnerPartyId, instanceGuid, status = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/readstatus`);
-
-        if (status !== null) {
-            url.searchParams.append("status", status);
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/readstatus`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/readstatus`,
-            action: TAGS.UpdateReadStatus.action,
-        };
-
-        return http.put(url.toString(), null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/readstatus`, { status }),
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/readstatus`,
+                action: TAGS.UpdateReadStatus.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -393,25 +287,17 @@ class InstancesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateSubStatus(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/substatus`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/substatus`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/substatus`,
-            action: TAGS.UpdateSubStatus.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/substatus`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/substatus`,
+                action: TAGS.UpdateSubStatus.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 
