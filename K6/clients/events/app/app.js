@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { AppCloudEventRequestModel, AppEventsByAppQuery, AppPartyEventsQuery } from "../types.js";
 
 const TAGS = {
@@ -50,31 +50,17 @@ class AppClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AppCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.AppCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.AppCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -88,44 +74,15 @@ class AppClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AppGetByApp(org, app, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${org}/${app}`);
-
-        const params = {
-            tags: {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${org}/${app}`, query),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/{org}/{app}`,
-                name: `${this.FULL_PATH}/{org}/{app}`,
                 action: TAGS.AppGetByApp.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === null || value === undefined) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url.toString(), params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -138,48 +95,16 @@ class AppClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AppGetByParty(query = null, person = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/party`);
-
-        const params = {
-            tags: {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/party`, query),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/party`,
-                name: `${this.FULL_PATH}/party`,
                 action: TAGS.AppGetByParty.action,
-            },
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { Person: person },
             }),
-        };
-
-        if (person !== null) {
-            params.headers.Person = person;
-        }
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === null || value === undefined) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 }
 
