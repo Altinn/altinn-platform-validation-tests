@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 
 const TAGS = {
     GetUserProfile: {
@@ -87,30 +87,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUserProfile(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/profile`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/profile`,
-            name: `${this.FULL_PATH}/profile`,
-            action: TAGS.GetUserProfile.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/profile`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/profile`,
+                action: TAGS.GetUserProfile.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -121,36 +106,16 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateShowDeleted(body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/profile/settingspreferences/showdeleted`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/profile/settingspreferences/showdeleted`,
-            name: `${this.FULL_PATH}/profile/settingspreferences/showdeleted`,
-            action: TAGS.UpdateShowDeleted.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/profile/settingspreferences/showdeleted`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/profile/settingspreferences/showdeleted`,
+                action: TAGS.UpdateShowDeleted.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -161,30 +126,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActorListOld(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/actorlist/old`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/old`,
-            name: `${this.FULL_PATH}/actorlist/old`,
-            action: TAGS.GetActorListOld.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/actorlist/old`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/actorlist/old`,
+                action: TAGS.GetActorListOld.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -194,30 +144,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActorList(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/actorlist`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist`,
-            name: `${this.FULL_PATH}/actorlist`,
-            action: TAGS.GetActorList.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/actorlist`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/actorlist`,
+                action: TAGS.GetActorList.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -227,30 +162,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/actorlist/favorites`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites`,
-            name: `${this.FULL_PATH}/actorlist/favorites`,
-            action: TAGS.GetFavorites.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/actorlist/favorites`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/actorlist/favorites`,
+                action: TAGS.GetFavorites.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -261,35 +181,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateFavorite(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
-            name: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
-            action: TAGS.CreateFavorite.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
+            `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
+                action: TAGS.CreateFavorite.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -301,35 +201,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteFavorite(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
-            name: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
-            action: TAGS.DeleteFavorite.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            `${this.FULL_PATH}/actorlist/favorites/${partyUuid}`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/actorlist/favorites/{partyUuid}`,
+                action: TAGS.DeleteFavorite.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -341,30 +221,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReportee(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/reportee/${partyUuid}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}`,
-            name: `${this.FULL_PATH}/reportee/{partyUuid}`,
-            action: TAGS.GetReportee.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/reportee/${partyUuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/reportee/{partyUuid}`,
+                action: TAGS.GetReportee.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -375,30 +240,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReporteeList(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/reporteelist/${partyUuid}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
-            name: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
-            action: TAGS.GetReporteeList.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/reporteelist/${partyUuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
+                action: TAGS.GetReporteeList.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -409,31 +259,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsAdmin(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/isAdmin`);
-        url.searchParams.append("party", party);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/isAdmin`,
-            name: `${this.FULL_PATH}/isAdmin`,
-            action: TAGS.GetIsAdmin.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/isAdmin`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/isAdmin`,
+                action: TAGS.GetIsAdmin.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -444,31 +278,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsClientAdmin(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/isClientAdmin`);
-        url.searchParams.append("party", party);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/isClientAdmin`,
-            name: `${this.FULL_PATH}/isClientAdmin`,
-            action: TAGS.GetIsClientAdmin.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/isClientAdmin`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/isClientAdmin`,
+                action: TAGS.GetIsClientAdmin.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -479,31 +297,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsCompanyProfileAdmin(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/isCompanyProfileAdmin`);
-        url.searchParams.append("party", party);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/isCompanyProfileAdmin`,
-            name: `${this.FULL_PATH}/isCompanyProfileAdmin`,
-            action: TAGS.GetIsCompanyProfileAdmin.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/isCompanyProfileAdmin`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/isCompanyProfileAdmin`,
+                action: TAGS.GetIsCompanyProfileAdmin.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -514,31 +316,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsHovedadmin(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/isHovedadmin`);
-        url.searchParams.append("party", party);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/isHovedadmin`,
-            name: `${this.FULL_PATH}/isHovedadmin`,
-            action: TAGS.GetIsHovedadmin.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/isHovedadmin`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/isHovedadmin`,
+                action: TAGS.GetIsHovedadmin.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -549,31 +335,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsInstanceAdmin(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/isInstanceAdmin`);
-        url.searchParams.append("party", party);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/isInstanceAdmin`,
-            name: `${this.FULL_PATH}/isInstanceAdmin`,
-            action: TAGS.GetIsInstanceAdmin.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/isInstanceAdmin`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/isInstanceAdmin`,
+                action: TAGS.GetIsInstanceAdmin.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -584,31 +354,15 @@ class UserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIsMaskinportenAdmin(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/isMaskinportenAdmin`);
-        url.searchParams.append("party", party);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/isMaskinportenAdmin`,
-            name: `${this.FULL_PATH}/isMaskinportenAdmin`,
-            action: TAGS.GetIsMaskinportenAdmin.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/isMaskinportenAdmin`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/isMaskinportenAdmin`,
+                action: TAGS.GetIsMaskinportenAdmin.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, requestParams } from "../../common/request.js";
 import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
 
 const TAGS = {
@@ -93,44 +93,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentRequests(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/sent`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/sent`,
-            name: `${this.FULL_PATH}/sent`,
-            action: TAGS.GetSentRequests.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/sent`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/sent`,
+                action: TAGS.GetSentRequests.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -142,44 +113,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentResourceRequests(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/sent/resource`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/sent/resource`,
-            name: `${this.FULL_PATH}/sent/resource`,
-            action: TAGS.GetSentResourceRequests.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/sent/resource`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/sent/resource`,
+                action: TAGS.GetSentResourceRequests.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -191,44 +133,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentPackageRequests(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/sent/package`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/sent/package`,
-            name: `${this.FULL_PATH}/sent/package`,
-            action: TAGS.GetSentPackageRequests.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/sent/package`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/sent/package`,
+                action: TAGS.GetSentPackageRequests.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -240,44 +153,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedRequests(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/received`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/received`,
-            name: `${this.FULL_PATH}/received`,
-            action: TAGS.GetReceivedRequests.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/received`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received`,
+                action: TAGS.GetReceivedRequests.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -289,44 +173,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedResourceRequests(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/received/resource`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/received/resource`,
-            name: `${this.FULL_PATH}/received/resource`,
-            action: TAGS.GetReceivedResourceRequests.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/received/resource`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received/resource`,
+                action: TAGS.GetReceivedResourceRequests.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -338,44 +193,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedPackageRequests(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/received/package`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/received/package`,
-            name: `${this.FULL_PATH}/received/package`,
-            action: TAGS.GetReceivedPackageRequests.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/received/package`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received/package`,
+                action: TAGS.GetReceivedPackageRequests.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -387,44 +213,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSentRequestsCount(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/sent/count`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/sent/count`,
-            name: `${this.FULL_PATH}/sent/count`,
-            action: TAGS.GetSentRequestsCount.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/sent/count`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/sent/count`,
+                action: TAGS.GetSentRequestsCount.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -436,44 +233,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReceivedRequestsCount(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/received/count`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/received/count`,
-            name: `${this.FULL_PATH}/received/count`,
-            action: TAGS.GetReceivedRequestsCount.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/received/count`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received/count`,
+                action: TAGS.GetReceivedRequestsCount.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -486,44 +254,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRequest(id, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${id}`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.GetRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${id}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.GetRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -534,30 +273,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDraftRequest(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/draft/${id}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/draft/{id}`,
-            name: `${this.FULL_PATH}/draft/{id}`,
-            action: TAGS.GetDraftRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/draft/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/draft/{id}`,
+                action: TAGS.GetDraftRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -569,47 +293,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateResourceRequest(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/resource`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/resource`,
-            name: `${this.FULL_PATH}/resource`,
-            action: TAGS.CreateResourceRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/resource`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/resource`,
+                action: TAGS.CreateResourceRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -622,47 +314,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreatePackageRequest(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/package`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/package`,
-            name: `${this.FULL_PATH}/package`,
-            action: TAGS.CreatePackageRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/package`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/package`,
+                action: TAGS.CreatePackageRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -675,47 +335,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     WithdrawSentRequest(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/sent/withdraw`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/sent/withdraw`,
-            name: `${this.FULL_PATH}/sent/withdraw`,
-            action: TAGS.WithdrawSentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/sent/withdraw`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/sent/withdraw`,
+                action: TAGS.WithdrawSentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -728,47 +356,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmDraftRequest(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/draft/confirm`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/draft/confirm`,
-            name: `${this.FULL_PATH}/draft/confirm`,
-            action: TAGS.ConfirmDraftRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/draft/confirm`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/draft/confirm`,
+                action: TAGS.ConfirmDraftRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -781,47 +377,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectReceivedRequest(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/received/reject`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/received/reject`,
-            name: `${this.FULL_PATH}/received/reject`,
-            action: TAGS.RejectReceivedRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/received/reject`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received/reject`,
+                action: TAGS.RejectReceivedRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -834,47 +398,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveReceivedRequest(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/received/approve`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/received/approve`,
-            name: `${this.FULL_PATH}/received/approve`,
-            action: TAGS.ApproveReceivedRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/received/approve`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received/approve`,
+                action: TAGS.ApproveReceivedRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 }

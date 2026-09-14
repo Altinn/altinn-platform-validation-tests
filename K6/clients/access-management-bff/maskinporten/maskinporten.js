@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, requestParams } from "../../common/request.js";
 import { CreateSupplierQuery, CreateSupplierResourceQuery, DeleteConsumerQuery, DeleteConsumerResourceQuery, DeleteSupplierQuery, DeleteSupplierResourceQuery, GetConsumerResourcesQuery, GetConsumersQuery, GetSupplierResourceDelegationCheckQuery, GetSupplierResourcesQuery, GetSuppliersQuery, SearchScopesQuery } from "./maskinporten.types.js";
 
 const TAGS = {
@@ -81,44 +81,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SearchScopes(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/scopes/search`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/scopes/search`,
-            name: `${this.FULL_PATH}/scopes/search`,
-            action: TAGS.SearchScopes.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/scopes/search`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/scopes/search`,
+                action: TAGS.SearchScopes.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -130,46 +101,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSupplierResourceDelegationCheck(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/suppliers/resources/delegationcheck`,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/suppliers/resources/delegationcheck`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers/resources/delegationcheck`,
+                action: TAGS.GetSupplierResourceDelegationCheck.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers/resources/delegationcheck`,
-            name: `${this.FULL_PATH}/suppliers/resources/delegationcheck`,
-            action: TAGS.GetSupplierResourceDelegationCheck.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -181,44 +121,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSupplierResources(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/suppliers/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers/resources`,
-            name: `${this.FULL_PATH}/suppliers/resources`,
-            action: TAGS.GetSupplierResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/suppliers/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers/resources`,
+                action: TAGS.GetSupplierResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -230,47 +141,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateSupplierResource(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/suppliers/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers/resources`,
-            name: `${this.FULL_PATH}/suppliers/resources`,
-            action: TAGS.CreateSupplierResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/suppliers/resources`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers/resources`,
+                action: TAGS.CreateSupplierResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -283,47 +162,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteSupplierResource(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/suppliers/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers/resources`,
-            name: `${this.FULL_PATH}/suppliers/resources`,
-            action: TAGS.DeleteSupplierResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/suppliers/resources`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers/resources`,
+                action: TAGS.DeleteSupplierResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -336,44 +183,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSuppliers(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/suppliers`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers`,
-            name: `${this.FULL_PATH}/suppliers`,
-            action: TAGS.GetSuppliers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/suppliers`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers`,
+                action: TAGS.GetSuppliers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -385,47 +203,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateSupplier(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/suppliers`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers`,
-            name: `${this.FULL_PATH}/suppliers`,
-            action: TAGS.CreateSupplier.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/suppliers`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers`,
+                action: TAGS.CreateSupplier.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -438,47 +224,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteSupplier(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/suppliers`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/suppliers`,
-            name: `${this.FULL_PATH}/suppliers`,
-            action: TAGS.DeleteSupplier.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/suppliers`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/suppliers`,
+                action: TAGS.DeleteSupplier.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -491,44 +245,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsumers(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/consumers`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consumers`,
-            name: `${this.FULL_PATH}/consumers`,
-            action: TAGS.GetConsumers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/consumers`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consumers`,
+                action: TAGS.GetConsumers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -540,47 +265,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteConsumer(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/consumers`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consumers`,
-            name: `${this.FULL_PATH}/consumers`,
-            action: TAGS.DeleteConsumer.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/consumers`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consumers`,
+                action: TAGS.DeleteConsumer.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -593,44 +286,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsumerResources(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/consumers/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consumers/resources`,
-            name: `${this.FULL_PATH}/consumers/resources`,
-            action: TAGS.GetConsumerResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/consumers/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consumers/resources`,
+                action: TAGS.GetConsumerResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -642,47 +306,15 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteConsumerResource(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/consumers/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consumers/resources`,
-            name: `${this.FULL_PATH}/consumers/resources`,
-            action: TAGS.DeleteConsumerResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/consumers/resources`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consumers/resources`,
+                action: TAGS.DeleteConsumerResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 }
