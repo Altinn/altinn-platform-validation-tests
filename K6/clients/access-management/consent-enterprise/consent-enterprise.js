@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { ConsentRequestDto, ConsentRequestEventsQuery } from "./consent-enterprise.types.js";
 
 const TAGS = {
@@ -52,31 +52,17 @@ class EnterpriseClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EnterpriseCreateConsentRequest(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/consentrequests`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consentrequests`,
-            name: `${this.FULL_PATH}/consentrequests`,
-            action: TAGS.EnterpriseCreateConsentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/consentrequests`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consentrequests`,
+                action: TAGS.EnterpriseCreateConsentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -90,30 +76,15 @@ class EnterpriseClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EnterpriseGetConsentRequest(consentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/consentrequests/${consentRequestId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consentrequests/{consentRequestId}`,
-            name: `${this.FULL_PATH}/consentrequests/{consentRequestId}`,
-            action: TAGS.EnterpriseGetConsentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/consentrequests/${consentRequestId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consentrequests/{consentRequestId}`,
+                action: TAGS.EnterpriseGetConsentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -128,44 +99,15 @@ class EnterpriseClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EnterpriseGetConsentRequestEvents(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/consentrequests/events`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consentrequests/events`,
-            name: `${this.FULL_PATH}/consentrequests/events`,
-            action: TAGS.EnterpriseGetConsentRequestEvents.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/consentrequests/events`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consentrequests/events`,
+                action: TAGS.EnterpriseGetConsentRequestEvents.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

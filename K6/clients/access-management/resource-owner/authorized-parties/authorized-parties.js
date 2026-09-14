@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../../common/request.js";
 import {
     AuthorizedPartiesQuery,
     AuthorizedPartiesRequest,
@@ -50,41 +50,19 @@ class AuthorizedPartiesClient {
      * @returns {http.RefinedResponse<"text">} HTTP response.
      */
     GetAuthorizedParties(request, queryParams, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/resourceowner/authorizedparties`
-        );
-
-        if (queryParams !== null) {
-            for (const [key, value] of Object.entries(queryParams)) {
-                // The query takes booleans as well as strings, and they go on the
-                // URL as their JSON spelling either way.
-                url.searchParams.append(key, String(value));
-            }
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/resourceowner/authorizedparties`,
-            name: `${this.FULL_PATH}/resourceowner/authorizedparties`,
-            action: TAGS.GetAuthorizedParties.action,
-        };
-
         return http.post(
-            url.toString(),
-            JSON.stringify(request),
-            {
-                tags,
-                headers: {
-                    // An empty token means the caller wants an unauthenticated
-                    // request, so send no Authorization header at all rather
-                    // than a bare "Bearer ".
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                    Accept: "application/json",
-                    "Content-type": "application/json",
-                },
-            }
+            buildUrl(`${this.FULL_PATH}/resourceowner/authorizedparties`, queryParams),
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/resourceowner/authorizedparties`,
+                action: TAGS.GetAuthorizedParties.action,
+                labels,
+                // An empty token means the caller wants an unauthenticated
+                // request, so send no Authorization header at all rather
+                // than a bare "Bearer ".
+                token: this.tokenGenerator.getToken() || null,
+                json: true,
+            }),
         );
     }
 }

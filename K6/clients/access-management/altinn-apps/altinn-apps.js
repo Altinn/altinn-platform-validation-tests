@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { jsonBody, requestParams } from "../../common/request.js";
 import {
     AppsInstanceDelegationRequestDto,
 } from "./altinn-apps.types.js";
@@ -97,32 +97,16 @@ class AppsInstanceDelegationClient {
         instanceId,
         labels = null,
     ) {
-        const url = new URL(
-            `${this.FULL_PATH}/app/delegationcheck/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
-        ).toString();
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/app/delegationcheck/resource/{resourceId}/instance/{instanceId}`,
-            name: `${this.FULL_PATH}/app/delegationcheck/resource/{resourceId}/instance/{instanceId}`,
-            action: TAGS.CheckResourceDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            PlatformAccessToken: this.tokenGenerator.getToken(),
-            Accept: "application/json",
-        };
-
-        return http.get(url, {
-            tags,
-            headers,
-        });
+        return http.get(
+            `${this.FULL_PATH}/app/delegationcheck/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/app/delegationcheck/resource/{resourceId}/instance/{instanceId}`,
+                action: TAGS.CheckResourceDelegation.action,
+                labels,
+                token: null,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
+            }),
+        );
     }
 
     /**
@@ -142,36 +126,17 @@ class AppsInstanceDelegationClient {
         request,
         labels = null,
     ) {
-        const url = new URL(
-            `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
-        ).toString();
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
-            name: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
-            action: TAGS.CreateDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            PlatformAccessToken: this.tokenGenerator.getToken(),
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        };
-
         return http.post(
-            url,
-            JSON.stringify(request),
-            {
-                tags,
-                headers,
-            },
+            `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
+                action: TAGS.CreateDelegation.action,
+                labels,
+                token: null,
+                json: true,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
+            }),
         );
     }
 
@@ -190,32 +155,16 @@ class AppsInstanceDelegationClient {
         instanceId,
         labels = null,
     ) {
-        const url = new URL(
-            `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
-        ).toString();
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
-            name: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
-            action: TAGS.GetDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            PlatformAccessToken: this.tokenGenerator.getToken(),
-            Accept: "application/json",
-        };
-
-        return http.get(url, {
-            tags,
-            headers,
-        });
+        return http.get(
+            `${this.FULL_PATH}/app/delegations/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/app/delegations/resource/{resourceId}/instance/{instanceId}`,
+                action: TAGS.GetDelegations.action,
+                labels,
+                token: null,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
+            }),
+        );
     }
 
     /**
@@ -238,36 +187,17 @@ class AppsInstanceDelegationClient {
         request,
         labels = null,
     ) {
-        const url = new URL(
-            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
-        ).toString();
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
-            name: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
-            action: TAGS.RevokeDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            PlatformAccessToken: this.tokenGenerator.getToken(),
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        };
-
         return http.post(
-            url,
-            JSON.stringify(request),
-            {
-                tags,
-                headers,
-            },
+            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
+                action: TAGS.RevokeDelegation.action,
+                labels,
+                token: null,
+                json: true,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
+            }),
         );
     }
 
@@ -286,35 +216,16 @@ class AppsInstanceDelegationClient {
         instanceId,
         labels = null,
     ) {
-        const url = new URL(
-            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`
-        ).toString();
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
-            name: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
-            action: TAGS.DeleteDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            PlatformAccessToken: this.tokenGenerator.getToken(),
-            Accept: "application/json",
-        };
-
         return http.del(
-            url,
+            `${this.FULL_PATH}/app/delegationrevoke/resource/${encodePath(resourceId)}/instance/${encodePath(instanceId)}`,
             null,
-            {
-                tags,
-                headers,
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}`,
+                action: TAGS.DeleteDelegations.action,
+                labels,
+                token: null,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
+            }),
         );
     }
 }

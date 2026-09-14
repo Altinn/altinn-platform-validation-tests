@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../../common/request.js";
 import { ServiceOwnerAccessPackageDelegation } from "./connections.types.js";
 
 const TAGS = {
@@ -46,31 +47,17 @@ class ConnectionsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConnectionsCreateAccessPackage(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/serviceowner/connections/accesspackages`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
-            name: `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
-            action: TAGS.ConnectionsCreateAccessPackage.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
+                action: TAGS.ConnectionsCreateAccessPackage.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -82,31 +69,17 @@ class ConnectionsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConnectionsRevokeAccessPackage(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
-            name: `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
-            action: TAGS.ConnectionsRevokeAccessPackage.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
+                action: TAGS.ConnectionsRevokeAccessPackage.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

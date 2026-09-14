@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../../common-imports.js";
+import { buildUrl, requestParams } from "../../../common/request.js";
 import { PackagesSearchQuery } from "./packages.types.js";
 
 const TAGS = {
@@ -71,44 +71,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesSearch(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/meta/info/accesspackages/search`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/search`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/search`,
-            action: TAGS.PackagesSearch.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/meta/info/accesspackages/search`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/search`,
+                action: TAGS.PackagesSearch.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -119,30 +90,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesExport(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/export`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/export`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/export`,
-            action: TAGS.PackagesExport.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/export`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/export`,
+                action: TAGS.PackagesExport.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -153,30 +109,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetGroup(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/group`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/group`,
-            action: TAGS.PackagesGetGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/group`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group`,
+                action: TAGS.PackagesGetGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -188,30 +129,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetGroupById(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/group/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}`,
-            action: TAGS.PackagesGetGroupById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/group/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}`,
+                action: TAGS.PackagesGetGroupById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -223,30 +149,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetGroupAreasById(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/group/${id}/areas`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}/areas`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}/areas`,
-            action: TAGS.PackagesGetGroupAreasById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/group/${id}/areas`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/group/{id}/areas`,
+                action: TAGS.PackagesGetGroupAreasById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -258,30 +169,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetAreaById(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/area/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}`,
-            action: TAGS.PackagesGetAreaById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/area/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}`,
+                action: TAGS.PackagesGetAreaById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -293,30 +189,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetAreaPackagesById(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/area/${id}/packages`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}/packages`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}/packages`,
-            action: TAGS.PackagesGetAreaPackagesById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/area/${id}/packages`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/area/{id}/packages`,
+                action: TAGS.PackagesGetAreaPackagesById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -328,30 +209,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetPackageById(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/package/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}`,
-            action: TAGS.PackagesGetPackageById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/package/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}`,
+                action: TAGS.PackagesGetPackageById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -363,30 +229,15 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetPackageByUrn(urnValue, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/package/urn/${urnValue}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/urn/{urnValue}`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/package/urn/{urnValue}`,
-            action: TAGS.PackagesGetPackageByUrn.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/package/urn/${urnValue}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/urn/{urnValue}`,
+                action: TAGS.PackagesGetPackageByUrn.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -398,30 +249,16 @@ class PackagesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PackagesGetPackageResourcesById(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/accesspackages/package/${id}/resources`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}/resources`,
-            name: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}/resources`,
-            action: TAGS.PackagesGetPackageResourcesById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers:
-            {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/accesspackages/package/${id}/resources`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/accesspackages/package/{id}/resources`,
+                action: TAGS.PackagesGetPackageResourcesById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
+        );
     }
 }
 
