@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { ServiceOwnerInitializeExt } from "./service-owner.types.js";
 
 const TAGS = {
@@ -47,32 +48,16 @@ class ServiceOwnerClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeServiceOwner(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.InitializeServiceOwner.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
             this.FULL_PATH,
-            JSON.stringify(request),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.InitializeServiceOwner.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -85,29 +70,15 @@ class ServiceOwnerClient {
      * Service owner overview information.
      */
     GetServiceOwner(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetServiceOwner.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.get(
             this.FULL_PATH,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetServiceOwner.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
         );
     }
 }

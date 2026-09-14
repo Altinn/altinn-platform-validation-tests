@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { FileTransferInitalizeExt, FileTransferQuery } from "./file-transfer.types.js";
 
 const TAGS = {
@@ -67,31 +67,17 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeFileTransfer(body, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = this.FULL_PATH;
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.InitializeFileTransfer.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(body), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            jsonBody(body),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.InitializeFileTransfer.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -106,44 +92,15 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransfers(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(this.FULL_PATH);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetFileTransfers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(this.FULL_PATH, query),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetFileTransfers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -157,31 +114,17 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadFileTransfer(fileTransferId, body, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${fileTransferId}/upload`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/upload`,
-            name: `${this.FULL_PATH}/{fileTransferId}/upload`,
-            action: TAGS.UploadFileTransfer.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, body, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/octet-stream",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/${fileTransferId}/upload`,
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/upload`,
+                action: TAGS.UploadFileTransfer.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "Content-Type": "application/octet-stream" },
+            }),
+        );
     }
 
     /**
@@ -201,8 +144,6 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InitializeAndUploadFileTransfer(metadata, file, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
         // The metadata is flattened onto the multipart body by name, so the body
         // is read through an index signature rather than a fixed shape.
         const body = /** @type {http.StructuredRequestBody} */ ({ FileTransfer: file });
@@ -223,28 +164,16 @@ class FileTransferClient {
             body[key] = value;
         }
 
-        const url = `${this.FULL_PATH}/upload`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/upload`,
-            name: `${this.FULL_PATH}/upload`,
-            action: TAGS.InitializeAndUploadFileTransfer.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, body, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/upload`,
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/upload`,
+                action: TAGS.InitializeAndUploadFileTransfer.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -257,30 +186,15 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransfer(fileTransferId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${fileTransferId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}`,
-            action: TAGS.GetFileTransfer.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${fileTransferId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}`,
+                action: TAGS.GetFileTransfer.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -293,30 +207,15 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFileTransferDetails(fileTransferId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${fileTransferId}/details`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/details`,
-            name: `${this.FULL_PATH}/{fileTransferId}/details`,
-            action: TAGS.GetFileTransferDetails.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${fileTransferId}/details`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/details`,
+                action: TAGS.GetFileTransferDetails.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -329,29 +228,16 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DownloadFileTransfer(fileTransferId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${fileTransferId}/download`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/download`,
-            name: `${this.FULL_PATH}/{fileTransferId}/download`,
-            action: TAGS.DownloadFileTransfer.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${fileTransferId}/download`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/download`,
+                action: TAGS.DownloadFileTransfer.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
+        );
     }
 
     /**
@@ -364,30 +250,16 @@ class FileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConfirmDownload(fileTransferId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${fileTransferId}/confirmdownload`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/confirmdownload`,
-            name: `${this.FULL_PATH}/{fileTransferId}/confirmdownload`,
-            action: TAGS.ConfirmDownload.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/${fileTransferId}/confirmdownload`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/confirmdownload`,
+                action: TAGS.ConfirmDownload.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

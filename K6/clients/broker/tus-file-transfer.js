@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
+
 const TUS_VERSION = "1.0.0";
 
 const TAGS = {
@@ -70,30 +72,20 @@ class TusFileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUploadOptions(fileTransferId, labels = null) {
-        const url = `${this.FULL_PATH}/${fileTransferId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}`,
-            action: TAGS.GetUploadOptions.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        };
-
-        return http.options(url, null, {
-            tags,
-            headers,
-        });
+        return http.options(
+            `${this.FULL_PATH}/${fileTransferId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}`,
+                action: TAGS.GetUploadOptions.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                },
+            }),
+        );
     }
 
     /**
@@ -114,38 +106,22 @@ class TusFileTransferClient {
         uploadConcat = null,
         labels = null,
     ) {
-        const url = `${this.FULL_PATH}/${fileTransferId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}`,
-            action: TAGS.CreatePartialUpload.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        });
-
-        if (uploadLength !== null) {
-            headers["Upload-Length"] = `${uploadLength}`;
-        }
-
-        if (uploadConcat !== null) {
-            headers["Upload-Concat"] = `${uploadConcat}`;
-        }
-
-        return http.post(url, null, {
-            tags,
-            headers,
-        });
+        return http.post(
+            `${this.FULL_PATH}/${fileTransferId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}`,
+                action: TAGS.CreatePartialUpload.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                    "Upload-Length": uploadLength,
+                    "Upload-Concat": uploadConcat,
+                },
+            }),
+        );
     }
 
     /**
@@ -158,30 +134,21 @@ class TusFileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetUploadStatus(fileTransferId, labels = null) {
-        const url = `${this.FULL_PATH}/${fileTransferId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}`,
-            action: TAGS.GetUploadStatus.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        };
-
-        return http.request("HEAD", url, null, {
-            tags,
-            headers,
-        });
+        return http.request(
+            "HEAD",
+            `${this.FULL_PATH}/${fileTransferId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}`,
+                action: TAGS.GetUploadStatus.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                },
+            }),
+        );
     }
 
     /**
@@ -196,32 +163,22 @@ class TusFileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UploadChunk(fileTransferId, uploadOffset, body, labels = null) {
-        const url = `${this.FULL_PATH}/${fileTransferId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}`,
-            action: TAGS.UploadChunk.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-            "Content-Type": "application/offset+octet-stream",
-            "Upload-Offset": `${uploadOffset}`,
-        };
-
-        return http.patch(url, body, {
-            tags,
-            headers,
-        });
+        return http.patch(
+            `${this.FULL_PATH}/${fileTransferId}`,
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}`,
+                action: TAGS.UploadChunk.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                    "Content-Type": "application/offset+octet-stream",
+                    "Upload-Offset": uploadOffset,
+                },
+            }),
+        );
     }
 
     /**
@@ -234,30 +191,20 @@ class TusFileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteUpload(fileTransferId, labels = null) {
-        const url = `${this.FULL_PATH}/${fileTransferId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}`,
-            action: TAGS.DeleteUpload.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        };
-
-        return http.del(url, null, {
-            tags,
-            headers,
-        });
+        return http.del(
+            `${this.FULL_PATH}/${fileTransferId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}`,
+                action: TAGS.DeleteUpload.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                },
+            }),
+        );
     }
 
     /**
@@ -271,30 +218,21 @@ class TusFileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartialUploadStatus(fileTransferId, partialUploadId, labels = null) {
-        const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
-            action: TAGS.GetPartialUploadStatus.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        };
-
-        return http.request("HEAD", url, null, {
-            tags,
-            headers,
-        });
+        return http.request(
+            "HEAD",
+            `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
+                action: TAGS.GetPartialUploadStatus.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                },
+            }),
+        );
     }
 
     /**
@@ -316,32 +254,22 @@ class TusFileTransferClient {
         body,
         labels = null,
     ) {
-        const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
-            action: TAGS.UploadPartialChunk.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-            "Content-Type": "application/offset+octet-stream",
-            "Upload-Offset": `${uploadOffset}`,
-        };
-
-        return http.patch(url, body, {
-            tags,
-            headers,
-        });
+        return http.patch(
+            `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`,
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
+                action: TAGS.UploadPartialChunk.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                    "Content-Type": "application/offset+octet-stream",
+                    "Upload-Offset": uploadOffset,
+                },
+            }),
+        );
     }
 
     /**
@@ -355,30 +283,20 @@ class TusFileTransferClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeletePartialUpload(fileTransferId, partialUploadId, labels = null) {
-        const url = `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
-            name: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
-            action: TAGS.DeletePartialUpload.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = {
-            Authorization: `Bearer ${this.tokenGenerator.getToken()}`,
-            "Tus-Resumable": TUS_VERSION,
-        };
-
-        return http.del(url, null, {
-            tags,
-            headers,
-        });
+        return http.del(
+            `${this.FULL_PATH}/${fileTransferId}/partial/${partialUploadId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{fileTransferId}/partial/{partialUploadId}`,
+                action: TAGS.DeletePartialUpload.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Tus-Resumable": TUS_VERSION,
+                },
+            }),
+        );
     }
 }
 
