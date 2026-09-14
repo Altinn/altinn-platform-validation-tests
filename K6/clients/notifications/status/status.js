@@ -1,7 +1,7 @@
 
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, requestParams } from "../../common/request.js";
 import { StatusFeedQuery } from "../types.js";
 
 const TAGS = {
@@ -48,31 +48,16 @@ class StatusClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     StatusGetShipment(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.StatusGetShipment.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.StatusGetShipment.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -84,47 +69,20 @@ class StatusClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     StatusGetFeed(queryParams = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
+        const query = queryParams !== null
+            ? { Seq: queryParams.seq, PageSize: queryParams.pageSize, OrderBy: queryParams.orderBy }
+            : null;
 
-        const url = new URL(`${this.FULL_PATH}/feed`);
-
-        if (queryParams !== null) {
-            const queryKeys = {
-                Seq: queryParams.seq,
-                PageSize: queryParams.pageSize,
-                OrderBy: queryParams.orderBy,
-            };
-
-            for (const [key, value] of Object.entries(queryKeys)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                url.searchParams.set(key, String(value));
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/feed`,
-            name: `${this.FULL_PATH}/feed`,
-            action: TAGS.StatusGetFeed.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/feed`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/feed`,
+                action: TAGS.StatusGetFeed.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 
