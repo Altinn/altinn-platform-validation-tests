@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { InstantEmailNotificationOrderRequestExt, InstantNotificationOrderRequestExt, InstantSmsNotificationOrderRequestExt } from "../types.js";
 
 const TAGS = {
@@ -49,31 +50,17 @@ class InstantOrdersClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreateSms(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/sms`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/sms`,
-            name: `${this.FULL_PATH}/sms`,
-            action: TAGS.InstantOrdersCreateSms.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/sms`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/sms`,
+                action: TAGS.InstantOrdersCreateSms.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -85,31 +72,17 @@ class InstantOrdersClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     InstantOrdersCreateEmail(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/email`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/email`,
-            name: `${this.FULL_PATH}/email`,
-            action: TAGS.InstantOrdersCreateEmail.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/email`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/email`,
+                action: TAGS.InstantOrdersCreateEmail.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -124,31 +97,17 @@ class InstantOrdersClient {
      * @deprecated Use InstantOrdersCreateSms with recipientSms at the top level.
      */
     InstantOrdersCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.InstantOrdersCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.InstantOrdersCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 
