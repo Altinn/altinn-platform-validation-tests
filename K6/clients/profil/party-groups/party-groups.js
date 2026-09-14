@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { GroupRequest } from "./party-groups.types.js";
 
 const TAGS = {
@@ -50,28 +51,15 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartyGroups(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetPartyGroups.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(this.FULL_PATH, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            this.FULL_PATH,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetPartyGroups.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -82,30 +70,15 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartyGroup(groupId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${groupId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{groupId}`,
-            name: `${this.FULL_PATH}/{groupId}`,
-            action: TAGS.GetPartyGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${groupId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{groupId}`,
+                action: TAGS.GetPartyGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -116,29 +89,17 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreatePartyGroup(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.CreatePartyGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(this.FULL_PATH, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.CreatePartyGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -150,31 +111,17 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePartyGroup(groupId, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${groupId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{groupId}`,
-            name: `${this.FULL_PATH}/{groupId}`,
-            action: TAGS.UpdatePartyGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.patch(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.patch(
+            `${this.FULL_PATH}/${groupId}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{groupId}`,
+                action: TAGS.UpdatePartyGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -185,30 +132,16 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeletePartyGroup(groupId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${groupId}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{groupId}`,
-            name: `${this.FULL_PATH}/{groupId}`,
-            action: TAGS.DeletePartyGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${groupId}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{groupId}`,
+                action: TAGS.DeletePartyGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -220,30 +153,16 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AddPartyToGroup(groupId, partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
-            name: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
-            action: TAGS.AddPartyToGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
+                action: TAGS.AddPartyToGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -255,30 +174,16 @@ class PartyGroupsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RemovePartyFromGroup(groupId, partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
-            name: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
-            action: TAGS.RemovePartyFromGroup.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${groupId}/associations/${partyUuid}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{groupId}/associations/{partyUuid}`,
+                action: TAGS.RemovePartyFromGroup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

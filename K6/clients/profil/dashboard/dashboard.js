@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../../common/request.js";
+
 const TAGS = {
     GetNotificationAddresses: {
         action: "get-notification-addresses",
@@ -47,30 +49,15 @@ class DashboardClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationAddresses(organizationNumber, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/organizations/${organizationNumber}/notificationaddresses`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/{organizationNumber}/notificationaddresses`,
-            name: `${this.FULL_PATH}/organizations/{organizationNumber}/notificationaddresses`,
-            action: TAGS.GetNotificationAddresses.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/organizations/${organizationNumber}/notificationaddresses`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/organizations/{organizationNumber}/notificationaddresses`,
+                action: TAGS.GetNotificationAddresses.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -82,31 +69,16 @@ class DashboardClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationAddressesByEmail(emailAddress, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/organizations/notificationaddresses/email`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/email`,
-            name: `${this.FULL_PATH}/organizations/notificationaddresses/email`,
-            action: TAGS.GetNotificationAddressesByEmail.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                emailAddress,
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/organizations/notificationaddresses/email`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/email`,
+                action: TAGS.GetNotificationAddressesByEmail.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { emailAddress },
+            }),
+        );
     }
 
     /**
@@ -124,32 +96,16 @@ class DashboardClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`,
-            name: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`,
-            action: TAGS.GetNotificationAddressesByPhoneNumber.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                phoneNumber,
-                ...(query?.countrycode == null ? {} : { countrycode: query.countrycode }),
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/organizations/notificationaddresses/phonenumber`,
+                action: TAGS.GetNotificationAddressesByPhoneNumber.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { phoneNumber, countrycode: query?.countrycode },
+            }),
+        );
     }
 
 }

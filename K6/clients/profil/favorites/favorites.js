@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../../common/request.js";
+
 const TAGS = {
     GetFavorites: {
         action: "get-favorites",
@@ -37,30 +39,15 @@ class FavoritesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = this.FULL_PATH;
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetFavorites.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            this.FULL_PATH,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetFavorites.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -72,30 +59,16 @@ class FavoritesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AddFavorite(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyUuid}`,
-            name: `${this.FULL_PATH}/{partyUuid}`,
-            action: TAGS.AddFavorite.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/${partyUuid}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyUuid}`,
+                action: TAGS.AddFavorite.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -107,30 +80,16 @@ class FavoritesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteFavorite(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyUuid}`,
-            name: `${this.FULL_PATH}/{partyUuid}`,
-            action: TAGS.DeleteFavorite.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${partyUuid}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyUuid}`,
+                action: TAGS.DeleteFavorite.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 
