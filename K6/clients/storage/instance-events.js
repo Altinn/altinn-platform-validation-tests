@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { InstanceEvent } from "./instances.types.js";
 
 const TAGS = {
@@ -55,25 +55,17 @@ class InstanceEventsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceEvent(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
-            action: TAGS.CreateInstanceEvent.action,
-        };
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
+                action: TAGS.CreateInstanceEvent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -90,36 +82,19 @@ class InstanceEventsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceEvents(instanceOwnerPartyId, instanceGuid, eventTypes = null, from = null, to = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events`);
-
-        if (eventTypes !== null) {
-            url.searchParams.append("eventTypes", eventTypes.join(","));
-        }
-
-        if (from !== null) {
-            url.searchParams.append("from", from);
-        }
-
-        if (to !== null) {
-            url.searchParams.append("to", to);
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
-            action: TAGS.GetInstanceEvents.action,
-        };
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events`, {
+                eventTypes: eventTypes !== null ? eventTypes.join(",") : null,
+                from,
+                to,
+            }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events`,
+                action: TAGS.GetInstanceEvents.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -134,24 +109,15 @@ class InstanceEventsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceEvent(instanceOwnerPartyId, instanceGuid, eventGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events/${eventGuid}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events/{eventGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events/{eventGuid}`,
-            action: TAGS.GetInstanceEvent.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/events/${eventGuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/events/{eventGuid}`,
+                action: TAGS.GetInstanceEvent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 
