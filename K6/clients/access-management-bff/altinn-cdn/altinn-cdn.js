@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { requestParams } from "../../common/request.js";
 
 const TAGS = {
     GetOrgData: {
@@ -45,30 +45,15 @@ class AltinnCdnClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetOrgData(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/orgdata`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/orgdata`,
-            name: `${this.FULL_PATH}/orgdata`,
-            action: TAGS.GetOrgData.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/orgdata`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/orgdata`,
+                action: TAGS.GetOrgData.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

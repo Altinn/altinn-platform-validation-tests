@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { NewSystemUserRequest } from "../common/common.types.js";
 import { DeleteAgentSystemUserQuery } from "./system-user.types.js";
 
@@ -69,30 +69,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSystemUsers(partyId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${partyId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}`,
-            name: `${this.FULL_PATH}/{partyId}`,
-            action: TAGS.GetSystemUsers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${partyId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}`,
+                action: TAGS.GetSystemUsers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -105,34 +90,16 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateSystemUser(partyId, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${partyId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}`,
-            name: `${this.FULL_PATH}/{partyId}`,
-            action: TAGS.CreateSystemUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/${partyId}`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}`,
+                action: TAGS.CreateSystemUser.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -145,30 +112,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSystemUser(partyId, systemUserGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${partyId}/${systemUserGuid}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
-            action: TAGS.GetSystemUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${partyId}/${systemUserGuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
+                action: TAGS.GetSystemUser.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -180,33 +132,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteSystemUser(partyId, systemUserGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${partyId}/${systemUserGuid}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
-            action: TAGS.DeleteSystemUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            `${this.FULL_PATH}/${partyId}/${systemUserGuid}`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}`,
+                action: TAGS.DeleteSystemUser.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -218,30 +152,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUsers(partyId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agent/${partyId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agent/{partyId}`,
-            name: `${this.FULL_PATH}/agent/{partyId}`,
-            action: TAGS.GetAgentSystemUsers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/agent/${partyId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent/{partyId}`,
+                action: TAGS.GetAgentSystemUsers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -253,32 +172,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentSystemUser(partyId, systemUserGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/agent/${partyId}/${systemUserGuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
+                action: TAGS.GetAgentSystemUser.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
-            name: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
-            action: TAGS.GetAgentSystemUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -297,49 +199,15 @@ class SystemUserClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/agent/${partyId}/${systemUserGuid}`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
-            name: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
-            action: TAGS.DeleteAgentSystemUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/agent/${partyId}/${systemUserGuid}`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent/{partyId}/{systemUserGuid}`,
+                action: TAGS.DeleteAgentSystemUser.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -351,30 +219,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPendingSystemUsers(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${partyUuid}/pending`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyUuid}/pending`,
-            name: `${this.FULL_PATH}/{partyUuid}/pending`,
-            action: TAGS.GetPendingSystemUsers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${partyUuid}/pending`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyUuid}/pending`,
+                action: TAGS.GetPendingSystemUsers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 
