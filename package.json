@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "# Adding tests",
   "scripts": {
+    "k6": "node hack/run-k6.mjs",
     "lint": "eslint --max-warnings 0 K6",
     "fix": "eslint --fix K6",
     "test": "echo \"Error: no test specified\" && exit 1",
