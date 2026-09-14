@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { ApproveConsentContext } from "../common/common.types.js";
 import { GetConsentCountQuery } from "./consent.types.js";
 
@@ -78,30 +78,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentRequest(consentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/request/${consentRequestId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/request/{consentRequestId}`,
-            name: `${this.FULL_PATH}/request/{consentRequestId}`,
-            action: TAGS.GetConsentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/request/${consentRequestId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/request/{consentRequestId}`,
+                action: TAGS.GetConsentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -116,36 +101,16 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveConsentRequest(consentRequestId, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/request/${consentRequestId}/approve`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/request/{consentRequestId}/approve`,
-            name: `${this.FULL_PATH}/request/{consentRequestId}/approve`,
-            action: TAGS.ApproveConsentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/request/${consentRequestId}/approve`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/request/{consentRequestId}/approve`,
+                action: TAGS.ApproveConsentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -159,35 +124,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectConsentRequest(consentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/request/${consentRequestId}/reject`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/request/{consentRequestId}/reject`,
-            name: `${this.FULL_PATH}/request/{consentRequestId}/reject`,
-            action: TAGS.RejectConsentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/request/${consentRequestId}/reject`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/request/{consentRequestId}/reject`,
+                action: TAGS.RejectConsentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -203,44 +148,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentCount(party, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/count/${party}`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/count/{party}`,
-            name: `${this.FULL_PATH}/count/{party}`,
-            action: TAGS.GetConsentCount.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/count/${party}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/count/{party}`,
+                action: TAGS.GetConsentCount.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -253,30 +169,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetActiveConsents(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/active/${party}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/active/{party}`,
-            name: `${this.FULL_PATH}/active/{party}`,
-            action: TAGS.GetActiveConsents.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/active/${party}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/active/{party}`,
+                action: TAGS.GetActiveConsents.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -289,30 +190,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentLog(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/log/${party}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/log/{party}`,
-            name: `${this.FULL_PATH}/log/{party}`,
-            action: TAGS.GetConsentLog.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/log/${party}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/log/{party}`,
+                action: TAGS.GetConsentLog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -325,30 +211,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsent(consentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${consentId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{consentId}`,
-            name: `${this.FULL_PATH}/{consentId}`,
-            action: TAGS.GetConsent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${consentId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{consentId}`,
+                action: TAGS.GetConsent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -361,33 +232,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RevokeConsent(consentId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${consentId}/revoke`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{consentId}/revoke`,
-            name: `${this.FULL_PATH}/{consentId}/revoke`,
-            action: TAGS.RevokeConsent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/${consentId}/revoke`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{consentId}/revoke`,
+                action: TAGS.RevokeConsent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -401,32 +254,15 @@ class ConsentClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetConsentRequestLogout(consentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/request/${consentRequestId}/logout`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/request/{consentRequestId}/logout`,
+                action: TAGS.GetConsentRequestLogout.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/request/{consentRequestId}/logout`,
-            name: `${this.FULL_PATH}/request/{consentRequestId}/logout`,
-            action: TAGS.GetConsentRequestLogout.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 }
 

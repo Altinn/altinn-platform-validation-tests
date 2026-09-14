@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, requestParams } from "../../common/request.js";
 import { CreateAccessPackageDelegationQuery, DeleteAccessPackageDelegationQuery, GetAccessPackageDelegationCheckQuery, GetAccessPackageDelegationsQuery, GetAccessPackagePermissionQuery, SearchAccessPackagesQuery } from "./access-package.types.js";
 
 const TAGS = {
@@ -63,44 +63,15 @@ class AccessPackageClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SearchAccessPackages(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/search`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/search`,
-            name: `${this.FULL_PATH}/search`,
-            action: TAGS.SearchAccessPackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/search`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/search`,
+                action: TAGS.SearchAccessPackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -112,44 +83,15 @@ class AccessPackageClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackageDelegations(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegations`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegations`,
-            name: `${this.FULL_PATH}/delegations`,
-            action: TAGS.GetAccessPackageDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegations`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegations`,
+                action: TAGS.GetAccessPackageDelegations.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -161,47 +103,15 @@ class AccessPackageClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAccessPackageDelegation(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegations`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegations`,
-            name: `${this.FULL_PATH}/delegations`,
-            action: TAGS.CreateAccessPackageDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/delegations`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegations`,
+                action: TAGS.CreateAccessPackageDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -214,47 +124,15 @@ class AccessPackageClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAccessPackageDelegation(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegations`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegations`,
-            name: `${this.FULL_PATH}/delegations`,
-            action: TAGS.DeleteAccessPackageDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/delegations`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegations`,
+                action: TAGS.DeleteAccessPackageDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -268,44 +146,15 @@ class AccessPackageClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackagePermission(packageId, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/permission/${packageId}`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/permission/{packageId}`,
-            name: `${this.FULL_PATH}/permission/{packageId}`,
-            action: TAGS.GetAccessPackagePermission.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/permission/${packageId}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/permission/{packageId}`,
+                action: TAGS.GetAccessPackagePermission.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -319,44 +168,15 @@ class AccessPackageClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAccessPackageDelegationCheck(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegationcheck`,
-            name: `${this.FULL_PATH}/delegationcheck`,
-            action: TAGS.GetAccessPackageDelegationCheck.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegationcheck`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegationcheck`,
+                action: TAGS.GetAccessPackageDelegationCheck.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

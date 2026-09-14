@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { AgentDelegationRequestFE } from "../common/common.types.js";
 import { CreateAgentSystemUserDelegationQuery, CreateAgentSystemUserSelfDelegationQuery, DeleteAgentSystemUserDelegationQuery, DeleteAgentSystemUserSelfDelegationQuery, GetAgentSystemUserCustomersQuery, GetAgentSystemUserDelegationsQuery, GetAgentSystemUserSelfDelegationQuery } from "./system-user-agent-delegation.types.js";
 
@@ -75,46 +75,15 @@ class SystemUserAgentDelegationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/customers`,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/customers`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/customers`,
+                action: TAGS.GetAgentSystemUserCustomers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/customers`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/customers`,
-            action: TAGS.GetAgentSystemUserCustomers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -133,46 +102,15 @@ class SystemUserAgentDelegationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation`,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
+                action: TAGS.GetAgentSystemUserDelegations.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
-            action: TAGS.GetAgentSystemUserDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -195,50 +133,16 @@ class SystemUserAgentDelegationClient {
         body = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
-            action: TAGS.CreateAgentSystemUserDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation`,
+                action: TAGS.CreateAgentSystemUserDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -261,49 +165,15 @@ class SystemUserAgentDelegationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation/${delegationId}`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation/{delegationId}`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation/{delegationId}`,
-            action: TAGS.DeleteAgentSystemUserDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/delegation/${delegationId}`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/delegation/{delegationId}`,
+                action: TAGS.DeleteAgentSystemUserDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -324,49 +194,15 @@ class SystemUserAgentDelegationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
-            action: TAGS.CreateAgentSystemUserSelfDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
+                action: TAGS.CreateAgentSystemUserSelfDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -387,49 +223,15 @@ class SystemUserAgentDelegationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
-            action: TAGS.DeleteAgentSystemUserSelfDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
+                action: TAGS.DeleteAgentSystemUserSelfDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -450,46 +252,15 @@ class SystemUserAgentDelegationClient {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${partyId}/${systemUserGuid}/self`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
+                action: TAGS.GetAgentSystemUserSelfDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
-            name: `${this.FULL_PATH}/{partyId}/{systemUserGuid}/self`,
-            action: TAGS.GetAgentSystemUserSelfDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 }
 

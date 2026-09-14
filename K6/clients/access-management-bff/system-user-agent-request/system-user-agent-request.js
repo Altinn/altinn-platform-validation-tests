@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { requestParams } from "../../common/request.js";
 
 const TAGS = {
     GetAgentRequest: {
@@ -59,30 +59,15 @@ class SystemUserAgentRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentRequest(agentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${agentRequestId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{agentRequestId}`,
-            name: `${this.FULL_PATH}/{agentRequestId}`,
-            action: TAGS.GetAgentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${agentRequestId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{agentRequestId}`,
+                action: TAGS.GetAgentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -94,35 +79,15 @@ class SystemUserAgentRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveAgentRequest(partyId, agentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${agentRequestId}/approve`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{agentRequestId}/approve`,
-            name: `${this.FULL_PATH}/{partyId}/{agentRequestId}/approve`,
-            action: TAGS.ApproveAgentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/${partyId}/${agentRequestId}/approve`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{agentRequestId}/approve`,
+                action: TAGS.ApproveAgentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -135,35 +100,15 @@ class SystemUserAgentRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectAgentRequest(partyId, agentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${agentRequestId}/reject`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{agentRequestId}/reject`,
-            name: `${this.FULL_PATH}/{partyId}/{agentRequestId}/reject`,
-            action: TAGS.RejectAgentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/${partyId}/${agentRequestId}/reject`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{agentRequestId}/reject`,
+                action: TAGS.RejectAgentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -176,35 +121,15 @@ class SystemUserAgentRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EscalateAgentRequest(partyId, requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${requestId}/escalate`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{requestId}/escalate`,
-            name: `${this.FULL_PATH}/{partyId}/{requestId}/escalate`,
-            action: TAGS.EscalateAgentRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/${partyId}/${requestId}/escalate`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{requestId}/escalate`,
+                action: TAGS.EscalateAgentRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -216,30 +141,15 @@ class SystemUserAgentRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentRequestLogout(agentRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${agentRequestId}/logout`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{agentRequestId}/logout`,
-            name: `${this.FULL_PATH}/{agentRequestId}/logout`,
-            action: TAGS.GetAgentRequestLogout.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${agentRequestId}/logout`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{agentRequestId}/logout`,
+                action: TAGS.GetAgentRequestLogout.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

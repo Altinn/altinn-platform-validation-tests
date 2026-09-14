@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { requestParams } from "../../common/request.js";
 
 const TAGS = {
     GetChangeRequest: {
@@ -56,30 +56,15 @@ class SystemUserChangeRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetChangeRequest(changeRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${changeRequestId}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{changeRequestId}`,
-            name: `${this.FULL_PATH}/{changeRequestId}`,
-            action: TAGS.GetChangeRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${changeRequestId}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{changeRequestId}`,
+                action: TAGS.GetChangeRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -91,35 +76,15 @@ class SystemUserChangeRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ApproveChangeRequest(partyId, changeRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${changeRequestId}/approve`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{changeRequestId}/approve`,
-            name: `${this.FULL_PATH}/{partyId}/{changeRequestId}/approve`,
-            action: TAGS.ApproveChangeRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/${partyId}/${changeRequestId}/approve`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{changeRequestId}/approve`,
+                action: TAGS.ApproveChangeRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -132,35 +97,15 @@ class SystemUserChangeRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RejectChangeRequest(partyId, changeRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/${partyId}/${changeRequestId}/reject`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{partyId}/{changeRequestId}/reject`,
-            name: `${this.FULL_PATH}/{partyId}/{changeRequestId}/reject`,
-            action: TAGS.RejectChangeRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            `${this.FULL_PATH}/${partyId}/${changeRequestId}/reject`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{partyId}/{changeRequestId}/reject`,
+                action: TAGS.RejectChangeRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -172,30 +117,15 @@ class SystemUserChangeRequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetChangeRequestLogout(changeRequestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${changeRequestId}/logout`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{changeRequestId}/logout`,
-            name: `${this.FULL_PATH}/{changeRequestId}/logout`,
-            action: TAGS.GetChangeRequestLogout.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${changeRequestId}/logout`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{changeRequestId}/logout`,
+                action: TAGS.GetChangeRequestLogout.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

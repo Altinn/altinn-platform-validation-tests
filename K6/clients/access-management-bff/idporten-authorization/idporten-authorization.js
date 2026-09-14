@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
+import { requestParams } from "../../common/request.js";
 
 const TAGS = {
     GetIdPortenAuthorizations: {
@@ -49,30 +49,15 @@ class IdPortenAuthorizationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetIdPortenAuthorizations(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.GetIdPortenAuthorizations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            this.FULL_PATH,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetIdPortenAuthorizations.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -83,33 +68,15 @@ class IdPortenAuthorizationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteIdPortenAuthorization(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${id}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.DeleteIdPortenAuthorization.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            `${this.FULL_PATH}/${id}`,
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.DeleteIdPortenAuthorization.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 }
