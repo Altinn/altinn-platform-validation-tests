@@ -1,7 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../../common-imports.js";
-import { uuidv4 } from "../../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { getActivityBody, getDialogBody, getDialogBodyWithoutTransmissionsAndActivities, getTransmissionBody } from "./request-body-templates.js";
 import { JsonPatchOperations_Operation, V1ServiceOwnerDialogsCommandsUpdate_Dialog, V1ServiceOwnerDialogsCommandsUpdateTransmission_TransmissionRequest, V1ServiceOwnerEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel, V1ServiceOwnerEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest, V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_Label } from "./types.js";
 
@@ -79,34 +78,15 @@ class ServiceOwnerApiClient {
         transmissionId,
         labels = null
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/dialogs" + `/${dialogId}` + "/actions/should-send-notification");
-
-        url.searchParams.append("conditionType", conditionType);
-        url.searchParams.append("activityType", activityType);
-        url.searchParams.append("transmissionId", transmissionId);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
-            name: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
-            action: TAGS.GetDialogsQueriesNotificationCondition.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            buildUrl(this.FULL_PATH + "/dialogs" + `/${dialogId}` + "/actions/should-send-notification", { conditionType, activityType, transmissionId }),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
+                action: TAGS.GetDialogsQueriesNotificationCondition.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -127,35 +107,24 @@ class ServiceOwnerApiClient {
         labels = null,
         noTransmissionsActivities = false,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/dialogs");
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs",
-            name: this.FULL_PATH + "/dialogs",
-            action: TAGS.PostDialog.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            }),
-        };
-
         let requestBody = null;
         if (!noTransmissionsActivities) {
             requestBody = getDialogBody(partyId, serviceResource, serviceOwner);
         } else {
             requestBody = getDialogBodyWithoutTransmissionsAndActivities(partyId, serviceResource, serviceOwner);
         }
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-        return http.post(url.toString(), JSON.stringify(requestBody), params);
+
+        return http.post(
+            this.FULL_PATH + "/dialogs",
+            jsonBody(requestBody),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs",
+                action: TAGS.PostDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -170,32 +139,19 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
-            name: this.FULL_PATH + "/dialogs/dialogId/transmissions",
-            action: TAGS.PostTransmission.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            }),
-        };
-
         const requestBody = getTransmissionBody();
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
 
-        return http.post(url.toString(), JSON.stringify(requestBody), params);
+        return http.post(
+            this.FULL_PATH + `/dialogs/${dialogId}/transmissions`,
+            jsonBody(requestBody),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+                action: TAGS.PostTransmission.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -210,33 +166,19 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
-            name: this.FULL_PATH + "/dialogs/dialogId/activities",
-            action: TAGS.PostActivity.action
-        };
-
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
-            }),
-        };
-
         const requestBody = getActivityBody();
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
 
-        return http.post(url.toString(), JSON.stringify(requestBody), params);
+        return http.post(
+            this.FULL_PATH + `/dialogs/${dialogId}/activities`,
+            jsonBody(requestBody),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
+                action: TAGS.PostActivity.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -250,34 +192,15 @@ class ServiceOwnerApiClient {
         queryParams,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/dialogs");
-
-        for (const [key, value] of Object.entries(queryParams)) {
-            if (value) url.searchParams.append(key, String(value));
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs",
-            name: this.FULL_PATH + "/dialogs",
-            action: TAGS.GetDialogs.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            buildUrl(this.FULL_PATH + "/dialogs", queryParams),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs",
+                action: TAGS.GetDialogs.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -291,30 +214,15 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId",
-            name: this.FULL_PATH + "/dialogs/dialogId",
-            action: TAGS.GetDialog.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId",
+                action: TAGS.GetDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -328,30 +236,15 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
-            name: this.FULL_PATH + "/dialogs/dialogId/activities",
-            action: TAGS.GetDialogActivities.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/activities`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
+                action: TAGS.GetDialogActivities.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -367,30 +260,15 @@ class ServiceOwnerApiClient {
         activityId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/activities/${activityId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
-            name: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
-            action: TAGS.GetDialogActivity.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/activities/${activityId}`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
+                action: TAGS.GetDialogActivity.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -404,30 +282,15 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/context/labels",
-            name: this.FULL_PATH + "/dialogs/dialogId/context/labels",
-            action: TAGS.GetServiceOwnerLabels.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/context/labels`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/context/labels",
+                action: TAGS.GetServiceOwnerLabels.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -441,30 +304,15 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/seenlog`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog",
-            name: this.FULL_PATH + "/dialogs/dialogId/seenlog",
-            action: TAGS.GetDialogSeenLogs.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/seenlog`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog",
+                action: TAGS.GetDialogSeenLogs.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -480,30 +328,15 @@ class ServiceOwnerApiClient {
         seenLogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/seenlog/${seenLogId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
-            name: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
-            action: TAGS.GetDialogSeenLog.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/seenlog/${seenLogId}`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
+                action: TAGS.GetDialogSeenLog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -517,30 +350,15 @@ class ServiceOwnerApiClient {
         dialogId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
-            name: this.FULL_PATH + "/dialogs/dialogId/transmissions",
-            action: TAGS.GetDialogTransmissions.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/transmissions`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+                action: TAGS.GetDialogTransmissions.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -556,29 +374,15 @@ class ServiceOwnerApiClient {
         transmissionId,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
-            name: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
-            action: TAGS.GetDialogTransmission.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
+                action: TAGS.GetDialogTransmission.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -592,34 +396,15 @@ class ServiceOwnerApiClient {
         queryParams,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/dialogs/endusercontext");
-
-        for (const [key, value] of Object.entries(queryParams)) {
-            if (value) url.searchParams.append(key, String(value));
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/endusercontext",
-            name: this.FULL_PATH + "/dialogs/endusercontext",
-            action: TAGS.GetEndUserContext.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            buildUrl(this.FULL_PATH + "/dialogs/endusercontext", queryParams),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/endusercontext",
+                action: TAGS.GetEndUserContext.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -633,34 +418,15 @@ class ServiceOwnerApiClient {
         queryParams,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/dialoglookup");
-
-        for (const [key, value] of Object.entries(queryParams)) {
-            if (value) url.searchParams.append(key, String(value));
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialoglookup",
-            name: this.FULL_PATH + "/dialoglookup",
-            action: TAGS.GetDialogLookup.action
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Accept": "application/json",
+        return http.get(
+            buildUrl(this.FULL_PATH + "/dialoglookup", queryParams),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialoglookup",
+                action: TAGS.GetDialogLookup.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.get(url.toString(), params);
+        );
     }
 
     /**
@@ -675,34 +441,18 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PutDialog(dialogId, request, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
-            name: this.FULL_PATH + "/dialogs/{dialogId}",
-            action: TAGS.PutDialog.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+        return http.put(
+            this.FULL_PATH + `/dialogs/${dialogId}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
+                action: TAGS.PutDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.put(url.toString(), JSON.stringify(request), params);
+        );
     }
 
     /**
@@ -717,34 +467,18 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PatchDialog(dialogId, operations, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
-            name: this.FULL_PATH + "/dialogs/{dialogId}",
-            action: TAGS.PatchDialog.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+        return http.patch(
+            this.FULL_PATH + `/dialogs/${dialogId}`,
+            jsonBody(operations),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
+                action: TAGS.PatchDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.patch(url.toString(), JSON.stringify(operations), params);
+        );
     }
 
     /**
@@ -758,33 +492,17 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     DeleteDialog(dialogId, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
-            name: this.FULL_PATH + "/dialogs/{dialogId}",
-            action: TAGS.DeleteDialog.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
+        return http.del(
+            this.FULL_PATH + `/dialogs/${dialogId}`,
+            null,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
+                action: TAGS.DeleteDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.del(url.toString(), null, params);
+        );
     }
 
     /**
@@ -800,34 +518,18 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PutTransmission(dialogId, transmissionId, request, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
-            action: TAGS.PutTransmission.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+        return http.put(
+            this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
+                action: TAGS.PutTransmission.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.put(url.toString(), JSON.stringify(request), params);
+        );
     }
 
     /**
@@ -841,33 +543,17 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PurgeDialog(dialogId, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/purge`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/purge",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/actions/purge",
-            action: TAGS.PurgeDialog.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
+        return http.post(
+            this.FULL_PATH + `/dialogs/${dialogId}/actions/purge`,
+            null,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/purge",
+                action: TAGS.PurgeDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.post(url.toString(), null, params);
+        );
     }
 
     /**
@@ -881,33 +567,17 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     RestoreDialog(dialogId, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/restore`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/restore",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/actions/restore",
-            action: TAGS.RestoreDialog.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
+        return http.post(
+            this.FULL_PATH + `/dialogs/${dialogId}/actions/restore`,
+            null,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/restore",
+                action: TAGS.RestoreDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.post(url.toString(), null, params);
+        );
     }
 
     /**
@@ -921,33 +591,17 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     FreezeDialog(dialogId, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/actions/freeze`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/freeze",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/actions/freeze",
-            action: TAGS.FreezeDialog.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
+        return http.post(
+            this.FULL_PATH + `/dialogs/${dialogId}/actions/freeze`,
+            null,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/freeze",
+                action: TAGS.FreezeDialog.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.post(url.toString(), null, params);
+        );
     }
 
     /**
@@ -962,34 +616,18 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PostServiceOwnerLabels(dialogId, request, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
-            action: TAGS.PostServiceOwnerLabels.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+        return http.post(
+            this.FULL_PATH + `/dialogs/${dialogId}/context/labels`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
+                action: TAGS.PostServiceOwnerLabels.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.post(url.toString(), JSON.stringify(request), params);
+        );
     }
 
     /**
@@ -1004,33 +642,17 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     DeleteServiceOwnerLabel(dialogId, label, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/context/labels/${label}`);
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels/{label}",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/context/labels/{label}",
-            action: TAGS.DeleteServiceOwnerLabel.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
+        return http.del(
+            this.FULL_PATH + `/dialogs/${dialogId}/context/labels/${label}`,
+            null,
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels/{label}",
+                action: TAGS.DeleteServiceOwnerLabel.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.del(url.toString(), null, params);
+        );
     }
 
     /**
@@ -1046,38 +668,18 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PutEndUserContextSystemLabels(dialogId, request, enduserId = null, ifMatch = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + `/dialogs/${dialogId}/endusercontext/systemlabels`);
-
-        if (enduserId != null) {
-            url.searchParams.append("enduserId", enduserId);
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/{dialogId}/endusercontext/systemlabels",
-            name: this.FULL_PATH + "/dialogs/{dialogId}/endusercontext/systemlabels",
-            action: TAGS.PutEndUserContextSystemLabels.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+        return http.put(
+            buildUrl(this.FULL_PATH + `/dialogs/${dialogId}/endusercontext/systemlabels`, { enduserId }),
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/endusercontext/systemlabels",
+                action: TAGS.PutEndUserContextSystemLabels.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "If-Match": ifMatch },
             }),
-        };
-
-        if (ifMatch != null) {
-            params.headers["If-Match"] = ifMatch;
-        }
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.put(url.toString(), JSON.stringify(request), params);
+        );
     }
 
     /**
@@ -1091,34 +693,17 @@ class ServiceOwnerApiClient {
      * @returns http.RefinedResponse<"text">
      */
     PostBulkSetSystemLabels(request, enduserId = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-        const url = new URL(this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset");
-
-        if (enduserId != null) {
-            url.searchParams.append("enduserId", enduserId);
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset",
-            name: this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset",
-            action: TAGS.PostBulkSetSystemLabels.action,
-        };
-        if (labels != null) {
-            tags = { ...labels, ...tags };
-        }
-        const params = {
-            tags: tags,
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: "Bearer " + token,
-                "Content-type": "application/json",
+        return http.post(
+            buildUrl(this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset", { enduserId }),
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH + "/dialogs/endusercontext/systemlabels/actions/bulkset",
+                action: TAGS.PostBulkSetSystemLabels.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
             }),
-        };
-
-        if (__ENV.TRACE_CALL) {
-            params.headers["traceparent"] = uuidv4();
-        }
-
-        return http.post(url.toString(), JSON.stringify(request), params);
+        );
     }
 }
 
