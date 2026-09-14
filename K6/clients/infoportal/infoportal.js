@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
+
 const TAGS = {
     GetAuthorizedParties: { action: "get-authorized-parties" },
     GetFavorites: { action: "get-favorites" },
@@ -43,30 +45,18 @@ class InfoPortalApiClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAuthorizedParties(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/authorized-parties`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/authorized-parties`,
-            name: `${this.FULL_PATH}/authorized-parties`,
-            action: TAGS.GetAuthorizedParties.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Cookie: `AltinnStudioRuntime=${token}`,
-                "Content-type": "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/authorized-parties`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/authorized-parties`,
+                action: TAGS.GetAuthorizedParties.action,
+                labels,
+                token: null,
+                accept: null,
+                json: true,
+                headers: { Cookie: `AltinnStudioRuntime=${this.tokenGenerator.getToken()}` },
+            }),
+        );
     }
 
     /**
@@ -76,30 +66,18 @@ class InfoPortalApiClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetFavorites(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/favorites`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/favorites`,
-            name: `${this.FULL_PATH}/favorites`,
-            action: TAGS.GetFavorites.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Cookie: `AltinnStudioRuntime=${token}`,
-                "Content-type": "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/favorites`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/favorites`,
+                action: TAGS.GetFavorites.action,
+                labels,
+                token: null,
+                accept: null,
+                json: true,
+                headers: { Cookie: `AltinnStudioRuntime=${this.tokenGenerator.getToken()}` },
+            }),
+        );
     }
 
     /**
@@ -109,30 +87,18 @@ class InfoPortalApiClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetCurrent(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/current`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/current`,
-            name: `${this.FULL_PATH}/current`,
-            action: TAGS.GetCurrent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Cookie: `AltinnStudioRuntime=${token}`,
-                "Content-type": "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/current`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/current`,
+                action: TAGS.GetCurrent.action,
+                labels,
+                token: null,
+                accept: null,
+                json: true,
+                headers: { Cookie: `AltinnStudioRuntime=${this.tokenGenerator.getToken()}` },
+            }),
+        );
     }
 }
 
