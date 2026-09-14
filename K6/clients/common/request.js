@@ -59,10 +59,29 @@ export function requestTags(endpoint, action, labels = null) {
 }
 
 /**
+ * Builds a `traceparent` header value that starts a new trace.
+ *
+ * Follows the W3C Trace Context format, `00-<trace id>-<span id>-01`: version
+ * 00, a 32 hex digit trace id, a 16 hex digit span id, and the sampled flag
+ * set, so the service the request goes to can pick the trace up and continue
+ * it. Both ids are drawn from UUIDs, which guarantees they are never all
+ * zeros, the one value the format forbids.
+ *
+ * @returns {string} A traceparent header value for one request.
+ */
+export function traceparent() {
+    const traceId = uuidv4().replace(/-/g, "");
+    const spanId = uuidv4().replace(/-/g, "").slice(0, 16);
+
+    return `00-${traceId}-${spanId}-01`;
+}
+
+/**
  * Builds the headers of a request.
  *
  * Adds a `traceparent` header when the run sets `TRACE_CALL`, so a request can
- * be found again in the logs of the service it went to.
+ * be found again in the logs of the service it went to. See
+ * {@link traceparent} for the format.
  *
  * @param {string|null} token Bearer token, or null for an unauthenticated
  * request.
@@ -92,7 +111,7 @@ export function requestHeaders(token, options = {}) {
     Object.assign(result, headers);
 
     if (__ENV.TRACE_CALL) {
-        result.traceparent = uuidv4();
+        result.traceparent = traceparent();
     }
 
     return result;
