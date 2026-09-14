@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { PartyFieldInclude, PartyUrn } from "./types.js";
 
 const TAGS = {
@@ -87,38 +87,23 @@ class RegisterClient {
      * PartyRecord would carry `ownerUuid` and `usernames.currentValue`.
      */
     AccessManagementPartiesQuery(urns, fields = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/access-management/parties/query`);
-
-        if (fields !== null) {
-            url.searchParams.set("fields", fields.join(","));
-        }
-
-        // The path without the query string, so the requested fields do not each
-        // get their own timeseries.
-        let tags = {
-            endpoint: `${this.FULL_PATH}/access-management/parties/query`,
-            name: `${this.FULL_PATH}/access-management/parties/query`,
-            action: TAGS.AccessManagementPartiesQuery.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url.toString(), JSON.stringify({ data: urns }), {
-            tags,
-            headers: {
-                PlatformAccessToken: token,
-                "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            buildUrl(`${this.FULL_PATH}/access-management/parties/query`, { fields: fields?.join(",") }),
+            jsonBody({ data: urns }),
+            requestParams({
+                // The path without the query string, so the requested fields do not each
+                // get their own timeseries.
+                endpoint: `${this.FULL_PATH}/access-management/parties/query`,
+                action: TAGS.AccessManagementPartiesQuery.action,
+                labels,
+                token: null,
+                json: true,
+                headers: {
+                    PlatformAccessToken: this.tokenGenerator.getToken(),
+                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
+                },
+            }),
+        );
     }
 
     /**
@@ -143,39 +128,19 @@ class RegisterClient {
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      */
     GetCustomers(partyUuid, ccrRole, fields = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/internal/parties/${partyUuid}/customers/ccr/${ccrRole}`);
-
-        if (fields !== null) {
-            url.searchParams.set("fields", fields.join(","));
-        }
-
-        // Both label tags keep the placeholders, so a party uuid, a role and a set
-        // of requested fields do not each get their own timeseries. The role is a
-        // tag of its own instead, which is three values rather than one per party.
-        let tags = {
-            endpoint: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
-            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
-            action: TAGS.GetCustomers.action,
-            ccrRole: ccrRole,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/internal/parties/${partyUuid}/customers/ccr/${ccrRole}`, { fields: fields?.join(",") }),
+            requestParams({
+                // Both label tags keep the placeholders, so a party uuid, a role and a set
+                // of requested fields do not each get their own timeseries. The role is a
+                // tag of its own instead, which is three values rather than one per party.
+                endpoint: `${this.FULL_PATH}/internal/parties/{partyUuid}/customers/ccr/{ccrRole}`,
+                action: TAGS.GetCustomers.action,
+                labels: { ...labels, ccrRole: ccrRole },
+                token: this.tokenGenerator.getToken(),
+                headers: { "Ocp-Apim-Subscription-Key": this.subscriptionKey },
+            }),
+        );
     }
 
     /**
@@ -199,37 +164,17 @@ class RegisterClient {
      * @returns {http.RefinedResponse<"text">} Body holds a Party list object.
      */
     GetRoleHolders(partyUuid, ccrRole, fields = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/internal/parties/${partyUuid}/holders/ccr/${ccrRole}`);
-
-        if (fields !== null) {
-            url.searchParams.set("fields", fields.join(","));
-        }
-
-        // Placeholders in both label tags, for the same reason as in GetCustomers.
-        let tags = {
-            endpoint: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
-            name: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
-            action: TAGS.GetRoleHolders.action,
-            ccrRole: ccrRole,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/internal/parties/${partyUuid}/holders/ccr/${ccrRole}`, { fields: fields?.join(",") }),
+            requestParams({
+                // Placeholders in both label tags, for the same reason as in GetCustomers.
+                endpoint: `${this.FULL_PATH}/internal/parties/{partyUuid}/holders/ccr/{ccrRole}`,
+                action: TAGS.GetRoleHolders.action,
+                labels: { ...labels, ccrRole: ccrRole },
+                token: this.tokenGenerator.getToken(),
+                headers: { "Ocp-Apim-Subscription-Key": this.subscriptionKey },
+            }),
+        );
     }
 }
 
