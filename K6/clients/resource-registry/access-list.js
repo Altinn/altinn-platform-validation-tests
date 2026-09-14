@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { AccessListGetByOwnerQuery, AccessListGetQuery, AccessListPagedQuery, CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
 
 const TAGS = {
@@ -71,47 +72,6 @@ class AccessListClient {
     }
 
     /**
-     * Creates query string parameters.
-     *
-     * @param {{[key: string]: string|number|boolean|Array<string>}|null} query Query parameters.
-     * @returns {string} The result.
-     */
-    buildQuery(query) {
-        if (query === null || query === undefined) {
-            return "";
-        }
-
-        const params = /** @type {string[]} */ ([]);
-
-        Object.entries(query).forEach(([key, value]) => {
-
-            if (value === undefined || value === null) {
-                return;
-            }
-
-            if (Array.isArray(value)) {
-                value.forEach((item) => {
-                    params.push(
-                        `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                    );
-                });
-
-                return;
-            }
-
-            params.push(
-                `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-            );
-        });
-
-        if (params.length === 0) {
-            return "";
-        }
-
-        return `?${params.join("&")}`;
-    }
-
-    /**
      * Gets access lists for a given member.
      *
      * @param {string} party Member party UUID URN.
@@ -120,30 +80,15 @@ class AccessListClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetByMember(party, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}get-by-member?party=${encodeURIComponent(party)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}get-by-member`,
-            name: `${this.FULL_PATH}get-by-member`,
-            action: TAGS.AccessListGetByMember.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}get-by-member`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}get-by-member`,
+                action: TAGS.AccessListGetByMember.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -156,30 +101,15 @@ class AccessListClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGetByOwner(owner, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}${this.buildQuery(query)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}`,
-            name: `${this.FULL_PATH}{owner}`,
-            action: TAGS.AccessListGetByOwner.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}${owner}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}`,
+                action: TAGS.AccessListGetByOwner.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -194,31 +124,16 @@ class AccessListClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListGet(owner, identifier, query = null, headers = {}, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}${this.buildQuery(query)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
-            name: `${this.FULL_PATH}{owner}/{identifier}`,
-            action: TAGS.AccessListGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...headers,
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}${owner}/${identifier}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
+                action: TAGS.AccessListGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers,
+            }),
+        );
     }
 
     /**
@@ -233,31 +148,17 @@ class AccessListClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListDelete(owner, identifier, headers = {}, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
-            name: `${this.FULL_PATH}{owner}/{identifier}`,
-            action: TAGS.AccessListDelete.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...headers,
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}${owner}/${identifier}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
+                action: TAGS.AccessListDelete.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers,
+            }),
+        );
     }
 
     /**
@@ -273,31 +174,19 @@ class AccessListClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListUpsert(owner, identifier, request, headers = {}, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
-            name: `${this.FULL_PATH}{owner}/{identifier}`,
-            action: TAGS.AccessListUpsert.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                ...headers,
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}${owner}/${identifier}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
+                action: TAGS.AccessListUpsert.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                accept: null,
+                headers,
+            }),
+        );
     }
 
     /**
@@ -311,31 +200,17 @@ class AccessListClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListPatch(owner, identifier, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
-            name: `${this.FULL_PATH}{owner}/{identifier}`,
-            action: TAGS.AccessListPatch.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.patch(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.patch(
+            `${this.FULL_PATH}${owner}/${identifier}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}`,
+                action: TAGS.AccessListPatch.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -357,31 +232,16 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/members${this.buildQuery(query)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            action: TAGS.AccessListGetMembers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...headers,
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}${owner}/${identifier}/members`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
+                action: TAGS.AccessListGetMembers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers,
+            }),
+        );
     }
 
     /**
@@ -403,31 +263,19 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            action: TAGS.AccessListReplaceMembers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                ...headers,
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}${owner}/${identifier}/members`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
+                action: TAGS.AccessListReplaceMembers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                accept: null,
+                headers,
+            }),
+        );
     }
 
     /**
@@ -449,31 +297,19 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            action: TAGS.AccessListAddMembers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                ...headers,
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}${owner}/${identifier}/members`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
+                action: TAGS.AccessListAddMembers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                accept: null,
+                headers,
+            }),
+        );
     }
 
     /**
@@ -495,31 +331,19 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/members`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/members`,
-            action: TAGS.AccessListRemoveMembers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                ...headers,
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}${owner}/${identifier}/members`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/members`,
+                action: TAGS.AccessListRemoveMembers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                accept: null,
+                headers,
+            }),
+        );
     }
 
     /**
@@ -541,31 +365,19 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/resource-connections${this.buildQuery(query)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections`,
-            action: TAGS.AccessListGetResourceConnections.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...headers,
-            },
-        });
+        return http.get(
+            buildUrl(
+                `${this.FULL_PATH}${owner}/${identifier}/resource-connections`,
+                query,
+            ),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections`,
+                action: TAGS.AccessListGetResourceConnections.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers,
+            }),
+        );
     }
 
     /**
@@ -589,31 +401,19 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/resource-connections/${resourceIdentifier}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
-            action: TAGS.AccessListUpsertResourceConnection.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                ...headers,
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}${owner}/${identifier}/resource-connections/${resourceIdentifier}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
+                action: TAGS.AccessListUpsertResourceConnection.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                accept: null,
+                headers,
+            }),
+        );
     }
 
     /**
@@ -635,31 +435,17 @@ class AccessListClient {
         headers = {},
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}${owner}/${identifier}/resource-connections/${resourceIdentifier}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
-            name: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
-            action: TAGS.AccessListDeleteResourceConnection.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...headers,
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}${owner}/${identifier}/resource-connections/${resourceIdentifier}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}{owner}/{identifier}/resource-connections/{resourceIdentifier}`,
+                action: TAGS.AccessListDeleteResourceConnection.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers,
+            }),
+        );
     }
 }
 

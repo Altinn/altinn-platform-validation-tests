@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
+
 const TAGS = {
     ResourceOwnerGetOrgs: {
         action: "resource-owner-get-orgs",
@@ -41,36 +43,17 @@ class ResourceOwnerClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceOwnerGetOrgs(labels = null) {
-        // The endpoint is public, so the client may be built without a token
-        // generator. That is what lets this run as a healthcheck in prod.
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
-        });
-        const token = this.tokenGenerator?.getToken();
-
-        if (token) {
-            headers.Authorization = `Bearer ${token}`;
-        }
-
-        const url = `${this.FULL_PATH}/orgs`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/orgs`,
-            name: `${this.FULL_PATH}/orgs`,
-            action: TAGS.ResourceOwnerGetOrgs.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers,
-        });
+        return http.get(
+            `${this.FULL_PATH}/orgs`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/orgs`,
+                action: TAGS.ResourceOwnerGetOrgs.action,
+                labels,
+                // The endpoint is public, so the client may be built without a token
+                // generator. That is what lets this run as a healthcheck in prod.
+                token: this.tokenGenerator?.getToken() || null,
+            }),
+        );
     }
 }
 

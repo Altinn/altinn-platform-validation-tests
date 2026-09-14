@@ -1,6 +1,6 @@
 import http from "k6/http";
 
-import { URL } from "../../common-imports.js";
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { ResourceListQuery, ResourceSearchQuery, ServiceResource, UpdatedResourceSubjectsQuery } from "./types.js";
 
 const TAGS = {
@@ -90,40 +90,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourceList(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/resourcelist`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                url.searchParams.append(key, String(value));
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/resourcelist`,
-            name: `${this.FULL_PATH}/resourcelist`,
-            action: TAGS.ResourceGetResourceList.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/resourcelist`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/resourcelist`,
+                action: TAGS.ResourceGetResourceList.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -134,30 +109,16 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceExport(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/export`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/export`,
-            name: `${this.FULL_PATH}/export`,
-            action: TAGS.ResourceExport.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/xml+rdf",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/export`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/export`,
+                action: TAGS.ResourceExport.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: "application/xml+rdf",
+            }),
+        );
     }
 
     /**
@@ -169,40 +130,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResource(id, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${encodeURIComponent(id)}`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                url.searchParams.append(key, String(value));
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.ResourceGetResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${encodeURIComponent(id)}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.ResourceGetResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -213,31 +149,17 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreateResource(resource, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.ResourceCreateResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(resource), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}`,
+            jsonBody(resource),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.ResourceCreateResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -249,31 +171,17 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdateResource(id, resource, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.ResourceUpdateResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(resource), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/${encodeURIComponent(id)}`,
+            jsonBody(resource),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.ResourceUpdateResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -284,30 +192,16 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceDeleteResource(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(id)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.ResourceDeleteResource.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${encodeURIComponent(id)}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.ResourceDeleteResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -318,30 +212,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicy(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy`,
-            name: `${this.FULL_PATH}/{id}/policy`,
-            action: TAGS.ResourceGetPolicy.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy`,
+                action: TAGS.ResourceGetPolicy.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -353,35 +232,17 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceCreatePolicy(id, policyFile, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy`,
-            name: `${this.FULL_PATH}/{id}/policy`,
-            action: TAGS.ResourceCreatePolicy.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url,
+            `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`,
             {
                 policyFile,
             },
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy`,
+                action: TAGS.ResourceCreatePolicy.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -394,35 +255,17 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdatePolicy(id, policyFile, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy`,
-            name: `${this.FULL_PATH}/{id}/policy`,
-            action: TAGS.ResourceUpdatePolicy.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url,
+            `${this.FULL_PATH}/${encodeURIComponent(id)}/policy`,
             {
                 policyFile,
             },
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy`,
+                action: TAGS.ResourceUpdatePolicy.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -435,40 +278,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicySubjects(id, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/${encodeURIComponent(id)}/policy/subjects`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                url.searchParams.append(key, String(value));
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy/subjects`,
-            name: `${this.FULL_PATH}/{id}/policy/subjects`,
-            action: TAGS.ResourceGetPolicySubjects.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${encodeURIComponent(id)}/policy/subjects`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy/subjects`,
+                action: TAGS.ResourceGetPolicySubjects.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -480,30 +298,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicyRules(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}/policy/rules`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy/rules`,
-            name: `${this.FULL_PATH}/{id}/policy/rules`,
-            action: ResourceClient.TAGS.ResourceGetPolicyRules.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${id}/policy/rules`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy/rules`,
+                action: ResourceClient.TAGS.ResourceGetPolicyRules.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -515,30 +318,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetPolicyRights(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}/policy/rights`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
-            name: `${this.FULL_PATH}/{id}/policy/rights`,
-            action: ResourceClient.TAGS.ResourceGetPolicyRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${id}/policy/rights`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
+                action: ResourceClient.TAGS.ResourceGetPolicyRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -550,31 +338,17 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceGetResourcesBySubjects(subjects, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/bysubjects`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/bysubjects`,
-            name: `${this.FULL_PATH}/bysubjects`,
-            action: ResourceClient.TAGS.ResourceGetResourcesBySubjects.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(subjects), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/bysubjects`,
+            jsonBody(subjects),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/bysubjects`,
+                action: ResourceClient.TAGS.ResourceGetResourcesBySubjects.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -587,40 +361,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceSearch(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/Search`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                url.searchParams.append(key, String(value));
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/Search`,
-            name: `${this.FULL_PATH}/Search`,
-            action: ResourceClient.TAGS.ResourceSearch.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/Search`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/Search`,
+                action: ResourceClient.TAGS.ResourceSearch.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
     /**
      * Gets the updated resources since the provided last updated time.
@@ -632,46 +381,18 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceUpdated(query = null, labels = null) {
-        // The endpoint is public, so the client may be built without a token
-        // generator. That is what lets this run as a healthcheck in prod.
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
-        });
-        const token = this.tokenGenerator?.getToken();
-
-        if (token) {
-            headers.Authorization = `Bearer ${token}`;
-        }
-
-        const url = new URL(`${this.FULL_PATH}/updated`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                url.searchParams.append(key, String(value));
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/updated`,
-            name: `${this.FULL_PATH}/updated`,
-            action: TAGS.ResourceUpdated.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers,
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/updated`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/updated`,
+                action: TAGS.ResourceUpdated.action,
+                labels,
+                // The endpoint is public, so the client may be built without a
+                // token generator. That is what lets this run as a healthcheck
+                // in prod.
+                token: this.tokenGenerator?.getToken() || null,
+            }),
+        );
     }
 
 }
