@@ -22,5 +22,5 @@ terraform.rc
 .DS_Store
 .env
 .env.*
-!.env.*.example
+!.env*.example
 .env*.local

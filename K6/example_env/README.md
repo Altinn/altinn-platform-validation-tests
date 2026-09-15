@@ -30,9 +30,13 @@ runs the selected file with k6, preserving its exit status. Tests declare their
 own required variables and thresholds. The example sets one VU and one iteration;
 edit these values or pass k6 flags to change the load.
 
+Use `--inspect` on its own, without other flags or arguments. The runner rejects
+combinations such as `--inspect --vus 1` before starting k6. Remove `--inspect`
+to run the test with those options.
+
 File values override inherited environment variables and do not change your
-shell. Local `.env.*` files are ignored by Git; `.env.*.example` templates can be
-committed. Quote values containing `#`. Values are parsed as dotenv, not executed
+shell. Local `.env.*` files are ignored by Git; `.env.example` and `.env.*.example`
+templates can be committed. Quote values containing `#`. Values are parsed as dotenv, not executed
 as shell code, and `${VARIABLE}` expansion is not supported.
 
 For another environment, copy the template to `.env.tt02`, for example, update
