@@ -2,6 +2,7 @@ import http from "k6/http";
 
 import { withRetries } from "../../api/building-blocks/common/retry.js";
 import { requireEnv } from "../../helpers.js";
+import { requestParams } from "../common/request.js";
 
 class AltinnCdnClient {
     /**
@@ -27,15 +28,19 @@ class AltinnCdnClient {
         }
         const orgs = [];
 
-        const params = {
-            tags: {
-                "endpoint": this.BASE_URL + "/orgs/altinn-orgs.json",
-                "action": "GetOrgs"
-            },
-        };
+        const url = this.BASE_URL + "/orgs/altinn-orgs.json";
 
         const res = withRetries(
-            () => http.get(this.BASE_URL + "/orgs/altinn-orgs.json", params),
+            () =>
+                http.get(
+                    url,
+                    requestParams({
+                        endpoint: url,
+                        action: "GetOrgs",
+                        token: null,
+                        accept: null,
+                    }),
+                ),
             "GetOrgs",
         );
         console.log(this.BASE_URL + "/orgs/altinn-orgs.json");
