@@ -143,6 +143,11 @@ export const AltinnScopes = {
         WRITE: "altinn:enterpriseusers.write"
     },
 
+    EVENTS: {
+        PUBLISH: "altinn:events.publish",
+        SUBSCRIBE: "altinn:events.subscribe"
+    },
+
     INSTANCES: {
         META: "altinn:instances.meta",
         READ: "altinn:instances.read",

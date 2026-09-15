@@ -1,0 +1,12 @@
+namespace: events
+base_dir: K6/api/tests/events/
+test_definitions:
+  - test_file: get-subscriptions.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+
+  - test_file: get-app-events.js
+    contexts:
+      - environment: at23
+      - environment: tt02

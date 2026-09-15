@@ -1,0 +1,12 @@
+namespace: storage
+base_dir: K6/api/tests/storage/
+test_definitions:
+  - test_file: get-applications.js
+    contexts:
+      - environment: at23
+      - environment: tt02
+
+  - test_file: query-instances.js
+    contexts:
+      - environment: at23
+      - environment: tt02
