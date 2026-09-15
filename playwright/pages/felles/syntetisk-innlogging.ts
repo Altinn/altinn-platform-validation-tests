@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
-import { baseUrls, requireEnv, TestUser } from "../../config/environment";
+import { baseUrls, requireEnv } from "../../config/environment";
+import { TestUser } from "../../config/testdata";
 
 /**
  * Innlogging som syntetisk testbruker, uten å gå gjennom ID-porten.
