@@ -1,5 +1,10 @@
 # altinn-platform-validation-tests
 
+For local k6 runs without sourcing environment variables, see the
+[dotenv setup](K6/example_env/README.md#local-runs-with-dotenv-files-no-sourcing).
+After filling in `.env.at23`, run a test with
+`npm run k6 -- at23 K6/api/tests/<folder>/<test>.js`.
+
 # Basic Repo Structure
 
 ## Important Folders
