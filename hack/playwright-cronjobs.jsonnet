@@ -146,7 +146,7 @@ local cronJob(
                   },
                   {
                     name: 'PLAYWRIGHT_HTML_ATTACHMENTS_BASE_URL',
-                    value: reportUrl + "/api/getreport/",
+                    value: reportUrl + '/api/getreport/',
                   },
                   {
                     name: 'PLAYWRIGHT_JUNIT_OUTPUT_NAME',

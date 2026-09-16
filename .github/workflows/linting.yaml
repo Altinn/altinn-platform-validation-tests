@@ -9,6 +9,8 @@ on:
       - "conf"
       - "jsconfig.json"
       - "package.json"
+      - "**/*.jsonnet"
+      - "**/*.libsonnet"
 run-name: "linting"
 permissions:
   contents: "read"
