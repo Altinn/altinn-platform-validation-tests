@@ -25,7 +25,20 @@ jobs:
           cache-dependency-path: helpers/detect-new-swagger-versions/go.sum
 
       - name: Check Swagger documents
+        id: detect-swagger
+        continue-on-error: true
         working-directory: helpers/detect-new-swagger-versions
-        run: go run .
+        run: |
+          go run .
+          exit_code=$?
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit "$exit_code"
 
-      # TODO: Send a slack notification whenever we create a channel
+      - name: Notify Slack
+        if: steps.detect-swagger.outputs.exit_code == '2'
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: ":warning: New Swagger documentation detected.\n<https://github.com/Altinn/altinn-platform-validation-tests/actions/workflows/detect-new-swagger-docs.yml|View workflow>"
